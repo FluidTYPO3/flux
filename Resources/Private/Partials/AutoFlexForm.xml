@@ -1,0 +1,29 @@
+{namespace flux=Tx_Flux_ViewHelpers}
+<T3DataStructure>
+	<meta>
+	    <langDisable>1</langDisable>
+	</meta>
+	<sheets>
+		<f:for each="{sheets}" as="sheet">
+		<{sheet.name}>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>{sheet.label}</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+			<f:for each="{sheet.fields}" as="field" iteration="iteration">
+				<f:if condition="{field.enabled}">
+					<{field.name}>
+					<TCEforms>
+						<flux:flexform.renderField config="{field}" />
+					</TCEforms>
+					</{field.name}>
+				</f:if>
+			</f:for>
+				</el>
+			</ROOT>
+		</{sheet.name}>
+		</f:for>
+	</sheets>
+</T3DataStructure>

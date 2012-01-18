@@ -1,0 +1,2 @@
+  # cat=basic/enable; type=boolean; label=Debug Mode: If enabled, all exceptions which can be caused by any template rendering errors will not be caught and presented in a non-fatal way. If you enable this and have enabled error display in your TYPO3 configuration you will see stack dumps of any template rendering errors - if you disable it you will only see that an error occured, the code of the error and the short message describing the error.
+debugMode = 0
