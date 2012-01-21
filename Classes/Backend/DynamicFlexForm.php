@@ -51,12 +51,18 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	protected $flexformService;
 
 	/**
+	 * @var Tx_Flux_Provider_ConfigurationService
+	 */
+	protected $configurationService;
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		$this->configurationManager = $this->objectManager->get('Tx_Flux_Configuration_ConfigurationManager');
 		$this->flexformService = $this->objectManager->get('Tx_Flux_Service_FlexForm');
+		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
 	}
 
 	/**
@@ -69,37 +75,22 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * @param string $fieldName
 	 */
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName) {
-		$flexFormConfiguration = Tx_Flux_Core::getRegisteredFlexForms('contentObject', isset($row['CType']) ? $row['CType'] : 'field_does_not_exist');
-		if (!$flexFormConfiguration && isset($row['list_type'])) {
-			$flexFormConfiguration = Tx_Flux_Core::getRegisteredFlexForms('plugin', $row['list_type']);
-		}
-		if (!$flexFormConfiguration && isset($conf['type']) && $conf['type'] === 'flex') {
-			$flexFormConfiguration = Tx_Flux_Core::getRegisteredFlexForms('table', $table, $fieldName);
-			if (empty($fieldName) && is_array($flexFormConfiguration) === TRUE) {
-				$flexFormConfiguration = array_shift($flexFormConfiguration);
-			}
-		}
-
-		if ($flexFormConfiguration) {
+		$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $row, $dataStructArray);
+		if ($provider) {
 			try {
-				foreach ($flexFormConfiguration as $configurationVariableName=>$configurationValue) {
-					if (class_exists('Closure') && $configurationValue instanceof Closure) {
-						$flexFormConfiguration[$configurationVariableName] = call_user_func($configurationValue, $row);
-					}
-				}
 				$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-				$paths = $flexFormConfiguration['paths'];
+				$paths = $provider->getTemplatePaths($row);
 				if ($paths === NULL) {
 					$paths = Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray((array) $typoScript['plugin.']['tx_flux.']['view.']);
 				}
 				$paths = Tx_Fed_Utility_Path::translatePath($paths);
-				$values = $this->flexformService->convertFlexFormContentToArray($row['pi_flexform']);
-				$values = array_merge((array) $flexFormConfiguration['variables'], $values);
-				$section = $flexFormConfiguration['section'];
+				$values = $this->flexformService->convertFlexFormContentToArray($row[$fieldName ? $fieldName : 'pi_flexform']);
+				$values = array_merge((array) $provider->getTemplateVariables($row), $values);
+				$section = $provider->getConfigurationSectionName($row);
 				if (strpos($section, 'variable:') !== FALSE) {
 					$section = $values[array_pop(explode(':', $section))];
 				}
-				$this->flexformService->convertFlexFormContentToDataStructure($flexFormConfiguration['templateFilename'], $values, $paths, $dataStructArray, $section);
+				$this->flexformService->convertFlexFormContentToDataStructure($provider->getTemplatePathAndFilename($row), $values, $paths, $dataStructArray, $section);
 			} catch (Exception $e) {
 				t3lib_div::sysLog($e->getMessage(), 'flux');
 				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {

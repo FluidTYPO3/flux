@@ -60,6 +60,11 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	protected $flexform;
 
 	/**
+	 * @var Tx_Flux_Provider_ConfigurationService
+	 */
+	protected $configurationService;
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
@@ -67,6 +72,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 		$this->jsonService = $this->objectManager->get('Tx_Flux_Service_Json');
 		$this->configurationManager = $this->objectManager->get('Tx_Flux_Configuration_ConfigurationManager');
 		$this->flexform = $this->objectManager->get('Tx_Flux_Service_FlexForm');
+		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
 		$this->view = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
 	}
 
@@ -79,26 +85,23 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @param array $row
 	 */
 	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
-		$flexFormConfiguration = Tx_Flux_Core::getRegisteredFlexForms('contentObject', $row['CType']);
-		if (!$flexFormConfiguration && !empty($row['list_type'])) {
-			$flexFormConfiguration = Tx_Flux_Core::getRegisteredFlexForms('plugin', $row['list_type']);
-		}
-		if ($flexFormConfiguration) {
-			foreach ($flexFormConfiguration as $configurationVariableName=>$configurationValue) {
-				if (class_exists('Closure') && $configurationValue instanceof Closure) {
-					$flexFormConfiguration[$configurationVariableName] = call_user_func($configurationValue, $row);
-				}
-			}
-
-			$templatePathAndFilename = $flexFormConfiguration['templateFilename'];
+		$provider = $this->configurationService->resolveConfigurationProvider('tt_content', '', $row);
+		if ($provider) {
+			$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
 			if (file_exists($templatePathAndFilename) === FALSE) {
 				$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
 			}
 			if (file_exists($templatePathAndFilename)) {
 				$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-				$extension = str_replace('_', '', $flexFormConfiguration['extensionName']);
-				$settings = $typoScript['plugin.']['tx_' . $extension . '.']['view.'];
-				$paths = Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray($settings);
+				$extension = str_replace('_', '', $provider->getExtensionKey($row));
+				if ($provider->getTemplatePaths($row)) {
+					$paths = $provider->getTemplatePaths($row);
+				} else if (t3lib_extMgm::isLoaded($provider->getExtensionKey($row))) {
+					$paths = $typoScript['plugin.']['tx_' . $extension . '.']['view.'];
+				} else {
+					$paths = $typoScript['plugin.']['tx_flux.']['view.'];
+				}
+				$paths = Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray($paths);
 				try {
 					$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
 					$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
@@ -118,7 +121,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 					$view->assign('row', $row);
 
 					$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', 'Configuration');
-					$variables = array_merge($stored, $flexFormConfiguration['variables'], $this->flexform->getAllAndTransform($stored['fields']));
+					$variables = array_merge($stored, (array) $provider->getTemplateVariables($row), $this->flexform->getAllAndTransform($stored['fields']));
 					$variables['label'] = $stored['label'];
 					$variables['config'] = $stored;
 					$variables['row'] = $row;

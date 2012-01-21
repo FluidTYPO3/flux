@@ -34,22 +34,28 @@
 class Tx_Flux_Core {
 
 	/**
-	 * Contains registered plugin FlexForms
+	 * Contains all ConfigurationProviders registered with Flux
 	 * @var array
 	 */
-	private static $pluginFlexForms = array();
+	private static $providers = array();
 
 	/**
-	 * Contains registered plugin-as-contentObject FlexForms
-	 * @var array
+	 * Registers a class implementing one of the Flux ConfigurationProvider
+	 * interfaces.
+	 *
+	 * @param string|object $classNameOrInstance
 	 */
-	private static $contentObjectFlexForms = array();
-
-	/**
-	 * Contains registered FlexForms for record (table) fields in TCA
-	 * @var array
-	 */
-	private static $tableFlexForms = array();
+	public static function registerConfigurationProvider($classNameOrInstance) {
+		if (is_object($classNameOrInstance) === FALSE) {
+			if (class_exists($classNameOrInstance) === FALSE) {
+				throw new Exception('ConfigurationProvider class ' . $classNameOrInstance . ' does not exists', 1327173514);
+			}
+		}
+		if (in_array('Tx_Flux_Provider_ConfigurationProviderInterface', class_implements($classNameOrInstance)) === FALSE) {
+			throw new Exception(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement one of the Provider interfaces from Flux/Provider', 1327173536);
+		}
+		array_push(self::$providers, $classNameOrInstance);
+	}
 
 	/**
 	 * Registers a Fluid template for use as a Dynamic Flex Form template in the
@@ -71,14 +77,17 @@ class Tx_Flux_Core {
 	 * @param mixed|NULL Optional paths array / Closure to return paths
 	 */
 	public static function registerFluidFlexFormPlugin($extensionName, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
-		self::$pluginFlexForms[$pluginSignature] = array(
-			'extensionName' => $extensionName,
-			'pluginSignature' => $pluginSignature,
-			'templateFilename' => $templateFilename,
-			'variables' => $variables,
-			'section' => $section,
-			'paths' => $paths
-		);
+		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$provider = $objectManager->create('Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider');
+		$provider->setTableName('tt_content');
+		$provider->setFieldName('');
+		$provider->setExtensionKey($extensionName);
+		$provider->setListType($pluginSignature);
+		$provider->setTemplatePathAndFilename($templateFilename);
+		$provider->setTemplateVariables($variables);
+		$provider->SetTemplatePaths($paths);
+		$provider->setConfigurationSectionName($section);
+		self::registerConfigurationProvider($provider);
 	}
 
 	/**
@@ -94,14 +103,18 @@ class Tx_Flux_Core {
 	 * @param mixed|NULL Optional paths array / Closure to return paths
 	 */
 	public static function registerFluidFlexFormContentObject($extensionName, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
-		self::$contentObjectFlexForms[$contentObjectType] = array(
-			'extensionName' => $extensionName,
-			'contentObjectType' => $contentObjectType,
-			'templateFilename' => $templateFilename,
-			'variables' => $variables,
-			'section' => $section,
-			'paths' => $paths
-		);
+		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$provider = $objectManager->create('Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider');
+		$provider->setTableName('tt_content');
+		$provider->setFieldName('');
+		$provider->setExtensionKey($extensionName);
+		$provider->setListType($pluginSignature);
+		$provider->setTemplatePathAndFilename($templateFilename);
+		$provider->setTemplateVariables($variables);
+		$provider->SetTemplatePaths($paths);
+		$provider->setConfigurationSectionName($section);
+		$provider->setContentObjectType($contentObjectType);
+		self::registerConfigurationProvider($provider);
 	}
 
 	/**
@@ -117,41 +130,24 @@ class Tx_Flux_Core {
 	 * @param mixed|NULL Optional paths array / Closure to return paths
 	 */
 	public static function registerFluidFlexFormTable($table, $fieldName, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
-		if (isset(self::$tableFlexForms[$table]) === FALSE) {
-			self::$tableFlexForms[$table] = array();
-		}
-		if (isset(self::$tableFlexForms[$table][$fieldName])) {
-			self::$tableFlexForms[$table][$fieldName] = array();
-		}
-		self::$tableFlexForms[$table][$fieldName] = array(
-			'table' => $table,
-			'fieldName' => $fieldName,
-			'templateFilename' => $templateFilename,
-			'variables' => $variables,
-			'section' => $section,
-			'paths' => $paths
-		);
+		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$provider = $objectManager->create('Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider');
+		$provider->setTableName($table);
+		$provider->setFieldName($fieldName);
+		$provider->setListType($pluginSignature);
+		$provider->setTemplatePathAndFilename($templateFilename);
+		$provider->setTemplateVariables($variables);
+		$provider->SetTemplatePaths($paths);
+		$provider->setConfigurationSectionName($section);
+		self::registerConfigurationProvider($provider);
 	}
 
 	/**
-	 * Gets the defined FlexForms based on parameters
-	 * @param string $type Optional; The type (plugin, contentObject) of registered FlexForm templates to get
-	 * @param string $signature Optional; The plugin signature or cType based on which $type you requested
+	 * Gets the defined FlexForms configuration providers based on parameters
 	 * @return array
 	 */
-	public static function getRegisteredFlexForms($type=NULL, $signature=NULL) {
-		$all = array(
-			'plugin' => self::$pluginFlexForms,
-			'contentObject' => self::$contentObjectFlexForms,
-			'table' => self::$tableFlexForms
-		);
-		if (!$type && !$signature) {
-			return $all;
-		} else if ($type && !$signature) {
-			return $all[$type];
-		} else if ($type && $all[$type] && $signature) {
-			return $all[$type][$signature];
-		}
+	public static function getRegisteredFlexFormProviders() {
+		return self::$providers;
 	}
 
 }
