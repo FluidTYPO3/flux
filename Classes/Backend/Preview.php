@@ -85,6 +85,15 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @param array $row
 	 */
 	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
+		$this->renderPreview($headerContent, $itemContent, $row);
+	}
+
+	/**
+	 * @param string $headerContent
+	 * @param type $itemContent
+	 * @param array $row
+	 */
+	public function renderPreview(&$headerContent, &$itemContent, array &$row) {
 		$provider = $this->configurationService->resolveConfigurationProvider('tt_content', '', $row);
 		if ($provider) {
 			$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
