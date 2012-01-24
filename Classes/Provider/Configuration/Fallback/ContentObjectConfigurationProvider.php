@@ -37,6 +37,14 @@ class Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider
 		$this->contentObjectType = $contentObjectType;
 	}
 
+	/**
+	 * @param array $row
+	 * @return string
+	 */
+	public function getContentObjectType(array $row) {
+		return $this->contentObjectType;
+	}
+
 }
 
 ?>
