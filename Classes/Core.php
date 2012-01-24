@@ -134,7 +134,6 @@ class Tx_Flux_Core {
 		$provider = $objectManager->create('Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider');
 		$provider->setTableName($table);
 		$provider->setFieldName($fieldName);
-		$provider->setListType($pluginSignature);
 		$provider->setTemplatePathAndFilename($templateFilename);
 		$provider->setTemplateVariables($variables);
 		$provider->SetTemplatePaths($paths);
