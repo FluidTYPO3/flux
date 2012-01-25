@@ -37,6 +37,8 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 	public function initializeArguments() {
 		$this->registerArgument('id', 'string', 'Identifier of this Flexible Content Element, [a-z0-9\-] allowed', TRUE);
 		$this->registerArgument('label', 'string', 'Label for this FlexForm, used when human-readable labels are displayed', FALSE, NULL);
+		$this->registerArgument('description', 'string', 'Short description of this content element', FALSE);
+		$this->registerArgument('icon', 'string', 'Optional icon file to use when displaying this content element in the new content element wizard', FALSE, '../typo3conf/ext/fed/Resources/Public/Icons/Plugin.png');
 		$this->registerArgument('mergeValues', 'boolean', 'If TRUE, enables overriding of record values with corresponding values from this FlexForm', FALSE, FALSE);
 		$this->registerArgument('enabled', 'boolean', 'If FALSE, makes the FCE inactive', FALSE, TRUE);
 	}
