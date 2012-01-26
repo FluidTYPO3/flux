@@ -139,7 +139,8 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
 					$view->assignMultiple($variables);
 					$itemContent = $view->renderStandaloneSection('Preview', $variables);
-					$headerContent = '<strong>' . $stored['label'] . '</strong> <i>' . $row['header'] . '</i> ';
+					$label = Tx_Extbase_Utility_Localization::translate($stored['label'], $extension);
+					$headerContent = '<strong>' . $label . '</strong> <i>' . $row['header'] . '</i><br /> ';
 					$drawItem = FALSE;
 				} catch (Exception $e) {
 					if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {

@@ -22,7 +22,7 @@ td.spacer { width: 8px; height: 8px; }
 				<fed:be.contentArea area="{area.name}" row="{row}">
 					<div class="fce-header t3-page-colHeader">
 						<fed:be.link.content.new row="{row}" area="{area.name}" />
-						<div>{area.label}</div>
+						<div><f:translate key="{area.label}" default="{area.label}" /></div>
 					</div>
 					<div class="fce-container">
 						<f:for each="{records}" as="record">
