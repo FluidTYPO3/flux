@@ -40,6 +40,8 @@ return array(
 	'tx_flux_configuration_configurationmanager' => $classPath . "Configuration/ConfigurationManager.php",
 	'tx_flux_backend_dynamicflexform' => $classPath . "Backend/DynamicFlexForm.php",
 	'tx_flux_backend_preview' => $classPath . "Backend/Preview.php",
+	'tx_flux_backend_tcemain' => $classPath . "Backend/TceMain.php",
+	'tx_flux_backend_makequeryarray' => $classPath . "Backend/MakeQueryArray.php",
 	'tx_flux_backend_templavoilapreview' => $classPath . "Backend/TemplaVoilaPreview.php",
 	'tx_flux_core' => $classPath . "Core.php",
 );

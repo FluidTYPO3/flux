@@ -1,4 +1,4 @@
-{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
 
 <style type="text/css">
 .fce-header { background-color: #5B5B5B; background-image: -moz-linear-gradient(center top , #7F7F7F 10%, #5B5B5B 100%); padding: 4px; margin-top: 8px; color: white; font-weight: bold; }
@@ -9,9 +9,6 @@
 td.spacer { width: 8px; height: 8px; }
 </style>
 
-<fed:comment comment="Not using f:format.raw() here, as it is only available in Fluid 1.4" />
-{preview -> fed:raw()}
-
 <table style="width: 100%; margin-top: 8px;" cellspacing="0" cellpadding="0">
 	<tbody>
 	<f:for each="{grid}" as="gridrow" iteration="rowIteration">
@@ -19,21 +16,20 @@ td.spacer { width: 8px; height: 8px; }
 		<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
 			<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}">
 			<f:for each="{gridcolumn.areas}" as="area">
-				<fed:be.contentArea area="{area.name}" row="{row}">
+				<flux:be.contentArea area="{area.name}" row="{row}">
 					<div class="fce-header t3-page-colHeader">
-						<fed:be.link.content.new row="{row}" area="{area.name}" />
+						<flux:be.link.content.new row="{row}" area="{area.name}" />
 						<div><f:translate key="{area.label}" default="{area.label}" /></div>
 					</div>
 					<div class="fce-container">
 						<f:for each="{records}" as="record">
 							<div class="t3-page-ce">
-								<fed:be.contentElement row="{record}" dblist="{dblist}" />
-								<fed:comment comment="Note: this next <div> line is necessary but looks invalid - due to bug in TYPO3 CE rendering" />
+								<flux:be.contentElement row="{record}" dblist="{dblist}" />
 									</div>
 							</div>
 						</f:for>
 					</div>
-				</fed:be.contentArea>
+				</flux:be.contentArea>
 			</f:for>
 			</td>
 			<f:if condition="{columnIteration.isLast} < 1">
