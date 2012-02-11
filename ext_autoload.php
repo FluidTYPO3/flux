@@ -43,6 +43,7 @@ return array(
 	'tx_flux_backend_tcemain' => $classPath . "Backend/TceMain.php",
 	'tx_flux_backend_makequeryarray' => $classPath . "Backend/MakeQueryArray.php",
 	'tx_flux_backend_templavoilapreview' => $classPath . "Backend/TemplaVoilaPreview.php",
+	'tx_flux_service_content' => $classPath . "Service/Content.php",
 	'tx_flux_core' => $classPath . "Core.php",
 );
 
