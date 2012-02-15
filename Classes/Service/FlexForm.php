@@ -321,6 +321,10 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 		if (file_exists($templateFile) === FALSE) {
 			$templateFile = t3lib_div::getFileAbsFileName($templateFile);
 		}
+		if (file_exists($templateFile) === FALSE) {
+				// only process this $dataStructArray if the specified template file exists.
+			return;
+		}
 		try {
 			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section);
 			$sheets = array();
