@@ -108,7 +108,6 @@ class Tx_Flux_Core {
 		$provider->setTableName('tt_content');
 		$provider->setFieldName('');
 		$provider->setExtensionKey($extensionName);
-		$provider->setListType($pluginSignature);
 		$provider->setTemplatePathAndFilename($templateFilename);
 		$provider->setTemplateVariables($variables);
 		$provider->SetTemplatePaths($paths);
