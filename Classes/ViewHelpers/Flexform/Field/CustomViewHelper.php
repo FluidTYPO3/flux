@@ -24,39 +24,29 @@
  * ************************************************************* */
 
 /**
- * FlexForm configuration container ViewHelper
+ * Custom FlexForm field ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Xml
+ * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Xml_NodeViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
 
-    /**
-     * @var string
-     */
-    protected $tagName = 'node';
+	/**
+	 * Initialize
+	 */
+	public function initializeArguments() {
+		parent::initializeArguments();
+	}
 
-    /**
-     * Initialize
-     */
-    public function initializeArguments() {
-        $this->registerArgument('tagName', 'string', 'Tag name of the node', FALSE, 'node');
-		$this->registerArgument('type', 'string', 'Type of node (FlexForm compatible)', FALSE);
-    }
-
-    /**
-     * Render
-     */
-    public function render() {
-        $this->tagName = $this->arguments['tagName'];
-        $this->tag->setTagName($this->tagName);
-        $this->tag->setContent($this->renderChildren());
-		if ($this->arguments['type']) {
-			$this->tag->addAttribute('type', $this->arguments['type']);
-		}
-        return $this->tag->render();
-    }
-
+	/**
+	 * Render method
+	 */
+	public function render() {
+		$config = parent::getBaseConfig();
+		$config['type'] = 'Custom';
+		$config['content'] = trim($this->renderChildren());
+		$this->addField($config);
+	}
 }
 
 ?>

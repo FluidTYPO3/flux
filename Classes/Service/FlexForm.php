@@ -62,7 +62,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	protected $objectManager;
 
 	/**
-	 * @var type Tx_Extbase_Property_Mapper
+	 * @var Tx_Extbase_Property_Mapper Tx_Extbase_Property_Mapper
 	 */
 	protected $propertyMapper;
 
@@ -127,7 +127,8 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * Uses "transform" property on each member of $fieldArrayContainingType to
 	 * properly type-cast each value before returning
 	 *
-	 * @param type $fieldArrayContainingTypes
+	 * @param array $fieldArrayContainingTypes
+	 * @param string $prefix
 	 */
 	public function getAllAndTransform($fieldArrayContainingTypes, $prefix='') {
 		$all = $this->getAll();
@@ -152,7 +153,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @param mixed $value
 	 * @param array $keysLeft
 	 * @param string $transformType
-	 * @return type
+	 * @return mixed
 	 */
 	protected function digDownTransform($all, $keysLeft, $transformType) {
 		$current =& $all;
@@ -185,8 +186,8 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	/**
 	 * Gets a DomainObject or QueryResult of $dataType
 	 *
-	 * @param type $dataType
-	 * @param type $uids
+	 * @param string $dataType
+	 * @param string $uids
 	 */
 	protected function getObjectOfType($dataType, $uids) {
 		$uids = trim($uids, ',');
