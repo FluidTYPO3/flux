@@ -65,7 +65,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 	 */
 	protected function getFieldConfig() {
 		$config = $this->getBaseConfig();
-		$config['type'] = 'select';
+		$config['type'] = 'Select';
 		if ($this->arguments['commaSeparatedItems']) {
 			$config['items'] = array();
 			$itemNames = t3lib_div::trimExplode(',', $this->arguments['commaSeparatedItems']);
@@ -76,13 +76,13 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 			$config['items'] = $this->arguments['items'];
 		}
 		$config['size'] = $this->arguments['size'];
-		$config['minitems'] = $this->arguments['minItems'];
-		$config['maxitems'] = $this->arguments['maxItems'];
+		$config['minItems'] = $this->arguments['minItems'];
+		$config['maxItems'] = $this->arguments['maxItems'];
 		$config['multiple'] = $this->arguments['multiple'] ? 1 : 0;
 		$config['table'] = $this->arguments['table'];
 		$config['condition'] = $this->arguments['condition'];
 		$config['mm'] = $this->arguments['mm'];
-		$config['show_thumbs'] = $this->getFlexFormBoolean($this->arguments['showThumbs']);
+		$config['showThumbs'] = $this->getFlexFormBoolean($this->arguments['showThumbs']);
 		$config['itemsProcFunc'] = $this->arguments['itemsProcFunc'];
 		$config['suggest'] = $this->arguments['suggest'];
 		return $config;

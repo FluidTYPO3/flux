@@ -1,0 +1,8 @@
+<label>{config.label}</label>
+<required>{config.required}</required>
+<config>
+	<type>input</type>
+	<default>{config.default}</default>
+	<size>{config.size}</size>
+	<eval>{config.eval}</eval>
+</config>

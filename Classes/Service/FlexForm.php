@@ -342,6 +342,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 			}
 			$flexformTemplateFile = t3lib_extMgm::extPath('flux', 'Resources/Private/Partials/AutoFlexForm.xml');
 			$template = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
+            $template->setFormat('xml');
 			$template->setTemplatePathAndFilename($flexformTemplateFile);
 			$template->setPartialRootPath($paths['partialRootPath']);
 			$template->setLayoutRootPath($paths['layoutRootPath']);

@@ -1,0 +1,20 @@
+{namespace flux=Tx_Flux_ViewHelpers}
+<flux:xml.node tagName="{sheet.name}">
+	<ROOT>
+		<TCEforms>
+			<sheetTitle>{sheet.label}</sheetTitle>
+		</TCEforms>
+		<type>array</type>
+		<el>
+	        <f:for each="{sheet.fields}" as="field" iteration="iteration">
+                <f:if condition="{field.enabled}">
+                    <flux:xml.node tagName="{field.name}">
+                        <TCEforms>
+                            <f:render partial="Fields/{field.type}" arguments="{config: field}" />
+                        </TCEforms>
+                    </flux:xml.node>
+                </f:if>
+            </f:for>
+		</el>
+	</ROOT>
+</flux:xml.node>

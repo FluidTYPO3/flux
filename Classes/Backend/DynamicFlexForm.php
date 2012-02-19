@@ -79,10 +79,7 @@ class Tx_Flux_Backend_DynamicFlexForm {
 		if ($provider) {
 			try {
 				$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-				$paths = $provider->getTemplatePaths($row);
-				if ($paths === NULL) {
-					$paths = Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray((array) $typoScript['plugin.']['tx_flux.']['view.']);
-				}
+				$paths = Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray((array) $typoScript['plugin.']['tx_flux.']['view.']);
 				$paths = Tx_Fed_Utility_Path::translatePath($paths);
 				$values = $this->flexformService->convertFlexFormContentToArray($row[$fieldName ? $fieldName : 'pi_flexform']);
 				$values = array_merge((array) $provider->getTemplateVariables($row), $values);

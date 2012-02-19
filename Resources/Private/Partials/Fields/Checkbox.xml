@@ -1,0 +1,6 @@
+<label>{config.label}</label>
+<required>{config.required}</required>
+<f:if condition="{config.requestUpdate}"><onChange>reload</onChange></f:if>
+<config>
+	<type>check</type>
+</config>

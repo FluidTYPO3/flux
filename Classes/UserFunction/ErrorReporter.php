@@ -39,11 +39,9 @@ class Tx_Flux_UserFunction_ErrorReporter {
 			return 'An ' . $type . ' was encountered while rendering the FlexForm.<br /><br />
 				The error code is ' . $code . ' and the message states: ' . $message;
 		} else {
-			return 'An error occurred - unfortunately, there was no information about the type of error.<br /><br />
-				Most likely the error is caused by the internals of a ViewHelper - but it is no possible
-				to tell you which one.';
+            return 'An error was encountered while rendering the FlexForm.<br /><br />
+          				The error message states: ' . $exception;
 		}
-		return $parameters['fieldConf']['config']['parameters']['exception']->getMessage();
 	}
 }
 ?>

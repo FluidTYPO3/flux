@@ -24,35 +24,20 @@
  * ************************************************************* */
 
 /**
- * Group (select supertype) FlexForm field ViewHelper
+ * Lowercase text ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_GroupViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper {
+class Tx_Flux_ViewHelpers_LowercaseViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
 
-	/**
-	 * Initialize
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('internalType', 'string', 'FlexForm-internalType of this Group Selector', TRUE);
-		$this->registerArgument('allowed', 'string', 'FlexForm-style "allowed" content for a group type field');
-		$this->registerArgument('uploadFolder', 'string', 'Upload folder');
-	}
-
-	/**
-	 * Render method
-	 */
-	public function render() {
-		$config = $this->getFieldConfig();
-		$config['type'] = 'Group';
-		$config['internalType'] = $this->arguments['internalType'];
-		$config['allowed'] = $this->arguments['allowed'];
-		$config['uploadFolder'] = $this->arguments['uploadFolder'];
-		$this->addField($config);
-		$this->renderChildren();
-	}
+    /**
+     * @return string
+     */
+    public function render() {
+		$content = $this->renderChildren();
+        return strtolower($content);
+    }
 
 }
 

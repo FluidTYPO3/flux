@@ -57,7 +57,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 		$config = parent::getBaseConfig();
 		$config['eval'] = $this->arguments['eval'];
 		$config['size'] = $this->arguments['size'];
-		$config['type'] = 'input';
+		$config['type'] = 'Input';
 		return $config;
 	}
 

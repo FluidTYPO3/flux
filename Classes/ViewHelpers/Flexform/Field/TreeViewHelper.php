@@ -39,6 +39,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelp
 		$this->registerArgument('parentField', 'string', 'Field containing UID of parent record', TRUE);
 		$this->registerArgument('expandAll', 'boolean', 'If TRUE, expands all branches', FALSE, FALSE);
 		$this->registerArgument('showHeader', 'boolean', 'If TRUE, displays tree header', FALSE, FALSE);
+        $this->registerArgument('width', 'integer', 'Width of TreeView component', FALSE, 400);
 	}
 
 	/**
@@ -46,10 +47,11 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelp
 	 */
 	public function render() {
 		$config = $this->getFieldConfig();
-		$config['type'] = 'tree';
+		$config['subType'] = 'Tree';
 		$config['parentField'] = $this->arguments['parentField'];
 		$config['expandAll'] = $this->arguments['expandAll'];
 		$config['showHeader'] = $this->arguments['showHeader'];
+        $config['width'] = $this->arguments['width'];
 		$this->addField($config);
 		$this->renderChildren();
 	}

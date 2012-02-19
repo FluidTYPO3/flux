@@ -24,35 +24,34 @@
  * ************************************************************* */
 
 /**
- * Group (select supertype) FlexForm field ViewHelper
+ * FlexForm configuration container ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Xml
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_GroupViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper {
+class Tx_Flux_ViewHelpers_Xml_NodeViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
 
-	/**
-	 * Initialize
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('internalType', 'string', 'FlexForm-internalType of this Group Selector', TRUE);
-		$this->registerArgument('allowed', 'string', 'FlexForm-style "allowed" content for a group type field');
-		$this->registerArgument('uploadFolder', 'string', 'Upload folder');
-	}
+    /**
+     * @var string
+     */
+    protected $tagName = 'node';
 
-	/**
-	 * Render method
-	 */
-	public function render() {
-		$config = $this->getFieldConfig();
-		$config['type'] = 'Group';
-		$config['internalType'] = $this->arguments['internalType'];
-		$config['allowed'] = $this->arguments['allowed'];
-		$config['uploadFolder'] = $this->arguments['uploadFolder'];
-		$this->addField($config);
-		$this->renderChildren();
-	}
+    /**
+     * Initialize
+     */
+    public function initializeArguments() {
+        $this->registerArgument('tagName', 'string', 'Tag name of the node', FALSE, 'node');
+    }
+
+    /**
+     * Render
+     */
+    public function render() {
+        $this->tagName = $this->arguments['tagName'];
+        $this->tag->setTagName($this->tagName);
+        $this->tag->setContent($this->renderChildren());
+        return $this->tag->render();
+    }
 
 }
 

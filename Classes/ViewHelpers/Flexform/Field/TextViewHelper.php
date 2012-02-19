@@ -50,7 +50,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 	 */
 	public function render() {
 		$config = $this->getBaseConfig();
-		$config['type'] = 'text';
+		$config['type'] = 'Text';
 		$config['validate'] = $this->arguments['validate'];
 		$config['cols'] = $this->arguments['cols'];
 		$config['rows'] = $this->arguments['rows'];

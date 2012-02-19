@@ -1,0 +1,9 @@
+<label>{config.label}</label>
+<required>{config.required}</required>
+<defaultExtras>{config.defaultExtras}</defaultExtras>
+<config>
+	<type>text</type>
+	<default>{config.default}</default>
+	<cols>{config.cols}</cols>
+	<rows>{config.rows}</rows>
+</config>
