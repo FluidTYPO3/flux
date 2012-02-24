@@ -82,7 +82,7 @@ class Tx_Flux_Backend_TceMain {
 						$area = ''; // moving directly to a new page, remove area
 					} else if (is_numeric($relativeTo)) {
 						$area = $this->contentService->getFlexibleContentElementArea(array('pid' => $relativeTo));
-					} else if (strpos($relativeTo, 'FED')) {
+					} else if (strpos($relativeTo, 'FLUX')) {
 						$parts = explode('-', $relativeTo);
 						$parts = array_slice($parts, 1, count($parts) - 2);
 						$pid = array_pop($parts);
@@ -126,8 +126,6 @@ class Tx_Flux_Backend_TceMain {
 				}
 			}
 			$incomingFieldArray['tx_flux_column'] = $this->contentService->getFlexibleContentElementArea($incomingFieldArray, $id);;
-			#var_dump($incomingFieldArray);
-			#exit();
 		}
 	}
 
