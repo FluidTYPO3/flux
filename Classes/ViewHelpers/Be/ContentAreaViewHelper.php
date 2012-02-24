@@ -70,7 +70,7 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Flux_Core_ViewHelp
 		$this->templateVariableContainer->remove('records');
 		$this->templateVariableContainer->remove('dblist');
 
-		$content = '<div id="' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX">' . $content . '</div>';
+		$content = '<div id="column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX">' . $content . '</div>';
 
 		return $content;
 	}
