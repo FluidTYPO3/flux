@@ -165,13 +165,15 @@ class DynFlexMigration {
 			array('fed:flexform.group', 'fed:page.group', 'fed:fce.group'),
 			array('fed:fce', 'fed:flexform'),
 			array('fed:page.field.'),
-			array('fed:page ')
+			array('fed:page '),
+			array('</fed:page>')
 		);
 		$newTags = array(
 			'flux:flexform.sheet',
 			'flux:flexform',
 			'flux:flexform.field.',
-			'flux:flexform '
+			'flux:flexform ',
+			'</flux:flexform>'
 		);
 
 		$fileInfo = pathinfo($fileName);
