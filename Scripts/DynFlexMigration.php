@@ -166,7 +166,7 @@ class DynFlexMigration {
 			array('fed:fce', 'fed:flexform'),
 			array('fed:page.field.'),
 			array('fed:page '),
-			array('</fed:page>')
+			array('<\/fed:page>')
 		);
 		$newTags = array(
 			'flux:flexform.sheet',
