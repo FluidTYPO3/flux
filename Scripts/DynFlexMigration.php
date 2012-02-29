@@ -190,6 +190,12 @@ class DynFlexMigration {
 			$file = preg_replace('/(' . implode('|', $oldTags[$i++]) . ')/um', $newTag, $file);
 		}
 
+		// add flux namespace if it does not exist
+		$fluxNamespace = '{namespace flux="Tx_Flux_ViewHelpers"}';
+		if (strpos($file, $fluxNamespace) === FALSE) {
+			$file = $fluxNamespace . LF . $file;
+		}
+
 		// add flux:widget.grid if required
 		$previewSection = NULL;
 		$previewEndingTagPosition = FALSE;
