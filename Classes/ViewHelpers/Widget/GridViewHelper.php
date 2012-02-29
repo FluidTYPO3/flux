@@ -47,7 +47,9 @@ class Tx_Flux_ViewHelpers_Widget_GridViewHelper extends Tx_Fluid_Core_Widget_Abs
 	 * @return string
 	 */
 	public function render() {
-		#var_dump($this->templateVariableContainer->get('grid'));
+		if (TYPO3_MODE !== 'BE') {
+			return '';
+		}
 		if ($this->templateVariableContainer->exists('grid')) {
 			$this->controller->setGrid($this->templateVariableContainer->get('grid'));
 		}
