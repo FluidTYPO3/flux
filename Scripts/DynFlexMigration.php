@@ -192,9 +192,10 @@ class DynFlexMigration {
 			$file = preg_replace('/(' . implode('|', $oldTags[$i++]) . ')/um', $newTag, $file);
 		}
 
-		// add flux namespace if it does not exist
-		$fluxNamespace = '{namespace flux="Tx_Flux_ViewHelpers"}';
-		if (strpos($file, $fluxNamespace) === FALSE) {
+		// add flux namespace if it does not exist and is required
+		$fluxNamespace = '{namespace flux=Tx_Flux_ViewHelpers}';
+		$fluxTag = 'flux:';
+		if ((strpos($file, $fluxNamespace) === FALSE) && (strpos($file, $fluxTag) !== FALSE)) {
 			$file = $fluxNamespace . LF . $file;
 		}
 
