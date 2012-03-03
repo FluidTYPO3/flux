@@ -90,7 +90,6 @@ class Tx_Flux_Backend_TceMain {
 						$area = implode(':', $parts);
 						$relativeTo = $pid;
 					}
-					trigger_error(var_export($pid, TRUE), E_USER_ERROR);
 					$data = array('tx_flux_column' => $area);
 					if ($pid !== FALSE && $pid !== 0) {
 						$data['sorting'] = -99999;
