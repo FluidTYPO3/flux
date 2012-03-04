@@ -69,23 +69,23 @@ class Tx_Flux_Core {
 	 * type select box or an ObjectStorage from a list of records. Usual output
 	 * is completely ignored, only the "Configuration" section is considered.
 	 *
-	 * @param mixed $extensionName The extension key which registered this FlexForm
+	 * @param mixed $extensionKey The extension key which registered this FlexForm
 	 * @param mixed $pluginSignature The plugin signature this FlexForm belongs to
 	 * @param mixed $templateFilename Location of the Fluid template containing field definitions
 	 * @param mixed $variables Optional array of variables to pass to Fluid template
 	 * @param mixed|NULL Optional section name containing the configuration
 	 * @param mixed|NULL Optional paths array / Closure to return paths
 	 */
-	public static function registerFluidFlexFormPlugin($extensionName, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
+	public static function registerFluidFlexFormPlugin($extensionKey, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		$provider = $objectManager->create('Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName('');
-		$provider->setExtensionKey($extensionName);
+		$provider->setExtensionKey($extensionKey);
 		$provider->setListType($pluginSignature);
 		$provider->setTemplatePathAndFilename($templateFilename);
 		$provider->setTemplateVariables($variables);
-		$provider->SetTemplatePaths($paths);
+		$provider->setTemplatePaths($paths);
 		$provider->setConfigurationSectionName($section);
 		self::registerConfigurationProvider($provider);
 	}
@@ -95,22 +95,22 @@ class Tx_Flux_Core {
 	 * resolution - use this if you registered your Extbase plugin as a content
 	 * object in your localconf.
 	 *
-	 * @param mixed $extensionName The extension key which registered this FlexForm
+	 * @param mixed $extensionKey The extension key which registered this FlexForm
 	 * @param mixed $contentObjectType The cType of the object you registered
 	 * @param mixed $templateFilename Location of the Fluid template containing field definitions
 	 * @param mixed $variables Optional array of variables to pass to Fluid template
 	 * @param mixed|NULL Optional section name containing the configuration
 	 * @param mixed|NULL Optional paths array / Closure to return paths
 	 */
-	public static function registerFluidFlexFormContentObject($extensionName, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
+	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		$provider = $objectManager->create('Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName('');
-		$provider->setExtensionKey($extensionName);
+		$provider->setExtensionKey($extensionKey);
 		$provider->setTemplatePathAndFilename($templateFilename);
 		$provider->setTemplateVariables($variables);
-		$provider->SetTemplatePaths($paths);
+		$provider->setTemplatePaths($paths);
 		$provider->setConfigurationSectionName($section);
 		$provider->setContentObjectType($contentObjectType);
 		self::registerConfigurationProvider($provider);
@@ -135,7 +135,7 @@ class Tx_Flux_Core {
 		$provider->setFieldName($fieldName);
 		$provider->setTemplatePathAndFilename($templateFilename);
 		$provider->setTemplateVariables($variables);
-		$provider->SetTemplatePaths($paths);
+		$provider->setTemplatePaths($paths);
 		$provider->setConfigurationSectionName($section);
 		self::registerConfigurationProvider($provider);
 	}

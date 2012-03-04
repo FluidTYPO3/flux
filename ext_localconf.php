@@ -19,4 +19,13 @@ if (TYPO3_MODE === 'BE') {
 		);
 }
 
+t3lib_extMgm::addTypoScript($_EXTKEY, 'setup', '
+	plugin.tx_flux.view {
+		templateRootPath = EXT:flux/Resources/Private/Templates/
+		partialRootPath = EXT:flux/Resources/Private/Partials/
+		layoutRootPath = EXT:flux/Resources/Private/Layouts/
+	}
+');
+
+
 ?>
