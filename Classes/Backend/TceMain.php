@@ -123,7 +123,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @return	void
 	 */
 	public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, t3lib_TCEmain &$reference) {
-		if ($table === 'tt_content' && $id) {
+		if ($table === 'tt_content' && $id && is_array($incomingFieldArray['pi_flexform']['data'])) {
 			foreach ((array) $incomingFieldArray['pi_flexform']['data']['options']['lDEF'] as $key=>$value) {
 				if (strpos($key, 'tt_content') === 0) {
 					$realKey = array_pop(explode('.', $key));

@@ -3,4 +3,7 @@
 <f:if condition="{config.requestUpdate}"><onChange>reload</onChange></f:if>
 <config>
 	<type>check</type>
+	<f:if condition="{config.wizards}">
+		<wizards type="array"><_PADDING type="integer">2</_PADDING>{config.wizards}</wizards>
+	</f:if>
 </config>

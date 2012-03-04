@@ -53,10 +53,21 @@
 		<allowed>{config.allowed}</allowed>
 	</f:if>
 	<f:if condition="{config.suggest}">
-		<wizards>
-			<suggest>
-				<type>suggest</type>
-			</suggest>
-		</wizards>
+		<f:then>
+			<wizards type="array">
+				<_PADDING type="integer">2</_PADDING>
+				<suggest>
+					<type>suggest</type>
+				</suggest>
+				<f:if condition="{config.wizards}">
+					{config.wizards}
+				</f:if>
+			</wizards>
+		</f:then>
+		<f:else>
+			<f:if condition="{config.wizards}">
+				<wizards type="array"><_PADDING type="integer">2</_PADDING>{config.wizards}</wizards>
+			</f:if>
+		</f:else>
 	</f:if>
 </config>
