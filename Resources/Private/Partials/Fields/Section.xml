@@ -1,0 +1,21 @@
+{namespace flux=Tx_Flux_ViewHelpers}
+<tx_templavoila>
+	<title>{config.label}</title>
+</tx_templavoila>
+<section>1</section>
+<type>array</type>
+<el>
+	<flux:xml.node tagName="{config.name}Wrap">
+		<tx_templavoila>
+			<title>{config.label}</title>
+		</tx_templavoila>
+		<type>array</type>
+		<el>
+			<f:for each="{config.fields}" as="field">
+				<flux:xml.node tagName="{field.name}" wrapWithTceForms="TRUE">
+					<f:render partial="Fields/{field.type}" arguments="{config: field}" />
+				</flux:xml.node>
+			</f:for>
+		</el>
+	</flux:xml.node>
+</el>

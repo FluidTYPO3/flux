@@ -64,6 +64,12 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards')) {
 			$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
 		}
+		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section')) {
+			$section = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section');
+			$sectionName = $section['name'];
+		} else {
+			$sectionName = NULL;
+		}
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'fieldName', $this->arguments['name']);
 		$this->renderChildren();
 		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'fieldName');
@@ -91,7 +97,9 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 			'requestUpdate' => $this->arguments['requestUpdate'],
 			'exclude' => $this->getFlexFormBoolean($this->arguments['exclude']),
 			'wizards' => $wizardXML,
-			'sheet' => $sheet
+			'sheet' => $sheet,
+			'wrap' => TRUE,
+			'section' => $sectionName
 		);
 	}
 

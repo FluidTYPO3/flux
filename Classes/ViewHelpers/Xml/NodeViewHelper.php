@@ -42,6 +42,7 @@ class Tx_Flux_ViewHelpers_Xml_NodeViewHelper extends Tx_Fluid_Core_ViewHelper_Ab
     public function initializeArguments() {
         $this->registerArgument('tagName', 'string', 'Tag name of the node', FALSE, 'node');
 		$this->registerArgument('type', 'string', 'Type of node (FlexForm compatible)', FALSE);
+		$this->registerArgument('wrapWithTceForms', 'boolean', 'If TRUE, wraps tag content in <TCEforms>', FALSE, FALSE);
     }
 
     /**
@@ -50,11 +51,15 @@ class Tx_Flux_ViewHelpers_Xml_NodeViewHelper extends Tx_Fluid_Core_ViewHelper_Ab
     public function render() {
         $this->tagName = $this->arguments['tagName'];
         $this->tag->setTagName($this->tagName);
-        $this->tag->setContent($this->renderChildren());
 		if ($this->arguments['type']) {
 			$this->tag->addAttribute('type', $this->arguments['type']);
 		}
-        return $this->tag->render();
+        $content = $this->renderChildren();
+		if ((bool) $this->arguments['wrapWithTceForms'] === TRUE) {
+			$content = '<TCEforms>' . LF . $content . LF . '</TCEforms>';
+		}
+        $this->tag->setContent($content);
+		return $this->tag->render();
     }
 
 }

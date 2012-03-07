@@ -8,10 +8,8 @@
 		<el>
 	        <f:for each="{sheet.fields}" as="field" iteration="iteration">
                 <f:if condition="{field.enabled}">
-                    <flux:xml.node tagName="{field.name}">
-                        <TCEforms>
-                            <f:render partial="Fields/{field.type}" arguments="{config: field}" />
-                        </TCEforms>
+                    <flux:xml.node tagName="{field.name}" wrapWithTceForms="{0: field.type} != {0: 'Section'}">
+                        <f:render partial="Fields/{field.type}" arguments="{config: field}" />
                     </flux:xml.node>
                 </f:if>
             </f:for>

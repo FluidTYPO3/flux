@@ -55,9 +55,15 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	 * @return void
 	 */
 	protected function addField($config) {
-		$storage = $this->getStorage();
-		array_push($storage['fields'], $config);
-		$this->setStorage($storage);
+		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section') === TRUE) {
+			$section = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section');
+			array_push($section['fields'], $config);
+			$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section', $section);
+		} else {
+			$storage = $this->getStorage();
+			array_push($storage['fields'], $config);
+			$this->setStorage($storage);
+		}
 	}
 
 	/**
