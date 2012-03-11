@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
+*  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
 *
 *  All rights reserved
 *
@@ -47,9 +47,9 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
 	 *
-	 * @var Tx_Extbase_Configuration_FrontendConfigurationManager
+	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
 	 */
-	protected $configuration;
+	protected $configurationManager;
 
 	/**
 	 * @var Tx_Extbase_Object_ObjectManager
@@ -67,10 +67,15 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	protected $reflectionService;
 
 	/**
-	 * @param Tx_Extbase_Configuration_FrontendConfigurationManager $configurationManager
+	 * @var Tx_Flux_Service_FluidFlexFormTemplateValidator
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_FrontendConfigurationManager $configurationManager) {
-		$this->configuration = $configurationManager;
+	protected $fluidFlexFormTemplateValidator;
+
+	/**
+	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 */
+	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+		$this->configurationManager = $configurationManager;
 	}
 
 	/**
@@ -95,10 +100,17 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	}
 
 	/**
+	 * @param Tx_Flux_Service_FluidFlexFormTemplateValidator $fluidFlexFormTemplateValidator
+	 */
+	public function injectFluidFlexFormTemplateValidatorService(Tx_Flux_Service_FluidFlexFormTemplateValidator $fluidFlexFormTemplateValidator) {
+		$this->fluidFlexFormTemplateValidator = $fluidFlexFormTemplateValidator;
+	}
+
+	/**
 	 * Initialization
 	 */
 	public function initializeObject() {
-		$contentObject = $this->configuration->getContentObject();
+		$contentObject = $this->configurationManager->getContentObject();
 		$this->contentObjectData = $contentObject->data;
 		$this->raw = $this->contentObjectData['pi_flexform'];
 	}
@@ -291,6 +303,9 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 		$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedStandaloneView');
 		$view->setTemplatePathAndFilename($templateFile);
 		$view->assignMultiple($values);
+
+		$this->fluidFlexFormTemplateValidator->validateFluidFlexFormTemplateFile($templateFile);
+
 		$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section);
 		return $config;
 	}
