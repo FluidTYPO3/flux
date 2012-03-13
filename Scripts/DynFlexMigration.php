@@ -203,7 +203,7 @@ class DynFlexMigration {
 		$previewSection = NULL;
 		$previewEndingTagPosition = FALSE;
 		$previewOpeningTagPosition = strpos($file, '<f:section name="Preview"');
-		if ($previewOpeningTagPositionTagPosition === FALSE) {
+		if ($previewOpeningTagPosition === FALSE) {
 			$previewOpeningTagPosition = strpos($file, "<f:section name='Preview'");
 		}
 		if ($previewOpeningTagPosition !== FALSE) {
