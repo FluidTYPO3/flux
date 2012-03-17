@@ -354,10 +354,6 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 			$template->assign('sheets', $sheets);
 			$flexformXml = $template->render();
 			$dataStructArray = t3lib_div::xml2array($flexformXml);
-			#header("Content-type: text/plain");
-			#var_dump($dataStructArray);
-			#echo $flexformXml;
-			#exit();
 			if (is_array($dataStructArray['sheets']) === FALSE || (count($dataStructArray['sheets']) < 1 && count($dataStructArray['sheets'][key($dataStructArray['sheets'])]) === 0)) {
 				$dataStructArray = $this->getFallbackDataStructure('Form contains no fields', 'Tx_Flux_UserFunction_NoFields->renderField');
 			}

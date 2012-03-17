@@ -69,7 +69,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @return	void
 	 */
 	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, t3lib_TCEmain &$reference) {
-		$pid = FALSE;
+		$data = array();
 		if ($table === 'tt_content') {
 			switch ($command) {
 				case 'delete':
@@ -79,29 +79,44 @@ class Tx_Flux_Backend_TceMain {
 					}
 					break;
 				case 'move':
-					if ($relativeTo > 0) {
-						$area = ''; // moving directly to a new page, remove area
-					} else if (is_numeric($relativeTo)) {
-						$area = $this->contentService->getFlexibleContentElementArea(array('pid' => $relativeTo));
-					} else if (strpos($relativeTo, 'FLUX')) {
-						$parts = explode('-', $relativeTo);
-						$parts = array_slice($parts, 1, 3);
-						$pid = array_pop($parts);
-						$area = implode(':', $parts);
+					if (strpos($relativeTo, 'FLUX') !== FALSE) {
+							// triggers when CE is dropped on a nested content area's header dropzone (EXT:gridelements)
+						list ($areaName, $parentElementUid, $pid) = explode('-', trim($relativeTo, '-'));
+						$data['tx_flux_column'] = $areaName . ':' . $parentElementUid;
+						$data['sorting'] = -1;
 						$relativeTo = $pid;
-					}
-					$data = array('tx_flux_column' => $area);
-					if ($pid !== FALSE && $pid !== 0) {
-						$data['sorting'] = -99999;
-						$data['pid'] = $pid;
+					} elseif (strpos($relativeTo, 'x') > 0) {
+							// triggers when CE is dropped on a root column header's dropzone (EXT:gridelements)
+						list ($relativeTo, $data['colPos']) = explode('x', $relativeTo);
+						$data['tx_flux_column'] = '';
+					} elseif ($relativeTo < 0) {
+							// triggers when sorting a CE after another CE, $relativeTo is negative value of CE's UID
+						$data['tx_flux_column'] = $this->contentService->getFlexibleContentElementArea(array('pid' => $relativeTo));
 					} else {
-						$data['pid'] = t3lib_div::_GET('id');
+							// triggers only if sorting/pasting to a "raw" page. Note: also triggers when manually
+							// sorting elements to the top position of a nested content area, in which case we preserve
+							// the current tx_flux_column value.
+						$data = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('tx_flux_column, colPos, pid', $table, "uid = '" . $id . "'");
+						$data['sorting'] = -1;
+						if ($data['pid'] != $relativeTo) {
+								// move outside FCE only if pasting to another page, which should be save because:
+								// - you cannot paste to a particular column (paste triggers move cmd)
+								// - you still need to select the "column" of the CE to move it to another column
+								// - when D&D'ed to another column, colPos is handled earlier in this condition structure
+							$data['tx_flux_column'] = '';
+						}
 					}
-					$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, "uid = '" . $id . "'", $data);
+					if ($data['tx_flux_column'] != '' && $data['colPos'] != -42) {
+						$data['colPos'] = -42;
+					}
+					if (count($data) > 0) {
+						$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, "uid = '" . $id . "'", $data);
+					}
 					break;
 				default:
 			}
 		}
+
 	}
 
 	/**
@@ -112,7 +127,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param	object		$reference: Reference to the parent object (TCEmain)
 	 * @return	void
 	 */
-	public function processCmdmap_postProcess(&$command, $table, $id, $relativeTo, t3lib_TCEmain &$reference) {
+	public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, t3lib_TCEmain &$reference) {
 	}
 
 	/**
@@ -123,16 +138,22 @@ class Tx_Flux_Backend_TceMain {
 	 * @return	void
 	 */
 	public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, t3lib_TCEmain &$reference) {
-		if ($table === 'tt_content' && $id && is_array($incomingFieldArray['pi_flexform']['data'])) {
-			foreach ((array) $incomingFieldArray['pi_flexform']['data']['options']['lDEF'] as $key=>$value) {
-				if (strpos($key, 'tt_content') === 0) {
-					$realKey = array_pop(explode('.', $key));
-					if (isset($incomingFieldArray[$realKey])) {
-						$incomingFieldArray[$realKey] = $value['vDEF'];
+		if ($table === 'tt_content' && $id) {
+			if (is_array($incomingFieldArray['pi_flexform']['data'])) {
+				foreach ((array) $incomingFieldArray['pi_flexform']['data']['options']['lDEF'] as $key=>$value) {
+					if (strpos($key, 'tt_content') === 0) {
+						$realKey = array_pop(explode('.', $key));
+						if (isset($incomingFieldArray[$realKey])) {
+							$incomingFieldArray[$realKey] = $value['vDEF'];
+						}
 					}
 				}
 			}
-			$incomingFieldArray['tx_flux_column'] = $this->contentService->getFlexibleContentElementArea($incomingFieldArray, $id);;
+			$area = $this->contentService->getFlexibleContentElementArea($incomingFieldArray, $id);
+			$incomingFieldArray['tx_flux_column'] = $area;
+			if ($area) {
+				$incomingFieldArray['colPos'] = -42;
+			}
 		}
 	}
 

@@ -16,7 +16,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'category' => 'misc',
 	'shy' => 0,
 	'version' => '1.4.0',
-	'dependencies' => 'cms,extbase,fluid',
+	'dependencies' => 'cms,extbase,fluid,gridelements',
 	'conflicts' => '',
 	'priority' => '',
 	'loadOrder' => '',
@@ -37,6 +37,7 @@ $EM_CONF[$_EXTKEY] = array(
 			'cms' => '',
 			'extbase' => '',
 			'fluid' => '',
+			'gridelements' => '',
 		),
 		'conflicts' => array(
 		),
