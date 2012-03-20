@@ -29,15 +29,14 @@
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_ColumnPositionListItemsProcessor extends tx_gridelements_colPosList {
+class Tx_Flux_Backend_StandaloneColumnPositionListItemsProcessor {
 
 	/**
-	 * ItemsProcFunc - adds items to tt_content.colPos selector (first, pipes through EXT:gridelements)
+	 * ItemsProcFunc - adds items to tt_content.colPos selector
 	 *
 	 * @param array $params
 	 */
 	public function itemsProcFunc(&$params) {
-		parent::itemsProcFunc($params);
 		$this->addFluxContentElmementAreas($params);
 		$params['items'][] = array(
 			$GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang_db.xml:tt_content.tx_flux_container'),
