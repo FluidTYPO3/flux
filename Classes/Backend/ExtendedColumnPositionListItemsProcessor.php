@@ -55,3 +55,4 @@ class Tx_Flux_Backend_ExtendedColumnPositionListItemsProcessor extends tx_gridel
 	}
 
 }
+?>

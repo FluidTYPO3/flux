@@ -25,7 +25,7 @@
 
 /**
  * Configuration Manager subclass. Contains additional configuration fetching
- * methods used in FED's features.
+ * methods used in Flux's features.
  *
  * @package Flux
  * @subpackage Configuration

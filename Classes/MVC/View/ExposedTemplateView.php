@@ -92,5 +92,4 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 
 }
 
-
 ?>

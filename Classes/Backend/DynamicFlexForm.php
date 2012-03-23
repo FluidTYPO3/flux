@@ -26,10 +26,9 @@
 /**
  * Dynamic FlexForm insertion hook class
  *
- * @version $Id$
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- * @package Fed
+ * @package Flux
  * @subpackage Backend
  */
 class Tx_Flux_Backend_DynamicFlexForm {
@@ -80,7 +79,7 @@ class Tx_Flux_Backend_DynamicFlexForm {
 			try {
 				$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 				$paths = Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray((array) $typoScript['plugin.']['tx_flux.']['view.']);
-				$paths = Tx_Fed_Utility_Path::translatePath($paths);
+				$paths = Tx_Flux_Utility_Path::translatePath($paths);
 				$values = $this->flexformService->convertFlexFormContentToArray($row[$fieldName ? $fieldName : 'pi_flexform']);
 				$values = array_merge((array) $provider->getTemplateVariables($row), $values);
 				$section = $provider->getConfigurationSectionName($row);

@@ -78,39 +78,15 @@ class Tx_Flux_Provider_AbstractConfigurationProvider {
 	protected $priority = 50;
 
 	/**
-	 * @var Tx_Fed_Service_Page
-	 */
-	protected $pageService;
-
-	/**
 	 * @var Tx_Extbase_Object_ObjectManager
 	 */
 	protected $objectManager;
-
-	/**
-	 * @var Tx_Fed_Configuration_ConfigurationManager
-	 */
-	protected $configurationManager;
-
-	/**
-	 * @param Tx_Fed_Service_Page $pageService
-	 */
-	public function injectPageService(Tx_Fed_Service_Page $pageService) {
-		$this->pageService = $pageService;
-	}
 
 	/**
 	 * @param Tx_Extbase_Object_ObjectManager $objectManager
 	 */
 	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
-	}
-
-	/**
-	 * @param Tx_Fed_Configuration_ConfigurationManager $configurationManager
-	 */
-	public function injectConfigurationManager(Tx_Fed_Configuration_ConfigurationManager $configurationManager) {
-		$this->configurationManager = $configurationManager;
 	}
 
 	/**

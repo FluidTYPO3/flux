@@ -46,11 +46,6 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	protected $contentObjectData;
 
 	/**
-	 * @var Tx_Fed_Utility_DomainObjectInfo
-	 */
-	protected $infoService;
-
-	/**
 	 *
 	 * @var Tx_Extbase_Configuration_FrontendConfigurationManager
 	 */
@@ -70,13 +65,6 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @var Tx_Extbase_Reflection_Service
 	 */
 	protected $reflectionService;
-
-	/**
-	 * @param Tx_Fed_Utility_DomainObjectInfo $infoService
-	 */
-	public function injectInfoService(Tx_Fed_Utility_DomainObjectInfo $infoService) {
-		$this->infoService = $infoService;
-	}
 
 	/**
 	 * @param Tx_Extbase_Configuration_FrontendConfigurationManager $configurationManager

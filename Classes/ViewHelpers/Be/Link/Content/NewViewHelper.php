@@ -24,7 +24,7 @@
 ***************************************************************/
 
 /**
- * @package Fed
+ * @package Flux
  * @subpackage ViewHelpers\Be\Uri\Content
  */
 class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper {

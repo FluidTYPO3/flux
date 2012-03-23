@@ -40,12 +40,6 @@ class DynFlexMigration {
 	protected $configurationManager;
 
 	/**
-	 *
-	 * @var Tx_Fed_Configuration_ConfigurationManager
-	 */
-	protected $fedConfigurationManager;
-
-	/**
 	 * @var Tx_Flux_Service_FlexForm
 	 */
 	protected $flexformService;
@@ -68,7 +62,6 @@ class DynFlexMigration {
 		$this->cli = $cli;
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		$this->configurationManager = $this->objectManager->get('Tx_Flux_Configuration_ConfigurationManager');
-		$this->fedConfigurationManager = $this->objectManager->get('Tx_Fed_Configuration_ConfigurationManager');
 		$this->flexformService = $this->objectManager->get('Tx_Flux_Service_FlexForm');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
 	}
@@ -99,16 +92,6 @@ class DynFlexMigration {
 		if(!$configuration[self::CONFIG_MODE_DRY]) {
 			$this->clearCaches();
 		}
-/*
-		//$configurationManager =
-		$templateFiles = $this->fedConfigurationManager->getAvailablePageTemplateFiles();
-		var_dump($templateFiles);
-
-		$extconfs = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'];
-		foreach ($extconfs as $extName => $config) {
-			echo $extName . PHP_EOL;
-		}
-*/
 	}
 
 	/**

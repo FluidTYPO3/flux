@@ -26,7 +26,7 @@
 /**
  * Select-type FlexForm field ViewHelper
  *
- * @package Fed
+ * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
 class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
