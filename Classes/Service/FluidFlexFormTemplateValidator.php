@@ -54,6 +54,9 @@ class Tx_Flux_Service_FluidFlexFormTemplateValidator implements t3lib_Singleton 
 	public function validateFluidFlexFormTemplateFile($templatePathAndFilename) {
 		$this->namespaces = array();
 		$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+		if (file_exists($templatePathAndFilename) === FALSE) {
+			return;
+		}
 		$templateSource = file_get_contents($templatePathAndFilename);
 		$this->validateFluidFlexFormTemplateSource($templateSource);
 	}
@@ -64,6 +67,9 @@ class Tx_Flux_Service_FluidFlexFormTemplateValidator implements t3lib_Singleton 
 	 * @param string $templateSource
 	 */
 	public function validateFluidFlexFormTemplateSource($templateSource) {
+		if (is_string($templateSource) === FALSE) {
+			return;
+		}
 		$this->namespaces = array();
 		$this->checkRequiredNamespace($templateSource);
 		$this->checkRequiredFluxFlexform($templateSource);
