@@ -78,15 +78,27 @@ class Tx_Flux_Provider_AbstractConfigurationProvider {
 	protected $priority = 50;
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var Tx_Extbase_Object_ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @var Tx_Flux_Service_FlexForm
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
+	protected $flexFormService;
+
+	/**
+	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 */
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
+	}
+
+	/**
+	 * @param Tx_Flux_Service_FlexForm $flexFormService
+	 */
+	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexFormService) {
+		$this->flexFormService = $flexFormService;
 	}
 
 	/**

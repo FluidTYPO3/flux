@@ -121,6 +121,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	public function setContentObjectData($data) {
 		$this->contentObjectData = $data;
 		$this->raw = $this->contentObjectData['pi_flexform'];
+		return $this;
 	}
 
 	/**
@@ -129,6 +130,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 *
 	 * @param array $fieldArrayContainingTypes
 	 * @param string $prefix
+	 * @return array
 	 */
 	public function getAllAndTransform($fieldArrayContainingTypes, $prefix='') {
 		$all = $this->getAll();
@@ -144,7 +146,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 				$current = $this->digDownTransform($all, explode('.', $fieldName), $transformType);
 			}
 		}
-		return $all;
+		return (array) $all;
 	}
 
 	/**
@@ -226,11 +228,11 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	/**
 	 * Gets the value of the FlexForm fields.
 	 *
-	 * @return string
+	 * @return array
 	 * @api
 	 */
 	public function getAll() {
-		return $this->get(NULL);
+		return (array) $this->get(NULL);
 	}
 
 	/**
