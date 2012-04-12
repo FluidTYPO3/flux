@@ -37,6 +37,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_RowViewHelper extends Tx_Flux_Core_ViewH
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('repeat', 'integer', 'number of times to repeat this colum while appending $iteration to name', FALSE, 1);
+		$this->registerArgument('iteration', 'string', 'name of the variable to store iteration information (index, cycle, isFirst, isLast, isEven, isOdd)');
 	}
 
 	/**
@@ -44,8 +45,28 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_RowViewHelper extends Tx_Flux_Core_ViewH
 	 * @return string
 	 */
 	public function render() {
-		$this->addGridRow();
-		$this->renderChildren();
+		$iterationData = array(
+			'index' => 0,
+			'cycle' => 1,
+			'total' => $this->arguments['repeat']
+		);
+
+		for ($i=0; $i<$this->arguments['repeat']; $i++) {
+			if ($this->arguments['iteration'] !== NULL) {
+				$iterationData['isFirst'] = $iterationData['cycle'] === 1;
+				$iterationData['isLast'] = $iterationData['cycle'] === $iterationData['total'];
+				$iterationData['isEven'] = $iterationData['cycle'] % 2 === 0;
+				$iterationData['isOdd'] = !$iterationData['isEven'];
+				$this->templateVariableContainer->add($this->arguments['iteration'], $iterationData);
+				$iterationData['index'] ++;
+				$iterationData['cycle'] ++;
+			}
+			$this->addGridRow();
+			$this->renderChildren();
+			if ($this->arguments['iteration'] !== NULL) {
+				$this->templateVariableContainer->remove($this->arguments['iteration']);
+			}
+		}
 		return '';
 	}
 
