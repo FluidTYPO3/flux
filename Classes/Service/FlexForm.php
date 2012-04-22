@@ -424,13 +424,15 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 		$settings = array();
 
 		$flexFormArray = t3lib_div::xml2array($flexFormContent);
-		$flexFormArray = (isset($flexFormArray['data']) && is_array($flexFormArray['data']) ? $flexFormArray['data'] : array());
-		foreach(array_values($flexFormArray) as $languages) {
-			if (!is_array($languages[$languagePointer])) {
+		$flexFormArray = (isset($flexFormArray['data']) && is_array($flexFormArray['data']) ? $flexFormArray['data'] : $flexFormArray);
+		if (is_array($flexFormArray) === FALSE) {
+			return $settings;
+		}
+		foreach (array_values($flexFormArray) as $languages) {
+			if (!is_array($languages) || !isset($languages[$languagePointer])) {
 				continue;
 			}
-
-			foreach($languages[$languagePointer] as $valueKey => $valueDefinition) {
+			foreach ($languages[$languagePointer] as $valueKey => $valueDefinition) {
 				if (strpos($valueKey, '.') === false) {
 					$settings[$valueKey] = $this->walkFlexFormNode($valueDefinition, $valuePointer);
 				} else {
