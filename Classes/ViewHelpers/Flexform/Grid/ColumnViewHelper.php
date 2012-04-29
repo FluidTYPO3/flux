@@ -41,6 +41,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_Core_Vi
 		$this->registerArgument('rowspan', 'integer', 'Column span');
 		$this->registerArgument('repeat', 'integer', 'number of times to repeat this colum while appending $iteration to name', FALSE, 1);
 		$this->registerArgument('width', 'string', 'DEPRECATED');
+		$this->registerArgument('style', 'string', 'Inline style to add when rendering the column');
 	}
 
 	/**
@@ -55,6 +56,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_Core_Vi
 				'rowspan' => $this->arguments['rowspan'],
 				#'width' => $this->arguments['width'],
 				'repeat' => $this->arguments['repeat'],
+				'style' => $this->arguments['style'],
 				'areas' => array()
 			);
 			$this->addGridColumn($column);
