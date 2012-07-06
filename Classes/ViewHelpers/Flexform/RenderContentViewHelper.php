@@ -39,6 +39,7 @@ class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Fluid_Core
 		$this->registerArgument('limit', 'integer', 'Optional limit to the number of content elements to render');
 		$this->registerArgument('order', 'string', 'Optional sort order of content elements - RAND() supported', FALSE, 'sorting');
 		$this->registerArgument('sortDirection', 'string', 'Optional sort direction of content elements', FALSE, 'ASC');
+		$this->registerArgument('as', 'string', 'Variable name to register, then render child content and insert all results as an array of records', FALSE);
 	}
 
 	/**
@@ -47,21 +48,28 @@ class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Fluid_Core
 	 * @return string
 	 */
 	public function render() {
-		$html = '';
 		$record = $this->templateVariableContainer->get('record');
 		$order = $this->arguments['order'] . ' ' . $this->arguments['sortDirection'];
 		$conditions = "tx_flux_column = '{$this->arguments['area']}:{$record['uid']}'
 			AND deleted = 0 AND hidden = 0";
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $conditions, 'uid', $order, $this->arguments['limit']);
+		$elements = array();
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$conf = array(
 				'tables' => 'tt_content',
 				'source' => $row['uid'],
 				'dontCheckPid' => 1
 			);
-			$html .= $GLOBALS['TSFE']->cObj->RECORDS($conf);
+			array_push($elements, $GLOBALS['TSFE']->cObj->RECORDS($conf));
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+		if ($this->arguments['as']) {
+			$this->templateVariableContainer->add($this->arguments['as'], $elements);
+			$html = $this->renderChildren();
+			$this->templateVariableContainer->remove($this->arguments['as']);
+		} else {
+			$html = implode(LF, $elements);
+		}
 		return $html;
 	}
 
