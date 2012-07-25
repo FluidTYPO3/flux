@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Base class for all FlexForm related ViewHelpers
@@ -44,6 +44,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 
 	/**
 	 * Render method
+	 * @return string
 	 */
 	public function render() {
 		$this->renderChildren();
@@ -57,10 +58,15 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	protected function addField($config) {
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section') === TRUE) {
 			$section = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section');
+		} else {
+			$section = NULL;
+		}
+		if (is_array($section) === TRUE) {
+			$config['sectionObjectName'] = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
 			array_push($section['fields'], $config);
 			$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section', $section);
 		} else {
-			$storage = $this->getStorage();
+			$storage = (array) $this->getStorage();
 			array_push($storage['fields'], $config);
 			$this->setStorage($storage);
 		}
@@ -108,7 +114,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 
 	/**
 	 * Set the internal FCE storage array
-	 * @param a $storage
+	 * @param array $storage
 	 * @return void
 	 */
 	protected function setStorage($storage) {
@@ -116,5 +122,3 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	}
 
 }
-
-?>

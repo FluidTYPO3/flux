@@ -1,26 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2010
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2010 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
 /**
  * FLUX CORE
@@ -44,6 +44,8 @@ class Tx_Flux_Core {
 	 * interfaces.
 	 *
 	 * @param string|object $classNameOrInstance
+	 * @return void
+	 * @throws Exception
 	 */
 	public static function registerConfigurationProvider($classNameOrInstance) {
 		if (is_object($classNameOrInstance) === FALSE) {
@@ -75,6 +77,7 @@ class Tx_Flux_Core {
 	 * @param mixed $variables Optional array of variables to pass to Fluid template
 	 * @param mixed|NULL Optional section name containing the configuration
 	 * @param mixed|NULL Optional paths array / Closure to return paths
+	 * @return void
 	 */
 	public static function registerFluidFlexFormPlugin($extensionKey, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
@@ -101,6 +104,7 @@ class Tx_Flux_Core {
 	 * @param mixed $variables Optional array of variables to pass to Fluid template
 	 * @param mixed|NULL Optional section name containing the configuration
 	 * @param mixed|NULL Optional paths array / Closure to return paths
+	 * @return void
 	 */
 	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
@@ -127,6 +131,7 @@ class Tx_Flux_Core {
 	 * @param mixed $variables Optional array of variables to pass to Fluid template
 	 * @param mixed|NULL Optional section name containing the configuration
 	 * @param mixed|NULL Optional paths array / Closure to return paths
+	 * @return void
 	 */
 	public static function registerFluidFlexFormTable($table, $fieldName, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');

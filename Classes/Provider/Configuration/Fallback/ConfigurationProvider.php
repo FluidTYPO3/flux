@@ -1,6 +1,5 @@
 <?php
-
-/* * *************************************************************
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
@@ -22,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Tries to match parameters in $row against deprecated registration function
@@ -39,6 +38,7 @@ class Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider extends Tx_F
 
 	/**
 	 * @param string $tableName
+	 * @return void
 	 */
 	public function setTableName($tableName) {
 		$this->tableName = $tableName;
@@ -46,6 +46,7 @@ class Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider extends Tx_F
 
 	/**
 	 * @param string $fieldName
+	 * @return void
 	 */
 	public function setFieldName($fieldName) {
 		$this->fieldName = $fieldName;
@@ -53,6 +54,7 @@ class Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider extends Tx_F
 
 	/**
 	 * @param string $extensionKey
+	 * @return void
 	 */
 	public function setExtensionKey($extensionKey) {
 		$this->extensionKey = $extensionKey;
@@ -60,6 +62,7 @@ class Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider extends Tx_F
 
 	/**
 	 * @param array|NULL $templateVariables
+	 * @return void
 	 */
 	public function setTemplateVariables($templateVariables) {
 		$this->templateVariables = $templateVariables;
@@ -67,6 +70,7 @@ class Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider extends Tx_F
 
 	/**
 	 * @param string $templatePathAndFilename
+	 * @return void
 	 */
 	public function setTemplatePathAndFilename($templatePathAndFilename) {
 		$this->templatePathAndFilename = $templatePathAndFilename;
@@ -74,6 +78,7 @@ class Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider extends Tx_F
 
 	/**
 	 * @param array|NULL $templatePaths
+	 * @return void
 	 */
 	public function setTemplatePaths($templatePaths) {
 		$this->templatePaths = $templatePaths;
@@ -81,6 +86,7 @@ class Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider extends Tx_F
 
 	/**
 	 * @param string|NULL $configurationSectionName
+	 * @return void
 	 */
 	public function setConfigurationSectionName($configurationSectionName) {
 		$this->configurationSectionName = $configurationSectionName;

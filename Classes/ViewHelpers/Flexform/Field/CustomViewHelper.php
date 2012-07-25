@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Custom FlexForm field ViewHelper
@@ -33,20 +33,29 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 
 	/**
 	 * Initialize
+	 * @return void
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
 	}
 
 	/**
+	 * @return Tx_Fluid_Core_ViewHelper_TemplateVariableContainer
+	 */
+	public function getTemplateVariableContainer() {
+		return $this->templateVariableContainer;
+	}
+
+	/**
 	 * Render method
+	 * @return void
 	 */
 	public function render() {
+		$self = $this;
 		$config = parent::getBaseConfig();
-		$config['type'] = 'Custom';
-		$config['content'] = trim($this->renderChildren());
+		$config['type'] = str_replace('ViewHelper', '', array_pop(explode('_', get_class($this))));
+		$config['closure'] = function($parameters) use ($self) { $self->getTemplateVariableContainer()->add('parameters', $parameters); return $self->renderChildren(); };
+		$config['arguments'] = $this->arguments;
 		$this->addField($config);
 	}
 }
-
-?>

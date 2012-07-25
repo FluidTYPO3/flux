@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * FlexForm field section object ViewHelper
@@ -36,6 +36,7 @@ class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_Core_ViewHel
 
 	/**
 	 * Initialize
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the section object, FlexForm XML-valid tag name string', TRUE);
@@ -44,6 +45,8 @@ class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_Core_ViewHel
 
 	/**
 	 * Render method
+	 * @return void
+	 * @throws Exception
 	 */
 	public function render() {
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section') === FALSE) {
@@ -51,14 +54,19 @@ class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_Core_ViewHel
 		}
 		$name = $this->arguments['name'];
 		$label = $this->arguments['label'];
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName', $name);
-
 		$labels = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels');
 		$labels[$name] = $label;
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels', $labels);
+
+		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName') === TRUE) {
+			$parentSectionObjectName = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
+		} else {
+			$parentSectionObjectName = NULL;
+		}
+
+		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName', $name);
 		$this->renderChildren();
+		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName', $parentSectionObjectName);
+		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels', $labels);
 	}
 
 }
-
-?>

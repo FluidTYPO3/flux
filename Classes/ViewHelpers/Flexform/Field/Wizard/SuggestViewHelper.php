@@ -1,6 +1,5 @@
 <?php
-
-/* * *************************************************************
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
@@ -22,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Field Wizard: Suggest
@@ -34,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SuggestViewHelper extends Tx_Flu
 
 	/**
 	 * Initialize arguments
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('table', 'string', 'Table to search. If left out will use the table defined by the parent field', FALSE, NULL);

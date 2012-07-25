@@ -1,27 +1,27 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
-*
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 3 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
 require_once t3lib_extMgm::extPath('cms', 'layout/class.tx_cms_layout.php');
 require_once t3lib_extMgm::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php');
@@ -45,7 +45,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	protected $view;
 
 	/**
-	 * @var Tx_Flux_Configuration_ConfigurationManager
+	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
@@ -70,7 +70,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		$this->jsonService = $this->objectManager->get('Tx_Flux_Service_Json');
-		$this->configurationManager = $this->objectManager->get('Tx_Flux_Configuration_ConfigurationManager');
+		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 		$this->flexform = $this->objectManager->get('Tx_Flux_Service_FlexForm');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
 		$this->view = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
@@ -83,6 +83,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @param string $headerContent
 	 * @param string $itemContent
 	 * @param array $row
+	 * @return void
 	 */
 	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
 		$this->renderPreview($headerContent, $itemContent, $row);
@@ -92,6 +93,8 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @param string $headerContent
 	 * @param type $itemContent
 	 * @param array $row
+	 * @return void
+	 * @throws Exception
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row) {
 		$provider = $this->configurationService->resolveConfigurationProvider('tt_content', '', $row);
@@ -164,6 +167,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @param type $headerContent
 	 * @param type $itemContent
 	 * @param array $row
+	 * @return void
 	 */
 	public function drawPreview(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
 	}

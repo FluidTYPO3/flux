@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Input FlexForm field ViewHelper
@@ -33,17 +33,21 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 
 	/**
 	 * Initialize
+	 * @return void
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->registerArgument('eval', 'string', 'FlexForm-type validation configuration for this input', FALSE, 'trim');
 		$this->registerArgument('size', 'integer', 'Size of field', FALSE, 32);
-		$this->registerArgument('minimum', 'integer', 'Minimum value for integer type fields', FALSE, -1);
-		$this->registerArgument('maximum', 'integer', 'Maximum value for integer type fields', FALSE, -1);
+		$this->registerArgument('maxCharacters', 'integer', 'Maximum number of characters allowed', FALSE);
+		$this->registerArgument('minimum', 'integer', 'Minimum value for integer type fields', FALSE);
+		$this->registerArgument('maximum', 'integer', 'Maximum value for integer type fields', FALSE);
+		$this->registerArgument('placeholder', 'string', 'Placeholder text which vanishes if field is filled and/or field is focused');
 	}
 
 	/**
 	 * Render method
+	 * @return void
 	 */
 	public function render() {
 		$config = $this->getBaseConfig();
@@ -59,6 +63,8 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 		$config = parent::getBaseConfig();
 		$config['eval'] = $this->arguments['eval'];
 		$config['size'] = $this->arguments['size'];
+		$config['placeholder'] = $this->arguments['placeholder'];
+		$config['max'] = $this->arguments['maxCharacters'];
 		$config['type'] = 'Input';
 		if ($this->arguments['minimum'] >= 0 || $this->arguments['maximum'] >= 0 && in_array('int', t3lib_div::trimExplode(',', $this->arguments['eval']))) {
 			$config['range'] = array(
@@ -70,5 +76,3 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 	}
 
 }
-
-?>

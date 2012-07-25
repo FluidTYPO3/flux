@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Flexform Grid Column ViewHelper
@@ -33,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_Core_Vi
 
 	/**
 	 * Initialize
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Optional column name', FALSE, 'Column');
@@ -45,7 +46,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_Core_Vi
 	}
 
 	/**
-	 * @return array
+	 * @return string
 	 */
 	public function render() {
 		for ($i=0; $i<$this->arguments['repeat']; $i++) {
@@ -68,5 +69,3 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_Core_Vi
 	}
 
 }
-
-?>

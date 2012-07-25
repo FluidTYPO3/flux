@@ -1,27 +1,27 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2012 Wouter Wolters <typo3@wouterwolters.nl>
-*
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2012 Wouter Wolters <typo3@wouterwolters.nl>
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
 /**
  * FluidFlexFormTemplateValidator checks for a valid Fluid Flexform template.
@@ -50,6 +50,7 @@ class Tx_Flux_Service_FluidFlexFormTemplateValidator implements t3lib_Singleton 
 	 * Validate a Fluid FlexForm template by filename
 	 *
 	 * @param string $templatePathAndFilename
+	 * @return void
 	 */
 	public function validateFluidFlexFormTemplateFile($templatePathAndFilename) {
 		$this->namespaces = array();
@@ -65,6 +66,7 @@ class Tx_Flux_Service_FluidFlexFormTemplateValidator implements t3lib_Singleton 
 	 * Validate a Fluid FlexForm template by source code
 	 *
 	 * @param string $templateSource
+	 * @return void
 	 */
 	public function validateFluidFlexFormTemplateSource($templateSource) {
 		if (is_string($templateSource) === FALSE) {
@@ -79,6 +81,8 @@ class Tx_Flux_Service_FluidFlexFormTemplateValidator implements t3lib_Singleton 
 	 * Check if required namespace exists in template source
 	 *
 	 * @param string $templateSource
+	 * @return void
+	 * @throws Exception
 	 */
 	protected function checkRequiredNamespace($templateSource) {
 		$this->extractFluxNamespaceDefinitions($templateSource);
@@ -91,6 +95,8 @@ class Tx_Flux_Service_FluidFlexFormTemplateValidator implements t3lib_Singleton 
 	 * Check if required Flux ViewHelper exists in template source
 	 *
 	 * @param string $templateSource
+	 * @return void
+	 * @throws Exception
 	 */
 	protected function checkRequiredFluxFlexform($templateSource) {
 		if (strpos($templateSource, $this->fluxFlexformPart) === FALSE) {
@@ -102,6 +108,8 @@ class Tx_Flux_Service_FluidFlexFormTemplateValidator implements t3lib_Singleton 
 	 * Extract namespace definitions from template source
 	 *
 	 * @param string $templateSource
+	 * @return void
+	 * @throws Tx_Fluid_Core_Parser_Exception
 	 */
 	protected function extractFluxNamespaceDefinitions($templateSource) {
 		$matchedVariables = array();

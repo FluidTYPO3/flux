@@ -1,10 +1,10 @@
 <?php
-if (!defined ('TYPO3_MODE')) {
-	die ('Access denied.');
+if (!defined('TYPO3_MODE')) {
+	die('Access denied.');
 }
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF);
 
-// register CLI
+	// Register CLI
 if (TYPO3_MODE === 'BE') {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys']['flux'] = array(
 		'EXT:flux/Scripts/CommandLineLauncher.php',
@@ -17,6 +17,33 @@ t3lib_extMgm::addTypoScript($_EXTKEY, 'setup', '
 		templateRootPath = EXT:flux/Resources/Private/Templates/
 		partialRootPath = EXT:flux/Resources/Private/Partials/
 		layoutRootPath = EXT:flux/Resources/Private/Layouts/
+	}
+	plugin.tx_flux.settings {
+		object {
+			image {
+				richTextCaptions = 1
+				sliderWidth = 600
+				sliderStep = 5
+				maxWidth = 1920
+				maxHeight = 1080
+			}
+			video {
+				richTextCaptions = 1
+			}
+			pages {
+				minItems = 0
+				maxItems = 20
+				size = 4
+			}
+			content {
+				minItems = 0
+				maxItems = 20
+				size = 4
+			}
+			file {
+				richTextCaptions = 1
+			}
+		}
 	}
 ');
 

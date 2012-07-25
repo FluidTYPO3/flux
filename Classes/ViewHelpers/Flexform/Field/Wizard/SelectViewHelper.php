@@ -1,6 +1,5 @@
 <?php
-
-/* * *************************************************************
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
@@ -22,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Field Wizard: Edit
@@ -34,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SelectViewHelper extends Tx_Flux
 
 	/**
 	 * Initialize arguments
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('mode', 'string', 'Selection mode - substitution, append or prepend', FALSE, 'substitution');
@@ -62,6 +62,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SelectViewHelper extends Tx_Flux
 	 * Builds an array of selector options based on a type of string
 	 *
 	 * @param string $itemsString
+	 * @return array
 	 */
 	protected function buildItems($itemsString) {
 		$itemsString = trim($itemsString, ',');
@@ -79,7 +80,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SelectViewHelper extends Tx_Flux
 		} else {
 			return array($itemsString => $itemsString);
 		}
-
 	}
 }
 

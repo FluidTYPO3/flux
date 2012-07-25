@@ -32,12 +32,13 @@
 class Tx_Flux_ViewHelpers_Widget_GridViewHelper extends Tx_Fluid_Core_Widget_AbstractWidgetViewHelper {
 
 	/**
-	 * @var Tx_Person_ViewHelpers_Widget_Controller_ImagecCropController
+	 * @var Tx_Flux_ViewHelpers_Widget_Controller_GridController
 	 */
 	protected $controller;
 
 	/**
 	 * @param Tx_Flux_ViewHelpers_Widget_Controller_GridController $controller
+	 * @return void
 	 */
 	public function injectController(Tx_Flux_ViewHelpers_Widget_Controller_GridController $controller) {
 		$this->controller = $controller;
@@ -61,5 +62,3 @@ class Tx_Flux_ViewHelpers_Widget_GridViewHelper extends Tx_Fluid_Core_Widget_Abs
 	}
 
 }
-
-?>

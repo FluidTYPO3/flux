@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Select-type FlexForm field ViewHelper
@@ -33,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 
 	/**
 	 * Initialize
+	 * @return void
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
@@ -53,6 +54,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 
 	/**
 	 * Render method
+	 * @return void
 	 */
 	public function render() {
 		$config = $this->getFieldConfig();
@@ -76,10 +78,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 			$config['items'] = $this->arguments['items'];
 		}
 		$config['size'] = $this->arguments['size'];
-		$config['minItems'] = $this->arguments['minItems'];
-		$config['maxItems'] = $this->arguments['maxItems'];
+		$config['minitems'] = $this->arguments['minItems'];
+		$config['maxitems'] = $this->arguments['maxItems'];
 		$config['multiple'] = $this->arguments['multiple'] ? 1 : 0;
-		$config['table'] = $this->arguments['table'];
+		$config['foreign_table'] = $this->arguments['table'];
 		$config['condition'] = $this->arguments['condition'];
 		$config['mm'] = $this->arguments['mm'];
 		$config['showThumbs'] = $this->getFlexFormBoolean($this->arguments['showThumbs']);
@@ -89,5 +91,3 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 	}
 
 }
-
-?>

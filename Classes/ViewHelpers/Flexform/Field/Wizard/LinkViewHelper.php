@@ -1,6 +1,5 @@
 <?php
-
-/* * *************************************************************
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
@@ -22,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Field Wizard: Link
@@ -34,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_V
 
 	/**
 	 * Initialize arguments
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('title', 'string', 'Title of the Link Wizard', FALSE, 'Select link');
@@ -63,5 +63,3 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_V
 	}
 
 }
-
-?>

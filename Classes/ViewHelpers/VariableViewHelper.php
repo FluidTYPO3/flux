@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Fetches a single variable from the template variables
@@ -33,6 +33,7 @@ class Tx_Flux_ViewHelpers_VariableViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 
 	/**
 	 * @param string $name
+	 * @return string
 	 */
 	public function render($name) {
 		if (strpos($name, '.') === FALSE) {
@@ -44,5 +45,3 @@ class Tx_Flux_ViewHelpers_VariableViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 	}
 
 }
-
-?>

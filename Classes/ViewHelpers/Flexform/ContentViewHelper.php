@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Adds a content area to a source using Flux FlexForms
@@ -33,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_Core_ViewHe
 
 	/**
 	 * Initialize arguments
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the content area, FlexForm XML-valid tag name string', TRUE);
@@ -41,6 +42,7 @@ class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_Core_ViewHe
 
 	/**
 	 * Render method
+	 * @return string
 	 */
 	public function render() {
 		$area = array(
@@ -53,5 +55,3 @@ class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_Core_ViewHe
 	}
 
 }
-
-?>

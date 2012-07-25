@@ -43,6 +43,7 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 
 	/**
 	 * @param array $grid
+	 * @return void
 	 */
 	public function setGrid($grid) {
 		$this->grid = $grid;
@@ -50,6 +51,7 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 
 	/**
 	 * @param array $row
+	 * @return void
 	 */
 	public function setRow($row) {
 		$this->row = $row;
@@ -63,4 +65,3 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 		$this->view->assign('row', $this->row);
 	}
 }
-?>

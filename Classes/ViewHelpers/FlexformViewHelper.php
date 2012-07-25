@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * FlexForm configuration container ViewHelper
@@ -33,6 +33,7 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 
 	/**
 	 * Initialize arguments
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('id', 'string', 'Identifier of this Flexible Content Element, [a-z0-9\-] allowed', TRUE);
@@ -45,10 +46,12 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 
 	/**
 	 * Render method
+	 * @return string
 	 */
 	public function render() {
 		$this->setStorage(array(
 			'label' => $this->arguments['label'],
+			'icon' => $this->arguments['icon'],
 			'enabled' => $this->arguments['enabled'],
 			'mergeValues' => $this->arguments['mergeValues'],
 			'id' => $this->arguments['id'],
@@ -59,5 +62,3 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 	}
 
 }
-
-?>

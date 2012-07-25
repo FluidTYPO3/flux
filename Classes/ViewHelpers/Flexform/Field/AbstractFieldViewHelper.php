@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Base class for all FlexForm fields.
@@ -33,6 +33,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 
 	/**
 	 * Initialize arguments
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', TRUE);
@@ -116,12 +117,11 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 	/**
 	 * Get 1 or 0 from a boolean
 	 *
-	 * @param type $value
+	 * @param integer $value
+	 * @return integer
 	 */
 	protected function getFlexFormBoolean($value) {
 		return ($value === TRUE ? 1 : 0);
 	}
 
 }
-
-?>

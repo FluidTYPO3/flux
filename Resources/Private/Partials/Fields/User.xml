@@ -1,9 +1,0 @@
-<label>{config.label}</label>
-<required>{config.required}</required>
-<config>
-	<type>user</type>
-	<userFunc>{config.userFunc}</userFunc>
-	<f:if condition="{config.wizards}">
-		<wizards type="array"><_PADDING type="integer">2</_PADDING>{config.wizards}</wizards>
-	</f:if>
-</config>

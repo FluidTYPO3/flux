@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * FlexForm sheet ViewHelper
@@ -35,6 +35,7 @@ class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_Core_ViewHelp
 
 	/**
 	 * Initialize arguments
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the group, used as FlexForm sheet name, must be FlexForm XML-valid tag name string', TRUE);
@@ -43,6 +44,7 @@ class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_Core_ViewHelp
 
 	/**
 	 * Render method
+	 * @return void
 	 */
 	public function render() {
 		$sheet = array(
@@ -55,5 +57,3 @@ class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_Core_ViewHelp
 	}
 
 }
-
-?>

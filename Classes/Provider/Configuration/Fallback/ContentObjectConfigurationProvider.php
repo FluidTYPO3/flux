@@ -1,6 +1,5 @@
 <?php
-
-/* * *************************************************************
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
@@ -22,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * @package Flux
@@ -32,6 +31,7 @@ class Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider
 
 	/**
 	 * @param string $contentObjectType
+	 * @return void
 	 */
 	public function setContentObjectType($contentObjectType) {
 		$this->contentObjectType = $contentObjectType;

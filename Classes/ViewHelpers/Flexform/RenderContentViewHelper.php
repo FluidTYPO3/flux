@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * ViewHelper used to render the FlexForm definition for Fluid FCEs
@@ -33,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Fluid_Core
 
 	/**
 	 * Initialize
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('area', 'string', 'Name of the area to render');
@@ -49,8 +50,9 @@ class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Fluid_Core
 	 */
 	public function render() {
 		$record = $this->templateVariableContainer->get('record');
+		$id = $record['uid'];
 		$order = $this->arguments['order'] . ' ' . $this->arguments['sortDirection'];
-		$conditions = "tx_flux_column = '{$this->arguments['area']}:{$record['uid']}'
+		$conditions = "((tx_flux_column = '{$this->arguments['area']}:{$record['uid']}' && tx_flux_parent < 1) || (tx_flux_parent = '" . $id . "' && tx_flux_column LIKE '" . $this->arguments['area'] . ":%'))
 			AND deleted = 0 AND hidden = 0";
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $conditions, 'uid', $order, $this->arguments['limit']);
 		$elements = array();
@@ -74,5 +76,3 @@ class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Fluid_Core
 	}
 
 }
-
-?>

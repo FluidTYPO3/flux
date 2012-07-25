@@ -1,6 +1,6 @@
 <?php
 if (!defined('TYPO3_MODE')) {
-	die ('Access denied.');
+	die('Access denied.');
 }
 
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF);
@@ -13,6 +13,22 @@ t3lib_extMgm::addTCAcolumns('tt_content', array(
 				'type' => 'passthrough',
 			)
 		),
+		'tx_flux_parent' => array (
+			'exclude' => 1,
+			'config' => array (
+				'type' => 'select',
+				'foreign_table' => 'tt_content',
+			)
+		),
+		'tx_flux_children' => array (
+			'exclude' => 1,
+			'config' => array (
+				'type' => 'inline',
+				'foreign_table' => 'tt_content',
+				'foreign_field' => 'tx_flux_parent',
+				'foreign_sortby' => 'sorting',
+			)
+		),
 	)
 );
 
@@ -22,7 +38,5 @@ if (t3lib_extMgm::isLoaded('gridelements')) {
 } else {
 	$TCA['tt_content']['columns']['colPos']['config']['itemsProcFunc'] = 'EXT:flux/Classes/Backend/StandaloneColumnPositionListItemsProcessor.php:Tx_Flux_Backend_StandaloneColumnPositionListItemsProcessor->itemsProcFunc';
 }
-
-
 
 ?>

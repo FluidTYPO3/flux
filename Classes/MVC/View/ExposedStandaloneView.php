@@ -1,27 +1,27 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2010 Claus Due <claus@wildside.dk>, Wildside A/S
-*
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2010 Claus Due <claus@wildside.dk>, Wildside A/S
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
 /**
  * ExposedStandaloneView. Allows access to registered template and viewhelper
@@ -34,19 +34,23 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 
 	/**
 	 * Get a variable stored in the Fluid template
-	 * @param string $viewHelperClassname Class name of the ViewHelper which stored the variable
+	 * @param string $viewHelperClassName Class name of the ViewHelper which stored the variable
 	 * @param string $name Name of the variable which the ViewHelper stored
 	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
 	 * @return mixed
 	 */
-	public function getStoredVariable($viewHelperClassname, $name, $sectionName) {
+	public function getStoredVariable($viewHelperClassName, $name, $sectionName) {
+		if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
+			throw new Exception('ExposedStandaloneView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
+		}
+		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->templateParser->setConfiguration($this->buildParserConfiguration());
 		$parsedTemplate = $this->getParsedTemplate();
 		$this->setRenderingContext($this->baseRenderingContext);
 		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
 		$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
 		$this->stopRendering();
-		return $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassname, $name);
+		return $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
 	}
 
 	/**
@@ -76,13 +80,12 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	/**
 	 * Exposition proxy for startRendering() method
 	 *
-	 * @param type $type
+	 * @param integer $type
 	 * @param Tx_Fluid_Core_Parser_ParsedTemplateInterface $parsedTemplate
 	 * @param Tx_Fluid_Core_Rendering_RenderingContextInterface $renderingContext
-	 * @return type
 	 */
 	public function startRendering($type, Tx_Fluid_Core_Parser_ParsedTemplateInterface $parsedTemplate, Tx_Fluid_Core_Rendering_RenderingContextInterface $renderingContext) {
-		return parent::startRendering($type, $parsedTemplate, $renderingContext);
+		parent::startRendering($type, $parsedTemplate, $renderingContext);
 	}
 
 	/**
@@ -91,7 +94,7 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	 * @return void
 	 */
 	public function stopRendering() {
-		return parent::stopRendering();
+		parent::stopRendering();
 	}
 
 	/**
@@ -99,6 +102,7 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	 * main render() method - allows for cherry-picking sections to render.
 	 * @param string $sectionName
 	 * @param array $variables
+	 * @return string
 	 */
 	public function renderStandaloneSection($sectionName, $variables) {
 		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);

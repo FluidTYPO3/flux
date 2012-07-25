@@ -1,27 +1,27 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
-*
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
 /**
  * FlexForm integration Service
@@ -73,6 +73,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
 	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @return void
 	 */
 	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
@@ -80,6 +81,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
 	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @return void
 	 */
 	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
@@ -87,6 +89,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
 	 * @param Tx_Extbase_Property_Mapper $propertyMapper
+	 * @return void
 	 */
 	public function injectPropertyMapper(Tx_Extbase_Property_Mapper $propertyMapper) {
 		$this->propertyMapper = $propertyMapper;
@@ -94,6 +97,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
 	 * @param Tx_Extbase_Reflection_Service $reflectionService
+	 * @return void
 	 */
 	public function injectReflectionService(Tx_Extbase_Reflection_Service $reflectionService) {
 		$this->reflectionService = $reflectionService;
@@ -101,6 +105,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
 	 * @param Tx_Flux_Service_FluidFlexFormTemplateValidator $fluidFlexFormTemplateValidator
+	 * @return void
 	 */
 	public function injectFluidFlexFormTemplateValidatorService(Tx_Flux_Service_FluidFlexFormTemplateValidator $fluidFlexFormTemplateValidator) {
 		$this->fluidFlexFormTemplateValidator = $fluidFlexFormTemplateValidator;
@@ -108,6 +113,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
 	 * Initialization
+	 * @return void
 	 */
 	public function initializeObject() {
 		$contentObject = $this->configurationManager->getContentObject();
@@ -117,6 +123,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
 	 * @param array $data
+	 * @return Tx_Flux_Service_FlexForm
 	 */
 	public function setContentObjectData($data) {
 		$this->contentObjectData = $data;
@@ -132,7 +139,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @param string $prefix
 	 * @return array
 	 */
-	public function getAllAndTransform($fieldArrayContainingTypes, $prefix='') {
+	public function getAllAndTransform($fieldArrayContainingTypes, $prefix = '') {
 		$all = $this->getAll();
 		foreach ($fieldArrayContainingTypes as $fieldConfiguration) {
 			$transformType = $fieldConfiguration['transform'];
@@ -152,7 +159,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	/**
 	 * Digs down path to transform final member to $dataType
 	 *
-	 * @param mixed $value
+	 * @param mixed $all
 	 * @param array $keysLeft
 	 * @param string $transformType
 	 * @return mixed
@@ -170,6 +177,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 *
 	 * @param string $value
 	 * @param string $dataType
+	 * @return mixed
 	 */
 	protected function transform($value, $dataType) {
 		if ($dataType == 'int' || $dataType == 'integer') {
@@ -190,11 +198,12 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 *
 	 * @param string $dataType
 	 * @param string $uids
+	 * @return mixed
 	 */
 	protected function getObjectOfType($dataType, $uids) {
 		$uids = trim($uids, ',');
 		$identifiers = explode(',', $uids);
-			// fast decisions
+			// Fast decisions
 		if (strpos($dataType, '_Domain_Model_') !== FALSE && strpos($dataType, '<') === FALSE) {
 			$repositoryClassName = str_replace('_Model_', '_Repository_', $dataType) . 'Repository';
 			if (class_exists($repositoryClassName)) {
@@ -243,13 +252,13 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @return mixed
 	 * @api
 	 */
-	public function get($key=NULL) {
+	public function get($key = NULL) {
 		$languagePointer = 'lDEF';
 		$valuePointer = 'vDEF';
 		$this->storage = $this->convertFlexFormContentToArray($this->raw, $languagePointer, $valuePointer);
 		if ($key === NULL) {
 			$arr = $this->storage;
-			foreach ($arr as $k=>$v) {
+			foreach ($arr as $k => $v) {
 				$arr[$k] = $this->get($k);
 			}
 			return $arr;
@@ -299,10 +308,19 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @param string $templateFile The absolute filename containing the configuration
 	 * @param mixed $values Optional values to use when rendering the configuration
 	 * @param string|NULL Optional section name containing the configuration
+	 * @throws Exception
 	 * @return array
 	 */
-	public function getFlexFormConfigurationFromFile($templateFile, $values, $section=NULL) {
-		$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedStandaloneView');
+	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL) {
+		if (file_exists($templateFile) === FALSE) {
+			$templateFile = t3lib_div::getFileAbsFileName($templateFile);
+		}
+		if (file_exists($templateFile) === FALSE) {
+				// Only process this $dataStructArray if the specified template file exists.
+			throw new Exception('Tried to get a FlexForm configuration from a file which does not exist (' . $templateFile . ')', 1343264270);
+		}
+		/**	@var $view Tx_Flux_MVC_View_ExposedStandaloneView */
+		$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedStandaloneView');
 		$view->setTemplatePathAndFilename($templateFile);
 		$view->assignMultiple($values);
 
@@ -321,91 +339,33 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @param array $paths
 	 * @param array $dataStructArray
 	 * @param string $section
+	 * @throws Exception
 	 * @return void
 	 */
-	public function convertFlexFormContentToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section=NULL) {
-		if (file_exists($templateFile) === FALSE) {
-			$templateFile = t3lib_div::getFileAbsFileName($templateFile);
-		}
-                if (file_exists($templateFile) === FALSE) {
-                                // only process this $dataStructArray if the specified template file exists.
-                        return;
-                }
+	public function convertFlexFormContentToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL) {
 		try {
 			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section);
-			$sheets = array();
-			foreach ($config['fields'] as $field) {
-				$groupKey = $field['sheet']['name'];
-				$groupLabel = $field['sheet']['label'];
-				if (is_array($sheets[$groupKey]) === FALSE) {
-					$sheets[$groupKey] = array(
-						'name' => $groupKey,
-						'label' => $groupLabel,
-						'fields' => array()
-					);
-				}
-				if ($field['section'] === NULL) {
-					array_push($sheets[$groupKey]['fields'], $field);
-				}
-			}
-			$flexformTemplateFile = t3lib_extMgm::extPath('flux', 'Resources/Private/Partials/AutoFlexForm.xml');
-			$template = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
-            $template->setFormat('xml');
-			$template->setTemplatePathAndFilename($flexformTemplateFile);
-			$template->setPartialRootPath($paths['partialRootPath']);
-			$template->setLayoutRootPath($paths['layoutRootPath']);
-			$template->assignMultiple($values);
-			$template->assignMultiple($config);
-			$template->assign('sheets', $sheets);
-			$flexformXml = $template->render();
-			$dataStructArray = t3lib_div::xml2array($flexformXml);
-			if (is_array($dataStructArray['sheets']) === FALSE || (count($dataStructArray['sheets']) < 1 && count($dataStructArray['sheets'][key($dataStructArray['sheets'])]) === 0)) {
-				$dataStructArray = $this->getFallbackDataStructure('Form contains no fields', 'Tx_Flux_UserFunction_NoFields->renderField');
+			/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
+			$flexFormStructureProvider = $this->objectManager->create('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
+			$dataStructArray = $flexFormStructureProvider->render($config);
+			if ((is_array($dataStructArray['ROOT']['el']) === FALSE && is_array($dataStructArray['sheets']) === FALSE) || (count($dataStructArray['sheets']) < 1 && count($dataStructArray['ROOT']['el']) < 1 && count($dataStructArray['sheets'][key($dataStructArray['sheets'])]) === 0)) {
+				$config['parameters'] = array(
+					'userFunction' => 'Tx_Flux_UserFunction_NoFields->renderField'
+				);
+				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
 			}
 		} catch (Exception $e) {
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
 				throw $e;
 			} else {
-				t3lib_div::sysLog($e->getMessage, 'flux');
-				$dataStructArray = $this->getFallbackDataStructure('Error', 'Tx_Flux_UserFunction_ErrorReporter->renderField', array('exception' => $e->getMessage()));
+				t3lib_div::sysLog($e->getMessage(), 'flux');
+				$config['parameters'] = array(
+					'exception' => $e,
+					'userFunction' => 'Tx_Flux_UserFunction_ErrorReporter->renderField'
+				);
+				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
 			}
 		}
-	}
-
-	/**
-	 * Gets a UserFunction-based single-field datastructure which can be used
-	 * to report errors, display messages, make default fields etc.
-	 *
-	 * @param string $title
-	 * @param string $userFunction
-	 * @param array $parameters
-	 * @return array
-	 */
-	public function getFallbackDataStructure($title, $userFunction, $parameters=array()) {
-		return array(
-			'meta' => array(
-				'langDisable' => 1
-			),
-			'ROOT' => array(
-				'TCEforms' => array(
-					'sheetTitle' => $title
-				),
-				'type' => 'array',
-				'el' => array(
-					'func' => array(
-						'TCEforms' => array(
-							'label' => $title,
-							'required' => 0,
-							'config' => array(
-								'type' => 'user',
-								'userFunc' => $userFunction,
-								'parameters' => $parameters
-							)
-						)
-					)
-				)
-			),
-		);
 	}
 
 	/**
@@ -509,5 +469,3 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	}
 
 }
-
-?>

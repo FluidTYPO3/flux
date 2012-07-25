@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * FlexForm configuration container ViewHelper
@@ -38,6 +38,7 @@ class Tx_Flux_ViewHelpers_Xml_NodeViewHelper extends Tx_Fluid_Core_ViewHelper_Ab
 
     /**
      * Initialize
+     * @return void
      */
     public function initializeArguments() {
         $this->registerArgument('tagName', 'string', 'Tag name of the node', FALSE, 'node');
@@ -47,6 +48,7 @@ class Tx_Flux_ViewHelpers_Xml_NodeViewHelper extends Tx_Fluid_Core_ViewHelper_Ab
 
     /**
      * Render
+     * @return string
      */
     public function render() {
         $this->tagName = $this->arguments['tagName'];
@@ -63,5 +65,3 @@ class Tx_Flux_ViewHelpers_Xml_NodeViewHelper extends Tx_Fluid_Core_ViewHelper_Ab
     }
 
 }
-
-?>

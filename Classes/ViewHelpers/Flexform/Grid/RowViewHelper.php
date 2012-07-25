@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Flexform Grid Row ViewHelper
@@ -33,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_RowViewHelper extends Tx_Flux_Core_ViewH
 
 	/**
 	 * Initialize
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('repeat', 'integer', 'number of times to repeat this colum while appending $iteration to name', FALSE, 1);
@@ -40,7 +41,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_RowViewHelper extends Tx_Flux_Core_ViewH
 
 	/**
 	 * Render method
-	 * @return type
+	 * @return string
 	 */
 	public function render() {
 		$this->addGridRow();
@@ -49,5 +50,3 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_RowViewHelper extends Tx_Flux_Core_ViewH
 	}
 
 }
-
-?>

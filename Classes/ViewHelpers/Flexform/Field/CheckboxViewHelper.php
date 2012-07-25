@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Checkbox FlexForm field ViewHelper
@@ -33,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CheckboxViewHelper extends Tx_Flux_View
 
 	/**
 	 * Render method
+	 * @return void
 	 */
 	public function render() {
 		$config = $this->getBaseConfig();
@@ -42,5 +43,3 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CheckboxViewHelper extends Tx_Flux_View
 	}
 
 }
-
-?>

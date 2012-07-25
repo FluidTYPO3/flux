@@ -6,6 +6,29 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
+            <label index="object.image">Image</label>
+            <label index="object.image.title">Image title/alt text</label>
+            <label index="object.image.caption">Image caption text</label>
+            <label index="object.image.file">Image file</label>
+            <label index="object.image.width">Image width</label>
+            <label index="object.image.height">Image height</label>
+
+            <label index="object.video">Video</label>
+            <label index="object.video.title">Title</label>
+            <label index="object.video.caption">Caption/description</label>
+            <label index="object.video.caption">Image caption text</label>
+            <label index="object.video.file">Image file</label>
+
+            <label index="object.pages">Pages</label>
+            <label index="object.pages.records">Pages</label>
+
+            <label index="object.content">Content</label>
+            <label index="object.content.records">Content elements</label>
+
+            <label index="object.file">File</label>
+            <label index="object.file.title">Title</label>
+            <label index="object.file.caption">Caption/description text</label>
+            <label index="object.file.file">File</label>
 		</languageKey>
 	</data>
 </T3locallang>

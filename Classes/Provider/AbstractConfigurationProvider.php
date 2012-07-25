@@ -1,6 +1,5 @@
 <?php
-
-/* * *************************************************************
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
@@ -22,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * @package Flux
@@ -89,6 +88,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider {
 
 	/**
 	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @return void
 	 */
 	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
@@ -96,6 +96,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider {
 
 	/**
 	 * @param Tx_Flux_Service_FlexForm $flexFormService
+	 * @return void
 	 */
 	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexFormService) {
 		$this->flexFormService = $flexFormService;

@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Textarea FlexForm field ViewHelper
@@ -35,6 +35,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 
 	/**
 	 * Initialize
+	 * @return void
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
@@ -47,6 +48,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 
 	/**
 	 * Render method
+	 * @return void
 	 */
 	public function render() {
 		$config = $this->getBaseConfig();
@@ -64,5 +66,3 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 	}
 
 }
-
-?>

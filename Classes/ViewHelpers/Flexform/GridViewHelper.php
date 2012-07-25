@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Grid container ViewHelper
@@ -33,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_GridViewHelper extends Tx_Flux_Core_ViewHelpe
 
 	/**
 	 * Render method
+	 * @return string
 	 */
 	public function render() {
 		$storage = $this->getStorage();
@@ -43,5 +44,3 @@ class Tx_Flux_ViewHelpers_Flexform_GridViewHelper extends Tx_Flux_Core_ViewHelpe
 	}
 
 }
-
-?>

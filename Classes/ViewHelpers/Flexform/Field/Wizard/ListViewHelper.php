@@ -1,6 +1,5 @@
 <?php
-
-/* * *************************************************************
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
@@ -22,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Field Wizard: List
@@ -34,6 +33,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ListViewHelper extends Tx_Flux_V
 
 	/**
 	 * Initialize arguments
+	 * @return void
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('title', 'string', 'Title of the List Wizard', FALSE, 'List records');
@@ -46,6 +46,8 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ListViewHelper extends Tx_Flux_V
 
 	/**
 	 * Build the configuration array
+	 *
+	 * @return array
 	 */
 	public function build() {
 		return array(
@@ -65,5 +67,3 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ListViewHelper extends Tx_Flux_V
 	}
 
 }
-
-?>

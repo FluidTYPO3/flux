@@ -21,7 +21,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
 /**
  * Lowercase text ViewHelper
@@ -40,5 +40,3 @@ class Tx_Flux_ViewHelpers_LowercaseViewHelper extends Tx_Flux_Core_ViewHelper_Ab
     }
 
 }
-
-?>
