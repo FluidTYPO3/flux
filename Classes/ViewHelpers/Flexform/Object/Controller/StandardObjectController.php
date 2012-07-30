@@ -88,6 +88,9 @@ class Tx_Flux_ViewHelpers_Flexform_Object_Controller_StandardObjectController ex
 		/** @var Tx_Fluid_Core_Rendering_RenderingContext $renderingContext */
 		$renderingContext = $this->objectManager->create('Tx_Fluid_Core_Rendering_RenderingContext');
 		$renderingContext->setControllerContext($this->controllerContext);
+		if (method_exists($renderingContext, 'injectViewHelperVariableContainer') === FALSE) {
+			throw new Exception('FlexForm section object Widgets are not supported on TYPO3 4.5', 1343612008);
+		}
 		$renderingContext->injectViewHelperVariableContainer($this->viewHelperVariableContainer);
 		$renderingContext->injectTemplateVariableContainer($this->templateVariableContainer);
 		$this->view->setRenderingContext($renderingContext);
