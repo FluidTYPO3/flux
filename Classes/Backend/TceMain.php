@@ -86,6 +86,7 @@ class Tx_Flux_Backend_TceMain {
 					} elseif ($relativeTo < 0) {
 							// Triggers when sorting a CE after another CE, $relativeTo is negative value of CE's UID
 						$data['tx_flux_column'] = $this->contentService->getFlexibleContentElementArea(array('pid' => $relativeTo));
+						$data['tx_flux_parent'] = empty($data['tx_flux_column']) === FALSE ? array_pop(explode(':', $data['tx_flux_column'])) : NULL;
 					} else {
 							// Triggers only if sorting/pasting to a "raw" page. Note: also triggers when manually
 							// sorting elements to the top position of a nested content area, in which case we preserve
