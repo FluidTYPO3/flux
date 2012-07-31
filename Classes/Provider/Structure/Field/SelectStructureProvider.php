@@ -38,6 +38,16 @@ class Tx_Flux_Provider_Structure_Field_SelectStructureProvider extends Tx_Flux_P
 	public function render($configuration) {
 		$fieldConfiguration = $configuration;
 		$fieldConfiguration['type'] = 'select';
+		if (is_array($configuration['items']) === TRUE) {
+			$items = array();
+			foreach ($configuration['items'] as $key => $item) {
+				if (is_array($item) === FALSE) {
+					$item = array($item, $key);
+				}
+				array_push($items, $item);
+			}
+			$fieldConfiguration['items'] = $items;
+		}
 		$fieldStructureArray = $this->getStandardFieldStructureArray($configuration, $fieldConfiguration);
 		return $fieldStructureArray;
 	}
