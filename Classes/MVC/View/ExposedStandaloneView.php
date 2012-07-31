@@ -43,8 +43,8 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 		if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
 			throw new Exception('ExposedStandaloneView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
 		}
-		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->templateParser->setConfiguration($this->buildParserConfiguration());
+		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$parsedTemplate = $this->getParsedTemplate();
 		$this->setRenderingContext($this->baseRenderingContext);
 		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);

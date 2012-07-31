@@ -34,22 +34,22 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 
 	/**
 	 * Get a variable stored in the Fluid template
-	 * @param string $viewHelperClassname Class name of the ViewHelper which stored the variable
+	 * @param string $viewHelperClassName Class name of the ViewHelper which stored the variable
 	 * @param string $name Name of the variable which the ViewHelper stored
 	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
 	 * @return mixed
 	 */
-	public function getStoredVariable($viewHelperClassname, $name, $sectionName) {
-		if ($this->controllerContext) {
-			$this->baseRenderingContext->setControllerContext($this->controllerContext);
+	public function getStoredVariable($viewHelperClassName, $name, $sectionName) {
+		if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
+			throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
 		}
 		$this->templateParser->setConfiguration($this->buildParserConfiguration());
-		$parsedTemplate = $this->getParsedTemplate();
+		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->setRenderingContext($this->baseRenderingContext);
-		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
+		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
 		$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
 		$this->stopRendering();
-		return $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassname, $name);
+		return $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
 	}
 
 	/**
@@ -84,6 +84,7 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	 * @return string
 	 */
 	public function renderStandaloneSection($sectionName, $variables) {
+		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
 		$content = $this->renderSection($sectionName, $variables);
 		$this->stopRendering();

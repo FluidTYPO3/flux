@@ -53,7 +53,8 @@ class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Fluid_Core
 		$id = $record['uid'];
 		$order = $this->arguments['order'] . ' ' . $this->arguments['sortDirection'];
 		$conditions = "((tx_flux_column = '{$this->arguments['area']}:{$record['uid']}')
-			OR (tx_flux_parent = '" . $id . "' AND tx_flux_column = '" . $this->arguments['area'] . "'))
+			OR (tx_flux_parent = '" . $id . "' AND (tx_flux_column = '" . $this->arguments['area'] . "' OR tx_flux_column = '" . $this->arguments['area'] . ":" . $id . "')))
+			OR tx_flux_parent = '" . $id . "'
 			AND deleted = 0 AND hidden = 0";
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $conditions, 'uid', $order, $this->arguments['limit']);
 		$elements = array();

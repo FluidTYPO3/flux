@@ -87,6 +87,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 */
 	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
 		$this->renderPreview($headerContent, $itemContent, $row);
+		$drawItem = FALSE;
 	}
 
 	/**
@@ -115,7 +116,10 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 				}
 				$paths = Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray($paths);
 				try {
+					$this->flexform->setContentObjectData($row);
+					/** @var Tx_Extbase_MVC_Controller_ControllerContext $context */
 					$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
+					/** @var Tx_Extbase_MVC_Request $request */
 					$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
 					$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
 					$request->setControllerExtensionName('Flux');
@@ -123,8 +127,8 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 					$request->setDispatched(TRUE);
 					$context->setRequest($request);
 					$context->setResponse($response);
-					$this->flexform->setContentObjectData($row);
 					$flexform = $this->flexform->getAll();
+					/** @var Tx_Flux_MVC_View_ExposedTemplateView $view */
 					$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
 					$view->setControllerContext($context);
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
@@ -140,17 +144,15 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 					$view->setPartialRootPath(t3lib_div::getFileAbsFileName($paths['partialRootPath']));
 					$view->setLayoutRootPath(t3lib_div::getFileAbsFileName($paths['layoutRootPath']));
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
-					$view->assignMultiple($variables);
 					$itemContent = $view->renderStandaloneSection('Preview', $variables);
 					$label = Tx_Extbase_Utility_Localization::translate($stored['label'], $extension);
 					$headerContent = '<strong>' . $label . '</strong> <i>' . $row['header'] . '</i><br /> ';
-					$drawItem = FALSE;
 				} catch (Exception $e) {
 					if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
 						throw $e;
 					} else {
 						$itemContent = 'INVALID: ';
-						$itemContent .= basename($fceTemplateFile);
+						$itemContent .= basename($templatePathAndFilename);
 						$itemContent .= '<br />' . LF;
 						$itemContent .= 'Error: ' . $e->getMessage();
 					}
