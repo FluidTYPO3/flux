@@ -60,7 +60,7 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Flux_Core_ViewHelp
 		$dblist->tt_contentConfig['single'] = 0;
 
 		$records = array();
-		$condition = "((tx_flux_column = '{$area}:{$row['uid']}' && tx_flux_parent < 1) || (tx_flux_parent = '" . $row['uid'] . "' && tx_flux_column LIKE '" . $area . "%')) AND deleted = 0";
+		$condition = "((tx_flux_column = '{$area}:{$row['uid']}') OR (tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "')) AND deleted = 0";
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition, 'uid', 'sorting ASC');
 		$records = $dblist->getResult($res);
 
