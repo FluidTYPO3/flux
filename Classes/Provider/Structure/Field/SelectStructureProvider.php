@@ -41,7 +41,9 @@ class Tx_Flux_Provider_Structure_Field_SelectStructureProvider extends Tx_Flux_P
 		if (is_array($configuration['items']) === TRUE) {
 			$items = array();
 			foreach ($configuration['items'] as $key => $item) {
-				if (is_array($item) === FALSE) {
+				if (is_array($item) === TRUE) {
+					$item = array_reverse($item);
+				} else {
 					$item = array($item, $key);
 				}
 				array_push($items, $item);
