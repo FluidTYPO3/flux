@@ -56,7 +56,7 @@ class Tx_Flux_Provider_Structure_FlexFormStructureProvider extends Tx_Flux_Provi
 				'langDisable' => 1
 			),
 		);
-		if (count($sheets) < 2) {
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'] && count($sheets) < 2) {
 			$dataStructArray['ROOT'] = array(
 				'type' => 'array',
 				'el' => array(),
