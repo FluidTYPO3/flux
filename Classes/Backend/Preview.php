@@ -91,7 +91,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 
 	/**
 	 * @param string $headerContent
-	 * @param type $itemContent
+	 * @param string $itemContent
 	 * @param array $row
 	 * @return void
 	 * @throws Exception
@@ -113,7 +113,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 				} else {
 					$paths = $typoScript['plugin.']['tx_flux.']['view.'];
 				}
-				$paths = Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray($paths);
+				$paths = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($paths);
 				try {
 					$this->flexform->setContentObjectData($row);
 					/** @var Tx_Extbase_MVC_Controller_ControllerContext $context */
@@ -165,8 +165,8 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 *
 	 * @param tx_cms_layout $parentObject
 	 * @param boolean $drawItem
-	 * @param type $headerContent
-	 * @param type $itemContent
+	 * @param string $headerContent
+	 * @param string $itemContent
 	 * @param array $row
 	 * @return void
 	 */

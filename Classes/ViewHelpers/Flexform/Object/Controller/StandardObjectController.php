@@ -97,7 +97,7 @@ class Tx_Flux_ViewHelpers_Flexform_Object_Controller_StandardObjectController ex
 		$this->view->setControllerContext($this->controllerContext);
 		$this->view->setTemplatePathAndFilename($templatePathAndFilename);
 		$this->view->assign('objectParameters', $this->widgetConfiguration);
-		$this->view->assign('settings', Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray($typoscript['plugin.']['tx_flux.']['settings.']));
+		$this->view->assign('settings', Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($typoscript['plugin.']['tx_flux.']['settings.']));
 		$content = $this->view->render();
 		return $content;
 	}
