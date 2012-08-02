@@ -40,12 +40,14 @@ class Tx_Flux_Provider_Structure_Field_InputStructureProvider extends Tx_Flux_Pr
 			'type' => 'input',
 			'placeholder' => $configuration['placeholder'],
 			'size' => $configuration['size'],
-			'eval' => $configuration['eval'],
 			'default' => $configuration['default'],
 			'max' => $configuration['max'],
 		);
 		if ($configuration['range']) {
 			$fieldConfiguration['range'] = $configuration['range'];
+		}
+		if (empty($configuration['eval']) === FALSE) {
+			$fieldConfiguration['eval'] = $configuration['eval'];
 		}
 		$fieldStructureArray = $this->getStandardFieldStructureArray($configuration, $fieldConfiguration);
 		return $fieldStructureArray;
