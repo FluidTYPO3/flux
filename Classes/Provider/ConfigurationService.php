@@ -50,7 +50,7 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 	 * @param string $fieldName
 	 * @param array $row
 	 * @param array|string $dataStructArray
-	 * @return Tx_Flux_Provider_AbstractConfigurationProviderInterface|NULL
+	 * @return Tx_Flux_Provider_ConfigurationProviderInterface|NULL
 	 */
 	public function resolveConfigurationProvider($table, $fieldName, $row, $dataStructArray=NULL) {
 		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
