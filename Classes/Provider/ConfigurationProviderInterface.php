@@ -91,6 +91,44 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 */
 	public function getTableName(array $row);
 
+	/**
+	 * Pre-process record data for the table that this ConfigurationProvider
+	 * is attached to.
+	 *
+	 * @abstract
+	 * @param array $row The record data, by reference. Changing fields' values changes the record's values before display
+	 * @param integer $id The ID of the current record (which is sometimes now included in $row
+	 * @param t3lib_TCEmain $reference A reference to the t3lib_TCEmain object that is currently displaying the record
+	 * @return void
+	 */
+	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference);
+
+	/**
+	 * Post-process record data for the table that this ConfigurationProvider
+	 * is attached to.
+	 *
+	 * @abstract
+	 * @param string $operation TYPO3 operation identifier, i.e. "update", "new" etc.
+	 * @param integer $id The ID of the current record (which is sometimes now included in $row
+	 * @param array $row the record data, by reference. Changing fields' values changes the record's values just before saving
+	 * @param t3lib_TCEmain $reference A reference to the t3lib_TCEmain object that is currently saving the record
+	 * @return void
+	 */
+	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference);
+
+	/**
+	 * Post-process database operation for the table that this ConfigurationProvider
+	 * is attached to.
+	 *
+	 * @abstract
+	 * @param string $status TYPO3 operation identifier, i.e. "new" etc.
+	 * @param integer $id The ID of the current record (which is sometimes now included in $row
+	 * @param array $row The record's data, by reference. Changing fields' values changes the record's values just before saving after operation
+	 * @param t3lib_TCEmain $reference A reference to the t3lib_TCEmain object that is currently performing the database operation
+	 * @return void
+	 */
+	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference);
+
 }
 
 ?>

@@ -50,6 +50,11 @@ class Tx_Flux_Backend_TceMain {
 	protected $contentService;
 
 	/**
+	 * @var Tx_Flux_Provider_ConfigurationService
+	 */
+	protected $configurationService;
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
@@ -57,6 +62,7 @@ class Tx_Flux_Backend_TceMain {
 		$this->flexFormService = $this->objectManager->get('Tx_Flux_Service_FlexForm');
 		$this->reflectionService = $this->objectManager->get('Tx_Extbase_Reflection_Service');
 		$this->contentService = $this->objectManager->get('Tx_Flux_Service_Content');
+		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
 	}
 
 	/**
@@ -68,6 +74,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @return void
 	 */
 	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, t3lib_TCEmain &$reference) {
+
 		$data = array();
 		if ($table === 'tt_content') {
 			switch ($command) {
@@ -159,6 +166,18 @@ class Tx_Flux_Backend_TceMain {
 				}
 			}
 		}
+			// check for a registered generic ConfigurationProvider for $table
+		$provider = $this->configurationService->resolveConfigurationProvider($table, '', $incomingFieldArray);
+		if ($provider) {
+			$provider->preProcessRecord($incomingFieldArray, $id, $reference);
+		}
+			// check each field for a registered ConfigurationProvider
+		foreach ($incomingFieldArray as $fieldName => $unusedValue) {
+			$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $incomingFieldArray);
+			if ($provider) {
+				$provider->preProcessRecord($incomingFieldArray, $id, $reference);
+			}
+		}
 	}
 
 	/**
@@ -179,6 +198,18 @@ class Tx_Flux_Backend_TceMain {
 				}
 			} else {
 				$fieldArray['tx_flux_parent'] = NULL;
+			}
+		}
+			// check for a registered generic ConfigurationProvider for $table
+		$provider = $this->configurationService->resolveConfigurationProvider($table, '', $fieldArray);
+		if ($provider) {
+			$provider->postProcessRecord($status, $id, $fieldArray, $reference);
+		}
+			// check each field for a registered ConfigurationProvider
+		foreach ($fieldArray as $fieldName => $unusedValue) {
+			$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $fieldArray);
+			if ($provider) {
+				$provider->postProcessRecord($status, $id, $fieldArray, $reference);
 			}
 		}
 	}
@@ -243,6 +274,18 @@ class Tx_Flux_Backend_TceMain {
 					}
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, "uid = '" . $childUid . "'", $overrideValues);
 				}
+			}
+		}
+		// check for a registered generic ConfigurationProvider for $table
+		$provider = $this->configurationService->resolveConfigurationProvider($table, '', $fieldArray);
+		if ($provider) {
+			$provider->postProcessDatabaseOperation($status, $id, $fieldArray, $reference);
+		}
+		// check each field for a registered ConfigurationProvider
+		foreach ($fieldArray as $fieldName => $unusedValue) {
+			$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $fieldArray);
+			if ($provider) {
+				$provider->postProcessDatabaseOperation($status, $id, $fieldArray, $reference);
 			}
 		}
 	}

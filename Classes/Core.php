@@ -150,6 +150,7 @@ class Tx_Flux_Core {
 	 * @return array
 	 */
 	public static function getRegisteredFlexFormProviders() {
+		reset(self::$providers);
 		return self::$providers;
 	}
 
