@@ -79,6 +79,9 @@ class Tx_Flux_Provider_Structure_AbstractStructureProvider {
 		if ($configuration['wizards']) {
 			$fieldStructureArray['TCEforms']['config']['wizards'] = $this->getWizardStructureArray($configuration);
 		}
+		if ($configuration['requestUpdate']) {
+			$fieldStructureArray['TCEforms']['onChange'] = 'reload';
+		}
 		return $fieldStructureArray;
 	}
 
