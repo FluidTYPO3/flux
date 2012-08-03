@@ -37,7 +37,8 @@ class Tx_Flux_Provider_Structure_Field_SectionStructureProvider extends Tx_Flux_
 	 */
 	public function render($configuration) {
 		$fieldStructureArray = array(
-			'tx_templavoila' => array(
+			'title' => $configuration['label'], // read only by >4.7 and required in order to prevent the tx_templavoila from generating a deprecation warning
+			'tx_templavoila' => array( // TODO: remove this when <4.7 no longer needs to be supported.
 				'title' => $configuration['label']
 			),
 			'type' => 'array',
