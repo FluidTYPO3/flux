@@ -61,7 +61,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 			$config['defaultExtras'] = $this->arguments['defaultExtras'];
 		}
 		$this->addField($config);
-		$this->renderChildren();
 	}
 
 }

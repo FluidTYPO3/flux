@@ -58,7 +58,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelp
 			'width' => $this->arguments['width']
 		);
 		$this->addField($config);
-		$this->renderChildren();
 	}
 
 }

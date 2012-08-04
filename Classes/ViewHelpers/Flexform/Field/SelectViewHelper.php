@@ -59,7 +59,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 	public function render() {
 		$config = $this->getFieldConfig();
 		$this->addField($config);
-		$this->renderChildren();
 	}
 
 	/**

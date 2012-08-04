@@ -39,7 +39,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CheckboxViewHelper extends Tx_Flux_View
 		$config = $this->getBaseConfig();
 		$config['type'] = 'Checkbox';
 		$this->addField($config);
-		$this->renderChildren();
 	}
 
 }

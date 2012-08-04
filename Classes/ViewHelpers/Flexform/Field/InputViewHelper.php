@@ -52,7 +52,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 	public function render() {
 		$config = $this->getBaseConfig();
 		$this->addField($config);
-		$this->renderChildren();
 	}
 
 	/**

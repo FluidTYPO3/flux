@@ -37,10 +37,12 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_V
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('title', 'string', 'Title of the Link Wizard', FALSE, 'Select link');
+		$this->registerArgument('activeTab', 'string', 'Active tab of the link popup', FALSE, 'file');
 		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 500);
 		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 500);
 		$this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the "real" field as a hidden input field and renders the wizard', FALSE, FALSE);
 		$this->registerArgument('allowedExtensions', 'string', 'Comma-separated list of extensions that are allowed to be selected. Default is all types.', FALSE, FALSE);
+		$this->registerArgument('blindLinkOptions', 'string', 'Blind link options', FALSE, '');
 	}
 
 	/**
@@ -54,10 +56,13 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_V
 				'type' => 'popup',
 				'title' => $this->arguments['title'],
 				'icon' => 'link_popup.gif',
-				'script' => 'browse_links.php?mode=wizard',
+				'script' => 'browse_links.php?mode=wizard&act=' . $this->arguments['activeTab'],
 				'hideParent' => (bool) $this->arguments['hideParent'] === TRUE ? 1 : 0,
 				'allowedExtensions' => $this->arguments['allowedExtensions'],
-				'JSopenParams' => 'height=' . $this->arguments['height'] . ',width=' . $this->arguments['width'] . ',status=0,menubar=0,scrollbars=1'
+				'JSopenParams' => 'height=' . $this->arguments['height'] . ',width=' . $this->arguments['width'] . ',status=0,menubar=0,scrollbars=1',
+				'params' => array(
+					'blindLinkOptions' => $this->arguments['blindLinkOptions'],
+				),
 			)
 		);
 	}

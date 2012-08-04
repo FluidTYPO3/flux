@@ -49,7 +49,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_UserFuncViewHelper extends Tx_Flux_View
 		$config['type'] = 'User';
 		$config['userFunc'] = $this->arguments['userFunc'];
 		$this->addField($config);
-		$this->renderChildren();
 	}
 
 }

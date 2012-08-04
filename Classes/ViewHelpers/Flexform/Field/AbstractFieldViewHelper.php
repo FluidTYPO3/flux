@@ -63,6 +63,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		}
 		$wizardXML = NULL;
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards')) {
+			$wizardsBackup = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
 			$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
 		}
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section')) {
@@ -86,10 +87,13 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards')) {
 			$wizards = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
 			$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
+			if ($wizardsBackup) {
+				$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards', $wizardsBackup);
+			}
 			$wizardXML = '';
 			foreach ($wizards as $xmlOrArray) {
 				if (is_array($xmlOrArray)) {
-					$wizardXML .= t3lib_div::array2xml($xmlOrArray, '', 1);
+					$wizardXML .= t3lib_div::array2xml($xmlOrArray, '', 1, key($xmlOrArray));
 				} else {
 					$wizardXML .= $xmlOrArray;
 				}

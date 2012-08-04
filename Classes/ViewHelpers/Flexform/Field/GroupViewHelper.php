@@ -53,7 +53,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_GroupViewHelper extends Tx_Flux_ViewHel
 		$config['allowed'] = $this->arguments['allowed'];
 		$config['uploadfolder'] = $this->arguments['uploadfolder'];
 		$this->addField($config);
-		$this->renderChildren();
 	}
 
 }
