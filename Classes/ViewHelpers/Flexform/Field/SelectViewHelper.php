@@ -82,7 +82,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 		$config['maxitems'] = $this->arguments['maxItems'];
 		$config['multiple'] = $this->arguments['multiple'] ? 1 : 0;
 		$config['foreign_table'] = $this->arguments['table'];
-		$config['condition'] = $this->arguments['condition'];
+		$config['foreign_table_where'] = $this->arguments['condition'];
 		$config['mm'] = $this->arguments['mm'];
 		$config['showThumbs'] = $this->getFlexFormBoolean($this->arguments['showThumbs']);
 		$config['itemsProcFunc'] = $this->arguments['itemsProcFunc'];
