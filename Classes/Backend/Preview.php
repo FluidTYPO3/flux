@@ -137,23 +137,25 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 
 					$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', 'Configuration');
 					$variables = array_merge($stored, (array) $provider->getTemplateVariables($row), $this->flexform->getAllAndTransform($stored['fields']));
-					$variables['label'] = $stored['label'];
+					$label = Tx_Extbase_Utility_Localization::translate($stored['label'], $extension);
+					if ($label === NULL) {
+						$label = $stored['label'];
+					}
+					$variables['label'] = $label;
 					$variables['config'] = $stored;
 					$variables['row'] = $row;
 					$view->setPartialRootPath(t3lib_div::getFileAbsFileName($paths['partialRootPath']));
 					$view->setLayoutRootPath(t3lib_div::getFileAbsFileName($paths['layoutRootPath']));
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
 					$itemContent = $view->renderStandaloneSection('Preview', $variables);
-					$label = Tx_Extbase_Utility_Localization::translate($stored['label'], $extension);
-					$headerContent = '<strong>' . $label . '</strong> <i>' . $row['header'] . '</i><br /> ';
+					$headerContent = '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
 				} catch (Exception $e) {
 					if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
 						throw $e;
 					} else {
-						$itemContent = 'INVALID: ';
-						$itemContent .= basename($templatePathAndFilename);
-						$itemContent .= '<br />' . LF;
-						$itemContent .= 'Error: ' . $e->getMessage();
+						$itemContent = 'Error: ' . $e->getMessage();
+						$itemContent = '<br />Code: ' . $e->getCode();
+						$itemContent = '<br />Filename: ' . $templatePathAndFilename;
 					}
 				}
 			}
