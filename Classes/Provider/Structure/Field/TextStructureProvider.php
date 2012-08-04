@@ -32,6 +32,18 @@
 class Tx_Flux_Provider_Structure_Field_TextStructureProvider extends Tx_Flux_Provider_Structure_AbstractStructureProvider implements Tx_Flux_Provider_StructureProviderInterface {
 
 	/**
+	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 */
+	protected $configurationManager;
+
+	/**
+	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 */
+	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+		$this->configurationManager = $configurationManager;
+	}
+
+	/**
 	 * @param array $configuration
 	 * @return array
 	 */
@@ -39,8 +51,14 @@ class Tx_Flux_Provider_Structure_Field_TextStructureProvider extends Tx_Flux_Pro
 		$fieldConfiguration = array(
 			'type' => 'text',
 		);
+		if ($configuration['defaultExtras'] === NULL) {
+			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$defaultExtras = $typoScript['plugin.']['tx_flux.']['settings.']['flexform.']['rteDefaults'];
+		} else {
+			$defaultExtras = $configuration['defaultExtras'];
+		}
 		$fieldStructureArray = $this->getStandardFieldStructureArray($configuration, $fieldConfiguration);
-		$fieldStructureArray['TCEforms']['defaultExtras'] = $configuration['defaultExtras'];
+		$fieldStructureArray['TCEforms']['defaultExtras'] = $defaultExtras;
 		return $fieldStructureArray;
 	}
 

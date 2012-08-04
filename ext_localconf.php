@@ -19,6 +19,9 @@ t3lib_extMgm::addTypoScript($_EXTKEY, 'setup', '
 		layoutRootPath = EXT:flux/Resources/Private/Layouts/
 	}
 	plugin.tx_flux.settings {
+		flexform {
+			rteDefaults = richtext[*]:rte_transform[mode=ts_css]
+		}
 		object {
 			image {
 				richTextCaptions = 1

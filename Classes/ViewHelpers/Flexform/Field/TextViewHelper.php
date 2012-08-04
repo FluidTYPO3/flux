@@ -31,8 +31,6 @@
  */
 class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
 
-	const RTE_DEFAULT = "richtext[*]:rte_transform[mode=ts_css]";
-
 	/**
 	 * Initialize
 	 * @return void
@@ -43,7 +41,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 		$this->registerArgument('cols', 'int', 'Number of columns in editor', FALSE, 85);
 		$this->registerArgument('rows', 'int', 'Number of rows in editor', FALSE, 10);
 		$this->registerArgument('defaultExtras', 'string', 'FlexForm-syntax "defaultExtras" definition, example: "richtext[*]:rte_transform[mode=ts_css]"', FALSE, '');
-		$this->registerArgument('enableRichText', 'boolean', 'Shortcut for adding "richtext[*]:rte_transform[mode=ts_css]" to "defaultExtras"', FALSE, FALSE);
+		$this->registerArgument('enableRichText', 'boolean', 'Shortcut for adding value of TS plugin.tx_flux.settings.flexform.rteDefaults to "defaultExtras"', FALSE, FALSE);
 	}
 
 	/**
@@ -57,7 +55,8 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 		$config['cols'] = $this->arguments['cols'];
 		$config['rows'] = $this->arguments['rows'];
 		if ($this->arguments['enableRichText'] && $this->arguments['defaultExtras'] == '') {
-			$config['defaultExtras'] = self::RTE_DEFAULT;
+				// a NULL value causes the FieldStructureProvider to insert the TS
+			$config['defaultExtras'] = NULL;
 		} else {
 			$config['defaultExtras'] = $this->arguments['defaultExtras'];
 		}
