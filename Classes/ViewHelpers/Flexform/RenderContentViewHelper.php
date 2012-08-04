@@ -51,9 +51,11 @@ class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Fluid_Core
 	public function render() {
 		$record = $this->templateVariableContainer->get('record');
 		$id = $record['uid'];
+		$localizedUid = $record['_LOCALIZED_UID'] > 0 ? $record['_LOCALIZED_UID'] : $id;
 		$order = $this->arguments['order'] . ' ' . $this->arguments['sortDirection'];
-		$conditions = "((tx_flux_column = '{$this->arguments['area']}:{$record['uid']}')
-			OR (tx_flux_parent = '" . $id . "' AND (tx_flux_column = '" . $this->arguments['area'] . "' OR tx_flux_column = '" . $this->arguments['area'] . ":" . $id . "')))
+		$area = $this->arguments['area'];
+		$conditions = "((tx_flux_column = '" . $area . ":" . $localizedUid . "')
+			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ":" . $localizedUid . "')))
 			AND deleted = 0 AND hidden = 0";
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $conditions, 'uid', $order, $this->arguments['limit']);
 		$elements = array();
