@@ -81,12 +81,13 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	 * main render() method - allows for cherry-picking sections to render.
 	 * @param string $sectionName
 	 * @param array $variables
+	 * @param boolean $optional
 	 * @return string
 	 */
-	public function renderStandaloneSection($sectionName, $variables) {
+	public function renderStandaloneSection($sectionName, $variables, $optional=TRUE) {
 		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
-		$content = $this->renderSection($sectionName, $variables);
+		$content = $this->renderSection($sectionName, $variables, $optional);
 		$this->stopRendering();
 		return $content;
 	}
