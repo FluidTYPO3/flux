@@ -141,41 +141,50 @@ class Tx_Flux_Backend_TceMain {
 	 * @return void
 	 */
 	public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, t3lib_TCEmain &$reference) {
-		if ($table === 'tt_content' && $id) {
-			if (is_array($incomingFieldArray['pi_flexform']['data'])) {
-				foreach ((array) $incomingFieldArray['pi_flexform']['data']['options']['lDEF'] as $key=>$value) {
-					if (strpos($key, 'tt_content') === 0) {
-						$realKey = array_pop(explode('.', $key));
-						if (isset($incomingFieldArray[$realKey])) {
-							$incomingFieldArray[$realKey] = $value['vDEF'];
+		try {
+			if ($table === 'tt_content' && $id) {
+				if (is_array($incomingFieldArray['pi_flexform']['data'])) {
+					foreach ((array) $incomingFieldArray['pi_flexform']['data']['options']['lDEF'] as $key=>$value) {
+						if (strpos($key, 'tt_content') === 0) {
+							$realKey = array_pop(explode('.', $key));
+							if (isset($incomingFieldArray[$realKey])) {
+								$incomingFieldArray[$realKey] = $value['vDEF'];
+							}
 						}
 					}
 				}
-			}
-			$area = $this->contentService->getFlexibleContentElementArea($incomingFieldArray, $id);
-			$incomingFieldArray['tx_flux_column'] = $area;
-			if ($area) {
-				$incomingFieldArray['colPos'] = -42;
-				$currentParent = array_pop(explode(':', $area));
-				if ($incomingFieldArray['tx_flux_parent'] > 0 && $incomingFieldArray['tx_flux_parent'] != $currentParent) {
-						// Means that TCA cascading has performed an action that cascaded,
-						// changing the parent. Set the Flux area accordingly.
-					$incomingFieldArray['tx_flux_column'] = array_shift(explode(':', $area)) . ':' . $incomingFieldArray['tx_flux_parent'];
-				} else {
-					$incomingFieldArray['tx_flux_parent'] = array_pop(explode(':', $area));
+				$area = $this->contentService->getFlexibleContentElementArea($incomingFieldArray, $id);
+				$incomingFieldArray['tx_flux_column'] = $area;
+				if ($area) {
+					$incomingFieldArray['colPos'] = -42;
+					$currentParent = array_pop(explode(':', $area));
+					if ($incomingFieldArray['tx_flux_parent'] > 0 && $incomingFieldArray['tx_flux_parent'] != $currentParent) {
+							// Means that TCA cascading has performed an action that cascaded,
+							// changing the parent. Set the Flux area accordingly.
+						$incomingFieldArray['tx_flux_column'] = array_shift(explode(':', $area)) . ':' . $incomingFieldArray['tx_flux_parent'];
+					} else {
+						$incomingFieldArray['tx_flux_parent'] = array_pop(explode(':', $area));
+					}
 				}
 			}
-		}
-			// check for a registered generic ConfigurationProvider for $table
-		$provider = $this->configurationService->resolveConfigurationProvider($table, '', $incomingFieldArray);
-		if ($provider) {
-			$provider->preProcessRecord($incomingFieldArray, $id, $reference);
-		}
-			// check each field for a registered ConfigurationProvider
-		foreach ($incomingFieldArray as $fieldName => $unusedValue) {
-			$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $incomingFieldArray);
+				// check for a registered generic ConfigurationProvider for $table
+			$provider = $this->configurationService->resolveConfigurationProvider($table, '', $incomingFieldArray);
 			if ($provider) {
 				$provider->preProcessRecord($incomingFieldArray, $id, $reference);
+			}
+				// check each field for a registered ConfigurationProvider
+			foreach ($incomingFieldArray as $fieldName => $unusedValue) {
+				$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $incomingFieldArray);
+				if ($provider) {
+					$provider->preProcessRecord($incomingFieldArray, $id, $reference);
+				}
+			}
+		} catch (Exception $error) {
+			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
+				throw $error;
+			} else {
+				t3lib_div::sysLog($error->getMessage(), 'flux');
+				t3lib_FlashMessageQueue::addMessage(new t3lib_FlashMessage($error->getMessage() . ' (code ' . $error->getCode() . ')', t3lib_FlashMessage::ERROR, TRUE));
 			}
 		}
 	}
@@ -189,27 +198,36 @@ class Tx_Flux_Backend_TceMain {
 	 * @return void
 	 */
 	public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, t3lib_TCEmain &$reference) {
-		if ($table === 'tt_content') {
-			$area = $this->contentService->getFlexibleContentElementArea($fieldArray, $id);
-			if ($area) {
-				$fieldArray['colPos'] = -42;
-				if ($fieldArray['tx_flux_parent'] > 0) {
-					$fieldArray['tx_flux_column'] = array_shift(explode(':', $area)) . ':' . $fieldArray['tx_flux_parent'];
+		try {
+			if ($table === 'tt_content') {
+				$area = $this->contentService->getFlexibleContentElementArea($fieldArray, $id);
+				if ($area) {
+					$fieldArray['colPos'] = -42;
+					if ($fieldArray['tx_flux_parent'] > 0) {
+						$fieldArray['tx_flux_column'] = array_shift(explode(':', $area)) . ':' . $fieldArray['tx_flux_parent'];
+					}
+				} else {
+					$fieldArray['tx_flux_parent'] = NULL;
 				}
-			} else {
-				$fieldArray['tx_flux_parent'] = NULL;
 			}
-		}
-			// check for a registered generic ConfigurationProvider for $table
-		$provider = $this->configurationService->resolveConfigurationProvider($table, '', $fieldArray);
-		if ($provider) {
-			$provider->postProcessRecord($status, $id, $fieldArray, $reference);
-		}
-			// check each field for a registered ConfigurationProvider
-		foreach ($fieldArray as $fieldName => $unusedValue) {
-			$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $fieldArray);
+				// check for a registered generic ConfigurationProvider for $table
+			$provider = $this->configurationService->resolveConfigurationProvider($table, '', $fieldArray);
 			if ($provider) {
 				$provider->postProcessRecord($status, $id, $fieldArray, $reference);
+			}
+				// check each field for a registered ConfigurationProvider
+			foreach ($fieldArray as $fieldName => $unusedValue) {
+				$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $fieldArray);
+				if ($provider) {
+					$provider->postProcessRecord($status, $id, $fieldArray, $reference);
+				}
+			}
+		} catch (Exception $error) {
+			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
+			throw $error;
+			} else {
+				t3lib_div::sysLog($error->getMessage(), 'flux');
+				t3lib_FlashMessageQueue::addMessage(new t3lib_FlashMessage($error->getMessage() . ' (code ' . $error->getCode() . ')', t3lib_FlashMessage::ERROR, TRUE));
 			}
 		}
 	}
@@ -223,69 +241,78 @@ class Tx_Flux_Backend_TceMain {
 	 * @return void
 	 */
 	public function processDatamap_afterDatabaseOperations($status, $table, $id, &$fieldArray, t3lib_TCEmain &$reference) {
-		if ($table == 'tt_content') {
-			if ($status === 'new' && $fieldArray['tx_flux_parent'] > 0) {
-				$area = $fieldArray['tx_flux_column'];
-				$currentParent = array_pop(explode(':', $area));
-				if ($fieldArray['tx_flux_parent'] > 0 && $fieldArray['tx_flux_parent'] != $currentParent) {
-						// Means that TCA cascading has performed an action that cascaded, changing the parent. Set the Flux area accordingly.
-					$fieldArray['tx_flux_column'] = array_shift(explode(':', $area)) . ':' . $fieldArray['tx_flux_parent'];
-				} else {
-						// Means area is defined but for some reason, parent is not. Set the parent to correct this problem.
-					$fieldArray['tx_flux_parent'] = array_pop(explode(':', $area));
-				}
-			} elseif ($status === 'new') {
-				$newUid = $reference->substNEWwithIDs[$id];
-				$oldUid = $fieldArray['t3_origuid'];
-				$languageFieldName = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
-				$newLanguageUid = NULL;
-				if ($oldUid) {
-					$oldRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,' . $languageFieldName, $table, "uid = '" . $oldUid . "'");
-					if (isset($oldRecord[$languageFieldName])) {
-						$newLanguageUid = $fieldArray[$languageFieldName];
-					}
-				}
-				if ($newLanguageUid === NULL) {
-					return;
-				}
-				$fieldArray[$languageFieldName] = $newLanguageUid;
-
-					// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
-				$children = $this->contentService->getChildContentElementUids($oldUid);
-				if (count($children) < 1) {
-					return;
-				}
-				foreach ($children as $child) {
-					if ($fieldArray['pid'] !== $child['pid']) {
-							// Note: if we are moving content to a new pid or copying a page, do not perform manual localization nor child record copying
-						continue;
-					}
-					$areaAndUid = explode(':', $child['tx_flux_column']);
-					$areaAndUid[1] = $newUid; // re-assign parent UID
-					$overrideValues = array(
-						'tx_flux_column' => implode(':', $areaAndUid),
-						'tx_flux_parent' => $newUid,
-						$languageFieldName => $newLanguageUid
-					);
-					if (NULL !== $newLanguageUid) {
-						$childUid = $reference->localize($table, $child['uid'], $newLanguageUid);
+		try {
+			if ($table == 'tt_content') {
+				if ($status === 'new' && $fieldArray['tx_flux_parent'] > 0) {
+					$area = $fieldArray['tx_flux_column'];
+					$currentParent = array_pop(explode(':', $area));
+					if ($fieldArray['tx_flux_parent'] > 0 && $fieldArray['tx_flux_parent'] != $currentParent) {
+							// Means that TCA cascading has performed an action that cascaded, changing the parent. Set the Flux area accordingly.
+						$fieldArray['tx_flux_column'] = array_shift(explode(':', $area)) . ':' . $fieldArray['tx_flux_parent'];
 					} else {
-						$childUid = $reference->copyRecord($table, $child['uid'], $fieldArray['pid']);
+							// Means area is defined but for some reason, parent is not. Set the parent to correct this problem.
+						$fieldArray['tx_flux_parent'] = array_pop(explode(':', $area));
 					}
-					$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, "uid = '" . $childUid . "'", $overrideValues);
+				} elseif ($status === 'new') {
+					$newUid = $reference->substNEWwithIDs[$id];
+					$oldUid = $fieldArray['t3_origuid'];
+					$languageFieldName = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
+					$newLanguageUid = NULL;
+					if ($oldUid) {
+						$oldRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,' . $languageFieldName, $table, "uid = '" . $oldUid . "'");
+						if (isset($oldRecord[$languageFieldName])) {
+							$newLanguageUid = $fieldArray[$languageFieldName];
+						}
+					}
+					if ($newLanguageUid === NULL) {
+						return;
+					}
+					$fieldArray[$languageFieldName] = $newLanguageUid;
+
+						// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
+					$children = $this->contentService->getChildContentElementUids($oldUid);
+					if (count($children) < 1) {
+						return;
+					}
+					foreach ($children as $child) {
+						if ($fieldArray['pid'] !== $child['pid']) {
+								// Note: if we are moving content to a new pid or copying a page, do not perform manual localization nor child record copying
+							continue;
+						}
+						$areaAndUid = explode(':', $child['tx_flux_column']);
+						$areaAndUid[1] = $newUid; // re-assign parent UID
+						$overrideValues = array(
+							'tx_flux_column' => implode(':', $areaAndUid),
+							'tx_flux_parent' => $newUid,
+							$languageFieldName => $newLanguageUid
+						);
+						if (NULL !== $newLanguageUid) {
+							$childUid = $reference->localize($table, $child['uid'], $newLanguageUid);
+						} else {
+							$childUid = $reference->copyRecord($table, $child['uid'], $fieldArray['pid']);
+						}
+						$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, "uid = '" . $childUid . "'", $overrideValues);
+					}
 				}
 			}
-		}
-		// check for a registered generic ConfigurationProvider for $table
-		$provider = $this->configurationService->resolveConfigurationProvider($table, '', $fieldArray);
-		if ($provider) {
-			$provider->postProcessDatabaseOperation($status, $id, $fieldArray, $reference);
-		}
-		// check each field for a registered ConfigurationProvider
-		foreach ($fieldArray as $fieldName => $unusedValue) {
-			$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $fieldArray);
+			// check for a registered generic ConfigurationProvider for $table
+			$provider = $this->configurationService->resolveConfigurationProvider($table, '', $fieldArray);
 			if ($provider) {
 				$provider->postProcessDatabaseOperation($status, $id, $fieldArray, $reference);
+			}
+			// check each field for a registered ConfigurationProvider
+			foreach ($fieldArray as $fieldName => $unusedValue) {
+				$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $fieldArray);
+				if ($provider) {
+					$provider->postProcessDatabaseOperation($status, $id, $fieldArray, $reference);
+				}
+			}
+		} catch (Exception $error) {
+			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
+				throw $error;
+			} else {
+				t3lib_div::sysLog($error->getMessage(), 'flux');
+				t3lib_FlashMessageQueue::addMessage(new t3lib_FlashMessage($error->getMessage() . ' (code ' . $error->getCode() . ')', t3lib_FlashMessage::ERROR, TRUE));
 			}
 		}
 	}

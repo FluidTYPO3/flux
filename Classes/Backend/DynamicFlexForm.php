@@ -89,10 +89,10 @@ class Tx_Flux_Backend_DynamicFlexForm {
 				}
 				$this->flexformService->convertFlexFormContentToDataStructure($provider->getTemplatePathAndFilename($row), $values, $paths, $dataStructArray, $section);
 			} catch (Exception $e) {
-				t3lib_div::sysLog($e->getMessage(), 'flux');
 				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
 					throw $e;
 				} else {
+					t3lib_div::sysLog($e->getMessage(), 'flux');
 					t3lib_FlashMessageQueue::addMessage(new t3lib_FlashMessage($e->getMessage() . ' (code ' . $e->getCode() . ')', t3lib_FlashMessage::ERROR, TRUE));
 				}
 			}
