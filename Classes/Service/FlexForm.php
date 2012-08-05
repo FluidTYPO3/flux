@@ -363,7 +363,9 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 					'exception' => $e,
 					'userFunction' => 'Tx_Flux_UserFunction_ErrorReporter->renderField'
 				);
-				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
+				if (t3lib_extMgm::isLoaded('templavoila') === FALSE) {
+					$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
+				}
 			}
 		}
 	}
