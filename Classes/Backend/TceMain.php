@@ -275,7 +275,7 @@ class Tx_Flux_Backend_TceMain {
 						return;
 					}
 					foreach ($children as $child) {
-						if ($fieldArray['pid'] !== $child['pid']) {
+						if ($fieldArray['pid'] === $child['pid']) {
 								// Note: if we are moving content to a new pid or copying a page, do not perform manual localization nor child record copying
 							continue;
 						}
