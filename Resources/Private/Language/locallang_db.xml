@@ -7,6 +7,8 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="tt_content.tx_flux_container">Content Container</label>
+			<label index="tt_content.tx_flux_parent">Parent element</label>
+			<label index="tt_content.tx_flux_column">Content area of parent</label>
 		</languageKey>
 	</data>
 </T3locallang>

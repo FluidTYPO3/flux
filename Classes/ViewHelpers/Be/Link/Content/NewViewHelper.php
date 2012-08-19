@@ -39,18 +39,18 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_Vie
 		$uid = $this->arguments['row']['uid'];
 		$area = $this->arguments['area'];
 		$sysLang = $this->arguments['row']['sys_language_uid'];
-		$colPos = $this->arguments['row']['colPos'];
 		$returnUri = $this->getReturnUri($pid);
 		if ($area) {
 			$returnUri .= '%23' . $area . '%3A' . $uid;
 		}
-		$sign = $after ? '-' : '';
 		$icon = $this->getIcon('actions-document-new', 'Insert new content element in this position');
 		$uri = 'db_new_content_el.php?id=' . $pid
+			. '&uid_pid=' . $pid
+			. '&colPos=-42'
+			. '&sys_language_uid=' .$sysLang
+			. '&defVals[tt_content][tx_flux_parent]=' . $uid
+			. '&defVals[tt_content][tx_flux_area]=' . $area
 			. '&returnUrl=' . $returnUri
-			. '&uid_pid=' . $sign . $pid
-			. '&colPos=' . $colPos
-			. '&sys_language_uid=0'
 			;
 		return $this->wrapLink($icon, $uri);
 	}

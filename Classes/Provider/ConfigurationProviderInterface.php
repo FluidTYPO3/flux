@@ -104,6 +104,13 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference);
 
 	/**
+	 * @abstract
+	 * @param array $row The record data, by reference. Changing fields' values changes the record's values before display
+	 * @return integer
+	 */
+	public function getPriority(array $row);
+
+	/**
 	 * Post-process record data for the table that this ConfigurationProvider
 	 * is attached to.
 	 *
@@ -129,6 +136,32 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 */
 	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference);
 
-}
+	/**
+	 * Pre-process a command executed on a record form the table this ConfigurationProvider
+	 * is attached to.
+	 *
+	 * @abstract
+	 * @param string $command
+	 * @param integer $id
+	 * @param array $row
+	 * @param integer $relativeTo
+	 * @param t3lib_TCEmain $reference
+	 * @return void
+	 */
+	public function preProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference);
 
-?>
+	/**
+	 * Post-process a command executed on a record form the table this ConfigurationProvider
+	 * is attached to.
+	 *
+	 * @abstract
+	 * @param string $command
+	 * @param integer $id
+	 * @param array $row
+	 * @param integer $relativeTo
+	 * @param t3lib_TCEmain $reference
+	 * @return void
+	 */
+	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference);
+
+}

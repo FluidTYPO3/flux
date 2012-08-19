@@ -97,8 +97,10 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @throws Exception
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row) {
-		$provider = $this->configurationService->resolveConfigurationProvider('tt_content', '', $row);
+		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', '', $row);
+		$provider = array_pop($providers);
 		if ($provider) {
+			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
 			$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
 			if (file_exists($templatePathAndFilename) === FALSE) {
 				$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
@@ -176,4 +178,3 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	}
 
 }
-?>

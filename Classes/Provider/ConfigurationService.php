@@ -49,10 +49,10 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 	 * @param string $table
 	 * @param string $fieldName
 	 * @param array $row
-	 * @param array|string $dataStructArray
-	 * @return Tx_Flux_Provider_ConfigurationProviderInterface|NULL
+	 * @param string $extensionKey
+	 * @return array<Tx_Flux_Provider_ConfigurationProviderInterface>|NULL
 	 */
-	public function resolveConfigurationProvider($table, $fieldName, $row, $dataStructArray=NULL) {
+	public function resolveConfigurationProviders($table, $fieldName, array $row=NULL, $extensionKey=NULL) {
 		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
 		$prioritizedProviders = array();
 		foreach ($providers as $providerClassNameOrInstance) {
@@ -61,22 +61,38 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 			} else {
 				$provider = $this->objectManager->create($providerClassNameOrInstance);
 			}
-			if ($provider->getTableName($row) === $table && $provider->getFieldName($row) === $fieldName) {
+			$priority = $provider->getPriority($row);
+			$providerFieldName = $provider->getFieldName($row);
+			$providerExtensionKey = $provider->getExtensionKey($row);
+			$providerTableName = $provider->getTableName($row);
+			if (is_array($prioritizedProviders[$priority]) === FALSE) {
+				$prioritizedProviders[$priority] = array();
+			}
+			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
+			if ($providerTableName === $table && $providerFieldName == $fieldName && ($extensionKey === NULL || $providerExtensionKey === $extensionKey)) {
 				if ($provider instanceof Tx_Flux_Provider_ContentObjectConfigurationProviderInterface) {
+					/** @var Tx_Flux_Provider_ContentObjectConfigurationProviderInterface $provider */
 					if ($provider->getContentObjectType($row) === $row['CType']) {
-						$prioritizedProviders[$provider->getPriority($row)] = $provider;
+						$prioritizedProviders[$priority][] = $provider;
 					}
-				} else if ($provider instanceof Tx_Flux_Provider_PluginConfigurationProviderInterface) {
+				} elseif ($provider instanceof Tx_Flux_Provider_PluginConfigurationProviderInterface) {
+					/** @var Tx_Flux_Provider_PluginConfigurationProviderInterface $provider */
 					if ($provider->getListType($row) === $row['list_type']) {
-						$prioritizedProviders[$provider->getPriority($row)] = $provider;
+						$prioritizedProviders[$priority][] = $provider;
 					}
 				} else {
-					$prioritizedProviders[$provider->getPriority($row)] = $provider;
+					$prioritizedProviders[$priority][] = $provider;
 				}
 			}
 		}
 		ksort($prioritizedProviders);
-		return count($prioritizedProviders) > 0 ? array_pop($prioritizedProviders) : NULL;
+		$providersToReturn = array();
+		foreach ($prioritizedProviders as $providerSet) {
+			foreach ($providerSet as $provider) {
+				array_push($providersToReturn, $provider);
+			}
+		}
+		return $providersToReturn;
 	}
 
 }

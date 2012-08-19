@@ -210,6 +210,34 @@ class Tx_Flux_Provider_AbstractConfigurationProvider {
 		return;
 	}
 
-}
+	/**
+	 * Pre-process a command executed on a record form the table this ConfigurationProvider
+	 * is attached to.
+	 *
+	 * @param string $command
+	 * @param integer $id
+	 * @param array $row
+	 * @param integer $relativeTo
+	 * @param t3lib_TCEmain $reference
+	 * @return void
+	 */
+	public function preProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
+		return;
+	}
 
-?>
+	/**
+	 * Post-process a command executed on a record form the table this ConfigurationProvider
+	 * is attached to.
+	 *
+	 * @param string $command
+	 * @param integer $id
+	 * @param array $row
+	 * @param integer $relativeTo
+	 * @param t3lib_TCEmain $reference
+	 * @return void
+	 */
+	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
+		return;
+	}
+
+}

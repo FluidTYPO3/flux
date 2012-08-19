@@ -75,9 +75,11 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * @throws Exception
 	 */
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName) {
-		$provider = $this->configurationService->resolveConfigurationProvider($table, $fieldName, $row, $dataStructArray);
+		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
+		$provider = array_pop($providers);
 		if ($provider) {
 			try {
+				/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
 				$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 				$paths = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray((array) $typoScript['plugin.']['tx_flux.']['view.']);
 				$paths = Tx_Flux_Utility_Path::translatePath($paths);
@@ -87,7 +89,8 @@ class Tx_Flux_Backend_DynamicFlexForm {
 				if (strpos($section, 'variable:') !== FALSE) {
 					$section = $values[array_pop(explode(':', $section))];
 				}
-				$this->flexformService->convertFlexFormContentToDataStructure($provider->getTemplatePathAndFilename($row), $values, $paths, $dataStructArray, $section);
+				$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
+				$this->flexformService->convertFlexFormContentToDataStructure($templatePathAndFilename, $values, $paths, $dataStructArray, $section);
 			} catch (Exception $e) {
 				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
 					throw $e;

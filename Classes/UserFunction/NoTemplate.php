@@ -3,13 +3,12 @@
  *  Copyright notice
  *
  *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
- *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
  *  free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
+ *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
  *  The GNU General Public License can be found at
@@ -24,25 +23,20 @@
  ***************************************************************/
 
 /**
- * Column position (colPos) list item processing function for tt_content records
+ * Renders nothing in case no template is selected
  *
  * @package Flux
- * @subpackage Backend
+ * @subpackage UserFunction
  */
-class Tx_Flux_Backend_ExtendedColumnPositionListItemsProcessor extends tx_gridelements_colPosList {
+class Tx_Flux_UserFunction_NoTemplate {
 
 	/**
-	 * ItemsProcFunc - adds items to tt_content.colPos selector (first, pipes through EXT:gridelements)
-	 *
-	 * @param array $params
-	 * @return void
+	 * @param array $parameters Not used
+	 * @param object $pObj Not used
+	 * @return string
 	 */
-	public function itemsProcFunc(&$params) {
-		parent::itemsProcFunc($params);
-		$params['items'][] = array(
-			$GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang_db.xml:tt_content.tx_flux_container'),
-			'-42'
-		);
+	public function renderField(&$parameters, &$pObj) {
+		return 'Please select Fluid Content Element type';
 	}
-
 }
+?>

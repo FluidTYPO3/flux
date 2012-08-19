@@ -62,15 +62,14 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper extends Tx_Flui
 	 * @return string
 	 */
 	protected function getFormToken() {
-		$token = '1b5927464308daff2e18a2fab5b2e5a2c6f53565';
-		return $token;
+		return NULL;
 	}
 
 	/**
 	 * @return string
 	 */
 	protected function getLinkChecksum() {
-		return '7a7abb3c9d';
+		return NULL;
 	}
 
 	/**
@@ -78,7 +77,8 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper extends Tx_Flui
 	 * @return string
 	 */
 	protected function getReturnUri($pid) {
-		return '%2Ftypo3%2Fsysext%2Fcms%2Flayout%2Fdb_layout.php%3Fid%3D' . $pid;
+		$uri = t3lib_extMgm::siteRelPath('cms') . 'layout/db_layout.php?id=' . $pid;
+		return urlencode('/' . $uri);
 	}
 
 }
