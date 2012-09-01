@@ -67,6 +67,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 		} else {
 			$items = array();
 		}
+		array_unshift($items, array('', '')); // adds an empty option in the beginning of the item list
 		if ($urlRequestedArea) {
 			foreach ($items as $index => $set) {
 				if ($set[0] !== $urlRequestedArea) {
