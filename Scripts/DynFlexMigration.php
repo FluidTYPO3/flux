@@ -288,9 +288,7 @@ class DynFlexMigration {
 	 *
 	 */
 	protected function clearCaches() {
-		if (t3lib_div::int_from_ver(TYPO3_version) >= 4006000) {
-		} else {
-		}
+
 	}
 }
 
