@@ -65,7 +65,7 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 	 * @api
 	 */
 	public function getChildContentElementUids($id) {
-		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,tx_flux_column', 'tt_content', "(tx_flux_column LIKE '%:" . $id . "' || tx_flux_parent = '" . $id . "') AND deleted = 0 AND hidden = 0");
+		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,pid,sys_language_uid,tx_flux_column,tx_flux_parent', 'tt_content', "(tx_flux_column LIKE '%:" . $id . "' || tx_flux_parent = '" . $id . "') AND deleted = 0 AND hidden = 0");
 		return (array) $rows;
 	}
 
