@@ -27,7 +27,7 @@
  * @package Flux
  * @subpackage Provider
  */
-class Tx_Flux_Provider_AbstractConfigurationProvider {
+class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider_ConfigurationProviderInterface {
 
 	/**
 	 * @var string
@@ -85,6 +85,11 @@ class Tx_Flux_Provider_AbstractConfigurationProvider {
 	protected $objectManager;
 
 	/**
+	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 */
+	protected $configurationManager;
+
+	/**
 	 * @var Tx_Flux_Service_FlexForm
 	 */
 	protected $flexFormService;
@@ -95,6 +100,13 @@ class Tx_Flux_Provider_AbstractConfigurationProvider {
 	 */
 	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
+	}
+
+	/**
+	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 */
+	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+		$this->configurationManager = $configurationManager;
 	}
 
 	/**
@@ -238,6 +250,30 @@ class Tx_Flux_Provider_AbstractConfigurationProvider {
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
 		return;
+	}
+
+	/**
+	 * Post-process the TCEforms DataStructure for a record associated
+	 * with this ConfigurationProvider
+	 *
+	 * @param array $row
+	 * @param array $dataStructure
+	 * @param array $conf
+	 * @return void
+	 */
+	public function postProcessDataStructure(array &$row, array &$dataStructure, array $conf) {
+		$fieldName = $this->getFieldName($row);
+		$paths = $this->getTemplatePaths($row);
+		$values = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName ? $fieldName : 'pi_flexform']);
+		$values = array_merge((array) $this->getTemplateVariables($row), $values);
+		$section = $this->getConfigurationSectionName($row);
+		if (strpos($section, 'variable:') !== FALSE) {
+			$section = $values[array_pop(explode(':', $section))];
+		}
+		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+		if (is_file($templatePathAndFilename) === TRUE) {
+			$this->flexFormService->convertFlexFormContentToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section);
+		}
 	}
 
 }

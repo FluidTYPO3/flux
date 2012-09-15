@@ -92,6 +92,17 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	public function getTableName(array $row);
 
 	/**
+	 * Post-process the TCEforms DataStructure for a record associated
+	 * with this ConfigurationProvider
+	 *
+	 * @param array $row
+	 * @param array $dataStructure
+	 * @param array $conf
+	 * @return void
+	 */
+	public function postProcessDataStructure(array &$row, array &$dataStructure, array $conf);
+
+	/**
 	 * Pre-process record data for the table that this ConfigurationProvider
 	 * is attached to.
 	 *

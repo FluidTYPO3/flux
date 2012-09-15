@@ -42,13 +42,6 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	protected $contentService;
 
 	/**
-	 * @param Tx_Flux_Service_Content $contentService
-	 */
-	public function injectContentService(Tx_Flux_Service_Content $contentService) {
-		$this->contentService = $contentService;
-	}
-
-	/**
 	 * @var string
 	 */
 	protected $tableName = 'tt_content';
@@ -67,6 +60,25 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @var integer
 	 */
 	protected $priority = 0;
+
+	/**
+	 * @param Tx_Flux_Service_Content $contentService
+	 */
+	public function injectContentService(Tx_Flux_Service_Content $contentService) {
+		$this->contentService = $contentService;
+	}
+
+	/**
+	 * @param array $row
+	 * @return array|mixed|NULL
+	 */
+	public function getTemplatePaths(array $row) {
+		$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		$extensionIdentity = str_replace('_', '', $this->getExtensionKey($row));
+		$paths = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray((array) $typoScript['plugin.']['tx_' . $extensionIdentity . '.']['view.']);
+		$paths = Tx_Flux_Utility_Path::translatePath($paths);
+		return $paths;
+	}
 
 	/**
 	 * @param array $row
@@ -112,7 +124,9 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			$row['colPos'] = -42;
 		}
 			// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
-		$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
+		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
+			$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
+		}
 		return;
 	}
 
@@ -230,4 +244,14 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
 		return;
 	}
+
+	/**
+	 * @param array $row
+	 * @param array $dataStructure
+	 * @param array $conf
+	 */
+	public function postProcessDataStructure(array &$row, array &$dataStructure, array $conf) {
+		return;
+	}
+
 }
