@@ -111,6 +111,8 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 		if ($row['tx_flux_parent'] > 0) {
 			$row['colPos'] = -42;
 		}
+			// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
+		$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
 		return;
 	}
 
