@@ -97,6 +97,13 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				}
 			}
 		}
+		if ($row['pid'] < 0) {
+				// inserting a new element after another element. Check column position of that element.
+			$relativeTo = abs($row['pid']);
+			$relativeToRecord = t3lib_BEfunc::getRecord($this->tableName, $relativeTo);
+			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
+			$row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
+		}
 		return;
 	}
 
