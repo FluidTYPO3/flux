@@ -98,8 +98,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row) {
 		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', '', $row);
-		$provider = array_pop($providers);
-		if ($provider) {
+		foreach ($providers as $provider) {
 			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
 			$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
 			if (file_exists($templatePathAndFilename) === FALSE) {
@@ -134,7 +133,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 					$view->setControllerContext($context);
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
 					$view->assignMultiple($flexform);
-					$view->assignMultiple((array) $variables);
+					$view->assignMultiple((array) $provider->getTemplateVariables($row));
 					$view->assign('row', $row);
 
 					$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', 'Configuration');
@@ -149,32 +148,19 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 					$view->setPartialRootPath(t3lib_div::getFileAbsFileName($paths['partialRootPath']));
 					$view->setLayoutRootPath(t3lib_div::getFileAbsFileName($paths['layoutRootPath']));
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
-					$itemContent = $view->renderStandaloneSection('Preview', $variables);
-					$headerContent = '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
+					$itemContent .= $view->renderStandaloneSection('Preview', $variables);
+					$headerContent .= '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
 				} catch (Exception $e) {
 					if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
 						throw $e;
 					} else {
-						$itemContent = 'Error: ' . $e->getMessage();
-						$itemContent = '<br />Code: ' . $e->getCode();
-						$itemContent = '<br />Filename: ' . $templatePathAndFilename;
+						$itemContent .= 'Error: ' . $e->getMessage();
+						$itemContent .= '<br />Code: ' . $e->getCode();
+						$itemContent .= '<br />Filename: ' . $templatePathAndFilename;
 					}
 				}
 			}
 		}
-	}
-
-	/**
-	 * Preprocessing
-	 *
-	 * @param tx_cms_layout $parentObject
-	 * @param boolean $drawItem
-	 * @param string $headerContent
-	 * @param string $itemContent
-	 * @param array $row
-	 * @return void
-	 */
-	public function drawPreview(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
 	}
 
 }
