@@ -40,5 +40,3 @@ interface Tx_Flux_ViewHelpers_Flexform_Field_Wizard_WizardViewHelperInterface {
 	public function build();
 
 }
-
-?>

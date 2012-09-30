@@ -125,4 +125,3 @@ class Tx_Flux_Service_FluidFlexFormTemplateValidator implements t3lib_Singleton 
 		}
 	}
 }
-?>

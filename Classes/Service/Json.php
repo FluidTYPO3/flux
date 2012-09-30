@@ -122,5 +122,3 @@ class Tx_Flux_Service_Json implements t3lib_Singleton {
 	}
 
 }
-
-?>

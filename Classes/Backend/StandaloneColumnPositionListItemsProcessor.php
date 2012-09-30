@@ -56,4 +56,3 @@ class Tx_Flux_Backend_StandaloneColumnPositionListItemsProcessor {
 	}
 
 }
-?>

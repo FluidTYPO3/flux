@@ -48,5 +48,3 @@ abstract class Tx_Flux_Provider_AbstractContentObjectConfigurationProvider exten
 	}
 
 }
-
-?>

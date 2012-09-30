@@ -49,4 +49,3 @@ class Tx_Flux_UserFunction_ErrorReporter {
 		}
 	}
 }
-?>

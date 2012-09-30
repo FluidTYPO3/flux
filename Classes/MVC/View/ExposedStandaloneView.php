@@ -113,5 +113,3 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	}
 
 }
-
-?>

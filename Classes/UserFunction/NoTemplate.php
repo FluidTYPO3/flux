@@ -39,4 +39,3 @@ class Tx_Flux_UserFunction_NoTemplate {
 		return 'Please select Fluid Content Element type';
 	}
 }
-?>

@@ -40,4 +40,3 @@ class Tx_Flux_UserFunction_HtmlOutput {
 	}
 
 }
-?>

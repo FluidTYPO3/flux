@@ -96,5 +96,3 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 	}
 
 }
-
-?>

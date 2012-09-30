@@ -71,5 +71,3 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SuggestViewHelper extends Tx_Flu
 	}
 
 }
-
-?>

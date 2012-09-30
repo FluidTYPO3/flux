@@ -75,4 +75,3 @@ class Tx_Flux_Service_Grid implements t3lib_Singleton {
 	}
 
 }
-?>

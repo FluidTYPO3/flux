@@ -38,5 +38,3 @@ interface Tx_Flux_Provider_ContentObjectConfigurationProviderInterface extends T
 	public function getContentObjectType(array $row);
 
 }
-
-?>

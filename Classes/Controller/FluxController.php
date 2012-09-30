@@ -41,4 +41,3 @@ class Tx_Flux_Controller_FluxController extends Tx_Extbase_MVC_Controller_Action
 	}
 
 }
-?>

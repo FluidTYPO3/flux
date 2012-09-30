@@ -38,5 +38,3 @@ interface Tx_Flux_Provider_PluginConfigurationProviderInterface extends Tx_Flux_
 	public function getListType(array $row);
 
 }
-
-?>

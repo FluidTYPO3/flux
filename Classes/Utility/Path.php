@@ -47,5 +47,3 @@ class Tx_Flux_Utility_Path implements t3lib_Singleton {
 		return $path;
 	}
 }
-
-?>

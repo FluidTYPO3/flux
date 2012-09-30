@@ -39,4 +39,3 @@ class Tx_Flux_UserFunction_NoFields {
 		return 'No fields found in form';
 	}
 }
-?>

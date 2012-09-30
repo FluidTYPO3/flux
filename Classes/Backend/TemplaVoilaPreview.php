@@ -52,5 +52,3 @@ class Tx_Flux_Backend_TemplaVoilaPreview extends tx_templavoila_preview_default 
 		return $itemContent;
 	}
 }
-
-?>

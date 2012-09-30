@@ -49,5 +49,3 @@ abstract class Tx_Flux_Provider_AbstractPluginConfigurationProvider extends Tx_F
 	}
 
 }
-
-?>

@@ -155,5 +155,3 @@ class Tx_Flux_Core {
 	}
 
 }
-
-?>

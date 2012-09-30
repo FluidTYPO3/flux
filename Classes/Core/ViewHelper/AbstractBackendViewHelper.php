@@ -82,4 +82,3 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper extends Tx_Flui
 	}
 
 }
-?>

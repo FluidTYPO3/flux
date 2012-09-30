@@ -93,5 +93,3 @@ class Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider extends Tx_F
 	}
 
 }
-
-?>

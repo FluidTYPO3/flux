@@ -60,5 +60,3 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SliderViewHelper extends Tx_Flux
 	}
 
 }
-
-?>
