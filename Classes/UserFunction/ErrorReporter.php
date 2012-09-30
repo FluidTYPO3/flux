@@ -36,6 +36,7 @@ class Tx_Flux_UserFunction_ErrorReporter {
 	 * @return string
 	 */
 	public function renderField(&$parameters, &$pObj) {
+		unset($pObj);
 		$exception = $parameters['fieldConf']['config']['parameters'][0]['exception'];
 		if ($exception instanceof Exception) {
 			$code = $exception->getCode();
@@ -44,8 +45,8 @@ class Tx_Flux_UserFunction_ErrorReporter {
 			return 'An ' . $type . ' was encountered while rendering the FlexForm.<br /><br />
 				The error code is ' . $code . ' and the message states: ' . $message;
 		} else {
-            return 'An error was encountered while rendering the FlexForm.<br /><br />
-          				The error message states: ' . $message;
+			return 'An error was encountered while rendering the FlexForm.<br /><br />
+					The error message states: ' . $exception;
 		}
 	}
 }

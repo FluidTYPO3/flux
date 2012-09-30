@@ -30,6 +30,7 @@ class tx_flux_cli extends t3lib_cli {
 	 * @return string
 	 */
 	function cli_main($argv) {
+		unset($argv); // TODO: remove if $argv is needed in the future
 		$task = (string)$this->cli_args['_DEFAULT'][1];
 		if (!$task) {
 			$this->cli_validateArgs();
@@ -54,7 +55,6 @@ class tx_flux_cli extends t3lib_cli {
 					$this->cli_help();
 					exit ;
 				}
-				//var_dump($configuration);
 				$migrator = new DynFlexMigration($this);
 				$migrator->migrate($configuration);
 				break;
@@ -140,4 +140,3 @@ class tx_flux_cli extends t3lib_cli {
 
 $cleanerObj = t3lib_div::makeInstance('tx_flux_cli');
 $cleanerObj->cli_main($_SERVER['argv']);
-?>

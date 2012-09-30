@@ -136,10 +136,9 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * properly type-cast each value before returning
 	 *
 	 * @param array $fieldArrayContainingTypes
-	 * @param string $prefix
 	 * @return array
 	 */
-	public function getAllAndTransform($fieldArrayContainingTypes, $prefix = '') {
+	public function getAllAndTransform($fieldArrayContainingTypes) {
 		$all = $this->getAll();
 		foreach ($fieldArrayContainingTypes as $fieldConfiguration) {
 			$transformType = $fieldConfiguration['transform'];
@@ -343,6 +342,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function convertFlexFormContentToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL) {
+		unset($paths); // TODO: remove if paths will be used in the future
 		if ($templateFile === NULL) {
 			$config['parameters'] = array(
 				'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'

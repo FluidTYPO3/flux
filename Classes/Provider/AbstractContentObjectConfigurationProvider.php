@@ -44,6 +44,7 @@ abstract class Tx_Flux_Provider_AbstractContentObjectConfigurationProvider exten
 	 * @return string
 	 */
 	public function getContentObjectType(array $row) {
+		unset($row);
 		return $this->contentObjectType;
 	}
 

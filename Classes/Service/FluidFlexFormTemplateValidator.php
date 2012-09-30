@@ -117,7 +117,7 @@ class Tx_Flux_Service_FluidFlexFormTemplateValidator implements t3lib_Singleton 
 			foreach (array_keys($matchedVariables[0]) as $index) {
 				$namespaceIdentifier = $matchedVariables[1][$index];
 				$fullyQualifiedNamespace = $matchedVariables[2][$index];
-				if (key_exists($namespaceIdentifier, $this->namespaces)) {
+				if (isset($this->namespaces[$namespaceIdentifier]) === TRUE) {
 					throw new Tx_Fluid_Core_Parser_Exception('Namespace identifier "' . $namespaceIdentifier . '" is already registered. Do not redeclare namespaces!', 1224241246);
 				}
 				$this->namespaces[$namespaceIdentifier] = $fullyQualifiedNamespace;

@@ -45,6 +45,7 @@ abstract class Tx_Flux_Provider_AbstractPluginConfigurationProvider extends Tx_F
 	 * @return string|NULL
 	 */
 	public function getListType(array $row) {
+		unset($row);
 		return $this->listType;
 	}
 

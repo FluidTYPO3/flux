@@ -38,6 +38,7 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	 * @param string $name Name of the variable which the ViewHelper stored
 	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
 	 * @return mixed
+	 * @throws Exception
 	 */
 	public function getStoredVariable($viewHelperClassName, $name, $sectionName) {
 		if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {

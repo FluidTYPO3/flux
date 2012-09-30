@@ -45,6 +45,7 @@ class Tx_Flux_Backend_TemplaVoilaPreview extends tx_templavoila_preview_default 
 	 * @return string
 	 */
 	public function render_previewContent ($row, $table, $output, $alreadyRendered, &$ref) {
+		unset($table, $output, $alreadyRendered, $ref);
 		$headerContent = '';
 		$itemContent = '';
 		$realPreviewer = t3lib_div::makeInstance('Tx_Flux_Backend_Preview');

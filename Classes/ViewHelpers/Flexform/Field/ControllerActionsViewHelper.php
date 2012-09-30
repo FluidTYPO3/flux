@@ -98,6 +98,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	 * Render method
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	public function render() {
 		$extensionName = $this->arguments['extensionName'];
@@ -139,6 +140,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	 * ViewHelper arguments)
 	 *
 	 * @param array $actions
+	 * @return array
 	 */
 	protected function renderItemsForActions(array $actions) {
 		$exclusions = $this->arguments['excludeActions'];
@@ -158,7 +160,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 				$controllerClassName = NULL;
 				$controllerClassReflection = NULL;
 			}
-			foreach ($actions as $actionIndex => $actionName) {
+			foreach ($actions as $actionName) {
 				$hasRequiredArguments = FALSE;
 				$hasLocalLanguageLabel = FALSE;
 				if (is_array($exclusions[$controllerName]) === TRUE && in_array($actionName, $exclusions[$controllerName]) === TRUE) {

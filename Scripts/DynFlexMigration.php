@@ -67,7 +67,8 @@ class DynFlexMigration {
 	}
 
 	/**
-	 *
+	 * @param array $configuration
+	 * @return void
 	 */
 	public function migrate($configuration) {
 		$this->migrationConfiguration = $configuration;
@@ -82,14 +83,13 @@ class DynFlexMigration {
 			}
 		}
 
-		//$this->cli->cli_echo($this->cli->cli_indent('Mod', $indent))
-		if($configuration[self::CONFIG_TARGET][self::CONFIG_TARGET_TEMPLATES]) {
+		if ($configuration[self::CONFIG_TARGET][self::CONFIG_TARGET_TEMPLATES]) {
 			$this->migrateTemplates();
 		}
-		if($configuration[self::CONFIG_TARGET][self::CONFIG_TARGET_DATABASE]) {
+		if ($configuration[self::CONFIG_TARGET][self::CONFIG_TARGET_DATABASE]) {
 			$this->migrateDatabase();
 		}
-		if(!$configuration[self::CONFIG_MODE_DRY]) {
+		if (!$configuration[self::CONFIG_MODE_DRY]) {
 			$this->clearCaches();
 		}
 	}
@@ -103,8 +103,8 @@ class DynFlexMigration {
 		$cli->cli_echo(PHP_EOL . 'MIGRATING TEMPLATES' . PHP_EOL);
 		// retrieve absolute and relative directories
 		$absoluteDirectories = $relaviveDirectories = array();
-		foreach($this->migrationConfiguration[self::CONFIG_TEMPLATE_DIRECTORIES] as $directory) {
-				if(strpos($directory, DIRECTORY_SEPARATOR) === 0){
+		foreach ($this->migrationConfiguration[self::CONFIG_TEMPLATE_DIRECTORIES] as $directory) {
+				if (strpos($directory, DIRECTORY_SEPARATOR) === 0){
 					#echo 'FOUND ABSOLUTE';
 					$absoluteDirectories[] = substr($directory, 1);
 				} else {
@@ -116,7 +116,7 @@ class DynFlexMigration {
 		foreach($absoluteDirectories as $directory) {
 			$cli->cli_echo($cli->cli_indent('Parsing ' . $directory . '...' . PHP_EOL, 2));
 			$files = t3lib_div::getAllFilesAndFoldersInPath(array(), $directory . '/', join(',', $this->migrationConfiguration[self::CONFIG_TEMPLATE_TYPES]));
-			foreach($files as $file) {
+			foreach ($files as $file) {
 				$this->migrateFile($file);
 			}
 		}
@@ -131,11 +131,11 @@ class DynFlexMigration {
 				continue;
 			}
 			$cli->cli_echo(PHP_EOL . 'Parsing ' . $ext . '...' . PHP_EOL);
-			foreach($relaviveDirectories as $directory) {
+			foreach ($relaviveDirectories as $directory) {
 				$cli->cli_echo($cli->cli_indent(PHP_EOL . 'Parsing ' . $directory . '...' . PHP_EOL, 2));
 				$path = t3lib_extMgm::siteRelPath($ext) . $directory . '/';
 				$files = t3lib_div::getAllFilesAndFoldersInPath(array(), $path, join(',', $this->migrationConfiguration[self::CONFIG_TEMPLATE_TYPES]));//, TRUE);
-				foreach($files as $file) {
+				foreach ($files as $file) {
 					$this->migrateFile($file, $path);
 				}
 			}
@@ -207,7 +207,7 @@ class DynFlexMigration {
 			}
 			$configurationSectionClosingTagPosition = strpos($file, '</f:section', $configurationSectionOpeningTagPosition);
 			$splitPoint = $configurationSectionClosingTagPosition ;
-		} else if ($previewEndingTagPosition !== FALSE && strpos($file, 'flux:flexform.content') !== FALSE && strpos($file, 'flux:widget.grid') === FALSE) {
+		} elseif ($previewEndingTagPosition !== FALSE && strpos($file, 'flux:flexform.content') !== FALSE && strpos($file, 'flux:widget.grid') === FALSE) {
 				// preview section only needs the grid Widget, set splitPoint and merged "section" markup accordingly
 			$splitPoint = $previewEndTagPosition - 12;
 			$previewSection = "\t<flux:widget.grid />" . LF;
@@ -236,12 +236,12 @@ class DynFlexMigration {
 				unlink($tempFileRight);
 				$cli->cli_echo($cli->cli_indent($output . LF, 0));
 			#}
-			if($this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_INTERACTIVE){
+			if ($this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_INTERACTIVE){
 				if($cli->cli_keyboardInput_yes('Save modifications')){
 					$doStoreTemplate = TRUE;
 				}
 			}
-			if($this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_AUTO || $doStoreTemplate) {
+			if ($this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_AUTO || $doStoreTemplate) {
 				file_put_contents($fileName, $file);
 			}
 		}
@@ -267,16 +267,16 @@ class DynFlexMigration {
 			$this->cli->cli_echo('tt_content entries are up to date' . PHP_EOL);
 		}
 
-		if($numberOfRows && ($this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_AUTO || $doDbUpdate)){
+		if ($numberOfRows && ($this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_AUTO || $doDbUpdate)){
 			// update DB if needed
 			$this->cli->cli_echo('updateing tt_content entries...' . PHP_EOL);
 			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$res2 = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'uid='.$row['uid'], array('tx_flux_column' => $row['tx_fed_fcecontentarea']));
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'uid='.$row['uid'], array('tx_flux_column' => $row['tx_fed_fcecontentarea']));
 			}
 			// sanity check
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, tx_fed_fcecontentarea', 'tt_content', 'deleted=0 AND tx_fed_fcecontentarea <> "" AND tx_flux_column = ""');
 			$numberOfFailedRows = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
-			if($numberOfFailedRows) {
+			if ($numberOfFailedRows) {
 				$this->cli->cli_echo('WARNING! Failed updating ' . $numberOfFailedRows . ' tt_content entries' . PHP_EOL, TRUE);
 			} else {
 				$this->cli->cli_echo('SUCCESS...' . PHP_EOL);
@@ -291,5 +291,3 @@ class DynFlexMigration {
 
 	}
 }
-
-?>

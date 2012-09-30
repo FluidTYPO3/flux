@@ -36,6 +36,7 @@ class Tx_Flux_UserFunction_NoFields {
 	 * @return string
 	 */
 	public function renderField(&$parameters, &$pObj) {
+		unset($pObj, $parameters);
 		return 'No fields found in form';
 	}
 }

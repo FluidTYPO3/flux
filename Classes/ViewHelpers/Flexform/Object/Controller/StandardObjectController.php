@@ -79,6 +79,7 @@ class Tx_Flux_ViewHelpers_Flexform_Object_Controller_StandardObjectController ex
 
 	/**
 	 * @return string
+	 * @throws Exception
 	 */
 	public function indexAction() {
 		$typoscript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);

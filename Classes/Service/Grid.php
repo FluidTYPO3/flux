@@ -58,6 +58,7 @@ class Tx_Flux_Service_Grid implements t3lib_Singleton {
 		if (file_exists($templatePathAndFilename) === FALSE) {
 			$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
 		}
+		$paths = Tx_Flux_Utility_Path::translatePath($paths);
 		$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
 		$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
 		$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
@@ -69,6 +70,12 @@ class Tx_Flux_Service_Grid implements t3lib_Singleton {
 		$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
 		$view->setControllerContext($context);
 		$view->setTemplatePathAndFilename($templatePathAndFilename);
+		if ($paths['partialRootPath']) {
+			$view->setPartialRootPath($paths['partialRootPath']);
+		}
+		if ($paths['layoutRootPath']) {
+			$view->setLayoutRootPath($paths['layoutRootPath']);
+		}
 		$view->assignMultiple($variables);
 		$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $configurationSection);
 		return $stored['grid'];

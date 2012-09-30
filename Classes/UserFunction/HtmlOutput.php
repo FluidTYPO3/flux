@@ -36,6 +36,7 @@ class Tx_Flux_UserFunction_HtmlOutput {
 	 * @return mixed
 	 */
 	public function renderField(array &$parameters, t3lib_TCEforms &$pObj) {
+		unset($pObj);
 		return trim($parameters['parameters']['closure']($parameters));
 	}
 

@@ -64,7 +64,7 @@ class Tx_Flux_Service_Json implements t3lib_Singleton {
 	 * Encode to working JSON depending on PHP version
 	 *
 	 * @param mixed $source
-	 * @param integer $options
+	 * @return string
 	 * @api
 	 */
 	public function encode($source) {
@@ -81,6 +81,7 @@ class Tx_Flux_Service_Json implements t3lib_Singleton {
 	 * Decode to working JSON depending on PHP version
 	 *
 	 * @param string $str
+	 * @return mixed
 	 * @api
 	 */
 	public function decode($str) {
@@ -118,7 +119,7 @@ class Tx_Flux_Service_Json implements t3lib_Singleton {
 			),
 			'id' => 'id'
 		);
-		return $this->encode($data);;
+		return $this->encode($data);
 	}
 
 }

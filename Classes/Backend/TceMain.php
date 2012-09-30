@@ -70,7 +70,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $relativeTo Filled if command is relative to another element
-	 * @param object $reference Reference to the parent object (TCEmain)
+	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, t3lib_TCEmain &$reference) {
@@ -84,7 +84,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $relativeTo Filled if command is relative to another element
-	 * @param object $reference Reference to the parent object (TCEmain)
+	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, t3lib_TCEmain &$reference) {
@@ -110,7 +110,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $fieldArray The field names and their values to be processed
-	 * @param object $reference Reference to the parent object (TCEmain)
+	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, t3lib_TCEmain &$reference) {
@@ -123,7 +123,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table	The table we're dealing with
 	 * @param mixed $id Either the record UID or a string if a new record has been created
 	 * @param array $fieldArray The record row how it has been inserted into the database
-	 * @param object $reference A reference to the TCEmain instance
+	 * @param t3lib_TCEmain $reference A reference to the TCEmain instance
 	 * @return void
 	 */
 	public function processDatamap_afterDatabaseOperations($status, $table, $id, &$fieldArray, t3lib_TCEmain &$reference) {
@@ -140,6 +140,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param array $record
 	 * @param array $arguments
 	 * @param t3lib_TCEmain $reference
+	 * @throws Exception
 	 */
 	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, t3lib_TCEmain &$reference) {
 		try {

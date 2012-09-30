@@ -36,6 +36,7 @@ class Tx_Flux_UserFunction_NoTemplate {
 	 * @return string
 	 */
 	public function renderField(&$parameters, &$pObj) {
+		unset($pObj, $parameters);
 		return 'Please select Fluid Content Element type';
 	}
 }
