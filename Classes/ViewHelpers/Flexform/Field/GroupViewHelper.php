@@ -51,7 +51,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_GroupViewHelper extends Tx_Flux_ViewHel
 		$config['type'] = 'Group';
 		$config['internal_type'] = $this->arguments['internalType'];
 		$config['allowed'] = $this->arguments['allowed'];
-		$config['uploadfolder'] = $this->arguments['uploadfolder'];
+		$config['uploadfolder'] = $this->arguments['uploadFolder'];
 		$this->addField($config);
 	}
 
