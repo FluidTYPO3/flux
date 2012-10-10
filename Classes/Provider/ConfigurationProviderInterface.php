@@ -96,11 +96,11 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 * with this ConfigurationProvider
 	 *
 	 * @param array $row
-	 * @param array $dataStructure
+	 * @param mixed $dataStructure Array or string; should only be processed if argument is an array
 	 * @param array $conf
 	 * @return void
 	 */
-	public function postProcessDataStructure(array &$row, array &$dataStructure, array $conf);
+	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf);
 
 	/**
 	 * Pre-process record data for the table that this ConfigurationProvider

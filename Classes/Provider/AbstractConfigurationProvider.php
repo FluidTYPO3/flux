@@ -257,11 +257,15 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * with this ConfigurationProvider
 	 *
 	 * @param array $row
-	 * @param array $dataStructure
+	 * @param mixed $dataStructure
 	 * @param array $conf
 	 * @return void
 	 */
-	public function postProcessDataStructure(array &$row, array &$dataStructure, array $conf) {
+	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
+		if (is_array($dataStructure) === FALSE) {
+				// skip processing; posting what is most likely an empty string
+			return;
+		}
 		$fieldName = $this->getFieldName($row);
 		$paths = $this->getTemplatePaths($row);
 		$values = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName ? $fieldName : 'pi_flexform']);

@@ -254,10 +254,10 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 
 	/**
 	 * @param array $row
-	 * @param array $dataStructure
+	 * @param mixed $dataStructure
 	 * @param array $conf
 	 */
-	public function postProcessDataStructure(array &$row, array &$dataStructure, array $conf) {
+	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
 		return;
 	}
 
