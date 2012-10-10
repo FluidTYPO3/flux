@@ -1,0 +1,22 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="redirect" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.navigation.redirect.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.navigation.redirect.description" enabled="TRUE">
+		<flux:flexform.field.input name="message" label="Short message, use ###TIMEOUT### to place dynamic countdown" default="You will be redirected in ###TIMEOUT### seconds" />
+		<flux:flexform.field.input name="timeout" label="Timeout before redirect" default="10" eval="int" />
+		<flux:flexform.field.group name="location" label="Page target for redirection" internalType="db" allowed="pages" minItems="1" maxItems="1" size="1" />
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+
+</f:section>
+
+<f:section name="Main">
+	<fed:redirect timeout="{timeout}" location="{f:uri.page(pageUid: location)}">
+		<fed:data.func func="str_replace" arguments="{0: '###TIMEOUT###', 1: timeoutCounter, 2: message}" />
+	</fed:redirect>
+</f:section>

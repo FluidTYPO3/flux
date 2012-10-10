@@ -1,0 +1,21 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="bootstrap-pageheader" label="Bootstrap: Page Header" description="An underlined page header element with optional small caption." icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
+		<flux:flexform.field.input name="header" label="Large text" />
+		<flux:flexform.field.input name="subheader" label="Smaller text next to large text" />
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+	<h2>{header} <f:if condition="{subheader}"><small>{subheader}</small></f:if></h2>
+</f:section>
+
+<f:section name="Main">
+	<div class="page-header">
+		<h1>{header}<f:if condition="{subheader}"> <small>{subheader}</small></f:if></h1>
+	</div>
+</f:section>

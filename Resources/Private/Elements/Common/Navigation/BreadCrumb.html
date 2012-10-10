@@ -1,0 +1,29 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+  <flux:flexform id="breadcrumb" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.navigation.breadCrumb.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.navigation.breadCrumb.description" enabled="TRUE">
+    <flux:flexform.field.group size="1" maxItems="1" minItems="1" name="startingPage" label="Starting page"
+		internalType="db" allowed="pages" suggest="TRUE" />
+    <flux:flexform.field.select name="entryLevel" label="Entry-level"
+      commaSeparatedItems="-1,0,1,2,3,4,5,6" />
+  </flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+  Entrylevel: {entryLevel}<br />
+  Starting page UID: {startingPage}
+</f:section>
+
+<f:section name="Main">
+  <f:if condition="{startingPage}">
+    <f:then>
+      <fed:page.breadCrumb pageUid="{startingPage}" entryLevel="{entryLevel}" />
+    </f:then>
+    <f:else>
+      <fed:page.breadCrumb entryLevel="{entryLevel}" />
+    </f:else>
+  </f:if>
+</f:section>

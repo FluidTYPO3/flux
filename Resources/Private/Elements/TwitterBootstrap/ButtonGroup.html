@@ -1,0 +1,26 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="bootstrap-buttongroup" label="Bootstrap: Button Group" description="Renders Twitter Bootstrap button elements added as child content elements in a botton grouping wrapper which closely aligns the buttons/links." icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
+		<flux:flexform.grid>
+			<flux:flexform.grid.row>
+				<flux:flexform.grid.column>
+					<flux:flexform.content name="content" label="Buttons" />
+				</flux:flexform.grid.column>
+			</flux:flexform.grid.row>
+		</flux:flexform.grid>
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+	<flux:widget.grid />
+</f:section>
+
+<f:section name="Main">
+	<div class="btn-group">
+		<flux:flexform.renderContent area="content" />
+	</div>
+</f:section>

@@ -1,0 +1,48 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="jQueryAccordion" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.jQueryAccordion.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.jQueryAccordion.description" enabled="TRUE">
+		<flux:flexform.field.select name="columns" label="Number of jQuery Accordion tabs" requestUpdate="TRUE"
+			items="{0: {0: 1, 1: '1'}, 1: {0: 2, 1: '2'}, 2: {0: 3, 1: '3'}, 3: {0: 4, 1: '4'}, 4: {0: 5, 1: '5'}, 5: {0: 6, 1: '6'}, 6: {0: 7, 1: '7'}, 7: {0: 8, 1: '8'}, 8: {0: 9, 1: '9'},       9: {0: 10, 1: '10'}, 10: {0: 11, 1: '11'}, 11: {0: 12, 1: '12'}, 12: {0: 13, 1: '13'}, 13: {0: 14, 1: '14'}, 14: {0: 15, 1: '15'}, 15: {0: 16, 1: '16'}, 16: {0: 17, 1: '17'}, 17: {0: 18, 1: '18'}, 18: {0: 19, 1: '19'}, 19: {0: 20, 1: '20'} }" default="1" maxItems="1" />
+		<flux:flexform.field.select name="active" label="The initially activated tab"
+			items="{0: {0: '-1', 1: 'none'}, 1: {0: 1, 1: '1'}, 2: {0: 2, 1: '2'}, 3: {0: 3, 1: '3'}, 4: {0: 4, 1: '4'}, 5: {0: 5, 1: '5'}, 6: {0: 6, 1: '6'}, 7: {0: 7, 1: '7'}, 8: {0: 8, 1: '8'}, 9: {0: 9, 1: '9'},   10: {0: 10, 1: '10'}, 11: {0: 11, 1: '11'}, 12: {0: 12, 1: '12'}, 13: {0: 13, 1: '13'}, 14: {0: 14, 1: '14'}, 15: {0: 15, 1: '15'}, 16: {0: 16, 1: '16'}, 17: {0: 17, 1: '17'}, 18: {0: 18, 1: '18'}, 19: {0: 19, 1: '19'}, 20: {0: 20, 1: '20'} }" default="1" maxItems="1" />
+		<flux:flexform.field.select name="disabled" label="Deactivated tabs"
+			items="{0: {0: 1, 1: '1'}, 1: {0: 2, 1: '2'}, 2: {0: 3, 1: '3'}, 3: {0: 4, 1: '4'}, 4: {0: 5, 1: '5'}, 5: {0: 6, 1: '6'}, 6: {0: 7, 1: '7'}, 7: {0: 8, 1: '8'}, 8: {0: 9, 1: '9'},       9: {0: 10, 1: '10'}, 10: {0: 11, 1: '11'}, 11: {0: 12, 1: '12'}, 12: {0: 13, 1: '13'}, 13: {0: 14, 1: '14'}, 14: {0: 15, 1: '15'}, 15: {0: 16, 1: '16'}, 16: {0: 17, 1: '17'}, 17: {0: 18, 1: '18'}, 18: {0: 19, 1: '19'}, 19: {0: 20, 1: '20'} }" default="1" maxItems="19" size="19" />
+		<flux:flexform.field.checkbox name="collapsible" label="Collapsible" />
+		<flux:flexform.field.checkbox name="collapsed" label="Collapsed" />
+
+		<flux:flexform.grid>
+			<flux:flexform.grid.row repeat="{columns}">
+				<flux:flexform.grid.column>
+					<flux:flexform.field.input name="title{cycle}" label="Tab title, tab #{cycle}" />
+					<flux:flexform.content name="column{cycle}" label="Content in accordion tab #{cycle}" />
+				</flux:flexform.grid.column>
+			</flux:flexform.grid.row>
+		</flux:flexform.grid>
+	</flux:flexform>
+</f:section>
+
+
+<f:section name="Preview">
+	jQuery Accordion Panel Content Elements:
+	<flux:widget.grid />
+</f:section>
+
+<f:section name="Main">
+	<f:if condition="{columns} < 1">
+		<fed:data.var name="columns">1</fed:data.var>
+	</f:if>
+	<fed:data.var name="disabledArray" type="array">{disabled}</fed:data.var>
+	<fed:jQuery.accordion collapsible="{collapsible}" collapsed="{collapsed}">
+		<fed:loop count="{columns}" iteration="iteration">
+			<fed:data.var name="title"><fed:data.var name="title{iteration.cycle}" /></fed:data.var>
+			<fed:data.func func="in_array" arguments="{0: iteration.cycle, 1: disabledArray}" as="isDisabled" />
+			<fed:jQuery.accordion title="{title}" active="{active} == {iteration.cycle}" disabled="{isDisabled}">
+				<flux:flexform.renderContent area="column{iteration.cycle}" />
+			</fed:jQuery.accordion>
+		</fed:loop>
+	</fed:jQuery.accordion>
+</f:section>

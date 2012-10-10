@@ -1,0 +1,9 @@
+[GLOBAL]
+# NOTE: for new installs use the commented line below. For existing installs that use the built-in FED FCEs, leave as-is.
+#plugin.tx_fed.fce.fluidcontent {
+plugin.tx_fed.fce.fed {
+	label = Fluid Content Elements
+	templateRootPath = EXT:fluidcontent/Resources/Private/Elements/Common/
+	partialRootPath = EXT:fluidcontent/Resources/Private/Partials/
+	layoutRootPath = EXT:fluidcontent/Resources/Private/Layouts/
+}

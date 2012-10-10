@@ -1,0 +1,20 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="display-script" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.resource.script.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.resource.script.description" enabled="TRUE">
+		<flux:flexform.field.userFunc name="script" label="Code editor" userFunc="Tx_Fed_Configuration_Wizard_FlexFormCodeEditor->renderField" />
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+
+</f:section>
+
+<f:section name="Main">
+	<fed:script>
+		{script}
+	</fed:script>
+</f:section>

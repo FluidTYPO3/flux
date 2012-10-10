@@ -1,0 +1,131 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="addressAndMap" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.description" enabled="TRUE">
+		<flux:flexform.sheet name="options" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.groups.options">
+			<flux:flexform.field.checkbox name="jQuery" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.jQuery" />
+			<flux:flexform.field.checkbox name="displayHeaders" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.displayHeaders" requestUpdate="TRUE" />
+			<flux:flexform.field.select name="headerType" label="Tagname of headers"
+				items="{0: {0:'h1'}, 1: {0:'h2'}, 2: {0:'h3'}, 3: {0:'h4'}, 4: {0:'h5'}}" enabled="{displayHeaders}" />
+			<flux:flexform.field.checkbox name="displayAddress" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.displayAddress" requestUpdate="TRUE" />
+			<flux:flexform.field.checkbox name="displayMap" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.displayMap" requestUpdate="TRUE" />
+		</flux:flexform.sheet>
+		<f:if condition="{displayMap}">
+			<flux:flexform.sheet name="map" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.groups.map">
+				<flux:flexform.field.select name="mapPosition" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.mapPosition"
+					items="{0: {0: 'left'}, 1: {0: 'right'}, 2: {0: 'top'}, 3: {0: 'bottom'}}" />
+				<flux:flexform.field.checkbox name="map.scaleControl" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.scaleControl" enabled="{displayMap}" />
+				<flux:flexform.field.checkbox name="map.zoomControl" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.zoomControl" enabled="{displayMap}" />
+				<flux:flexform.field.checkbox name="map.panControl" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.panControl" enabled="{displayMap}" />
+				<flux:flexform.field.checkbox name="map.mapTypeControl" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.mapTypeControl" enabled="{displayMap}" />
+				<flux:flexform.field.input name="map.zoom" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.zoom" eval="int" default="7" enabled="{displayMap}" />
+				<flux:flexform.field.input name="map.width" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.width" enabled="{displayMap}" />
+				<flux:flexform.field.input name="map.height" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.height" enabled="{displayMap}" />
+				<flux:flexform.field.select name="map.mapTypeId" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.mapTypeId" enabled="{displayMap}"
+					items="{0: {0: 'google.maps.MapTypeId.ROADMAP'}, 1: {0: 'google.maps.MapTypeId.SATELLITE'}, 2: {0: 'google.maps.MapTypeId.TERRAIN'}, 3: {0: 'google.maps.MapTypeId.HYBRID'}}"
+					default="google.maps.MapTypeId.ROADMAP" />
+				<flux:flexform.field.group name="map.markerIcon" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.map.markerIcon" internalType="file" allowed="png,gif,jpg" enabled="{displayMap}" />
+			</flux:flexform.sheet>
+		</f:if>
+		<f:if condition="{displayAddress}">
+			<flux:flexform.sheet name="address" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.groups.address">
+				<flux:flexform.field.text name="address" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.fields.address" enableRichText="TRUE" />
+			</flux:flexform.sheet>
+		</f:if>
+		<flux:flexform.grid>
+			<flux:flexform.grid.row>
+				<flux:flexform.grid.column>
+					<flux:flexform.content name="addressContent" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.areas.addressContent" />
+				</flux:flexform.grid.column>
+				<flux:flexform.grid.column>
+					<flux:flexform.content name="infoboxContent" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.addressandmap.areas.infoboxContent" />
+				</flux:flexform.grid.column>
+			</flux:flexform.grid.row>
+		</flux:flexform.grid>
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+	<fed:raw>{address}</fed:raw>
+</f:section>
+
+<f:section name="Main">
+	<!-- FCE data processing -->
+
+	<fed:comment comment="Geocodes an address and stores the result in a template variable" />
+	<fed:map.geocode as="gps"><fed:raw>{address}</fed:raw></fed:map.geocode>
+
+	<f:if condition="{jQuery}">
+		<fed:jQuery.cdn jQueryVersion="1" jQueryUIVersion="1" />
+	</f:if>
+
+	<fed:comment comment="Assigns variable 'addressHtml' for easier layout handling later on" />
+	<f:if condition="{displayAddress}">
+	<fed:data.var name="addressHtml">
+		<f:if condition="{displayHeaders}"><{headerType} class="address-header">Address</{headerType}></f:if>
+		<fed:raw>{address}</fed:raw>
+		<flux:flexform.renderContent area="addressContent" />
+	</fed:data.var>
+	</f:if>
+
+
+	<fed:data.var name="markerIconFilenameLength"><fed:data.func func="strlen" arguments="{0: map.markerIcon}" /></fed:data.var>
+	<fed:data.var name="markerIcon">
+		<f:if condition="{markerIconFilenameLength} > 0">
+			<f:then>{map.markerIcon}</f:then>
+			<f:else><f:uri.resource path="Icons/MapMarker.png" extensionName="fed" /></f:else>
+		</f:if>
+	</fed:data.var>
+
+	<fed:comment comment="Assigns variable 'mapHtml' for easier layout handling later on" />
+	<f:if condition="{displayMap}">
+	<fed:data.var name="mapHtml">
+		<f:if condition="{displayHeaders}"><{headerType} class="map-header">Map</{headerType}></f:if>
+		<fed:map lat="{gps.lat}" lng="{gps.lng}" zoom="13"
+				 mapTypeControl="{map.mapTypeControl}" scaleControl="{map.zoomControl}" panControl="{map.panControl}"
+				 zoomControl="{map.zoomControl}"
+				 height="{map.height}" width="{map.width}" zoom="{map.zoom}" mapTypeId="{map.mapTypeId}">
+			<fed:map.layer>
+				<fed:map.marker lat="{gps.lat}" lng="{gps.lng}" icon="{markerIcon}">
+					<fflux:flexform.renderContent area="infoboxContent" />
+				</fed:map.marker>
+			</fed:map.layer>
+		</fed:map>
+	</fed:data.var>
+	</f:if>
+
+	<!-- FCE rendering -->
+	<fed:comment comment="Switching on mapPosition to render in proper sequence" />
+	<fed:switch value="{mapPosition}">
+		<fed:case case="left" break="TRUE">
+			<fed:style>.map-display-left {float: left; white-space: wrap; width: {map.width}; }</fed:style>
+			<div class="map-display-left">
+				<fed:raw>{addressHtml}</fed:raw>
+			</div>
+			<fed:raw>{mapHtml}</fed:raw>
+		</fed:case>
+		<fed:case case="right" break="TRUE">
+			<fed:style>.map-display-right { float: right; white-space: wrap; width: {map.width}; }</fed:style>
+			<div class="map-display-right">
+				<fed:raw>{addressHtml}</fed:raw>
+			</div>
+			<fed:raw>{mapHtml}</fed:raw>
+		</fed:case>
+		<fed:case case="top" break="TRUE">
+			<fed:raw>{mapHtml}</fed:raw>
+			<fed:raw>{addressHtml}</fed:raw>
+		</fed:case>
+		<fed:case case="bottom" break="TRUE">
+			<fed:raw>{addressHtml}</fed:raw>
+			<fed:raw>{mapHtml}</fed:raw>
+		</fed:case>
+		<fed:case case="default" break="TRUE">
+			<fed:raw>{mapHtml}</fed:raw>
+			<fed:raw>{addressHtml}</fed:raw>
+		</fed:case>
+	</fed:switch>
+	<flux:widget.grid />
+</f:section>

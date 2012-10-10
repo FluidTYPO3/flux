@@ -1,0 +1,99 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="displayFileList" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.filelist.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.filelist.description" enabled="TRUE">
+		<flux:flexform.field.checkbox name="jQuery" label="Load jQuery - in case your page does not include it. Uses Google's CDN Service" />
+		<flux:flexform.field.input name="path" label="Site-relative path to dir containing files, remember trailing slash" />
+		<flux:flexform.field.input name="dateFormat" label="Format for date, PHP date() syntax - ex. Y-m-d H:i" default="Y-m-d H:i" />
+		<flux:flexform.field.checkbox name="downloadable" label="Add download links on file names" />
+		<flux:flexform.field.checkbox name="headers" label="Show table column headers - necessary for sortable!" />
+		<flux:flexform.field.select name="unit" label="Size unit to use" items="{0: {0: 'GB'}, 1: {0: 'MB'}, 2: {0: 'KB'}, 3: {0: 'B'}}" maxItems="1" />
+		<flux:flexform.field.input name="decimals" label="Number of decimals to display in file sizes" default="2" />
+		<flux:flexform.field.select name="fields" label="Fields to display"
+			items="{0: {0: 'iteration'}, 1: {0: 'filename'}, 2: {0: 'size'}, 3: {0: 'created'}, 4: {0: 'modified'}}"
+			minItems="1" maxItems="6" multiple="TRUE" size="6" />
+		<flux:flexform.field.select name="resource.sortBy" label="Initially sort by field" maxItems="1"
+			items="{0: {0: 'iteration'}, 1: {0: 'filename'}, 2: {0: 'size'}, 3: {0: 'created'}, 4: {0: 'modified'}}" />
+		<flux:flexform.field.select name="resource.sortDirection" label="Initial sorting direction" items="{0: {0: 'ASC'}, 1: {0: 'DESC'}}" maxItems="1" />
+
+		<flux:flexform.field.input name="table.cellpadding" label="Cell padding" default="2" eval="int" />
+		<flux:flexform.field.input name="table.cellspacing" label="Cell spacing" default="2" eval="int" />
+		<flux:flexform.field.input name="table.iDisplayLength" label="Items per page" default="20" eval="int" />
+		<flux:flexform.field.select name="table.textExtraction" label="Cell text extraction method. Use 'complex' if your sorting misbehaves - can also be the name of a Javascript function"
+			items="{0: {0: 'simple'}, 1: {0: 'complex'}}" maxItems="1" />
+		<flux:flexform.field.checkbox name="table.sortable" label="Enable sorting" default="1" />
+		<flux:flexform.field.checkbox name="table.bPaginate" label="Enable pagination" default="1" />
+		<flux:flexform.field.checkbox name="table.bSaveState" label="Save display state in user cookie" default="1" />
+		<flux:flexform.field.checkbox name="table.bFilter" label="Add search capabilities" default="1" />
+		<flux:flexform.field.checkbox name="table.bInfo" label="Enable additional info display" default="1" />
+		<flux:flexform.field.select name="table.sPaginationType" label="Pagination type" items="{0: {0: 'full_numbers'}, 1: {0: 'two_buttons'}}" maxItems="1" />
+		<flux:flexform.field.input name="table.instanceName" label="Instance name to set globally in Javascript" />
+		<flux:flexform.field.input name="table.registerWith" label="Name of Javascript function this instance will be passed to after init" />
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+
+</f:section>
+
+<f:section name="Main">
+	<fed:data.var name="fields" type="array">{fields}</fed:data.var>
+	<fed:resource.file path="{path}" as="files" sortBy="{resource.sortBy}" sortDirection="{resource.sortDirection}" />
+
+	<f:if condition="{jQuery}">
+		<fed:jQuery.cdn jQueryVersion="1" />
+	</f:if>
+
+	<fed:table cellspacing="{table.cellspacing}" cellpadding="{table.cellpadding}" iDisplayLength="{table.iDisplayLength}" textExtraction="{table.textExtraction}"
+		sortable="{table.sortable}" bPaginate="{table.bPaginate}" bSaveState="{table.bSaveState}" bInfo="{table.bInfo}" bFilter="{table.bFilter}"
+		instanceName="{table.instanceName}" registerWith="{table.registerWith}">
+		<f:if condition="{headers}">
+		<thead>
+			<tr>
+			<f:for each="{fields}" as="fieldName">
+				<th><f:translate key="LLL:EXT:fed/Resources/Private/Language/locallang.xml:tx_fed_file.{fieldName}" default="{fieldName}" /></th>
+			</f:for>
+			</tr>
+		</thead>
+		</f:if>
+
+		<f:for each="{files}" as="file" iteration="iteration">
+			<tr>
+				<f:for each="{fields}" as="fieldName">
+					<td>
+						<fed:switch value="{fieldName}">
+							<fed:case case="iteration" break="TRUE">{iteration.cycle}</fed:case>
+							<fed:case case="filename" break="TRUE">
+								<f:if condition="{downloadable}">
+									<f:then>
+										<a href="{file.relativePath}">{file.filename}.{file.extension}</a>
+									</f:then>
+									<f:else>
+										{file.filename}.{file.extension}
+									</f:else>
+								</f:if>
+							</fed:case>
+							<fed:case case="size" break="TRUE">
+								<fed:switch value="{unit}">
+									<fed:case case="GB" break="TRUE"><f:format.number decimals="{decimals}"><fed:math>{file.size}/1024/1024/1024</fed:math></f:format.number> {unit}</fed:case>
+									<fed:case case="MB" break="TRUE"><f:format.number decimals="{decimals}"><fed:math>{file.size}/1024/1024</fed:math></f:format.number> {unit}</fed:case>
+									<fed:case case="KB" break="TRUE"><f:format.number decimals="{decimals}"><fed:math>{file.size}/1024</fed:math></f:format.number> {unit}</fed:case>
+									<fed:case case="B" break="TRUE">{file.size} {unit}</fed:case>
+								</fed:switch>
+							</fed:case>
+							<fed:case case="created" break="TRUE">
+								<f:format.date format="{dateFormat}">{file.created}</f:format.date>
+							</fed:case>
+							<fed:case case="modified" break="TRUE">
+								<f:format.date format="{dateFormat}">{file.modified}</f:format.date>
+							</fed:case>
+						</fed:switch>
+					</td>
+				</f:for>
+			</tr>
+		</f:for>
+	</fed:table>
+</f:section>

@@ -1,0 +1,36 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="bootstrap-alert" label="Bootstrap: Alert (inline)" description="Styled alert box, inline as page content. Optionally with dismiss/close icon." icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
+		<flux:flexform.field.input name="header" label="Alert header" />
+		<flux:flexform.field.input name="closeLinkText" label="Close link text (for example: a single x)" />
+		<flux:flexform.field.select name="class" label="Alert box class" commaSeparatedItems="info,success,error" />
+		<flux:flexform.field.checkbox name="isBlock" label="Add additional padding" />
+		<flux:flexform.grid>
+			<flux:flexform.grid.row>
+				<flux:flexform.grid.column>
+					<flux:flexform.content name="content" label="Child content" />
+				</flux:flexform.grid.column>
+			</flux:flexform.grid.row>
+		</flux:flexform.grid>
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+	<flux:widget.grid />
+</f:section>
+
+<f:section name="Main">
+	<div class="alert alert-{class} {f:if(condition: isBlock, then: 'alert-block')}">
+		<f:if condition="{closeLinkText}">
+			<a class="close" data-dismiss="alert"><fed:raw>{closeLinkText}</fed:raw></a>
+		</f:if>
+		<f:if condition="{header}">
+			<h1 class="alert-heading">{header}</h1>
+		</f:if>
+		<flux:flexform.renderContent area="content" />
+	</div>
+</f:section>

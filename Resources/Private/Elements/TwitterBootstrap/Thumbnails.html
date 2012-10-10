@@ -1,0 +1,101 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="bootstrap-thumbnais" label="Bootstrap: Thumbnail Grid" description="Responsive grid of highly configurable thumbnails configurable with lightbox-style opening of content" icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
+		<flux:flexform.sheet name="thumbnails" label="Thumbnails">
+			<flux:flexform.field.input name="width" label="Maxium allowed width to distribute across 12 cells. The Twitter Bootstrap default is 960" default="960" />
+			<flux:flexform.field.input name="ratio" label="Ratio of images, for example 0.75 (very grid friendly), 16/9 (widescreen) or 1.32 (nice golden ratio portrait)" default="16/9" />
+			<flux:flexform.section name="thumbnails" label="Thumbnails">
+				<f:render section="ImageObject" arguments="{_all}" />
+				<f:render section="ContentObject" arguments="{_all}" />
+			</flux:flexform.section>
+		</flux:flexform.sheet>
+		<f:if condition="{thumbnails -> f:count()}">
+			<flux:flexform.grid>
+				<f:for each="{thumbnails}" as="itemSectionObject" iteration="iteration">
+					<fed:data.var name="objectType" value="{fed:data.func(func: 'key', arguments: {0: itemSectionObject})}" />
+					<fed:data.var name="object" value="{fed:data.func(func: 'array_pop', arguments: {0: itemSectionObject})}" />
+					<f:if condition="{0: objectType, 1: object.disabled} == {0: 'content', 1: 0}">
+						<flux:flexform.grid.row>
+							<flux:flexform.grid.column>
+								<flux:flexform.content name="contentElements.{object.name}" label="{object.label}" />
+							</flux:flexform.grid.column>
+						</flux:flexform.grid.row>
+					</f:if>
+				</f:for>
+			</flux:flexform.grid>
+		</f:if>
+	</flux:flexform>
+</f:section>
+
+<f:section name="SharedObject">
+	<flux:flexform.field.checkbox name="disabled" label="Disable/hide this object" />
+	<flux:flexform.field.select name="class" label="Size" commaSeparatedItems="1,2,3,4,5,6,7,8,9,10,11,12" />
+</f:section>
+
+<f:section name="ImageObject">
+	<flux:flexform.object name="image" label="Image">
+		<f:render section="SharedObject" arguments="{_all}" />
+		<flux:flexform.field.input name="file" label="File" eval="trim">
+			<flux:flexform.field.wizard.link />
+		</flux:flexform.field.input>
+		<flux:flexform.field.checkbox name="addWell" label="Add well on thumbnail wrap" />
+		<flux:flexform.field.select name="scaling" label="Scaling mode" items="{0: {0: 'Disable', 1: ''}, 1: {0: 'Crop', 1: 'c'}, 2: {0: 'Preserve maximums', 1: 'm'}}" />
+		<flux:flexform.field.input name="title" label="Hover title / alt text for image" />
+		<flux:flexform.field.input name="header" label="Caption header (optional)" />
+		<flux:flexform.field.text name="caption" label="Caption text (optional)" />
+	</flux:flexform.object>
+</f:section>
+
+<f:section name="ContentObject">
+	<flux:flexform.object name="content" label="Content">
+		<f:render section="SharedObject" arguments="{_all}" />
+		<flux:flexform.field.input name="name" label="Content area name" />
+		<flux:flexform.field.input name="label" label="Content area label" />
+		<flux:flexform.field.html name="message" label="">
+			Save this content element then insert content elements through page module to fill in this thumbnail.
+		</flux:flexform.field.html>
+	</flux:flexform.object>
+</f:section>
+
+<f:section name="Preview">
+	<flux:widget.grid />
+</f:section>
+
+<f:section name="Main">
+	<ul class="thumbnails">
+		<f:for each="{thumbnails}" as="itemSectionObject" iteration="iteration">
+			<fed:data.var name="objectType" value="{fed:data.func(func: 'key', arguments: {0: itemSectionObject})}" />
+			<fed:data.var name="object" value="{fed:data.func(func: 'array_pop', arguments: {0: itemSectionObject})}" />
+			<f:if condition="{object.disabled} < 1">
+				<li class="span{object.class}">
+					<div class="{f:if(condition: object.addWell, then: 'well')}">
+						<fed:switch value="{objectType}">
+							<fed:case case="image" break="TRUE">
+								<fed:data.var name="imageWidth" value="{fed:math(expression: '({width}/12) * {object.class}')}" />
+								<fed:data.var name="imageHeight" value="{fed:math(expression: '({ratio}) / {imageWidth}')}" />
+								<a href="#" class="thumbnail">
+									<f:image src="{object.file}" width="{imageWidth}{object.scaling}" height="{imageHeight}{object.scaling}" alt="{object.title}" />
+								</a>
+								<f:if condition="{0: object.header, 1: object.caption} != {0: '', 1: ''}">
+									<f:if condition="{object.header}">
+										<h4>{object.header}</h4>
+									</f:if>
+									<f:if condition="{object.caption}">
+										<f:format.html>{object.caption}</f:format.html>
+									</f:if>
+								</f:if>
+							</fed:case>
+							<fed:case case="content" break="TRUE">
+								<flux:flexform.renderContent area="contentElements.{object.name}" />
+							</fed:case>
+						</fed:switch>
+					</div>
+				</li>
+			</f:if>
+		</f:for>
+	</ul>
+</f:section>

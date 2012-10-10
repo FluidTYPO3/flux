@@ -1,0 +1,47 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<f:if condition="{columns} < 1">
+		<fed:data.var name="columns" type="integer">1</fed:data.var>
+	</f:if>
+	<flux:flexform id="jquery-tabs" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.jQueryTabs.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.jQueryTabs.description" enabled="TRUE">
+		<flux:flexform.field.select name="columns" label="Number of jQuery tabs" requestUpdate="TRUE"
+			commaSeparatedItems="1,2,3,4,5,6,7,8,9,10" default="1" maxItems="1" />
+		<flux:flexform.field.select name="active" label="The initially activated tab"
+			items="{0: {0: '-1', 1: 'none'}, 1: {0: 1}, 2: {0: 2}, 3: {0: 3}, 4: {0: 4}, 5: {0: 5}, 6: {0: 6}, 7: {0: 7}, 8: {0: 8}, 9: {0: 9}}" default="1" maxItems="1" />
+		<flux:flexform.field.checkbox name="cookie" label="Save state in a cookie (requires the jQuery cookie plugin to be loaded)" />
+		<flux:flexform.field.select name="disabled" label="Deactivated tabs"
+			commaSeparatedItems="1,2,3,4,5,6,7,8,9,10" default="1" maxItems="9" size="9" />
+		<flux:flexform.grid>
+			<flux:flexform.grid.row>
+				<flux:flexform.grid.column repeat="{columns}">
+					<flux:flexform.field.input name="title{cycle}" label="{fed:data.var(name: 'title{cycle}')}" />
+					<flux:flexform.content name="column{cycle}" label="{fed:data.var(name: 'title{cycle}')}" />
+				</flux:flexform.grid.column>
+			</flux:flexform.grid.row>
+		</flux:flexform.grid>
+	</flux:flexform>
+</f:section>
+
+
+<f:section name="Preview">
+	<flux:widget.grid />
+</f:section>
+
+<f:section name="Main">
+	<f:if condition="{columns} < 1">
+		<fed:data.var name="columns">1</fed:data.var>
+	</f:if>
+	<fed:data.var name="disabledArray" type="array">{disabled}</fed:data.var>
+	<fed:jQuery.tab cookie="{f:if(condition: cookie, then: {expires: 30}, else: NULL)}">
+		<fed:loop count="{columns}" iteration="iteration">
+			<fed:data.func func="in_array" arguments="{0: iteration.cycle, 1: disabledArray}" as="isDisabled" />
+			<fed:jQuery.tab title="{fed:data.var(name: 'title{iteration.cycle}')}" active="{active} == {iteration.cycle}" disabled="{isDisabled}">
+				<flux:flexform.renderContent area="column{iteration.cycle}" />
+			</fed:jQuery.tab>
+		</fed:loop>
+	</fed:jQuery.tab>
+</f:section>

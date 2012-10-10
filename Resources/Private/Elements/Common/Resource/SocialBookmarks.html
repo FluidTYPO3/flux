@@ -1,0 +1,151 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="SocialBookmarks" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.resource.social.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.resource.social.description" enabled="TRUE">
+		<flux:flexform.field.input name="divider" label="Component divider - use if you want to separate each link with a custom text or HTML tag" />
+		<flux:flexform.field.input name="order" label="Display order" default="facebook.like,facebook.share,facebook.comment,disqus,googleplus,twitter" transform="array" />
+		<flux:flexform.field.input name="url" label="Custom URL to use in all social bookmark links, empty for this page including all arguments" />
+		<flux:flexform.field.input name="locale" label="Custom locale to use in link generation" default="en_US" />
+		<flux:flexform.sheet name="components" label="Link widgets">
+			<flux:flexform.field.checkbox name="facebook.like.enabled" label="Facebook 'Like' link" requestUpdate="TRUE" />
+			<flux:flexform.field.checkbox name="facebook.share.enabled" label="Facebook 'Share' link" requestUpdate="TRUE" />
+			<flux:flexform.field.checkbox name="facebook.comment.enabled" label="Facebook 'Comment' plugin" requestUpdate="TRUE" />
+			<fed:comment comment="Disqus VH broken as of writing this">
+				<flux:flexform.field.checkbox name="disqus.enabled" label="Disqus" requestUpdate="TRUE" />
+			</fed:comment>
+			<flux:flexform.field.checkbox name="googleplus.enabled" label="Google +1" requestUpdate="TRUE" />
+			<flux:flexform.field.checkbox name="twitter.enabled" label="Twitter" requestUpdate="TRUE" />
+		</flux:flexform.sheet>
+		<f:if condition="{facebook.like.enabled}">
+			<flux:flexform.sheet name="facebook.like" label="Facebook Like">
+				<flux:flexform.field.input name="facebook.like.javaScript" label="Custom FaceBook 'Like' JavaScript. Leave blank for default script" />
+				<flux:flexform.field.select name="facebook.like.layout" label="Layout for 'Like' link"
+					commaSeparatedItems="standard,button_count,box_count" />
+				<flux:flexform.field.select name="facebook.like.font" label="Font for 'Like' link"
+					commaSeparatedItems="arial,lucidia grande,segoe ui,tahoma,trebuchet ms,verdana" />
+				<flux:flexform.field.input name="facebook.like.width" label="Width of 'Like' link container" eval="int" default="450" />
+			</flux:flexform.sheet>
+		</f:if>
+		<f:if condition="{facebook.share.enabled}">
+			<flux:flexform.sheet name="facebook.share" label="Facebook Share">
+				<flux:flexform.field.select name="facebook.share.type" label="Type of 'Share' component"
+					commaSeparatedItems="standard,button_count,box_count" />
+				<flux:flexform.field.checkbox name="facebook.share.loadJs" label="Load FaceBook 'Share' JavaScript" />
+			</flux:flexform.sheet>
+		</f:if>
+		<f:if condition="{facebook.comment.enabled}">
+			<flux:flexform.sheet name="facebook.comment" label="Facebook Comment">
+				<flux:flexform.field.checkbox name="facebook.comment.publishFeed" label="Publish FaceBook comment feed" />
+				<flux:flexform.field.input name="facebook.comment.width" label="Width of 'Comment' plugin" default="450" />
+				<flux:flexform.field.select name="facebook.comment.numposts" label="Number of comments to display"
+					commaSeparatedItems="1,5,10,15,20,25,50,75,100,150,200,300,400,500,1000,99999" />
+			</flux:flexform.sheet>
+		</f:if>
+		<f:if condition="{disqus.enabled}">
+			<flux:flexform.sheet name="disqus" label="Disqus">
+				<flux:flexform.field.input name="disqus.identifier" label="Identifier for link" />
+				<flux:flexform.field.input name="disqus.shortName" label="Short-name for link - used as ID of DOM element so required
+					and should be unique when using multiple instances of this FCE" required="TRUE" />
+			</flux:flexform.sheet>
+		</f:if>
+		<f:if condition="{googleplus.enabled}">
+			<flux:flexform.sheet name="googleplus" label="Google+">
+				<flux:flexform.field.input name="googleplus.size" label="Size" />
+				<flux:flexform.field.input name="googleplus.callback" label="Callback" />
+				<flux:flexform.field.checkbox name="googleplus.count" label="Display count" />
+				<flux:flexform.field.input name="googleplus.jsCode" label="JavaScript file, if custom" />
+			</flux:flexform.sheet>
+		</f:if>
+		<f:if condition="{twitter.enabled}">
+			<flux:flexform.sheet name="twitter" label="Twitter">
+				<flux:flexform.field.input name="twitter.text" label="Text for twitter link if 'none' used as button style" />
+				<flux:flexform.field.select name="twitter.datacount" label="Button style"
+					commaSeparatedItems="horizontal,vertical,none" />
+				<flux:flexform.field.select name="twitter.datalang" label="Language for button"
+					commaSeparatedItems="en,fr,it,de,es,ko,ja" />
+				<flux:flexform.field.input name="twitter.datavia" label="Twitter account name" />
+				<flux:flexform.field.input name="twitter.datarelated" label="Related Twitter account name" />
+				<flux:flexform.field.input name="twitter.datatext" label="Text which will be tweeted, defaults to page title" />
+			</flux:flexform.sheet>
+		</f:if>
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+	<f:for each="{order}" as="key" iteration="iteration">
+		<fed:data.var name="component" value="{fed:data.var(name: key)}" />
+		<f:if condition="{component.enabled}">
+			<fed:data.var name="config.groups.{key}.label" /><f:if condition="{iteration.isLast}" then="" else=", " />
+		</f:if>
+	</f:for>
+	<f:if condition="{url}">
+		<f:else>
+			- using automatic URL for links
+		</f:else>
+	</f:if>
+</f:section>
+
+<f:section name="Main">
+	<f:if condition="{url}">
+		<f:else>
+			<fed:data.var name="url" value="{fed:page.absoluteUrl()}" />
+		</f:else>
+	</f:if>
+	<f:for each="{order}" as="key" iteration="iteration">
+		<fed:hide><fed:data.var name="component" value="{fed:data.var(name: key)}" /></fed:hide>
+		<f:if condition="{component.enabled}">
+			<fed:switch value="{key}">
+				<fed:case case="facebook.like" break="TRUE">
+					<fed:social.facebook.like
+						javaScript="{component.javaScript}"
+						layout="{component.layout}"
+						font="{component.font}"
+						width="{component.width}"
+						locale="{locale}"></fed:social.facebook.like>
+				</fed:case>
+				<fed:case case="facebook.share" break="TRUE">
+					<fed:social.facebook.share
+						shareUrl="{url}"
+						loadJs="{component.loadJs}"
+						type="{component.type}"></fed:social.facebook.share>
+				</fed:case>
+				<fed:case case="facebook.comment" break="TRUE">
+					<fed:social.facebook.comment
+						publishFeed="{component.publishFeed}"
+						href="{url}"
+						width="{component.width}"
+						numposts="{component.numposts}"
+						locale="{locale}">Share</fed:social.facebook.comment>
+				</fed:case>
+				<fed:case case="disqus" break="TRUE">
+					<fed:social.disqus
+						link="{url}"
+						identifier="{component.identifier}"
+						shortName="{component.shortName}" />
+				</fed:case>
+				<fed:case case="googleplus" break="TRUE">
+					<fed:social.googlePlus
+						size="{component.size}"
+						callback="{component.callback}"
+						href="{url}"
+						count="{f:if(condition: component.count, then: 'true', else: 'false')}"
+						jsCode="{component.jsCode}"
+						locale="{locale}"></fed:social.googlePlus>
+				</fed:case>
+				<fed:case case="twitter" break="TRUE">
+					<fed:social.twitter
+						datacount="{component.datacount}"
+						datavia="{component.datavia}"
+						datarelated="{component.datarelated}"
+						datatext="{component.datatext}"
+						dataurl="{url}"
+						datalang="{component.datalang}">{component.text}</fed:social.twitter>
+				</fed:case>
+			</fed:switch>
+			<f:if condition="{iteration.isLast}" else="{divider}" />
+		</f:if>
+	</f:for>
+</f:section>

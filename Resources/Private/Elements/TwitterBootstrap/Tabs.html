@@ -1,0 +1,79 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="bootstrap-tabs" label="Bootstrap: Tabs/pills with content elements" description="Places child content elements in tabs." icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
+
+		<flux:flexform.sheet name="display" label="Display">
+			<flux:flexform.field.select name="mode" label="Display mode" commaSeparatedItems="tab,pill" requestUpdate="TRUE" />
+			<f:if condition="{0: mode} == {0: 'tab'}">
+				<flux:flexform.field.select name="tabDirection" label="Display mode" commaSeparatedItems="above,below,left,right" />
+			</f:if>
+			<flux:flexform.field.checkbox name="stackable" label="Make stackable tabs/pills" />
+			<flux:flexform.field.select name="position" label="Positioning" commaSeparatedItems="default,pull-left,pull-right" />
+		</flux:flexform.sheet>
+
+		<flux:flexform.sheet name="tabs" label="Tabs">
+			<flux:flexform.section name="tabs" label="Tabs">
+				<flux:flexform.object name="tab" label="Tab">
+					<flux:flexform.field.input name="title" label="Tab title" />
+					<flux:flexform.field.input name="class" label="Additional class names" />
+					<flux:flexform.field.checkbox name="active" label="Active?" />
+					<flux:flexform.field.checkbox name="fade" label="Enable fading effect" />
+				</flux:flexform.object>
+			</flux:flexform.section>
+		</flux:flexform.sheet>
+
+		<flux:flexform.grid>
+			<flux:flexform.grid.row>
+				<f:for each="{tabs}" as="tab" iteration="iteration">
+					<flux:flexform.grid.column style="width: {fed:math(expression: '100/{tabs -> f:count()}')}%">
+						<flux:flexform.content name="content.{iteration.index}" label="Content, tab {iteration.cycle}" />
+					</flux:flexform.grid.column>
+				</f:for>
+			</flux:flexform.grid.row>
+		</flux:flexform.grid>
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+	<flux:widget.grid />
+</f:section>
+
+<f:section name="Main">
+
+	<fed:data.var name="activeTabIndex" value="0" />
+	<f:for each="{tabs}" as="tab" iteration="iteration">
+		<f:if condition="{tab.tab.active}"><fed:data.var name="activeTabIndex" value="{iteration.index}" /></f:if>
+	</f:for>
+
+	<div class="tabbable tabs-{tabDirection}">
+		<f:if condition="{0: tabDirection} != {0: 'below'}">
+			<f:render section="Tabs" arguments="{_all}" />
+		</f:if>
+
+		<div class="tab-content">
+			<f:for each="{tabs}" as="tab" iteration="iteration">
+				<div class="tab-pane {f:if(condition: tab.tab.fade, then: 'fade')} {f:if(condition: '{activeTabIndex} == {iteration.index}', then: 'active in')}" id="tab-{record.uid}-{iteration.index}">
+					<flux:flexform.renderContent area="content.{iteration.index}" />
+				</div>
+			</f:for>
+		</div>
+
+		<f:if condition="{0: tabDirection} == {0: 'below'}">
+			<f:render section="Tabs" arguments="{_all}" />
+		</f:if>
+	</div>
+</f:section>
+
+<f:section name="Tabs">
+	<ul class="nav nav-{mode}s {f:if(condition: stackable, then: 'nav-stacked')} {position}">
+		<f:for each="{tabs}" as="tab" iteration="iteration">
+			<li class="nav-link {f:if(condition: '{activeTabIndex} == {iteration.index}', then: 'active')}">
+				<a href="{fed:page.absoluteUrl()}#tab-{record.uid}-{iteration.index}" data-toggle="{mode}">{tab.tab.title}</a>
+			</li>
+		</f:for>
+	</ul>
+</f:section>

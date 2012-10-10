@@ -1,0 +1,26 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+	<flux:flexform id="contentRandomizer" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.contentrandomizer.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.contentrandomizer.description">
+		<flux:flexform.field.input name="limit" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.contentrandomizer.fields.limit" eval="int" />
+		<flux:flexform.grid>
+			<flux:flexform.grid.row>
+				<flux:flexform.grid.column>
+					<flux:flexform.content name="content" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.contentrandomizer.areas.content" />
+				</flux:flexform.grid.column>
+			</flux:flexform.grid.row>
+		</flux:flexform.grid>
+	</flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+	<f:translate key="fce.elements.layout.contentrandomizer.label" />
+	<flux:widget.grid />
+</f:section>
+
+<f:section name="Main">
+	<flux:flexform.renderContent area="content" limit="{limit}" order="RAND()" />
+</f:section>
