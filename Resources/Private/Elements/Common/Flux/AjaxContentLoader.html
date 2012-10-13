@@ -1,0 +1,25 @@
+{namespace fed=Tx_Fed_ViewHelpers}
+{namespace flux=Tx_Flux_ViewHelpers}
+{namespace widget=Tx_Fluidwidget_ViewHelpers}
+
+<f:layout name="FCE" />
+
+<f:section name="Configuration">
+    <flux:flexform id="ajax-loader" label="Ajax Loader" description="Loads content elements through AJAX. Requires the Fluidwidget extension with AJAX TypoScript loaded from static TS">
+        <flux:flexform.grid>
+            <flux:flexform.grid.row>
+                <flux:flexform.grid.column>
+                    <flux:flexform.content name="default" label="Content elements to load through AJAX" />
+                </flux:flexform.grid.column>
+            </flux:flexform.grid.row>
+        </flux:flexform.grid>
+    </flux:flexform>
+</f:section>
+
+<f:section name="Preview">
+    <flux:widget.grid />
+</f:section>
+
+<f:section name="Main">
+    <widget:content.ajaxFluxContent parentUid="{record.uid}" area="default" />
+</f:section>
