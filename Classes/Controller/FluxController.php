@@ -32,12 +32,32 @@
 class Tx_Flux_Controller_FluxController extends Tx_Extbase_MVC_Controller_ActionController {
 
 	/**
-	 * Unused; simply there to give a valid Class Reflection
+	 * @var Tx_Flux_Service_Content
+	 */
+	protected $contentService;
+
+	/**
+	 * @param Tx_Flux_Service_Content $contentService
+	 */
+	public function injectContentService(Tx_Flux_Service_Content $contentService) {
+		$this->contentService = $contentService;
+	}
+
+	/**
+	 * Renders child content from $record's $area
 	 *
+	 * @param integer $localizedUid The UID (localized through _LOCALIZED_UID substitution if localization is wanted) of the parent element
+	 * @param string $area The area of the parent element from which to render child content
+	 * @param integer $limit
+	 * @param string $order
+	 * @param string $sortDirection
 	 * @return string
 	 */
-	public function indexAction() {
-		return '';
+	public function renderChildContentAction($localizedUid, $area, $limit=99999, $order='sorting', $sortDirection='ASC') {
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $localizedUid . "'"));
+		$id = $record['uid'];
+		$localizedUid = $record['_LOCALIZED_UID'] > 0 ? $record['_LOCALIZED_UID'] : $id;
+		return $this->contentService->renderChildContent($localizedUid, $area, $limit, $order, $sortDirection);
 	}
 
 }

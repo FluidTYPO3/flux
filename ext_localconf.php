@@ -12,6 +12,8 @@ if (TYPO3_MODE === 'BE') {
 	);
 }
 
+Tx_Extbase_Utility_Extension::configurePlugin($_EXTKEY, 'API', array('Flux' => 'renderChildContent'), array());
+
 t3lib_extMgm::addTypoScript($_EXTKEY, 'setup', '
 	plugin.tx_flux.view {
 		templateRootPath = EXT:flux/Resources/Private/Templates/
