@@ -32,6 +32,18 @@
 class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
 	/**
+	 * @var Tx_Flux_Service_Content
+	 */
+	protected $contentService;
+
+	/**
+	 * @param Tx_Flux_Service_Content $contentService
+	 */
+	public function injectContentService(Tx_Flux_Service_Content $contentService) {
+		$this->contentService = $contentService;
+	}
+
+	/**
 	 * Initialize
 	 * @return void
 	 */
@@ -52,30 +64,11 @@ class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Fluid_Core
 		$record = $this->templateVariableContainer->get('record');
 		$id = $record['uid'];
 		$localizedUid = $record['_LOCALIZED_UID'] > 0 ? $record['_LOCALIZED_UID'] : $id;
-		$order = $this->arguments['order'] . ' ' . $this->arguments['sortDirection'];
+		$order = $this->arguments['order'];
 		$area = $this->arguments['area'];
-		$conditions = "((tx_flux_column = '" . $area . ":" . $localizedUid . "')
-			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ":" . $localizedUid . "')))
-			AND deleted = 0 AND hidden = 0";
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $conditions, 'uid', $order, $this->arguments['limit']);
-		$elements = array();
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$conf = array(
-				'tables' => 'tt_content',
-				'source' => $row['uid'],
-				'dontCheckPid' => 1
-			);
-			array_push($elements, $GLOBALS['TSFE']->cObj->RECORDS($conf));
-		}
-		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-		if ($this->arguments['as']) {
-			$this->templateVariableContainer->add($this->arguments['as'], $elements);
-			$html = $this->renderChildren();
-			$this->templateVariableContainer->remove($this->arguments['as']);
-		} else {
-			$html = implode(LF, $elements);
-		}
-		return $html;
+		$limit = $this->arguments['limit'] ? $this->arguments['limit'] : 99999;
+		$sortDirection = $this->arguments['sortDirection'];
+		return $this->contentService->renderChildContent($localizedUid, $area, $limit, $order, $sortDirection);
 	}
 
 }

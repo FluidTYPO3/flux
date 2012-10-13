@@ -58,6 +58,36 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 	}
 
 	/**
+	 * Renders child content from $record's $area
+	 *
+	 * @param integer $localizedUid The UID (localized through _LOCALIZED_UID substitution if localization is wanted) of the parent element
+	 * @param string $area The area of the parent element from which to render child content
+	 * @param integer $limit
+	 * @param string $order
+	 * @param string $sortDirection
+	 * @return string
+	 */
+	public function renderChildContent($localizedUid, $area, $limit=99999, $order='sorting', $sortDirection='ASC') {
+		$order .= ' ' . $sortDirection;
+		$conditions = "((tx_flux_column = '" . $area . ":" . $localizedUid . "')
+			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ":" . $localizedUid . "')))
+			AND deleted = 0 AND hidden = 0";
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $conditions, 'uid', $order, $limit);
+		$elements = array();
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			$conf = array(
+				'tables' => 'tt_content',
+				'source' => $row['uid'],
+				'dontCheckPid' => 1
+			);
+			array_push($elements, $GLOBALS['TSFE']->cObj->RECORDS($conf));
+		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+		$html = implode(LF, $elements);
+		return $html;
+	}
+
+	/**
 	 * Get an array of child element records from a parent FCE
 	 *
 	 * @param integer $id
