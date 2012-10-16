@@ -46,7 +46,19 @@ class Tx_Flux_ViewHelpers_Flexform_Field_HtmlViewHelper extends Tx_Flux_ViewHelp
 		$self = $this;
 		$config = $this->getBaseConfig();
 		$config['type'] = str_replace('ViewHelper', '', array_pop(explode('_', get_class($this))));
-		$config['closure'] = function($parameters) use ($self) { $self->getTemplateVariableContainer()->add('parameters', $parameters); return $self->renderChildren(); };
+		$config['closure'] = function($parameters) use ($self) {
+			$backupParameters = NULL;
+			if ($this->getTemplateVariableContainer()->exists('parameters') === TRUE) {
+				$this->getTemplateVariableContainer()->remove('parameters');
+			}
+			$self->getTemplateVariableContainer()->add('parameters', $parameters);
+			$content = $self->renderChildren();
+			$self->getTemplateVariableContainer()->remove('parameters');
+			if ($backupParameters !== NULL) {
+				$this->getTemplateVariableContainer()->add('parameters', $backupParameters);
+			}
+			return $content;
+		};
 		$config['arguments'] = $this->arguments;
 		$this->addField($config);
 	}
