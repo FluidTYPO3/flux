@@ -63,6 +63,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 
 	/**
 	 * @param Tx_Flux_Service_Content $contentService
+	 * @return void
 	 */
 	public function injectContentService(Tx_Flux_Service_Content $contentService) {
 		$this->contentService = $contentService;
@@ -104,7 +105,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
 			$row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
 		}
-		return;
+		unset($id, $reference);
 	}
 
 	/**
@@ -134,7 +135,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
 			$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
 		}
-		return;
+		unset($id, $operation, $reference);
 	}
 
 	/**
@@ -190,7 +191,6 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				}
 			}
 		}
-		return;
 	}
 
 	/**
@@ -234,7 +234,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$row['colPos'] = -42;
 			}
 		}
-		return;
+		unset($id, $reference);
 	}
 
 	/**
@@ -249,16 +249,17 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return void
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
-		return;
+		unset($command, $id, $row, $relativeTo, $reference);
 	}
 
 	/**
 	 * @param array $row
 	 * @param mixed $dataStructure
 	 * @param array $conf
+	 * @return void
 	 */
 	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
-		return;
+		unset($row, $dataStructure, $conf);
 	}
 
 }
