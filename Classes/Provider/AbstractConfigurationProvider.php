@@ -104,6 +104,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 
 	/**
 	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @return void
 	 */
 	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
@@ -122,6 +123,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return string|NULL
 	 */
 	public function getFieldName(array $row) {
+		isset($row);
 		return $this->fieldName;
 	}
 
@@ -130,6 +132,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return string|NULL
 	 */
 	public function getTableName(array $row) {
+		unset($row);
 		return $this->tableName;
 	}
 
@@ -138,6 +141,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return string|NULL
 	 */
 	public function getTemplatePathAndFilename(array $row) {
+		unset($row);
 		return $this->templatePathAndFilename;
 	}
 
@@ -146,6 +150,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array|NULL
 	 */
 	public function getTemplateVariables(array $row) {
+		unset($row);
 		return $this->templateVariables;
 	}
 
@@ -154,6 +159,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array|NULL
 	 */
 	public function getTemplatePaths(array $row) {
+		unset($row);
 		return $this->templatePaths;
 	}
 
@@ -162,6 +168,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return string|NULL
 	 */
 	public function getConfigurationSectionName(array $row) {
+		unset($row);
 		return $this->configurationSectionName;
 	}
 
@@ -170,6 +177,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return string|NULL
 	 */
 	public function getExtensionKey(array $row) {
+		unset($row);
 		return $this->extensionKey;
 	}
 
@@ -178,6 +186,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return integer
 	 */
 	public function getPriority(array $row) {
+		unset($row);
 		return $this->priority;
 	}
 
@@ -191,7 +200,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
-		return;
+		unset($row, $id, $reference);
 	}
 
 	/**
@@ -205,7 +214,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
-		return;
+		unset($operation, $id, $row, $reference);
 	}
 
 	/**
@@ -219,7 +228,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference) {
-		return;
+		unset($status, $id, $row, $reference);
 	}
 
 	/**
@@ -234,7 +243,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function preProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
-		return;
+		unset($command, $id, $row, $relativeTo, $reference);
 	}
 
 	/**
@@ -249,7 +258,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
-		return;
+		unset($command, $id, $row, $relativeTo, $reference);
 	}
 
 	/**
@@ -278,6 +287,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		if (is_file($templatePathAndFilename) === TRUE) {
 			$this->flexFormService->convertFlexFormContentToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section);
 		}
+		unset($conf);
 	}
 
 }
