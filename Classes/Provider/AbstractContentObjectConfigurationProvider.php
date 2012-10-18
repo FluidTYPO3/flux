@@ -24,6 +24,8 @@
  *****************************************************************/
 
 /**
+ * AbstractContentObjectConfigurationProvider
+ *
  * @package Flux
  * @subpackage Provider
  */

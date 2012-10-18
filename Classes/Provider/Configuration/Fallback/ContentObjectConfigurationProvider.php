@@ -24,6 +24,8 @@
  *****************************************************************/
 
 /**
+ * Fallback ContentObjectConfigurationProvider
+ *
  * @package Flux
  * @subpackage Provider/Configuration/Fallback
  */
@@ -42,6 +44,7 @@ class Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider
 	 * @return string
 	 */
 	public function getContentObjectType(array $row) {
+		unset($row);
 		return $this->contentObjectType;
 	}
 
