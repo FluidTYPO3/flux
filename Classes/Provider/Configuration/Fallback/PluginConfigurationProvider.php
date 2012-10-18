@@ -48,6 +48,7 @@ class Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider extend
 	 * @return type
 	 */
 	public function getListType(array $row) {
+		unset($row);
 		return $this->listType;
 	}
 
