@@ -49,19 +49,18 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_Core_Vi
 	 * @return string
 	 */
 	public function render() {
-		for ($i=0; $i<$this->arguments['repeat']; $i++) {
+		for ($i = 0; $i < $this->arguments['repeat']; $i++) {
 			$column = array(
 				'name' => $this->arguments['name'],
 				'colPos' => $this->arguments['colPos'],
 				'colspan' => $this->arguments['colspan'],
 				'rowspan' => $this->arguments['rowspan'],
-				#'width' => $this->arguments['width'],
 				'repeat' => $this->arguments['repeat'],
 				'style' => $this->arguments['style'],
 				'areas' => array()
 			);
 			$this->addGridColumn($column);
-			$this->templateVariableContainer->add('cycle', $i+1);
+			$this->templateVariableContainer->add('cycle', $i + 1);
 			$this->renderChildren();
 			$this->templateVariableContainer->remove('cycle');
 		}

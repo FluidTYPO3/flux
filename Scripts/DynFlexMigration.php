@@ -105,7 +105,7 @@ class DynFlexMigration {
 		$absoluteDirectories = $relaviveDirectories = array();
 		foreach ($this->migrationConfiguration[self::CONFIG_TEMPLATE_DIRECTORIES] as $directory) {
 				if (strpos($directory, DIRECTORY_SEPARATOR) === 0){
-					#echo 'FOUND ABSOLUTE';
+					//echo 'FOUND ABSOLUTE';
 					$absoluteDirectories[] = substr($directory, 1);
 				} else {
 					$relaviveDirectories[] = $directory;
@@ -225,7 +225,7 @@ class DynFlexMigration {
 			$doStoreTemplate = FALSE;
 			$cli->cli_echo($cli->cli_indent('file modified!' . PHP_EOL, 4), TRUE);
 
-			#if ($this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_DRY || $this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_DRY) {
+			//if ($this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_DRY || $this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_DRY) {
 				$tempFileLeft = PATH_site . 'typo3temp/' . uniqid('fluxmigrateTempFile_');
 				$tempFileRight = PATH_site . 'typo3temp/' . uniqid('fluxmigrateTempFile_');
 				t3lib_div::writeFile($tempFileLeft, $fileBackup);
@@ -235,7 +235,7 @@ class DynFlexMigration {
 				unlink($tempFileLeft);
 				unlink($tempFileRight);
 				$cli->cli_echo($cli->cli_indent($output . LF, 0));
-			#}
+			//}
 			if ($this->migrationConfiguration[self::CONFIG_MODE] == self::CONFIG_MODE_INTERACTIVE){
 				if($cli->cli_keyboardInput_yes('Save modifications')){
 					$doStoreTemplate = TRUE;

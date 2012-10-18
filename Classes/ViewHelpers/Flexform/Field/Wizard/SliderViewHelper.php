@@ -48,7 +48,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SliderViewHelper extends Tx_Flux
 	 * @return array
 	 */
 	public function build() {
-		#$fieldName = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'fieldName');
 		return array(
 			'slider' => array(
 				'type' => 'slider',

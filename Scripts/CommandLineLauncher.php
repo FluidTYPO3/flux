@@ -104,7 +104,7 @@ class tx_flux_cli extends t3lib_cli {
 		}
 		// template file types
 		$configuration[DynFlexMigration::CONFIG_TEMPLATE_TYPES][] = 'html';
-		#$configuration[DynFlexMigration::CONFIG_TEMPLATE_TYPES][] = 'xml';
+		//$configuration[DynFlexMigration::CONFIG_TEMPLATE_TYPES][] = 'xml';
 		$index = 0;
 		while ($extension = $this->cli_argValue('--additional-type', $index++)) {
 			$configuration[DynFlexMigration::CONFIG_TEMPLATE_TYPES][] = $extension;

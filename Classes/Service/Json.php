@@ -38,11 +38,11 @@ class Tx_Flux_Service_Json implements t3lib_Singleton {
 	 *
 	 * @return float
 	 */
-	private function getPHPVersion() {
+	private function getPhpVersion() {
 		$segments = explode('.', phpversion());
 		$major = array_shift($segments);
 		$minor = array_shift($segments);
-		$num = "{$major}.{$minor}";
+		$num = $major . '.' . $minor;
 		$num = (float) $num;
 		return $num;
 	}
@@ -53,11 +53,10 @@ class Tx_Flux_Service_Json implements t3lib_Singleton {
 	 * @return integer
 	 */
 	private function getEncodeOptions() {
-		if ($this->getPHPVersion() >= 5.3) {
+		if ($this->getPhpVersion() >= 5.3) {
 			return JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP;
-		} else {
-			return 0;
 		}
+		return 0;
 	}
 
 	/**
@@ -68,7 +67,7 @@ class Tx_Flux_Service_Json implements t3lib_Singleton {
 	 * @api
 	 */
 	public function encode($source) {
-		if ($this->getPHPVersion() >= 5.3) {
+		if ($this->getPhpVersion() >= 5.3) {
 			$options = $this->getEncodeOptions();
 			$str = json_encode($source, $options);
 		} else {

@@ -38,7 +38,7 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_Core_ViewHe
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', TRUE);
 		$this->registerArgument('label', 'string', 'Label for the attribute, can be LLL: value', TRUE);
-		#$this->registerArgument('maxItems', 'integer', 'Maximum allowed items', FALSE);
+		//$this->registerArgument('maxItems', 'integer', 'Maximum allowed items', FALSE);
 	}
 
 	/**
@@ -65,7 +65,7 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_Core_ViewHe
 		$baseConfig = array();
 		$baseConfig['name'] = $this->arguments['name'];
 		$baseConfig['label'] = $this->arguments['label'];
-		#$baseConfig['maxItems'] = $this->arguments['maxItems'];
+		//$baseConfig['maxItems'] = $this->arguments['maxItems'];
 		$baseConfig['type'] = 'Section';
 		$baseConfig['fields'] = array();
 		$baseConfig['enabled'] = TRUE;
