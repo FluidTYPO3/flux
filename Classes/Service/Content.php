@@ -69,8 +69,8 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 	 */
 	public function renderChildContent($localizedUid, $area, $limit=99999, $order='sorting', $sortDirection='ASC') {
 		$order .= ' ' . $sortDirection;
-		$conditions = "((tx_flux_column = '" . $area . ":" . $localizedUid . "')
-			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ":" . $localizedUid . "')))
+		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
+			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
 			AND deleted = 0 AND hidden = 0";
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $conditions, 'uid', $order, $limit);
 		$elements = array();
@@ -111,7 +111,7 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 		$urlHashCutoffPoint = strrpos($url, '#');
 		$area = NULL;
 		if ($urlHashCutoffPoint > 0) {
-			$area = substr($url, 1 - (strlen($url)-$urlHashCutoffPoint));
+			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
 		}
 		return array_shift(explode(':', $area));
 	}
@@ -128,7 +128,7 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 		$urlHashCutoffPoint = strrpos($url, '#');
 		$area = NULL;
 		if ($urlHashCutoffPoint > 0) {
-			$area = substr($url, 1 - (strlen($url)-$urlHashCutoffPoint));
+			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
 		}
 		return array_pop(explode(':', $area));
 	}
