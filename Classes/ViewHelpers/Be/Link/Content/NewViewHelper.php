@@ -24,6 +24,8 @@
  ***************************************************************/
 
 /**
+ * Content / NewViewHelper
+ *
  * @package Flux
  * @subpackage ViewHelpers\Be\Uri\Content
  */
@@ -44,14 +46,13 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_Vie
 			$returnUri .= '%23' . $area . '%3A' . $uid;
 		}
 		$icon = $this->getIcon('actions-document-new', 'Insert new content element in this position');
-		$uri = 'db_new_content_el.php?id=' . $pid
-			. '&uid_pid=' . $pid
-			. '&colPos=-42'
-			. '&sys_language_uid=' .$sysLang
-			. '&defVals[tt_content][tx_flux_parent]=' . $uid
-			. '&defVals[tt_content][tx_flux_area]=' . $area
-			. '&returnUrl=' . $returnUri
-			;
+		$uri = 'db_new_content_el.php?id=' . $pid .
+			'&uid_pid=' . $pid .
+			'&colPos=-42' .
+			'&sys_language_uid=' . $sysLang .
+			'&defVals[tt_content][tx_flux_parent]=' . $uid .
+			'&defVals[tt_content][tx_flux_area]=' . $area .
+			'&returnUrl=' . $returnUri;
 		return $this->wrapLink($icon, $uri);
 	}
 }

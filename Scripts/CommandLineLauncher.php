@@ -35,11 +35,11 @@ class tx_flux_cli extends t3lib_cli {
 		if (!$task) {
 			$this->cli_validateArgs();
 			$this->cli_help();
-			exit ;
+			exit;
 		}
 
 		switch($task) {
-			case 'migrate' :
+			case 'migrate':
 				$this->cli_options[] = array('[extension]', 'Extension (folder) name to parse');
 				$this->cli_options[] = array('-m', 'Migrate to flux (templates & DB)');
 				$this->cli_options[] = array('-t', 'Migrate to flux (only templates)');
@@ -53,12 +53,12 @@ class tx_flux_cli extends t3lib_cli {
 
 				if (!$configuration[DynFlexMigration::CONFIG_TARGET]) {
 					$this->cli_help();
-					exit ;
+					exit;
 				}
 				$migrator = new DynFlexMigration($this);
 				$migrator->migrate($configuration);
 				break;
-			default :
+			default:
 				echo 'No valid Task given' . "\n\n";
 				$this->cli_help();
 				break;
