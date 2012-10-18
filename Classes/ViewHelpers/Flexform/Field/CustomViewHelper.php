@@ -48,7 +48,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 
 	/**
 	 * Render method
-	 * @return void
+	 * @return mixed
 	 */
 	public function render() {
 		$self = $this;
@@ -70,5 +70,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 		};
 		$config['arguments'] = $this->arguments;
 		$this->addField($config);
+		return NULL;
 	}
 }
