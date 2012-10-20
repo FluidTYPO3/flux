@@ -141,6 +141,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param array $arguments
 	 * @param t3lib_TCEmain $reference
 	 * @throws Exception
+	 * @return void
 	 */
 	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, t3lib_TCEmain &$reference) {
 		try {
@@ -151,8 +152,11 @@ class Tx_Flux_Backend_TceMain {
 			$saveRecordData = FALSE;
 			if (count($record) === 0) {
 				$saveRecordData = TRUE;
-				$loadedRecord = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid, tx_flux_column, tx_flux_parent', $table, $clause));
-				$record = &$loadedRecord;
+				$loadedRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $table, $clause);
+				if (is_array($loadedRecords)) {
+					$loadedRecord = array_pop($loadedRecords);
+					$record = &$loadedRecord;
+				}
 			}
 			$arguments[] = &$reference;
 				// check for a registered generic ConfigurationProvider for $table
