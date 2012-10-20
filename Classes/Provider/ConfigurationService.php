@@ -24,6 +24,8 @@
  *****************************************************************/
 
 /**
+ * ConfigurationService
+ *
  * @package Flux
  * @subpackage Provider
  */

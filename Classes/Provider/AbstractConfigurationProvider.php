@@ -123,8 +123,17 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return string|NULL
 	 */
 	public function getFieldName(array $row) {
-		isset($row);
-		return $this->fieldName;
+		$version = explode('.', TYPO3_version);
+		if (isset($row[$this->fieldName]) && $version[0] >= 6 && $version[1] >= 0) {
+				// NOTE: only allow returning the real fieldname for Providers which do NOT
+				// override the getFieldName method if the version of TYPO3 is recent enough
+				// for the FlexForm Hook to include the actual field name when calling the
+				// hook that in turn calls this method when resolving Providers. In other words:
+				// becuase of a bug in older TYPO3 versions the field name must be NULL if
+				// TYPO3 version is too old or no FlexForm is rendered.
+			return $this->fieldName;
+		}
+		return NULL;
 	}
 
 	/**
@@ -272,8 +281,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
 		if (is_array($dataStructure) === FALSE) {
-				// skip processing; posting what is most likely an empty string
-			return;
+			$dataStructure = array();
 		}
 		$fieldName = $this->getFieldName($row);
 		$paths = $this->getTemplatePaths($row);

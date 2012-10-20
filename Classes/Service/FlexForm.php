@@ -342,7 +342,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function convertFlexFormContentToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL) {
-		unset($paths); // TODO: remove if paths will be used in the future
+		unset($paths);
 		if ($templateFile === NULL) {
 			$config['parameters'] = array(
 				'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
