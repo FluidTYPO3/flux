@@ -197,7 +197,6 @@ class DynFlexMigration {
 			$previewSection = '<f:section name="Preview"></f:section>' . LF;
 		}
 
-
 		$splitPoint = FALSE;
 		if ($previewSection) {
 				// completely new Preview section - add it after the Configuration section

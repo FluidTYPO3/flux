@@ -13,7 +13,7 @@ class tx_flux_cli extends t3lib_cli {
 	/**
 	 * Constructor
 	 */
-	function tx_flux_cli() {
+	public function __construct() {
 		parent::t3lib_cli();
 		$this->cli_help['name'] = 'Flux CLI script';
 		$this->cli_help['synopsis'] = '###OPTIONS###';
@@ -29,7 +29,7 @@ class tx_flux_cli extends t3lib_cli {
 	 * @param array Command line arguments
 	 * @return string
 	 */
-	function cli_main($argv) {
+	public function cli_main($argv) {
 		unset($argv); // TODO: remove if $argv is needed in the future
 		$task = (string)$this->cli_args['_DEFAULT'][1];
 		if (!$task) {
@@ -129,7 +129,7 @@ class tx_flux_cli extends t3lib_cli {
 	 * @param	string		String to ask before...
 	 * @return	boolean		TRUE if "y" or "yes" is the input (case insensitive)
 	 */
-	function cli_keyboardInput_yes($msg = '') {
+	public function cli_keyboardInput_yes($msg = '') {
 		echo $msg . ' (Yes/No + return): ';
 		// ONLY makes sense to echo it out since we are awaiting keyboard input - that cannot be silenced...
 		ob_flush();

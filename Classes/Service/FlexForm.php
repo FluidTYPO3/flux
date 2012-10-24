@@ -402,7 +402,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 				continue;
 			}
 			foreach ($languages[$languagePointer] as $valueKey => $valueDefinition) {
-				if (strpos($valueKey, '.') === false) {
+				if (strpos($valueKey, '.') === FALSE) {
 					$settings[$valueKey] = $this->walkFlexFormNode($valueDefinition, $valuePointer);
 				} else {
 					$valueKeyParts = explode('.', $valueKey);
