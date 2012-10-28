@@ -28,6 +28,7 @@
  *
  * @package Flux
  * @subpackage Controller
+ * @route off
  */
 class Tx_Flux_Controller_FluxController extends Tx_Extbase_MVC_Controller_ActionController {
 
