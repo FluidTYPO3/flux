@@ -98,7 +98,8 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @throws Exception
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row) {
-		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', '', $row);
+		$fieldName = 'pi_flexform';
+		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
 		foreach ($providers as $provider) {
 			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
 			$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);

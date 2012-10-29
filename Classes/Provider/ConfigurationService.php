@@ -55,6 +55,14 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 	 * @return array<Tx_Flux_Provider_ConfigurationProviderInterface>|NULL
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row=NULL, $extensionKey=NULL) {
+		$isBad4x5 = (TYPO3_version === '4.5.20');
+		$isBad4x6 = (TYPO3_version === '4.6.13');
+		$isBad4x7 = (TYPO3_version === '4.7.5');
+		if ($isBad4x5 || $isBad4x6 || $isBad4x7) {
+			$bindToFieldName = FALSE;
+		} else {
+			$bindToFieldName = TRUE;
+		}
 		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
 		$prioritizedProviders = array();
 		foreach ($providers as $providerClassNameOrInstance) {
@@ -70,8 +78,11 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 			if (is_array($prioritizedProviders[$priority]) === FALSE) {
 				$prioritizedProviders[$priority] = array();
 			}
+			$matchesTableName = ($providerTableName === $table);
+			$matchesFieldName = ($providerFieldName === $fieldName || $bindToFieldName === FALSE);
+			$matchesExtensionKey = ($providerExtensionKey === $extensionKey || $extensionKey === NULL);
 			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
-			if ($providerTableName === $table && $providerFieldName == $fieldName && ($extensionKey === NULL || $providerExtensionKey === $extensionKey)) {
+			if ($matchesExtensionKey && $matchesTableName && $matchesFieldName) {
 				if ($provider instanceof Tx_Flux_Provider_ContentObjectConfigurationProviderInterface) {
 					/** @var Tx_Flux_Provider_ContentObjectConfigurationProviderInterface $provider */
 					if ($provider->getContentObjectType($row) === $row['CType']) {

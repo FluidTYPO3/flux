@@ -44,16 +44,6 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	/**
 	 * @var string
 	 */
-	protected $tableName = 'tt_content';
-
-	/**
-	 * @var string
-	 */
-	protected $fieldName = NULL;
-
-	/**
-	 * @var string
-	 */
 	protected $extensionKey = 'flux';
 
 	/**

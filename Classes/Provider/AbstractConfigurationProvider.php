@@ -67,7 +67,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	/**
 	 * @var string|NULL
 	 */
-	protected $configurationSectionName = NULL;
+	protected $configurationSectionName = 'Configuration';
 
 	/**
 	 * @var string|NULL
@@ -124,7 +124,11 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function getFieldName(array $row) {
 		$version = explode('.', TYPO3_version);
-		if (isset($row[$this->fieldName]) && $version[0] >= 6 && $version[1] >= 0) {
+		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version >= 21);
+		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version >= 14);
+		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version >= 6);
+		$isAbove4 = ($version[0] >= 4);
+		if ($isRecent4x5 || $isRecent4x6 || $isRecent4x7 || $isAbove4) {
 				// NOTE: only allow returning the real fieldname for Providers which do NOT
 				// override the getFieldName method if the version of TYPO3 is recent enough
 				// for the FlexForm Hook to include the actual field name when calling the
@@ -292,9 +296,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$section = $values[array_pop(explode(':', $section))];
 		}
 		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		if (is_file($templatePathAndFilename) === TRUE) {
-			$this->flexFormService->convertFlexFormContentToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section);
-		}
+		$this->flexFormService->convertFlexFormContentToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section);
 		unset($conf);
 	}
 

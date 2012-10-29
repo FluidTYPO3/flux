@@ -37,6 +37,11 @@ abstract class Tx_Flux_Provider_AbstractPluginConfigurationProvider extends Tx_F
 	/**
 	 * @var string
 	 */
+	protected $fieldName = 'pi_flexform';
+
+	/**
+	 * @var string
+	 */
 	protected $listType = NULL;
 
 	/**

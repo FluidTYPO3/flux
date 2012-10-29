@@ -39,6 +39,11 @@ abstract class Tx_Flux_Provider_AbstractContentObjectConfigurationProvider exten
 	/**
 	 * @var string
 	 */
+	protected $fieldName = 'pi_flexform';
+
+	/**
+	 * @var string
+	 */
 	protected $contentObjectType = NULL;
 
 	/**

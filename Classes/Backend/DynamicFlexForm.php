@@ -65,6 +65,18 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * @throws Exception
 	 */
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName) {
+		if (empty($fieldName) === TRUE) {
+			$fieldName = NULL;
+		}
+			// check for versions of TYPO3 which do not consistently pass $fieldName
+		$version = explode('.', TYPO3_version);
+		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version >= 21);
+		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version >= 14);
+		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version >= 6);
+		$isAbove4 = ($version[0] >= 4);
+		if ($isRecent4x5 === FALSE || $isRecent4x6 === FALSE || $isRecent4x7 === FALSE || $isAbove4 === FALSE) {
+			$fieldName = NULL;
+		}
 		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
 		foreach ($providers as $provider) {
 			try {
