@@ -155,7 +155,7 @@ class Tx_Flux_Backend_TceMain {
 			$saveRecordData = FALSE;
 			if (count($record) === 0) {
 				$saveRecordData = TRUE;
-				$loadedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid, tx_flux_column, tx_flux_parent', $table, $clause);
+				$loadedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $table, $clause);
 				if (is_array($loadedRecord) === TRUE) {
 					$loadedRecord = array_pop($loadedRecord);
 				} else {
