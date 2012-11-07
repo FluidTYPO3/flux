@@ -40,7 +40,7 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getStoredVariable($viewHelperClassName, $name, $sectionName) {
+	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL) {
 		if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
 			throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
 		}
@@ -48,7 +48,11 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->setRenderingContext($this->baseRenderingContext);
 		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
-		$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
+		if ($sectionName !== NULL) {
+			$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
+		} else {
+			$this->render();
+		}
 		$this->stopRendering();
 		return $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
 	}
