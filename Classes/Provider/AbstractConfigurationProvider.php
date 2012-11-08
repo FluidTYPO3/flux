@@ -124,9 +124,9 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function getFieldName(array $row) {
 		$version = explode('.', TYPO3_version);
-		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version[2] >= 21);
-		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version[2] >= 14);
-		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version[2] >= 6);
+		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version[2] >= 22);
+		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version[2] >= 15);
+		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version[2] >= 7);
 		$isAbove4 = ($version[0] > 4);
 		if ($isRecent4x5 || $isRecent4x6 || $isRecent4x7 || $isAbove4) {
 				// NOTE: only allow returning the real fieldname for Providers which do NOT

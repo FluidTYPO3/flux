@@ -99,9 +99,9 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row) {
 		$version = explode('.', TYPO3_version);
-		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version[2] >= 21);
-		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version[2] >= 14);
-		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version[2] >= 6);
+		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version[2] >= 22);
+		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version[2] >= 15);
+		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version[2] >= 7);
 		$isAbove4 = ($version[0] > 4);
 		if ($isRecent4x5 === FALSE || $isRecent4x6 === FALSE || $isRecent4x7 === FALSE || $isAbove4 === FALSE) {
 			$fieldName = NULL;
