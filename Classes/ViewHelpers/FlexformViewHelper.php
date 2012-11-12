@@ -42,6 +42,7 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 		$this->registerArgument('icon', 'string', 'Optional icon file to use when displaying this content element in the new content element wizard', FALSE, '../typo3conf/ext/fed/Resources/Public/Icons/Plugin.png');
 		$this->registerArgument('mergeValues', 'boolean', 'If TRUE, enables overriding of record values with corresponding values from this FlexForm', FALSE, FALSE);
 		$this->registerArgument('enabled', 'boolean', 'If FALSE, makes the FCE inactive', FALSE, TRUE);
+		$this->registerArgument('wizardTab', 'string', 'Optional tab name (usually extension key) in which to place the content element in the new content element wizard');
 	}
 
 	/**
