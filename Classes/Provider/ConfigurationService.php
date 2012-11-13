@@ -55,14 +55,7 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 	 * @return array<Tx_Flux_Provider_ConfigurationProviderInterface>|NULL
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row=NULL, $extensionKey=NULL) {
-		$isBad4x5 = (TYPO3_version === '4.5.20' || TYPO3_version === '4.5.21');
-		$isBad4x6 = (TYPO3_version === '4.6.13' || TYPO3_version === '4.6.14');
-		$isBad4x7 = (TYPO3_version === '4.7.5' || TYPO3_version === '4.7.6');
-		if ($isBad4x5 || $isBad4x6 || $isBad4x7) {
-			$bindToFieldName = FALSE;
-		} else {
-			$bindToFieldName = TRUE;
-		}
+		$bindToFieldName = Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing();
 		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
 		$prioritizedProviders = array();
 		foreach ($providers as $providerClassNameOrInstance) {

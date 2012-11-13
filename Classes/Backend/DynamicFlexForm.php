@@ -65,16 +65,12 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * @throws Exception
 	 */
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName) {
-		if (empty($fieldName) === TRUE) {
+		if (Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing() === FALSE) {
 			$fieldName = NULL;
 		}
-			// check for versions of TYPO3 which do not consistently pass $fieldName
-		$version = explode('.', TYPO3_version);
-		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version[2] >= 22);
-		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version[2] >= 15);
-		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version[2] >= 7);
-		$isAbove4 = ($version[0] > 4);
-		if (($isRecent4x5 === FALSE || $isRecent4x6 === FALSE || $isRecent4x7 === FALSE) && $isAbove4 === FALSE) {
+		if (empty($fieldName) === TRUE) {
+				// forcibly assert type NULL if an empty field name was passed. There are
+				// no empty fields in a database, it's a plain mystery why TYPO3 may pass ''
 			$fieldName = NULL;
 		}
 		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
