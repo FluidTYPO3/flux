@@ -52,6 +52,11 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	protected $priority = 0;
 
 	/**
+	 * @var string
+	 */
+	protected $fieldName = NULL;
+
+	/**
 	 * @param Tx_Flux_Service_Content $contentService
 	 * @return void
 	 */
@@ -88,6 +93,31 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				}
 			}
 		}
+		if (count($row) === 1 && isset($row['colPos'])) {
+				// dropping an element in a column header dropzone in 6.0 only sends the "colPos"
+				// and this colPos may contain nothing but positive integers. Bring the severe hacking.
+			$backtrace = debug_backtrace();
+			$retrievedArgument = NULL;
+			foreach (array_reverse($backtrace) as $stackItem) {
+				if ($stackItem['class'] === 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands') {
+					if ($stackItem['function'] === 'moveContentElement') {
+						$retrievedArgument = $stackItem['args'][1];
+						$segments = explode('-', $retrievedArgument);
+						$slice = array_slice($segments, count($segments) - 3);
+						if ($slice[0] === 'top') {
+							$row['tx_flux_parent'] = $slice[1];
+							$row['tx_flux_column'] = $slice[2];
+							#$row['colPos'] = -42;
+						} elseif ($slice[1] === 'after') {
+							$row['pid'] = 0 - $slice[2];
+						}
+						break;
+					}
+				}
+			}
+			#\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($retrievedArgument);
+			#return;
+		}
 		if ($row['pid'] < 0) {
 				// inserting a new element after another element. Check column position of that element.
 			$relativeTo = abs($row['pid']);
@@ -95,6 +125,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
 			$row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
 		}
+		#\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($id);
 		unset($id, $reference);
 	}
 
