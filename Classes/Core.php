@@ -146,6 +146,20 @@ class Tx_Flux_Core {
 	}
 
 	/**
+	 * @param string $providerClassName
+	 * @return void
+	 */
+	public static function unregisterConfigurationProvider($providerClassName) {
+		$contained = in_array($providerClassName, self::$providers);
+		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($contained);
+		if ($contained) {
+			die('contained');
+			$index = array_search($providerClassName, self::$providers);
+			unset(self::$providers[$index]);
+		}
+	}
+
+	/**
 	 * Gets the defined FlexForms configuration providers based on parameters
 	 * @return array
 	 */
