@@ -40,6 +40,12 @@ class Tx_Flux_Core {
 	private static $providers = array();
 
 	/**
+	 * Contains ConfigurationProviders which have been unregistered
+	 * @var array
+	 */
+	private static $unregisteredProviders = array();
+
+	/**
 	 * Registers a class implementing one of the Flux ConfigurationProvider
 	 * interfaces.
 	 *
@@ -48,6 +54,7 @@ class Tx_Flux_Core {
 	 * @throws Exception
 	 */
 	public static function registerConfigurationProvider($classNameOrInstance) {
+			\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($classNameOrInstance);
 		if (is_object($classNameOrInstance) === FALSE) {
 			if (class_exists($classNameOrInstance) === FALSE) {
 				throw new Exception('ConfigurationProvider class ' . $classNameOrInstance . ' does not exists', 1327173514);
@@ -56,7 +63,9 @@ class Tx_Flux_Core {
 		if (in_array('Tx_Flux_Provider_ConfigurationProviderInterface', class_implements($classNameOrInstance)) === FALSE) {
 			throw new Exception(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement one of the Provider interfaces from Flux/Provider', 1327173536);
 		}
-		array_push(self::$providers, $classNameOrInstance);
+		if (in_array($classNameOrInstance, self::$unregisteredProviders) === FALSE) {
+			array_push(self::$providers, $classNameOrInstance);
+		}
 	}
 
 	/**
@@ -150,12 +159,12 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function unregisterConfigurationProvider($providerClassName) {
-		$contained = in_array($providerClassName, self::$providers);
-		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($contained);
-		if ($contained) {
-			die('contained');
+		if (in_array($providerClassName, self::$providers) === TRUE) {
 			$index = array_search($providerClassName, self::$providers);
 			unset(self::$providers[$index]);
+		}
+		if (in_array($providerClassName, self::$unregisteredProviders) === FALSE) {
+			array_push(self::$unregisteredProviders, $providerClassName);
 		}
 	}
 
