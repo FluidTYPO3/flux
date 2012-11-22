@@ -3,6 +3,7 @@
 #plugin.tx_fed.fce.fluidcontent {
 plugin.tx_fed.fce.fed {
 	label = Fluid Content Elements
+	dependencies = fed
 	templateRootPath = EXT:fluidcontent/Resources/Private/Elements/Common/
 	partialRootPath = EXT:fluidcontent/Resources/Private/Partials/
 	layoutRootPath = EXT:fluidcontent/Resources/Private/Layouts/
