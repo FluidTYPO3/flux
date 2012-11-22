@@ -54,7 +54,6 @@ class Tx_Flux_Core {
 	 * @throws Exception
 	 */
 	public static function registerConfigurationProvider($classNameOrInstance) {
-			\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($classNameOrInstance);
 		if (is_object($classNameOrInstance) === FALSE) {
 			if (class_exists($classNameOrInstance) === FALSE) {
 				throw new Exception('ConfigurationProvider class ' . $classNameOrInstance . ' does not exists', 1327173514);
