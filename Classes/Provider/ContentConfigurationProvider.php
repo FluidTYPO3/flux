@@ -149,7 +149,7 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 		$templatePathAndFilename = $row['tx_fed_fcefile'];
 		$extensionName = array_shift(explode(':', $templatePathAndFilename));
 		$paths = $this->configurationService->getContentConfiguration($extensionName);
-		if ($this->configurationService->checkDependenciesForContentElementConfiguration($paths) === FALSE) {
+		if ($this->configurationService->checkDependenciesForConfiguration($paths) === FALSE) {
 			return NULL;
 		}
 		return $paths;

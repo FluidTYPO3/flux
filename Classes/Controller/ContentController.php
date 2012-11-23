@@ -38,9 +38,9 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Flux_Service_Flexform
+	 * @var Tx_Flux_Service_FlexForm
 	 */
-	protected $flexformService;
+	protected $flexFormService;
 
 	/**
 	 * @param Tx_Fluidcontent_Service_ConfigurationService $configurationService
@@ -54,8 +54,8 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 	 * @param Tx_Flux_Service_FlexForm $flexformService
 	 * @return void
 	 */
-	public function injectFlexformService(Tx_Flux_Service_FlexForm $flexformService) {
-		$this->flexformService = $flexformService;
+	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexFormService) {
+		$this->flexFormService = $flexFormService;
 	}
 
 	/**
@@ -67,7 +67,7 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 		/** @var $view Tx_Flux_MVC_View_ExposedTemplateView */
 		$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedTemplateView');
 		$cObj = $this->configurationManager->getContentObject();
-		$this->flexformService->setContentObjectData($cObj->data);
+		$this->flexFormService->setContentObjectData($cObj->data);
 		list ($extensionName, $filename) = explode(':', $cObj->data['tx_fed_fcefile']);
 		$paths = $this->configurationService->getContentConfiguration($extensionName);
 		$absolutePath = $paths['templateRootPath'] . '/' . $filename;
@@ -76,7 +76,7 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 		$view->setTemplatePathAndFilename($absolutePath);
 		$view->setControllerContext($this->controllerContext);
 		$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', 'Configuration');
-		$variables = $this->flexformService->getAllAndTransform($config['fields']);
+		$variables = $this->flexFormService->getAllAndTransform($config['fields']);
 		$variables['page'] = $GLOBALS['TSFE']->page;
 		$variables['record'] = $cObj->data;
 		$variables['contentObject'] = $cObj;
