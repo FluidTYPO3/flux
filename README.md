@@ -76,6 +76,7 @@ provided with a `<f:section name="Configuration">` which contains the Flux confi
 
 ### An example template
 
+```xml
 {namespace fed=Tx_Fed_ViewHelpers}
 {namespace flux=Tx_Flux_ViewHelpers}
 {namespace widget=Tx_Fluidwidget_ViewHelpers}
