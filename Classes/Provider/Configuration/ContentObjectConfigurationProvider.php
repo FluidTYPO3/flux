@@ -107,16 +107,17 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 						if ($slice[0] === 'top') {
 							$row['tx_flux_parent'] = $slice[1];
 							$row['tx_flux_column'] = $slice[2];
-							#$row['colPos'] = -42;
-						} elseif ($slice[1] === 'after') {
-							$row['pid'] = 0 - $slice[2];
+							$row['colPos'] = -42;
+						} elseif ($slice[0] === 'after') {
+							$row['pid'] = 0 - $slice[1];
+							$row['tx_flux_column'] = $slice[2];
+						} else {
+							$row['tx_flux_parent'] = $row['tx_flux_column'] = '';
 						}
 						break;
 					}
 				}
 			}
-			#\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($retrievedArgument);
-			#return;
 		}
 		if ($row['pid'] < 0) {
 				// inserting a new element after another element. Check column position of that element.
@@ -125,7 +126,6 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
 			$row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
 		}
-		#\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($id);
 		unset($id, $reference);
 	}
 

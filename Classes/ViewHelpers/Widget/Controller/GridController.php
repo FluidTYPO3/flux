@@ -63,5 +63,8 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 	public function indexAction() {
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $this->row);
+		if (Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero() === TRUE) {
+			return $this->view->render('legacy');
+		}
 	}
 }
