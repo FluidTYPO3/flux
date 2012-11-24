@@ -12,13 +12,13 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Fluid Content Elements',
-	'description' => 'Content elements written in Fluid using EXT:fed. Install dependencies, include static TS and enable Fluid Content Elements in extension configuration for EXT:fed.',
+	'description' => 'Fluid Content Element engine - integrates extremely compact and highly dynamic content element templates written in Fluid. See: https://github.com/NamelessCoder/fluidcontent',
 	'category' => 'misc',
 	'author' => 'Claus Due',
 	'author_email' => 'claus@wildside.dk',
 	'author_company' => 'Wildside A/S',
 	'shy' => '',
-	'dependencies' => 'cms,fed',
+	'dependencies' => 'cms,flux',
 	'conflicts' => '',
 	'priority' => '',
 	'module' => '',
@@ -34,7 +34,7 @@ $EM_CONF[$_EXTKEY] = array(
 		'depends' => array(
 			'typo3' => '4.5-0.0.0',
 			'cms' => '',
-			'fed' => '',
+			'flux' => '5.0.0',
 		),
 		'conflicts' => array(
 		),
