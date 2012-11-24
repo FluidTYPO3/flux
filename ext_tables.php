@@ -14,7 +14,16 @@ Tx_Extbase_Utility_Extension::registerPlugin(
 t3lib_extMgm::addPlugin(array('Fluid Content', 'fed_fce', t3lib_extMgm::extRelPath('fluidcontent') . 'ext_icon.gif'), 'CType');
 t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/Common', 'Fluid Content Elements: Common');
 t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TwitterBootstrap', 'Fluid Content Elements: Twitter Bootstrap');
-
+t3lib_extMgm::addTCAcolumns('tt_content', array(
+	'tx_fed_fcefile' => array (
+		'exclude' => 1,
+		'label' => 'LLL:EXT:fluidcontent/Resources/Private/Language/locallang_db.xml:tt_content.tx_fed_fcefile',
+		'config' => array (
+			'type' => 'user',
+			'userFunc' => 'Tx_Fluidcontent_Backend_ContentSelector->renderField',
+		)
+	),
+), 1);
 $TCA['tt_content']['types']['list']['subtypes_addlist']['fed_fce'] = 'pi_flexform';
 $TCA['tt_content']['types']['fed_fce']['showitem'] = '
 	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.general;general,
