@@ -42,8 +42,24 @@ class Tx_Flux_Utility_Version {
 		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version[2] >= 23);
 		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version[2] >= 16);
 		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version[2] >= 8);
-		$isAbove4 = ($version[0] > 4);
-		return ($isAbove4 || $isRecent4x5 || $isRecent4x6 || $isRecent4x7);
+		$isRecent6x0 = self::assertCoreVersionIsAtLeastSixPointZero();
+		return (!$isRecent6x0 || $isRecent4x5 || $isRecent4x6 || $isRecent4x7);
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public static function assertCoreVersionIsBelowSixPointZero() {
+		$version = explode('.', TYPO3_version);
+		return ($version[0] < 6);
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public static function assertCoreVersionIsAtLeastSixPointZero() {
+		$version = explode('.', TYPO3_version);
+		return ($version[0] >= 6);
 	}
 
 }

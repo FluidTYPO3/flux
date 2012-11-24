@@ -113,6 +113,10 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 			if (file_exists($templatePathAndFilename)) {
 				$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 				$extension = str_replace('_', '', $provider->getExtensionKey($row));
+				$providerTemplatePaths = $provider->getTemplatePaths($row);
+				if ($providerTemplatePaths === NULL) {
+					continue;
+				}
 				if ($provider->getTemplatePaths($row)) {
 					$paths = $provider->getTemplatePaths($row);
 				} else if (t3lib_extMgm::isLoaded($provider->getExtensionKey($row))) {

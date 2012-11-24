@@ -40,6 +40,12 @@ class Tx_Flux_Core {
 	private static $providers = array();
 
 	/**
+	 * Contains ConfigurationProviders which have been unregistered
+	 * @var array
+	 */
+	private static $unregisteredProviders = array();
+
+	/**
 	 * Registers a class implementing one of the Flux ConfigurationProvider
 	 * interfaces.
 	 *
@@ -56,7 +62,9 @@ class Tx_Flux_Core {
 		if (in_array('Tx_Flux_Provider_ConfigurationProviderInterface', class_implements($classNameOrInstance)) === FALSE) {
 			throw new Exception(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement one of the Provider interfaces from Flux/Provider', 1327173536);
 		}
-		array_push(self::$providers, $classNameOrInstance);
+		if (in_array($classNameOrInstance, self::$unregisteredProviders) === FALSE) {
+			array_push(self::$providers, $classNameOrInstance);
+		}
 	}
 
 	/**
@@ -143,6 +151,20 @@ class Tx_Flux_Core {
 		$provider->setTemplatePaths($paths);
 		$provider->setConfigurationSectionName($section);
 		self::registerConfigurationProvider($provider);
+	}
+
+	/**
+	 * @param string $providerClassName
+	 * @return void
+	 */
+	public static function unregisterConfigurationProvider($providerClassName) {
+		if (in_array($providerClassName, self::$providers) === TRUE) {
+			$index = array_search($providerClassName, self::$providers);
+			unset(self::$providers[$index]);
+		}
+		if (in_array($providerClassName, self::$unregisteredProviders) === FALSE) {
+			array_push(self::$unregisteredProviders, $providerClassName);
+		}
 	}
 
 	/**
