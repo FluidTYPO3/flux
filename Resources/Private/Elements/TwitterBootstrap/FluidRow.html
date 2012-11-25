@@ -30,7 +30,7 @@
 
 <f:section name="Main">
 	<div class="row-fluid">
-		<f:for each="{columns -> v:iterator.slice(length: 1)}" as="sectionObject" iteration="iteration">
+		<f:for each="{columns}" as="sectionObject" iteration="iteration">
 			<div class="{sectionObject.column.class}">
 				<f:if condition="{sectionObject.column.addWell}">
 					<f:then>
