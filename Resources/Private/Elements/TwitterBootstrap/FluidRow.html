@@ -1,6 +1,6 @@
 {namespace v=Tx_Vhs_ViewHelpers}
 {namespace flux=Tx_Flux_ViewHelpers}
-<f:layout name="FCE" />
+<f:layout name="Content" />
 <div xmlns="http://www.w3.org/1999/xhtml"
      xmlns:v="http://fedext.net/ns/vhs/ViewHelpers"
      xmlns:flux="http://fedext.net/ns/flux/ViewHelpers"
@@ -30,7 +30,7 @@
 
 <f:section name="Main">
 	<div class="row-fluid">
-		<f:for each="{columns}" as="sectionObject" iteration="iteration">
+		<f:for each="{columns -> v:iterator.slice(length: 1)}" as="sectionObject" iteration="iteration">
 			<div class="{sectionObject.column.class}">
 				<f:if condition="{sectionObject.column.addWell}">
 					<f:then>
