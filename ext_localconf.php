@@ -13,3 +13,5 @@ Tx_Extbase_Utility_Extension::configurePlugin(
 	),
 	Tx_Extbase_Utility_Extension::PLUGIN_TYPE_CONTENT_ELEMENT
 );
+
+Tx_Fluidcontent_Core::loadRegisteredFluidContentElementTypoScript();
