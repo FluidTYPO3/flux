@@ -12,6 +12,7 @@ Tx_Extbase_Utility_Extension::registerPlugin(
 	t3lib_extMgm::extRelPath('fluidcontent') . 'ext_icon.gif'
 );
 t3lib_extMgm::addPlugin(array('Fluid Content', 'fed_fce', t3lib_extMgm::extRelPath('fluidcontent') . 'ext_icon.gif'), 'CType');
+t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'Fluid Content');
 t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/Common', 'Fluid Content Elements: Common');
 t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TwitterBootstrap', 'Fluid Content Elements: Twitter Bootstrap');
 t3lib_extMgm::addTCAcolumns('tt_content', array(

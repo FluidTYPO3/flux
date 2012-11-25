@@ -1,5 +1,5 @@
 [GLOBAL]
-# NOTE: for new installs use the commented line below. For existing installs that use the built-in FED FCEs, leave as-is.
+tt_content.fed_fce < tt_content.fluidcontent_content
 plugin.tx_fed.fce.fluidcontent_twitterbootstrap {
 	label = Fluid Content Elements - Twitter Bootstrap
 	dependencies = fed

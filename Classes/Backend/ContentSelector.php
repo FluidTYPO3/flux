@@ -69,9 +69,9 @@ class Tx_Fluidcontent_Backend_ContentSelector {
 		$select = '<div><select name="' . htmlspecialchars($name) . '"  class="formField select" onchange="if (confirm(TBE_EDITOR.labels.onChangeAlert) && TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };">' . LF;
 		$select .= '<option value="">' . $GLOBALS['LANG']->sL('LLL:EXT:fluidcontent/Resources/Private/Language/locallang_db.xml:tt_content.tx_fed_fcefile', TRUE) . '</option>' . LF;
 		foreach ($allTemplatePaths as $key => $templatePathSet) {
-			#$files = Tx_Flux_Utility_Path::getFiles($templatePathSet['templateRootPath'], TRUE);
 			$files = array();
 			$files = t3lib_div::getAllFilesAndFoldersInPath($files, $templatePathSet['templateRootPath']);
+			$templateRootPath = t3lib_div::getFileAbsFileName($templatePathSet['templateRootPath']);
 			if (count($files) > 0) {
 				if ($templatePathSet['label']) {
 					$groupLabel = $templatePathSet['label'];
@@ -84,8 +84,7 @@ class Tx_Fluidcontent_Backend_ContentSelector {
 				}
 				$select .= '<optgroup label="' . htmlspecialchars($groupLabel) . '">' . LF;
 				foreach ($files as $templateFilename) {
-					#\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($templateFilename);
-					$fileRelPath = substr($templateFilename, strlen(PATH_site));
+					$fileRelPath = substr($templateFilename, strlen($templateRootPath));
 					$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedStandaloneView');
 					$view->setTemplatePathAndFilename($templateFilename);
 					try {
