@@ -1,7 +1,8 @@
-{namespace fed=Tx_Fed_ViewHelpers}
 {namespace flux=Tx_Flux_ViewHelpers}
-
-<f:layout name="FCE" />
+<f:layout name="FCE" xmlns:v="http://www.w3.org/1999/html"/>
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:flux="http://fedext.net/ns/flux/ViewHelpers"
+     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers">
 
 <f:section name="Configuration">
 	<flux:flexform wizardTab="Bootstrap" id="bootstrap-tabs" label="Bootstrap: Accordion with content elements" description="Places child content elements in tabs." icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
@@ -38,9 +39,9 @@
 
 <f:section name="Main">
 
-	<fed:data.var name="activeTabIndex" value="0" />
+	<v:var.set name="activeTabIndex" value="0" />
 	<f:for each="{panels}" as="panel" iteration="iteration">
-		<f:if condition="{panel.panel.active}"><fed:data.var name="activeTabIndex" value="{iteration.index}" /></f:if>
+		<f:if condition="{panel.panel.active}"><v:var.set name="activeTabIndex" value="{iteration.index}" /></f:if>
 	</f:for>
 
 	<div class="accordion" id="accordion-{record.uid}">
@@ -61,3 +62,5 @@
 	</div>
 
 </f:section>
+
+</div>
