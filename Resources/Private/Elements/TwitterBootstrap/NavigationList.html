@@ -1,7 +1,10 @@
-{namespace fed=Tx_Fed_ViewHelpers}
+{namespace v=Tx_Vhs_ViewHelpers}
 {namespace flux=Tx_Flux_ViewHelpers}
-
-<f:layout name="FCE" />
+<f:layout name="Content" />
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:v="http://fedext.net/ns/vhs/ViewHelpers"
+     xmlns:flux="http://fedext.net/ns/flux/ViewHelpers"
+     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers">
 
 <f:section name="Configuration">
 	<flux:flexform wizardTab="Bootstrap" id="bootstrap-navigationlist" label="Bootstrap: Navigation List" description="Configurable navigation list of links to various resources." icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
@@ -38,9 +41,9 @@
 <f:section name="Preview">
 	<ul>
 		<f:for each="{items}" as="itemSectionObject">
-			<fed:data.var name="objectType" value="{fed:data.func(func: 'key', arguments: {0: itemSectionObject})}" />
-			<fed:data.var name="object" value="{fed:data.func(func: 'array_pop', arguments: {0: itemSectionObject})}" />
-			<li><strong>{objectType}</strong> <f:if condition="{0: objectType} != {0: 'divider'}"> <em>{object.text} ({object.target})</em> <fed:exists file="{object.icon}">Icon: {object.icon}</fed:exists></f:if></li>
+			<f:for each="{itemSectionObjects}" as="object" key="objectType">
+				<li><strong>{objectType}</strong> <f:if condition="{0: objectType} != {0: 'divider'}"> <em>{object.text} ({object.target})</em> <fed:exists file="{object.icon}">Icon: {object.icon}</fed:exists></f:if></li>
+			</f:for>
 		</f:for>
 	</ul>
 </f:section>
@@ -48,32 +51,34 @@
 <f:section name="Main">
 	<div class="{class} {f:if(condition: addWell, then: 'well')}" style="{f:if(condition: zeroPadding, then: 'padding: 8px 0px 8px 0px;')}">
 		<ul class="nav nav-list">
-			<f:for each="{items}" as="itemSectionObject">
-				<fed:data.var name="objectType" value="{fed:data.func(func: 'key', arguments: {0: itemSectionObject})}" />
-				<fed:data.var name="object" value="{fed:data.func(func: 'array_pop', arguments: {0: itemSectionObject})}" />
-				<fed:data.var name="icon" value="" />
-				<fed:switch value="{objectType}">
-					<fed:case case="header" break="TRUE">
-						<li class="nav-header {object.class}"><fed:raw>{icon}{object.text}</fed:raw></li>
-					</fed:case>
-					<fed:case case="divider" break="TRUE">
-						<li class="divider {object.class}"></li>
-					</fed:case>
-					<fed:case case="default">
-						<fed:data.var name="icon" value="{fed:exists(file: object.icon, then: '<img src=\'{object.icon}\' alt=\'\' class=\'icon-blank\' /> ', else: '')}" />
-						<li class="{f:if(condition: '{fed:data.var(name: \'GLOBALS.TSFE.id\', scope: \'php\')} == {object.target}', then: 'active', else: 'item')}">
-							<f:if condition="{fed:data.func(func: 'intval', arguments: {0: object.target})} > 0">
-								<f:then>
-									<f:link.page pageUid="{object.target}" class="{object.class}" rel="{f:if(condition: object.tooltip, then: 'tooltip')}" title="{object.tooltip}"><fed:raw>{icon}{object.text}</fed:raw></f:link.page>
-								</f:then>
-								<f:else>
-									<a href="{object.target}" class="{object.class}" rel="{f:if(condition: object.tooltip, then: 'tooltip')}" title="{object.tooltip}"><fed:raw>{icon}{object.text}</fed:raw></a>
-								</f:else>
-							</f:if>
-						</li>
-					</fed:case>
-				</fed:switch>
+			<f:for each="{items}" as="itemSectionObjects">
+				<v:var.set name="icon" value="" />
+				<f:for each="{itemSectionObjects}" as="object" key="objectType">
+					<v:switch value="{objectType}">
+						<v:case case="header" break="TRUE">
+							<li class="nav-header {object.class}"><fed:raw>{icon}{object.text}</fed:raw></li>
+						</v:case>
+						<v:case case="divider" break="TRUE">
+							<li class="divider {object.class}"></li>
+						</v:case>
+						<v:case case="default">
+							<v:var.set name="icon" value="{v:media.exists(file: object.icon, then: '<img src=\'{object.icon}\' alt=\'\' class=\'icon-blank\' /> ', else: '')}" />
+							<li class="{f:if(condition: '{contentObject.pid} == {object.target}', then: 'active', else: 'item')}">
+								<f:if condition="{object.target -> v:math.round()} > 0">
+									<f:then>
+										<f:link.page pageUid="{object.target}" class="{object.class}" rel="{f:if(condition: object.tooltip, then: 'tooltip')}" title="{object.tooltip}"><fed:raw>{icon}{object.text}</fed:raw></f:link.page>
+									</f:then>
+									<f:else>
+										<a href="{object.target}" class="{object.class}" rel="{f:if(condition: object.tooltip, then: 'tooltip')}" title="{object.tooltip}"><fed:raw>{icon}{object.text}</fed:raw></a>
+									</f:else>
+								</f:if>
+							</li>
+						</v:case>
+					</v:switch>
+				</f:for>
 			</f:for>
 		</ul>
 	</div>
 </f:section>
+
+</div>
