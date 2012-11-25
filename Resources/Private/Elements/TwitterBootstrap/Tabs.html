@@ -1,7 +1,10 @@
-{namespace fed=Tx_Fed_ViewHelpers}
+{namespace v=Tx_Vhs_ViewHelpers}
 {namespace flux=Tx_Flux_ViewHelpers}
-
-<f:layout name="FCE" />
+<f:layout name="Content" />
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:v="http://fedext.net/ns/vhs/ViewHelpers"
+     xmlns:flux="http://fedext.net/ns/flux/ViewHelpers"
+     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers">
 
 <f:section name="Configuration">
 	<flux:flexform wizardTab="Bootstrap" id="bootstrap-tabs" label="Bootstrap: Tabs/pills with content elements" description="Places child content elements in tabs." icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
@@ -29,7 +32,7 @@
 		<flux:flexform.grid>
 			<flux:flexform.grid.row>
 				<f:for each="{tabs}" as="tab" iteration="iteration">
-					<flux:flexform.grid.column style="width: {fed:math(expression: '100/{tabs -> f:count()}')}%">
+					<flux:flexform.grid.column style="width: {v:math.division(b: '{tabs -> f:count()}', a: 100)}%">
 						<flux:flexform.content name="content.{iteration.index}" label="Content, tab {iteration.cycle}" />
 					</flux:flexform.grid.column>
 				</f:for>
@@ -44,9 +47,11 @@
 
 <f:section name="Main">
 
-	<fed:data.var name="activeTabIndex" value="0" />
+	<v:var.set name="activeTabIndex" value="0" />
 	<f:for each="{tabs}" as="tab" iteration="iteration">
-		<f:if condition="{tab.tab.active}"><fed:data.var name="activeTabIndex" value="{iteration.index}" /></f:if>
+		<f:if condition="{tab.tab.active}">
+			<v:var.set name="activeTabIndex" value="{iteration.index}" />
+		</f:if>
 	</f:for>
 
 	<div class="tabbable tabs-{tabDirection}">
@@ -72,8 +77,10 @@
 	<ul class="nav nav-{mode}s {f:if(condition: stackable, then: 'nav-stacked')} {position}">
 		<f:for each="{tabs}" as="tab" iteration="iteration">
 			<li class="nav-link {f:if(condition: '{activeTabIndex} == {iteration.index}', then: 'active')}">
-				<a href="{fed:page.absoluteUrl()}#tab-{record.uid}-{iteration.index}" data-toggle="{mode}">{tab.tab.title}</a>
+				<a href="{v:page.absoluteUrl()}#tab-{record.uid}-{iteration.index}" data-toggle="{mode}">{tab.tab.title}</a>
 			</li>
 		</f:for>
 	</ul>
 </f:section>
+
+</div>
