@@ -3,9 +3,7 @@
      xmlns:f="http://typo3.org/ns/fluid/ViewHelpers">
 
 <style type="text/css">
-.fce-header { background-color: #5B5B5B; background-image: -moz-linear-gradient(center top , #7F7F7F 10%, #5B5B5B 100%); padding: 4px; margin-top: 8px; color: white; font-weight: bold; }
-.fce-header span { position: absolute; }
-.fce-header div { text-align: center; }
+.fce-header { background-color: #5B5B5B; background-image: -moz-linear-gradient(center top , #7F7F7F 10%, #5B5B5B 100%); margin-top: 8px; }
 .fce-container .t3-page-ce-body { margin-bottom: 8px; padding: 5px; }
 td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
 </style>
@@ -18,10 +16,10 @@ td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
 			<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" style="{gridcolumn.style}">
 			<f:for each="{gridcolumn.areas}" as="area">
 				<flux:be.contentArea area="{area.name}" row="{row}">
-					<div class="fce-header t3-page-colHeader t3-page-colHeader-label">
+					<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
 						<div><f:translate key="{area.label}" default="{area.label}" /></div>
 					</div>
-					<div class="fce-container">
+					<div class="fce-container t3-page-ce-wrapper">
 						<div class="t3-page-ce">
 							<div class="t3-page-ce-dropzone" id="colpos-{row.colPos}-page-{row.pid}-{area.md5}-top-{row.uid}-{area.name}" style="height: 16px;">
 								<div class="t3-page-ce-wrapper-new-ce">
