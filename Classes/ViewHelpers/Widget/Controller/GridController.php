@@ -34,12 +34,12 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 	/**
 	 * @var array
 	 */
-	protected $grid;
+	protected $grid = array();
 
 	/**
 	 * @var array
 	 */
-	protected $row;
+	protected $row = array();
 
 	/**
 	 * @param array $grid
@@ -61,7 +61,6 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 	 * @return void
 	 */
 	protected function assignGridVariables() {
-		#\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($this->grid);
 		foreach ($this->grid as $index => $columns) {
 			$this->grid[$index]['totalColumnCount'] = array();
 			foreach ($columns as $columnIndex => $column) {
@@ -71,7 +70,7 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 				}
 				if (isset($column['areas']) === TRUE) {
 					foreach ($column['areas'] as $areaIndex => $area) {
-						$this->grid[$index][$columnIndex]['areas'][$areaIndex]['md5'] = md5(implode('', $row) . $area['name']);
+						$this->grid[$index][$columnIndex]['areas'][$areaIndex]['md5'] = md5(implode('', $this->row) . $area['name']);
 					}
 				}
 				$this->grid[$index][$columnIndex]['md5'] = md5($column['name']);
