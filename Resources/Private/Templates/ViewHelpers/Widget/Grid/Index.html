@@ -43,16 +43,7 @@ td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
 					</div>
 				</flux:be.contentArea>
 			</f:for>
-
 			</td>
-			<f:if condition="{columnIteration.isLast} < 1">
-				<td class="spacer">&nbsp;</td>
-			</f:if>
-		</f:for>
-		</tr>
-		<tr>
-		<f:for each="{gridrow.totalColumnCount}" as="void">
-			<td class='spacer'>&nbsp;</td>
 		</f:for>
 		</tr>
 	</f:for>
