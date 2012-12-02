@@ -162,6 +162,9 @@ class Tx_Flux_Backend_TceMain {
 					$loadedRecord = array();
 				}
 				$record = &$loadedRecord;
+				if (isset($arguments['row']) === TRUE) {
+					$arguments['row'] = &$record;
+				}
 			}
 			$arguments[] = &$reference;
 				// check for a registered generic ConfigurationProvider for $table
@@ -176,7 +179,7 @@ class Tx_Flux_Backend_TceMain {
 					call_user_func_array(array($provider, $methodName), $arguments);
 				}
 			}
-			if ($saveRecordData === TRUE) {
+			if ($saveRecordData === TRUE && isset($arguments['row']) === TRUE && is_array($arguments['row']) === TRUE && count($arguments['row']) > 0) {
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $clause, $arguments['row']);
 			}
 		} catch (Exception $error) {
