@@ -36,3 +36,5 @@ $TCA['tt_content']['types']['fed_fce']['showitem'] = '
 	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.visibility;visibility,
 	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.access;access
 	 ';
+
+Tx_Fluidcontent_Core::loadRegisteredFluidContentElementTypoScript();
