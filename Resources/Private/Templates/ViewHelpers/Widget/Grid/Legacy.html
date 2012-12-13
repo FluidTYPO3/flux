@@ -9,64 +9,49 @@
 	.fce-container .t3-page-ce-body { margin-bottom: 8px; }
 	td.spacer { width: 8px; height: 8px; }
 </style>
-
 <table style="width: 100%; margin-top: 8px;" cellspacing="0" cellpadding="0">
 	<tbody>
-	<f:for each="{grid}" as="gridrow" iteration="rowIteration">
-		<fed:data.var name="totalColumnCount" type="integer" value="0" />
-		<tr>
-			<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
-				<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" style="{gridcolumn.style}">
-					<f:for each="{gridcolumn.areas}" as="area">
-						<flux:be.contentArea area="{area.name}" row="{row}">
-							<div class="fce-header t3-page-colHeader">
-								<flux:be.link.content.new row="{row}" area="{area.name}" />
-								<div><f:translate key="{area.label}" default="{area.label}" /></div>
-							</div>
-							<div class="fce-container">
-								<f:for each="{records}" as="record">
-									<div class="t3-page-ce">
-										<flux:be.contentElement row="{record}" dblist="{dblist}" />
-										<fed:comment comment="This next DIV closing tag is NOT a mistake! It is a bug in tt_content list rendering internals of TYPO3" />
-									</div>
-							</div>
-					</f:for>
-					</div>
-					</flux:be.contentArea>
-			</f:for>
-
-			<fed:data.var name="totalColumnCount" type="integer">
-				<fed:math>
-					<fed:data.var name="totalColumnCount"/> + 1 + ({gridcolumn.colspan} - 1)
-				</fed:math>
-			</fed:data.var>
-
-			</td>
-			<f:if condition="{columnIteration.isLast} < 1">
-
-				<fed:data.var name="totalColumnCount" type="integer">
-					<fed:math>
-						<fed:data.var name="totalColumnCount"/> + 1
-					</fed:math>
-				</fed:data.var>
-
-				<td class="spacer">&nbsp;</td>
-			</f:if>
-	</f:for>
-	</tr>
-	<!--
-	<f:if condition="{rowIteration.isLast} < 1">
-		<tr>
-			<td><fed:data.var name="totalColumnCount"/></td>
-			<td class="spacer">&nbsp;</td>
-		</tr>
-	</f:if>
-	 -->
-	<tr>
-		<fed:loop count="{totalColumnCount}">
-			<td class='spacer'>&nbsp;</td>
-		</fed:loop>
-	</tr>
-	</f:for>
+		<f:for each="{grid}" as="gridrow" iteration="rowIteration">
+			<fed:data.var name="totalColumnCount" type="integer" value="0" />
+			<tr>
+				<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
+					<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" style="{gridcolumn.style}">
+						<f:for each="{gridcolumn.areas}" as="area">
+							<flux:be.contentArea area="{area.name}" row="{row}">
+								<div class="fce-header t3-page-colHeader">
+									<flux:be.link.content.new row="{row}" area="{area.name}" />
+									<div><f:translate key="{area.label}" default="{area.label}" /></div>
+								</div>
+								<div class="fce-container">
+									<f:for each="{records}" as="record">
+										<div class="t3-page-ce">
+											<flux:be.contentElement row="{record}" dblist="{dblist}" />
+										</div>
+									</f:for>
+								</div>
+							</flux:be.contentArea>
+						</f:for>
+						<fed:data.var name="totalColumnCount" type="integer">
+							<fed:math>
+								<fed:data.var name="totalColumnCount"/> + 1 + ({gridcolumn.colspan} - 1)
+							</fed:math>
+						</fed:data.var>
+					</td>
+					<f:if condition="{columnIteration.isLast} < 1">
+						<fed:data.var name="totalColumnCount" type="integer">
+							<fed:math>
+								<fed:data.var name="totalColumnCount"/> + 1
+							</fed:math>
+						</fed:data.var>
+						<td class="spacer">&nbsp;</td>
+					</f:if>
+				</f:for>
+			</tr>
+			<tr>
+				<fed:loop count="{totalColumnCount}">
+					<td class='spacer'>&nbsp;</td>
+				</fed:loop>
+			</tr>
+		</f:for>
 	</tbody>
 </table>
