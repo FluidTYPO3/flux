@@ -86,7 +86,6 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @return void
 	 */
 	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
-		unset($parentObject, $drawItem);
 		$this->renderPreview($headerContent, $itemContent, $row);
 	}
 
@@ -158,8 +157,14 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 					$view->setPartialRootPath(t3lib_div::getFileAbsFileName($paths['partialRootPath']));
 					$view->setLayoutRootPath(t3lib_div::getFileAbsFileName($paths['layoutRootPath']));
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
-					$itemContent .= $view->renderStandaloneSection('Preview', $variables);
-					$headerContent .= '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
+					$previewContent = $view->renderStandaloneSection('Preview', $variables);
+					$previewContent = trim($previewContent);
+					if (empty($label) === FALSE) {
+						$headerContent .= '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
+					}
+					if (empty($previewContent) === FALSE) {
+						$itemContent .= $previewContent;
+					}
 				} catch (Exception $e) {
 					if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
 						throw $e;
