@@ -75,6 +75,9 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 				}
 				$this->grid[$index][$columnIndex]['md5'] = md5(implode('', $this->row) . $column['name']);
 			}
+			if (Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero() === TRUE) {
+				unset($this->grid[$index]['totalColumnCount']);
+			}
 		}
 	}
 
