@@ -35,7 +35,9 @@ $GLOBALS['TCA']['tt_content']['types']['fed_fce']['showitem'] = '
 	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.frames;frames,
 	--div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access,
 	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.visibility;visibility,
-	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.access;access
+	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.access;access,
+	--div--;LLL:EXT:cms/locallang_ttc.xml:tabs.extended,
+	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.extended;extended
 	 ';
 $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['fed_fce'] = 'apps-pagetree-root';
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']['fed']['plugins']['fed_fce']['pluginType'] = 'CType';
