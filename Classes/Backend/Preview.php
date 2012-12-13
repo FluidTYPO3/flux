@@ -86,6 +86,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @return void
 	 */
 	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
+		$drawItem = FALSE;
 		$this->renderPreview($headerContent, $itemContent, $row);
 	}
 
