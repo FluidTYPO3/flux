@@ -37,6 +37,7 @@ class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends Tx_Flux_Core_ViewH
 		$record = $this->arguments['row'];
 		$rendered = $dblist->tt_content_drawHeader($record);
 		$rendered .= $dblist->tt_content_drawItem($record);
+		$rendered .= '</div>';
 		return $rendered;
 	}
 
