@@ -169,6 +169,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference) {
 		if ($status === 'new') {
 			$newUid = $reference->substNEWwithIDs[$id];
+			$this->adjustColumnPositionBasedOnCommandUrl($newUid);
 			$oldUid = $row['t3_origuid'];
 			$languageFieldName = $GLOBALS['TCA'][$this->tableName]['ctrl']['languageField'];
 			$newLanguageUid = NULL;
@@ -227,6 +228,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 */
 	public function preProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
 		if ($command === 'move') {
+			$this->adjustColumnPositionBasedOnCommandUrl($id);
 			if (strpos($relativeTo, 'FLUX') !== FALSE) {
 				// Triggers when CE is dropped on a nested content area's header dropzone (EXT:gridelements)
 				list ($areaName, $parentElementUid, $pid) = explode('-', trim($relativeTo, '-'));
@@ -281,6 +283,28 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 */
 	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
 		unset($row, $dataStructure, $conf);
+	}
+
+	/**
+	 * @param integer $id
+	 * @return void
+	 */
+	protected function adjustColumnPositionBasedOnCommandUrl($id) {
+		$commandUrl = t3lib_div::_GET('cmd');
+		$instruction = array_pop(array_pop($commandUrl));
+		$command = key($instruction);
+		$relativeTo = $instruction[$command];
+		if ($command === 'copy' || $command === 'move') {
+			if (strpos($relativeTo, 'x') !== FALSE) {
+				// Triggers when an URL-based copy/paste or cut/paste action is performed and
+				// the target is a column directly in the page (i.e. not nested content column).
+				// The implication: content-to-parent relationship should be nullified
+				$row = array();
+				$row['tx_flux_parent'] = $row['tx_flux_column'] = NULL;
+				$row['colPos'] = array_pop(explode('x', $relativeTo));
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
+			}
+		}
 	}
 
 }
