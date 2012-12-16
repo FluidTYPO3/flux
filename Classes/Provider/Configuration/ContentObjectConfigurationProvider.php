@@ -187,7 +187,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				}
 					// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
 				foreach ($children as $child) {
-					if (strpos($child['tx_flux_column'], ':') !== FALSE) {
+					if (strpos($child['tx_flux_column'], ':') === FALSE) {
 						$area = $child['tx_flux_column'];
 					} else {
 						$areaAndUid = explode(':', $child['tx_flux_column']);
