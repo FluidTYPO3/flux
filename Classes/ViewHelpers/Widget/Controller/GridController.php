@@ -34,12 +34,12 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 	/**
 	 * @var array
 	 */
-	protected $grid;
+	protected $grid = array();
 
 	/**
 	 * @var array
 	 */
-	protected $row;
+	protected $row = array();
 
 	/**
 	 * @param array $grid
@@ -58,9 +58,34 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 	}
 
 	/**
+	 * @return void
+	 */
+	protected function assignGridVariables() {
+		foreach ($this->grid as $index => $columns) {
+			$this->grid[$index]['totalColumnCount'] = array();
+			foreach ($columns as $columnIndex => $column) {
+				$add = (1 + ($column['colspan'] - 1));
+				for ($i = 0; $i < $add; $i++) {
+					array_push($this->grid[$index]['totalColumnCount'], 1);
+				}
+				if (isset($column['areas']) === TRUE) {
+					foreach ($column['areas'] as $areaIndex => $area) {
+						$this->grid[$index][$columnIndex]['areas'][$areaIndex]['md5'] = md5(implode('', $this->row) . $area['name']);
+					}
+				}
+				$this->grid[$index][$columnIndex]['md5'] = md5(implode('', $this->row) . $column['name']);
+			}
+			if (Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero() === TRUE) {
+				unset($this->grid[$index]['totalColumnCount']);
+			}
+		}
+	}
+
+	/**
 	 * @return string
 	 */
 	public function indexAction() {
+		$this->assignGridVariables();
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $this->row);
 		if (Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero() === TRUE) {

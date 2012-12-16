@@ -126,6 +126,9 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @return Tx_Flux_Service_FlexForm
 	 */
 	public function setContentObjectData($data) {
+		if (is_array($data) === FALSE) {
+			throw new Exception('Content object data was not an array; please check the type before passing it to the FlexForm Service', 1355433372);
+		}
 		$this->contentObjectData = $data;
 		$this->raw = $this->contentObjectData['pi_flexform'];
 		return $this;

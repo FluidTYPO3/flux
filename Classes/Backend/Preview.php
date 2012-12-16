@@ -86,18 +86,18 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @return void
 	 */
 	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
-		$drawItem = FALSE;
-		$this->renderPreview($headerContent, $itemContent, $row);
+		$this->renderPreview($headerContent, $itemContent, $row, $drawItem);
 	}
 
 	/**
 	 * @param string $headerContent
 	 * @param string $itemContent
 	 * @param array $row
+	 * @param boolean $drawItem
 	 * @return void
 	 * @throws Exception
 	 */
-	public function renderPreview(&$headerContent, &$itemContent, array &$row) {
+	public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem) {
 		if (Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing() === TRUE) {
 			$fieldName = 'pi_flexform';
 		} else {
@@ -158,9 +158,17 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 					$view->setPartialRootPath(t3lib_div::getFileAbsFileName($paths['partialRootPath']));
 					$view->setLayoutRootPath(t3lib_div::getFileAbsFileName($paths['layoutRootPath']));
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
-					$itemContent .= $view->renderStandaloneSection('Preview', $variables);
-					$headerContent .= '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
+					$previewContent = $view->renderStandaloneSection('Preview', $variables);
+					$previewContent = trim($previewContent);
+					if (empty($label) === FALSE) {
+						$headerContent .= '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
+					}
+					if (empty($previewContent) === FALSE) {
+						$drawItem = FALSE;
+						$itemContent .= $previewContent;
+					}
 				} catch (Exception $e) {
+					$drawItem = FALSE;
 					if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
 						throw $e;
 					} else {
