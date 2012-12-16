@@ -1,13 +1,14 @@
-{namespace fed=Tx_Fed_ViewHelpers}
 {namespace flux=Tx_Flux_ViewHelpers}
-
-<f:layout name="FCE" />
+<f:layout name="Content" />
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:flux="http://fedext.net/ns/flux/ViewHelpers"
+     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers">
 
 <f:section name="Configuration">
 	<flux:flexform wizardTab="Bootstrap" id="bootstrap-alert" label="Bootstrap: Alert (inline)" description="Styled alert box, inline as page content. Optionally with dismiss/close icon." icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
 		<flux:flexform.field.input name="header" label="Alert header" />
-		<flux:flexform.field.input name="closeLinkText" label="Close link text (for example: a single x)" />
-		<flux:flexform.field.select name="class" label="Alert box class" commaSeparatedItems="info,success,error" />
+		<flux:flexform.field.input name="closeLinkText" label="Close link text (for example: a single x or &times;)" />
+		<flux:flexform.field.select name="class" label="Alert box class" commaSeparatedItems="default,info,success,error" default="default" />
 		<flux:flexform.field.checkbox name="isBlock" label="Add additional padding" />
 		<flux:flexform.grid>
 			<flux:flexform.grid.row>
@@ -26,7 +27,7 @@
 <f:section name="Main">
 	<div class="alert alert-{class} {f:if(condition: isBlock, then: 'alert-block')}">
 		<f:if condition="{closeLinkText}">
-			<a class="close" data-dismiss="alert"><fed:raw>{closeLinkText}</fed:raw></a>
+			<a class="close" data-dismiss="alert"><f:format.raw>{closeLinkText}</f:format.raw></a>
 		</f:if>
 		<f:if condition="{header}">
 			<h1 class="alert-heading">{header}</h1>
@@ -34,3 +35,5 @@
 		<flux:flexform.renderContent area="content" />
 	</div>
 </f:section>
+
+</div>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'fluidcontent'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tt_content.tx_fed_fcecontentarea">Content area</label>
+			<label index="tt_content.tx_fed_fcefile">Fluid Content type</label>
+			<label index="tt_content.pi_flexform">Element Configuration</label>
+		</languageKey>
+	</data>
+</T3locallang>

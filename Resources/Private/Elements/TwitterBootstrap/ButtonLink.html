@@ -1,7 +1,10 @@
-{namespace fed=Tx_Fed_ViewHelpers}
+{namespace v=Tx_Vhs_ViewHelpers}
 {namespace flux=Tx_Flux_ViewHelpers}
-
-<f:layout name="FCE" />
+<f:layout name="Content" />
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:flux="http://fedext.net/ns/flux/ViewHelpers"
+     xmlns:v="http://fedext.net/ns/vhs/ViewHelpers"
+     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers">
 
 <f:section name="Configuration">
 	<flux:flexform wizardTab="Bootstrap" id="bootstrap-buttonlink" label="Bootstrap: Button Link" description="Default Twitter Bootstrap button-styled link to a page, file or custom URL." icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
@@ -40,7 +43,6 @@
 </f:section>
 
 <f:section name="Main">
-	<fed:data.var name="wrapTag"><f:if condition="{0: wrapTag} == {0: ''}" then="none" else="{wrapTag}" /></fed:data.var>
 	<f:if condition="{0: wrapTag} != {0: 'none'}">
 		<f:then>
 			<{wrapTag} class="button-wrap">
@@ -54,7 +56,7 @@
 </f:section>
 
 <f:section name="Button">
-	<f:if condition="{fed:data.func(func: 'intval', arguments: {0: target})} > 0">
+	<f:if condition="{target -> v:math.round()} > 0">
 		<f:then>
 			<f:link.page pageUid="{target}" class="btn btn-{size} btn-{class} {additionalClassNames}" rel="{f:if(condition: tooltip, then: 'tooltip')}" title="{title}">{text}</f:link.page>
 		</f:then>
@@ -63,3 +65,5 @@
 		</f:else>
 	</f:if>
 </f:section>
+
+</div>

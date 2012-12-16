@@ -1,0 +1,2 @@
+[GLOBAL]
+tt_content.fed_fce < tt_content.fluidcontent_content

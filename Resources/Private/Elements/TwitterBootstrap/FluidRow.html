@@ -1,7 +1,10 @@
-{namespace fed=Tx_Fed_ViewHelpers}
+{namespace v=Tx_Vhs_ViewHelpers}
 {namespace flux=Tx_Flux_ViewHelpers}
-
-<f:layout name="FCE" />
+<f:layout name="Content" />
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:v="http://fedext.net/ns/vhs/ViewHelpers"
+     xmlns:flux="http://fedext.net/ns/flux/ViewHelpers"
+     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers">
 
 <f:section name="Configuration">
 	<flux:flexform wizardTab="Bootstrap" id="special-header" label="Bootstrap: Column Row" description="Adds a wrapper element that lets you define columns of varying widths" icon="../typo3conf/ext/fluidcontent/Resources/Public/Icons/icon-twitter.png">
@@ -14,8 +17,10 @@
 		<flux:flexform.grid>
 			<flux:flexform.grid.row>
 				<f:for each="{columns}" as="sectionObject" iteration="iteration">
-					<flux:flexform.grid.column style="width: {fed:math(expression: '({fed:data.func(func: \\'substr\\', arguments: {0: sectionObject.column.class, 1: 4})} / 12) * 100')}%">
-						<flux:flexform.content name="column{iteration.cycle}" label="{fed:data.func(func: 'substr', arguments: {0: sectionObject.column.class, 1: 4})}/12" />
+					<v:var.set name="width" value="{sectionObject.column.class -> v:format.substring(start: 4)}" />
+					<v:var.set name="percent" value="{width  -> v:math.division(b: 12) -> v:math.product(b: 100) -> v:math.round(decimals: 2)}" />
+					<flux:flexform.grid.column style="width: {percent}%">
+						<flux:flexform.content name="column{iteration.cycle}" label="{percent}%" />
 					</flux:flexform.grid.column>
 				</f:for>
 			</flux:flexform.grid.row>
@@ -45,3 +50,5 @@
 <f:section name="Preview">
 	<flux:widget.grid />
 </f:section>
+
+</div>
