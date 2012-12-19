@@ -92,6 +92,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		$this->registerArgument('prefixOnRequiredArguments', 'string', 'A short string denoting that the method takes arguments, ex * (which should then be explained in the documentation for your extension about how to setup your plugins', FALSE, '*');
 		$this->registerArgument('disableLocalLanguageLabels', 'boolean', 'If TRUE, disables LLL label usage and just uses the class comment or Controller->action syntax', FALSE, FALSE);
 		$this->registerArgument('localLanguageFileRelativePath', 'string', 'Relative (from extension $extensionName) path to locallang file containing the action method labels', FALSE, '/Resources/Private/Language/locallang_db.xml');
+		$this->registerArgument('subActions', 'array', 'Array of sub actions {ControllerName: {list: "update,delete"}, OtherController: {create: "create"}} which are allowed inside of each switchable action.', FALSE, array());
 	}
 
 	/**
@@ -127,10 +128,11 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	 * @return array
 	 */
 	protected function getActionsForExtensionNameAndPluginName($extensionName, $pluginName) {
-		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers']; //['actions']; //[$controllerName] = array('actions' => t3lib_div::trimExplode(',', $actionsList));
+		$actions = (array)$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers']; //['actions']; //[$controllerName] = array('actions' => t3lib_div::trimExplode(',', $actionsList));
 		foreach ($actions as $controllerName => $definitions) {
 			$actions[$controllerName] = $definitions['actions'];
 		}
+
 		return $actions;
 	}
 
@@ -143,6 +145,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	 * @return array
 	 */
 	protected function renderItemsForActions(array $actions) {
+		$subActions = $this->arguments['subActions'];
 		$exclusions = $this->arguments['excludeActions'];
 		foreach ($exclusions as $controllerName => $actionsCommaSeparated) {
 			$exclusions[$controllerName] = t3lib_div::trimExplode(',', $actionsCommaSeparated, TRUE);
@@ -173,7 +176,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 					}
 					/** @var ReflectionMethod $methodReflection */
 					$methodReflection = $controllerClassReflection->getMethod($actionName . 'Action');
-					$hasRequiredArguments = (boolean) ($methodReflection->getNumberOfRequiredParameters() > 0);
+					$hasRequiredArguments = (boolean)($methodReflection->getNumberOfRequiredParameters() > 0);
 					$labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
 					if ($this->arguments['disableLocalLanguageLabels'] || file_exists(t3lib_extMgm::extPath(t3lib_div::camelCaseToLowerCaseUnderscored($extensionName), $this->arguments['localLanguageFileRelativePath'])) === FALSE) {
 						$line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
@@ -195,14 +198,23 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 				if ($hasRequiredArguments === TRUE && $hasLocalLanguageLabel === FALSE && empty($this->arguments['prefixOnRequiredArguments']) === FALSE) {
 					$label = $this->arguments['prefixOnRequiredArguments'] . ' ' . $label;
 				}
+				$actionKey = array($controllerName . '->' . $actionName);
+
+				if (isset($subActions[$controllerName][$actionName])) {
+					$subActionsArray = t3lib_div::trimExplode(',', $subActions[$controllerName][$actionName]);
+					foreach ($subActionsArray as $allowedActionName) {
+						$actionKey[] = $controllerName . '->' . $allowedActionName;
+					}
+				}
+
 				$values = array(
-					$controllerName . '->' . $actionName,
+					implode(';', $actionKey),
 					$label,
 				);
 				array_push($items, $values);
-
 			}
 		}
+
 		return $items;
 	}
 }
