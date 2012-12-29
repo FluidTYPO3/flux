@@ -29,7 +29,7 @@
  * Renders a FlexForm select field with options fetched from
  * requested extensionName/pluginName and other settings.
  *
- * There are two basic ways of adding selection options:
+ * There are three basic ways of adding selection options:
  *
  * - You can use the "extensionName" and "pluginName" to render all
  *   possible actions from an Extbase plugin that you've defined. It
@@ -37,6 +37,17 @@
  *   rendering actions from EXT:news or another through your own plugin.
  * - Or you can use the "actions" argument which is an array:
  *   {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
+ * - And you can extend any of the two methods above with the "subActions"
+ *   parameter, which allows you to extend the allowed actions whenever
+ *   the specified combination of ControllerName + actionName is encountered.
+ *   Example: 		actions="{ControllerName: 'action1,action2'}"
+ *            		subActions="{ControllerName: {action1: 'action3,action4'}}"
+ *   Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
+ * 					ControllerName->action2 with LLL values based on "action2"
+ *   By default Flux will create one option per action when reading
+ *   Controller actions - using "subActions" it becomes possible to add
+ *   additional actions to the list of allowed actions that the option
+ *   will contain, as opposed to having only one action per option.
  *
  * And there are a few ways to limit the options that are displayed:
  *
@@ -92,7 +103,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		$this->registerArgument('prefixOnRequiredArguments', 'string', 'A short string denoting that the method takes arguments, ex * (which should then be explained in the documentation for your extension about how to setup your plugins', FALSE, '*');
 		$this->registerArgument('disableLocalLanguageLabels', 'boolean', 'If TRUE, disables LLL label usage and just uses the class comment or Controller->action syntax', FALSE, FALSE);
 		$this->registerArgument('localLanguageFileRelativePath', 'string', 'Relative (from extension $extensionName) path to locallang file containing the action method labels', FALSE, '/Resources/Private/Language/locallang_db.xml');
-		$this->registerArgument('subActions', 'array', 'Array of sub actions {ControllerName: {list: "update,delete"}, OtherController: {create: "create"}} which are allowed inside of each switchable action.', FALSE, array());
+		$this->registerArgument('subActions', 'array', "Array of sub actions {ControllerName: {list: 'update,delete'}, OtherController: {new: 'create'}} which are also allowed but not presented as options when the mapped action is selected (in example: if ControllerName->list is selected, ControllerName->update and ControllerName->delete are allowed - but cannot be selected).", FALSE, array());
 	}
 
 	/**
