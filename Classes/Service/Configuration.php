@@ -100,7 +100,7 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 					$messageText = 'The Fluid configuration set named ' .
 						$configuration['label'] . ' depends on extension ' . $dependency . ' (all dependencies: ' .
 						implode(',', $dependencies) . ') but ' . $dependency . ' was not loaded';
-					$flashMessage = new \TYPO3\CMS\Core\Messaging\FlashMessage($messageText, 'Fluid configuration missing', t3lib_FlashMessage::WARNING);
+					$flashMessage = new t3lib_FlashMessage($messageText, 'Fluid configuration missing', t3lib_FlashMessage::WARNING);
 					t3lib_FlashMessageQueue::addMessage($flashMessage);
 					return FALSE;
 				}
