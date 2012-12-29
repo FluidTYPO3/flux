@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for the 'fluidcontent' extension in the FRONTEND</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<!-- FCE field and element labels -->
+			<label index="fce.elements.display.filelist.label">Display: Customizable File List</label>
+			<label index="fce.elements.display.filelist.description">Displays fully customizable list of files, with optional columns for file size, type, ctime etc. Can create a DataTable jQuery sortable table.</label>
+			
+			<label index="fce.selection">Select Fluid FCE type</label>
+			<label index="fce.elements.layout.columns.label">Layout: Columns</label>
+			<label index="fce.elements.layout.columns.description">Divides content elements into columns, the number and widths of which can be configured.</label>
+			<label index="fce.elements.layout.columns.fields.class">Column layout</label>
+			<label index="fce.elements.layout.columns.areas.column.1">Column 1</label>
+			<label index="fce.elements.layout.columns.areas.column.2">Column 2</label>
+			<label index="fce.elements.layout.columns.areas.column.3">Column 3</label>
+
+			<label index="fce.elements.layout.contentrandomizer.label">Layout: Content Randomizer</label>
+			<label index="fce.elements.layout.contentrandomizer.description">Displays child content elements in a random fashion. Has option to define how many elements to select at random.</label>
+			<label index="fce.elements.layout.contentrandomizer.fields.limit">Number of random content elements to display</label>
+			<label index="fce.elements.layout.contentrandomizer.areas.content">Content to be randomized</label>
+
+			<label index="fce.elements.layout.jQueryAccordion.label">Layout: JQuery Accordion</label>
+			<label index="fce.elements.layout.jQueryAccordion.description">Allows other content elements to be inserted into a jQuery Accordion widget.</label>
+
+			<label index="fce.elements.layout.jQueryTabs.label">Layout: JQuery Tabs</label>
+			<label index="fce.elements.layout.jQueryTabs.description">Allows other content elements to be inserted into a jQuery Tabs widget.</label>
+
+			<label index="fce.elements.navigation.breadCrumb.label">Naviation: Bread Crumb menu</label>
+			<label index="fce.elements.navigation.breadCrumb.description">Renders a page root line in the shape of a breadcrumb menu. Allows configuring the starting point and entryLevel.</label>
+			
+			<label index="fce.elements.navigation.redirect.label">Naviation: Redirect</label>
+			<label index="fce.elements.navigation.redirect.description">Allows a timeout-based redirection to a target page, showing a message and counting down before redirecting.</label>
+
+		</languageKey>
+	</data>
+</T3locallang>

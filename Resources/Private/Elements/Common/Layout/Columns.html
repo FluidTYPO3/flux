@@ -9,8 +9,8 @@
 	<f:if condition="{columns} < 1">
 		<fed:data.var name="columns" type="integer">1</fed:data.var>
 	</f:if>
-	<flux:flexform id="contentColumns" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.description" enabled="TRUE">
-		<flux:flexform.field.select name="columnClass" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.fields.class"
+	<flux:flexform id="contentColumns" label="LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.label" description="LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.description" enabled="TRUE">
+		<flux:flexform.field.select name="columnClass" label="LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.fields.class"
 			items="{
 				0: {0: '50-50', 1: '50% - 50%'},
 				1: {0: '33-66', 1: '33% - 66%'},
@@ -27,7 +27,7 @@
 				<fed:data.func func="floor" as="gridColumnWidth"><fed:math>100/{columns}</fed:math></fed:data.func>
 				<f:for each="{columnClass->fed:explode(glue: '-')}" as="className" iteration="iteration">
 					<flux:flexform.grid.column style="width: {columnClass}%">
-						<flux:flexform.content name="column{iteration.cycle}" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.areas.column.{iteration.cycle}" />
+						<flux:flexform.content name="column{iteration.cycle}" label="LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.areas.column.{iteration.cycle}" />
 					</flux:flexform.grid.column>
 				</f:for>
 			</flux:flexform.grid.row>
@@ -36,7 +36,7 @@
 </f:section>
 
 <f:section name="Preview">
-	<f:translate key="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.fields.class" />: {columnClass}
+	<f:translate key="LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:fce.elements.layout.columns.fields.class" />: {columnClass}
 	<flux:widget.grid />
 </f:section>
 
