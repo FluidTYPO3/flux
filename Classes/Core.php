@@ -83,12 +83,11 @@ class Tx_Fluidcontent_Core {
 			$templateRootPath = t3lib_div::getFileAbsFileName($templatePathSet['templateRootPath']);
 			$files = array();
 			$files = t3lib_div::getAllFilesAndFoldersInPath($files, $templateRootPath, '');
-			#$files = Tx_Fed_Utility_Path::getFiles($templatePathSet['templateRootPath'], TRUE);
+			$defaultIcon = '../' . t3lib_extMgm::siteRelPath('fluidcontent') . 'Resources/Public/Icons/Plugin.png';
 			if (count($files) > 0) {
 				foreach ($files as $templateFilename) {
 					$fileRelPath = substr($templateFilename, strlen($templateRootPath));
 					$contentConfiguration = array();
-					#$templateFilename = $templatePathSet['templateRootPath'] . '/' . $fileRelPath;
 					$templateContents = file_get_contents($templateFilename);
 					$matches = array();
 					$pattern = '/<flux\:flexform[^\.]([^>]+)/';
@@ -119,7 +118,7 @@ class Tx_Fluidcontent_Core {
 						',
 						$tabId,
 						$id,
-						($contentConfiguration['icon'] ? $contentConfiguration['icon'] : '../' . t3lib_extMgm::siteRelPath('fed') . 'Resources/Public/Icons/Plugin.png') ,
+						($contentConfiguration['icon'] ? $contentConfiguration['icon'] : $defaultIcon) ,
 						$contentConfiguration['label'],
 						$contentConfiguration['description'],
 						$key . ':' . $fileRelPath
