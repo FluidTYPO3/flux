@@ -4,7 +4,7 @@
 <f:layout name="FCE" />
 
 <f:section name="Configuration">
-	<flux:flexform id="displayFileList" label="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.filelist.label" description="LLL:EXT:fed/Resources/Private/Language/locallang.xml:fce.elements.display.filelist.description" enabled="TRUE">
+	<flux:flexform id="displayFileList" label="LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:fce.elements.display.filelist.label" description="LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:fce.elements.display.filelist.description" enabled="TRUE">
 		<flux:flexform.field.checkbox name="jQuery" label="Load jQuery - in case your page does not include it. Uses Google's CDN Service" />
 		<flux:flexform.field.input name="path" label="Site-relative path to dir containing files, remember trailing slash" />
 		<flux:flexform.field.input name="dateFormat" label="Format for date, PHP date() syntax - ex. Y-m-d H:i" default="Y-m-d H:i" />
@@ -54,7 +54,7 @@
 		<thead>
 			<tr>
 			<f:for each="{fields}" as="fieldName">
-				<th><f:translate key="LLL:EXT:fed/Resources/Private/Language/locallang.xml:tx_fed_file.{fieldName}" default="{fieldName}" /></th>
+				<th><f:translate key="LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tx_fed_file.{fieldName}" default="{fieldName}" /></th>
 			</f:for>
 			</tr>
 		</thead>
