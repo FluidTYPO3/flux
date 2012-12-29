@@ -37,6 +37,12 @@ class Tx_Flux_UserFunction_NoTemplate {
 	 */
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj, $parameters);
-		return 'Please select Fluid Content Element type';
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
+			return 'No FlexForm source selected. This is usually caused by incorrect template paths being returned by a ConfigurationProvider - in the
+				case of FED/FluidContent/FluidPages this can also be caused by not having selected a page template or Fluid content element type, which
+				can be considered a safe "error" that is only reported because debug mode is enabled in Flux. The parameters which lead to this error
+				were: <br />' . var_export($parameters, TRUE);
+		}
+		return NULL;
 	}
 }
