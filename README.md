@@ -8,11 +8,6 @@ content elements. The feature was born in the extension FED and ported into this
 a simple, highly specific purpose. It uses Flux to enable highly dynamic configuration of variables used when rendering the
 template.
 
-Two sets of built-in content elements are provided which can be included as needed:
-
-* Common content elements such as a column divider, an AJAX content loader, a file list and a bread crumb element.
-* Twitter Bootstrap content elements such as collapsibles, dismissable alert boxes, button groups, hero unit and navigation lists.
-
 ## What does it do?
 
 EXT:fluidcontent lets you write custom content elements based on Fluid templates. Each content element and its possible settings
@@ -147,3 +142,8 @@ Other extensions which are either dependencies of or closely related to this ext
 * https://github.com/NamelessCoder/flux is a dependency and is used to configure how the content template variable are defined.
 * https://github.com/NamelessCoder/vhs is a highly suggested companion for Fluid Content templates, providing useful ViewHelpers.
 * https://github.com/NamelessCoder/fluidpages is a recommendation for a site built with Fluid, but is not TemplaVoila compatible.
+* https://github.com/NamelessCoder/fluidcontent_fed is a collection of general Fluid Content Elements which use FED ViewHelpers
+* https://github.com/NamelessCoder/fluidcontent_bootstrap is a collection of Fluid Content Elements for Twitter Bootstrap which
+  use VHS ViewHelpers
+* https://github.com/NamelessCoder/fluidpages_bootstrap is a collection of Fluid Page templates written for Bootstrap using VHS
+  ViewHelpers
