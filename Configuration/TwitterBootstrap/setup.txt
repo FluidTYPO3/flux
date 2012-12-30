@@ -1,9 +1,0 @@
-[GLOBAL]
-tt_content.fed_fce < tt_content.fluidcontent_content
-plugin.tx_fed.fce.fluidcontent_twitterbootstrap {
-	label = Fluid Content Elements - Twitter Bootstrap
-	dependencies = vhs
-	templateRootPath = EXT:fluidcontent/Resources/Private/Elements/TwitterBootstrap/
-	partialRootPath = EXT:fluidcontent/Resources/Private/Partials/
-	layoutRootPath = EXT:fluidcontent/Resources/Private/Layouts/
-}
