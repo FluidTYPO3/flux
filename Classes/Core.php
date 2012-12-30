@@ -72,12 +72,7 @@ class Tx_Fluidcontent_Core {
 			return FALSE;
 		}
 		unset($GLOBALS['TYPO3_DB']);
-		$wizardTabs = array(
-			'fed' => array(
-				'title' => 'Fluid Content Elements',
-				'elements' => array()
-			)
-		);
+		$wizardTabs = array();
 		foreach ($allTemplatePaths as $key => $templatePathSet) {
 			$key = trim($key, '.');
 			$templateRootPath = t3lib_div::getFileAbsFileName($templatePathSet['templateRootPath']);
