@@ -8,7 +8,7 @@ Tx_Flux_Core::registerConfigurationProvider('Tx_Fluidcontent_Provider_ContentCon
 Tx_Extbase_Utility_Extension::registerPlugin(
 	$_EXTKEY,
 	'Content',
-	'Fluid Content Element',
+	'Fluid Content',
 	t3lib_extMgm::extRelPath('fluidcontent') . 'ext_icon.gif'
 );
 
