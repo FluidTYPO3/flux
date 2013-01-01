@@ -11,7 +11,7 @@
  ***************************************************************/
 
 $EM_CONF[$_EXTKEY] = array(
-	'title' => 'Fluid Content Elements',
+	'title' => 'Fluid Content Engine',
 	'description' => 'Fluid Content Element engine - integrates extremely compact and highly dynamic content element templates written in Fluid. See: https://github.com/NamelessCoder/fluidcontent',
 	'category' => 'misc',
 	'author' => 'Claus Due',
