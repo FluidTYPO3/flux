@@ -33,7 +33,7 @@
  * @package Flux
  * @subpackage Service
  */
-class Tx_Flux_Service_FlexForm extends Tx_Extbase_Service_FlexFormService implements t3lib_Singleton {
+class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
 	 * @var string
@@ -381,6 +381,106 @@ class Tx_Flux_Service_FlexForm extends Tx_Extbase_Service_FlexFormService implem
 				}
 			}
 		}
+	}
+
+	/**
+	 * Parses the flexForm content and converts it to an array
+	 * The resulting array will be multi-dimensional, as a value "bla.blubb"
+	 * results in two levels, and a value "bla.blubb.bla" results in three levels.
+	 *
+	 * Note: multi-language flexForms are not supported yet
+	 *
+	 * @param string $flexFormContent flexForm xml string
+	 * @param string $languagePointer language pointer used in the flexForm
+	 * @param string $valuePointer value pointer used in the flexForm
+	 * @return array the processed array
+	 */
+	public function convertFlexFormContentToArray($flexFormContent, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
+		$settings = array();
+
+		$flexFormArray = t3lib_div::xml2array($flexFormContent);
+		$flexFormArray = (isset($flexFormArray['data']) && is_array($flexFormArray['data']) ? $flexFormArray['data'] : $flexFormArray);
+		if (is_array($flexFormArray) === FALSE) {
+			return $settings;
+		}
+		foreach (array_values($flexFormArray) as $languages) {
+			if (!is_array($languages) || !isset($languages[$languagePointer])) {
+				continue;
+			}
+			foreach ($languages[$languagePointer] as $valueKey => $valueDefinition) {
+				if (strpos($valueKey, '.') === FALSE) {
+					$settings[$valueKey] = $this->walkFlexFormNode($valueDefinition, $valuePointer);
+				} else {
+					$valueKeyParts = explode('.', $valueKey);
+					$currentNode =& $settings;
+
+					foreach ($valueKeyParts as $valueKeyPart) {
+						$currentNode =& $currentNode[$valueKeyPart];
+					}
+
+					if (is_array($valueDefinition)) {
+						if (array_key_exists($valuePointer, $valueDefinition)) {
+							$currentNode = $valueDefinition[$valuePointer];
+						} else {
+							$currentNode = $this->walkFlexFormNode($valueDefinition, $valuePointer);
+						}
+					} else {
+						$currentNode = $valueDefinition;
+					}
+				}
+			}
+		}
+		return $settings;
+	}
+
+	/**
+	 * Parses a flexForm node recursively and takes care of sections etc
+	 *
+	 * @param array $nodeArray The flexForm node to parse
+	 * @param string $valuePointer The valuePointer to use for value retrieval
+	 * @return array
+	 */
+	public function walkFlexFormNode($nodeArray, $valuePointer = 'vDEF') {
+		if (is_array($nodeArray)) {
+			$return = array();
+
+			foreach ($nodeArray as $nodeKey => $nodeValue) {
+				if ($nodeKey === $valuePointer) {
+					return $nodeValue;
+				}
+
+				if (in_array($nodeKey, array('el', '_arrayContainer'))) {
+					return $this->walkFlexFormNode($nodeValue, $valuePointer);
+				}
+
+				if (substr($nodeKey, 0, 1) === '_') {
+					continue;
+				}
+
+				if (strpos($nodeKey, '.')) {
+					$nodeKeyParts = explode('.', $nodeKey);
+					$currentNode =& $return;
+
+					for ($i = 0; $i < (count($nodeKeyParts) - 1); $i++) {
+						$currentNode =& $currentNode[$nodeKeyParts[$i]];
+					}
+
+					$newNode = array(next($nodeKeyParts) => $nodeValue);
+					$currentNode = $this->walkFlexFormNode($newNode, $valuePointer);
+				} else if (is_array($nodeValue)) {
+					if (array_key_exists($valuePointer, $nodeValue)) {
+						$return[$nodeKey] = $nodeValue[$valuePointer];
+					} else {
+						$return[$nodeKey] = $this->walkFlexFormNode($nodeValue, $valuePointer);
+					}
+				} else {
+					$return[$nodeKey] = $nodeValue;
+				}
+			}
+			return $return;
+		}
+
+		return $nodeArray;
 	}
 
 }
