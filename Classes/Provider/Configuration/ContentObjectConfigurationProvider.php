@@ -291,6 +291,9 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 */
 	protected function adjustColumnPositionBasedOnCommandUrl($id) {
 		$commandUrl = t3lib_div::_GET('cmd');
+		if (empty($commandUrl)) {
+			return;
+		}
 		$instruction = array_pop(array_pop($commandUrl));
 		$command = key($instruction);
 		$relativeTo = $instruction[$command];
