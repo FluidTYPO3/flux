@@ -23,14 +23,10 @@ t3lib_extMgm::addTCAcolumns('tt_content', array(
 			'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang_db.xml:tt_content.tx_flux_parent',
 			'config' => array (
 				'type' => 'select',
-				'renderMode' => 'tree',
-				'treeConfig' => array(
-					'parentField' => 'tx_flux_parent',
-				),
 				'foreign_table' => 'tt_content',
 				'foreign_table_where' => "AND tt_content.CType = 'fed_fce' AND tt_content.pid = '###CURRENT_PID###'",
 				'default' => 0,
-				'size' => 10,
+				'size' => 1,
 				'maxitems' => 1,
 			)
 		),
