@@ -47,7 +47,5 @@ t3lib_extMgm::addTCAcolumns('tt_content', array(
 );
 
 $TCA['tt_content']['columns']['colPos']['config']['items'][] = array('LLL:EXT:flux/locallang_db.xml:tt_content.tx_flux_container', '-42');
-$TCA['tt_content']['ctrl']['requestUpdate'] .= ',tx_flux_parent';
-t3lib_extMgm::addToAllTCAtypes('tt_content', 'tx_flux_parent, tx_flux_column');
 
 Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider');
