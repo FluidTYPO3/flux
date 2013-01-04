@@ -64,33 +64,48 @@ class Tx_Flux_Service_Grid implements t3lib_Singleton {
 	 * @param array $variables
 	 * @param string|NULL $configurationSection
 	 * @param array $paths
-	 * @return mixed
+	 * @return array
+	 * @throws Exception
 	 */
 	public function getGridFromTemplateFile($templatePathAndFilename, array $variables = array(), $configurationSection = NULL, array $paths = array()) {
-		if (file_exists($templatePathAndFilename) === FALSE) {
-			$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+		try {
+			if (file_exists($templatePathAndFilename) === FALSE) {
+				$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+			}
+			if (file_exists($templatePathAndFilename) === FALSE) {
+				t3lib_div::sysLog('Attempted to fetch a Grid from a template file which does not exist (' . $templatePathAndFilename . ')', 'flux', t3lib_div::SYSLOG_SEVERITY_WARNING);
+				return array();
+			}
+			$paths = Tx_Flux_Utility_Path::translatePath($paths);
+			$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
+			$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
+			$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
+			$request->setControllerExtensionName('Flux');
+			$request->setControllerName('Flux');
+			$request->setDispatched(TRUE);
+			$context->setRequest($request);
+			$context->setResponse($response);
+			$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
+			$view->setControllerContext($context);
+			$view->setTemplatePathAndFilename($templatePathAndFilename);
+			if ($paths['partialRootPath']) {
+				$view->setPartialRootPath($paths['partialRootPath']);
+			}
+			if ($paths['layoutRootPath']) {
+				$view->setLayoutRootPath($paths['layoutRootPath']);
+			}
+			$view->assignMultiple($variables);
+			$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $configurationSection);
+			$grid = isset($stored['grid']) ? $stored['grid'] : NULL;
+		} catch (Exception $error) {
+			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
+				throw $error;
+			} else {
+				t3lib_div::sysLog($error->getMessage(), 'flux');
+			}
+			$grid = array();
 		}
-		$paths = Tx_Flux_Utility_Path::translatePath($paths);
-		$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
-		$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
-		$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
-		$request->setControllerExtensionName('Flux');
-		$request->setControllerName('Flux');
-		$request->setDispatched(TRUE);
-		$context->setRequest($request);
-		$context->setResponse($response);
-		$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
-		$view->setControllerContext($context);
-		$view->setTemplatePathAndFilename($templatePathAndFilename);
-		if ($paths['partialRootPath']) {
-			$view->setPartialRootPath($paths['partialRootPath']);
-		}
-		if ($paths['layoutRootPath']) {
-			$view->setLayoutRootPath($paths['layoutRootPath']);
-		}
-		$view->assignMultiple($variables);
-		$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $configurationSection);
-		return $stored['grid'];
+		return $grid;
 	}
 
 }
