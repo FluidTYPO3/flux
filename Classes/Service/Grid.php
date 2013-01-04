@@ -47,6 +47,18 @@ class Tx_Flux_Service_Grid implements t3lib_Singleton {
 	}
 
 	/**
+	 * Reads a Grid constructed using flux:flexform.grid, returning an array of
+	 * defined rows and columns along with any content areas.
+	 *
+	 * Note about specific implementations:
+	 *
+	 * * EXT:fluidpages uses the Grid to render a BackendLayout on TYPO3 6.0 and above
+	 * * EXT:flux uses the Grid to render content areas inside content elements
+	 *   registered with Flux
+	 *
+	 * But your custom extension is of course allowed to use the Grid for any
+	 * purpose. You can even read the Grid from - for example - the currently
+	 * selected page template to know exactly how the BackendLayout looks.
 	 *
 	 * @param string $templatePathAndFilename
 	 * @param array $variables
