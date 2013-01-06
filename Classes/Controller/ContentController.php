@@ -67,10 +67,30 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 		/** @var $view Tx_Flux_MVC_View_ExposedTemplateView */
 		$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedTemplateView');
 		$cObj = $this->configurationManager->getContentObject();
+		if (isset($cObj->data['tx_fed_fcefile']) === FALSE) {
+			return 'Fluid Content type not selected';
+		}
 		$this->flexFormService->setContentObjectData($cObj->data);
 		list ($extensionName, $filename) = explode(':', $cObj->data['tx_fed_fcefile']);
+		if (empty($extensionName) || empty($filename)) {
+			return 'Invalid Fluid Content type definition! The specified type is an empty value.';
+		}
 		$paths = $this->configurationService->getContentConfiguration($extensionName);
 		$absolutePath = $paths['templateRootPath'] . '/' . $filename;
+		if (is_file($absolutePath) === FALSE) {
+			$safeReportPath = str_replace(PATH_site, '$PATH_site/', $absolutePath);
+			return 'Fluid Content template file "' . $safeReportPath . '" does not exist';
+		}
+		if (is_dir($paths['layoutRootPath']) === FALSE) {
+			return 'Fluid Content group has not defined a <code>layoutRootPath</code> - please make sure one is defined.
+			 		If the group does not require Partials please use path <code>EXT:fluidcontent/Resources/Private/Partials</code>
+			 		as a safe fallback path which is guaranteed to exist.';
+		}
+		if (is_dir($paths['partialRootPath']) === FALSE) {
+			return 'Fluid Content group has not defined a <code>partialRootPath</code> - please make sure one is defined.
+			 		If the group does not require Partials please use path <code>EXT:flux/Resources/Private/Partials</code>
+			 		as a safe fallback path which is guaranteed to exist.';
+		}
 		$view->setLayoutRootPath($paths['layoutRootPath']);
 		$view->setPartialRootPath($paths['partialRootPath']);
 		$view->setTemplatePathAndFilename($absolutePath);
