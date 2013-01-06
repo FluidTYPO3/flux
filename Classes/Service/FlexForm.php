@@ -399,7 +399,12 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 */
 	public function convertFlexFormContentToArray($flexFormContent, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
 		$settings = array();
-
+		if (empty($languagePointer)) {
+			$languagePointer = 'lDEF';
+		}
+		if (empty($valuePointer)) {
+			$valuePointer = 'vDEF';
+		}
 		$flexFormArray = t3lib_div::xml2array($flexFormContent);
 		$flexFormArray = (isset($flexFormArray['data']) && is_array($flexFormArray['data']) ? $flexFormArray['data'] : $flexFormArray);
 		if (is_array($flexFormArray) === FALSE) {
