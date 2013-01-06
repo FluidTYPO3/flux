@@ -284,7 +284,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		}
 		$fieldName = $this->getFieldName($row);
 		$paths = $this->getTemplatePaths($row);
-		$values = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName ? $fieldName : 'pi_flexform'], $paths);
+		$values = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName ? $fieldName : 'pi_flexform']);
 		$values = array_merge((array) $this->getTemplateVariables($row), $values);
 		$section = $this->getConfigurationSectionName($row);
 		if (strpos($section, 'variable:') !== FALSE) {
