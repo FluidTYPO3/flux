@@ -37,25 +37,38 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	 * @param string $viewHelperClassName Class name of the ViewHelper which stored the variable
 	 * @param string $name Name of the variable which the ViewHelper stored
 	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
+	 * @param array $paths Template paths; required if template renders Partials (from inside $sectionName, if specified)
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL) {
-		if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
-			throw new Exception('ExposedStandaloneView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
+	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL, $paths = NULL) {
+		try {
+			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
+				throw new Exception('ExposedStandaloneView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
+			}
+			$value = NULL;
+			if (is_array($paths)) {
+				$this->setPartialRootPath($paths['partialRootPath']);
+				$this->setLayoutRootPath($paths['layoutRootPath']);
+			}
+			$this->templateParser->setConfiguration($this->buildParserConfiguration());
+			$this->baseRenderingContext->setControllerContext($this->controllerContext);
+			$parsedTemplate = $this->getParsedTemplate();
+			$this->setRenderingContext($this->baseRenderingContext);
+			$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
+			if ($sectionName !== NULL) {
+				$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
+			} else {
+				$this->render();
+			}
+			$this->stopRendering();
+			$value = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
+		} catch (Exception $error) {
+			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
+				throw $error;
+			}
 		}
-		$this->templateParser->setConfiguration($this->buildParserConfiguration());
-		$this->baseRenderingContext->setControllerContext($this->controllerContext);
-		$parsedTemplate = $this->getParsedTemplate();
-		$this->setRenderingContext($this->baseRenderingContext);
-		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
-		if ($sectionName !== NULL) {
-			$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
-		} else {
-			$this->render();
-		}
-		$this->stopRendering();
-		return $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
+		return $value;
 	}
 
 	/**
