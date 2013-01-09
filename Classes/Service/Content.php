@@ -112,6 +112,9 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 		$area = NULL;
 		if ($urlHashCutoffPoint > 0) {
 			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
+			if (strpos($area, ':') === FALSE) {
+				return NULL;
+			}
 		}
 		return array_shift(explode(':', $area));
 	}
@@ -129,6 +132,9 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 		$area = NULL;
 		if ($urlHashCutoffPoint > 0) {
 			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
+			if (strpos($area, ':') === FALSE) {
+				return NULL;
+			}
 		}
 		return array_pop(explode(':', $area));
 	}
