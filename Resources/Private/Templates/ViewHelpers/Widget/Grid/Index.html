@@ -1,52 +1,83 @@
 {namespace flux=Tx_Flux_ViewHelpers}
 <div xmlns="http://www.w3.org/1999/xhtml" lang="en"
-     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers">
-
+     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers"
+	 id="container-record-{row.uid}"
+	 class="grid-visibility-toggle">
 <style type="text/css">
+<f:format.raw>
 .fce-header { background-color: #5B5B5B; background-image: -moz-linear-gradient(center top , #7F7F7F 10%, #5B5B5B 100%); margin-top: 8px; }
 .fce-container .t3-page-ce-body { margin-bottom: 8px; padding: 5px; }
 td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
+.toggle-content { cursor: pointer; float: right; margin-top: -15px; }
+.content-blind, .content-blind * { display: none; !important }
+.flux-grid { width: 100%; }
+.t3-page-ce .toggle-content { display: none; }
+.t3-page-ce:hover .toggle-content { display: block; }
+</f:format.raw>
 </style>
-
-<table style="width: 100%; margin-top: 8px;" cellspacing="0" cellpadding="0">
-	<tbody>
-	<f:for each="{grid}" as="gridrow" iteration="rowIteration">
-		<tr>
-		<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
-			<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" style="{gridcolumn.style}">
-			<f:for each="{gridcolumn.areas}" as="area">
-				<flux:be.contentArea area="{area.name}" row="{row}">
-					<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
-						<div><f:translate key="{area.label}" default="{area.label}" /></div>
-					</div>
-					<div class="fce-container t3-page-ce-wrapper">
-						<div class="t3-page-ce">
-							<div class="t3-page-ce-dropzone" id="colpos-{row.colPos}-page-{row.pid}-{area.md5}-top-{row.uid}-{area.name}" style="height: 16px;">
-								<div class="t3-page-ce-wrapper-new-ce">
-									<flux:be.link.content.new row="{row}" area="{area.name}" />
-								</div>
-							</div>
-						</div>
-						<f:for each="{records}" as="record">
-							<div class="t3-page-ce" id="element-tt_content-{record.uid}">
-								<div class="t3-page-ce-dragitem">
-									<flux:be.contentElement row="{record}" dblist="{dblist}" />
-								</div>
-								<div class="t3-page-ce-dropzone" id="colpos-{record.colPos}-page-{record.pid}-{row.uid}-after-{row.uid}" style="height: 16px;">
-									<div class="t3-page-ce-wrapper-new-ce">
-										<flux:be.link.content.new row="{row}" area="{area.name}" />
-									</div>
-								</div>
-							</div>
-						</f:for>
-					</div>
-				</flux:be.contentArea>
-			</f:for>
-			</td>
-		</f:for>
-		</tr>
-	</f:for>
-	</tbody>
-</table>
-
+<div id="content-blind-{row.uid}" class="content-blind"></div>
+<div id="toggle-content-{row.uid}" class="toggle-content">
+	<span id="toggle-{row.uid}" class="t3-icon t3-icon-actions t3-icon-view-table-{f:if(condition: record.hidden, then: 'expand', else: 'collapse')}"></span>
 </div>
+<div id="grid-container-{row.uid}">
+	<f:render section="Grid" arguments="{_all}" />
+</div>
+<script type="text/javascript">
+	fluxCollapse{row.uid} = function() {
+		if (Ext.get('content-grid-{row.uid}').isDisplayed()) {
+			Ext.get('content-blind-{row.uid}').insertFirst(Ext.get('content-grid-{row.uid}'));
+			Ext.get('toggle-{row.uid}').replaceClass('t3-icon-view-table-collapse', 't3-icon-view-table-expand');
+		} else {
+			Ext.get('grid-container-{row.uid}').insertFirst(Ext.get('content-grid-{row.uid}'));
+			Ext.get('toggle-{row.uid}').replaceClass('t3-icon-view-table-expand', 't3-icon-view-table-collapse');
+		};
+	};
+	Ext.get('toggle-content-{row.uid}').on('click', fluxCollapse{row.uid});
+	if (Ext.get('content-grid-{row.uid}').hasClass('hidden')) {
+		fluxCollapse{row.uid}();
+	};
+</script>
+</div>
+
+<f:section name="Grid">
+	<table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" class="flux-grid{f:if(condition: row.hidden, then: ' hidden')}">
+		<tbody>
+		<f:for each="{grid}" as="gridrow" iteration="rowIteration">
+			<tr>
+				<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
+					<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" style="{gridcolumn.style}">
+						<f:for each="{gridcolumn.areas}" as="area">
+							<flux:be.contentArea area="{area.name}" row="{row}">
+								<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
+									<div><f:translate key="{area.label}" default="{area.label}" /></div>
+								</div>
+								<div class="fce-container t3-page-ce-wrapper">
+									<div class="t3-page-ce">
+										<div class="t3-page-ce-dropzone" id="colpos-{row.colPos}-page-{row.pid}-{area.md5}-top-{row.uid}-{area.name}" style="height: 16px;">
+											<div class="t3-page-ce-wrapper-new-ce">
+												<flux:be.link.content.new row="{row}" area="{area.name}" />
+											</div>
+										</div>
+									</div>
+									<f:for each="{records}" as="record">
+										<div class="t3-page-ce" id="element-tt_content-{record.uid}">
+											<div class="t3-page-ce-dragitem">
+												<flux:be.contentElement row="{record}" dblist="{dblist}" />
+											</div>
+											<div class="t3-page-ce-dropzone" id="colpos-{record.colPos}-page-{record.pid}-{row.uid}-after-{row.uid}" style="height: 16px;">
+												<div class="t3-page-ce-wrapper-new-ce">
+													<flux:be.link.content.new row="{row}" area="{area.name}" />
+												</div>
+											</div>
+										</div>
+									</f:for>
+								</div>
+							</flux:be.contentArea>
+						</f:for>
+					</td>
+				</f:for>
+			</tr>
+		</f:for>
+		</tbody>
+	</table>
+</f:section>
