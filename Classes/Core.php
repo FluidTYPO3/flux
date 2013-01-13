@@ -79,6 +79,7 @@ class Tx_Fluidcontent_Core {
 			$files = array();
 			$files = t3lib_div::getAllFilesAndFoldersInPath($files, $templateRootPath, '');
 			$defaultIcon = '../' . t3lib_extMgm::siteRelPath('fluidcontent') . 'Resources/Public/Icons/Plugin.png';
+			$defaultTab = 'FCE';
 			if (count($files) > 0) {
 				foreach ($files as $templateFilename) {
 					$fileRelPath = substr($templateFilename, strlen($templateRootPath));
@@ -95,7 +96,9 @@ class Tx_Fluidcontent_Core {
 					if ($contentConfiguration['enabled'] === 'FALSE') {
 						continue;
 					}
-					if (isset($contentConfiguration['wizardTab'])) {
+					if (!isset($contentConfiguration['wizardTab'])) {
+						$wizardTabs[$tabId]['title'] = $defaultTab;
+					} else {
 						$tabId = self::sanitizeString($contentConfiguration['wizardTab']);
 						$wizardTabs[$tabId]['title'] = $contentConfiguration['wizardTab'];
 					}
