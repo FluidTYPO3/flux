@@ -144,7 +144,6 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 		$matches = array();
 		$pattern = '/<flux\:flexform[^\.]([^>]+)/';
 		preg_match_all($pattern, $templateContents, $matches);
-		$tabId = 'fed';
 		foreach (explode('" ', trim($matches[1][0], '"')) as $valueStringPair) {
 			list ($name, $value) = explode('="', trim($valueStringPair, '"'));
 			$contentConfiguration[$name] = $value;
