@@ -84,6 +84,13 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	}
 
 	/**
+	 * @return void
+	 */
+	public function initializeObject() {
+		$this->configurationService->loadRegisteredFluidContentElementTypoScript();
+	}
+
+	/**
 	 * @param array $row
 	 * @return string
 	 */

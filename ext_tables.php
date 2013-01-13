@@ -40,4 +40,6 @@ $GLOBALS['TCA']['tt_content']['types']['fed_fce']['showitem'] = '
 $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['fed_fce'] = 'apps-pagetree-root';
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']['fed']['plugins']['fed_fce']['pluginType'] = 'CType';
 
-Tx_Fluidcontent_Core::loadRegisteredFluidContentElementTypoScript();
+if (file_exists(PATH_site . 'typo3conf/.FED_CONTENT')) {
+	t3lib_extMgm::addPageTSConfig(file_get_contents(PATH_site . 'typo3conf/.FED_CONTENT'));
+}
