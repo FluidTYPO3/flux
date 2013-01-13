@@ -52,8 +52,10 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 	public function render() {
 		$this->setStorage(array(
 			'label' => $this->arguments['label'],
+			'description' => $this->arguments['description'],
 			'icon' => $this->arguments['icon'],
 			'enabled' => $this->arguments['enabled'],
+			'wizardTab' => $this->arguments['wizardTab'],
 			'mergeValues' => $this->arguments['mergeValues'],
 			'id' => $this->arguments['id'],
 			'fields' => array(),
