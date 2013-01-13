@@ -36,9 +36,22 @@
 class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Configuration implements t3lib_Singleton {
 
 	/**
+	 * @var Tx_Flux_Service_FlexForm
+	 */
+	protected $flexFormService;
+
+	/**
 	 * @var string
 	 */
 	protected $defaultIcon;
+
+	/**
+	 * @param Tx_Flux_Service_FlexForm $flexFormService
+	 * @return void
+	 */
+	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexFormService) {
+		$this->flexFormService = $flexFormService;
+	}
 
 	/**
 	 * CONSTRUCTOR
@@ -107,13 +120,14 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 		$wizardTabs = array();
 		foreach ($allTemplatePaths as $key => $templatePathSet) {
 			$key = trim($key, '.');
-			$templateRootPath = t3lib_div::getFileAbsFileName($templatePathSet['templateRootPath']);
+			$templatePathSet = Tx_Flux_Utility_Path::translatePath($templatePathSet);
+			$templateRootPath = $templatePathSet['templateRootPath'];
 			$files = array();
 			$files = t3lib_div::getAllFilesAndFoldersInPath($files, $templateRootPath, '');
 			if (count($files) > 0) {
 				foreach ($files as $templateFilename) {
 					$fileRelPath = substr($templateFilename, strlen($templateRootPath));
-					$contentConfiguration = $this->getContentObjectConfigurationFromTemplateFile($templateFilename);
+					$contentConfiguration = $this->flexFormService->getFlexFormConfigurationFromFile($templateFilename, array(), 'Configuration', $templatePathSet);
 					if ($contentConfiguration['enabled'] === 'FALSE') {
 						continue;
 					}
@@ -128,27 +142,6 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 			}
 		}
 		return $wizardTabs;
-	}
-
-	/**
-	 * Reads an array of settings which are defined in the template
-	 * file located at $templateFilename. The information includes
-	 * flags such as "enabled" and options such as "label".
-	 *
-	 * @param string $templateFilename
-	 * @return array
-	 */
-	protected function getContentObjectConfigurationFromTemplateFile($templateFilename) {
-		$contentConfiguration = array();
-		$templateContents = file_get_contents($templateFilename);
-		$matches = array();
-		$pattern = '/<flux\:flexform[^\.]([^>]+)/';
-		preg_match_all($pattern, $templateContents, $matches);
-		foreach (explode('" ', trim($matches[1][0], '"')) as $valueStringPair) {
-			list ($name, $value) = explode('="', trim($valueStringPair, '"'));
-			$contentConfiguration[$name] = $value;
-		}
-		return $contentConfiguration;
 	}
 
 	/**
