@@ -155,4 +155,15 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 		return $paths;
 	}
 
+	/**
+	 * Perform various cleanup operations upon clearing cache
+	 *
+	 * @return void
+	 */
+	public function clearCacheCommand() {
+		if (file_exists(PATH_site . 'typo3conf/.FED_CONTENT') === TRUE) {
+			unlink(PATH_site . 'typo3conf/.FED_CONTENT');
+		}
+	}
+
 }
