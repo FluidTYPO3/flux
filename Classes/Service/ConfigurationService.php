@@ -72,8 +72,6 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 	 * @return void
 	 */
 	protected function writeCachedConfiguration() {
-		$fedWizardElements = array();
-		$pageTsConfig = '';
 		/** @var t3lib_tsparser_ext $template */
 		$template = t3lib_div::makeInstance("t3lib_tsparser_ext");
 		$template->tt_track = 0;
@@ -119,9 +117,27 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 						$wizardTabs[$tabId]['title'] = $contentConfiguration['wizardTab'];
 					}
 					$id = $key . '_' . preg_replace('/[\.\/]/' , '', $fileRelPath);
-					$pageTsConfig .= $this->buildWizardTabItem($tabId, $id, $contentConfiguration, $key . ':' . $fileRelPath);
-					$wizardTabs[$tabId]['elements'][] = $id;
+					$elementTsConfig = $this->buildWizardTabItem($tabId, $id, $contentConfiguration, $key . ':' . $fileRelPath);
+					$wizardTabs[$tabId]['elements'][$id] = $elementTsConfig;
 				}
+			}
+		}
+		$pageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
+		t3lib_div::writeFile(PATH_site . 'typo3conf/.FED_CONTENT', $pageTsConfig);
+	}
+
+	/**
+	 * Builds a big piece of pageTSconfig setup, defining
+	 * every detected content element's wizard tabs and items.
+	 *
+	 * @param array $wizardTabs
+	 * @return string
+	 */
+	protected function buildAllWizardTabsPageTsConfig($wizardTabs) {
+		$pageTsConfig = '';
+		foreach ($wizardTabs as $tab) {
+			foreach ($tab['elements'] as $id => $elementTsConfig) {
+				$pageTsConfig .= $elementTsConfig;
 			}
 		}
 		foreach ($wizardTabs as $tabId => $tab) {
@@ -134,10 +150,10 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 				',
 				$tabId,
 				$tab['title'],
-				implode(',', $tab['elements'])
+				implode(',', array_keys($tab['elements']))
 			);
 		}
-		t3lib_div::writeFile(PATH_site . 'typo3conf/.FED_CONTENT', $pageTsConfig);
+		return $pageTsConfig;
 	}
 
 	/**
