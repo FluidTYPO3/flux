@@ -152,6 +152,7 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 	 * @return string
 	 */
 	protected function buildWizardTabItem($tabId, $id, $contentConfiguration, $templateFileIdentity) {
+		$iconFileRelativePath = ($contentConfiguration['icon'] ? $contentConfiguration['icon'] : $this->defaultIcon);
 		return sprintf('
 			mod.wizards.newContentElement.wizardItems.%s.elements.%s {
 				icon = %s
@@ -165,7 +166,7 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 			',
 			$tabId,
 			$id,
-			($contentConfiguration['icon'] ? $contentConfiguration['icon'] : $this->defaultIcon) ,
+			$iconFileRelativePath,
 			$contentConfiguration['label'],
 			$contentConfiguration['description'],
 			$templateFileIdentity
