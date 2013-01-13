@@ -36,6 +36,18 @@
 class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Configuration implements t3lib_Singleton {
 
 	/**
+	 * @var string
+	 */
+	protected $defaultIcon;
+
+	/**
+	 * CONSTRUCTOR
+	 */
+	public function __construct() {
+		$this->defaultIcon = '../' . t3lib_extMgm::siteRelPath('fluidcontent') . 'Resources/Public/Icons/Plugin.png';
+	}
+
+	/**
 	 * Get definitions of paths for FCEs defined in TypoScript
 	 *
 	 * @param string $extensionName Optional extension name to get only that extension
@@ -86,7 +98,6 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 			$templateRootPath = t3lib_div::getFileAbsFileName($templatePathSet['templateRootPath']);
 			$files = array();
 			$files = t3lib_div::getAllFilesAndFoldersInPath($files, $templateRootPath, '');
-			$defaultIcon = '../' . t3lib_extMgm::siteRelPath('fluidcontent') . 'Resources/Public/Icons/Plugin.png';
 			if (count($files) > 0) {
 				foreach ($files as $templateFilename) {
 					$fileRelPath = substr($templateFilename, strlen($templateRootPath));
@@ -108,24 +119,7 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 						$wizardTabs[$tabId]['title'] = $contentConfiguration['wizardTab'];
 					}
 					$id = $key . '_' . preg_replace('/[\.\/]/' , '', $fileRelPath);
-					$pageTsConfig .= sprintf('
-						mod.wizards.newContentElement.wizardItems.%s.elements.%s {
-							icon = %s
-							title = %s
-							description = %s
-							tt_content_defValues {
-								CType = fed_fce
-								tx_fed_fcefile = %s
-							}
-						}
-						',
-						$tabId,
-						$id,
-						($contentConfiguration['icon'] ? $contentConfiguration['icon'] : $defaultIcon) ,
-						$contentConfiguration['label'],
-						$contentConfiguration['description'],
-						$key . ':' . $fileRelPath
-					);
+					$pageTsConfig .= $this->buildWizardTabItem($tabId, $id, $contentConfiguration, $key . ':' . $fileRelPath);
 					$wizardTabs[$tabId]['elements'][] = $id;
 				}
 			}
@@ -144,6 +138,38 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 			);
 		}
 		t3lib_div::writeFile(PATH_site . 'typo3conf/.FED_CONTENT', $pageTsConfig);
+	}
+
+	/**
+	 * Builds a single Wizard item (one FCE) based on the
+	 * tab id, element id, configuration array and special
+	 * template identity (groupName:Relative/Path/File.html)
+	 *
+	 * @param string $tabId
+	 * @param string $id
+	 * @param array $contentConfiguration
+	 * @param string $templateFileIdentity
+	 * @return string
+	 */
+	protected function buildWizardTabItem($tabId, $id, $contentConfiguration, $templateFileIdentity) {
+		return sprintf('
+			mod.wizards.newContentElement.wizardItems.%s.elements.%s {
+				icon = %s
+				title = %s
+				description = %s
+				tt_content_defValues {
+					CType = fed_fce
+					tx_fed_fcefile = %s
+				}
+			}
+			',
+			$tabId,
+			$id,
+			($contentConfiguration['icon'] ? $contentConfiguration['icon'] : $this->defaultIcon) ,
+			$contentConfiguration['label'],
+			$contentConfiguration['description'],
+			$templateFileIdentity
+		);
 	}
 
 	/**
