@@ -52,9 +52,12 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 	 * @param string $fieldName
 	 * @param array $row
 	 * @param string $extensionKey
-	 * @return array<Tx_Flux_Provider_ConfigurationProviderInterface>|NULL
+	 * @return Tx_Flux_Provider_ConfigurationProviderInterface[]
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row=NULL, $extensionKey=NULL) {
+		if (is_array($row) === FALSE) {
+			$row = array();
+		}
 		$bindToFieldName = Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing();
 		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
 		$prioritizedProviders = array();
@@ -72,18 +75,18 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 				$prioritizedProviders[$priority] = array();
 			}
 			$matchesTableName = ($providerTableName === $table);
-			$matchesFieldName = ($providerFieldName === $fieldName || $bindToFieldName === FALSE);
+			$matchesFieldName = ($providerFieldName === $fieldName || $bindToFieldName === FALSE || $fieldName === NULL);
 			$matchesExtensionKey = ($providerExtensionKey === $extensionKey || $extensionKey === NULL);
 			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
 			if ($matchesExtensionKey && $matchesTableName && $matchesFieldName) {
 				if ($provider instanceof Tx_Flux_Provider_ContentObjectConfigurationProviderInterface) {
 					/** @var Tx_Flux_Provider_ContentObjectConfigurationProviderInterface $provider */
-					if ($provider->getContentObjectType($row) === $row['CType']) {
+					if (isset($row['CType']) === FALSE || $provider->getContentObjectType($row) === $row['CType']) {
 						$prioritizedProviders[$priority][] = $provider;
 					}
 				} elseif ($provider instanceof Tx_Flux_Provider_PluginConfigurationProviderInterface) {
 					/** @var Tx_Flux_Provider_PluginConfigurationProviderInterface $provider */
-					if ($provider->getListType($row) === $row['list_type']) {
+					if (isset($row['list_type']) === FALSE || $provider->getListType($row) === $row['list_type']) {
 						$prioritizedProviders[$priority][] = $provider;
 					}
 				} else {
