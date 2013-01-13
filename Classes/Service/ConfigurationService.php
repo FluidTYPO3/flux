@@ -85,16 +85,16 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 	 * @return void
 	 */
 	protected function writeCachedConfiguration() {
+		$pageUid = intval(t3lib_div::_GP('id'));
+		if ($pageUid < 1) {
+			return FALSE;
+		}
 		/** @var t3lib_tsparser_ext $template */
 		$template = t3lib_div::makeInstance("t3lib_tsparser_ext");
 		$template->tt_track = 0;
 		$template->init();
 		/** @var t3lib_pageSelect $sys_page */
 		$sys_page = t3lib_div::makeInstance("t3lib_pageSelect");
-		$pageUid = intval(t3lib_div::_GP('id'));
-		if ($pageUid < 1) {
-			return FALSE;
-		}
 		$rootLine = $sys_page->getRootLine($pageUid);
 		$template->runThroughTemplates($rootLine);
 		$template->generateConfig();
