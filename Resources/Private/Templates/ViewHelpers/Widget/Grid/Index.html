@@ -24,13 +24,26 @@ td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
 </div>
 <script type="text/javascript">
 	fluxCollapse{row.uid} = function() {
+		var cookie = Ext.decode(Ext.util.Cookies.get('fluxCollapseStates'));
+		if (cookie == '') {
+			cookie = [];
+		};
 		if (Ext.get('content-grid-{row.uid}').isDisplayed()) {
 			Ext.get('content-blind-{row.uid}').insertFirst(Ext.get('content-grid-{row.uid}'));
 			Ext.get('toggle-{row.uid}').replaceClass('t3-icon-view-table-collapse', 't3-icon-view-table-expand');
+			if (cookie.indexOf({row.uid}) < 0) {
+				cookie.push({row.uid});
+			};
 		} else {
 			Ext.get('grid-container-{row.uid}').insertFirst(Ext.get('content-grid-{row.uid}'));
 			Ext.get('toggle-{row.uid}').replaceClass('t3-icon-view-table-expand', 't3-icon-view-table-collapse');
+			for (var i in cookie) {
+				if (cookie[i] == {row.uid}) {
+					delete(cookie[i]);
+				};
+			};
 		};
+		Ext.util.Cookies.set('fluxCollapseStates', Ext.encode(cookie));
 	};
 	Ext.get('toggle-content-{row.uid}').on('click', fluxCollapse{row.uid});
 	if (Ext.get('content-grid-{row.uid}').hasClass('hidden')) {
@@ -40,7 +53,7 @@ td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
 </div>
 
 <f:section name="Grid">
-	<table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" class="flux-grid{f:if(condition: row.hidden, then: ' hidden')}">
+	<table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" class="flux-grid{flux:isCollapsed(record: row, then: ' hidden')}">
 		<tbody>
 		<f:for each="{grid}" as="gridrow" iteration="rowIteration">
 			<tr>
