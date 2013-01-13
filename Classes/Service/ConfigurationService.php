@@ -113,16 +113,7 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 			if (count($files) > 0) {
 				foreach ($files as $templateFilename) {
 					$fileRelPath = substr($templateFilename, strlen($templateRootPath));
-					$contentConfiguration = array();
-					$templateContents = file_get_contents($templateFilename);
-					$matches = array();
-					$pattern = '/<flux\:flexform[^\.]([^>]+)/';
-					preg_match_all($pattern, $templateContents, $matches);
-					$tabId = 'fed';
-					foreach (explode('" ', trim($matches[1][0], '"')) as $valueStringPair) {
-						list ($name, $value) = explode('="', trim($valueStringPair, '"'));
-						$contentConfiguration[$name] = $value;
-					}
+					$contentConfiguration = $this->getContentObjectConfigurationFromTemplateFile($templateFilename);
 					if ($contentConfiguration['enabled'] === 'FALSE') {
 						continue;
 					}
@@ -137,6 +128,28 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 			}
 		}
 		return $wizardTabs;
+	}
+
+	/**
+	 * Reads an array of settings which are defined in the template
+	 * file located at $templateFilename. The information includes
+	 * flags such as "enabled" and options such as "label".
+	 *
+	 * @param string $templateFilename
+	 * @return array
+	 */
+	protected function getContentObjectConfigurationFromTemplateFile($templateFilename) {
+		$contentConfiguration = array();
+		$templateContents = file_get_contents($templateFilename);
+		$matches = array();
+		$pattern = '/<flux\:flexform[^\.]([^>]+)/';
+		preg_match_all($pattern, $templateContents, $matches);
+		$tabId = 'fed';
+		foreach (explode('" ', trim($matches[1][0], '"')) as $valueStringPair) {
+			list ($name, $value) = explode('="', trim($valueStringPair, '"'));
+			$contentConfiguration[$name] = $value;
+		}
+		return $contentConfiguration;
 	}
 
 	/**
