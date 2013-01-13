@@ -135,7 +135,7 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 						$tabId = $this->sanitizeString($contentConfiguration['wizardTab']);
 						$wizardTabs[$tabId]['title'] = $contentConfiguration['wizardTab'];
 					}
-					$id = $key . '_' . preg_replace('/[\.\/]/' , '', $fileRelPath);
+					$id = $key . '_' . preg_replace('/[\.\/]/' , '_', $fileRelPath);
 					$elementTsConfig = $this->buildWizardTabItem($tabId, $id, $contentConfiguration, $key . ':' . $fileRelPath);
 					$wizardTabs[$tabId]['elements'][$id] = $elementTsConfig;
 				}
