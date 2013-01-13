@@ -156,5 +156,4 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 		return trim($string, '-');
 	}
 
-
 }
