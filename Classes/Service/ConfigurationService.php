@@ -90,6 +90,20 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 		if (is_array($allTemplatePaths) === FALSE) {
 			return FALSE;
 		}
+		$wizardTabs = $this->buildAllWizardTabGroups($allTemplatePaths);
+		$pageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
+		t3lib_div::writeFile(PATH_site . 'typo3conf/.FED_CONTENT', $pageTsConfig);
+	}
+
+	/**
+	 * Scans all folders in $allTemplatePaths for template
+	 * files, reads information about each file and collects
+	 * the groups of files into groups of pageTSconfig setup.
+	 *
+	 * @param array $allTemplatePaths
+	 * @return array
+	 */
+	protected function buildAllWizardTabGroups($allTemplatePaths) {
 		$wizardTabs = array();
 		foreach ($allTemplatePaths as $key => $templatePathSet) {
 			$key = trim($key, '.');
@@ -122,8 +136,7 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 				}
 			}
 		}
-		$pageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
-		t3lib_div::writeFile(PATH_site . 'typo3conf/.FED_CONTENT', $pageTsConfig);
+		return $wizardTabs;
 	}
 
 	/**
