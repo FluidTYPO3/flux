@@ -295,4 +295,13 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		unset($conf);
 	}
 
+	/**
+	 * Perform various cleanup operations upon clearing cache
+	 *
+	 * @return void
+	 */
+	public function clearCacheCommand() {
+		return;
+	}
+
 }

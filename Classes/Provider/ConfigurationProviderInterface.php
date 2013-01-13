@@ -175,4 +175,11 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference);
 
+	/**
+	 * Perform operations upon clearing cache(s)
+	 *
+	 * @return void
+	 */
+	public function clearCacheCommand();
+
 }

@@ -192,4 +192,20 @@ class Tx_Flux_Backend_TceMain {
 		}
 	}
 
+	/**
+	 * Perform various cleanup operations upon clearing cache
+	 *
+	 * @return void
+	 */
+	public function clearCacheCommand() {
+		$reference = new t3lib_TCEmain();
+		$tables = array_keys($GLOBALS['TCA']);
+		foreach ($tables as $table) {
+			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL);
+			foreach ($providers as $provider) {
+				$provider->clearCacheCommand();
+			}
+		}
+	}
+
 }
