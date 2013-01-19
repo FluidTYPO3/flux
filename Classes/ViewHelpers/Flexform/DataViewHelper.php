@@ -42,6 +42,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 	protected $flexFormService;
 
 	/**
+	 * Inject FlexForm service
 	 * @param Tx_Flux_Service_FlexForm $flexFormService
 	 * @return void
 	 */
@@ -50,18 +51,23 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 	}
 
 	/**
-	 * @param  int    $uid
-	 * @param  string $table
-	 * @param  string $field
+	 * Render method
+	 * @param int $uid
+	 * @param string $table
+	 * @param string $field
 	 * @return array
 	 */
-	public function render($uid, $table = 'pages', $field = 'tx_fed_page_flexform') {
+	public function render($uid = NULL, $table = 'pages', $field = 'tx_fed_page_flexform') {
+
+		if (NULL === $uid) {
+			$uid = $GLOBALS["TSFE"]->id;
+		}
 
 		if (TRUE === isset(self::$dataCache[$uid.$table.$field])) {
 		    return self::$dataCache[$uid.$table.$field];
 		}
 
-		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow($field, $table, 'uid=' . intval($uid));
+		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow($field, $table, sprintf('uid=%d', $uid));
 
 		if (NULL === $row) {
 			$dataArray = array();
