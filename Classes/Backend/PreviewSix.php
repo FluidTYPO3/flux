@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_Preview extends Tx_Flux_Backend_AbstractPreview {
+class Tx_Flux_Backend_PreviewSix extends Tx_Flux_Backend_AbstractPreview {
 
 	/**
 	 *
@@ -40,7 +40,7 @@ class Tx_Flux_Backend_Preview extends Tx_Flux_Backend_AbstractPreview {
 	 * @param array $row
 	 * @return void
 	 */
-	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
+	public function preProcess(\TYPO3\CMS\Backend\View\PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
 		$this->renderPreview($headerContent, $itemContent, $row, $drawItem);
 	}
 
