@@ -52,16 +52,12 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 
 	/**
 	 * Render method
-	 * @param int $uid
+	 * @param integer $uid
 	 * @param string $table
 	 * @param string $field
 	 * @return array
 	 */
-	public function render($uid = NULL, $table = 'pages', $field = 'tx_fed_page_flexform') {
-
-		if (NULL === $uid) {
-			$uid = $GLOBALS["TSFE"]->id;
-		}
+	public function render($uid, $table, $field) {
 
 		if (TRUE === isset(self::$dataCache[$uid.$table.$field])) {
 		    return self::$dataCache[$uid.$table.$field];
