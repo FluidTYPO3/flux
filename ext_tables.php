@@ -28,7 +28,9 @@ $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['fed_fce'] = 
 $GLOBALS['TCA']['tt_content']['types']['fed_fce']['showitem'] = '
 	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.general;general,
 	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.header;header,
-	--div--;Content settings, tx_fed_fcefile;Element type, pi_flexform;Configuration,
+	--div--;LLL:EXT:fluidcontent/Resources/Private/Language/locallang_db.xml:pages.tab.content_settings,
+	tx_fed_fcefile;LLL:EXT:fluidcontent/Resources/Private/Language/locallang_db.xml:pages.tab.element_type,
+	pi_flexform;LLL:EXT:fluidcontent/Resources/Private/Language/locallang_db.xml:pages.tab.configuration,
 	--div--;LLL:EXT:cms/locallang_ttc.xml:tabs.appearance,
 	--palette--;LLL:EXT:cms/locallang_ttc.xml:palette.frames;frames,
 	--div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access,
