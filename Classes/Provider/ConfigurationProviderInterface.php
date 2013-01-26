@@ -182,4 +182,23 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 */
 	public function clearCacheCommand();
 
+	/**
+	 * Converts the contents of the provided row's Flux-enabled field,
+	 * at the same time running through the inheritance tree generated
+	 * by getInheritanceTree() in order to apply inherited values.
+	 *
+	 * @param array $row
+	 * @return array
+	 */
+	public function getFlexFormValues(array $row);
+
+	/**
+	 * Gets an inheritance tree (ordered parent -> ... -> this record)
+	 * of record arrays containing raw values.
+	 *
+	 * @param array $row
+	 * @return array
+	 */
+	public function getInheritanceTree(array $row);
+
 }
