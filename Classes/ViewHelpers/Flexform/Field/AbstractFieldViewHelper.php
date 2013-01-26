@@ -100,12 +100,27 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 				}
 			}
 		}
+		if (FALSE === strpos($this->arguments['name'], '.')) {
+			$segmentsOfAssignedVariableName = array($this->arguments['name']);
+		} else {
+			$segmentsOfAssignedVariableName = explode('.', $this->arguments['name']);
+		}
+		$firstSegmentOfAssignedVariableName = array_shift($segmentsOfAssignedVariableName);
+		if (TRUE === $this->templateVariableContainer->exists($firstSegmentOfAssignedVariableName)) {
+			$value = $this->templateVariableContainer->get($firstSegmentOfAssignedVariableName);
+			if (0 !== count($segmentsOfAssignedVariableName)) {
+				$value = Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($value, implode('.', $segmentsOfAssignedVariableName));
+			}
+			$defaultValue = $value;
+		} elseif (TRUE === isset($this->arguments['default'])) {
+			$defaultValue = $this->arguments['default'];
+		}
 		return array(
 			'name' => $this->arguments['name'],
 			'transform' => $this->arguments['transform'],
 			'label' => $this->arguments['label'],
 			'type' => $this->arguments['type'],
-			'default' => $this->arguments['default'],
+			'default' => $defaultValue,
 			'required' => $this->getFlexFormBoolean($this->arguments['required']),
 			'repeat' => $this->arguments['repeat'],
 			'enabled' => $this->arguments['enabled'],
