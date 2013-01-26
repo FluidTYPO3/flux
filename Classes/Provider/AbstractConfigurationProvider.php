@@ -40,6 +40,11 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	protected $tableName = NULL;
 
 	/**
+	 * @var string
+	 */
+	protected $parentFieldName = NULL;
+
+	/**
 	 * @var array|NULL
 	 */
 	protected $row = NULL;
@@ -136,6 +141,15 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	}
 
 	/**
+	 * @param array $row
+	 * @return string
+	 */
+	public function getParentFieldName(array $row) {
+		unset($row);
+		return $this->parentFieldName;
+	}
+
+	/**
 	 * @param array $row The record row which triggered processing
 	 * @return string|NULL
 	 */
@@ -208,7 +222,34 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
-		unset($row, $id, $reference);
+		$parentFieldName = $this->getParentFieldName($row);
+		$fieldName = $this->getFieldName($row);
+		if (NULL === $fieldName || NULL === $parentFieldName) {
+			return;
+		}
+		if (FALSE === isset($row[$fieldName]['data'])) {
+			return;
+		}
+		$data = $row[$fieldName]['data'];
+		if (FALSE === is_array($data)) {
+			return;
+		}
+		if (FALSE === isset($row['uid']) && intval($id) > 0) {
+			$row['uid'] = $id;
+		}
+		foreach ($data as $sheetName => $sheetFields) {
+			foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
+				$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
+				if ($inheritedValue == $fieldDefinition['vDEF']) {
+					unset($data[$sheetName]['lDEF'][$sheetFieldName]);
+				}
+			}
+			if (0 === count($data[$sheetName]['lDEF'])) {
+				$data[$sheetName]['lDEF'] = array('flux.placeholder' => array('vDEF' => 0));
+			}
+		}
+		$row[$fieldName]['data'] = $data;
+		$_POST['data'][$this->tableName][$id] = $row;
 	}
 
 	/**
@@ -284,7 +325,8 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		}
 		$fieldName = $this->getFieldName($row);
 		$paths = $this->getTemplatePaths($row);
-		$values = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName ? $fieldName : 'pi_flexform']);
+		$values = $this->getFlexFormValues($row);
+		$row[$fieldName ? $fieldName : 'pi_flexform'] = $this->flexFormService->convertDataStructureToFlexFormContent($values);
 		$values = array_merge((array) $this->getTemplateVariables($row), $values);
 		$section = $this->getConfigurationSectionName($row);
 		if (strpos($section, 'variable:') !== FALSE) {
@@ -302,6 +344,131 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function clearCacheCommand() {
 		return;
+	}
+
+	/**
+	 * Converts the contents of the provided row's Flux-enabled field,
+	 * at the same time running through the inheritance tree generated
+	 * by getInheritanceTree() in order to apply inherited values.
+	 *
+	 * @param array $row
+	 * @return array
+	 */
+	public function getFlexFormValues(array $row) {
+		$fieldName = $this->getFieldName($row);
+		if (NULL === $fieldName) {
+			return array();
+		}
+		$immediateConfiguration = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName]);
+		$tree = $this->getInheritanceTree($row);
+		if (0 === count($tree)) {
+			return $immediateConfiguration;
+		}
+		$inheritedConfiguration = $this->getMergedConfiguration($tree);
+		if (0 === count($immediateConfiguration)) {
+			return $inheritedConfiguration;
+		}
+		$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
+		return $merged;
+	}
+
+	/**
+	 * Gets an inheritance tree (ordered parent -> ... -> this record)
+	 * of record arrays containing raw values.
+	 *
+	 * @param array $row
+	 * @return array
+	 */
+	public function getInheritanceTree(array $row) {
+		$records = array();
+		if (NULL === $this->getFieldName($row)) {
+			return $records;
+		}
+		$parentFieldName = $this->getParentFieldName($row);
+		$record = $row;
+		if (FALSE === isset($record[$parentFieldName])) {
+			$record[$parentFieldName] = $this->getParentFieldValue($record);
+		}
+		while ($record[$parentFieldName] > 0) {
+			$tableName = $this->getTableName($row);
+			$resource = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $tableName, "uid = '" . $record[$parentFieldName] . "'");
+			$record = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resource);
+			$parentFieldName = $this->getParentFieldName($record);
+			array_push($records, $record);
+		}
+		$records = array_reverse($records);
+		return $records;
+	}
+
+	/**
+	 * @param array $row
+	 * @param string $propertyPath
+	 * @return mixed
+	 */
+	protected function getInheritedPropertyValueByDottedPath(array $row, $propertyPath) {
+		$tree = $this->getInheritanceTree($row);
+		$inheritedConfiguration = $this->getMergedConfiguration($tree);
+		if (FALSE === strpos($propertyPath, '.')) {
+			if (TRUE === isset($inheritedConfiguration[$propertyPath])) {
+				return Tx_Extbase_Reflection_ObjectAccess::getProperty($inheritedConfiguration, $propertyPath);
+			}
+			return NULL;
+		}
+		return Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($inheritedConfiguration, $propertyPath);
+	}
+
+	/**
+	 * @param array $tree
+	 * @return array
+	 */
+	protected function getMergedConfiguration(array $tree) {
+		$data = array();
+		foreach ($tree as $branch) {
+			$fieldName = $this->getFieldName($branch);
+			if (NULL === $fieldName) {
+				return $data;
+			}
+			$currentData = $this->flexFormService->convertFlexFormContentToArray($branch[$fieldName]);
+			$data = t3lib_div::array_merge_recursive_overrule($data, $currentData, FALSE, FALSE, TRUE);
+		}
+		return $data;
+	}
+
+	/**
+	 * @param array $array1
+	 * @param array $array2
+	 * @return array
+	 */
+	protected function arrayDiffRecursive($array1, $array2) {
+		foreach ($array1 as $key => $value) {
+			if (TRUE === isset($array2[$key])) {
+				if (TRUE === is_array($value)) {
+					$diff = $this->arrayDiffRecursive($value, $array2[$key]);
+					if (0 !== count($diff)) {
+						$array1[$key] = $diff;
+					}
+				} elseif ($value != $array2[$key]) {
+					$array1[$key] = $array2[$key];
+				} else {
+					unset($array1[$key]);
+				}
+			} else {
+				unset($array1[$key]);
+			}
+		}
+		return $array1;
+	}
+
+	/**
+	 * @param array $row
+	 * @return mixed
+	 */
+	protected function getParentFieldValue(array $row) {
+		$parentFieldName = $this->getParentFieldName($row);
+		if (FALSE === isset($row[$parentFieldName])) {
+			$row = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows($parentFieldName, 'pages', "uid = '" . $row['uid'] . "'"));
+		}
+		return $row[$parentFieldName];
 	}
 
 }
