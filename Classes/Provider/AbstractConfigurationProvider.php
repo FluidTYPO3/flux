@@ -35,6 +35,11 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	private static $cacheTree = array();
 
 	/**
+	 * @var array
+	 */
+	private static $cacheMergedConfigurations = array();
+
+	/**
 	 * @var string
 	 */
 	protected $fieldName = NULL;
@@ -431,6 +436,10 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	protected function getMergedConfiguration(array $tree) {
+		$key = md5(json_encode($tree));
+		if (TRUE === isset(self::$cacheMergedConfigurations[$key])) {
+			return self::$cacheMergedConfigurations[$key];
+		}
 		$data = array();
 		foreach ($tree as $branch) {
 			$fieldName = $this->getFieldName($branch);
@@ -440,6 +449,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$currentData = $this->flexFormService->convertFlexFormContentToArray($branch[$fieldName]);
 			$data = t3lib_div::array_merge_recursive_overrule($data, $currentData, FALSE, FALSE, TRUE);
 		}
+		self::$cacheMergedConfigurations[$key] = $data;
 		return $data;
 	}
 
