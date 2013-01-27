@@ -30,6 +30,11 @@
 class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider_ConfigurationProviderInterface {
 
 	/**
+	 * @var array
+	 */
+	private static $cacheTree = array();
+
+	/**
 	 * @var string
 	 */
 	protected $fieldName = NULL;
@@ -379,6 +384,10 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getInheritanceTree(array $row) {
+		$recordUid = $row['uid'];
+		if (TRUE === isset(self::$cacheTree[$recordUid])) {
+			return self::$cacheTree[$recordUid];
+		}
 		$records = array();
 		if (NULL === $this->getFieldName($row)) {
 			return $records;
@@ -396,6 +405,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			array_push($records, $record);
 		}
 		$records = array_reverse($records);
+		self::$cacheTree[$recordUid] = $records;
 		return $records;
 	}
 
