@@ -34,6 +34,11 @@
 class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 
 	/**
+	 * @var array
+	 */
+	private static $cache = array();
+
+	/**
 	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
@@ -57,6 +62,9 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 	 * @return array
 	 */
 	public function getTypoScriptSubConfiguration($extensionName, $memberName, $dontTranslateMembers = array()) {
+		if (TRUE === isset(self::$cache[$extensionName.$memberName])) {
+			return self::$cache[$extensionName.$memberName];
+		}
 		$config = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		$config = $config['plugin.']['tx_fed.'][$memberName . '.'];
 		if (is_array($config) === FALSE) {
@@ -85,7 +93,8 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 				}
 			}
 		}
-		return $config;
+		self::$cache[$extensionName.$memberName] = $config;
+		return self::$cache[$extensionName.$memberName];
 	}
 
 	/**
