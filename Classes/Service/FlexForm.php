@@ -67,11 +67,6 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	protected $reflectionService;
 
 	/**
-	 * @var Tx_Flux_Service_FluidFlexFormTemplateValidator
-	 */
-	protected $fluidFlexFormTemplateValidator;
-
-	/**
 	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
@@ -101,14 +96,6 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 */
 	public function injectReflectionService(Tx_Extbase_Reflection_Service $reflectionService) {
 		$this->reflectionService = $reflectionService;
-	}
-
-	/**
-	 * @param Tx_Flux_Service_FluidFlexFormTemplateValidator $fluidFlexFormTemplateValidator
-	 * @return void
-	 */
-	public function injectFluidFlexFormTemplateValidatorService(Tx_Flux_Service_FluidFlexFormTemplateValidator $fluidFlexFormTemplateValidator) {
-		$this->fluidFlexFormTemplateValidator = $fluidFlexFormTemplateValidator;
 	}
 
 	/**
@@ -328,10 +315,6 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 				// Only process this $dataStructArray if the specified template file exists.
 			throw new Exception('Tried to get a FlexForm configuration from a file which does not exist (' . $templateFile . ')', 1343264270);
 		}
-		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-			$this->fluidFlexFormTemplateValidator->validateFluidFlexFormTemplateFile($templateFile);
-		}
-
 		/**	@var $view Tx_Flux_MVC_View_ExposedStandaloneView */
 		$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedStandaloneView');
 		$view->setTemplatePathAndFilename($templateFile);
