@@ -84,13 +84,6 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	}
 
 	/**
-	 * @return void
-	 */
-	public function initializeObject() {
-		$this->configurationService->loadRegisteredFluidContentElementTypoScript();
-	}
-
-	/**
 	 * @param array $row
 	 * @return string
 	 */
@@ -168,9 +161,10 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	 * @return void
 	 */
 	public function clearCacheCommand() {
-		if (file_exists(PATH_site . 'typo3conf/.FED_CONTENT') === TRUE) {
-			unlink(PATH_site . 'typo3conf/.FED_CONTENT');
+		if (file_exists(FLUIDCONTENT_TEMPFILE) === TRUE) {
+			unlink(FLUIDCONTENT_TEMPFILE);
 		}
+		$this->configurationService->writeCachedConfigurationIfMissing();
 	}
 
 }

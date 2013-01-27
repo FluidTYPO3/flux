@@ -3,6 +3,8 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
+define('FLUIDCONTENT_TEMPFILE', PATH_site . 'typo3temp/.FED_CONTENT');
+
 Tx_Flux_Core::unregisterConfigurationProvider('Tx_Fed_Provider_Configuration_ContentObjectConfigurationProvider');
 Tx_Flux_Core::registerConfigurationProvider('Tx_Fluidcontent_Provider_ContentConfigurationProvider');
 Tx_Extbase_Utility_Extension::registerPlugin(
@@ -42,6 +44,6 @@ $GLOBALS['TCA']['tt_content']['types']['fed_fce']['showitem'] = '
 $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['fed_fce'] = 'apps-pagetree-root';
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']['fed']['plugins']['fed_fce']['pluginType'] = 'CType';
 
-if (file_exists(PATH_site . 'typo3conf/.FED_CONTENT')) {
-	t3lib_extMgm::addPageTSConfig(file_get_contents(PATH_site . 'typo3conf/.FED_CONTENT'));
+if (file_exists(FLUIDCONTENT_TEMPFILE)) {
+	t3lib_extMgm::addPageTSConfig(file_get_contents(FLUIDCONTENT_TEMPFILE));
 }

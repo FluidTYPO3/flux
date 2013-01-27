@@ -75,19 +75,18 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 	/**
 	 * @return void
 	 */
-	public function loadRegisteredFluidContentElementTypoScript() {
-		if (file_exists(PATH_site . 'typo3conf/.FED_CONTENT') === FALSE) {
-			$this->writeCachedConfiguration();
+	public function writeCachedConfigurationIfMissing() {
+		if (TRUE === file_exists(FLUIDCONTENT_TEMPFILE)) {
+			return;
 		}
-	}
-
-	/**
-	 * @return void
-	 */
-	protected function writeCachedConfiguration() {
 		$pageUid = intval(t3lib_div::_GP('id'));
 		if ($pageUid < 1) {
-			return FALSE;
+			$firstPageWithRootTemplate = array_shift($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('pid', 'sys_template t', "t.root = 1"));
+			if (TRUE === is_array($firstPageWithRootTemplate)) {
+				$pageUid = $firstPageWithRootTemplate['pid'];
+			} else {
+				return FALSE;
+			}
 		}
 		/** @var t3lib_tsparser_ext $template */
 		$template = t3lib_div::makeInstance("t3lib_tsparser_ext");
@@ -105,7 +104,7 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 		}
 		$wizardTabs = $this->buildAllWizardTabGroups($allTemplatePaths);
 		$pageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
-		t3lib_div::writeFile(PATH_site . 'typo3conf/.FED_CONTENT', $pageTsConfig);
+		t3lib_div::writeFile(FLUIDCONTENT_TEMPFILE, $pageTsConfig);
 	}
 
 	/**
