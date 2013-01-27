@@ -285,18 +285,6 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	}
 
 	/**
-	 * Convert a DataStructure array to FlexForm XML
-	 *
-	 * @param array $dataStructure
-	 * @return string
-	 */
-	public function convertDataStructureToFlexFormContent($dataStructure) {
-		$flexFormTool = new t3lib_flexformtools();
-		$xml = $flexFormTool->flexArray2Xml($dataStructure);
-		return $xml;
-	}
-
-	/**
 	 * Gets a stored FlexForm configuration and applies any dynamic values to
 	 * create a current representation of the FlexForm sheet+fields array
 	 *
