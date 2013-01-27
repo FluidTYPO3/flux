@@ -62,6 +62,16 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 	 * @return array
 	 */
 	public function getTypoScriptSubConfiguration($extensionName, $memberName, $dontTranslateMembers = array()) {
+		$contentObject = $this->configurationManager->getContentObject();
+		if ($contentObject) {
+			$pid = $this->configurationManager->getContentObject()->data['pid'];
+		} else {
+			$pid = t3lib_div::_GET('id');
+		}
+		$cachedConfigurationPathAndFilename = PATH_site . 'typo3temp/flux-configuration-' . $extensionName . '-' . $memberName . '-' . $pid . '.ts';
+		if (TRUE === file_exists($cachedConfigurationPathAndFilename)) {
+			self::$cache[$extensionName.$memberName] = unserialize(file_get_contents($cachedConfigurationPathAndFilename));
+		}
 		if (TRUE === isset(self::$cache[$extensionName.$memberName])) {
 			return self::$cache[$extensionName.$memberName];
 		}
@@ -94,6 +104,7 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 			}
 		}
 		self::$cache[$extensionName.$memberName] = $config;
+		t3lib_div::writeFile($cachedConfigurationPathAndFilename, serialize($config));
 		return self::$cache[$extensionName.$memberName];
 	}
 
