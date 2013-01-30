@@ -111,6 +111,7 @@ class Tx_Fluidcontent_Backend_ContentSelector {
 			}
 		}
 		$select .= '</select></div>' . LF;
+		unset($parentObject);
 		return $select;
 	}
 

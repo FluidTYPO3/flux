@@ -89,11 +89,11 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 			}
 		}
 		/** @var t3lib_tsparser_ext $template */
-		$template = t3lib_div::makeInstance("t3lib_tsparser_ext");
+		$template = t3lib_div::makeInstance('t3lib_tsparser_ext');
 		$template->tt_track = 0;
 		$template->init();
 		/** @var t3lib_pageSelect $sys_page */
-		$sys_page = t3lib_div::makeInstance("t3lib_pageSelect");
+		$sys_page = t3lib_div::makeInstance('t3lib_pageSelect');
 		$rootLine = $sys_page->getRootLine($pageUid);
 		$template->runThroughTemplates($rootLine);
 		$template->generateConfig();
@@ -134,7 +134,7 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 						$tabId = $this->sanitizeString($contentConfiguration['wizardTab']);
 						$wizardTabs[$tabId]['title'] = $contentConfiguration['wizardTab'];
 					}
-					$id = $key . '_' . preg_replace('/[\.\/]/' , '_', $fileRelPath);
+					$id = $key . '_' . preg_replace('/[\.\/]/', '_', $fileRelPath);
 					$elementTsConfig = $this->buildWizardTabItem($tabId, $id, $contentConfiguration, $key . ':' . $fileRelPath);
 					$wizardTabs[$tabId]['elements'][$id] = $elementTsConfig;
 				}
