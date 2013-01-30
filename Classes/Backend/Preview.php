@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
  *
  *  All rights reserved
  *
@@ -42,6 +42,7 @@ class Tx_Flux_Backend_Preview extends Tx_Flux_Backend_AbstractPreview {
 	 */
 	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
 		$this->renderPreview($headerContent, $itemContent, $row, $drawItem);
+		unset($parentObject);
 	}
 
 }

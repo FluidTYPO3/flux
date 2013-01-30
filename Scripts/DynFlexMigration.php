@@ -190,7 +190,7 @@ class DynFlexMigration {
 			$previewOpeningTagPosition = strpos($file, "<f:section name='Preview'");
 		}
 		if ($previewOpeningTagPosition !== FALSE) {
-			$previewEndingTagPosition = strpos($file, "</f:section", $previewOpeningTagPosition);
+			$previewEndingTagPosition = strpos($file, '</f:section', $previewOpeningTagPosition);
 		} elseif (strpos($file, 'flux:flexform.content') !== FALSE && strpos($file, 'flux:widget.grid') === FALSE) {
 			$previewSection = "<f:section name=\"Preview\">\n\t<flux:widget.grid />\n</f:section>\n\n";
 		} elseif ($previewEndTagPosition === FALSE) {

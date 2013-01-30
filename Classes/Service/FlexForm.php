@@ -441,7 +441,8 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 					$nodeKeyParts = explode('.', $nodeKey);
 					$currentNode =& $return;
 
-					for ($i = 0; $i < (count($nodeKeyParts) - 1); $i++) {
+					$total = (count($nodeKeyParts) - 1);
+					for ($i = 0; $i < $total; $i++) {
 						$currentNode =& $currentNode[$nodeKeyParts[$i]];
 					}
 

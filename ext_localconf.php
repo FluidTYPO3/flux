@@ -61,14 +61,13 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['move
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] = 'EXT:flux/Classes/Backend/TceMain.php:&Tx_Flux_Backend_TceMain->clearCacheCommand';
 
 
-# The following code fixes the following issue:
-# https://github.com/NamelessCoder/flux/issues/19
-#
-# Basically, the implementation of preProcess() changes between TYPO3 v4 and v6,
-# and this code includes the appropriate class file to make the hook work on both
-# platforms. Though the fix was checked in by A. Gissel, the mastermind behind
-# the solution is mr. Due. That means "dove" in Danish, by the way. A very death-metal
-# dove, by the sound of it.
+/*
+ * The following code fixes the following issue:
+ * https://github.com/NamelessCoder/flux/issues/19
+ * Basically, the implementation of preProcess() changes between TYPO3 v4 and v6,
+ * and this code includes the appropriate class file to make the hook work on both
+ * platforms.
+ */
 if (Tx_Flux_Utility_Version::assertCoreVersionIsAtLeastSixPointZero()) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = 'EXT:flux/Classes/Backend/PreviewSix.php:Tx_Flux_Backend_PreviewSix';
 } else {
