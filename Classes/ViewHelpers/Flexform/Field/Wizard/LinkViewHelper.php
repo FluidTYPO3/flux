@@ -58,10 +58,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_V
 				'icon' => 'link_popup.gif',
 				'script' => 'browse_links.php?mode=wizard&act=' . $this->arguments['activeTab'],
 				'hideParent' => (bool) $this->arguments['hideParent'] === TRUE ? 1 : 0,
-				'allowedExtensions' => $this->arguments['allowedExtensions'],
 				'JSopenParams' => 'height=' . $this->arguments['height'] . ',width=' . $this->arguments['width'] . ',status=0,menubar=0,scrollbars=1',
 				'params' => array(
 					'blindLinkOptions' => $this->arguments['blindLinkOptions'],
+					'allowedExtensions' => $this->arguments['allowedExtensions'],
 				),
 			)
 		);
