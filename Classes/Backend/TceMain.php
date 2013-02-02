@@ -73,7 +73,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
-	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, t3lib_TCEmain &$reference) {
+	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference) {
 		$record = array();
 		$arguments = array('command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo);
 		$this->executeConfigurationProviderMethod('preProcessCommand', $table, $id, $record, $arguments, $reference);
@@ -87,7 +87,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
-	public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, t3lib_TCEmain &$reference) {
+	public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference) {
 		$record = array();
 		$arguments = array('command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo);
 		$this->executeConfigurationProviderMethod('postProcessCommand', $table, $id, $record, $arguments, $reference);
@@ -100,7 +100,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
-	public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, t3lib_TCEmain &$reference) {
+	public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, &$reference) {
 		$arguments = array('row' => &$incomingFieldArray, 'id' => $id);
 		$this->executeConfigurationProviderMethod('preProcessRecord', $table, $id, $incomingFieldArray, $arguments, $reference);
 	}
@@ -113,7 +113,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
-	public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, t3lib_TCEmain &$reference) {
+	public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$reference) {
 		$arguments = array('status' => $status, 'id' => $id, 'row' => &$fieldArray);
 		$this->executeConfigurationProviderMethod('postProcessRecord', $table, $id, $fieldArray, $arguments, $reference);
 	}
@@ -126,7 +126,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param t3lib_TCEmain $reference A reference to the TCEmain instance
 	 * @return void
 	 */
-	public function processDatamap_afterDatabaseOperations($status, $table, $id, &$fieldArray, t3lib_TCEmain &$reference) {
+	public function processDatamap_afterDatabaseOperations($status, $table, $id, &$fieldArray, &$reference) {
 		$arguments = array('status' => $status, 'id' => $id, 'row' => &$fieldArray);
 		$this->executeConfigurationProviderMethod('postProcessDatabaseOperation', $table, $id, $fieldArray, $arguments, $reference);
 	}
@@ -143,7 +143,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @throws Exception
 	 * @return void
 	 */
-	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, t3lib_TCEmain &$reference) {
+	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, &$reference) {
 		try {
 			if (strpos($id, 'NEW') !== FALSE) {
 				$id = $reference->substNEWwithIDs[$id];
