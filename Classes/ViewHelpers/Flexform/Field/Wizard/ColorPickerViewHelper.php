@@ -36,7 +36,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ColorPickerViewHelper extends Tx
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('title', 'string', 'Title of the Add Wizard', FALSE, 'Add new record');
+		$this->registerArgument('title', 'string', 'Title of the Add Wizard', FALSE, 'Choose color');
 		$this->registerArgument('dim', 'string', 'Dimensions (WxH, e.g. 20x20) of color picker', FALSE, '20x20');
 		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 450);
 		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 720);
