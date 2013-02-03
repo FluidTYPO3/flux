@@ -11,7 +11,7 @@
  ***************************************************************/
 
 $EM_CONF[$_EXTKEY] = array(
-	'title' => 'Dynamic Fluid FlexForms',
+	'title' => 'Flux: Fluid FlexForms',
 	'description' => 'Uses Fluid to render FlexForms, making them highly dynamic. Has built-in content preview in BE page module for any content using Flux. Offspring of the FED extension.',
 	'category' => 'misc',
 	'shy' => 0,
