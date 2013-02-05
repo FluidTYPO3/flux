@@ -41,6 +41,9 @@ class Tx_Flux_ViewHelpers_IsCollapsedViewHelper extends Tx_Fluid_Core_ViewHelper
 	 * @return string
 	 */
 	public function render($record) {
+		if (FALSE === isset($_COOKIE['fluxCollapseStates'])) {
+			return $this->renderElseChild();
+		}
 		$cookie = $_COOKIE['fluxCollapseStates'];
 		$cookie = urldecode($cookie);
 		$cookie = json_decode($cookie);
