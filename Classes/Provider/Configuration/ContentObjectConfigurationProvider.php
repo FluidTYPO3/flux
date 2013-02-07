@@ -290,8 +290,10 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 */
 	public function clearCacheCommand() {
 		$files = glob(PATH_site . 'typo3temp/flux-*');
-		foreach ($files as $fileName) {
-			unlink($fileName);
+		if (TRUE === is_array($files)) {
+			foreach ($files as $fileName) {
+				unlink($fileName);
+			}
 		}
 	}
 
