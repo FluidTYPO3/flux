@@ -56,7 +56,7 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 			$parsedTemplate = $this->getParsedTemplate();
 			$this->setRenderingContext($this->baseRenderingContext);
 			$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
-			if ($sectionName !== NULL) {
+			if (FALSE === empty($sectionName)) {
 				$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
 			} else {
 				$this->render();
