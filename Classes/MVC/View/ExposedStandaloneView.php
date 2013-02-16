@@ -67,6 +67,7 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
 				throw $error;
 			}
+			t3lib_div::sysLog($error->getMessage(), 'flux', t3lib_div::SYSLOG_SEVERITY_ERROR);
 		}
 		return $value;
 	}
