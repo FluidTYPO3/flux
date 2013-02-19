@@ -84,6 +84,9 @@ class Tx_Fluidcontent_Backend_ContentSelector {
 				}
 				$select .= '<optgroup label="' . htmlspecialchars($groupLabel) . '">' . LF;
 				foreach ($files as $templateFilename) {
+					if (0 === strpos(basename($templateFilename), '.')) {
+						continue;
+					}
 					$fileRelPath = substr($templateFilename, strlen($templateRootPath));
 					$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedStandaloneView');
 					$view->setTemplatePathAndFilename($templateFilename);
