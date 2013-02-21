@@ -39,7 +39,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_Core_Vi
 		$this->registerArgument('name', 'string', 'Optional column name', FALSE, 'Column');
 		$this->registerArgument('colPos', 'integer', 'Optional column position. If you do not specify this it will be automatically assigned - so specify it if your template is dynamic and the output relies on this, as page rendering does for example!', FALSE, -1);
 		$this->registerArgument('colspan', 'integer', 'Column span');
-		$this->registerArgument('rowspan', 'integer', 'Column span');
+		$this->registerArgument('rowspan', 'integer', 'Row span');
 		$this->registerArgument('repeat', 'integer', 'number of times to repeat this colum while appending $iteration to name', FALSE, 1);
 		$this->registerArgument('width', 'string', 'DEPRECATED');
 		$this->registerArgument('style', 'string', 'Inline style to add when rendering the column');
