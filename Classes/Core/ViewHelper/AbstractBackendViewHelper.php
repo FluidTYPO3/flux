@@ -77,8 +77,8 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper extends Tx_Flui
 	 * @return string
 	 */
 	protected function getReturnUri($pid) {
-		$uri = t3lib_extMgm::siteRelPath('cms') . 'layout/db_layout.php?id=' . $pid;
-		return urlencode('/' . $uri);
+		$uri = $_SERVER['REQUEST_URI'];
+		return urlencode($uri);
 	}
 
 }
