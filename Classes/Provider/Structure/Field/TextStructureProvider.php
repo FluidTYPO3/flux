@@ -50,6 +50,10 @@ class Tx_Flux_Provider_Structure_Field_TextStructureProvider extends Tx_Flux_Pro
 	public function render($configuration) {
 		$fieldConfiguration = array(
 			'type' => 'text',
+			'rows' => $configuration['rows'],
+			'cols' => $configuration['cols'],
+			'eval' => $configuration['validate'],
+			'default' => $configuration['default']
 		);
 		if ($configuration['defaultExtras'] === NULL) {
 			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
