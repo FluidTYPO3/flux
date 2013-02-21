@@ -38,12 +38,7 @@ class Tx_Flux_Utility_Version {
 	 * @return boolean
 	 */
 	public static function assertHasFixedFlexFormFieldNamePassing() {
-		$version = explode('.', TYPO3_version);
-		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version[2] >= 23);
-		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version[2] >= 16);
-		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version[2] >= 8);
-		$isRecent6x0 = self::assertCoreVersionIsAtLeastSixPointZero();
-		return ($isRecent6x0 || $isRecent4x5 || $isRecent4x6 || $isRecent4x7);
+		return self::assertCoreVersionIsAtLeastSixPointZero();
 	}
 
 	/**
