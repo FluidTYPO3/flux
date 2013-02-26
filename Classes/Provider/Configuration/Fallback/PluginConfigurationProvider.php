@@ -30,6 +30,13 @@
 class Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider extends Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider implements Tx_Flux_Provider_PluginConfigurationProviderInterface {
 
 	/**
+	 * @param Tx_Fed_Service_Page $pageLayout
+	 */
+	public function injectPageService(Tx_Fed_Service_Page $pageService) {
+		$this->pageService = $pageService;
+	}
+
+	/**
 	 * @var string|NULL
 	 */
 	protected $listType = NULL;
