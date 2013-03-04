@@ -58,16 +58,16 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 	}
 
 	/**
-	 * Renders child content from $record's $area
+	 * Gets child content from $record's $area
 	 *
 	 * @param integer $localizedUid The UID (localized through _LOCALIZED_UID substitution if localization is wanted) of the parent element
 	 * @param string $area The area of the parent element from which to render child content
 	 * @param integer $limit
 	 * @param string $order
 	 * @param string $sortDirection
-	 * @return string
+	 * @return array
 	 */
-	public function renderChildContent($localizedUid, $area, $limit=99999, $order='sorting', $sortDirection='ASC') {
+	public function getChildContent($localizedUid, $area, $limit=99999, $order='sorting', $sortDirection='ASC') {
 		$order .= ' ' . $sortDirection;
 		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
 			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
@@ -83,6 +83,21 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 			array_push($elements, $GLOBALS['TSFE']->cObj->RECORDS($conf));
 		}
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+		return $elements;
+	}
+
+	/**
+	 * Renders child content from $record's $area
+	 *
+	 * @param integer $localizedUid The UID (localized through _LOCALIZED_UID substitution if localization is wanted) of the parent element
+	 * @param string $area The area of the parent element from which to render child content
+	 * @param integer $limit
+	 * @param string $order
+	 * @param string $sortDirection
+	 * @return string
+	 */
+	public function renderChildContent($localizedUid, $area, $limit=99999, $order='sorting', $sortDirection='ASC') {
+		$elements = $this->getChildContent($localizedUid, $area, $limit, $order, $sortDirection);
 		$html = implode(LF, $elements);
 		return $html;
 	}
