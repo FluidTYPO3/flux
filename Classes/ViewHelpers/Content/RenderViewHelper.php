@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
  *
  *  All rights reserved
  *
@@ -24,11 +24,26 @@
  *****************************************************************/
 
 /**
- * ViewHelper used to render the FlexForm definition for Fluid FCEs
+ * ### Content: Render ViewHelper
+ *
+ * Renders all child content of a record based on area.
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Flux_ViewHelpers_Content_RenderViewHelper {
+class Tx_Flux_ViewHelpers_Content_RenderViewHelper extends Tx_Flux_ViewHelpers_Content_GetViewHelper {
+
+	/**
+	 * Render
+	 *
+	 * @return string
+	 */
+	public function render() {
+		$content = parent::render();
+		if (TRUE === is_array($content)) {
+			return implode(LF, $content);
+		}
+		return $content;
+	}
 
 }
