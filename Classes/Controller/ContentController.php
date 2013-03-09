@@ -83,7 +83,7 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 		}
 		if (is_dir($paths['layoutRootPath']) === FALSE) {
 			return 'Fluid Content group has not defined a <code>layoutRootPath</code> - please make sure one is defined.
-			 		If the group does not require Partials please use path <code>EXT:fluidcontent/Resources/Private/Partials</code>
+			 		If the group does not require Partials please use path <code>EXT:fluidcontent/Resources/Private/Layouts</code>
 			 		as a safe fallback path which is guaranteed to exist.';
 		}
 		if (is_dir($paths['partialRootPath']) === FALSE) {
