@@ -37,6 +37,7 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_V
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->registerArgument('reference', 'boolean', 'If TRUE, pastes as reference', FALSE, FALSE);
+		$this->registerArgument('relativeTo', 'array', 'If filled with an array, assumes clicable icon is placed below this content record', FALSE, array());
 	}
 
 	/**
@@ -56,23 +57,21 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_V
 			return NULL;
 		}
 		$row = $this->arguments['row'];
+		$area = $this->arguments['area'];
 		$pid = $row['pid'];
 		$uid = $row['uid'];
-		$area = $this->arguments['area'];
-		$sysLang = $row['sys_language_uid'];
-		$token = $this->getFormToken();
+		$relativeUid = TRUE === isset($this->arguments['relativeTo']['uid']) ? $this->arguments['relativeTo']['uid'] : 0;
 		$clipBoard = new t3lib_clipboard();
-		$returnUri = $this->getReturnUri($pid);
 		if (TRUE === $reference) {
 			$command = 'reference';
 			$label = 'Paste as reference in this position';
 			$icon = 'actions-insert-reference';
-			$relativeTo = $pid . '-reference-' . $uid;
+			$relativeTo = $pid . '-reference-' . $relativeUid . '-' . $uid;
 		} else {
 			$command = 'paste';
 			$label = 'Paste in this position';
 			$icon = 'actions-document-paste-after';
-			$relativeTo = $pid . '-paste-' . $uid;
+			$relativeTo = $pid . '-paste-' . $relativeUid . '-' . $uid;
 		}
 		if (FALSE === empty($area)) {
 			$relativeTo .= '-' . $area;
