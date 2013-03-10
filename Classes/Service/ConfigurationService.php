@@ -122,7 +122,7 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_Confi
 			$templatePathSet = Tx_Flux_Utility_Path::translatePath($templatePathSet);
 			$templateRootPath = $templatePathSet['templateRootPath'];
 			$files = array();
-			$files = t3lib_div::getAllFilesAndFoldersInPath($files, $templateRootPath, '');
+			$files = t3lib_div::getAllFilesAndFoldersInPath($files, $templateRootPath, 'html');
 			if (count($files) > 0) {
 				foreach ($files as $templateFilename) {
 					$fileRelPath = substr($templateFilename, strlen($templateRootPath));
