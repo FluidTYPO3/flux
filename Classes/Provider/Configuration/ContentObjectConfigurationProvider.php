@@ -272,7 +272,43 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return void
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
-		unset($command, $id, $row, $relativeTo, $reference);
+		$pasteCommands = array('copy', 'move');
+		if (TRUE === in_array($command, $pasteCommands)) {
+			$callback = t3lib_div::_GET('CB');
+			$pasteCommand = $callback['paste'];
+			$parameters = explode('|', $pasteCommand);
+			list ($pid, $subCommand, $relativeUid, $uid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
+			$clipData = $GLOBALS['BE_USER']->getModuleData('clipboard', $GLOBALS['BE_USER']->getTSConfigVal('options.saveClipboard') ? '' : 'ses');
+			if ($command === 'copy') {
+				$copiedUid = $reference->copyMappingArray[$this->tableName][$id];
+				$condition = "uid = '" . $copiedUid . "'";
+				$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $this->tableName, $condition));
+				if ('reference' === $subCommand) {
+					$record['CType'] = 'shortcut';
+					$record['records'] = $id;
+				}
+			} else {
+				$condition = "uid = '" . $id . "'";
+				$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $this->tableName, $condition));
+			}
+			if (0 < $relativeUid) {
+				$relativeRecord = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $this->tableName, "uid = '" . $relativeUid . "'"));
+				$record['sorting'] = $relativeRecord['sorting'] + 1;
+				$relativeTo = 0 - $relativeUid;
+			} else {
+				$record['sorting'] = 0;
+			}
+			$record['pid'] = $pid;
+			$record['tx_flux_column'] = $possibleArea;
+			$record['tx_flux_parent'] = $uid;
+			if (FALSE === empty($possibleArea)) {
+				$record['colPos'] = -42;
+			}
+			if (FALSE === empty($possibleColPos) || $possibleColPos === 0 || $possibleColPos === '0') {
+				$record['colPos'] = $possibleColPos;
+			}
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->tableName, $condition, $record);
+		}
 	}
 
 	/**

@@ -46,7 +46,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper extends Tx_Flui
 	 * @return string
 	 */
 	protected function getIcon($icon, $title = NULL) {
-		return t3lib_iconWorks::getSpriteIcon($icon, array('title' => $title));
+		return t3lib_iconWorks::getSpriteIcon($icon, array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new'));
 	}
 
 	/**
@@ -62,14 +62,14 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper extends Tx_Flui
 	 * @return string
 	 */
 	protected function getFormToken() {
-		return NULL;
+		return t3lib_BEfunc::getUrlToken('editRecord');
 	}
 
 	/**
 	 * @return string
 	 */
 	protected function getLinkChecksum() {
-		return NULL;
+		return $GLOBALS['BE_USER']->veriCode();
 	}
 
 	/**
