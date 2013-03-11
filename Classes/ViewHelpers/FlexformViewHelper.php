@@ -50,6 +50,9 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 	 * @return string
 	 */
 	public function render() {
+		if(substr($this->arguments['icon'],0,4) === 'EXT:') {
+			$this->arguments['icon'] = t3lib_extMgm::extRelPath($this->arguments['icon']);
+		}
 		$this->setStorage(array(
 			'label' => $this->arguments['label'],
 			'description' => $this->arguments['description'],
