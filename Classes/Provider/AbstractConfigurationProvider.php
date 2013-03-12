@@ -403,6 +403,17 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$this->configurationService->debug($error);
 			return array();
 		}
+		$immediateConfiguration = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName]);
+		$tree = $this->getInheritanceTree($row);
+		if (0 === count($tree)) {
+			return $immediateConfiguration;
+		}
+		$inheritedConfiguration = $this->getMergedConfiguration($tree);
+		if (0 === count($immediateConfiguration)) {
+			return $inheritedConfiguration;
+		}
+		$merged = $this->arrayMergeRecursive($inheritedConfiguration, $immediateConfiguration);
+		return $merged;
 	}
 
 	/**
@@ -470,11 +481,29 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			if (NULL === $fieldName) {
 				return $data;
 			}
-			$currentData = $this->configurationService->convertFlexFormContentToArray($branch[$fieldName]);
-			$data = t3lib_div::array_merge_recursive_overrule($data, $currentData, FALSE, FALSE, TRUE);
+			$currentData = $this->flexFormService->convertFlexFormContentToArray($branch[$fieldName]);
+			$data = $this->arrayMergeRecursive($data, $currentData);
 		}
 		self::$cacheMergedConfigurations[$key] = $data;
 		return $data;
+	}
+
+	/**
+	 * @param array $array1
+	 * @param array $array2
+	 * @return array
+	 */
+	protected function arrayMergeRecursive($array1, $array2) {
+		foreach ($array2 as $key => $val) {
+			if (is_array($array1[$key])) {
+				if (is_array($array2[$key])) {
+					$val = $this->arrayMergeRecursive($array1[$key], $array2[$key]);
+				}
+			}
+			$array1[$key] = $val;
+		}
+		reset($array1);
+		return $array1;
 	}
 
 	/**
