@@ -477,12 +477,19 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		}
 		$data = array();
 		foreach ($tree as $branch) {
-			$fieldName = $this->getFieldName($branch);
-			if (NULL === $fieldName) {
-				return $data;
+			$values = $this->getFlexFormValues($branch);
+			$variables = $this->getTemplateVariables($branch);
+			foreach ($values as $name => $value) {
+				$stop = (TRUE === isset($variables['fields'][$name]['stopInheritance']));
+				$inherit = (TRUE === isset($variables['fields'][$name]['emptyInheritance']));
+				$empty = (TRUE === empty($value));
+				if (TRUE === $stop) {
+					unset($values[$name]);
+				} elseif (FALSE === $inherit && TRUE === $empty) {
+					unset($values[$name]);
+				}
 			}
-			$currentData = $this->flexFormService->convertFlexFormContentToArray($branch[$fieldName]);
-			$data = $this->arrayMergeRecursive($data, $currentData);
+			$data = $this->arrayMergeRecursive($data, $values);
 		}
 		self::$cacheMergedConfigurations[$key] = $data;
 		return $data;
