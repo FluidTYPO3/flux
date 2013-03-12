@@ -482,7 +482,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			foreach ($values as $name => $value) {
 				$stop = (TRUE === isset($variables['fields'][$name]['stopInheritance']));
 				$inherit = (TRUE === isset($variables['fields'][$name]['emptyInheritance']));
-				$empty = (TRUE === empty($value));
+				$empty = (TRUE === empty($value) && $value !== '0' && $value !== 0);
 				if (TRUE === $stop) {
 					unset($values[$name]);
 				} elseif (FALSE === $inherit && TRUE === $empty) {
