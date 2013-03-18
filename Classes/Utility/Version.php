@@ -38,12 +38,12 @@ class Tx_Flux_Utility_Version {
 	 * @return boolean
 	 */
 	public static function assertHasFixedFlexFormFieldNamePassing() {
-		$version = explode('.', TYPO3_version);
-		$isRecent4x5 = ($version[0] == 4 && $version[1] == 5 && $version[2] >= 23);
-		$isRecent4x6 = ($version[0] == 4 && $version[1] == 6 && $version[2] >= 16);
-		$isRecent4x7 = ($version[0] == 4 && $version[1] == 7 && $version[2] >= 8);
-		$isRecent6x0 = self::assertCoreVersionIsAtLeastSixPointZero();
-		return ($isRecent6x0 || $isRecent4x5 || $isRecent4x6 || $isRecent4x7);
+		// Due to lacking support from the core in the 4.x-branches, we need to completely
+		// override the old version checker. The following only enables certain features if
+		// the system is running 6.0 or newer. If this isn't done, flexforms won't work.
+		// Which is bad.
+		return self::assertCoreVersionIsAtLeastSixPointZero();
+		
 	}
 
 	/**
