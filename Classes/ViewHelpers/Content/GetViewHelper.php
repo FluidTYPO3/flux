@@ -55,6 +55,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		$this->registerArgument('order', 'string', 'Optional sort order of content elements - RAND() supported', FALSE, 'sorting');
 		$this->registerArgument('sortDirection', 'string', 'Optional sort direction of content elements', FALSE, 'ASC');
 		$this->registerArgument('as', 'string', 'Variable name to register, then render child content and insert all results as an array of records', FALSE);
+		$this->registerArgument('loadRegister', 'array', 'List of LOAD_REGISTER variable');
 	}
 
 	/**
@@ -63,6 +64,11 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 	 * @return mixed
 	 */
 	public function render() {
+		$loadRegister = FALSE;
+		if (empty($this->arguments['loadRegister']) === FALSE) {
+			$this->contentObject->cObjGetSingle('LOAD_REGISTER', $this->arguments['loadRegister']);
+			$loadRegister = TRUE;
+		}
 		$record = $this->templateVariableContainer->get('record');
 		$id = $record['uid'];
 		$localizedUid = $record['_LOCALIZED_UID'] > 0 ? $record['_LOCALIZED_UID'] : $id;
@@ -85,6 +91,9 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 			if (TRUE === isset($backup)) {
 				$this->templateVariableContainer->add($as, $backup);
 			}
+		}
+		if ($loadRegister) {
+			$this->contentObject->cObjGetSingle('RESTORE_REGISTER', '');
 		}
 		return $content;
 	}
