@@ -50,10 +50,14 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 	 * @return string
 	 */
 	public function render() {
+		$icon = $this->arguments['icon'];
+		if (0 === strpos($icon, 'EXT:')) {
+			$icon = t3lib_div::getFileAbsFileName($icon);
+		}
 		$this->setStorage(array(
 			'label' => $this->arguments['label'],
 			'description' => $this->arguments['description'],
-			'icon' => $this->arguments['icon'],
+			'icon' => $icon,
 			'enabled' => $this->arguments['enabled'],
 			'wizardTab' => $this->arguments['wizardTab'],
 			'mergeValues' => $this->arguments['mergeValues'],
