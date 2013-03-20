@@ -85,7 +85,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 				$backup = $this->templateVariableContainer->get($as);
 				$this->templateVariableContainer->remove($as);
 			}
-			$this->templateVariableContainer->add($as, $records);
+			$this->templateVariableContainer->add($as, $elements);
 			$content = $this->renderChildren();
 			$this->templateVariableContainer->remove($as);
 			if (TRUE === isset($backup)) {
