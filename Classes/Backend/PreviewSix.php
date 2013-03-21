@@ -33,7 +33,7 @@ class Tx_Flux_Backend_PreviewSix extends Tx_Flux_Backend_AbstractPreview {
 
 	/**
 	 *
-	 * @param tx_cms_layout $parentObject
+	 * @param \TYPO3\CMS\Backend\View\PageLayoutView $parentObject
 	 * @param boolean $drawItem
 	 * @param string $headerContent
 	 * @param string $itemContent
