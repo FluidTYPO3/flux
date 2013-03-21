@@ -333,7 +333,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		if (is_array($dataStructure) === FALSE) {
 			$dataStructure = array();
 		}
-		$fieldName = $this->getFieldName($row);
 		$paths = $this->getTemplatePaths($row);
 		$values = $this->getFlexFormValues($row);
 		$values = array_merge((array) $this->getTemplateVariables($row), $values);
