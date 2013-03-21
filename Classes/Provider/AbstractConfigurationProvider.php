@@ -485,7 +485,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	protected function getParentFieldValue(array $row) {
 		$parentFieldName = $this->getParentFieldName($row);
 		$tableName = $this->getTableName($row);
-		if (NULL !== $parentFIeldName && FALSE === isset($row[$parentFieldName])) {
+		if (NULL !== $parentFieldName && FALSE === isset($row[$parentFieldName])) {
 			$row = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows($parentFieldName, $tableName, "uid = '" . $row['uid'] . "'"));
 		}
 		return $row[$parentFieldName];
