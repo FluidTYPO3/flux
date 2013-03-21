@@ -32,6 +32,11 @@
 class Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider extends Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider implements Tx_Flux_Provider_ContentObjectConfigurationProviderInterface {
 
 	/**
+	 * @var string
+	 */
+	protected $contentObjectType;
+
+	/**
 	 * @param string $contentObjectType
 	 * @return void
 	 */
