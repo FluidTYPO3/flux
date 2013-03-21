@@ -41,7 +41,7 @@ class Tx_Flux_Utility_Path implements t3lib_Singleton {
 		if (is_array($path) == FALSE) {
 			return t3lib_div::getFileAbsFileName($path);
 		} else {
-			foreach ($path as $key=>$subPath) {
+			foreach ($path as $key => $subPath) {
 				$path[$key] = self::translatePath($subPath);
 			}
 		}
