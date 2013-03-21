@@ -193,7 +193,7 @@ class DynFlexMigration {
 			$previewEndingTagPosition = strpos($file, '</f:section', $previewOpeningTagPosition);
 		} elseif (strpos($file, 'flux:flexform.content') !== FALSE && strpos($file, 'flux:widget.grid') === FALSE) {
 			$previewSection = "<f:section name=\"Preview\">\n\t<flux:widget.grid />\n</f:section>\n\n";
-		} elseif ($previewEndTagPosition === FALSE) {
+		} elseif ($previewEndingTagPosition === FALSE) {
 			$previewSection = '<f:section name="Preview"></f:section>' . LF;
 		}
 
@@ -208,7 +208,7 @@ class DynFlexMigration {
 			$splitPoint = $configurationSectionClosingTagPosition;
 		} elseif ($previewEndingTagPosition !== FALSE && strpos($file, 'flux:flexform.content') !== FALSE && strpos($file, 'flux:widget.grid') === FALSE) {
 				// preview section only needs the grid Widget, set splitPoint and merged "section" markup accordingly
-			$splitPoint = $previewEndTagPosition - 12;
+			$splitPoint = $previewEndingTagPosition - 12;
 			$previewSection = "\t<flux:widget.grid />" . LF;
 		}
 

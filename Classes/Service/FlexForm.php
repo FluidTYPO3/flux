@@ -46,6 +46,11 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	protected $contentObjectData;
 
 	/**
+	 * @var array
+	 */
+	protected $storage;
+
+	/**
 	 *
 	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
 	 */
