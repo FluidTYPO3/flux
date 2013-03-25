@@ -34,7 +34,12 @@
 class Tx_Flux_Backend_DynamicFlexForm {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var Tx_Flux_Service_Debug
+	 */
+	protected $debugService;
+
+	/**
+	 * @var Tx_Extbase_Object_ObjectManagerInterface
 	 */
 	protected $objectManager;
 
@@ -51,6 +56,7 @@ class Tx_Flux_Backend_DynamicFlexForm {
 		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 		$this->flexformService = $this->objectManager->get('Tx_Flux_Service_FlexForm');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
+		$this->debugService = $this->objectManager->get('Tx_Flux_Service_Debug');
 	}
 
 	/**
@@ -79,12 +85,7 @@ class Tx_Flux_Backend_DynamicFlexForm {
 				/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
 				$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 			} catch (Exception $e) {
-				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-					throw $e;
-				} else {
-					t3lib_div::sysLog($e->getMessage(), 'flux');
-					t3lib_FlashMessageQueue::addMessage(new t3lib_FlashMessage($e->getMessage() . ' (code ' . $e->getCode() . ')', t3lib_FlashMessage::ERROR, TRUE));
-				}
+				$this->debugService->debug($e);
 			}
 		}
 	}

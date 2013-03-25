@@ -110,6 +110,11 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	protected $flexFormService;
 
 	/**
+	 * @var Tx_Flux_Service_Debug
+	 */
+	protected $debugService;
+
+	/**
 	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
 	 * @return void
 	 */
@@ -131,6 +136,14 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexFormService) {
 		$this->flexFormService = $flexFormService;
+	}
+
+	/**
+	 * @param Tx_Flux_Service_Debug $debugService
+	 * @return void
+	 */
+	public function injectDebugService(Tx_Flux_Service_Debug $debugService) {
+		$this->debugService = $debugService;
 	}
 
 	/**
@@ -330,19 +343,22 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
-		if (is_array($dataStructure) === FALSE) {
-			$dataStructure = array();
+		try {
+			if (is_array($dataStructure) === FALSE) {
+				$dataStructure = array();
+			}
+			$paths = $this->getTemplatePaths($row);
+			$values = $this->getFlexFormValues($row);
+			$values = array_merge((array) $this->getTemplateVariables($row), $values);
+			$section = $this->getConfigurationSectionName($row);
+			if (strpos($section, 'variable:') !== FALSE) {
+				$section = $values[array_pop(explode(':', $section))];
+			}
+			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+			$this->flexFormService->convertFlexFormContentToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section);
+		} catch (Exception $error) {
+			$this->debugService->debug($error);
 		}
-		$paths = $this->getTemplatePaths($row);
-		$values = $this->getFlexFormValues($row);
-		$values = array_merge((array) $this->getTemplateVariables($row), $values);
-		$section = $this->getConfigurationSectionName($row);
-		if (strpos($section, 'variable:') !== FALSE) {
-			$section = $values[array_pop(explode(':', $section))];
-		}
-		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		$this->flexFormService->convertFlexFormContentToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section);
-		unset($conf);
 	}
 
 	/**
@@ -363,21 +379,30 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getFlexFormValues(array $row) {
-		$fieldName = $this->getFieldName($row);
-		if (NULL === $fieldName) {
+		try {
+			$className = get_class($this);
+			$fieldName = $this->getFieldName($row);
+			if (NULL === $fieldName) {
+				$this->debugService->message('Returning empty array from ' . $className .
+					' - detected field name NULL and parent getFlexFormValues method is being inherited and used.');
+				return array();
+			}
+			$immediateConfiguration = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName]);
+			$tree = $this->getInheritanceTree($row);
+			if (0 === count($tree)) {
+				return $immediateConfiguration;
+			}
+			$inheritedConfiguration = $this->getMergedConfiguration($tree);
+			if (0 === count($immediateConfiguration)) {
+				return $inheritedConfiguration;
+			}
+			$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
+			$this->debugService->message('Using ' . count($tree) . ' record(s) from root line to inherit configuration', t3lib_div::SYSLOG_SEVERITY_INFO);
+			return $merged;
+		} catch (Exception $error) {
+			$this->debugService->debug($error);
 			return array();
 		}
-		$immediateConfiguration = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName]);
-		$tree = $this->getInheritanceTree($row);
-		if (0 === count($tree)) {
-			return $immediateConfiguration;
-		}
-		$inheritedConfiguration = $this->getMergedConfiguration($tree);
-		if (0 === count($immediateConfiguration)) {
-			return $inheritedConfiguration;
-		}
-		$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
-		return $merged;
 	}
 
 	/**

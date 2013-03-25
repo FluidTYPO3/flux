@@ -32,9 +32,22 @@
 class Tx_Flux_Provider_Structure_AbstractStructureProvider {
 
 	/**
+	 * @var Tx_Flux_Service_Debug
+	 */
+	protected $debugService;
+
+	/**
 	 * @var Tx_Extbase_Object_ObjectManagerInterface
 	 */
 	protected $objectManager;
+
+	/**
+	 * @param Tx_Flux_Service_Debug $debugService
+	 * @return void
+	 */
+	public function injectDebugService(Tx_Flux_Service_Debug $debugService) {
+		$this->debugService = $debugService;
+	}
 
 	/**
 	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
