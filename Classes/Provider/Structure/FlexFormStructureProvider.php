@@ -36,6 +36,12 @@ class Tx_Flux_Provider_Structure_FlexFormStructureProvider extends Tx_Flux_Provi
 	 * @return array
 	 */
 	public function render($configuration) {
+		if (FALSE === is_array($configuration)) {
+			$className = get_class($this);
+			$exported = var_export($configuration, TRUE);
+			$this->debugService->message('Class ' . $className . ' asked to render an invalid configuration: ' . $exported, t3lib_div::SYSLOG_SEVERITY_FATAL);
+			return array();
+		}
 		$sheets = array();
 		foreach ($configuration['fields'] as $field) {
 			$groupKey = $field['sheet']['name'];

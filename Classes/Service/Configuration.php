@@ -44,11 +44,24 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 	protected $configurationManager;
 
 	/**
+	 * @var Tx_Flux_Service_Debug
+	 */
+	protected $debugService;
+
+	/**
 	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
 	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
+	}
+
+	/**
+	 * @param Tx_Flux_Service_Debug $debugService
+	 * @return void
+	 */
+	public function injectDebugService(Tx_Flux_Service_Debug $debugService) {
+		$this->debugService = $debugService;
 	}
 
 	/**
@@ -120,8 +133,7 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 					$messageText = 'The Fluid configuration set named ' .
 						$configuration['label'] . ' depends on extension ' . $dependency . ' (all dependencies: ' .
 						implode(',', $dependencies) . ') but ' . $dependency . ' was not loaded';
-					$flashMessage = new t3lib_FlashMessage($messageText, 'Fluid configuration missing', t3lib_FlashMessage::WARNING);
-					t3lib_FlashMessageQueue::addMessage($flashMessage);
+					$this->debugService->message($messageText, t3lib_div::SYSLOG_SEVERITY_WARNING);
 					return FALSE;
 				}
 			}

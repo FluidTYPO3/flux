@@ -72,6 +72,11 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	protected $reflectionService;
 
 	/**
+	 * @var Tx_Flux_Service_Debug
+	 */
+	protected $debugService;
+
+	/**
 	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
@@ -101,6 +106,14 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 */
 	public function injectReflectionService(Tx_Extbase_Reflection_Service $reflectionService) {
 		$this->reflectionService = $reflectionService;
+	}
+
+	/**
+	 * @param Tx_Flux_Service_Debug $debugService
+	 * @return void
+	 */
+	public function injectDebugService(Tx_Flux_Service_Debug $debugService) {
+		$this->debugService = $debugService;
 	}
 
 	/**
@@ -304,16 +317,22 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 		if (file_exists($templateFile) === FALSE) {
 			$templateFile = t3lib_div::getFileAbsFileName($templateFile);
 		}
-		if (file_exists($templateFile) === FALSE) {
-				// Only process this $dataStructArray if the specified template file exists.
-			throw new Exception('Tried to get a FlexForm configuration from a file which does not exist (' . $templateFile . ')', 1343264270);
+		try {
+			if (file_exists($templateFile) === FALSE) {
+					// Only process this $dataStructArray if the specified template file exists.
+				throw new Exception('Tried to get a FlexForm configuration from a file which does not exist (' . $templateFile . ')', 1343264270);
+			}
+			/**	@var $view Tx_Flux_MVC_View_ExposedStandaloneView */
+			$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedStandaloneView');
+			$view->setTemplatePathAndFilename($templateFile);
+			$view->assignMultiple($values);
+			$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths);
+			return $config;
+		} catch (Exception $error) {
+			$this->debugService->message('Reading file ' . $templateFile . ' caused an error - see next message', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			$this->debugService->debug($error);
+			return array();
 		}
-		/**	@var $view Tx_Flux_MVC_View_ExposedStandaloneView */
-		$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedStandaloneView');
-		$view->setTemplatePathAndFilename($templateFile);
-		$view->assignMultiple($values);
-		$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths);
-		return $config;
 	}
 
 	/**
@@ -329,14 +348,16 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function convertFlexFormContentToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL) {
-		if ($templateFile === NULL) {
-			$config['parameters'] = array(
-				'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
-			);
-			$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-			return;
-		}
+		$className = get_class($this);
 		try {
+			if ($templateFile === NULL) {
+				$this->debugService->message('A template file path was NULL - this might indicate an error in class ' . $className);
+				$config['parameters'] = array(
+					'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
+				);
+				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
+				return;
+			}
 			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths);
 			/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
 			$flexFormStructureProvider = $this->objectManager->create('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
@@ -348,17 +369,15 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
 			}
 		} catch (Exception $e) {
-			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-				throw $e;
-			} else {
-				t3lib_div::sysLog($e->getMessage(), 'flux');
-				$config['parameters'] = array(
-					'exception' => $e,
-					'userFunction' => 'Tx_Flux_UserFunction_ErrorReporter->renderField'
-				);
-				if (t3lib_extMgm::isLoaded('templavoila') === FALSE) {
-					$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-				}
+			$this->debugService->message('Attempting to convert FlexForm XML to array using file ' . $templateFile . ' failed - ' .
+				'see next error message');
+			$this->debugService->debug($e);
+			$config['parameters'] = array(
+				'exception' => $e,
+				'userFunction' => 'Tx_Flux_UserFunction_ErrorReporter->renderField'
+			);
+			if (t3lib_extMgm::isLoaded('templavoila') === FALSE) {
+				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
 			}
 		}
 	}

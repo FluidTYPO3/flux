@@ -34,15 +34,34 @@
 class Tx_Flux_Service_Debug implements t3lib_Singleton {
 
 	/**
+	 * @var array
+	 */
+	private static $sentDebugMessages = array();
+
+	/**
+	 * @var array
+	 */
+	private static $friendlySeverities = array(
+		t3lib_div::SYSLOG_SEVERITY_INFO,
+		t3lib_div::SYSLOG_SEVERITY_NOTICE
+	);
+
+	/**
 	 * @param mixed $instance
 	 * @return void
 	 */
 	public function debug($instance) {
-		if (0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
+		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
 			if (TRUE === $instance instanceof Exception) {
 				t3lib_div::sysLog('Flux Debug: Suppressed Exception - "' . $instance->getMessage() . '" (' . $instance->getCode() . ')', 'flux');
 			}
 			return;
+		}
+		if (TRUE === is_object($instance)) {
+			$hash = spl_object_hash($instance);
+			if (TRUE === isset(self::$sentDebugMessages[$hash])) {
+				return;
+			}
 		}
 		if (TRUE === $instance instanceof Tx_Flux_MVC_View_ExposedTemplateView) {
 			$this->debugView($instance);
@@ -53,6 +72,7 @@ class Tx_Flux_Service_Debug implements t3lib_Singleton {
 		} else {
 			$this->debugMixed($instance);
 		}
+		self::$sentDebugMessages[$hash] = TRUE;
 	}
 
 	/**
@@ -68,7 +88,7 @@ class Tx_Flux_Service_Debug implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function debugException(Exception $error) {
-		$this->message($error->getMessage() . ' (' . $error->getCode() . ')');
+		$this->message($error->getMessage() . ' (' . $error->getCode() . ')', t3lib_div::SYSLOG_SEVERITY_FATAL);
 	}
 
 	/**
@@ -92,12 +112,22 @@ class Tx_Flux_Service_Debug implements t3lib_Singleton {
 	 * @param integer $severity
 	 * @return void
 	 */
-	public function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_WARNING) {
-		if (0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
+	public function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
+		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
 			return;
 		}
-		$flashMessage = new t3lib_FlashMessage('Flux Debug:<br />' . $message, $severity);
+		$hash = $message . $severity;
+		if (TRUE === isset(self::$sentDebugMessages[$hash])) {
+			return;
+		}
+		if (2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] && TRUE === in_array($severity, self::$friendlySeverities)) {
+			return;
+		}
+		$isAjaxCall = (boolean) 0 < t3lib_div::_GET('ajaxCall');
+		$flashMessage = new t3lib_FlashMessage($message, $title, $severity);
+		$flashMessage->setStoreInSession($isAjaxCall);
 		t3lib_FlashMessageQueue::addMessage($flashMessage);
+		self::$sentDebugMessages[$hash] = TRUE;
 	}
 
 }
