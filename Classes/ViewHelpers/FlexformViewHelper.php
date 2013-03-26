@@ -63,6 +63,7 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 			'mergeValues' => $this->arguments['mergeValues'],
 			'id' => $this->arguments['id'],
 			'fields' => array(),
+			'hidefields' => array(),
 		));
 		$this->renderChildren();
 		return '';
