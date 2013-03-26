@@ -33,6 +33,19 @@
 class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneView {
 
 	/**
+	 * @var Tx_Flux_Service_Debug
+	 */
+	protected $debugService;
+
+	/**
+	 * @param Tx_Flux_Service_Debug $debugService
+	 * @return void
+	 */
+	public function injectDebugService(Tx_Flux_Service_Debug $debugService) {
+		$this->debugService = $debugService;
+	}
+
+	/**
 	 * Get a variable stored in the Fluid template
 	 * @param string $viewHelperClassName Class name of the ViewHelper which stored the variable
 	 * @param string $name Name of the variable which the ViewHelper stored
@@ -54,6 +67,12 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 			$this->templateParser->setConfiguration($this->buildParserConfiguration());
 			$this->baseRenderingContext->setControllerContext($this->controllerContext);
 			$parsedTemplate = $this->getParsedTemplate();
+			if (NULL === $parsedTemplate) {
+				throw new Exception('Unable to fetch a parsed template - this is <b>very likely</b> to be caused by ' .
+					' syntax errors in the template. It may also point to a problem in a core class from Fluid; however, ' .
+					' this is <b>not very likely</b> to be the cause. There almost certainly are earlier errors which should ' .
+					' be handled; if there are then you can safely ignore this message.', t3lib_div::SYSLOG_SEVERITY_WARNING);
+			}
 			$this->setRenderingContext($this->baseRenderingContext);
 			$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
 			if (FALSE === empty($sectionName)) {
@@ -62,12 +81,15 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 				$this->render();
 			}
 			$this->stopRendering();
-			$value = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
+			$stored = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
+			$this->debugService->message('Flux View ' . get_class($this) . ' is able to read stored configuration from file ' .
+				$this->getTemplatePathAndFilename(), t3lib_div::SYSLOG_SEVERITY_INFO);
+			return $stored;
 		} catch (Exception $error) {
-			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-				throw $error;
-			}
-			t3lib_div::sysLog($error->getMessage(), 'flux', t3lib_div::SYSLOG_SEVERITY_ERROR);
+			$this->debugService->message('Failed to get stored variable from file ' . $this->getTemplatePathAndFilename() . ' - ' .
+				'additional error messages have been sent', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			$this->debugService->debug($error);
+			$value = NULL;
 		}
 		return $value;
 	}
@@ -77,22 +99,29 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	 * @return mixed
 	 */
 	public function getParsedTemplate() {
-		if (!$this->templateCompiler) {
-			$source = $this->getTemplateSource();
-			$parsedTemplate = $this->templateParser->parse($source);
-			return $parsedTemplate;
-		} else {
-			$templateIdentifier = $this->getTemplateIdentifier();
-			if ($this->templateCompiler->has($templateIdentifier)) {
-				$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
-			} else {
+		try {
+			if (!$this->templateCompiler) {
 				$source = $this->getTemplateSource();
 				$parsedTemplate = $this->templateParser->parse($source);
-				if ($parsedTemplate->isCompilable()) {
-					$this->templateCompiler->store($templateIdentifier, $parsedTemplate);
+				return $parsedTemplate;
+			} else {
+				$templateIdentifier = $this->getTemplateIdentifier();
+				if ($this->templateCompiler->has($templateIdentifier)) {
+					$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
+				} else {
+					$source = $this->getTemplateSource();
+					$parsedTemplate = $this->templateParser->parse($source);
+					if ($parsedTemplate->isCompilable()) {
+						$this->templateCompiler->store($templateIdentifier, $parsedTemplate);
+					}
 				}
+				return $parsedTemplate;
 			}
-			return $parsedTemplate;
+		} catch (Exception $error) {
+			$this->debugService->message('Failed to parse Fluid template in file ' . $this->getTemplatePathAndFilename() . ' - ' .
+				'additional error messages have been sent', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			$this->debugService->debug($error);
+			return NULL;
 		}
 	}
 
@@ -104,7 +133,11 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	 * @param Tx_Fluid_Core_Rendering_RenderingContextInterface $renderingContext
 	 */
 	public function startRendering($type, Tx_Fluid_Core_Parser_ParsedTemplateInterface $parsedTemplate, Tx_Fluid_Core_Rendering_RenderingContextInterface $renderingContext) {
-		parent::startRendering($type, $parsedTemplate, $renderingContext);
+		try {
+			parent::startRendering($type, $parsedTemplate, $renderingContext);
+		} catch (Exception $error) {
+			$this->debugService->debug($error);
+		}
 	}
 
 	/**
@@ -113,7 +146,11 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	 * @return void
 	 */
 	public function stopRendering() {
-		parent::stopRendering();
+		try {
+			parent::stopRendering();
+		} catch (Exception $error) {
+			$this->debugService->debug($error);
+		}
 	}
 
 	/**
@@ -125,9 +162,16 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	 * @return string
 	 */
 	public function renderStandaloneSection($sectionName, $variables, $optional=TRUE) {
-		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
-		$content = $this->renderSection($sectionName, $variables, $optional);
-		$this->stopRendering();
+		$content = NULL;
+		try {
+			$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
+			$content = $this->renderSection($sectionName, $variables, $optional);
+			$this->stopRendering();
+		} catch (Exception $error) {
+			$this->debugService->message('Failed to render section "' . $sectionName .'" in file ' . $this->getTemplatePathAndFilename() .
+				' - see next error message', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			$this->debugService->debug($error);
+		}
 		return $content;
 	}
 
