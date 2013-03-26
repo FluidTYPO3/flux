@@ -30,7 +30,7 @@
  * @package Flux
  * @subpackage Override\Core\DataHandling
  */
-class Tx_Flux_Override_Core_DataHandling_DataHandler extends \TYPO3\CMS\Core\DataHandling\DataHandler {
+class Tx_Flux_Override_Core_DataHandling_DataHandler extends t3lib_TCEmain {
 
 	/**
 	 * Evaluates 'flex' type values.
