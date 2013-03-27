@@ -240,7 +240,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$relativeTo = $pid;
 			} elseif (strpos($relativeTo, 'x') > 0) {
 				// Triggers when CE is dropped on a root (not CE) column header's dropzone (EXT:gridelements)
-				// set colPos and remove FCE relationprint $child['uid'];
+				// set colPos and remove FCE relation
 				list ($relativeTo, $colPos) = explode('x', $relativeTo);
 				$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 				$row['colPos'] = $colPos;
