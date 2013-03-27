@@ -174,7 +174,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			$languageFieldName = $GLOBALS['TCA'][$this->tableName]['ctrl']['languageField'];
 			$newLanguageUid = NULL;
 			if ($oldUid) {
-				$oldRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,' . $languageFieldName, $this->tableName, "uid = '" . $oldUid . "'");
+				$oldRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,pid,' . $languageFieldName, $this->tableName, "uid = '" . $oldUid . "'");
 				if (empty($row[$languageFieldName]) === FALSE) {
 					$newLanguageUid = $row[$languageFieldName];
 				} elseif (empty($oldRecord[$languageFieldName]) === FALSE) {
