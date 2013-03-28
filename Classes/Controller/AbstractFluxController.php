@@ -58,6 +58,11 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	protected $contentService;
 
 	/**
+	 * @var Tx_Flux_Service_Configuration
+	 */
+	protected $configurationService;
+
+	/**
 	 * @var Tx_Flux_Service_Debug
 	 */
 	protected $debugService;
@@ -98,6 +103,13 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	}
 
 	/**
+	 * @param Tx_Flux_Service_Configuration $configurationService
+	 */
+	public function injectConfigurationService(Tx_Flux_Service_Content $configurationService) {
+		$this->configurationService = $configurationService;
+	}
+
+	/**
 	 * @param Tx_Flux_Provider_ConfigurationService $providerConfigurationService
 	 * @return void
 	 */
@@ -131,12 +143,14 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		}
 		$this->setup = $this->provider->getTemplatePaths($row);
 		$this->data = $this->provider->getFlexFormValues($row);
+		$settings = $this->configurationService->getTypoScriptSubConfiguration(NULL, 'settings', array(), 'fluidpagesbootstrap');
 		$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
 		$view->setTemplatePathAndFilename($templatePathAndFilename);
 		$view->setLayoutRootPath($this->setup['layoutRootPath']);
 		$view->setPartialRootPath($this->setup['partialRootPath']);
 		$view->setTemplateRootPath($this->setup['templateRootPath']);
 		$view->assignMultiple($this->data);
+		$view->assign('settings', $settings);
 		$this->view = $view;
 	}
 
