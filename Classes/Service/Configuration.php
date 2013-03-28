@@ -75,10 +75,10 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 		list ($extensionKey, $action) = explode('->', $reference);
 		$action{0} = strtolower($action{0});
 		$extensionName = ucfirst(t3lib_div::underscoredToLowerCamelCase($extensionKey));
-		$potentialControllerClassName = 'Tx_' . $extensionName . '_Controllers_' . $controllerObjectShortName . 'Controller';
+		$potentialControllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerObjectShortName . 'Controller';
 		if (FALSE === class_exists($potentialControllerClassName)) {
 			if (TRUE === $failHardClass) {
-				throw new Exception('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($reference) .
+				throw new Exception('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($reference, TRUE) .
 					' but the resulting class name was not found.', 1364498093);
 			}
 			return NULL;
