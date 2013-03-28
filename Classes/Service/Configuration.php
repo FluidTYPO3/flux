@@ -72,9 +72,10 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 	 * @param string $extensionName
 	 * @param string $memberName
 	 * @param array $dontTranslateMembers Array of members not to be translated by path
+	 * @param string $containerExtensionScope If TypoScript is not located under plugin.tx_fed, change the tx_<scope> part by specifying this argument
 	 * @return array
 	 */
-	public function getTypoScriptSubConfiguration($extensionName, $memberName, $dontTranslateMembers = array()) {
+	public function getTypoScriptSubConfiguration($extensionName, $memberName, $dontTranslateMembers = array(), $containerExtensionScope = 'fed') {
 		$contentObject = $this->configurationManager->getContentObject();
 		if ($contentObject) {
 			$pid = $this->configurationManager->getContentObject()->data['pid'];
@@ -89,7 +90,7 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 			return self::$cache[$extensionName.$memberName];
 		}
 		$config = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		$config = $config['plugin.']['tx_fed.'][$memberName . '.'];
+		$config = $config['plugin.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
 		if (is_array($config) === FALSE) {
 			return array();
 		}
