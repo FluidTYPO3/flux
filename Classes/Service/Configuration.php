@@ -138,7 +138,7 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 				if (in_array($k, $dontTranslateMembers) === FALSE) {
 					$config[$k] = Tx_Flux_Utility_Path::translatePath($v);
 				}
-			} else {
+			} elseif (TRUE === is_array($v)) {
 				foreach ($v as $subkey=>$paths) {
 					if (in_array($subkey, $dontTranslateMembers) === FALSE) {
 						$config[$k][$subkey] = Tx_Flux_Utility_Path::translatePath($paths);
