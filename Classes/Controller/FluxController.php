@@ -30,19 +30,7 @@
  * @subpackage Controller
  * @route off
  */
-class Tx_Flux_Controller_FluxController extends Tx_Extbase_MVC_Controller_ActionController {
-
-	/**
-	 * @var Tx_Flux_Service_Content
-	 */
-	protected $contentService;
-
-	/**
-	 * @param Tx_Flux_Service_Content $contentService
-	 */
-	public function injectContentService(Tx_Flux_Service_Content $contentService) {
-		$this->contentService = $contentService;
-	}
+class Tx_Flux_Controller_FluxController extends Tx_Flux_Controller_AbstractFluxController {
 
 	/**
 	 * Renders child content from $record's $area
