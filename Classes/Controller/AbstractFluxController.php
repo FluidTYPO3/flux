@@ -43,16 +43,6 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	protected $defaultViewObjectName = 'Tx_Flux_MVC_View_ExposedTemplateView';
 
 	/**
-	 * @var Tx_Fluidpages_Service_PageService
-	 */
-	protected $pageService;
-
-	/**
-	 * @var Tx_Fluidpages_Service_ConfigurationService
-	 */
-	protected $configurationService;
-
-	/**
 	 * @var Tx_Flux_Provider_ConfigurationService
 	 */
 	protected $providerConfigurationService;
@@ -61,6 +51,11 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	 * @var Tx_Flux_Service_FlexForm
 	 */
 	protected $flexFormService;
+
+	/**
+	 * @var Tx_Flux_Service_Content
+	 */
+	protected $contentService;
 
 	/**
 	 * @var Tx_Flux_Service_Debug
@@ -88,26 +83,18 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	private $data = array();
 
 	/**
-	 * @param Tx_Fluidpages_Service_PageService $pageService
-	 */
-	public function injectPageService(Tx_Fluidpages_Service_PageService $pageService) {
-		$this->pageService = $pageService;
-	}
-
-	/**
-	 * @param Tx_Fluidpages_Service_ConfigurationService $configurationService
-	 * @return void
-	 */
-	public function injectConfigurationService(Tx_Fluidpages_Service_ConfigurationService $configurationService) {
-		$this->configurationService = $configurationService;
-	}
-
-	/**
 	 * @param Tx_Flux_Service_FlexForm $flexFormService
 	 * @return void
 	 */
 	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexformService) {
 		$this->flexFormService = $flexformService;
+	}
+
+	/**
+	 * @param Tx_Flux_Service_Content $contentService
+	 */
+	public function injectContentService(Tx_Flux_Service_Content $contentService) {
+		$this->contentService = $contentService;
 	}
 
 	/**
