@@ -65,6 +65,34 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 	}
 
 	/**
+	 * @param string $reference
+	 * @param string $controllerObjectShortName
+	 * @param boolean $failHardClass
+	 * @param boolean $failHardAction
+	 * @return string|NULL
+	 */
+	public function resolveFluxControllerClassName($reference, $controllerObjectShortName, $failHardClass = FALSE, $failHardAction = FALSE) {
+		list ($extensionKey, $action) = explode('->', $reference);
+		$action{0} = strtolower($action{0});
+		$extensionName = ucfirst(t3lib_div::underscoredToLowerCamelCase($extensionKey));
+		$potentialControllerClassName = 'Tx_' . $extensionName . '_Controllers_' . $controllerObjectShortName . 'Controller';
+		if (FALSE === class_exists($potentialControllerClassName)) {
+			if (TRUE === $failHardClass) {
+				throw new Exception('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($reference) .
+					' but the resulting class name was not found.', 1364498093);
+			}
+			return NULL;
+		}
+		if (FALSE === method_exists($potentialControllerClassName, $action . 'Action')) {
+			if (TRUE === $failHardAction) {
+				throw new Exception('Class ' . $potentialControllerClassName . ' does not contain a method named ' . $action . 'Action', 1364498223);
+			}
+			return NULL;
+		}
+		return $potentialControllerClassName;
+	}
+
+	/**
 	 * Gets an array of TypoScript configuration from below plugin.tx_fed -
 	 * if $extensionName is set in parameters it is used to indicate which sub-
 	 * section of the result to return.
