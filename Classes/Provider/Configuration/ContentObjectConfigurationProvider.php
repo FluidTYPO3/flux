@@ -174,7 +174,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			$languageFieldName = $GLOBALS['TCA'][$this->tableName]['ctrl']['languageField'];
 			$newLanguageUid = NULL;
 			if ($oldUid) {
-				$oldRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,' . $languageFieldName, $this->tableName, "uid = '" . $oldUid . "'");
+				$oldRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,pid,' . $languageFieldName, $this->tableName, "uid = '" . $oldUid . "'");
 				if (empty($row[$languageFieldName]) === FALSE) {
 					$newLanguageUid = $row[$languageFieldName];
 				} elseif (empty($oldRecord[$languageFieldName]) === FALSE) {
@@ -186,7 +186,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				if (count($children) < 1) {
 					return;
 				}
-					// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
+				// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
 				foreach ($children as $child) {
 					if (strpos($child['tx_flux_column'], ':') === FALSE) {
 						$area = $child['tx_flux_column'];
@@ -203,10 +203,10 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 						$childUid = $reference->localize($this->tableName, $child['uid'], $newLanguageUid);
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->tableName, "uid = '" . $childUid . "'", $overrideValues);
 					} elseif ($child['tx_flux_parent'] < 1) {
-							// patch; copying of elements which previously had no parent entered needs to be done
-							// manually in this case because the TCA cascading that happens on "inline" type fields
-							// does not trigger because the child element uses the old way of storing relationships.
-							// The new copies will use the new way of storing relationships.
+						// patch; copying of elements which previously had no parent entered needs to be done
+						// manually in this case because the TCA cascading that happens on "inline" type fields
+						// does not trigger because the child element uses the old way of storing relationships.
+						// The new copies will use the new way of storing relationships.
 						$childUid = $reference->copyRecord($this->tableName, $child['uid'], $row['pid']);
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->tableName, "uid = '" . $childUid . "'", $overrideValues);
 					}
