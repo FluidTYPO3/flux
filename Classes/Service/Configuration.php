@@ -78,7 +78,7 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 		$potentialControllerClassName = 'Tx_' . $extensionName . '_Controllers_' . $controllerObjectShortName . 'Controller';
 		if (FALSE === class_exists($potentialControllerClassName)) {
 			if (TRUE === $failHardClass) {
-				throw new Exception('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($reference) .
+				throw new Exception('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($reference, TRUE) .
 					' but the resulting class name was not found.', 1364498093);
 			}
 			return NULL;
