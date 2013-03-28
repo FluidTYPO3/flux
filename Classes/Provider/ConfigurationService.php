@@ -45,6 +45,28 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 	}
 
 	/**
+	 * Resolve the top-priority ConfigurationPrivider which can provide
+	 * a working FlexForm configuration baed on the given parameters.
+	 *
+	 * @param string $table
+	 * @param string $fieldName
+	 * @param array $row
+	 * @param string $extensionKey
+	 * @return Tx_Flux_Provider_ConfigurationProviderInterface|NULL
+	 */
+	public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
+		$providers = $this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
+		$priority = 0;
+		$providerWithTopPriority = NULL;
+		foreach ($providers as $provider) {
+			if ($provider->getPriority($row) >= $priority) {
+				$providerWithTopPriority = $provider;
+			}
+		}
+		return $providerWithTopPriority;
+	}
+
+	/**
 	 * Resolves a ConfigurationProvider which can provide a working FlexForm
 	 * configuration based on the given parameters.
 	 *
