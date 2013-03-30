@@ -151,7 +151,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 			if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName')) {
 				$prefix = 'objects.' . $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
 			} else {
-				$prefix = '';
+				$prefix = 'fields';
 			}
 		} else {
 			$prefix = '';
