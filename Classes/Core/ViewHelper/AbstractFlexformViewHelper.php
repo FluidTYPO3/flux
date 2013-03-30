@@ -145,6 +145,8 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 			$prefix = 'sheets';
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_SectionViewHelper) {
 			$prefix = 'sections';
+		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_ContentViewHelper) {
+			$prefix = 'areas';
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper) {
 			$prefix = 'objects';
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_FlexformViewHelper) {
