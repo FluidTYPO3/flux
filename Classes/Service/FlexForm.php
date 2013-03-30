@@ -316,7 +316,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 */
 	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL, $extensionName = NULL) {
 		if (file_exists($templateFile) === FALSE) {
-			if (0 === strpos($templateFile, 'EXT:')) {
+			if (NULL === $extensionName && 0 === strpos($templateFile, 'EXT:')) {
 				$extensionKey = substr($templateFile, 4, strpos($templateFile, '/') - 4);
 				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 			}
