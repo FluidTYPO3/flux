@@ -38,7 +38,7 @@ class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_Core_ViewHe
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the content area, FlexForm XML-valid tag name string', TRUE);
 		$this->registerArgument('label', 'string', 'Label for content area, can be LLL: value. Optional - if not specified, ' .
-			'Flux tries to detect an LLL label named "flux.areas.fluxFormId.foobar" based on area name, in scope of ' .
+			'Flux tries to detect an LLL label named "flux.fluxFormId.areas.foobar" based on area name, in scope of ' .
 			'extension rendering the Flux form.', FALSE, NULL);
 	}
 

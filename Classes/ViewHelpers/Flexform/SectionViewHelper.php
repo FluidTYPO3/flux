@@ -38,7 +38,7 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_Core_ViewHe
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', TRUE);
 		$this->registerArgument('label', 'string', 'Label for section, can be LLL: value. Optional - if not specified, ' .
-			'Flux tries to detect an LLL label named "flux.sections.fluxFormId.foobar" based on section name, in scope of ' .
+			'Flux tries to detect an LLL label named "flux.fluxFormId.sections.foobar" based on section name, in scope of ' .
 			'extension rendering the Flux form.', FALSE, NULL);
 		//$this->registerArgument('maxItems', 'integer', 'Maximum allowed items', FALSE);
 	}

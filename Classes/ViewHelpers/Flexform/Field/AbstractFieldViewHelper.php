@@ -38,8 +38,8 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', TRUE);
 		$this->registerArgument('label', 'string', 'Label for the attribute, can be LLL: value. Optional - if not specified, Flux ' .
-			'tries to detect an LLL label named "flux.fields.fluxFormId.foobar" based on field name, in scope of extension ' .
-			'rendering the Flux form. If field is in an object, use "flux.objects.fluxFormId.objectname.foobar" where ' .
+			'tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension ' .
+			'rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where ' .
 			'"foobar" is the name of the field.', FALSE, NULL);
 		$this->registerArgument('default', 'string', 'Default value for this attribute');
 		$this->registerArgument('required', 'boolean', 'If TRUE, this attribute must be filled when editing the FCE', FALSE, FALSE);
