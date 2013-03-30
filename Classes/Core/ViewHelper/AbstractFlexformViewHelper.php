@@ -146,6 +146,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		} else {
 			$name = NULL;
 		}
+		$prefix = '';
 		if (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_SheetViewHelper) {
 			$prefix = 'sheets';
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_SectionViewHelper) {
@@ -157,15 +158,12 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_FlexformViewHelper) {
 			$name = $this->arguments['id'];
 			$id = $this->arguments['id'];
-			$prefix = 'flexforms';
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper) {
 			if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName')) {
 				$prefix = 'objects.' . $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
 			} else {
 				$prefix = 'fields';
 			}
-		} else {
-			$prefix = '';
 		}
 		$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
 		if (TRUE === empty($extensionName)) {
@@ -177,8 +175,8 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 			$id = $storage['id'];
 		}
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-		$labelIdentifier = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $id . '.';
-		$labelIdentifier .= (TRUE === empty($prefix) ? '' : $prefix . '.');
+		$labelIdentifier = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $id;
+		$labelIdentifier .= (TRUE === empty($prefix) ? '' : '.' . $prefix . '.');
 		$labelIdentifier .= $this->arguments['name'];
 		$this->debugService->message('Generated automatic LLL path for entity called "' . $name . '" which is a ' .
 			get_class($this) . ': ' . $labelIdentifier, t3lib_div::SYSLOG_SEVERITY_INFO, 'Flux FlexForm LLL label generation');
