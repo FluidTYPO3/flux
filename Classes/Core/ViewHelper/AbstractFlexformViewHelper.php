@@ -141,6 +141,11 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		if (TRUE === isset($this->arguments['label']) && FALSE === empty($this->arguments['label'])) {
 			return $this->arguments['label'];
 		}
+		if (TRUE === isset($this->arguments['name'])) {
+			$name = $this->arguments['name'];
+		} else {
+			$name = NULL;
+		}
 		if (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_SheetViewHelper) {
 			$prefix = 'sheets';
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_SectionViewHelper) {
@@ -150,6 +155,8 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper) {
 			$prefix = 'objects';
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_FlexformViewHelper) {
+			$name = $this->arguments['id'];
+			$id = $this->arguments['id'];
 			$prefix = 'flexforms';
 		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper) {
 			if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName')) {
@@ -162,15 +169,18 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		}
 		$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
 		if (TRUE === empty($extensionName)) {
-			$this->debugService->message('Wanted to generate an automatic LLL label for field "' . $this->arguments['name'] . '" ' .
+			$this->debugService->message('Wanted to generate an automatic LLL label for field "' . $name . '" ' .
 				'but there was no extension name stored in the RenderingContext.', t3lib_div::SYSLOG_SEVERITY_FATAL);
 		}
-		$storage = $this->getStorage();
+		if (FALSE === isset($id)) {
+			$storage = $this->getStorage();
+			$id = $storage['id'];
+		}
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-		$labelIdentifier = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $storage['id'] . '.';
+		$labelIdentifier = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $id . '.';
 		$labelIdentifier .= (TRUE === empty($prefix) ? '' : $prefix . '.');
 		$labelIdentifier .= $this->arguments['name'];
-		$this->debugService->message('Generated automatic LLL path for entity called "' . $this->arguments['name'] . '" which is a ' .
+		$this->debugService->message('Generated automatic LLL path for entity called "' . $name . '" which is a ' .
 			get_class($this) . ': ' . $labelIdentifier, t3lib_div::SYSLOG_SEVERITY_INFO, 'Flux FlexForm LLL label generation');
 		return $labelIdentifier;
 	}
