@@ -327,6 +327,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 					// Only process this $dataStructArray if the specified template file exists.
 				throw new Exception('Tried to get a FlexForm configuration from a file which does not exist (' . $templateFile . ')', 1343264270);
 			}
+			/**	@var $view Tx_Flux_MVC_View_ExposedStandaloneView */
 			$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedStandaloneView');
 			$view->setTemplatePathAndFilename($templateFile);
 			$view->assignMultiple($values);
