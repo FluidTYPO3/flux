@@ -175,12 +175,73 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 			$id = $storage['id'];
 		}
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-		$labelIdentifier = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $id;
-		$labelIdentifier .= (TRUE === empty($prefix) ? '' : '.' . $prefix . '.');
+		$filePrefix = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml';
+		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.');
 		$labelIdentifier .= $this->arguments['name'];
 		$this->debugService->message('Generated automatic LLL path for entity called "' . $name . '" which is a ' .
 			get_class($this) . ': ' . $labelIdentifier, t3lib_div::SYSLOG_SEVERITY_INFO, 'Flux FlexForm LLL label generation');
-		return $labelIdentifier;
+		$this->updateLanguageSourceFileIfUpdateFeatureIsEnabledAndIdentifierIsMissing($filePrefix, $labelIdentifier, $id);
+		return $filePrefix . ':' . $labelIdentifier;
 	}
+
+	/**
+	 * @param string $file
+	 * @param string $identifier
+	 * @param string $id
+	 */
+	private function updateLanguageSourceFileIfUpdateFeatureIsEnabledAndIdentifierIsMissing($file, $identifier, $id) {
+		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles']) {
+			return;
+		}
+		$debugTitle = 'Flux LLL file rewriting';
+		$allowed = 'a-z\.';
+		$pattern = '/[^' . $allowed . ']+/i';
+		if (preg_match($pattern, $id) || preg_match($pattern, $identifier)) {
+			$this->debugService->message('Cowardly refusing to create an invalid LLL reference called "' . $identifier . '" ' .
+				' in a Flux form called "' . $id . '" - one or both contains invalid characters. Allowed: dots and "' .
+				$allowed . '".', t3lib_div::SYSLOG_SEVERITY_NOTICE, $debugTitle);
+			return;
+		}
+		$file = substr($file, 4);
+		$filePathAndFilename = t3lib_div::getFileAbsFileName($file);
+		$dom = new DOMDocument('1.0', 'utf-8');
+		$dom->load($filePathAndFilename);
+		foreach ($dom->getElementsByTagName('languageKey') as $languageNode) {
+			$nodes = array();
+			foreach ($languageNode->getElementsByTagName('label') as $labelNode) {
+				$key = (string) $labelNode->attributes->getNamedItem('index')->firstChild->textContent;
+				if ($key === $identifier) {
+					$this->debugService->message('Skipping LLL file merge for label "' . $identifier.
+						'"; it already exists in file "' . $filePathAndFilename . '"');
+					return;
+				}
+				$nodes[$key] = $labelNode;
+			}
+			$node = $dom->createElement('label', $identifier);
+			$attribute = $dom->createAttribute('index');
+			$attribute->appendChild($dom->createTextNode($identifier));
+			$node->appendChild($attribute);
+			$nodes[$identifier] = $node;
+			ksort($nodes);
+			foreach ($nodes as $labelNode) {
+				$languageNode->appendChild($labelNode);
+			}
+		}
+		$this->debugService->message('Rewrote "' . $file . '" by adding placeholder label for "' . $identifier . '"',
+			t3lib_div::SYSLOG_SEVERITY_INFO, $debugTitle);
+		$xml = $dom->saveXML();
+
+		if (function_exists('tidy_repair_string')) {
+			$config = array(
+				'indent'     => TRUE,
+				'input-xml'  => TRUE,
+				'output-xml' => TRUE,
+				'wrap'       => FALSE);
+			$xml = tidy_repair_string($xml, $config);
+		}
+
+		file_put_contents($filePathAndFilename, $xml);
+	}
+
 
 }
