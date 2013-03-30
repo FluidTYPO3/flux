@@ -134,4 +134,41 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $storage);
 	}
 
+	/**
+	 * @return string
+	 */
+	protected function getLabel() {
+		if (TRUE === isset($this->arguments['label']) && FALSE === empty($this->arguments['label'])) {
+			return $this->arguments['label'];
+		}
+		if (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_SheetViewHelper) {
+			$prefix = 'sheets';
+		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper) {
+			$prefix = 'objects';
+		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_FlexformViewHelper) {
+			$prefix = 'flexforms';
+		} elseif (TRUE === $this instanceof Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper) {
+			if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName')) {
+				$prefix = 'objects.' . $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
+			} else {
+				$prefix = '';
+			}
+		} else {
+			$prefix = '';
+		}
+		$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
+		if (TRUE === empty($extensionName)) {
+			$this->debugService->message('Wanted to generate an automatic LLL label for field "' . $this->arguments['name'] . '" ' .
+				'but there was no extension name stored in the RenderingContext.', t3lib_div::SYSLOG_SEVERITY_FATAL);
+		}
+		$storage = $this->getStorage();
+		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+		$labelIdentifier = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $storage['id'] . '.';
+		$labelIdentifier .= (TRUE === empty($prefix) ? '' : $prefix . '.');
+		$labelIdentifier .= $this->arguments['name'];
+		$this->debugService->message('Generated automatic LLL path for entity called "' . $this->arguments['name'] . '" which is a ' .
+			get_class($this) . ': ' . $labelIdentifier, t3lib_div::SYSLOG_SEVERITY_INFO, 'Flux FlexForm LLL label generation');
+		return $labelIdentifier;
+	}
+
 }
