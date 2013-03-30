@@ -211,7 +211,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 			foreach ($languageNode->getElementsByTagName('label') as $labelNode) {
 				$key = (string) $labelNode->attributes->getNamedItem('index')->firstChild->textContent;
 				if ($key === $identifier) {
-					$this->debugService->message('Skipping LLL file merge for lael "' . $identifier.
+					$this->debugService->message('Skipping LLL file merge for label "' . $identifier.
 						'"; it already exists in file "' . $filePathAndFilename . '"');
 					return;
 				}
