@@ -331,22 +331,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 			$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedStandaloneView');
 			$view->setTemplatePathAndFilename($templateFile);
 			$view->assignMultiple($values);
-			if (NULL !== $extensionName) {
-				/** @var $request Tx_Extbase_MVC_Web_Request */
-				$request = $this->objectManager->get('Tx_Extbase_MVC_Web_Request');
-				$request->setControllerExtensionName($extensionName);
-				/** @var $controllerContext Tx_Extbase_MVC_Controller_ControllerContext */
-				$controllerContext = $this->objectManager->get('Tx_Extbase_MVC_Controller_ControllerContext');
-				$controllerContext->setRequest($request);
-				/**	@var $view Tx_Flux_MVC_View_ExposedStandaloneView */
-				$view->setControllerContext($controllerContext);
-				/** @var $renderingContext Tx_Fluid_Core_Rendering_RenderingContext */
-				$renderingContext = $this->objectManager->get('Tx_Fluid_Core_Rendering_RenderingContext');
-				$renderingContext->setControllerContext($controllerContext);
-				$view->setRenderingContext($renderingContext);
-				$view->setControllerContext($controllerContext);
-			}
-			$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths);
+			$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths, $extensionName);
 			return $config;
 		} catch (Exception $error) {
 			$this->debugService->message('Reading file ' . $templateFile . ' caused an error - see next message', t3lib_div::SYSLOG_SEVERITY_FATAL);
