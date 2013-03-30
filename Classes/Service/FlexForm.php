@@ -36,6 +36,11 @@
 class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
+	 * @var array
+	 */
+	private static $cache = array();
+
+	/**
 	 * @var string
 	 */
 	protected $raw;
@@ -140,6 +145,30 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 		}
 		$this->raw = $this->contentObjectData['pi_flexform'];
 		return $this;
+	}
+
+	/**
+	 * @param string $templatePathAndFilename
+	 * @param string $variableName
+	 * @param string $section
+	 * @param array $paths
+	 * @oaram string $extensionName
+	 * @return mixed
+	 */
+	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL) {
+		$cacheKey = $templatePathAndFilename . $variableName . json_encode($paths) . $section;
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
+		}
+		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedStandaloneView');
+		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+		if (TRUE === isset($paths['layoutRootPath'])) {
+			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
+			$exposedView->setPartialRootPath($paths['partialRootPath']);
+		}
+		$value = $exposedView->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $variableName, $section, $paths, $extensionName);
+		self::$cache[$cacheKey] = $value;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
