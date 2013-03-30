@@ -82,3 +82,5 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\DataHandling\\D
 	array('className' => 'Tx_Flux_Override_Core_DataHandling_DataHandler');
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\Database\\ReferenceIndex'] =
 	array('className' => 'Tx_Flux_Override_Core_Database_ReferenceIndex');
+
+Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider');
