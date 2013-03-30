@@ -40,7 +40,9 @@ class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_Core_ViewHel
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the section object, FlexForm XML-valid tag name string', TRUE);
-		$this->registerArgument('label', 'string', 'Label for section object, can be LLL: value', TRUE);
+		$this->registerArgument('label', 'string', 'Label for section object, can be LLL: value. Optional - if not specified, ' .
+			'Flux tries to detect an LLL label named "flux.objects.fluxFormId.foobar" based on object name, in scope of ' .
+			'extension rendering the Flux form.', FALSE, NULL);
 	}
 
 	/**
@@ -53,7 +55,7 @@ class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_Core_ViewHel
 			throw new Exception('ViewHelper flux:flexform.object can only be used inside flux:flexform.section', 1331664840);
 		}
 		$name = $this->arguments['name'];
-		$label = $this->arguments['label'];
+		$label = $this->getLabel();
 		$labels = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels');
 		$labels[$name] = $label;
 

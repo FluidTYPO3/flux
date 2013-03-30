@@ -39,7 +39,9 @@ class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_Core_ViewHelp
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the group, used as FlexForm sheet name, must be FlexForm XML-valid tag name string', TRUE);
-		$this->registerArgument('label', 'string', 'Label for the field group - used as tab name in FlexForm', TRUE);
+		$this->registerArgument('label', 'string', 'Label for the field group - used as tab name in FlexForm. Optional - if not ' .
+			'specified, Flux tries to detect an LLL label named "flux.sheets.fluxFormId.foobar" based on sheet name, in ' .
+			'scope of extension rendering the Flux form.', FALSE, NULL);
 	}
 
 	/**
@@ -49,7 +51,7 @@ class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_Core_ViewHelp
 	public function render() {
 		$sheet = array(
 			'name' => $this->arguments['name'],
-			'label' => $this->arguments['label'],
+			'label' => $this->getLabel()
 		);
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet', $sheet);
 		$this->renderChildren();
