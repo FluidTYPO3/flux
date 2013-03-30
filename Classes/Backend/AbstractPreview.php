@@ -119,8 +119,9 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 					/** @var Tx_Extbase_MVC_Request $request */
 					$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
 					$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
-					$request->setControllerExtensionName('Flux');
-					$request->setControllerName('Flux');
+					$extensionKey = (TRUE === isset($paths['extensionKey']) ? $paths['extensionKey'] : $provider->getExtensionKey($row));
+					$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+					$request->setControllerExtensionName($extensionName);
 					$request->setDispatched(TRUE);
 					$context->setRequest($request);
 					$context->setResponse($response);
