@@ -310,11 +310,16 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @param mixed $values Optional values to use when rendering the configuration
 	 * @param string|NULL $section Optional section name containing the configuration
 	 * @param array|NULL $paths Template paths; required if template renders Partials (from inside section if $section != NULL)
+	 * @param string|NULL $extensionName If specified, uses this extensionName in an injected ControllerContext
 	 * @throws Exception
 	 * @return array
 	 */
-	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL) {
+	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL, $extensionName = NULL) {
 		if (file_exists($templateFile) === FALSE) {
+			if (0 === strpos($templateFile, 'EXT:')) {
+				$extensionKey = substr($templateFile, 4, strpos($templateFile, '/') - 4);
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+			}
 			$templateFile = t3lib_div::getFileAbsFileName($templateFile);
 		}
 		try {
@@ -322,10 +327,24 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 					// Only process this $dataStructArray if the specified template file exists.
 				throw new Exception('Tried to get a FlexForm configuration from a file which does not exist (' . $templateFile . ')', 1343264270);
 			}
-			/**	@var $view Tx_Flux_MVC_View_ExposedStandaloneView */
 			$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedStandaloneView');
 			$view->setTemplatePathAndFilename($templateFile);
 			$view->assignMultiple($values);
+			if (NULL !== $extensionName) {
+				/** @var $request Tx_Extbase_MVC_Web_Request */
+				$request = $this->objectManager->get('Tx_Extbase_MVC_Web_Request');
+				$request->setControllerExtensionName($extensionName);
+				/** @var $controllerContext Tx_Extbase_MVC_Controller_ControllerContext */
+				$controllerContext = $this->objectManager->get('Tx_Extbase_MVC_Controller_ControllerContext');
+				$controllerContext->setRequest($request);
+				/**	@var $view Tx_Flux_MVC_View_ExposedStandaloneView */
+				$view->setControllerContext($controllerContext);
+				/** @var $renderingContext Tx_Fluid_Core_Rendering_RenderingContext */
+				$renderingContext = $this->objectManager->get('Tx_Fluid_Core_Rendering_RenderingContext');
+				$renderingContext->setControllerContext($controllerContext);
+				$view->setRenderingContext($renderingContext);
+				$view->setControllerContext($controllerContext);
+			}
 			$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths);
 			return $config;
 		} catch (Exception $error) {
@@ -344,10 +363,11 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @param array $paths
 	 * @param array $dataStructArray
 	 * @param string $section
+	 * @param string $extensionName
 	 * @throws Exception
 	 * @return void
 	 */
-	public function convertFlexFormContentToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL) {
+	public function convertFlexFormContentToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL, $extensionName = NULL) {
 		$className = get_class($this);
 		try {
 			if ($templateFile === NULL) {
@@ -358,7 +378,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
 				return;
 			}
-			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths);
+			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths, $extensionName);
 			/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
 			$flexFormStructureProvider = $this->objectManager->create('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
 			$dataStructArray = $flexFormStructureProvider->render($config);
