@@ -184,7 +184,8 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 		$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		$templatePaths = $typoScript['plugin.']['tx_fed.']['fce.'][$extensionKey . '.'];
 		$values = $this->flexFormService->convertFlexFormContentToArray($record['pi_flexform']);
-		$configuration = $this->flexFormService->getFlexFormConfigurationFromFile($templatePaths['templateRootPath'] . $fileName, $values, 'Configuration');
+		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$configuration = $this->flexFormService->getFlexFormConfigurationFromFile($templatePaths['templateRootPath'] . $fileName, $values, 'Configuration', $extensionName);
 		$columns = array();
 		foreach ($configuration['grid'] as $row) {
 			foreach ($row as $column) {

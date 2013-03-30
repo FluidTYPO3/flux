@@ -32,6 +32,11 @@
 class Tx_Flux_Utility_Path implements t3lib_Singleton {
 
 	/**
+	 * @var array
+	 */
+	private static $knownPathNames = array('templateRootPath', 'layoutRootPath', 'partialRootPath');
+
+	/**
 	 * Translates an array of paths or single path into absolute paths/path
 	 *
 	 * @param mixed $path
@@ -42,7 +47,9 @@ class Tx_Flux_Utility_Path implements t3lib_Singleton {
 			return t3lib_div::getFileAbsFileName($path);
 		} else {
 			foreach ($path as $key => $subPath) {
-				$path[$key] = self::translatePath($subPath);
+				if (TRUE === in_array($key, self::$knownPathNames)) {
+					$path[$key] = self::translatePath($subPath);
+				}
 			}
 		}
 		return $path;

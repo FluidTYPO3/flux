@@ -133,19 +133,7 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 		if (is_array($config) === FALSE) {
 			return array();
 		}
-		foreach ($config as $k => $v) {
-			if ($extensionName) {
-				if (in_array($k, $dontTranslateMembers) === FALSE) {
-					$config[$k] = Tx_Flux_Utility_Path::translatePath($v);
-				}
-			} elseif (TRUE === is_array($v)) {
-				foreach ($v as $subkey=>$paths) {
-					if (in_array($subkey, $dontTranslateMembers) === FALSE) {
-						$config[$k][$subkey] = Tx_Flux_Utility_Path::translatePath($paths);
-					}
-				}
-			}
-		}
+		$config = Tx_Flux_Utility_Path::translatePath($config);
 		self::$cache[$extensionName.$memberName] = $config;
 		t3lib_div::writeFile($cachedConfigurationPathAndFilename, serialize($config));
 		return self::$cache[$extensionName.$memberName];

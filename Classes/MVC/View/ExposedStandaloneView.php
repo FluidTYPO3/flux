@@ -51,21 +51,28 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 	 * @param string $name Name of the variable which the ViewHelper stored
 	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
 	 * @param array $paths Template paths; required if template renders Partials (from inside $sectionName, if specified)
+	 * @param string $extensionName If specified, overrides the extension name stored in the RenderingContext. Use with care.
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL, $paths = NULL) {
+	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL, $paths = NULL, $extensionName = NULL) {
 		try {
 			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
 				throw new Exception('ExposedStandaloneView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
 			}
+			if (NULL !== $extensionName) {
+				$request = $this->controllerContext->getRequest();
+				$request->setControllerExtensionName($extensionName);
+				$this->controllerContext->setRequest($request);
+				$this->controllerContext->setRequest($request);
+			}
+			$this->baseRenderingContext->setControllerContext($this->controllerContext);
 			$value = NULL;
 			if (is_array($paths)) {
 				$this->setPartialRootPath($paths['partialRootPath']);
 				$this->setLayoutRootPath($paths['layoutRootPath']);
 			}
 			$this->templateParser->setConfiguration($this->buildParserConfiguration());
-			$this->baseRenderingContext->setControllerContext($this->controllerContext);
 			$parsedTemplate = $this->getParsedTemplate();
 			if (NULL === $parsedTemplate) {
 				throw new Exception('Unable to fetch a parsed template - this is <b>very likely</b> to be caused by ' .
@@ -73,7 +80,6 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 					' this is <b>not very likely</b> to be the cause. There almost certainly are earlier errors which should ' .
 					' be handled; if there are then you can safely ignore this message.', t3lib_div::SYSLOG_SEVERITY_WARNING);
 			}
-			$this->setRenderingContext($this->baseRenderingContext);
 			$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
 			if (FALSE === empty($sectionName)) {
 				$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());

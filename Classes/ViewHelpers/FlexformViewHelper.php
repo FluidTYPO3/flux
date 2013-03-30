@@ -37,7 +37,8 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('id', 'string', 'Identifier of this Flexible Content Element, [a-z0-9\-] allowed', TRUE);
-		$this->registerArgument('label', 'string', 'Label for this FlexForm, used when human-readable labels are displayed', FALSE, NULL);
+		$this->registerArgument('label', 'string', 'Label for the FlexForm, can be LLL: value. Optional - if not specified, Flux ' .
+			'tries to detect an LLL label named "flux.fluxFormId", in scope of extension rendering the Flux form.', FALSE, NULL);
 		$this->registerArgument('description', 'string', 'Short description of this content element', FALSE);
 		$this->registerArgument('icon', 'string', 'Optional icon file to use when displaying this content element in the new content element wizard', FALSE, '../typo3conf/ext/flux/Resources/Public/Icons/Plugin.png');
 		$this->registerArgument('mergeValues', 'boolean', 'If TRUE, enables overriding of record values with corresponding values from this FlexForm', FALSE, FALSE);
@@ -55,15 +56,23 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 		if (0 === strpos($icon, 'EXT:')) {
 			$icon = t3lib_div::getFileAbsFileName($icon);
 		}
+		$id = $this->arguments['id'];
+		$allowed = 'a-z';
+		$pattern = '/[^' . $allowed . ']+/i';
+		if (preg_match($pattern, $id)) {
+			$this->debugService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
+				are: "' . $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent
+				you from utilising some features, fx automatic LLL reference building, but is not fatal', t3lib_div::SYSLOG_SEVERITY_NOTICE);
+		}
 		$this->setStorage(array(
-			'label' => $this->arguments['label'],
+			'label' => $this->getLabel(),
 			'description' => $this->arguments['description'],
 			'icon' => $icon,
 			'compact' => $this->arguments['compact'],
 			'enabled' => $this->arguments['enabled'],
 			'wizardTab' => $this->arguments['wizardTab'],
 			'mergeValues' => $this->arguments['mergeValues'],
-			'id' => $this->arguments['id'],
+			'id' => $id,
 			'fields' => array(),
 			'hidefields' => array(),
 		));

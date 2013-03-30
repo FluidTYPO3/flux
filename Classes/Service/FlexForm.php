@@ -36,6 +36,11 @@
 class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 
 	/**
+	 * @var array
+	 */
+	private static $cache = array();
+
+	/**
 	 * @var string
 	 */
 	protected $raw;
@@ -140,6 +145,30 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 		}
 		$this->raw = $this->contentObjectData['pi_flexform'];
 		return $this;
+	}
+
+	/**
+	 * @param string $templatePathAndFilename
+	 * @param string $variableName
+	 * @param string $section
+	 * @param array $paths
+	 * @oaram string $extensionName
+	 * @return mixed
+	 */
+	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL) {
+		$cacheKey = $templatePathAndFilename . $variableName . json_encode($paths) . $section;
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
+		}
+		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedStandaloneView');
+		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+		if (TRUE === isset($paths['layoutRootPath'])) {
+			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
+			$exposedView->setPartialRootPath($paths['partialRootPath']);
+		}
+		$value = $exposedView->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $variableName, $section, $paths, $extensionName);
+		self::$cache[$cacheKey] = $value;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -310,11 +339,16 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @param mixed $values Optional values to use when rendering the configuration
 	 * @param string|NULL $section Optional section name containing the configuration
 	 * @param array|NULL $paths Template paths; required if template renders Partials (from inside section if $section != NULL)
+	 * @param string|NULL $extensionName If specified, uses this extensionName in an injected ControllerContext
 	 * @throws Exception
 	 * @return array
 	 */
-	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL) {
+	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL, $extensionName = NULL) {
 		if (file_exists($templateFile) === FALSE) {
+			if (NULL === $extensionName && 0 === strpos($templateFile, 'EXT:')) {
+				$extensionKey = substr($templateFile, 4, strpos($templateFile, '/') - 4);
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+			}
 			$templateFile = t3lib_div::getFileAbsFileName($templateFile);
 		}
 		try {
@@ -326,7 +360,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 			$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedStandaloneView');
 			$view->setTemplatePathAndFilename($templateFile);
 			$view->assignMultiple($values);
-			$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths);
+			$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths, $extensionName);
 			return $config;
 		} catch (Exception $error) {
 			$this->debugService->message('Reading file ' . $templateFile . ' caused an error - see next message', t3lib_div::SYSLOG_SEVERITY_FATAL);
@@ -344,10 +378,11 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 	 * @param array $paths
 	 * @param array $dataStructArray
 	 * @param string $section
+	 * @param string $extensionName
 	 * @throws Exception
 	 * @return void
 	 */
-	public function convertFlexFormContentToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL) {
+	public function convertFlexFormContentToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL, $extensionName = NULL) {
 		$className = get_class($this);
 		try {
 			if ($templateFile === NULL) {
@@ -358,7 +393,7 @@ class Tx_Flux_Service_FlexForm implements t3lib_Singleton {
 				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
 				return;
 			}
-			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths);
+			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths, $extensionName);
 			/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
 			$flexFormStructureProvider = $this->objectManager->create('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
 			$dataStructArray = $flexFormStructureProvider->render($config);
