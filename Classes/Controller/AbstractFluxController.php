@@ -78,6 +78,11 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	protected $fluxRecordField = 'pi_flexform';
 
 	/**
+	 * @var string
+	 */
+	protected $fluxTableName = 'tt_content';
+
+	/**
 	 * @var array
 	 */
 	private $setup = array();
@@ -105,7 +110,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	/**
 	 * @param Tx_Flux_Service_Configuration $configurationService
 	 */
-	public function injectConfigurationService(Tx_Flux_Service_Content $configurationService) {
+	public function injectConfigurationService(Tx_Flux_Service_Configuration $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
@@ -132,16 +137,24 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	 */
 	public function initializeView(Tx_Extbase_MVC_View_ViewInterface $view) {
 		$row = $this->configurationManager->getContentObject()->data;
-		$table = $this->configurationManager->getContentObject()->getCurrentTable();
+		$table = $this->getFluxTableName();
+		$field = $this->getFluxRecordField();
 		$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
-		$fluxRecordField = $this->getFluxRecordField();
-		$this->provider = $this->providerConfigurationService->resolvePrimaryConfigurationProvider($table, $fluxRecordField, $row);
+		$providers = $this->providerConfigurationService->resolveConfigurationProviders($table, $field, $row);
+		$this->provider = $this->providerConfigurationService->resolvePrimaryConfigurationProvider($table, $field, $row);
 		if (NULL === $this->provider) {
-			throw new Exception('Unable to resolve a Flux ConfigurationProvider, but controller indicates it is a Flux-enabled Controller - ' .
-				'this is a grave error and indicates that EXT: ' . $extensionName . 'itself is broken - or that EXT:' . $extensionName .
-				' has been overridden by another implementation which is broken. The controller that caused this error was', 1358693007);
+			$this->debugService->message('Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled Controller - ' .
+				'this is a grave error and indicates that EXT: ' . $extensionName . ' itself is broken - or that EXT:' . $extensionName .
+				' has been overridden by another implementation which is broken. The controller that caused this error was ' .
+				get_class($this) . ' and the table name is "' . $table . '".', t3lib_div::SYSLOG_SEVERITY_WARNING);
+			return;
 		}
 		$this->setup = $this->provider->getTemplatePaths($row);
+		if (FALSE === is_array($this->setup) || 0 === count($this->setup)) {
+			throw new Exception('Unable to read a working path set from the Provider. The extension that caused this error was "' .
+				$extensionName . '" and the controller was "' . get_class($this) . '". The provider which should have returned ' .
+				'a valid path set was "' . get_class($this->provider) . '" but it returned an empty array or not an array.', 1364685651);
+		}
 		$this->data = $this->provider->getFlexFormValues($row);
 		$settings = $this->configurationService->getTypoScriptSubConfiguration(NULL, 'settings', array(), 'fluidpagesbootstrap');
 		$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
@@ -151,7 +164,6 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		$view->setTemplateRootPath($this->setup['templateRootPath']);
 		$view->assignMultiple($this->data);
 		$view->assign('settings', $settings);
-		$this->view = $view;
 	}
 
 	/**
@@ -181,6 +193,13 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	 */
 	protected function getFluxRecordField() {
 		return $this->fluxRecordField;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getFluxTableName() {
+		return $this->fluxTableName;
 	}
 
 }
