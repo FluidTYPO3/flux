@@ -178,6 +178,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			$this->debugService->debug($error);
 			$view->assign('class', get_class($this));
 			$view->assign('error', $error);
+			$view->assign('backtrace', $this->getLimitedBacktrace());
 			if ('error' !== $this->request->getControllerActionName()) {
 				$this->forward('error');
 			}
@@ -239,6 +240,20 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	 */
 	protected function getFluxTableName() {
 		return $this->fluxTableName;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getLimitedBacktrace() {
+		$trace = debug_backtrace();
+		foreach ($trace as $index => $step) {
+			if (($step['class'] === 'TYPO3\\CMS\\Extbase\\Core\\Bootstrap' || $step['class'] === 'Tx_Extbase_Core_Bootstrap') && $step['function'] === 'run') {
+				$trace = array_slice($trace, 1, $index);
+				break;
+			}
+		}
+		return $trace;
 	}
 
 }
