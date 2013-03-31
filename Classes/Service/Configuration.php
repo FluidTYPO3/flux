@@ -93,6 +93,15 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 	}
 
 	/**
+	 * @param string $extensionName
+	 * @return array|NULL
+	 */
+	public function getViewConfiguration($extensionName) {
+		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', array(), $extensionName);
+		return $configuration;
+	}
+
+	/**
 	 * Gets an array of TypoScript configuration from below plugin.tx_fed -
 	 * if $extensionName is set in parameters it is used to indicate which sub-
 	 * section of the result to return.
