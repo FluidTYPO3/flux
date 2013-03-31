@@ -32,6 +32,11 @@
 class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 
 	/**
+	 * @var array
+	 */
+	private static $cache = array();
+
+	/**
 	 * @var Tx_Extbase_Object_ObjectManager
 	 */
 	protected $objectManager;
@@ -80,6 +85,11 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 		if (is_array($row) === FALSE) {
 			$row = array();
 		}
+		$rowChecksum = md5(json_encode($row));
+		$cacheKey = $table . $fieldName . $rowChecksum . $extensionKey;
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
+		}
 		$bindToFieldName = Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing();
 		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
 		$prioritizedProviders = array();
@@ -87,7 +97,12 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 			if (is_object($providerClassNameOrInstance)) {
 				$provider = &$providerClassNameOrInstance;
 			} else {
-				$provider = $this->objectManager->create($providerClassNameOrInstance);
+				$providerCacheKey = $table . $fieldName . $rowChecksum . $extensionKey . $providerClassNameOrInstance;
+				if (TRUE === isset(self::$cache[$providerCacheKey])) {
+					$provider = &self::$cache[$providerCacheKey];
+				} else {
+					$provider = $this->objectManager->create($providerClassNameOrInstance);
+				}
 			}
 			$priority = $provider->getPriority($row);
 			$providerFieldName = $provider->getFieldName($row);
@@ -123,6 +138,7 @@ class Tx_Flux_Provider_ConfigurationService implements t3lib_Singleton {
 				array_push($providersToReturn, $provider);
 			}
 		}
+		self::$cache[$cacheKey] = $providersToReturn;
 		return $providersToReturn;
 	}
 
