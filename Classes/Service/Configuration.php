@@ -110,6 +110,7 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 		} else {
 			$pid = t3lib_div::_GET('id');
 		}
+		$containerExtensionScope = str_replace('_', '', $containerExtensionScope);
 		$cachedConfigurationPathAndFilename = PATH_site . 'typo3temp/flux-configuration-' . $containerExtensionScope . '-' .
 			$extensionName . '-' . $memberName . '-' . $pid . '.ts';
 		if (TRUE === file_exists($cachedConfigurationPathAndFilename)) {
