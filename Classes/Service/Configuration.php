@@ -113,20 +113,10 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 	 * @return array
 	 */
 	public function getTypoScriptSubConfiguration($extensionName, $memberName, $dontTranslateMembers = array(), $containerExtensionScope = 'fed') {
-		$contentObject = $this->configurationManager->getContentObject();
-		if ($contentObject) {
-			$pid = $this->configurationManager->getContentObject()->data['pid'];
-		} else {
-			$pid = t3lib_div::_GET('id');
-		}
 		$containerExtensionScope = str_replace('_', '', $containerExtensionScope);
-		$cachedConfigurationPathAndFilename = PATH_site . 'typo3temp/flux-configuration-' . $containerExtensionScope . '-' .
-			$extensionName . '-' . $memberName . '-' . $pid . '.ts';
-		if (TRUE === file_exists($cachedConfigurationPathAndFilename)) {
-			self::$cache[$extensionName.$memberName] = unserialize(file_get_contents($cachedConfigurationPathAndFilename));
-		}
-		if (TRUE === isset(self::$cache[$extensionName.$memberName])) {
-			return self::$cache[$extensionName.$memberName];
+		$cacheKey = $extensionName . $memberName . $containerExtensionScope;
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
 		}
 		$config = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		$config = $config['plugin.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
@@ -144,9 +134,8 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 			return array();
 		}
 		$config = Tx_Flux_Utility_Path::translatePath($config);
-		self::$cache[$extensionName.$memberName] = $config;
-		t3lib_div::writeFile($cachedConfigurationPathAndFilename, serialize($config));
-		return self::$cache[$extensionName.$memberName];
+		self::$cache[$cacheKey] = $config;
+		return $config;
 	}
 
 	/**
