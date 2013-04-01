@@ -31,12 +31,12 @@
  * @package Flux
  * @subpackage Service
  */
-class Tx_Flux_Service_Content implements t3lib_Singleton {
+class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 
 	/**
-	 * @var Tx_Flux_Service_FlexForm
+	 * @var Tx_Flux_Service_FluxService
 	 */
-	protected $flexFormService;
+	protected $configurationService;
 
 	/**
 	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
@@ -44,10 +44,10 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 	protected $configurationManager;
 
 	/**
-	 * @param Tx_Flux_Service_FlexForm $flexFormService
+	 * @param Tx_Flux_Service_FluxService $configurationService
 	 */
-	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexFormService) {
-		$this->flexFormService = $flexFormService;
+	public function injectFlexFormService(Tx_Flux_Service_FluxService $configurationService) {
+		$this->configurationService = $configurationService;
 	}
 
 	/**
@@ -183,9 +183,9 @@ class Tx_Flux_Service_Content implements t3lib_Singleton {
 		list ($extensionKey, $fileName) = explode(':', $record['tx_fed_fcefile']);
 		$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		$templatePaths = $typoScript['plugin.']['tx_fed.']['fce.'][$extensionKey . '.'];
-		$values = $this->flexFormService->convertFlexFormContentToArray($record['pi_flexform']);
+		$values = $this->configurationService->convertFlexFormContentToArray($record['pi_flexform']);
 		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$configuration = $this->flexFormService->getFlexFormConfigurationFromFile($templatePaths['templateRootPath'] . $fileName, $values, 'Configuration', $extensionName);
+		$configuration = $this->configurationService->getFlexFormConfigurationFromFile($templatePaths['templateRootPath'] . $fileName, $values, 'Configuration', $extensionName);
 		$columns = array();
 		foreach ($configuration['grid'] as $row) {
 			foreach ($row as $column) {
