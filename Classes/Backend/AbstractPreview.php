@@ -50,11 +50,6 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Flux_Service_Json
-	 */
-	protected $jsonService;
-
-	/**
 	 * @var Tx_Flux_Service_FlexForm
 	 */
 	protected $flexform;
@@ -69,7 +64,6 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->jsonService = $this->objectManager->get('Tx_Flux_Service_Json');
 		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 		$this->flexform = $this->objectManager->get('Tx_Flux_Service_FlexForm');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
