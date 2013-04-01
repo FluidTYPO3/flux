@@ -227,7 +227,11 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			}
 			$templateFile = t3lib_div::getFileAbsFileName($templateFile);
 		}
+		$config = NULL;
 		try {
+			if (TRUE === isset($paths['extensionKey'])) {
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($paths['extensionKey']);
+			}
 			if (file_exists($templateFile) === FALSE) {
 				// Only process this $dataStructArray if the specified template file exists.
 				throw new Exception('Tried to get a FlexForm configuration from a file which does not exist (' . $templateFile . ')', 1343264270);
@@ -237,12 +241,11 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			$view->setTemplatePathAndFilename($templateFile);
 			$view->assignMultiple($values);
 			$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths, $extensionName);
-			return $config;
 		} catch (Exception $error) {
 			$this->debugService->message('Reading file ' . $templateFile . ' caused an error - see next message', t3lib_div::SYSLOG_SEVERITY_FATAL);
 			$this->debugService->debug($error);
-			return array();
 		}
+		return $config;
 	}
 
 	/**
@@ -302,14 +305,14 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		$config = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		$config = $config['plugin.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
 		if (is_array($config) === FALSE) {
-			return array();
+			$config = array();
 		}
 		$config = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($config);
 		if ($extensionName) {
 			$config = $config[$extensionName];
 		}
 		if (is_array($config) === FALSE) {
-			return array();
+			$config = array();
 		}
 		$config = Tx_Flux_Utility_Path::translatePath($config);
 		self::$cache[$cacheKey] = $config;
