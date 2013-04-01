@@ -355,7 +355,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 				$section = $values[array_pop(explode(':', $section))];
 			}
 			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-			$extensionKey = (TRUE === isset($paths['extensionKey']) ? $paths['extensionKey'] : $this->getExtensionKey($row));
+			$extensionKey = $this->getExtensionKey($row);
 			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 			$this->configurationService->convertFlexFormTemplateToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section, $extensionName);
 		} catch (Exception $error) {
