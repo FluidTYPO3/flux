@@ -37,7 +37,7 @@
 class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends Tx_Flux_Provider_AbstractContentObjectConfigurationProvider implements Tx_Flux_Provider_ConfigurationProviderInterface {
 
 	/**
-	 * @var Tx_Flux_Service_Content
+	 * @var Tx_Flux_Service_ContentService
 	 */
 	protected $contentService;
 
@@ -57,10 +57,10 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	protected $fieldName = NULL;
 
 	/**
-	 * @param Tx_Flux_Service_Content $contentService
+	 * @param Tx_Flux_Service_ContentService $contentService
 	 * @return void
 	 */
-	public function injectContentService(Tx_Flux_Service_Content $contentService) {
+	public function injectContentService(Tx_Flux_Service_ContentService $contentService) {
 		$this->contentService = $contentService;
 	}
 

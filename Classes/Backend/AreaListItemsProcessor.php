@@ -36,7 +36,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_Content
+	 * @var Tx_Flux_Service_ContentService
 	 */
 	protected $contentService;
 
@@ -45,7 +45,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->contentService = $this->objectManager->get('Tx_Flux_Service_Content');
+		$this->contentService = $this->objectManager->get('Tx_Flux_Service_ContentService');
 	}
 
 	/**

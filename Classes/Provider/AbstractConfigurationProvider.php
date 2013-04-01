@@ -105,12 +105,12 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Flux_Service_FlexForm
+	 * @var Tx_Flux_Service_FluxService
 	 */
-	protected $flexFormService;
+	protected $configurationService;
 
 	/**
-	 * @var Tx_Flux_Service_Debug
+	 * @var Tx_Flux_Service_DebugService
 	 */
 	protected $debugService;
 
@@ -131,18 +131,18 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	}
 
 	/**
-	 * @param Tx_Flux_Service_FlexForm $flexFormService
+	 * @param Tx_Flux_Service_FluxService $configurationService
 	 * @return void
 	 */
-	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexFormService) {
-		$this->flexFormService = $flexFormService;
+	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+		$this->configurationService = $configurationService;
 	}
 
 	/**
-	 * @param Tx_Flux_Service_Debug $debugService
+	 * @param Tx_Flux_Service_DebugService $debugService
 	 * @return void
 	 */
-	public function injectDebugService(Tx_Flux_Service_Debug $debugService) {
+	public function injectDebugService(Tx_Flux_Service_DebugService $debugService) {
 		$this->debugService = $debugService;
 	}
 
@@ -357,7 +357,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 			$extensionKey = (TRUE === isset($paths['extensionKey']) ? $paths['extensionKey'] : $this->getExtensionKey($row));
 			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-			$this->flexFormService->convertFlexFormContentToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section, $extensionName);
+			$this->configurationService->convertFlexFormTemplateToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section, $extensionName);
 		} catch (Exception $error) {
 			$this->debugService->debug($error);
 		}
@@ -389,7 +389,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 					' - detected field name NULL and parent getFlexFormValues method is being inherited and used.');
 				return array();
 			}
-			$immediateConfiguration = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName]);
+			$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 			$tree = $this->getInheritanceTree($row);
 			if (0 === count($tree)) {
 				return $immediateConfiguration;
@@ -472,7 +472,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			if (NULL === $fieldName) {
 				return $data;
 			}
-			$currentData = $this->flexFormService->convertFlexFormContentToArray($branch[$fieldName]);
+			$currentData = $this->configurationService->convertFlexFormContentToArray($branch[$fieldName]);
 			$data = t3lib_div::array_merge_recursive_overrule($data, $currentData, FALSE, FALSE, TRUE);
 		}
 		self::$cacheMergedConfigurations[$key] = $data;

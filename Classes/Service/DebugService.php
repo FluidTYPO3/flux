@@ -31,7 +31,7 @@
  * @package Flux
  * @subpackage Service
  */
-class Tx_Flux_Service_Debug implements t3lib_Singleton {
+class Tx_Flux_Service_DebugService implements t3lib_Singleton {
 
 	/**
 	 * @var array
