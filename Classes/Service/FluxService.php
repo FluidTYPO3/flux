@@ -132,6 +132,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
+		/** @var $exposedView Tx_Flux_MVC_View_ExposedStandaloneView */
 		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedStandaloneView');
 		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
 		if (TRUE === isset($paths['layoutRootPath'])) {
