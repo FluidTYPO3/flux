@@ -35,22 +35,7 @@ class Tx_Flux_Backend_TceMain {
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_FlexForm
-	 */
-	protected $flexFormService;
-
-	/**
-	 * @var Tx_Extbase_Reflection_Service
-	 */
-	protected $reflectionService;
-
-	/**
-	 * @var Tx_Flux_Service_Content
-	 */
-	protected $contentService;
-
-	/**
-	 * @var Tx_Flux_Provider_ConfigurationService
+	 * @var Tx_Flux_Service_FluxService
 	 */
 	protected $configurationService;
 
@@ -59,10 +44,7 @@ class Tx_Flux_Backend_TceMain {
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->flexFormService = $this->objectManager->get('Tx_Flux_Service_FlexForm');
-		$this->reflectionService = $this->objectManager->get('Tx_Extbase_Reflection_Service');
-		$this->contentService = $this->objectManager->get('Tx_Flux_Service_Content');
-		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
+		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
 	}
 
 	/**

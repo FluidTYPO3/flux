@@ -40,12 +40,7 @@ class DynFlexMigration {
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Flux_Service_FlexForm
-	 */
-	protected $flexformService;
-
-	/**
-	 * @var Tx_Flux_Provider_ConfigurationService
+	 * @var Tx_Flux_Service_FluxService
 	 */
 	protected $configurationService;
 
@@ -62,8 +57,7 @@ class DynFlexMigration {
 		$this->cli = $cli;
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		$this->configurationManager = $this->objectManager->get('Tx_Flux_Configuration_ConfigurationManager');
-		$this->flexformService = $this->objectManager->get('Tx_Flux_Service_FlexForm');
-		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
+		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
 	}
 
 	/**

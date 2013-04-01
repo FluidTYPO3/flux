@@ -50,17 +50,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Flux_Service_Json
-	 */
-	protected $jsonService;
-
-	/**
-	 * @var Tx_Flux_Service_FlexForm
-	 */
-	protected $flexform;
-
-	/**
-	 * @var Tx_Flux_Provider_ConfigurationService
+	 * @var Tx_Flux_Service_FluxService
 	 */
 	protected $configurationService;
 
@@ -69,10 +59,8 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->jsonService = $this->objectManager->get('Tx_Flux_Service_Json');
 		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
-		$this->flexform = $this->objectManager->get('Tx_Flux_Service_FlexForm');
-		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
+		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
 		$this->view = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
 	}
 
@@ -113,7 +101,6 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 				}
 				$paths = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($paths);
 				try {
-					$this->flexform->setContentObjectData($row);
 					/** @var Tx_Extbase_MVC_Controller_ControllerContext $context */
 					$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
 					/** @var Tx_Extbase_MVC_Request $request */
@@ -125,17 +112,16 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 					$request->setDispatched(TRUE);
 					$context->setRequest($request);
 					$context->setResponse($response);
-					$flexform = $this->flexform->getAll();
+					$templateVariables = $provider->getTemplateVariables($row);
 					/** @var Tx_Flux_MVC_View_ExposedTemplateView $view */
 					$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
 					$view->setControllerContext($context);
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
-					$view->assignMultiple($flexform);
-					$view->assignMultiple((array) $provider->getTemplateVariables($row));
+					$view->assignMultiple($templateVariables);
 					$view->assign('row', $row);
-
-					$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', 'Configuration');
-					$variables = array_merge($stored, (array) $provider->getTemplateVariables($row), $this->flexform->getAllAndTransform($stored['fields']));
+					$stored = $this->configurationService->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths, $extensionName);
+					$flexformVariables = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform'], $stored);
+					$variables = t3lib_div::array_merge_recursive_overrule($stored, $templateVariables, $flexformVariables);
 					$label = Tx_Extbase_Utility_Localization::translate($stored['label'], $extension);
 					if ($label === NULL) {
 						$label = $stored['label'];
@@ -146,6 +132,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 					$view->setPartialRootPath(t3lib_div::getFileAbsFileName($paths['partialRootPath']));
 					$view->setLayoutRootPath(t3lib_div::getFileAbsFileName($paths['layoutRootPath']));
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
+					$view->assignMultiple($variables);
 					$previewContent = $view->renderStandaloneSection('Preview', $variables);
 					$previewContent = trim($previewContent);
 					if (empty($label) === FALSE) {
