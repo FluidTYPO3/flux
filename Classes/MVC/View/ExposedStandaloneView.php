@@ -33,15 +33,15 @@
 class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneView {
 
 	/**
-	 * @var Tx_Flux_Service_Debug
+	 * @var Tx_Flux_Service_DebugService
 	 */
 	protected $debugService;
 
 	/**
-	 * @param Tx_Flux_Service_Debug $debugService
+	 * @param Tx_Flux_Service_DebugService $debugService
 	 * @return void
 	 */
-	public function injectDebugService(Tx_Flux_Service_Debug $debugService) {
+	public function injectDebugService(Tx_Flux_Service_DebugService $debugService) {
 		$this->debugService = $debugService;
 	}
 

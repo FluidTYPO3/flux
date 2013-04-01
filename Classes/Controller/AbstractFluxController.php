@@ -63,7 +63,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Flux_Service_Debug
+	 * @var Tx_Flux_Service_DebugService
 	 */
 	protected $debugService;
 
@@ -123,10 +123,10 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	}
 
 	/**
-	 * @param Tx_Flux_Service_Debug $debugService
+	 * @param Tx_Flux_Service_DebugService $debugService
 	 * @return void
 	 */
-	public function injectDebugService(Tx_Flux_Service_Debug $debugService) {
+	public function injectDebugService(Tx_Flux_Service_DebugService $debugService) {
 		$this->debugService = $debugService;
 	}
 

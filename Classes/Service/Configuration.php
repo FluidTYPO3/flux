@@ -44,7 +44,7 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Flux_Service_Debug
+	 * @var Tx_Flux_Service_DebugService
 	 */
 	protected $debugService;
 
@@ -57,10 +57,10 @@ class Tx_Flux_Service_Configuration implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param Tx_Flux_Service_Debug $debugService
+	 * @param Tx_Flux_Service_DebugService $debugService
 	 * @return void
 	 */
-	public function injectDebugService(Tx_Flux_Service_Debug $debugService) {
+	public function injectDebugService(Tx_Flux_Service_DebugService $debugService) {
 		$this->debugService = $debugService;
 	}
 

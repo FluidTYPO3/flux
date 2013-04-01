@@ -34,7 +34,7 @@
 class Tx_Flux_Backend_DynamicFlexForm {
 
 	/**
-	 * @var Tx_Flux_Service_Debug
+	 * @var Tx_Flux_Service_DebugService
 	 */
 	protected $debugService;
 
@@ -56,7 +56,7 @@ class Tx_Flux_Backend_DynamicFlexForm {
 		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 		$this->flexformService = $this->objectManager->get('Tx_Flux_Service_FlexForm');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Provider_ConfigurationService');
-		$this->debugService = $this->objectManager->get('Tx_Flux_Service_Debug');
+		$this->debugService = $this->objectManager->get('Tx_Flux_Service_DebugService');
 	}
 
 	/**
