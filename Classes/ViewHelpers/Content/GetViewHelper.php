@@ -34,14 +34,14 @@
 class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
 	/**
-	 * @var Tx_Flux_Service_Content
+	 * @var Tx_Flux_Service_ContentService
 	 */
 	protected $contentService;
 
 	/**
-	 * @param Tx_Flux_Service_Content $contentService
+	 * @param Tx_Flux_Service_ContentService $contentService
 	 */
-	public function injectContentService(Tx_Flux_Service_Content $contentService) {
+	public function injectContentService(Tx_Flux_Service_ContentService $contentService) {
 		$this->contentService = $contentService;
 	}
 

@@ -43,22 +43,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	protected $defaultViewObjectName = 'Tx_Flux_MVC_View_ExposedTemplateView';
 
 	/**
-	 * @var Tx_Flux_Provider_ConfigurationService
-	 */
-	protected $providerConfigurationService;
-
-	/**
-	 * @var Tx_Flux_Service_FlexForm
-	 */
-	protected $flexFormService;
-
-	/**
-	 * @var Tx_Flux_Service_Content
-	 */
-	protected $contentService;
-
-	/**
-	 * @var Tx_Flux_Service_Configuration
+	 * @var Tx_Flux_Service_FluxService
 	 */
 	protected $configurationService;
 
@@ -93,33 +78,11 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	private $data = array();
 
 	/**
-	 * @param Tx_Flux_Service_FlexForm $flexFormService
+	 * @param Tx_Flux_Service_FluxService $configurationService
 	 * @return void
 	 */
-	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexformService) {
-		$this->flexFormService = $flexformService;
-	}
-
-	/**
-	 * @param Tx_Flux_Service_Content $contentService
-	 */
-	public function injectContentService(Tx_Flux_Service_Content $contentService) {
-		$this->contentService = $contentService;
-	}
-
-	/**
-	 * @param Tx_Flux_Service_Configuration $configurationService
-	 */
-	public function injectConfigurationService(Tx_Flux_Service_Configuration $configurationService) {
+	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
 		$this->configurationService = $configurationService;
-	}
-
-	/**
-	 * @param Tx_Flux_Provider_ConfigurationService $providerConfigurationService
-	 * @return void
-	 */
-	public function injectProviderConfigurationService(Tx_Flux_Provider_ConfigurationService $providerConfigurationService) {
-		$this->providerConfigurationService = $providerConfigurationService;
 	}
 
 	/**
@@ -143,8 +106,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
 			$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 			$extensionSignature = str_replace('_', '', $extensionKey);
-			$providers = $this->providerConfigurationService->resolveConfigurationProviders($table, $field, $row);
-			$this->provider = $this->providerConfigurationService->resolvePrimaryConfigurationProvider($table, $field, $row);
+			$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $field, $row);
 			if (NULL === $this->provider) {
 				$this->debugService->message('Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled Controller - ' .
 					'this is a grave error and indicates that EXT: ' . $extensionName . ' itself is broken - or that EXT:' . $extensionName .
@@ -192,7 +154,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		$setup = $this->getSetup();
 		$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-		$nativePaths = $this->configurationService->getViewConfiguration($extensionKey);
+		$nativePaths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 		$errorPageSubPath = $controllerObjectName . '/Error.' . $this->request->getFormat();
 		$controllerObjectName = $this->request->getControllerObjectName();
 		$errorTemplatePathAndFilename = $setup['templateRootPath'] . $errorPageSubPath;

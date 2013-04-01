@@ -37,29 +37,17 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 	private static $dataCache = array();
 
 	/**
-	 * @var Tx_Flux_Service_FlexForm
-	 */
-	protected $flexFormService;
-
-	/**
-	 * @var Tx_Flux_Provider_ConfigurationService
+	 * @var Tx_Flux_Service_FluxService
 	 */
 	protected $configurationService;
 
-	/**
-	 * Inject FlexForm service
-	 * @param Tx_Flux_Service_FlexForm $flexFormService
-	 * @return void
-	 */
-	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexformService) {
-		$this->flexFormService = $flexformService;
-	}
 
 	/**
-	 * @param Tx_Flux_Provider_ConfigurationService $configurationService
+	 * Inject Flux service
+	 * @param Tx_Flux_Service_FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(Tx_Flux_Provider_ConfigurationService $configurationService) {
+	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
@@ -83,7 +71,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 		}
 		$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $row);
 		if (0 === count($providers)) {
-			$dataArray = $this->flexFormService->convertFlexFormContentToArray($row[$field]);
+			$dataArray = $this->configurationService->convertFlexFormContentToArray($row[$field]);
 		} else {
 			$dataArray = array();
 			foreach ($providers as $provider) {
