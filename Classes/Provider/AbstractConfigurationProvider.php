@@ -537,4 +537,14 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		return NULL;
 	}
 
+	/**
+	 * Stub: implement this in Controllers which store the action in a record field.
+	 *
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerActionReferenceFromRecord(array $row) {
+		return NULL;
+	}
+
 }
