@@ -205,7 +205,9 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		$file = substr($file, 4);
 		$filePathAndFilename = t3lib_div::getFileAbsFileName($file);
 		$dom = new DOMDocument('1.0', 'utf-8');
+		$dom->preserveWhiteSpace = FALSE;
 		$dom->load($filePathAndFilename);
+		$dom->formatOutput = TRUE;
 		foreach ($dom->getElementsByTagName('languageKey') as $languageNode) {
 			$nodes = array();
 			foreach ($languageNode->getElementsByTagName('label') as $labelNode) {
@@ -227,20 +229,15 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 				$languageNode->appendChild($labelNode);
 			}
 		}
-		$this->debugService->message('Rewrote "' . $file . '" by adding placeholder label for "' . $identifier . '"',
-			t3lib_div::SYSLOG_SEVERITY_INFO, $debugTitle);
 		$xml = $dom->saveXML();
-
-		if (function_exists('tidy_repair_string')) {
-			$config = array(
-				'indent'     => TRUE,
-				'input-xml'  => TRUE,
-				'output-xml' => TRUE,
-				'wrap'       => FALSE);
-			$xml = tidy_repair_string($xml, $config);
+		if (FALSE === $xml) {
+			$this->debugService->message('Skipping LLL file saving due to an error while generating the XML.',
+				t3lib_div::SYSLOG_SEVERITY_FATAL);
+		} else {
+			$this->debugService->message('Rewrote "' . $file . '" by adding placeholder label for "' . $identifier . '"',
+				t3lib_div::SYSLOG_SEVERITY_INFO, $debugTitle);
+			file_put_contents($filePathAndFilename, $xml);
 		}
-
-		file_put_contents($filePathAndFilename, $xml);
 	}
 
 
