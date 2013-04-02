@@ -125,16 +125,20 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $section
 	 * @param array $paths
 	 * @oaram string $extensionName
+	 * @param array $variables
 	 * @return mixed
 	 */
-	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL) {
-		$cacheKey = $templatePathAndFilename . $variableName . json_encode($paths) . $section;
+	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL, $variables = array()) {
+		$cacheKey = $templatePathAndFilename . $variableName . json_encode($paths) . $section . json_encode($variables);
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
 		/** @var $exposedView Tx_Flux_MVC_View_ExposedStandaloneView */
 		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedStandaloneView');
 		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+		if (0 < count($variables)) {
+			$exposedView->assignMultiple($variables);
+		}
 		if (TRUE === isset($paths['layoutRootPath'])) {
 			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
 			$exposedView->setPartialRootPath($paths['partialRootPath']);

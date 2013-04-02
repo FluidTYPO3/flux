@@ -43,6 +43,11 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	protected $defaultViewObjectName = 'Tx_Flux_MVC_View_ExposedTemplateView';
 
 	/**
+	 * @var string
+	 */
+	protected $fallbackExtensionKey = 'flux';
+
+	/**
 	 * @var Tx_Flux_Service_FluxService
 	 */
 	protected $configurationService;

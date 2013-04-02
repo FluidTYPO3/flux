@@ -62,7 +62,7 @@ class Tx_Flux_Core {
 		if (in_array('Tx_Flux_Provider_ConfigurationProviderInterface', class_implements($classNameOrInstance)) === FALSE) {
 			throw new Exception(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement one of the Provider interfaces from Flux/Provider', 1327173536);
 		}
-		if (in_array($classNameOrInstance, self::$unregisteredProviders) === FALSE) {
+		if (in_array($classNameOrInstance, self::$unregisteredProviders) === FALSE && in_array($classNameOrInstance, self::$providers) === FALSE) {
 			array_push(self::$providers, $classNameOrInstance);
 		}
 	}
