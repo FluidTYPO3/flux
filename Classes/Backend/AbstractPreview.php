@@ -55,12 +55,18 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	protected $configurationService;
 
 	/**
+	 * @var Tx_Flux_Service_FluxService
+	 */
+	protected $debugService;
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+		$this->debugService = $this->objectManager->get('Tx_Flux_Service_DebugService');
 		$this->view = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
 	}
 
@@ -142,15 +148,9 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 						$drawItem = FALSE;
 						$itemContent .= $previewContent;
 					}
-				} catch (Exception $e) {
+				} catch (Exception $error) {
+					$this->debugService->debug($error);
 					$drawItem = FALSE;
-					if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-						throw $e;
-					} else {
-						$itemContent .= 'Error: ' . $e->getMessage();
-						$itemContent .= '<br />Code: ' . $e->getCode();
-						$itemContent .= '<br />Filename: ' . $templatePathAndFilename;
-					}
 				}
 			}
 		}
