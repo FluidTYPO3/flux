@@ -46,6 +46,38 @@ class Tx_Flux_Core {
 	private static $unregisteredProviders = array();
 
 	/**
+	 * Contains all extensions registered with Fluidpages
+	 * @var array
+	 */
+	private static $extensions = array();
+
+	/**
+	 * @param string $extensionKey
+	 * @param string $providesControllerName
+	 * @return void
+	 */
+	public static function registerProviderExtensionKey($extensionKey, $providesControllerName) {
+		if (FALSE === isset(self::$extensions[$providesControllerName])) {
+			self::$extensions[$providesControllerName] = array();
+		}
+		if (FALSE === in_array($extensionKey[$providesControllerName], self::$extensions)) {
+			array_push(self::$extensions[$providesControllerName], $extensionKey);
+		}
+	}
+
+	/**
+	 * @param string $forControllerName
+	 * @return array
+	 */
+	public static function getRegisteredProviderExtensionKeys($forControllerName) {
+		if (TRUE === isset(self::$extensions[$forControllerName])) {
+			return self::$extensions[$forControllerName];
+		}
+		return NULL;
+	}
+
+
+	/**
 	 * Registers a class implementing one of the Flux ConfigurationProvider
 	 * interfaces.
 	 *
