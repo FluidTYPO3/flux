@@ -214,4 +214,10 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 */
 	public function getControllerActionFromRecord(array $row);
 
+	/**
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerActionReferenceFromRecord(array $row);
+
 }
