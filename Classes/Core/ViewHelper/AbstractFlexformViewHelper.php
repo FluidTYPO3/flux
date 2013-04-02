@@ -205,7 +205,9 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		$file = substr($file, 4);
 		$filePathAndFilename = t3lib_div::getFileAbsFileName($file);
 		$dom = new DOMDocument('1.0', 'utf-8');
+		$dom->preserveWhiteSpace = false;
 		$dom->load($filePathAndFilename);
+		$dom->formatOutput = true;
 		foreach ($dom->getElementsByTagName('languageKey') as $languageNode) {
 			$nodes = array();
 			foreach ($languageNode->getElementsByTagName('label') as $labelNode) {
@@ -229,18 +231,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		}
 		$this->debugService->message('Rewrote "' . $file . '" by adding placeholder label for "' . $identifier . '"',
 			t3lib_div::SYSLOG_SEVERITY_INFO, $debugTitle);
-		$xml = $dom->saveXML();
-
-		if (function_exists('tidy_repair_string')) {
-			$config = array(
-				'indent'     => TRUE,
-				'input-xml'  => TRUE,
-				'output-xml' => TRUE,
-				'wrap'       => FALSE);
-			$xml = tidy_repair_string($xml, $config);
-		}
-
-		file_put_contents($filePathAndFilename, $xml);
+		$dom->save($filePathAndFilename);
 	}
 
 
