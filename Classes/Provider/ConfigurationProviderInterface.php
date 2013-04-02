@@ -201,4 +201,17 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 */
 	public function getInheritanceTree(array $row);
 
+
+	/**
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerExtensionKeyFromRecord(array $row);
+
+	/**
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerActionFromRecord(array $row);
+
 }

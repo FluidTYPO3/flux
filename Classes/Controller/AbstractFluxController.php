@@ -223,4 +223,34 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		return $trace;
 	}
 
+	/**
+	 * @return array
+	 */
+	public function getRecord() {
+		return $this->configurationManager->getContentObject()->data;
+	}
+
+	/**
+	 * @return string
+	 * @route off
+	 */
+	public function renderAction() {
+		$row = $this->getRecord();
+		$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($this->fluxTableName, $this->fluxRecordField, $row);
+		$extensionKey = $this->provider->getExtensionKey($row);
+		$extensionName = ucfirst(t3lib_div::underscoredToLowerCamelCase($extensionKey));
+		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
+		$controllerExtensionName = $this->provider->getControllerExtensionKeyFromRecord($row);
+		// failure toggles. Instructs ConfigurationService to throw Exceptions when not being able to detect. We capture these and pass to debug.
+		$failHardClass = TRUE;
+		$failHardAction = TRUE;
+		$controllerName = $this->request->getControllerName();
+		try {
+			$potentialControllerClassName = $this->configurationService->resolveFluxControllerClassName($action, $controllerName, $failHardClass, $failHardAction);
+			return call_user_func_array(array($potentialControllerClassName, $controllerActionName . 'Action'), array());
+		} catch (Exception $error) {
+			// no Controller class exists; let built-in View render everything.
+		}
+	}
+
 }
