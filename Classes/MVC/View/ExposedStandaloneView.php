@@ -60,6 +60,9 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
 				throw new Exception('ExposedStandaloneView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
 			}
+			if (NULL !== $paths && FALSE === is_array($paths) && FALSE == $paths instanceof ArrayObject) {
+				throw new Exception('ExposedStandaloneView->getStoredVariable received an invalid path set; the value is not an array: ' . gettype($paths), 1365000126);
+			}
 			if (NULL === $extensionName && TRUE === isset($paths['extensionKey'])) {
 				$extensionName = t3lib_div::underscoredToLowerCamelCase($paths['extensionKey']);
 			}
