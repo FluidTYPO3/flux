@@ -517,4 +517,34 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		return $row[$parentFieldName];
 	}
 
+	/**
+	 * Stub: Override this when ConfigurationProvider is associated with a Controller
+	 *
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerExtensionKeyFromRecord(array $row) {
+		return NULL;
+	}
+
+	/**
+	 * Stub: Override this when ConfigurationProvider is associated with a Controller
+	 *
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerActionFromRecord(array $row) {
+		return NULL;
+	}
+
+	/**
+	 * Stub: implement this in Controllers which store the action in a record field.
+	 *
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerActionReferenceFromRecord(array $row) {
+		return NULL;
+	}
+
 }
