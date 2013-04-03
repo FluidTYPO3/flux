@@ -6,29 +6,66 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-            <label index="object.image">Image</label>
-            <label index="object.image.title">Image title/alt text</label>
-            <label index="object.image.caption">Image caption text</label>
-            <label index="object.image.file">Image file</label>
-            <label index="object.image.width">Image width</label>
-            <label index="object.image.height">Image height</label>
+		<label index="tt_content.tx_flux_container">Content Container</label>
+		<label index="tt_content.tx_flux_parent">Parent element</label>
+		<label index="tt_content.tx_flux_column">Content area of parent</label>
 
-            <label index="object.video">Video</label>
-            <label index="object.video.title">Title</label>
-            <label index="object.video.caption">Caption/description</label>
-            <label index="object.video.caption">Image caption text</label>
-            <label index="object.video.file">Image file</label>
+		<label index="object.image">Image</label>
+		<label index="object.image.title">Image title/alt text</label>
+		<label index="object.image.caption">Image caption text</label>
+		<label index="object.image.file">Image file</label>
+		<label index="object.image.width">Image width</label>
+		<label index="object.image.height">Image height</label>
 
-            <label index="object.pages">Pages</label>
-            <label index="object.pages.records">Pages</label>
+		<label index="object.video">Video</label>
+		<label index="object.video.title">Title</label>
+		<label index="object.video.caption">Caption/description</label>
+		<label index="object.video.caption">Image caption text</label>
+		<label index="object.video.file">Image file</label>
 
-            <label index="object.content">Content</label>
-            <label index="object.content.records">Content elements</label>
+		<label index="object.pages">Pages</label>
+		<label index="object.pages.records">Pages</label>
 
-            <label index="object.file">File</label>
-            <label index="object.file.title">Title</label>
-            <label index="object.file.caption">Caption/description text</label>
-            <label index="object.file.file">File</label>
+		<label index="object.content">Content</label>
+		<label index="object.content.records">Content elements</label>
+
+		<label index="object.file">File</label>
+		<label index="object.file.title">Title</label>
+		<label index="object.file.caption">Caption/description text</label>
+		<label index="object.file.file">File</label>
+
+		<label index="user.no_fields">No fields found in form</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+		<label index="tt_content.tx_flux_container">Content Container</label>
+		<label index="tt_content.tx_flux_parent">Übergeordnetes Element</label>
+		<label index="tt_content.tx_flux_column">Übergeordneter Inhaltsbereich</label>
+
+		<label index="object.image">Bild</label>
+		<label index="object.image.title">Bild title/alt Text</label>
+		<label index="object.image.caption">Bildunterschrift</label>
+		<label index="object.image.file">Bilddatei</label>
+		<label index="object.image.width">Bild Breite</label>
+		<label index="object.image.height">Bild Hähe</label>
+
+		<label index="object.video">Video</label>
+		<label index="object.video.title">Titel</label>
+		<label index="object.video.caption">Unterschrift/Beschreibung</label>
+		<label index="object.video.caption">Bildunterschrift</label>
+		<label index="object.video.file">Bilddatei</label>
+
+		<label index="object.pages">Seiten</label>
+		<label index="object.pages.records">Seiten</label>
+
+		<label index="object.content">Content</label>
+		<label index="object.content.records">Content Elemente</label>
+
+		<label index="object.file">Datei</label>
+		<label index="object.file.title">Titel</label>
+		<label index="object.file.caption">Unterschrift/Beschreibung</label>
+		<label index="object.file.file">Datei</label>
+
+		<label index="user.no_fields">Keine Felder in diesem Formular</label>
 		</languageKey>
 	</data>
 </T3locallang>
