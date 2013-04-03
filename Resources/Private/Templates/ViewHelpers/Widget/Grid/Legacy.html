@@ -14,7 +14,7 @@
 		<f:for each="{grid}" as="gridrow" iteration="rowIteration">
 			<tr>
 				<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
-					<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" style="{gridcolumn.style}">
+					<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" style="{gridcolumn.style}" class="t3-allow-all">
 						<f:for each="{gridcolumn.areas}" as="area">
 							<flux:be.contentArea area="{area.name}" row="{row}">
 								<div class="fce-header t3-page-colHeader">
