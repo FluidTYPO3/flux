@@ -58,7 +58,10 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL, $paths = NULL, $extensionName = NULL) {
 		try {
 			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
-				throw new Exception('ExposedStandaloneView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
+				throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists', 1343521593);
+			}
+			if (NULL !== $paths && FALSE === is_array($paths) && FALSE == $paths instanceof ArrayObject) {
+				throw new Exception('ExposedTemplateView->getStoredVariable received an invalid path set; the value is not an array: ' . gettype($paths), 1365000126);
 			}
 			if (NULL === $extensionName && TRUE === isset($paths['extensionKey'])) {
 				$extensionName = t3lib_div::underscoredToLowerCamelCase($paths['extensionKey']);

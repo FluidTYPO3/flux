@@ -198,7 +198,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				$view->setLayoutRootPath($paths['layoutRootPath']);
 			}
 			$view->assignMultiple($variables);
-			$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $configurationSection, $extensionName);
+			$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $configurationSection, $paths, $extensionName);
 			$grid = isset($stored['grid']) ? $stored['grid'] : NULL;
 		} catch (Exception $error) {
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
