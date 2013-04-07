@@ -70,7 +70,6 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 				$request = $this->controllerContext->getRequest();
 				$request->setControllerExtensionName($extensionName);
 				$this->controllerContext->setRequest($request);
-				$this->controllerContext->setRequest($request);
 			}
 			$this->baseRenderingContext->setControllerContext($this->controllerContext);
 			$value = NULL;
