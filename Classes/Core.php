@@ -73,7 +73,7 @@ class Tx_Flux_Core {
 		if (TRUE === isset(self::$extensions[$forControllerName])) {
 			return self::$extensions[$forControllerName];
 		}
-		return NULL;
+		return array();
 	}
 
 
