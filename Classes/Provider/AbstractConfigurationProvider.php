@@ -110,11 +110,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Flux_Service_DebugService
-	 */
-	protected $debugService;
-
-	/**
 	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
 	 * @return void
 	 */
@@ -136,14 +131,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
 		$this->configurationService = $configurationService;
-	}
-
-	/**
-	 * @param Tx_Flux_Service_DebugService $debugService
-	 * @return void
-	 */
-	public function injectDebugService(Tx_Flux_Service_DebugService $debugService) {
-		$this->debugService = $debugService;
 	}
 
 	/**
@@ -359,7 +346,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 			$this->configurationService->convertFlexFormTemplateToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section, $extensionName);
 		} catch (Exception $error) {
-			$this->debugService->debug($error);
+			$this->configurationService->debug($error);
 		}
 	}
 
@@ -385,7 +372,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$className = get_class($this);
 			$fieldName = $this->getFieldName($row);
 			if (NULL === $fieldName) {
-				$this->debugService->message('Returning empty array from ' . $className .
+				$this->configurationService->message('Returning empty array from ' . $className .
 					' - detected field name NULL and parent getFlexFormValues method is being inherited and used.');
 				return array();
 			}
@@ -399,10 +386,10 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 				return $inheritedConfiguration;
 			}
 			$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
-			$this->debugService->message('Using ' . count($tree) . ' record(s) from root line to inherit configuration', t3lib_div::SYSLOG_SEVERITY_INFO);
+			$this->configurationService->message('Using ' . count($tree) . ' record(s) from root line to inherit configuration', t3lib_div::SYSLOG_SEVERITY_INFO);
 			return $merged;
 		} catch (Exception $error) {
-			$this->debugService->debug($error);
+			$this->configurationService->debug($error);
 			return array();
 		}
 	}
