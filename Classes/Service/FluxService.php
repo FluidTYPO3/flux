@@ -584,23 +584,28 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 *
 	 * @param array $values
 	 * @param array $fluxConfiguration
+	 * @param string $prefix
 	 * @return array
 	 */
-	private function transformAccordingToConfiguration($values, $fluxConfiguration) {
-		return $values;
-		foreach ($fieldArrayContainingTypes as $fieldConfiguration) {
-			$transformType = $fieldConfiguration['transform'];
-			if ($transformType) {
-				$fieldName = $fieldConfiguration['name'];
-				$path = explode('.', $fieldName);
-				$current =& $all;
-				while ($key = array_shift($path)) {
-					$current =& $current[$key];
-				}
-				$current = $this->digDownTransform($values, explode('.', $fieldName), $transformType);
-			}
+	public function transformAccordingToConfiguration($values, $fluxConfiguration = NULL, $prefix = '') {
+		if (FALSE === is_array($values) || NULL === $fluxConfiguration) {
+			return $values;
 		}
-		return (array) $values;
+		foreach ($values as $index => $value) {
+			if (TRUE === is_array($value)) {
+				$value = $this->transformAccordingToConfiguration($value, $fluxConfiguration, $prefix . (FALSE === empty($prefix) ? '.' : '') . $index);
+			} else {
+				foreach ($fluxConfiguration['fields'] as $fieldConfiguration) {
+					$fieldName = $fieldConfiguration['name'];
+					$transformType = $fieldConfiguration['transform'];
+					if ($fieldName === $prefix . (FALSE === empty($prefix) ? '.' : '') . $index && FALSE === empty($transformType)) {
+						$value = $this->transformValueToType($value, $transformType);
+					}
+				}
+			}
+			$values[$index] = $value;
+		}
+		return $values;
 	}
 
 	/**
