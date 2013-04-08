@@ -34,11 +34,6 @@
 class Tx_Flux_Backend_DynamicFlexForm {
 
 	/**
-	 * @var Tx_Flux_Service_DebugService
-	 */
-	protected $debugService;
-
-	/**
 	 * @var Tx_Extbase_Object_ObjectManagerInterface
 	 */
 	protected $objectManager;
@@ -55,7 +50,6 @@ class Tx_Flux_Backend_DynamicFlexForm {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
-		$this->debugService = $this->objectManager->get('Tx_Flux_Service_DebugService');
 	}
 
 	/**
@@ -84,7 +78,7 @@ class Tx_Flux_Backend_DynamicFlexForm {
 				/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
 				$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 			} catch (Exception $e) {
-				$this->debugService->debug($e);
+				$this->configurationService->debug($e);
 			}
 		}
 	}

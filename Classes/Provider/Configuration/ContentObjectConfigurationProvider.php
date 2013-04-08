@@ -37,11 +37,6 @@
 class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends Tx_Flux_Provider_AbstractContentObjectConfigurationProvider implements Tx_Flux_Provider_ConfigurationProviderInterface {
 
 	/**
-	 * @var Tx_Flux_Service_ContentService
-	 */
-	protected $contentService;
-
-	/**
 	 * @var string
 	 */
 	protected $extensionKey = 'flux';
@@ -55,14 +50,6 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @var string
 	 */
 	protected $fieldName = NULL;
-
-	/**
-	 * @param Tx_Flux_Service_ContentService $contentService
-	 * @return void
-	 */
-	public function injectContentService(Tx_Flux_Service_ContentService $contentService) {
-		$this->contentService = $contentService;
-	}
 
 	/**
 	 * @param array $row
@@ -137,8 +124,8 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
-		$contentAreaFromUrl = $this->contentService->detectParentElementAreaFromUrl();
-		$parentUidFromUrl = $this->contentService->detectParentUidFromUrl();
+		$contentAreaFromUrl = $this->configurationService->detectParentElementAreaFromUrl();
+		$parentUidFromUrl = $this->configurationService->detectParentUidFromUrl();
 		if ($contentAreaFromUrl) {
 			$row['tx_flux_column'] = $contentAreaFromUrl;
 		}
@@ -182,7 +169,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				} else {
 					$newLanguageUid = 1; // TODO: resolve config.sys_language_uid but WITHOUT using Extbase TS resolution, consider pid of new record
 				}
-				$children = $this->contentService->getChildContentElementUids($oldUid);
+				$children = $this->configurationService->getChildContentElementUids($oldUid);
 				if (count($children) < 1) {
 					return;
 				}
@@ -246,8 +233,8 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$row['sorting'] = -1;
 			} elseif ($relativeTo < 0) {
 				// Triggers when sorting a CE after another CE, $relativeTo is negative value of CE's UID
-				$row['tx_flux_column'] = $this->contentService->detectParentElementAreaFromRecord($relativeTo);
-				$row['tx_flux_parent'] = $this->contentService->detectParentUidFromRecord($relativeTo);
+				$row['tx_flux_column'] = $this->configurationService->detectParentElementAreaFromRecord($relativeTo);
+				$row['tx_flux_parent'] = $this->configurationService->detectParentUidFromRecord($relativeTo);
 			}
 			if (strpos($row['tx_flux_column'], ':') !== FALSE) {
 				// TODO: after migration to "parent" usage, remember to change this next line

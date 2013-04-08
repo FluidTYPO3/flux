@@ -32,9 +32,17 @@
 abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
 	/**
-	 * @var Tx_Flux_Service_DebugService
+	 * @var Tx_Flux_Service_FluxService
 	 */
-	protected $debugService;
+	protected $configurationService;
+
+	/**
+	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @return void
+	 */
+	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+		$this->configurationService = $configurationService;
+	}
 
 	/**
 	 * Inject a TagBuilder
@@ -45,14 +53,6 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	 */
 	public function injectTagBuilder(Tx_Fluid_Core_ViewHelper_TagBuilder $tagBuilder) {
 		$this->tag = $tagBuilder;
-	}
-
-	/**
-	 * @param Tx_Flux_Service_DebugService $debugService
-	 * @return void
-	 */
-	public function injectDebugService(Tx_Flux_Service_DebugService $debugService) {
-		$this->debugService = $debugService;
 	}
 
 	/**
@@ -167,7 +167,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		}
 		$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
 		if (TRUE === empty($extensionName)) {
-			$this->debugService->message('Wanted to generate an automatic LLL label for field "' . $name . '" ' .
+			$this->configurationService->message('Wanted to generate an automatic LLL label for field "' . $name . '" ' .
 				'but there was no extension name stored in the RenderingContext.', t3lib_div::SYSLOG_SEVERITY_FATAL);
 		}
 		if (FALSE === isset($id)) {
@@ -178,7 +178,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml';
 		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.');
 		$labelIdentifier .= $this->arguments['name'];
-		$this->debugService->message('Generated automatic LLL path for entity called "' . $name . '" which is a ' .
+		$this->configurationService->message('Generated automatic LLL path for entity called "' . $name . '" which is a ' .
 			get_class($this) . ': ' . $labelIdentifier, t3lib_div::SYSLOG_SEVERITY_INFO, 'Flux FlexForm LLL label generation');
 		$this->updateLanguageSourceFileIfUpdateFeatureIsEnabledAndIdentifierIsMissing($filePrefix, $labelIdentifier, $id);
 		return $filePrefix . ':' . $labelIdentifier;
@@ -197,7 +197,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		$allowed = 'a-z\.';
 		$pattern = '/[^' . $allowed . ']+/i';
 		if (preg_match($pattern, $id) || preg_match($pattern, $identifier)) {
-			$this->debugService->message('Cowardly refusing to create an invalid LLL reference called "' . $identifier . '" ' .
+			$this->configurationService->message('Cowardly refusing to create an invalid LLL reference called "' . $identifier . '" ' .
 				' in a Flux form called "' . $id . '" - one or both contains invalid characters. Allowed: dots and "' .
 				$allowed . '".', t3lib_div::SYSLOG_SEVERITY_NOTICE, $debugTitle);
 			return;
@@ -213,7 +213,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 			foreach ($languageNode->getElementsByTagName('label') as $labelNode) {
 				$key = (string) $labelNode->attributes->getNamedItem('index')->firstChild->textContent;
 				if ($key === $identifier) {
-					$this->debugService->message('Skipping LLL file merge for label "' . $identifier.
+					$this->configurationService->message('Skipping LLL file merge for label "' . $identifier.
 						'"; it already exists in file "' . $filePathAndFilename . '"');
 					return;
 				}
@@ -231,10 +231,10 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		}
 		$xml = $dom->saveXML();
 		if (FALSE === $xml) {
-			$this->debugService->message('Skipping LLL file saving due to an error while generating the XML.',
+			$this->configurationService->message('Skipping LLL file saving due to an error while generating the XML.',
 				t3lib_div::SYSLOG_SEVERITY_FATAL);
 		} else {
-			$this->debugService->message('Rewrote "' . $file . '" by adding placeholder label for "' . $identifier . '"',
+			$this->configurationService->message('Rewrote "' . $file . '" by adding placeholder label for "' . $identifier . '"',
 				t3lib_div::SYSLOG_SEVERITY_INFO, $debugTitle);
 			file_put_contents($filePathAndFilename, $xml);
 		}
