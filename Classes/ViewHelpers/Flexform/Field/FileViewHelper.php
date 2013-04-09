@@ -37,6 +37,8 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
+                $this->registerArgument('maxSize', 'integer', 'Maximum file size allowed in KB');
+                $this->registerArgument('disallowed', 'string', 'Defines a list of file extensions which are not allowed to get uploaded into this field.');
 		$this->overrideArgument('internalType', 'string', 'FlexForm-internalType of this Group Selector', FALSE, 'file');
 			// TODO: after removing this next argument from the GroupViewHelper, change this to registerArgument()
 		$this->overrideArgument('uploadFolder', 'string', 'Upload folder. DEPRECATED, will be moved to the File field ViewHelper');
@@ -51,6 +53,8 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 		$config['type'] = 'Group';
 		$config['internal_type'] = $this->arguments['internalType'];
 		$config['allowed'] = $this->arguments['allowed'];
+                $config['disallowed'] = $this->arguments['disallowed'];
+                $config['max_size'] = $this->arguments['maxSize'];
 		$config['uploadfolder'] = $this->arguments['uploadFolder'];
 		$this->addField($config);
 	}
