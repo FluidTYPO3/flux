@@ -120,6 +120,39 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
+	 * @param string $extensionName
+	 * @param string $controllerName
+	 * @return Tx_Flux_MVC_View_ExposedTemplateView
+	 */
+	public function getPreparedExposedTemplateView($extensionName = NULL, $controllerName = NULL) {
+		if (NULL === $extensionName) {
+			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
+			$extensionName = 'Flux';
+		}
+		if (NULL === $controllerName) {
+			$controllerName = 'Flux';
+		}
+		/** @var $context Tx_Extbase_MVC_Controller_ControllerContext */
+		$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
+		/** @var $request Tx_Extbase_MVC_Request */
+		$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
+		/** @var $response Tx_Extbase_MVC_Response */
+		$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
+		$request->setControllerExtensionName($extensionName);
+		$request->setControllerName($controllerName);
+		$request->setDispatched(TRUE);
+		/** @var $uriBuilder Tx_Extbase_Mvc_Web_Routing_UriBuilder */
+		$uriBuilder = $this->objectManager->create('Tx_Extbase_Mvc_Web_Routing_UriBuilder');
+		$uriBuilder->setRequest($request);
+		$context->setRequest($request);
+		$context->setResponse($response);
+		/** @var $exposedView Tx_Flux_MVC_View_ExposedTemplateView */
+		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
+		$exposedView->setControllerContext($context);
+		return $exposedView;
+	}
+
+	/**
 	 * @param string $templatePathAndFilename
 	 * @param string $variableName
 	 * @param string $section
@@ -129,12 +162,11 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return mixed
 	 */
 	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL, $variables = array()) {
-		$cacheKey = $templatePathAndFilename . $variableName . json_encode($paths) . $section . json_encode($variables);
+		$cacheKey = md5($templatePathAndFilename . $variableName . $extensionName . json_encode($paths) . $section . json_encode($variables));
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		/** @var $exposedView Tx_Flux_MVC_View_ExposedStandaloneView */
-		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedStandaloneView');
+		$exposedView = $this->getPreparedExposedTemplateView($extensionName);
 		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
 		if (0 < count($variables)) {
 			$exposedView->assignMultiple($variables);
@@ -180,16 +212,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				return array();
 			}
 			$paths = Tx_Flux_Utility_Path::translatePath($paths);
-			$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
-			$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
-			$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
-			$request->setControllerExtensionName('Flux');
-			$request->setControllerName('Flux');
-			$request->setDispatched(TRUE);
-			$context->setRequest($request);
-			$context->setResponse($response);
-			$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
-			$view->setControllerContext($context);
+			$view = $this->getPreparedExposedTemplateView($extensionName);
 			$view->setTemplatePathAndFilename($templatePathAndFilename);
 			if ($paths['partialRootPath']) {
 				$view->setPartialRootPath($paths['partialRootPath']);
@@ -240,8 +263,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				// Only process this $dataStructArray if the specified template file exists.
 				throw new Exception('Tried to get a FlexForm configuration from a file which does not exist (' . $templateFile . ')', 1343264270);
 			}
-			/**	@var $view Tx_Flux_MVC_View_ExposedStandaloneView */
-			$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedStandaloneView');
+			$view = $this->getPreparedExposedTemplateView($extensionName);
 			$view->setTemplatePathAndFilename($templateFile);
 			$view->assignMultiple($values);
 			$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths, $extensionName);
