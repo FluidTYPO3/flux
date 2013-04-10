@@ -36,16 +36,16 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_ContentService
+	 * @var Tx_Flux_Service_FluxService
 	 */
-	protected $contentService;
+	protected $fluxService;
 
 	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->contentService = $this->objectManager->get('Tx_Flux_Service_ContentService');
+		$this->fluxService = $this->objectManager->get('Tx_Flux_Service_FluxService');
 	}
 
 	/**
@@ -63,7 +63,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 			$parentUid = $params['row']['tx_flux_parent'];
 		}
 		if ($parentUid > 0) {
-			$items = $this->contentService->getContentAreasDefinedInContentElement($parentUid);
+			$items = $this->fluxService->getContentAreasDefinedInContentElement($parentUid);
 		} else {
 			$items = array();
 		}

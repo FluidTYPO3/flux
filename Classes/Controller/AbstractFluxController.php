@@ -53,11 +53,6 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Flux_Service_DebugService
-	 */
-	protected $debugService;
-
-	/**
 	 * @var Tx_Flux_Provider_ConfigurationProviderInterface
 	 */
 	protected $provider;
@@ -91,14 +86,6 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	}
 
 	/**
-	 * @param Tx_Flux_Service_DebugService $debugService
-	 * @return void
-	 */
-	public function injectDebugService(Tx_Flux_Service_DebugService $debugService) {
-		$this->debugService = $debugService;
-	}
-
-	/**
 	 * @param Tx_Extbase_MVC_View_ViewInterface $view
 	 *
 	 * @return void
@@ -113,7 +100,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 			$extensionSignature = str_replace('_', '', $extensionKey);
 			if (NULL === $this->provider) {
-				$this->debugService->message('Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled Controller - ' .
+				$this->configurationService->message('Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled Controller - ' .
 					'this is a grave error and indicates that EXT: ' . $extensionName . ' itself is broken - or that EXT:' . $extensionName .
 					' has been overridden by another implementation which is broken. The controller that caused this error was ' .
 					get_class($this) . ' and the table name is "' . $table . '".', t3lib_div::SYSLOG_SEVERITY_WARNING);
@@ -142,7 +129,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			if (TRUE === isset($this->settings['displayErrors']) && 0 < $this->settings['displayErrors']) {
 				throw $error;
 			}
-			$this->debugService->debug($error);
+			$this->configurationService->debug($error);
 			$view->assign('class', get_class($this));
 			$view->assign('error', $error);
 			$view->assign('backtrace', $this->getLimitedBacktrace());

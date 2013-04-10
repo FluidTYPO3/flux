@@ -60,7 +60,7 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 		$allowed = 'a-z';
 		$pattern = '/[^' . $allowed . ']+/i';
 		if (preg_match($pattern, $id)) {
-			$this->debugService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
+			$this->configurationService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
 				are: "' . $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent
 				you from utilising some features, fx automatic LLL reference building, but is not fatal', t3lib_div::SYSLOG_SEVERITY_NOTICE);
 		}

@@ -34,15 +34,15 @@
 class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
 	/**
-	 * @var Tx_Flux_Service_ContentService
+	 * @var Tx_Flux_Service_FluxService
 	 */
-	protected $contentService;
+	protected $configurationService;
 
 	/**
-	 * @param Tx_Flux_Service_ContentService $contentService
+	 * @param Tx_Flux_Service_FluxService $configurationService
 	 */
-	public function injectContentService(Tx_Flux_Service_ContentService $contentService) {
-		$this->contentService = $contentService;
+	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+		$this->configurationService = $configurationService;
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		$area = $this->arguments['area'];
 		$limit = $this->arguments['limit'] ? $this->arguments['limit'] : 99999;
 		$sortDirection = $this->arguments['sortDirection'];
-		$elements = $this->contentService->getChildContent($localizedUid, $area, $limit, $order, $sortDirection);
+		$elements = $this->configurationService->getChildContent($localizedUid, $area, $limit, $order, $sortDirection);
 		if (FALSE === isset($this->arguments['as'])) {
 			$content = $elements;
 		} else {
