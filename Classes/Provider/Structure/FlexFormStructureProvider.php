@@ -64,7 +64,7 @@ class Tx_Flux_Provider_Structure_FlexFormStructureProvider extends Tx_Flux_Provi
 		);
 		$compactExtensionToggleOn = 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'];
 		$compactConfigurationToggleOn = 0 < $configuration['compact'];
-		if (($compactExtensionToggle || $compactConfigurationToggleOn) && count($sheets) < 2) {
+		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && count($sheets) < 2) {
 			$dataStructArray['ROOT'] = array(
 				'type' => 'array',
 				'el' => array(),
