@@ -64,7 +64,7 @@ class Tx_Flux_MVC_View_ExposedStandaloneView extends Tx_Fluid_View_StandaloneVie
 				throw new Exception('ExposedStandaloneView->getStoredVariable received an invalid path set; the value is not an array: ' . gettype($paths), 1365000126);
 			}
 			if (NULL === $extensionName && TRUE === isset($paths['extensionKey'])) {
-				$extensionName = t3lib_div::underscoredToLowerCamelCase($paths['extensionKey']);
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($paths['extensionKey']);
 			}
 			if (NULL !== $extensionName) {
 				$request = $this->controllerContext->getRequest();

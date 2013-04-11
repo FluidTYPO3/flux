@@ -64,9 +64,10 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 				throw new Exception('ExposedTemplateView->getStoredVariable received an invalid path set; the value is not an array: ' . gettype($paths), 1365000126);
 			}
 			if (NULL === $extensionName && TRUE === isset($paths['extensionKey'])) {
-				$extensionName = t3lib_div::underscoredToLowerCamelCase($paths['extensionKey']);
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($paths['extensionKey']);
 			}
 			if (NULL !== $extensionName) {
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionName);
 				$request = $this->controllerContext->getRequest();
 				$request->setControllerExtensionName($extensionName);
 				$this->controllerContext->setRequest($request);
