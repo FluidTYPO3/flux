@@ -147,8 +147,8 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 		$nativePaths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
-		$errorPageSubPath = $controllerObjectName . '/Error.' . $this->request->getFormat();
 		$controllerObjectName = $this->request->getControllerObjectName();
+		$errorPageSubPath = $controllerObjectName . '/Error.' . $this->request->getFormat();
 		$errorTemplatePathAndFilename = $setup['templateRootPath'] . $errorPageSubPath;
 		if (FALSE === file_exists($errorTemplatePathAndFilename) || $setup === NULL) {
 			if (TRUE === file_exists($nativePaths['templateRootPath'] . $errorPageSubPath)) {
