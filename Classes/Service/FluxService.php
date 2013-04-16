@@ -62,25 +62,15 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	protected $contentObjectData;
 
 	/**
-	 * @var array
-	 */
-	protected $storage;
-
-	/**
 	 *
 	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var Tx_Extbase_Object_ObjectManagerInterface
 	 */
 	protected $objectManager;
-
-	/**
-	 * @var Tx_Extbase_Property_Mapper Tx_Extbase_Property_Mapper
-	 */
-	protected $propertyMapper;
 
 	/**
 	 * @var Tx_Extbase_Reflection_Service
@@ -96,19 +86,11 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
-	}
-
-	/**
-	 * @param Tx_Extbase_Property_Mapper $propertyMapper
-	 * @return void
-	 */
-	public function injectPropertyMapper(Tx_Extbase_Property_Mapper $propertyMapper) {
-		$this->propertyMapper = $propertyMapper;
 	}
 
 	/**
@@ -162,7 +144,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return mixed
 	 */
 	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL, $variables = array()) {
-		$cacheKey = md5($templatePathAndFilename . $variableName . $extensionName . json_encode($paths) . $section . json_encode($variables));
+		$variableCheck = array_keys($variables);
+		$cacheKey = md5($templatePathAndFilename . $variableName . $extensionName . implode('', $paths) . $section . $variableCheck);
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
@@ -173,6 +156,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		if (TRUE === isset($paths['layoutRootPath'])) {
 			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
+		}
+		if (TRUE === isset($paths['partialRootPath'])) {
 			$exposedView->setPartialRootPath($paths['partialRootPath']);
 		}
 		$value = $exposedView->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $variableName, $section, $paths, $extensionName);
@@ -204,24 +189,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 */
 	public function getGridFromTemplateFile($templatePathAndFilename, array $variables = array(), $configurationSection = NULL, array $paths = array(), $extensionName = NULL) {
 		try {
-			if (file_exists($templatePathAndFilename) === FALSE) {
-				$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
-			}
-			if (file_exists($templatePathAndFilename) === FALSE) {
-				t3lib_div::sysLog('Attempted to fetch a Grid from a template file which does not exist (' . $templatePathAndFilename . ')', 'flux', t3lib_div::SYSLOG_SEVERITY_WARNING);
-				return array();
-			}
 			$paths = Tx_Flux_Utility_Path::translatePath($paths);
-			$view = $this->getPreparedExposedTemplateView($extensionName);
-			$view->setTemplatePathAndFilename($templatePathAndFilename);
-			if ($paths['partialRootPath']) {
-				$view->setPartialRootPath($paths['partialRootPath']);
-			}
-			if ($paths['layoutRootPath']) {
-				$view->setLayoutRootPath($paths['layoutRootPath']);
-			}
-			$view->assignMultiple($variables);
-			$stored = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $configurationSection, $paths, $extensionName);
+			$stored = $this->getStoredVariable($templatePathAndFilename, 'storage', $configurationSection, $paths, $extensionName, $variables);
 			$grid = isset($stored['grid']) ? $stored['grid'] : NULL;
 		} catch (Exception $error) {
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
@@ -247,30 +216,18 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return array
 	 */
 	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL, $extensionName = NULL) {
-		if (file_exists($templateFile) === FALSE) {
-			if (NULL === $extensionName && 0 === strpos($templateFile, 'EXT:')) {
-				$extensionKey = substr($templateFile, 4, strpos($templateFile, '/') - 4);
-				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-			}
-			$templateFile = t3lib_div::getFileAbsFileName($templateFile);
+		$cacheKey = md5($templateFile . $variableName . $extensionName . implode('', $paths) . $section);
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
 		}
 		$config = NULL;
 		try {
-			if (TRUE === isset($paths['extensionKey'])) {
-				$extensionName = t3lib_div::underscoredToUpperCamelCase($paths['extensionKey']);
-			}
-			if (file_exists($templateFile) === FALSE) {
-				// Only process this $dataStructArray if the specified template file exists.
-				throw new Exception('Tried to get a FlexForm configuration from a file which does not exist (' . $templateFile . ')', 1343264270);
-			}
-			$view = $this->getPreparedExposedTemplateView($extensionName);
-			$view->setTemplatePathAndFilename($templateFile);
-			$view->assignMultiple($values);
-			$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', $section, $paths, $extensionName);
+			$config = $this->getStoredVariable($templateFile, 'storage', $section, $paths, $extensionName, $values);
 		} catch (Exception $error) {
 			$this->message('Reading file ' . $templateFile . ' caused an error - see next message', t3lib_div::SYSLOG_SEVERITY_FATAL);
 			$this->debug($error);
 		}
+		self::$cache[$cacheKey] = $config;
 		return $config;
 	}
 
@@ -366,6 +323,14 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return Tx_Flux_Provider_ConfigurationProviderInterface|NULL
 	 */
 	public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
+		if (is_array($row) === FALSE) {
+			$row = array();
+		}
+		$rowIdentity = TRUE === isset($row['uid']) ? $row['uid'] : NULL;
+		$cacheKey = $table . $fieldName . $rowIdentity . $extensionKey . 'top';
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
+		}
 		$providers = $this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
 		$priority = 0;
 		$providerWithTopPriority = NULL;
@@ -374,6 +339,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				$providerWithTopPriority = $provider;
 			}
 		}
+		self::$cache[$cacheKey] = $providerWithTopPriority;
 		return $providerWithTopPriority;
 	}
 
@@ -391,8 +357,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (is_array($row) === FALSE) {
 			$row = array();
 		}
-		$rowChecksum = md5(json_encode($row));
-		$cacheKey = $table . $fieldName . $rowChecksum . $extensionKey;
+		$rowIdentity = TRUE === isset($row['uid']) ? $row['uid'] : NULL;
+		$cacheKey = $table . $fieldName . $rowIdentity . $extensionKey;
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
@@ -403,7 +369,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			if (is_object($providerClassNameOrInstance)) {
 				$provider = &$providerClassNameOrInstance;
 			} else {
-				$providerCacheKey = $table . $fieldName . $rowChecksum . $extensionKey . $providerClassNameOrInstance;
+				$providerCacheKey = $table . $fieldName . $rowIdentity . $extensionKey . $providerClassNameOrInstance;
 				if (TRUE === isset(self::$cache[$providerCacheKey])) {
 					$provider = &self::$cache[$providerCacheKey];
 				} else {
@@ -616,7 +582,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		foreach ($values as $index => $value) {
 			if (TRUE === is_array($value)) {
 				$value = $this->transformAccordingToConfiguration($value, $fluxConfiguration, $prefix . (FALSE === empty($prefix) ? '.' : '') . $index);
-			} else {
+			} elseif (TRUE === isset($fluxConfiguration['fields'])) {
 				foreach ($fluxConfiguration['fields'] as $fieldConfiguration) {
 					$fieldName = $fieldConfiguration['name'];
 					$transformType = $fieldConfiguration['transform'];

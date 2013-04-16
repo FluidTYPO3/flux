@@ -67,7 +67,10 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 				$extensionName = t3lib_div::underscoredToUpperCamelCase($paths['extensionKey']);
 			}
 			if (NULL !== $extensionName) {
-				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionName);
+				// Note: the following double conversion is NOT redundant; inconsiderate passing of UpperCamel to t3lib_div
+				// can cause underscores to be unintentionally removed.
+				$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 				$request = $this->controllerContext->getRequest();
 				$request->setControllerExtensionName($extensionName);
 				$this->controllerContext->setRequest($request);

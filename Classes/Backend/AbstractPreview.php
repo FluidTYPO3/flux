@@ -87,7 +87,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 			}
 			if (file_exists($templatePathAndFilename)) {
 				$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-				$extension = str_replace('_', '', $provider->getExtensionKey($row));
+				$extension = $provider->getExtensionKey($row);
 				$providerTemplatePaths = $provider->getTemplatePaths($row);
 				if ($providerTemplatePaths === NULL) {
 					continue;
@@ -95,28 +95,19 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 				if ($provider->getTemplatePaths($row)) {
 					$paths = $provider->getTemplatePaths($row);
 				} else if (t3lib_extMgm::isLoaded($provider->getExtensionKey($row))) {
+					$extension = str_replace('_', '', $extension);
 					$paths = $typoScript['plugin.']['tx_' . $extension . '.']['view.'];
 				} else {
 					$paths = $typoScript['plugin.']['tx_flux.']['view.'];
 				}
 				$paths = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($paths);
 				try {
-					/** @var Tx_Extbase_MVC_Controller_ControllerContext $context */
-					$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
-					/** @var Tx_Extbase_MVC_Request $request */
-					$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
-					$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
 					$extensionKey = (TRUE === isset($paths['extensionKey']) ? $paths['extensionKey'] : $provider->getExtensionKey($row));
 					$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-					$request->setControllerExtensionName($extensionName);
-					$request->setDispatched(TRUE);
-					$context->setRequest($request);
-					$context->setResponse($response);
+
+
 					$templateVariables = $provider->getTemplateVariables($row);
-					/** @var Tx_Flux_MVC_View_ExposedTemplateView $view */
-					$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
-					$view->setControllerContext($context);
-					$view->setTemplatePathAndFilename($templatePathAndFilename);
+					$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, 'Content');
 					$view->assignMultiple($templateVariables);
 					$view->assign('row', $row);
 					$flexformVariables = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform']);
@@ -129,10 +120,10 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 					}
 					$variables['label'] = $label;
 					$variables['row'] = $row;
-					$view->setPartialRootPath(t3lib_div::getFileAbsFileName($paths['partialRootPath']));
-					$view->setLayoutRootPath(t3lib_div::getFileAbsFileName($paths['layoutRootPath']));
+
 					$view->setTemplatePathAndFilename($templatePathAndFilename);
 					$view->assignMultiple($variables);
+
 					$previewContent = $view->renderStandaloneSection('Preview', $variables);
 					$previewContent = trim($previewContent);
 					if (empty($label) === FALSE) {
