@@ -162,7 +162,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		$value = $exposedView->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $variableName, $section, $paths, $extensionName);
 		self::$cache[$cacheKey] = $value;
-		return self::$cache[$cacheKey];
+		return $value;
 	}
 
 	/**
