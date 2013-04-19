@@ -168,16 +168,27 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($this->fluxTableName, $this->fluxRecordField, $row);
 		$extensionKey = $this->provider->getExtensionKey($row);
 		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$pluginSignature = 'tx_' . str_replace('_', '', $extensionKey) . '_content';
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
 		$controllerExtensionName = $this->provider->getControllerExtensionKeyFromRecord($row);
 		// failure toggles. Instructs ConfigurationService to throw Exceptions when not being able to detect. We capture these and pass to debug.
 		$failHardClass = TRUE;
 		$failHardAction = TRUE;
-		$controllerName = $this->request->getControllerName();
+		$requestParameters = t3lib_div::_GET($pluginSignature);
+		$arguments = (TRUE === is_array(t3lib_div::_POST($pluginSignature)) ? t3lib_div::_POST($pluginSignature) : $requestParameters);
+		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : $controllerActionName;
 		try {
+			$controllerName = $this->request->getControllerName();
 			$action = $this->provider->getControllerActionReferenceFromRecord($row);
 			$potentialControllerClassName = $this->configurationService->resolveFluxControllerClassName($action, $controllerName, $failHardClass, $failHardAction);
-			return call_user_func_array(array($potentialControllerClassName, $controllerActionName . 'Action'), array());
+			$potentialControllerInstance = $this->objectManager->get($potentialControllerClassName);
+			$response = $this->response;
+			$this->response = clone $this->response;
+			$this->request->setControllerActionName($overriddenControllerActionName);
+			$this->request->setControllerExtensionName($extensionName);
+			if ($extensionName !== $this->extensionName) {
+				return $potentialControllerInstance->processRequest($this->request, $response);
+			}
 		} catch (Exception $error) {
 			// no Controller class exists; let built-in View render everything.
 		}
