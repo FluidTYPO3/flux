@@ -44,8 +44,16 @@ class Tx_Flux_Provider_Structure_FlexFormStructureProvider extends Tx_Flux_Provi
 		}
 		$sheets = array();
 		foreach ($configuration['fields'] as $field) {
-			$groupKey = $field['sheet']['name'];
-			$groupLabel = $field['sheet']['label'];
+			if (FALSE === empty($field['sheet'])) {
+				$sheet = $field['sheet'];
+			} else {
+				$sheet = array(
+					'name' => 'options',
+					'label' => 'Options',
+				);
+			}
+			$groupKey = $sheet['name'];
+			$groupLabel = $sheet['label'];
 			if (is_array($sheets[$groupKey]) === FALSE) {
 				$sheets[$groupKey] = array(
 					'name' => $groupKey,
@@ -73,8 +81,7 @@ class Tx_Flux_Provider_Structure_FlexFormStructureProvider extends Tx_Flux_Provi
 			foreach ($sheet['fields'] as $field) {
 				unset($field['sheet']);
 				$name = $field['name'];
-				$structureProvider = $this->resolveFieldStructureProvider($field);
-				$dataStructArray['ROOT']['el'][$name] =  $structureProvider->render($field);
+				$sheetStructArray['ROOT']['el'][$name] =  $field->getStructure();
 			}
 		} else {
 			$dataStructArray['sheets'] = array();

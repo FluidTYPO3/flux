@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -48,6 +48,15 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_Core_ViewHe
 	 * @return void
 	 */
 	public function render() {
+		$this->configuration = $this->renderConfiguration();
+		$this->structure = $this->createStructure();
+		$this->addField($this->configuration);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function renderConfiguration() {
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet') === TRUE) {
 			$sheet = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet');
 		} else {
@@ -68,7 +77,7 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_Core_ViewHe
 		$baseConfig['name'] = $this->arguments['name'];
 		$baseConfig['label'] = $this->getLabel();
 		//$baseConfig['maxItems'] = $this->arguments['maxItems'];
-		$baseConfig['type'] = 'Section';
+		$baseConfig['type'] = 'section';
 		$baseConfig['fields'] = array();
 		$baseConfig['enabled'] = TRUE;
 		$baseConfig['sheet'] = $sheet;
@@ -87,7 +96,47 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_Core_ViewHe
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName', $parentSectionObjectName);
 
 		$config = array_merge($baseConfig, $compiledConfig);
-		$this->addField($config);
+		return $config;
 	}
+
+	/**
+	 * @return array
+	 */
+	public function createStructure() {
+		$configuration = $this->configuration;
+		$fieldStructureArray = array(
+			'title' => $configuration['label'], // read only by >4.7 and required in order to prevent the tx_templavoila from generating a deprecation warning
+			'tx_templavoila' => array( // TODO: remove this when <4.7 no longer needs to be supported.
+				'title' => $configuration['label']
+			),
+			'type' => 'array',
+			'section' => 1,
+			'el' => array()
+		);
+		$objects = array();
+		foreach ($configuration['fields'] as $field) {
+			$name = $field['sectionObjectName'];
+			if (isset($objects[$name]) === FALSE) {
+				$objects[$name] = array();
+			}
+			array_push($objects[$name], $field);
+		};
+		foreach ($objects as $objectName => $objectFields) {
+			$fieldStructureArray['el'][$objectName] = array(
+				'type' => 'array',
+				'title' => $configuration['labels'][$objectName],
+				'tx_templavoila' => array(
+					'title' => $configuration['labels'][$objectName]
+				),
+				'el' => array(),
+			);
+			foreach ($objectFields as $field) {
+				$name = $field['name'];
+				$fieldStructureArray['el'][$objectName]['el'][$name] = $field->getStructure();
+			}
+		}
+		return $fieldStructureArray;
+	}
+
 
 }
