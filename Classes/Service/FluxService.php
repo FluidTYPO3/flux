@@ -216,10 +216,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return array
 	 */
 	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL, $extensionName = NULL) {
-		$cacheKey = md5($templateFile . $variableName . $extensionName . implode('', $paths) . $section);
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
 		$config = NULL;
 		try {
 			$config = $this->getStoredVariable($templateFile, 'storage', $section, $paths, $extensionName, $values);
@@ -227,7 +223,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			$this->message('Reading file ' . $templateFile . ' caused an error - see next message', t3lib_div::SYSLOG_SEVERITY_FATAL);
 			$this->debug($error);
 		}
-		self::$cache[$cacheKey] = $config;
 		return $config;
 	}
 
