@@ -46,13 +46,13 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 	 * Render method
 	 * @return void
 	 */
-	public function render() {
+	public function renderConfiguration() {
 		$config = $this->getFieldConfig();
 		$config['type'] = 'group';
 		$config['internal_type'] = $this->arguments['internalType'];
 		$config['allowed'] = $this->arguments['allowed'];
 		$config['uploadfolder'] = $this->arguments['uploadFolder'];
-		$this->addField($config);
+		return $config;
 	}
 
 }
