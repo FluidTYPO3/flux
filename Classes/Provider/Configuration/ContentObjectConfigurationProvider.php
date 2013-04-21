@@ -124,7 +124,16 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
-		$contentAreaFromUrl = $this->configurationService->detectParentElementAreaFromUrl();
+		$url = t3lib_div::_GET('returnUrl');
+		$urlHashCutoffPoint = strrpos($url, '#');
+		$area = NULL;
+		if ($urlHashCutoffPoint > 0) {
+			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
+			if (strpos($area, ':') === FALSE) {
+				return NULL;
+			}
+		}
+		$contentAreaFromUrl = array_shift(explode(':', $area));
 		$parentUidFromUrl = $this->configurationService->detectParentUidFromUrl();
 		if ($contentAreaFromUrl) {
 			$row['tx_flux_column'] = $contentAreaFromUrl;
