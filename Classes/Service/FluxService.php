@@ -144,7 +144,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return mixed
 	 */
 	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL, $variables = array()) {
-		$variableCheck = serialize($variables);
+		$variableCheck = json_encode($variables);
 		$cacheKey = md5($templatePathAndFilename . $variableName . $extensionName . implode('', $paths) . $section . $variableCheck);
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
