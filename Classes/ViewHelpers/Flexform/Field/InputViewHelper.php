@@ -46,15 +46,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 	}
 
 	/**
-	 * Render method
-	 * @return void
-	 */
-	public function render() {
-		$config = $this->getBaseConfig();
-		$this->addField($config);
-	}
-
-	/**
 	 * Gets a basic array of field configuration
 	 * @return array
 	 */
@@ -73,5 +64,27 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 		}
 		return $config;
 	}
+
+	/**
+	 * @return array
+	 */
+	public function renderConfiguration() {
+		$configuration = $this->getBaseConfig();
+		$fieldConfiguration = array(
+			'type' => 'input',
+			'placeholder' => $configuration['placeholder'],
+			'size' => $configuration['size'],
+			'default' => $configuration['default'],
+			'max' => $configuration['max'],
+		);
+		if ($configuration['range']) {
+			$fieldConfiguration['range'] = $configuration['range'];
+		}
+		if (empty($configuration['eval']) === FALSE) {
+			$fieldConfiguration['eval'] = $configuration['eval'];
+		}
+		return $fieldConfiguration;
+	}
+
 
 }

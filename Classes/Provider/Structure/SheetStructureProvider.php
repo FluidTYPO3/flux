@@ -57,8 +57,7 @@ class Tx_Flux_Provider_Structure_SheetStructureProvider extends Tx_Flux_Provider
 		);
 		foreach ($sheet['fields'] as $field) {
 			$name = $field['name'];
-			$structureProvider = $this->resolveFieldStructureProvider($field);
-			$sheetStructArray['ROOT']['el'][$name] =  $structureProvider->render($field);
+			$sheetStructArray['ROOT']['el'][$name] =  $field->getStructure();
 		}
 		return $sheetStructArray;
 	}

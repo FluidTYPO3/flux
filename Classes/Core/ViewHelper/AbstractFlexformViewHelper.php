@@ -29,12 +29,22 @@
  * @package Flux
  * @subpackage Core/ViewHelper
  */
-abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper implements ArrayAccess {
 
 	/**
 	 * @var Tx_Flux_Service_FluxService
 	 */
 	protected $configurationService;
+
+	/**
+	 * @var array
+	 */
+	protected $configuration = array();
+
+	/**
+	 * @var array
+	 */
+	protected $structure = array();
 
 	/**
 	 * @param Tx_Flux_Service_FluxService $configurationService
@@ -57,30 +67,32 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 
 	/**
 	 * Render method
-	 * @return string
+	 * @return void
 	 */
 	public function render() {
 		$this->renderChildren();
-		return '';
+		$this->configuration = $this->renderConfiguration();
+		$this->structure = $this->createStructure();
+		$this->addField($this->configuration);
 	}
 
 	/**
 	 * @param array $config
 	 * @return void
 	 */
-	protected function addField($config) {
+	protected function addField($config = array()) {
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section') === TRUE) {
 			$section = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section');
 		} else {
 			$section = NULL;
 		}
 		if (is_array($section) === TRUE) {
-			$config['sectionObjectName'] = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
-			array_push($section['fields'], $config);
+			$this->configuration['sectionObjectName'] = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
+			array_push($section['fields'], clone $this);
 			$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section', $section);
 		} else {
 			$storage = (array) $this->getStorage();
-			array_push($storage['fields'], $config);
+			array_push($storage['fields'], clone $this);
 			$this->setStorage($storage);
 		}
 	}
@@ -240,5 +252,105 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		}
 	}
 
+	/**
+	 * @param array $configuration
+	 * @return array
+	 */
+	protected function getWizardStructureArray($configuration) {
+		$wizardStructureArray = array();
+		$wizards = t3lib_div::xml2array($configuration['wizards'], '', TRUE);
+		if (isset($wizards['_DOCUMENT_TAG'])) {
+			$wizards = array($wizards);
+		}
+		foreach ($wizards as $wizard) {
+			$key = $wizard['_DOCUMENT_TAG'];
+			$wizardStructureArray[$key] = $wizard;
+		}
+		return $wizardStructureArray;
+	}
+
+	/**
+	 * Creates a TCEforms configuration array based on the
+	 * configuration stored in this ViewHelper. Calls the
+	 * expected-to-be-overridden stub method getConfiguration()
+	 * to return the TCE field configuration - see that method
+	 * for information about how to implement that method.
+	 *
+	 * @return array
+	 */
+	public function createStructure() {
+		if (TRUE === method_exists($this, 'getBaseConfig')) {
+			$configuration = $this->getBaseConfig();
+		} else {
+			$configuration = array();
+		}
+		$fieldStructureArray = array(
+			'TCEforms' => array(
+				'label' => $configuration['label'],
+				'required' => $this->arguments['required'],
+				'config' => $this->renderConfiguration(),
+				'displayCond' => $this->arguments['displayCond']
+			)
+		);
+		if ($configuration['wizards']) {
+			$fieldStructureArray['TCEforms']['config']['wizards'] = $this->getWizardStructureArray($configuration);
+		}
+		if ($configuration['requestUpdate']) {
+			$fieldStructureArray['TCEforms']['onChange'] = 'reload';
+		}
+		return $fieldStructureArray;
+	}
+
+	/**
+	 * Stub: Should be overridden by every field type in order
+	 * to allow it to return its own special configuration array.
+	 * The returned configuration array should be the array usually
+	 * placed under the "config" index in an TCA array. Example:
+	 * array("type" => "input", "default" => "Default value")
+	 *
+	 * @return array
+	 */
+	public function renderConfiguration() {
+		return $this->configuration;
+	}
+
+	/**
+	 * @return boolean true on success or false on failure.
+	 */
+	public function offsetExists($offset) {
+		return isset($this->configuration[$offset]);
+	}
+
+	/**
+	 * @param mixed $offset
+	 * @return mixed Can return all value types.
+	 */
+	public function offsetGet($offset) {
+		return $this->configuration[$offset];
+	}
+
+	/**
+	 * @param mixed $offset
+	 * @param mixed $value
+	 * @return void
+	 */
+	public function offsetSet($offset, $value) {
+		$this->configuration[$offset] = $value;
+	}
+
+	/**
+	 * @param mixed $offset
+	 * @return void
+	 */
+	public function offsetUnset($offset) {
+		unset($this->configuration[$offset]);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getStructure() {
+		return $this->structure;
+	}
 
 }

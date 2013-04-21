@@ -59,24 +59,6 @@ class Tx_Flux_Provider_Structure_AbstractStructureProvider {
 
 	/**
 	 * @param array $configuration
-	 * @return Tx_Flux_Provider_StructureProviderInterface
-	 */
-	protected function resolveFieldStructureProvider($configuration) {
-		$structureProviderClassName = 'Tx_Flux_Provider_Structure_Field_' . $configuration['type'] . 'StructureProvider';
-		$structureProviderClassName = class_exists($structureProviderClassName) ? $structureProviderClassName : 'Tx_Flux_Provider_Structure_Field_PassthroughStructureProvider';
-		return $this->objectManager->create($structureProviderClassName);
-	}
-
-	/**
-	 * @param array $configuration
-	 * @return array
-	 */
-	protected function resolveStructureProviderAndRenderField($configuration) {
-		return $this->resolveFieldStructureProvider($configuration)->render($configuration);
-	}
-
-	/**
-	 * @param array $configuration
 	 * @param array $fieldConfiguration
 	 * @return array
 	 */

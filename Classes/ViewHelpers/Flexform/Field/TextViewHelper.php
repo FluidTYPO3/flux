@@ -49,18 +49,45 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 	 * @return void
 	 */
 	public function render() {
-		$config = $this->getBaseConfig();
-		$config['type'] = 'Text';
-		$config['validate'] = $this->arguments['validate'];
-		$config['cols'] = $this->arguments['cols'];
-		$config['rows'] = $this->arguments['rows'];
 		if ($this->arguments['enableRichText'] && $this->arguments['defaultExtras'] == '') {
 				// a NULL value causes the FieldStructureProvider to insert the TS
-			$config['defaultExtras'] = NULL;
+			$this->configuration['defaultExtras'] = NULL;
 		} else {
-			$config['defaultExtras'] = $this->arguments['defaultExtras'];
+			$this->configuration['defaultExtras'] = $this->arguments['defaultExtras'];
 		}
-		$this->addField($config);
+		parent::render();
+	}
+
+	/**
+	 * @return array
+	 */
+	public function renderConfiguration() {
+		$configuration = $this->getBaseConfig();
+		$fieldConfiguration = array(
+			'type' => 'text',
+			'rows' => $configuration['rows'],
+			'cols' => $configuration['cols'],
+			'eval' => $configuration['validate'],
+			'default' => $configuration['default']
+		);
+		return $fieldConfiguration;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function createStructure() {
+		if ($this->configuration['defaultExtras'] === NULL) {
+			$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+			$configurationManager = $objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
+			$typoScript = $configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$defaultExtras = $typoScript['plugin.']['tx_flux.']['settings.']['flexform.']['rteDefaults'];
+		} else {
+			$defaultExtras = $this->configuration['defaultExtras'];
+		}
+		$structure = parent::createStructure();
+		$structure['TCEforms']['defaultExtras'] = $defaultExtras;
+		return $structure;
 	}
 
 }
