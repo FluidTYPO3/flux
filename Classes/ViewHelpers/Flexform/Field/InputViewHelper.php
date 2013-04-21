@@ -71,6 +71,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 	public function renderConfiguration() {
 		$configuration = $this->getBaseConfig();
 		$fieldConfiguration = array(
+			'name' => $configuration['name'],
 			'type' => 'input',
 			'placeholder' => $configuration['placeholder'],
 			'size' => $configuration['size'],

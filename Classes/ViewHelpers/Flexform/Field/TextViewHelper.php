@@ -65,6 +65,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 		$configuration = $this->getBaseConfig();
 		$fieldConfiguration = array(
 			'type' => 'text',
+			'name' => $configuration['name'],
 			'rows' => $configuration['rows'],
 			'cols' => $configuration['cols'],
 			'eval' => $configuration['validate'],
