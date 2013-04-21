@@ -178,9 +178,10 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	/**
 	 * Perform operations upon clearing cache(s)
 	 *
+	 * @param array $command
 	 * @return void
 	 */
-	public function clearCacheCommand();
+	public function clearCacheCommand($command = array());
 
 	/**
 	 * Converts the contents of the provided row's Flux-enabled field,
