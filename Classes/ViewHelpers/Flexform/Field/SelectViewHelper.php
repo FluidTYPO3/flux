@@ -79,7 +79,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 	 */
 	protected function getFieldConfig() {
 		$config = $this->getBaseConfig();
-		$config['type'] = 'Select';
+		$config['type'] = 'select';
 		if ($this->arguments['commaSeparatedItems']) {
 			$config['items'] = array();
 			$itemNames = t3lib_div::trimExplode(',', $this->arguments['commaSeparatedItems']);
