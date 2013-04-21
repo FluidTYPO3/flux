@@ -112,7 +112,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	 * @return void
 	 * @throws Exception
 	 */
-	public function render() {
+	public function renderConfiguration() {
 		$extensionName = $this->arguments['extensionName'];
 		$pluginName = $this->arguments['pluginName'];
 		$actions = $this->arguments['actions'];
@@ -126,9 +126,9 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 			$actions = $this->getActionsForExtensionNameAndPluginName($extensionName, $pluginName);
 		}
 		$config = $this->getFieldConfig();
-		$config['type'] = 'Select';
+		$config['type'] = 'select';
 		$config['items'] = $this->renderItemsForActions($actions);
-		$this->addField($config);
+		return $config;
 	}
 
 	/**
