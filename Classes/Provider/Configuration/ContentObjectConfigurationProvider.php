@@ -124,8 +124,16 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
-		$contentAreaFromUrl = $this->configurationService->detectParentElementAreaFromUrl();
-		$parentUidFromUrl = $this->configurationService->detectParentUidFromUrl();
+		$url = t3lib_div::_GET('returnUrl');
+		$urlHashCutoffPoint = strrpos($url, '#');
+		$area = NULL;
+		if ($urlHashCutoffPoint > 0) {
+			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
+			if (strpos($area, ':') === FALSE) {
+				return;
+			}
+		}
+		list ($contentAreaFromUrl, $parentUidFromUrl) = explode(':', $area);
 		if ($contentAreaFromUrl) {
 			$row['tx_flux_column'] = $contentAreaFromUrl;
 		}
@@ -169,7 +177,8 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				} else {
 					$newLanguageUid = 1; // TODO: resolve config.sys_language_uid but WITHOUT using Extbase TS resolution, consider pid of new record
 				}
-				$children = $this->configurationService->getChildContentElementUids($oldUid);
+				$clause = "(tx_flux_column LIKE '%:" . $oldUid . "' || tx_flux_parent = '" . $oldUid . "') AND deleted = 0 AND hidden = 0";
+				$children = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,pid,sys_language_uid,tx_flux_column,tx_flux_parent', 'tt_content', $clause);
 				if (count($children) < 1) {
 					return;
 				}
@@ -233,8 +242,8 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$row['sorting'] = -1;
 			} elseif ($relativeTo < 0) {
 				// Triggers when sorting a CE after another CE, $relativeTo is negative value of CE's UID
-				$row['tx_flux_column'] = $this->configurationService->detectParentElementAreaFromRecord($relativeTo);
-				$row['tx_flux_parent'] = $this->configurationService->detectParentUidFromRecord($relativeTo);
+				$row['tx_flux_column'] = $this->detectParentElementAreaFromRecord($relativeTo);
+				$row['tx_flux_parent'] = $this->detectParentUidFromRecord($relativeTo);
 			}
 			if (strpos($row['tx_flux_column'], ':') !== FALSE) {
 				// TODO: after migration to "parent" usage, remember to change this next line
@@ -343,6 +352,26 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
 			}
 		}
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return string
+	 */
+	public function detectParentElementAreaFromRecord($uid) {
+		$uid = abs($uid);
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		return $record['tx_flux_column'];
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return integer
+	 */
+	public function detectParentUidFromRecord($uid) {
+		$uid = abs($uid);
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		return intval($record['tx_flux_parent']);
 	}
 
 }
