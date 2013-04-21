@@ -799,29 +799,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param integer $uid
-	 * @return array
-	 */
-	public function getContentAreasDefinedInContentElement($uid) {
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		$provider = $this->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
-		$extensionKey = $provider->getExtensionKey($record);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$values = $provider->getTemplateVariables($record);
-		$grid = $this->getGridFromTemplateFile($templatePaths['templateRootPath'] . $fileName, $values, 'Configuration', $extensionName);
-		$columns = array();
-		foreach ($grid as $row) {
-			foreach ($row as $column) {
-				foreach ($column['areas'] as $area) {
-					array_push($columns, array($area['label'], $area['name']));
-
-				}
-			}
-		}
-		return $columns;
-	}
-
-	/**
 	 * Gets a value for the field tx_flux_column based on $record and $id
 	 *
 	 * @param array $record
