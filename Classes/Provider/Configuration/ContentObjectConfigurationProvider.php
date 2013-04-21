@@ -242,8 +242,8 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$row['sorting'] = -1;
 			} elseif ($relativeTo < 0) {
 				// Triggers when sorting a CE after another CE, $relativeTo is negative value of CE's UID
-				$row['tx_flux_column'] = $this->configurationService->detectParentElementAreaFromRecord($relativeTo);
-				$row['tx_flux_parent'] = $this->configurationService->detectParentUidFromRecord($relativeTo);
+				$row['tx_flux_column'] = $this->detectParentElementAreaFromRecord($relativeTo);
+				$row['tx_flux_parent'] = $this->detectParentUidFromRecord($relativeTo);
 			}
 			if (strpos($row['tx_flux_column'], ':') !== FALSE) {
 				// TODO: after migration to "parent" usage, remember to change this next line
@@ -352,6 +352,26 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
 			}
 		}
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return string
+	 */
+	public function detectParentElementAreaFromRecord($uid) {
+		$uid = abs($uid);
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		return $record['tx_flux_column'];
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return integer
+	 */
+	public function detectParentUidFromRecord($uid) {
+		$uid = abs($uid);
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		return intval($record['tx_flux_parent']);
 	}
 
 }

@@ -800,26 +800,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 
 	/**
 	 * @param integer $uid
-	 * @return string
-	 */
-	public function detectParentElementAreaFromRecord($uid) {
-		$uid = abs($uid);
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		return $record['tx_flux_column'];
-	}
-
-	/**
-	 * @param integer $uid
-	 * @return integer
-	 */
-	public function detectParentUidFromRecord($uid) {
-		$uid = abs($uid);
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		return intval($record['tx_flux_parent']);
-	}
-
-	/**
-	 * @param integer $uid
 	 * @return array
 	 */
 	public function getContentAreasDefinedInContentElement($uid) {
