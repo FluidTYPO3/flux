@@ -165,12 +165,7 @@ class Tx_Flux_Backend_TceMain {
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $clause, $arguments['row']);
 			}
 		} catch (Exception $error) {
-			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-				throw $error;
-			} else {
-				t3lib_div::sysLog($error->getMessage(), 'flux');
-				t3lib_FlashMessageQueue::addMessage(new t3lib_FlashMessage($error->getMessage() . ' (code ' . $error->getCode() . ')', t3lib_FlashMessage::ERROR, TRUE));
-			}
+			$this->configurationService->debugException($error);
 		}
 	}
 
