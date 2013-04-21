@@ -169,7 +169,8 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				} else {
 					$newLanguageUid = 1; // TODO: resolve config.sys_language_uid but WITHOUT using Extbase TS resolution, consider pid of new record
 				}
-				$children = $this->configurationService->getChildContentElementUids($oldUid);
+				$clause = "(tx_flux_column LIKE '%:" . $oldUid . "' || tx_flux_parent = '" . $oldUid . "') AND deleted = 0 AND hidden = 0";
+				$children = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,pid,sys_language_uid,tx_flux_column,tx_flux_parent', 'tt_content', $clause);
 				if (count($children) < 1) {
 					return;
 				}

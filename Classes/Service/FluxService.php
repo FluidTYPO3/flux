@@ -799,18 +799,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * Get an array of child element records from a parent FCE
-	 *
-	 * @param integer $id
-	 * @return array
-	 * @api
-	 */
-	public function getChildContentElementUids($id) {
-		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,pid,sys_language_uid,tx_flux_column,tx_flux_parent', 'tt_content', "(tx_flux_column LIKE '%:" . $id . "' || tx_flux_parent = '" . $id . "') AND deleted = 0 AND hidden = 0");
-		return (array) $rows;
-	}
-
-	/**
 	 * Detects the desired content area name for the element currently being
 	 * edited. This should only be executed from within TCEmain hooks as it
 	 * partially depends on URL parameters!
