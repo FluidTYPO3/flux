@@ -79,7 +79,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 	public function createStructure() {
 		if ($this->configuration['defaultExtras'] === NULL) {
 			$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-			$configurationManager = $objectManager->create('Tx_Extbase_Configuration_ConfigurationManagerInterface');
+			$configurationManager = $objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 			$typoScript = $configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$defaultExtras = $typoScript['plugin.']['tx_flux.']['settings.']['flexform.']['rteDefaults'];
 		} else {
