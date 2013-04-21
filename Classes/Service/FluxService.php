@@ -799,26 +799,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * Detects the desired parent element for the element currently being
-	 * edited. This should only be executed from within TCEmain hooks as it
-	 * partially depends on URL parameters!
-	 *
-	 * @return integer
-	 */
-	public function detectParentUidFromUrl() {
-		$url = t3lib_div::_GET('returnUrl');
-		$urlHashCutoffPoint = strrpos($url, '#');
-		$area = NULL;
-		if ($urlHashCutoffPoint > 0) {
-			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
-			if (strpos($area, ':') === FALSE) {
-				return NULL;
-			}
-		}
-		return array_pop(explode(':', $area));
-	}
-
-	/**
 	 * @param integer $uid
 	 * @return string
 	 */

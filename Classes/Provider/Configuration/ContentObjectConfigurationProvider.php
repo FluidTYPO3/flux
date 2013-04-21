@@ -130,11 +130,10 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 		if ($urlHashCutoffPoint > 0) {
 			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
 			if (strpos($area, ':') === FALSE) {
-				return NULL;
+				return;
 			}
 		}
-		$contentAreaFromUrl = array_shift(explode(':', $area));
-		$parentUidFromUrl = $this->configurationService->detectParentUidFromUrl();
+		list ($contentAreaFromUrl, $parentUidFromUrl) = explode(':', $area);
 		if ($contentAreaFromUrl) {
 			$row['tx_flux_column'] = $contentAreaFromUrl;
 		}
