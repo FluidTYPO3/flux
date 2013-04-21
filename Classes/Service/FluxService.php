@@ -291,10 +291,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			return self::$cache[$cacheKey];
 		}
 		$config = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		$config = $config['plugin.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
-		if (FALSE === is_array($config)) {
-			$config = array();
+		if (FALSE === isset($config['plugin.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'])) {
+			return NULL;
 		}
+		$config = $config['plugin.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
 		$config = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($config);
 		if ($extensionName) {
 			$config = $config[$extensionName];
