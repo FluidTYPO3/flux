@@ -48,13 +48,25 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 
 	/**
 	 * Render method
-	 * @return mixed
+	 * @return void
 	 */
 	public function render() {
+		$this->configuration = $this->renderConfiguration();
+		$this->structure = $this->createStructure();
+		$this->addField($this->configuration);
+	}
+
+	/**
+	 * Render method
+	 * @return array
+	 */
+	public function renderConfiguration() {
 		$self = $this;
 		$config = parent::getBaseConfig();
-		$config['type'] = str_replace('ViewHelper', '', array_pop(explode('_', get_class($this))));
-		$config['closure'] = function($parameters) use ($self) {
+		$config['type'] = 'user';
+		$config['userFunc'] = 'EXT:flux/Classes/UserFunction/HtmlOutput.php:Tx_Flux_UserFunction_HtmlOutput->renderField';
+		$config['parameters'] = $this->arguments; // will be passed to the UserFunction as argument
+		$config['parameters']['closure'] = function($parameters) use ($self) {
 			$backupParameters = NULL;
 			if ($self->getTemplateVariableContainer()->exists('parameters') === TRUE) {
 				$backupParameters = $self->getTemplateVariableContainer()->get('parameters');
@@ -69,7 +81,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 			return $content;
 		};
 		$config['arguments'] = $this->arguments;
-		$this->addField($config);
-		return NULL;
+		return $config;
 	}
 }

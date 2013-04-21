@@ -53,12 +53,25 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 	}
 
 	/**
-	 * Render method
-	 * @return void
+	 * @return array
 	 */
-	public function render() {
-		$config = $this->getFieldConfig();
-		$this->addField($config);
+	public function renderConfiguration() {
+		$configuration = $this->getFieldConfig();
+		$fieldConfiguration = $configuration;
+		$fieldConfiguration['type'] = 'select';
+		if (is_array($configuration['items']) === TRUE) {
+			$items = array();
+			foreach ($configuration['items'] as $key => $item) {
+				if (is_array($item) === TRUE) {
+					$item = array_reverse($item);
+				} else {
+					$item = array($item, $key);
+				}
+				array_push($items, $item);
+			}
+			$fieldConfiguration['items'] = $items;
+		}
+		return $fieldConfiguration;
 	}
 
 	/**

@@ -44,11 +44,11 @@ class Tx_Flux_ViewHelpers_Flexform_Field_UserFuncViewHelper extends Tx_Flux_View
 	 * Render method
 	 * @return void
 	 */
-	public function render() {
+	public function renderConfiguration() {
 		$config = $this->getBaseConfig();
-		$config['type'] = 'User';
+		$config['type'] = 'user';
 		$config['userFunc'] = $this->arguments['userFunc'];
-		$this->addField($config);
+		return $config;
 	}
 
 }
