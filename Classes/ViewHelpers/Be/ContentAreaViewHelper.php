@@ -44,6 +44,7 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Flux_Core_ViewHelp
 		$pageRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages', "uid = '" . $row['pid'] . "'");
 		$pageRecord = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pageRes);
 		$GLOBALS['TYPO3_DB']->sql_free_result($pageRes);
+		/** @var $dblist tx_cms_layout */
 		$dblist = t3lib_div::makeInstance('tx_cms_layout');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
 		$dblist->thumbs = $this->imagemode;
@@ -60,6 +61,14 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Flux_Core_ViewHelp
 		$dblist->tt_contentConfig['showCommands'] = 1;
 		$dblist->tt_contentConfig['showInfo'] = 1;
 		$dblist->tt_contentConfig['single'] = 0;
+		$dblist->CType_labels = array();
+		foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
+			$dblist->CType_labels[$val[1]] = $GLOBALS['LANG']->sL($val[0]);
+		}
+		$dblist->itemLabels = array();
+		foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
+			$dblist->itemLabels[$name] = $GLOBALS['LANG']->sL($val['label']);
+		}
 
 		$condition = "((tx_flux_column = '" . $area . ':' . $row['uid'] . "') OR (tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "')) AND deleted = 0";
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition, 'uid', 'sorting ASC');
