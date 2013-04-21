@@ -63,7 +63,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 			$parentUid = $params['row']['tx_flux_parent'];
 		}
 		if ($parentUid > 0) {
-			$items = $this->fluxService->getContentAreasDefinedInContentElement($parentUid);
+			$items = $this->getContentAreasDefinedInContentElement($parentUid);
 		} else {
 			$items = array();
 		}
@@ -76,6 +76,29 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 			}
 		}
 		$params['items'] = $items;
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return array
+	 */
+	public function getContentAreasDefinedInContentElement($uid) {
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
+		$extensionKey = $provider->getExtensionKey($record);
+		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$values = $provider->getTemplateVariables($record);
+		$grid = $this->fluxService->getGridFromTemplateFile($templatePaths['templateRootPath'] . $fileName, $values, 'Configuration', $extensionName);
+		$columns = array();
+		foreach ($grid as $row) {
+			foreach ($row as $column) {
+				foreach ($column['areas'] as $area) {
+					array_push($columns, array($area['label'], $area['name']));
+
+				}
+			}
+		}
+		return $columns;
 	}
 
 }
