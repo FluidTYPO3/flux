@@ -76,7 +76,21 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		$area = $this->arguments['area'];
 		$limit = $this->arguments['limit'] ? $this->arguments['limit'] : 99999;
 		$sortDirection = $this->arguments['sortDirection'];
-		$elements = $this->configurationService->getChildContent($localizedUid, $area, $limit, $order, $sortDirection);
+		$order .= ' ' . $sortDirection;
+		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
+			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
+			AND deleted = 0 AND hidden = 0";
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $conditions, 'uid', $order, $limit);
+		$elements = array();
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			$conf = array(
+				'tables' => 'tt_content',
+				'source' => $row['uid'],
+				'dontCheckPid' => 1
+			);
+			array_push($elements, $GLOBALS['TSFE']->cObj->RECORDS($conf));
+		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		if (FALSE === isset($this->arguments['as'])) {
 			$content = $elements;
 		} else {
