@@ -227,44 +227,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param string $reference
-	 * @param string $controllerObjectShortName
-	 * @param boolean $failHardClass
-	 * @param boolean $failHardAction
-	 * @return string|NULL
-	 */
-	public function resolveFluxControllerClassName($reference, $controllerObjectShortName, $failHardClass = FALSE, $failHardAction = FALSE) {
-		list ($extensionKey, $action) = explode('->', $reference);
-		return $this->resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $action, $controllerObjectShortName, $failHardClass, $failHardAction);
-	}
-	/**
-	 * @param string $extensionKey
-	 * @param string $action
-	 * @param string $controllerObjectShortName
-	 * @param boolean $failHardClass
-	 * @param boolean $failHardAction
-	 * @return string|NULL
-	 */
-	protected function resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $action, $controllerObjectShortName, $failHardClass = FALSE, $failHardAction = FALSE) {
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$potentialControllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerObjectShortName . 'Controller';
-		if (FALSE === class_exists($potentialControllerClassName)) {
-			if (TRUE === $failHardClass) {
-				throw new Exception('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($extensionKey, TRUE) .
-					' but the resulting class name was not found.', 1364498093);
-			}
-			return NULL;
-		}
-		if (FALSE === method_exists($potentialControllerClassName, $action . 'Action')) {
-			if (TRUE === $failHardAction) {
-				throw new Exception('Class ' . $potentialControllerClassName . ' does not contain a method named ' . $action . 'Action', 1364498223);
-			}
-			return NULL;
-		}
-		return $potentialControllerClassName;
-	}
-
-	/**
 	 * @param string $extensionName
 	 * @return array|NULL
 	 */
