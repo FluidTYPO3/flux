@@ -353,9 +353,10 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	/**
 	 * Perform various cleanup operations upon clearing cache
 	 *
+	 * @param array $command
 	 * @return void
 	 */
-	public function clearCacheCommand() {
+	public function clearCacheCommand($command = array()) {
 		return;
 	}
 

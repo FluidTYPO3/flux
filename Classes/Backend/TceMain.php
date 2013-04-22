@@ -177,14 +177,15 @@ class Tx_Flux_Backend_TceMain {
 	/**
 	 * Perform various cleanup operations upon clearing cache
 	 *
+	 * @param string $command
 	 * @return void
 	 */
-	public function clearCacheCommand() {
+	public function clearCacheCommand($command) {
 		$tables = array_keys($GLOBALS['TCA']);
 		foreach ($tables as $table) {
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL);
 			foreach ($providers as $provider) {
-				$provider->clearCacheCommand();
+				$provider->clearCacheCommand($command);
 			}
 		}
 	}
