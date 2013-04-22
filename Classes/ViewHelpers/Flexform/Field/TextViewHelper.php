@@ -45,20 +45,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 	}
 
 	/**
-	 * Render method
-	 * @return void
-	 */
-	public function render() {
-		if ($this->arguments['enableRichText'] && $this->arguments['defaultExtras'] == '') {
-				// a NULL value causes the FieldStructureProvider to insert the TS
-			$this->configuration['defaultExtras'] = NULL;
-		} else {
-			$this->configuration['defaultExtras'] = $this->arguments['defaultExtras'];
-		}
-		parent::render();
-	}
-
-	/**
 	 * @return array
 	 */
 	public function renderConfiguration() {
@@ -78,13 +64,13 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 	 * @return array
 	 */
 	public function createStructure() {
-		if ($this->configuration['defaultExtras'] === NULL) {
+		if (TRUE === $this->arguments['enableRichText'] && '' == $this->arguments['defaultExtras']) {
 			$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 			$configurationManager = $objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 			$typoScript = $configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$defaultExtras = $typoScript['plugin.']['tx_flux.']['settings.']['flexform.']['rteDefaults'];
 		} else {
-			$defaultExtras = $this->configuration['defaultExtras'];
+			$defaultExtras = $this->arguments['defaultExtras'];
 		}
 		$structure = parent::createStructure();
 		$structure['TCEforms']['defaultExtras'] = $defaultExtras;
