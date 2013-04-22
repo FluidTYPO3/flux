@@ -250,7 +250,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		foreach ($data as $sheetName => $sheetFields) {
 			foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
 				$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
-				if ($inheritedValue == $fieldDefinition['vDEF']) {
+				if (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']) {
 					unset($data[$sheetName]['lDEF'][$sheetFieldName]);
 				}
 			}
