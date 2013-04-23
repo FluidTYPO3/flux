@@ -142,7 +142,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		// in the rootline - or "2" to inherit from only the closest two pages in the rootline Because
 		// of this the type of this argument is "integer" but type is, at the moment, irrelevant.
 		// This note left here to remind future devs about the exact purpose of the odd var type.
-		if (FALSE === $this->arguments['inherit']) {
+		if (0 === intval($this->arguments['inherit'])) {
 			$config['stopInheritance'] = TRUE;
 		}
 		if (TRUE === $this->arguments['inheritEmpty']) {
