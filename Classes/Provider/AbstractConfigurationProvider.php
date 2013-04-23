@@ -254,9 +254,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 					unset($data[$sheetName]['lDEF'][$sheetFieldName]);
 				}
 			}
-			if (0 === count($data[$sheetName]['lDEF'])) {
-				$data[$sheetName]['lDEF'] = array('flux.placeholder' => array('vDEF' => 0));
-			}
 		}
 		$row[$fieldName]['data'] = $data;
 		$_POST['data'][$this->tableName][$id] = $row;
