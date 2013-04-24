@@ -71,7 +71,7 @@
 		<label index="object.file.file">Datei</label>
 
 		<label index="user.no_fields">Keine Felder in diesem Formular</label>
-		<label index="user.no_selection">Keine Formular sind erwählt/konfiguriert (Flux debug wird mehr Information produzieren)</label>
+		<label index="user.no_selection">Kein Formular ausgewählt/konfiguriert (Aktivieren des Flux Debug Modus wird mehr Aufschluss geben)</label>
 		<label index="user.no_template">Keine FlexForm Quelle vorhanden. Dies wird in der Regel durch von einem ConfigurationProvider falsch zurückgegebene
 			Template Pfade verursacht - im Falle von FED/FluidContent/FluidPages kann dies auch an einem nicht gewählten Seiten Template oder FCE liegen,
 			was nur wegen des aktivierten Debug Modus in Flux gemeldet wird und kein Problem darstellt. Die Parameter, die zu diesem Fehler führten,
