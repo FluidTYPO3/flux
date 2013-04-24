@@ -190,8 +190,6 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml';
 		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.');
 		$labelIdentifier .= $this->arguments['name'];
-		$this->configurationService->message('Generated automatic LLL path for entity called "' . $name . '" which is a ' .
-			get_class($this) . ': ' . $labelIdentifier, t3lib_div::SYSLOG_SEVERITY_INFO, 'Flux FlexForm LLL label generation');
 		$this->updateLanguageSourceFileIfUpdateFeatureIsEnabledAndIdentifierIsMissing($filePrefix, $labelIdentifier, $id);
 		return $filePrefix . ':' . $labelIdentifier;
 	}
@@ -205,6 +203,8 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles']) {
 			return;
 		}
+		$this->configurationService->message('Generated automatic LLL path for entity called "' . $identifier . '" which is a ' .
+			get_class($this), t3lib_div::SYSLOG_SEVERITY_INFO, 'Flux FlexForm LLL label generation');
 		$debugTitle = 'Flux LLL file rewriting';
 		$allowed = 'a-z\.';
 		$pattern = '/[^' . $allowed . ']+/i';
