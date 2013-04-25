@@ -342,6 +342,15 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 				$section = $values[array_pop(explode(':', $section))];
 			}
 			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+			if (FALSE === file_exists($templatePathAndFilename)) {
+				/** @var $fallbackStructureProvider Tx_Flux_Provider_Structure_FallbackStructureProvider */
+				$fallbackStructureProvider = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider');
+				$config['parameters'] = array(
+					'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
+				);
+				$dataStructure = $fallbackStructureProvider->render($config);
+				return;
+			}
 			$extensionKey = $this->getExtensionKey($row);
 			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 			$this->configurationService->convertFlexFormTemplateToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section, $extensionName);
