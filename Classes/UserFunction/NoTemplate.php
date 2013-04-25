@@ -33,7 +33,7 @@ class Tx_Flux_UserFunction_NoTemplate {
 	/**
 	 * @param array $parameters Not used
 	 * @param object $pObj Not used
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj);
