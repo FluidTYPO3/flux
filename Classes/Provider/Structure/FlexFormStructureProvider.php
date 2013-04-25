@@ -49,7 +49,7 @@ class Tx_Flux_Provider_Structure_FlexFormStructureProvider extends Tx_Flux_Provi
 			} else {
 				$sheet = array(
 					'name' => 'options',
-					'label' => 'Options',
+					'label' => Tx_Extbase_Utility_Localization::translate('tt_content.tx_flux_options', 'Flux'),
 				);
 			}
 			$groupKey = $sheet['name'];
