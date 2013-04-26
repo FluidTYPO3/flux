@@ -47,7 +47,6 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Flux_Core_ViewHelp
 		/** @var $dblist tx_cms_layout */
 		$dblist = t3lib_div::makeInstance('tx_cms_layout');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
-		$dblist->thumbs = $this->imagemode;
 		$dblist->script = 'db_layout.php';
 		$dblist->showIcon = 1;
 		$dblist->setLMargin = 0;

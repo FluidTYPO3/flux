@@ -46,7 +46,7 @@ class Tx_Flux_Controller_FluxController extends Tx_Flux_Controller_AbstractFluxC
 		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $localizedUid . "'"));
 		$id = $record['uid'];
 		$localizedUid = $record['_LOCALIZED_UID'] > 0 ? $record['_LOCALIZED_UID'] : $id;
-		return $this->contentService->renderChildContent($localizedUid, $area, $limit, $order, $sortDirection);
+		return $this->configurationService->renderChildContent($localizedUid, $area, $limit, $order, $sortDirection);
 	}
 
 }
