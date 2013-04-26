@@ -558,22 +558,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * Digs down path to transform final member to $dataType
-	 *
-	 * @param mixed $all
-	 * @param array $keysLeft
-	 * @param string $transformType
-	 * @return mixed
-	 */
-	private function digDownTransform($all, $keysLeft, $transformType) {
-		$current = &$all;
-		while ($key = array_shift($keysLeft)) {
-			$current = &$current[$key];
-		}
-		return $this->transformValueToType($current, $transformType);
-	}
-
-	/**
 	 * Transforms a single value to $dataType
 	 *
 	 * @param string $value

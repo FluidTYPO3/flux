@@ -73,8 +73,10 @@ class Tx_Flux_Override_Core_Database_ReferenceIndex extends \TYPO3\CMS\Core\Data
 				// For "flex" fieldtypes we need to traverse the structure looking for file and db references of course!
 				if ($conf['type'] == 'flex') {
 					// Get current value array:
-					// NOTICE: failure to resolve Data Structures can lead to integrity problems with the reference index. Please look up the note in the JavaDoc documentation for the function t3lib_BEfunc::getFlexFormDS()
-					$dataStructArray = \TYPO3\CMS\Backend\Utility\BackendUtility::getFlexFormDS($conf, $row, $table, $field, $this->WSOL);
+					// NOTICE: failure to resolve Data Structures can lead to integrity problems with the reference index.
+					// We execute this function to ensure no errors exist in the flexform source.
+					// Please look up the note in the JavaDoc documentation for the function t3lib_BEfunc::getFlexFormDS()
+					\TYPO3\CMS\Backend\Utility\BackendUtility::getFlexFormDS($conf, $row, $table, $field, $this->WSOL);
 					$currentValueArray = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($value);
 					// Traversing the XML structure, processing files:
 					if (is_array($currentValueArray)) {

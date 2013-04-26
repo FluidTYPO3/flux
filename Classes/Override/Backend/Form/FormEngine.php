@@ -114,8 +114,8 @@ class Tx_Flux_Override_Backend_Form_FormEngine extends \TYPO3\CMS\Backend\Form\F
 				// Default language, other options are "lUK" or whatever country code (independant of system!!!)
 				$lang = 'l' . $lKey;
 				$tabParts = array();
+				$sheetContent = '';
 				foreach ($tabsToTraverse as $sheet) {
-					$sheetContent = '';
 					list($dataStruct, $sheet) = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveSheetDefInDS($dataStructArray, $sheet);
 					// If sheet has displayCond
 					if ($dataStruct['ROOT']['TCEforms']['displayCond']) {
