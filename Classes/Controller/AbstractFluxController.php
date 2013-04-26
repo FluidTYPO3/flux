@@ -172,23 +172,27 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
 		$controllerExtensionName = $this->provider->getControllerExtensionKeyFromRecord($row);
 		// failure toggles. Instructs ConfigurationService to throw Exceptions when not being able to detect. We capture these and pass to debug.
-		$failHardClass = TRUE;
-		$failHardAction = TRUE;
-		$requestParameters = t3lib_div::_GET($pluginSignature);
-		$arguments = (TRUE === is_array(t3lib_div::_POST($pluginSignature)) ? t3lib_div::_POST($pluginSignature) : $requestParameters);
+		$requestParameters = (array) t3lib_div::_GET($pluginSignature);
+		$arguments = (array) (TRUE === is_array(t3lib_div::_POST($pluginSignature)) ? t3lib_div::_POST($pluginSignature) : $requestParameters);
 		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : $controllerActionName;
+		if ($extensionName === $this->extensionName) {
+			return $this->view->render();
+		}
 		try {
 			$controllerName = $this->request->getControllerName();
-			$action = $this->provider->getControllerActionReferenceFromRecord($row);
-			$potentialControllerClassName = $this->resolveFluxControllerClassName($action, $controllerName, $failHardClass, $failHardAction);
-			$potentialControllerInstance = $this->objectManager->get($potentialControllerClassName);
-			$response = $this->response;
-			$this->response = clone $this->response;
-			$this->request->setControllerActionName($overriddenControllerActionName);
-			$this->request->setControllerExtensionName($extensionName);
-			if ($extensionName !== $this->extensionName) {
-				return $potentialControllerInstance->processRequest($this->request, $response);
+			$potentialControllerClassName = $this->resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $overriddenControllerActionName, $controllerName);
+			if (NULL === $potentialControllerClassName) {
+				$this->request->setControllerExtensionName($controllerExtensionName);
+				return $this->view->render();
 			}
+			$potentialControllerInstance = $this->objectManager->get($potentialControllerClassName);
+			/** @var $response Tx_Extbase_MVC_Response */
+			$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
+			$this->request->setControllerActionName($overriddenControllerActionName);
+			$this->request->setControllerExtensionName($controllerExtensionName);
+			$this->request->setArguments($arguments);
+			$potentialControllerInstance->processRequest($this->request, $response);
+			return $response->getContent();
 		} catch (Exception $error) {
 			// no Controller class exists; let built-in View render everything.
 		}
@@ -252,22 +256,12 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	}
 
 	/**
-	 * @param string $reference
-	 * @param string $controllerObjectShortName
-	 * @param boolean $failHardClass
-	 * @param boolean $failHardAction
-	 * @return string|NULL
-	 */
-	public function resolveFluxControllerClassName($reference, $controllerObjectShortName, $failHardClass = FALSE, $failHardAction = FALSE) {
-		list ($extensionKey, $action) = explode('->', $reference);
-		return $this->resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $action, $controllerObjectShortName, $failHardClass, $failHardAction);
-	}
-	/**
 	 * @param string $extensionKey
 	 * @param string $action
 	 * @param string $controllerObjectShortName
 	 * @param boolean $failHardClass
 	 * @param boolean $failHardAction
+	 * @throws Exception
 	 * @return string|NULL
 	 */
 	protected function resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $action, $controllerObjectShortName, $failHardClass = FALSE, $failHardAction = FALSE) {
