@@ -121,6 +121,7 @@ class Tx_Flux_Core {
 	 */
 	public static function registerFluidFlexFormPlugin($extensionKey, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider */
 		$provider = $objectManager->create('Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName('');
@@ -147,7 +148,9 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
+		/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider */
 		$provider = $objectManager->create('Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName('');
@@ -174,7 +177,9 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function registerFluidFlexFormTable($table, $fieldName, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
+		/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider */
 		$provider = $objectManager->create('Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider');
 		$provider->setTableName($table);
 		$provider->setFieldName($fieldName);

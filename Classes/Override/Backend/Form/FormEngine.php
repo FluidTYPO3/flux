@@ -115,6 +115,7 @@ class Tx_Flux_Override_Backend_Form_FormEngine extends \TYPO3\CMS\Backend\Form\F
 				$lang = 'l' . $lKey;
 				$tabParts = array();
 				foreach ($tabsToTraverse as $sheet) {
+					$sheetContent = '';
 					list($dataStruct, $sheet) = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveSheetDefInDS($dataStructArray, $sheet);
 					// If sheet has displayCond
 					if ($dataStruct['ROOT']['TCEforms']['displayCond']) {
@@ -162,6 +163,7 @@ class Tx_Flux_Override_Backend_Form_FormEngine extends \TYPO3\CMS\Backend\Form\F
 							$PA['_cshKey'] .= '.' . $row[$key];
 						}
 						// Push the sheet level tab to DynNestedStack
+						$tabIdentString = '';
 						if (is_array($dataStructArray['sheets'])) {
 							$tabIdentString = $GLOBALS['TBE_TEMPLATE']->getDynTabMenuId('TCEFORMS:flexform:' . $PA['itemFormElName'] . $PA['_lang']);
 							$this->pushToDynNestedStack('tab', $tabIdentString . '-' . (count($tabParts) + 1));

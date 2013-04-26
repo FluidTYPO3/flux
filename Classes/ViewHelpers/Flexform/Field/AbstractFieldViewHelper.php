@@ -86,7 +86,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards')) {
 			$wizards = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
 			$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
-			if ($wizardsBackup) {
+			if (TRUE === isset($wizardsBackup)) {
 				$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards', $wizardsBackup);
 			}
 			$wizardXML = '';
@@ -112,6 +112,8 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 			$defaultValue = $value;
 		} elseif (TRUE === isset($this->arguments['default'])) {
 			$defaultValue = $this->arguments['default'];
+		} else {
+			$defaultValue = NULL;
 		}
 		return array(
 			'name' => $this->arguments['name'],
@@ -126,7 +128,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 			'displayCond' => $this->arguments['displayCond'],
 			'exclude' => $this->getFlexFormBoolean($this->arguments['exclude']),
 			'wizards' => $wizardXML,
-			'sheet' => $sheet,
+			'sheet' => TRUE == isset($sheet) ? $sheet : NULL,
 			'wrap' => TRUE,
 			'section' => $sectionName,
 			'sectionObjectName' => $sectionObjectName,

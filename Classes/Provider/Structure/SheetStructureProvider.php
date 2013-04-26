@@ -56,6 +56,7 @@ class Tx_Flux_Provider_Structure_SheetStructureProvider extends Tx_Flux_Provider
 			)
 		);
 		foreach ($sheet['fields'] as $field) {
+			/** @var $field Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper */
 			$name = $field['name'];
 			$sheetStructArray['ROOT']['el'][$name] =  $field->getStructure();
 		}

@@ -620,6 +620,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if ($container && $object) {
 			if (FALSE !== strpos($object, '_Domain_Model_') && $uids) {
 				$repositoryClassName = str_replace('_Model_', '_Repository_', $object) . 'Repository';
+				/** @var $repository Tx_Extbase_Persistence_Repository */
 				$repository = $this->objectManager->get($repositoryClassName);
 				$query = $repository->createQuery();
 				$query->matching($query->in('uid', $uids));
@@ -647,9 +648,11 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		if (TRUE === is_object($instance)) {
 			$hash = spl_object_hash($instance);
-			if (TRUE === isset(self::$sentDebugMessages[$hash])) {
-				return;
-			}
+		} else {
+			$hash = microtime(TRUE);
+		}
+		if (TRUE === isset(self::$sentDebugMessages[$hash])) {
+			return;
 		}
 		if (TRUE === $instance instanceof Tx_Flux_MVC_View_ExposedTemplateView) {
 			$this->debugView($instance);

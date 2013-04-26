@@ -14,7 +14,7 @@ class tx_flux_cli extends t3lib_cli {
 	 * Constructor
 	 */
 	public function __construct() {
-		parent::t3lib_cli();
+		parent::__construct();
 		$this->cli_help['name'] = 'Flux CLI script';
 		$this->cli_help['synopsis'] = '###OPTIONS###';
 		$this->cli_help['description'] = 'available tasks:' . PHP_EOL . PHP_EOL . $this->cli_indent('migrateFluxOutsource - Migration script for extensions using FEDs page/fce template features', 2);
