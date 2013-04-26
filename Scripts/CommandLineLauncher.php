@@ -26,7 +26,7 @@ class tx_flux_cli extends t3lib_cli {
 	/**
 	 * CLI engine
 	 *
-	 * @param array Command line arguments
+	 * @param array $argv Command line arguments
 	 * @return string
 	 */
 	public function cli_main($argv) {
