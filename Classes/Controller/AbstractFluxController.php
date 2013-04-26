@@ -196,6 +196,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		} catch (Exception $error) {
 			// no Controller class exists; let built-in View render everything.
 		}
+		return $this->view->render();
 	}
 
 	/**

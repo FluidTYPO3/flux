@@ -109,7 +109,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	/**
 	 * Render method
 	 *
-	 * @return void
+	 * @return array
 	 * @throws Exception
 	 */
 	public function renderConfiguration() {

@@ -44,7 +44,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 
 	/**
 	 * Render method
-	 * @return void
+	 * @return array
 	 */
 	public function renderConfiguration() {
 		$config = $this->getFieldConfig();
