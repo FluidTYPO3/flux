@@ -197,4 +197,28 @@ class Tx_Flux_Override_Backend_Form_FormEngine extends \TYPO3\CMS\Backend\Form\F
 		return $item;
 	}
 
+	/**
+	 * Rendering a single item for the form
+	 *
+	 * @param string $table Table name of record
+	 * @param string $field Fieldname to render
+	 * @param array $row The record
+	 * @param array $PA Parameters array containing a lot of stuff. Value by Reference!
+	 * @return string Returns the item as HTML code to insert
+	 * @access private
+	 * @see getSingleField(), getSingleField_typeFlex_draw()
+	 * @todo Define visibility
+	 */
+	public function getSingleField_SW($table, $field, $row, &$PA) {
+		try {
+			$field = parent::getSingleField_SW($table, $field, $row, $PA);
+		} catch (\TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException $error) {
+			$PA['itemFormElValue'] = '';
+			$field = parent::getSingleField_SW($table, $field, $row, $PA);
+		} catch (Exception $error) {
+			t3lib_div::sysLog($error->getMessage(), 'cms', t3lib_div::SYSLOG_SEVERITY_FATAL);
+		}
+		return $field;
+	}
+
 }
