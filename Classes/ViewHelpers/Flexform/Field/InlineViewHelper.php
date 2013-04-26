@@ -76,6 +76,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InlineViewHelper extends Tx_Flux_ViewHe
 
 	/**
 	 * Render method
+	 * @throws Exception
 	 * @return array
 	 */
 	public function renderConfiguration() {

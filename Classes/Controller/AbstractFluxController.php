@@ -88,6 +88,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	/**
 	 * @param Tx_Extbase_MVC_View_ViewInterface $view
 	 *
+	 * @throws Exception
 	 * @return void
 	 */
 	public function initializeView(Tx_Extbase_MVC_View_ViewInterface $view) {

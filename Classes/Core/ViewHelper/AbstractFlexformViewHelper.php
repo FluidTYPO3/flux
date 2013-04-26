@@ -315,6 +315,7 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	}
 
 	/**
+	 * @param mixed $offset
 	 * @return boolean true on success or false on failure.
 	 */
 	public function offsetExists($offset) {

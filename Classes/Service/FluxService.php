@@ -139,8 +139,9 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $variableName
 	 * @param string $section
 	 * @param array $paths
-	 * @oaram string $extensionName
+	 * @param string|NULL $extensionName
 	 * @param array $variables
+	 * @throws Exception
 	 * @return mixed
 	 */
 	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL, $variables = array()) {
@@ -697,24 +698,26 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	/**
 	 * @param string $message
 	 * @param integer $severity
-	 * @return void
+	 * @param string $title
+	 * @return NULL
 	 */
 	public function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
 		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
-			return;
+			return NULL;
 		}
 		$hash = $message . $severity;
 		if (TRUE === isset(self::$sentDebugMessages[$hash])) {
-			return;
+			return NULL;
 		}
 		if (2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] && TRUE === in_array($severity, self::$friendlySeverities)) {
-			return;
+			return NULL;
 		}
 		$isAjaxCall = (boolean) 0 < t3lib_div::_GET('ajaxCall');
 		$flashMessage = new t3lib_FlashMessage($message, $title, $severity);
 		$flashMessage->setStoreInSession($isAjaxCall);
 		t3lib_FlashMessageQueue::addMessage($flashMessage);
 		self::$sentDebugMessages[$hash] = TRUE;
+		return NULL;
 	}
 
 }

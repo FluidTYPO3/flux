@@ -136,6 +136,11 @@ class DynFlexMigration {
 		}
 	}
 
+	/**
+	 * @param string $fileName
+	 * @param string $stripPath
+	 * @return void
+	 */
 	protected function migrateFile($fileName, $stripPath = NULL) {
 		$cli = $this->cli;
 		$oldTags = array(
