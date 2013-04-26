@@ -213,6 +213,9 @@ class Tx_Flux_Override_Backend_Form_FormEngine extends \TYPO3\CMS\Backend\Form\F
 		try {
 			$field = parent::getSingleField_SW($table, $field, $row, $PA);
 		} catch (\TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException $error) {
+			$message = new t3lib_FlashMessage('WARNING! Removed FAL resource detected. The field "' . $field . '" has been reset to ' .
+				'an empty value in order to prevent fatal, unrecoverable errors', 'WARNING', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			t3lib_FlashMessageQueue::addMessage($message);
 			$PA['itemFormElValue'] = '';
 			$field = parent::getSingleField_SW($table, $field, $row, $PA);
 		} catch (Exception $error) {
