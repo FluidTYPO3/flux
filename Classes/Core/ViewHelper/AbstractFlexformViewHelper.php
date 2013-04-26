@@ -193,8 +193,6 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		if (FALSE === isset($id)) {
 			$storage = $this->getStorage();
 			$id = $storage['id'];
-		} else {
-			$id = NULL;
 		}
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml';
