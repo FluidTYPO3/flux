@@ -70,6 +70,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		$this->registerArgument('sortDirection', 'string', 'Optional sort direction of content elements', FALSE, 'ASC');
 		$this->registerArgument('as', 'string', 'Variable name to register, then render child content and insert all results as an array of records', FALSE);
 		$this->registerArgument('loadRegister', 'array', 'List of LOAD_REGISTER variable');
+		$this->registerArgument('render', 'integer', 'Optional returning variable as original table rows', FALSE,TRUE);
 	}
 
 	/**
@@ -94,17 +95,9 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
 			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
 			AND deleted = 0 AND hidden = 0";
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $conditions, 'uid', $order, $limit);
-		$elements = array();
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$conf = array(
-				'tables' => 'tt_content',
-				'source' => $row['uid'],
-				'dontCheckPid' => 1
-			);
-			array_push($elements, $GLOBALS['TSFE']->cObj->RECORDS($conf));
-		}
-		$GLOBALS['TYPO3_DB']->sql_free_result($res);
+		$render = $this->arguments['render'];
+		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $conditions, 'uid', $order, $limit);
+		$elements = (FALSE === (boolean) $render) ? $rows : $this->getRenderedRecord($rows);
 		if (FALSE === isset($this->arguments['as'])) {
 			$content = $elements;
 		} else {
@@ -124,6 +117,26 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 			$this->configurationManager->getContentObject()->cObjGetSingle('RESTORE_REGISTER', '');
 		}
 		return $content;
+	}
+
+
+	/**
+	 * Get Rendered elements
+	 * @param array $rows database rows
+	 *
+	 * @return array Array of elements
+	 */
+	protected function getRenderedRecord($rows) {
+		$elements = array();
+		foreach ($rows as $row) {
+			$conf = array(
+				'tables' => 'tt_content',
+				'source' => $row['uid'],
+				'dontCheckPid' => 1
+			);
+			array_push($elements, $GLOBALS['TSFE']->cObj->RECORDS($conf));
+		}
+		return $elements;
 	}
 
 }
