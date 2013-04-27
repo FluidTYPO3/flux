@@ -232,31 +232,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
-		$parentFieldName = $this->getParentFieldName($row);
-		$fieldName = $this->getFieldName($row);
-		if (NULL === $fieldName || NULL === $parentFieldName) {
-			return;
-		}
-		if (FALSE === isset($row[$fieldName]['data'])) {
-			return;
-		}
-		$data = $row[$fieldName]['data'];
-		if (FALSE === is_array($data)) {
-			return;
-		}
-		if (FALSE === isset($row['uid']) && intval($id) > 0) {
-			$row['uid'] = $id;
-		}
-		foreach ($data as $sheetName => $sheetFields) {
-			foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
-				$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
-				if (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']) {
-					unset($data[$sheetName]['lDEF'][$sheetFieldName]);
-				}
-			}
-		}
-		$row[$fieldName]['data'] = $data;
-		$_POST['data'][$this->tableName][$id] = $row;
 	}
 
 	/**
@@ -270,7 +245,46 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
-		unset($operation, $id, $row, $reference);
+		if ('update' === $operation) {
+			$fieldName = $this->getFieldName($reference->datamap[$this->tableName][$id]);
+			if (NULL === $fieldName) {
+				return;
+			}
+			if (FALSE === isset($row[$fieldName])) {
+				return;
+			}
+			$data = $reference->datamap[$this->tableName][$id][$fieldName]['data'];
+			if (FALSE === is_array($data)) {
+				return;
+			}
+			$removals = array();
+			foreach ($data as $sheetName => $sheetFields) {
+				foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
+					if ('_clear' === substr($sheetFieldName, -6)) {
+						array_push($removals, $sheetFieldName);
+					} else {
+						$clearFieldName = $sheetFieldName . '_clear';
+						$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
+						if (TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) && 0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) {
+							array_push($removals, $sheetFieldName);
+						} elseif (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']) {
+							array_push($removals, $sheetFieldName);
+						}
+					}
+				}
+			}
+			$dom = new DOMDocument();
+			$dom->loadXML($row[$fieldName]);
+			$dom->preserveWhiteSpace = FALSE;
+			$dom->formatOutput = TRUE;
+			foreach ($dom->getElementsByTagName('field') as $fieldNode) {
+				if (TRUE === in_array($fieldNode->getAttribute('index'), $removals)) {
+					#$dom->removeChild($fieldNode);
+					$fieldNode->parentNode->removeChild($fieldNode);
+				}
+			}
+			$row[$fieldName] = $dom->saveXML();
+		}
 	}
 
 	/**

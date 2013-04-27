@@ -51,6 +51,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		$this->registerArgument('displayCond', 'string', 'Optional "Display Condition" (TCA style) for this particular field', FALSE, NULL);
 		$this->registerArgument('inherit', 'integer', 'If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider', FALSE, 99);
 		$this->registerArgument('inheritEmpty', 'boolean', 'If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider', FALSE, TRUE);
+		$this->registerArgument('clear', 'boolean', 'If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value', FALSE, FALSE);
 	}
 
 	/**
