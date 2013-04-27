@@ -35,7 +35,7 @@ class DynFlexMigration {
 
 	/**
 	 *
-	 * @var Tx_Flux_Configuration_ConfigurationManager
+	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
@@ -56,7 +56,7 @@ class DynFlexMigration {
 	public function __construct(t3lib_cli $cli) {
 		$this->cli = $cli;
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->configurationManager = $this->objectManager->get('Tx_Flux_Configuration_ConfigurationManager');
+		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
 	}
 
@@ -136,6 +136,11 @@ class DynFlexMigration {
 		}
 	}
 
+	/**
+	 * @param string $fileName
+	 * @param string $stripPath
+	 * @return void
+	 */
 	protected function migrateFile($fileName, $stripPath = NULL) {
 		$cli = $this->cli;
 		$oldTags = array(

@@ -66,13 +66,12 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_V
 			$command = 'reference';
 			$label = 'Paste as reference in this position';
 			$icon = 'actions-insert-reference';
-			$relativeTo = $pid . '-reference-' . $relativeUid . '-' . $uid;
 		} else {
 			$command = 'paste';
 			$label = 'Paste in this position';
 			$icon = 'actions-document-paste-after';
-			$relativeTo = $pid . '-paste-' . $relativeUid . '-' . $uid;
 		}
+		$relativeTo = $pid . '-' . $command . '-' . $relativeUid . '-' . $uid;
 		if (FALSE === empty($area)) {
 			$relativeTo .= '-' . $area;
 		}

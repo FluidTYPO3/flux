@@ -39,10 +39,24 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 	protected $configurationService;
 
 	/**
+	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 */
+	protected $configurationManager;
+
+	/**
 	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @return void
 	 */
 	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
 		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @return void
+	 */
+	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+		$this->configurationManager = $configurationManager;
 	}
 
 	/**
@@ -66,7 +80,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 	public function render() {
 		$loadRegister = FALSE;
 		if (empty($this->arguments['loadRegister']) === FALSE) {
-			$this->contentObject->cObjGetSingle('LOAD_REGISTER', $this->arguments['loadRegister']);
+			$this->configurationManager->getContentObject()->cObjGetSingle('LOAD_REGISTER', $this->arguments['loadRegister']);
 			$loadRegister = TRUE;
 		}
 		$record = $this->templateVariableContainer->get('record');
@@ -107,7 +121,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 			}
 		}
 		if ($loadRegister) {
-			$this->contentObject->cObjGetSingle('RESTORE_REGISTER', '');
+			$this->configurationManager->getContentObject()->cObjGetSingle('RESTORE_REGISTER', '');
 		}
 		return $content;
 	}

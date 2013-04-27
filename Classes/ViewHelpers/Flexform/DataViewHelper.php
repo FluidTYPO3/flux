@@ -56,6 +56,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 	 * @param integer $uid
 	 * @param string $table
 	 * @param string $field
+	 * @throws Tx_Fluid_Core_ViewHelper_Exception
 	 * @return array
 	 */
 	public function render($uid, $table, $field) {
