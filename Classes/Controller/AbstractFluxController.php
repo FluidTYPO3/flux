@@ -88,6 +88,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	/**
 	 * @param Tx_Extbase_MVC_View_ViewInterface $view
 	 *
+	 * @throws Exception
 	 * @return void
 	 */
 	public function initializeView(Tx_Extbase_MVC_View_ViewInterface $view) {
@@ -119,6 +120,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			if (FALSE === file_exists($templatePathAndFilename)) {
 				throw new Exception('Desired template file "' . $templatePathAndFilename . '" does not exist', 1364741158);
 			}
+			/** @var $view Tx_Flux_MVC_View_ExposedTemplateView */
 			$view->setTemplatePathAndFilename($templatePathAndFilename);
 			$view->setLayoutRootPath($this->setup['layoutRootPath']);
 			$view->setPartialRootPath($this->setup['partialRootPath']);
@@ -196,6 +198,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		} catch (Exception $error) {
 			// no Controller class exists; let built-in View render everything.
 		}
+		return $this->view->render();
 	}
 
 	/**

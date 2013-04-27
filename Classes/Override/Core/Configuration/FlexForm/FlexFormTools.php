@@ -40,7 +40,7 @@ class Tx_Flux_Override_Core_Configuration_Flexform_FlexFormTools extends \TYPO3\
 	 * @param array $row The record data array
 	 * @param object $callBackObj Object (passed by reference) in which the call back function is located
 	 * @param string $callBackMethod_value Method name of call back function in object for values
-	 * @return boolean If TRUE, error happened (error string returned)
+	 * @return string|NULL
 	 * @todo Define visibility
 	 */
 	public function traverseFlexFormXMLData($table, $field, $row, $callBackObj, $callBackMethod_value) {
@@ -97,7 +97,6 @@ class Tx_Flux_Override_Core_Configuration_Flexform_FlexFormTools extends \TYPO3\
 			// Traverse languages:
 			foreach ($lKeys as $lKey) {
 				foreach ($sKeys as $sheet) {
-					$sheetCfg = $dataStructArray['sheets'][$sheet];
 					list($dataStruct, $sheet) = \TYPO3\CMS\Core\Utility\GeneralUtility::resolveSheetDefInDS($dataStructArray, $sheet);
 					// Render sheet:
 					if (is_array($dataStruct['ROOT']) && is_array($dataStruct['ROOT']['el'])) {
@@ -121,6 +120,6 @@ class Tx_Flux_Override_Core_Configuration_Flexform_FlexFormTools extends \TYPO3\
 		} else {
 			return 'Data Structure ERROR: ' . $dataStructArray;
 		}
+		return NULL;
 	}
-
 }

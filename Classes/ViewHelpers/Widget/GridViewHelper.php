@@ -46,7 +46,7 @@ class Tx_Flux_ViewHelpers_Widget_GridViewHelper extends Tx_Fluid_Core_Widget_Abs
 
 	/**
 	 * @return string
-	 * @throw Exception
+	 * @throws Exception
 	 */
 	public function render() {
 		if (TYPO3_MODE !== 'BE') {

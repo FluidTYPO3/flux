@@ -47,4 +47,13 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper extends
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards', $wizards);
 	}
 
+	/**
+	 * Stub method: overridden by every Wizard ViewHelper type
+	 *
+	 * @return NULL
+	 */
+	public function build() {
+		return NULL;
+	}
+
 }

@@ -131,6 +131,7 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_ViewHelpers
 				'el' => array(),
 			);
 			foreach ($objectFields as $field) {
+				/** @var $field Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper */
 				$name = $field['name'];
 				$fieldStructureArray['el'][$objectName]['el'][$name] = $field->getStructure();
 			}

@@ -45,7 +45,7 @@ class Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider extend
 	/**
 	 *
 	 * @param array $row Not used
-	 * @return type
+	 * @return string
 	 */
 	public function getListType(array $row) {
 		unset($row);
