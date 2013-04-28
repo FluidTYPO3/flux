@@ -54,6 +54,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 			'name' => $configuration['name'],
 			'rows' => $configuration['rows'],
 			'cols' => $configuration['cols'],
+			'sheet' => $configuration['sheet'],
 			'eval' => $configuration['validate'],
 			'default' => $configuration['default']
 		);
