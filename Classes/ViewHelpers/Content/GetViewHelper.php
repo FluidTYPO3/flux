@@ -70,7 +70,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		$this->registerArgument('sortDirection', 'string', 'Optional sort direction of content elements', FALSE, 'ASC');
 		$this->registerArgument('as', 'string', 'Variable name to register, then render child content and insert all results as an array of records', FALSE);
 		$this->registerArgument('loadRegister', 'array', 'List of LOAD_REGISTER variable');
-		$this->registerArgument('render', 'integer', 'Optional returning variable as original table rows', FALSE,TRUE);
+		$this->registerArgument('render', 'boolean', 'Optional returning variable as original table rows', FALSE, TRUE);
 	}
 
 	/**
@@ -95,9 +95,8 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
 			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
 			AND deleted = 0 AND hidden = 0";
-		$render = $this->arguments['render'];
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $conditions, 'uid', $order, $limit);
-		$elements = (FALSE === (boolean) $render) ? $rows : $this->getRenderedRecord($rows);
+		$elements = (FALSE === (boolean) $this->arguments['render']) ? $rows : $this->getRenderedRecord($rows);
 		if (FALSE === isset($this->arguments['as'])) {
 			$content = $elements;
 		} else {
@@ -121,10 +120,11 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 
 
 	/**
-	 * Get Rendered elements
-	 * @param array $rows database rows
+	 * This function renders an array of tt_content record into an array of rendered content
+	 * it returns a list of elements rendered by typoscript RECORDS function
 	 *
-	 * @return array Array of elements
+	 * @param array $rows database rows of records (each item is a tt_content table record)
+	 * @return array
 	 */
 	protected function getRenderedRecord($rows) {
 		$elements = array();
