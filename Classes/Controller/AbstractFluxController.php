@@ -38,6 +38,17 @@
 class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controller_ActionController {
 
 	/**
+	 * Exception code for "class not found" - which is thrown, caught but ignored
+	 * when Flux attempts to use a custom controller extension name without also
+	 * replacing the standard controller. In this case the error is friendly enough
+	 * but still takes the form of an Exception - and we have way to change that
+	 * default Extbase behavior.
+	 *
+	 * @var integer
+	 */
+	const EXCEPTION_CUSTOM_CONTROLLER_NOT_FOUND = 1289386765;
+
+	/**
 	 * @var string
 	 */
 	protected $defaultViewObjectName = 'Tx_Flux_MVC_View_ExposedTemplateView';
@@ -189,7 +200,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			return $response->getContent();
 		} catch (Exception $error) {
 			$code = $error->getCode();
-			if (1289386765 == $code) {
+			if (self::EXCEPTION_CUSTOM_CONTROLLER_NOT_FOUND === $code) {
 				return $this->view->render();
 			}
 			$this->handleError($error);
