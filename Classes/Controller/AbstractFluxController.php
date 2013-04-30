@@ -118,6 +118,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			}
 			$extensionKey = $this->provider->getExtensionKey($row);
 			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+			$extensionSignature = str_replace('_', '', $extensionKey);
 			$this->setup = $this->provider->getTemplatePaths($row);
 			if (FALSE === is_array($this->setup) || 0 === count($this->setup)) {
 				throw new Exception('Unable to read a working path set from the Provider. The extension that caused this error was "' .
@@ -127,7 +128,12 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			}
 			$this->settings = (array) $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName);
 			$this->data = $this->provider->getFlexFormValues($row);
-			if (TRUE === isset($this->data['settings']) && TRUE === is_array($this->data['settings'])) {
+			if (TRUE === isset($this->settings['useTypoScript']) && 0 < $this->settings['useTypoScript']) {
+				// an override shared by all Flux enabled controllers: setting plugin.tx_EXTKEY.settings.useTypoScript = 1
+				// will read the "settings" array from that location instead - thus excluding variables from the flexform
+				// which are still available as $this->data but no longer available automatically in the template.
+				$this->settings = $this->configurationService->getTypoScriptSubConfiguration(NULL, 'settings', $extensionSignature);
+			} elseif (TRUE === isset($this->data['settings']) && TRUE === is_array($this->data['settings'])) {
 				// a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
 				// as well as the internal $this->settings array as per expected Extbase behavior.
 				$this->settings = t3lib_div::array_merge_recursive_overrule($this->settings, $this->data['settings'], FALSE, TRUE);
