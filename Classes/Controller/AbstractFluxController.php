@@ -210,7 +210,8 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 
 	/**
 	 * @param Exception $error
-	 * @return string
+	 * @throws Exception
+	 * @return void
 	 */
 	public function handleError(Exception $error) {
 		if (TRUE === isset($this->settings['displayErrors']) && 0 < $this->settings['displayErrors']) {
