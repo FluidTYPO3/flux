@@ -93,6 +93,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	 */
 	public function initializeView(Tx_Extbase_MVC_View_ViewInterface $view) {
 		try {
+			$this->view = $view;
 			$row = $this->configurationManager->getContentObject()->data;
 			$table = $this->getFluxTableName();
 			$field = $this->getFluxRecordField();
@@ -121,23 +122,14 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 				throw new Exception('Desired template file "' . $templatePathAndFilename . '" does not exist', 1364741158);
 			}
 			/** @var $view Tx_Flux_MVC_View_ExposedTemplateView */
-			$view->setTemplatePathAndFilename($templatePathAndFilename);
-			$view->setLayoutRootPath($this->setup['layoutRootPath']);
-			$view->setPartialRootPath($this->setup['partialRootPath']);
-			$view->setTemplateRootPath($this->setup['templateRootPath']);
-			$view->assignMultiple($this->data);
-			$view->assign('settings', $settings);
+			$this->view->setTemplatePathAndFilename($templatePathAndFilename);
+			$this->view->setLayoutRootPath($this->setup['layoutRootPath']);
+			$this->view->setPartialRootPath($this->setup['partialRootPath']);
+			$this->view->setTemplateRootPath($this->setup['templateRootPath']);
+			$this->view->assignMultiple($this->data);
+			$this->view->assign('settings', $settings);
 		} catch (Exception $error) {
-			if (TRUE === isset($this->settings['displayErrors']) && 0 < $this->settings['displayErrors']) {
-				throw $error;
-			}
-			$this->configurationService->debug($error);
-			$view->assign('class', get_class($this));
-			$view->assign('error', $error);
-			$view->assign('backtrace', $this->getLimitedBacktrace());
-			if ('error' !== $this->request->getControllerActionName()) {
-				$this->forward('error');
-			}
+			$this->handleError($error);
 		}
 	}
 
@@ -196,9 +188,26 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			$potentialControllerInstance->processRequest($this->request, $response);
 			return $response->getContent();
 		} catch (Exception $error) {
-			// no Controller class exists; let built-in View render everything.
+			$this->handleError($error);
 		}
 		return $this->view->render();
+	}
+
+	/**
+	 * @param Exception $error
+	 * @return string
+	 */
+	public function handleError(Exception $error) {
+		if (TRUE === isset($this->settings['displayErrors']) && 0 < $this->settings['displayErrors']) {
+			throw $error;
+		}
+		$this->configurationService->debug($error);
+		$this->view->assign('class', get_class($this));
+		$this->view->assign('error', $error);
+		$this->view->assign('backtrace', $this->getLimitedBacktrace());
+		if ('error' !== $this->request->getControllerActionName()) {
+			$this->forward('error');
+		}
 	}
 
 	/**
