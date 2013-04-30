@@ -397,7 +397,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 				return $inheritedConfiguration;
 			}
 			$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
-			$this->configurationService->message('Using ' . count($tree) . ' record(s) from root line to inherit configuration', t3lib_div::SYSLOG_SEVERITY_INFO);
 			return $merged;
 		} catch (Exception $error) {
 			$this->configurationService->debug($error);
