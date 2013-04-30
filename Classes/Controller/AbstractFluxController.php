@@ -38,6 +38,17 @@
 class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controller_ActionController {
 
 	/**
+	 * Exception code for "class not found" - which is thrown, caught but ignored
+	 * when Flux attempts to use a custom controller extension name without also
+	 * replacing the standard controller. In this case the error is friendly enough
+	 * but still takes the form of an Exception - and we have way to change that
+	 * default Extbase behavior.
+	 *
+	 * @var integer
+	 */
+	const EXCEPTION_CUSTOM_CONTROLLER_NOT_FOUND = 1289386765;
+
+	/**
 	 * @var string
 	 */
 	protected $defaultViewObjectName = 'Tx_Flux_MVC_View_ExposedTemplateView';
@@ -164,12 +175,12 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 		$pluginSignature = 'tx_' . str_replace('_', '', $extensionKey) . '_content';
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
-		$controllerExtensionName = $this->provider->getControllerExtensionKeyFromRecord($row);
-		// failure toggles. Instructs ConfigurationService to throw Exceptions when not being able to detect. We capture these and pass to debug.
+		$controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
+		$controllerExtensionName = t3lib_div::underscoredToUpperCamelCase($controllerExtensionKey);
 		$requestParameters = (array) t3lib_div::_GET($pluginSignature);
 		$arguments = (array) (TRUE === is_array(t3lib_div::_POST($pluginSignature)) ? t3lib_div::_POST($pluginSignature) : $requestParameters);
 		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : $controllerActionName;
-		if ($extensionName === $this->extensionName) {
+		if ($controllerExtensionName === $this->extensionName) {
 			return $this->view->render();
 		}
 		try {
@@ -179,15 +190,19 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 				$this->request->setControllerExtensionName($controllerExtensionName);
 				return $this->view->render();
 			}
+			/** @var $response Tx_Extbase_MVC_Web_Response */
+			$response = $this->objectManager->create('Tx_Extbase_MVC_Web_Response');
 			$potentialControllerInstance = $this->objectManager->get($potentialControllerClassName);
-			/** @var $response Tx_Extbase_MVC_Response */
-			$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
 			$this->request->setControllerActionName($overriddenControllerActionName);
 			$this->request->setControllerExtensionName($controllerExtensionName);
 			$this->request->setArguments($arguments);
 			$potentialControllerInstance->processRequest($this->request, $response);
 			return $response->getContent();
 		} catch (Exception $error) {
+			$code = $error->getCode();
+			if (self::EXCEPTION_CUSTOM_CONTROLLER_NOT_FOUND === $code) {
+				return $this->view->render();
+			}
 			$this->handleError($error);
 		}
 		return $this->view->render();
