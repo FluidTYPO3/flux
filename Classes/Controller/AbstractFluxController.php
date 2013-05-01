@@ -138,6 +138,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 				// as well as the internal $this->settings array as per expected Extbase behavior.
 				$this->settings = t3lib_div::array_merge_recursive_overrule($this->settings, $this->data['settings'], FALSE, TRUE);
 			}
+			$this->view->assignMultiple($this->data);
 			$this->view->assign('settings', $this->settings);
 			$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
 			if (FALSE === file_exists($templatePathAndFilename)) {
