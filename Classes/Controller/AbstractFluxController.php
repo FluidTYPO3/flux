@@ -109,9 +109,6 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			$table = $this->getFluxTableName();
 			$field = $this->getFluxRecordField();
 			$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $field, $row);
-			$extensionKey = $this->provider->getExtensionKey($row);
-			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-			$extensionSignature = str_replace('_', '', $extensionKey);
 			if (NULL === $this->provider) {
 				$this->configurationService->message('Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled Controller - ' .
 					'this is a grave error and indicates that EXT: ' . $extensionName . ' itself is broken - or that EXT:' . $extensionName .
@@ -119,6 +116,8 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 					get_class($this) . ' and the table name is "' . $table . '".', t3lib_div::SYSLOG_SEVERITY_WARNING);
 				return;
 			}
+			$extensionKey = $this->provider->getExtensionKey($row);
+			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 			$this->setup = $this->provider->getTemplatePaths($row);
 			if (FALSE === is_array($this->setup) || 0 === count($this->setup)) {
 				throw new Exception('Unable to read a working path set from the Provider. The extension that caused this error was "' .
@@ -126,8 +125,14 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 					'a valid path set was "' . get_class($this->provider) . '" but it returned an empty array or not an array. View ' .
 					'paths have been reset to paths native to the controller in question.', 1364685651);
 			}
+			$this->settings = (array) $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName);
 			$this->data = $this->provider->getFlexFormValues($row);
-			$settings = $this->configurationService->getTypoScriptSubConfiguration(NULL, 'settings', array(), $extensionSignature);
+			if (TRUE === isset($this->data['settings']) && TRUE === is_array($this->data['settings'])) {
+				// a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
+				// as well as the internal $this->settings array as per expected Extbase behavior.
+				$this->settings = t3lib_div::array_merge_recursive_overrule($this->settings, $this->data['settings'], FALSE, TRUE);
+			}
+			$this->view->assign('settings', $this->settings);
 			$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
 			if (FALSE === file_exists($templatePathAndFilename)) {
 				throw new Exception('Desired template file "' . $templatePathAndFilename . '" does not exist', 1364741158);
@@ -137,8 +142,6 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			$this->view->setLayoutRootPath($this->setup['layoutRootPath']);
 			$this->view->setPartialRootPath($this->setup['partialRootPath']);
 			$this->view->setTemplateRootPath($this->setup['templateRootPath']);
-			$this->view->assignMultiple($this->data);
-			$this->view->assign('settings', $settings);
 		} catch (Exception $error) {
 			$this->handleError($error);
 		}
@@ -172,7 +175,6 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		$row = $this->getRecord();
 		$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($this->fluxTableName, $this->fluxRecordField, $row);
 		$extensionKey = $this->provider->getExtensionKey($row);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 		$pluginSignature = 'tx_' . str_replace('_', '', $extensionKey) . '_content';
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
 		$controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
