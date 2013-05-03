@@ -413,17 +413,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$this->configurationService->debug($error);
 			return array();
 		}
-		$immediateConfiguration = $this->flexFormService->convertFlexFormContentToArray($row[$fieldName]);
-		$tree = $this->getInheritanceTree($row);
-		if (0 === count($tree)) {
-			return $immediateConfiguration;
-		}
-		$inheritedConfiguration = $this->getMergedConfiguration($tree);
-		if (0 === count($immediateConfiguration)) {
-			return $inheritedConfiguration;
-		}
-		$merged = $this->arrayMergeRecursive($inheritedConfiguration, $immediateConfiguration);
-		return $merged;
 	}
 
 	/**
