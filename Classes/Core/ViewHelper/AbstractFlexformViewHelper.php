@@ -274,14 +274,14 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 				$key = $wizard['_DOCUMENT_TAG'];
 				$wizardStructureArray[$key] = $wizard;
 			}
-			if (TRUE === (boolean) $this->arguments['clear']) {
-				// Field has been configured to display a "clear value" checkbox. Add it as a custom Wizard.
-				$wizardStructureArray['clear'] = array(
-					'type' => 'userFunc',
-					'userFunc' => 'EXT:flux/Classes/UserFunction/ClearValueWizard.php:Tx_Flux_UserFunction_ClearValueWizard->renderField',
-					'title' => Tx_Extbase_Utility_Localization::translate('flux.clearValue', 'Flux'),
-				);
-			}
+		}
+		if (TRUE === (boolean) $this->arguments['clear']) {
+			// Field has been configured to display a "clear value" checkbox. Add it as a custom Wizard.
+			$wizardStructureArray['clear'] = array(
+				'type' => 'userFunc',
+				'userFunc' => 'EXT:flux/Classes/UserFunction/ClearValueWizard.php:Tx_Flux_UserFunction_ClearValueWizard->renderField',
+				'title' => Tx_Extbase_Utility_Localization::translate('flux.clearValue', 'Flux'),
+			);
 		}
 		return $wizardStructureArray;
 	}
