@@ -265,21 +265,23 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	 */
 	protected function getWizardStructureArray($configuration) {
 		$wizardStructureArray = array();
-		$wizards = t3lib_div::xml2array($configuration['wizards'], '', TRUE);
-		if (isset($wizards['_DOCUMENT_TAG'])) {
-			$wizards = array($wizards);
-		}
-		foreach ($wizards as $wizard) {
-			$key = $wizard['_DOCUMENT_TAG'];
-			$wizardStructureArray[$key] = $wizard;
-		}
-		if (TRUE === (boolean) $this->arguments['clear']) {
-			// Field has been configured to display a "clear value" checkbox. Add it as a custom Wizard.
-			$wizardStructureArray['clear'] = array(
-				'type' => 'userFunc',
-				'userFunc' => 'EXT:flux/Classes/UserFunction/ClearValueWizard.php:Tx_Flux_UserFunction_ClearValueWizard->renderField',
-				'title' => Tx_Extbase_Utility_Localization::translate('flux.clearValue', 'Flux'),
-			);
+		if (FALSE === empty($configuration['wizards'])) {
+			$wizards = t3lib_div::xml2array($configuration['wizards'], '', TRUE);
+			if (isset($wizards['_DOCUMENT_TAG'])) {
+				$wizards = array($wizards);
+			}
+			foreach ($wizards as $wizard) {
+				$key = $wizard['_DOCUMENT_TAG'];
+				$wizardStructureArray[$key] = $wizard;
+			}
+			if (TRUE === (boolean) $this->arguments['clear']) {
+				// Field has been configured to display a "clear value" checkbox. Add it as a custom Wizard.
+				$wizardStructureArray['clear'] = array(
+					'type' => 'userFunc',
+					'userFunc' => 'EXT:flux/Classes/UserFunction/ClearValueWizard.php:Tx_Flux_UserFunction_ClearValueWizard->renderField',
+					'title' => Tx_Extbase_Utility_Localization::translate('flux.clearValue', 'Flux'),
+				);
+			}
 		}
 		return $wizardStructureArray;
 	}
