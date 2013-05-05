@@ -133,7 +133,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				return;
 			}
 		}
-		list ($contentAreaFromUrl, $parentUidFromUrl) = explode(':', $area);
+		list ($contentAreaFromUrl, $parentUidFromUrl, $afterElementUid) = explode(':', $area);
 		if ($contentAreaFromUrl) {
 			$row['tx_flux_column'] = $contentAreaFromUrl;
 		}
@@ -146,12 +146,15 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 		}
 		if ($row['tx_flux_parent'] > 0) {
 			$row['colPos'] = -42;
+			if (0 > $afterElementUid) {
+				$row['sorting'] = $reference->resorting($this->tableName, $row['pid'], 'sorting', abs($afterElementUid));
+			}
 		}
 			// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
 		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
 			$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
 		}
-		unset($id, $operation, $reference);
+		unset($id, $operation);
 	}
 
 	/**
