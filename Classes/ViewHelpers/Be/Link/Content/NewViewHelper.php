@@ -34,9 +34,10 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_Vie
 	/**
 	 * Render uri
 	 *
+	 * @param integer $after
 	 * @return string
 	 */
-	public function render() {
+	public function render($after = 0) {
 		$pid = $this->arguments['row']['pid'];
 		$uid = $this->arguments['row']['uid'];
 		$area = $this->arguments['area'];
@@ -44,6 +45,9 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_Vie
 		$returnUri = $this->getReturnUri($pid);
 		if ($area) {
 			$returnUri .= '%23' . $area . '%3A' . $uid;
+			if (0 < $after) {
+				$returnUri .= '%3A-' . $after;
+			}
 		}
 		$icon = $this->getIcon('actions-document-new', 'Insert new content element in this position');
 		$uri = 'db_new_content_el.php?id=' . $pid .
