@@ -78,6 +78,18 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 		} else {
 			$fieldName = NULL;
 		}
+		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
+			$targetRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('p.title, t.pid', 'tt_content t, pages p', "t.uid = '" . $row['records'] . "' AND p.uid = t.pid");
+			$targetRecord = array_pop($targetRecords);
+			$title = Tx_Extbase_Utility_Localization::translate('reference', 'Flux', array(
+				$targetRecord['title']
+			));
+			$targetLink = '?id=' . $targetRecord['pid'] . '#c' . $row['records'];
+			$iconClass = 't3-icon t3-icon-actions-insert t3-icon-insert-reference t3-icon-actions t3-icon-actions-insert-reference';
+			$icon = '<a title="' . $title . '" href="' . $targetLink . '"><span class="' . $iconClass . '"></spa></a>';
+			$itemContent = $icon . $itemContent;
+		}
+		$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
 		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
 		foreach ($providers as $provider) {
 			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
