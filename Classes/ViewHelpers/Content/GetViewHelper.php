@@ -110,15 +110,10 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		} else {
 			$as = $this->arguments['as'];
 			if (TRUE === $this->templateVariableContainer->exists($as)) {
-				$backup = $this->templateVariableContainer->get($as);
 				$this->templateVariableContainer->remove($as);
 			}
 			$this->templateVariableContainer->add($as, $elements);
 			$content = $this->renderChildren();
-			$this->templateVariableContainer->remove($as);
-			if (TRUE === isset($backup)) {
-				$this->templateVariableContainer->add($as, $backup);
-			}
 		}
 		if ($loadRegister) {
 			$this->configurationManager->getContentObject()->cObjGetSingle('RESTORE_REGISTER', '');
