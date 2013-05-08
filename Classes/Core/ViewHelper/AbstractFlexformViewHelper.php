@@ -369,4 +369,11 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		return $this->structure;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getName() {
+		return $this->arguments['name'];
+	}
+
 }
