@@ -226,4 +226,214 @@ class Tx_Flux_Override_Backend_Form_FormEngine extends \TYPO3\CMS\Backend\Form\F
 		return $field;
 	}
 
+	/************************************************************
+	 *
+	 * Form element helper functions
+	 *
+	 ************************************************************/
+	/**
+	 * Prints the selector box form-field for the db/file/select elements (multiple)
+	 *
+	 * @param string $fName Form element name
+	 * @param string $mode Mode "db", "file" (internal_type for the "group" type) OR blank (then for the "select" type)
+	 * @param string $allowed Commalist of "allowed
+	 * @param array $itemArray The array of items. For "select" and "group"/"file" this is just a set of value. For "db" its an array of arrays with table/uid pairs.
+	 * @param string $selector Alternative selector box.
+	 * @param array $params An array of additional parameters, eg: "size", "info", "headers" (array with "selector" and "items"), "noBrowser", "thumbnails
+	 * @param string $onFocus On focus attribute string
+	 * @param string $table (optional) Table name processing for
+	 * @param string $field (optional) Field of table name processing for
+	 * @param string $uid (optional) uid of table record processing for
+	 * @param array $config (optional) The TCA field config
+	 * @return string The form fields for the selection.
+	 * @todo Define visibility
+	 */
+	public function dbFileIcons($fName, $mode, $allowed, $itemArray, $selector = '', $params = array(), $onFocus = '', $table = '', $field = '', $uid = '', $config = array()) {
+		$title = '';
+		$disabled = '';
+		if ($this->renderReadonly || $params['readOnly']) {
+			$disabled = ' disabled="disabled"';
+		}
+		// Sets a flag which means some JavaScript is included on the page to support this element.
+		$this->printNeededJS['dbFileIcons'] = 1;
+		// INIT
+		$uidList = array();
+		$opt = array();
+		$itemArrayC = 0;
+		// Creating <option> elements:
+		if (is_array($itemArray)) {
+			$itemArrayC = count($itemArray);
+			switch ($mode) {
+				case 'db':
+					foreach ($itemArray as $pp) {
+						$pRec = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL($pp['table'], $pp['id']);
+						if (is_array($pRec)) {
+							$pTitle = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($pp['table'], $pRec, FALSE, TRUE);
+							$pUid = $pp['table'] . '_' . $pp['id'];
+							$uidList[] = $pUid;
+							$title = htmlspecialchars($pTitle);
+							$opt[] = '<option value="' . htmlspecialchars($pUid) . '" title="' . $title . '">' . $title . '</option>';
+						}
+					}
+					break;
+				case 'file_reference':
+
+				case 'file':
+					foreach ($itemArray as $item) {
+						#\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($item);
+						$itemParts = explode('|', $item);
+						if (TRUE === empty($itemParts[1])) {
+							$itemParts[1] = $itemParts[0];
+						}
+						$uidList[] = ($pUid = ($pTitle = $itemParts[0]));
+						$title = htmlspecialchars(basename(rawurldecode($itemParts[1])));
+						$opt[] = '<option value="' . htmlspecialchars(rawurldecode($itemParts[0])) . '" title="' . $title . '">' . $title . '</option>';
+					}
+					break;
+				case 'folder':
+					foreach ($itemArray as $pp) {
+						$pParts = explode('|', $pp);
+						$uidList[] = ($pUid = ($pTitle = $pParts[0]));
+						$title = htmlspecialchars(rawurldecode($pParts[0]));
+						$opt[] = '<option value="' . htmlspecialchars(rawurldecode($pParts[0])) . '" title="' . $title . '">' . $title . '</option>';
+					}
+					break;
+				default:
+					foreach ($itemArray as $pp) {
+						$pParts = explode('|', $pp, 2);
+						$uidList[] = ($pUid = $pParts[0]);
+						$pTitle = $pParts[1];
+						$title = htmlspecialchars(rawurldecode($pTitle));
+						$opt[] = '<option value="' . htmlspecialchars(rawurldecode($pUid)) . '" title="' . $title . '">' . $title . '</option>';
+					}
+					break;
+			}
+		}
+		// Create selector box of the options
+		$sSize = $params['autoSizeMax'] ? \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($itemArrayC + 1, \TYPO3\CMS\Core\Utility\MathUtility::forceIntegerInRange($params['size'], 1), $params['autoSizeMax']) : $params['size'];
+		if (!$selector) {
+			$isMultiple = $params['size'] != 1;
+			$selector = '<select id="' . uniqid('tceforms-multiselect-') . '" ' . ($params['noList'] ? 'style="display: none"' : 'size="' . $sSize . '"' . $this->insertDefStyle('group', 'tceforms-multiselect')) . ($isMultiple ? ' multiple="multiple"' : '') . ' name="' . $fName . '_list" ' . $onFocus . $params['style'] . $disabled . '>' . implode('', $opt) . '</select>';
+		}
+		$icons = array(
+			'L' => array(),
+			'R' => array()
+		);
+		if (!$params['readOnly'] && !$params['noList']) {
+			if (!$params['noBrowser']) {
+				// Check against inline uniqueness
+				$inlineParent = $this->inline->getStructureLevel(-1);
+				if (is_array($inlineParent) && $inlineParent['uid']) {
+					if ($inlineParent['config']['foreign_table'] == $table && $inlineParent['config']['foreign_unique'] == $field) {
+						$objectPrefix = $this->inline->inlineNames['object'] . \TYPO3\CMS\Backend\Form\Element\InlineElement::Structure_Separator . $table;
+						$aOnClickInline = $objectPrefix . '|inline.checkUniqueElement|inline.setUniqueElement';
+						$rOnClickInline = 'inline.revertUnique(\'' . $objectPrefix . '\',null,\'' . $uid . '\');';
+					}
+				}
+				if (is_array($config['appearance']) && isset($config['appearance']['elementBrowserType'])) {
+					$elementBrowserType = $config['appearance']['elementBrowserType'];
+				} else {
+					$elementBrowserType = $mode;
+				}
+				if (is_array($config['appearance']) && isset($config['appearance']['elementBrowserAllowed'])) {
+					$elementBrowserAllowed = $config['appearance']['elementBrowserAllowed'];
+				} else {
+					$elementBrowserAllowed = $allowed;
+				}
+				$aOnClick = 'setFormValueOpenBrowser(\'' . $elementBrowserType . '\',\'' . ($fName . '|||' . $elementBrowserAllowed . '|' . $aOnClickInline) . '\'); return false;';
+				$icons['R'][] = '<a href="#" onclick="' . htmlspecialchars($aOnClick) . '">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-insert-record', array('title' => htmlspecialchars($this->getLL(('l_browse_' . ($mode == 'db' ? 'db' : 'file')))))) . '</a>';
+			}
+			if (!$params['dontShowMoveIcons']) {
+				if ($sSize >= 5) {
+					$icons['L'][] = '<a href="#" onclick="setFormValueManipulate(\'' . $fName . '\',\'Top\'); return false;">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-move-to-top', array('title' => htmlspecialchars($this->getLL('l_move_to_top')))) . '</a>';
+				}
+				$icons['L'][] = '<a href="#" onclick="setFormValueManipulate(\'' . $fName . '\',\'Up\'); return false;">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-move-up', array('title' => htmlspecialchars($this->getLL('l_move_up')))) . '</a>';
+				$icons['L'][] = '<a href="#" onclick="setFormValueManipulate(\'' . $fName . '\',\'Down\'); return false;">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-move-down', array('title' => htmlspecialchars($this->getLL('l_move_down')))) . '</a>';
+				if ($sSize >= 5) {
+					$icons['L'][] = '<a href="#" onclick="setFormValueManipulate(\'' . $fName . '\',\'Bottom\'); return false;">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-move-to-bottom', array('title' => htmlspecialchars($this->getLL('l_move_to_bottom')))) . '</a>';
+				}
+			}
+			$clipElements = $this->getClipboardElements($allowed, $mode);
+			if (count($clipElements)) {
+				$aOnClick = '';
+				foreach ($clipElements as $elValue) {
+					if ($mode == 'db') {
+						list($itemTable, $itemUid) = explode('|', $elValue);
+						$itemTitle = $GLOBALS['LANG']->JScharCode(\TYPO3\CMS\Backend\Utility\BackendUtility::getRecordTitle($itemTable, \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL($itemTable, $itemUid)));
+						$elValue = $itemTable . '_' . $itemUid;
+					} else {
+						// 'file', 'file_reference' and 'folder' mode
+						$itemTitle = 'unescape(\'' . rawurlencode(basename($elValue)) . '\')';
+					}
+					$aOnClick .= 'setFormValueFromBrowseWin(\'' . $fName . '\',unescape(\'' . rawurlencode(str_replace('%20', ' ', $elValue)) . '\'),' . $itemTitle . ',' . $itemTitle . ');';
+				}
+				$aOnClick .= 'return false;';
+				$icons['R'][] = '<a href="#" onclick="' . htmlspecialchars($aOnClick) . '">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-document-paste-into', array('title' => htmlspecialchars(sprintf($this->getLL(('l_clipInsert_' . ($mode == 'db' ? 'db' : 'file'))), count($clipElements))))) . '</a>';
+			}
+		}
+		if (!$params['readOnly'] && !$params['noDelete']) {
+			$rOnClick = $rOnClickInline . 'setFormValueManipulate(\'' . $fName . '\',\'Remove\'); return false';
+			$icons['L'][] = '<a href="#" onclick="' . htmlspecialchars($rOnClick) . '">' . \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon('actions-selection-delete', array('title' => htmlspecialchars($this->getLL('l_remove_selected')))) . '</a>';
+		}
+		$imagesOnly = FALSE;
+		if ($params['thumbnails'] && $params['info']) {
+			// In case we have thumbnails, check if only images are allowed.
+			// In this case, render them below the field, instead of to the right
+			$allowedExtensionList = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(' ', strtolower($params['info']), TRUE);
+			$imageExtensionList = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', strtolower($GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']), TRUE);
+			$imagesOnly = TRUE;
+			foreach ($allowedExtensionList as $allowedExtension) {
+				if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inArray($imageExtensionList, $allowedExtension)) {
+					$imagesOnly = FALSE;
+					break;
+				}
+			}
+		}
+		if ($imagesOnly) {
+			$rightbox = '';
+			$thumbnails = '<div class="imagethumbs">' . $this->wrapLabels($params['thumbnails']) . '</div>';
+		} else {
+			$rightbox = $this->wrapLabels($params['thumbnails']);
+			$thumbnails = '';
+		}
+		// Hook: dbFileIcons_postProcess (requested by FAL-team for use with the "fal" extension)
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tceforms.php']['dbFileIcons'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tceforms.php']['dbFileIcons'] as $classRef) {
+				$hookObject = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
+				if (!$hookObject instanceof \TYPO3\CMS\Backend\Form\DatabaseFileIconsHookInterface) {
+					throw new \UnexpectedValueException('$hookObject must implement interface TYPO3\\CMS\\Backend\\Form\\DatabaseFileIconsHookInterface', 1290167704);
+				}
+				$additionalParams = array(
+					'mode' => $mode,
+					'allowed' => $allowed,
+					'itemArray' => $itemArray,
+					'onFocus' => $onFocus,
+					'table' => $table,
+					'field' => $field,
+					'uid' => $uid,
+					'config' => $GLOBALS['TCA'][$table]['columns'][$field]
+				);
+				$hookObject->dbFileIcons_postProcess($params, $selector, $thumbnails, $icons, $rightbox, $fName, $uidList, $additionalParams, $this);
+			}
+		}
+		$str = '<table border="0" cellpadding="0" cellspacing="0" width="1">
+			' . ($params['headers'] ? '
+				<tr>
+					<td>' . $this->wrapLabels($params['headers']['selector']) . '</td>
+					<td></td>
+					<td></td>
+					<td>' . ($params['thumbnails'] ? $this->wrapLabels($params['headers']['items']) : '') . '</td>
+				</tr>' : '') . '
+			<tr>
+				<td valign="top">' . $selector . $thumbnails . ($params['noList'] ? '' : '<span class="filetypes">' . $this->wrapLabels($params['info'])) . '</span></td>
+					<td valign="top" class="icons">' . implode('<br />', $icons['L']) . '</td>
+					<td valign="top" class="icons">' . implode('<br />', $icons['R']) . '</td>
+					<td valign="top" class="thumbnails">' . $rightbox . '</td>
+			</tr>
+		</table>';
+		// Creating the hidden field which contains the actual value as a comma list.
+		$str .= '<input type="hidden" name="' . $fName . '" value="' . htmlspecialchars(implode(',', $uidList)) . '" />';
+		return $str;
+	}
+
 }
