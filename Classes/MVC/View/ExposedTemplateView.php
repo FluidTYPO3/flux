@@ -163,4 +163,31 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 		return $content;
 	}
 
+	/**
+	 * @param string $actionName
+	 * @return string
+	 * @throws Exception
+	 */
+	protected function getTemplatePathAndFilename($actionName = NULL) {
+		if ($this->templatePathAndFilename !== NULL) {
+			return $this->templatePathAndFilename;
+		}
+		if ($actionName === NULL) {
+			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
+				throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists ' .
+					'(getTemplatePathAndFilename used without action argument)', 1343521593);
+			}
+			$actionName = $this->controllerContext->getRequest()->getControllerActionName();
+		}
+		$actionName = ucfirst($actionName);
+		$paths = $this->expandGenericPathPattern($this->templatePathAndFilenamePattern, FALSE, FALSE);
+		foreach ($paths as &$templatePathAndFilename) {
+			$templatePathAndFilename = str_replace('@action', $actionName, $templatePathAndFilename);
+			if (file_exists($templatePathAndFilename)) {
+				return $templatePathAndFilename;
+			}
+		}
+		return NULL;
+	}
+
 }
