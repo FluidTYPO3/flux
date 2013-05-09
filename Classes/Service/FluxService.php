@@ -116,10 +116,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		/** @var $context Tx_Extbase_MVC_Controller_ControllerContext */
 		$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
-		/** @var $request Tx_Extbase_MVC_Request */
-		$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
-		/** @var $response Tx_Extbase_MVC_Response */
-		$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
+		/** @var $request Tx_Extbase_MVC_Web_Request */
+		$request = $this->objectManager->create('Tx_Extbase_MVC_Web_Request');
+		/** @var $response Tx_Extbase_MVC_Web_Response */
+		$response = $this->objectManager->create('Tx_Extbase_MVC_Web_Response');
 		$request->setControllerExtensionName($extensionName);
 		$request->setControllerName($controllerName);
 		$request->setDispatched(TRUE);
