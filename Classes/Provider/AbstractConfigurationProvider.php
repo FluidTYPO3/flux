@@ -232,34 +232,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
-		$parentFieldName = $this->getParentFieldName($row);
-		$fieldName = $this->getFieldName($row);
-		if (NULL === $fieldName || NULL === $parentFieldName) {
-			return;
-		}
-		if (FALSE === isset($row[$fieldName]['data'])) {
-			return;
-		}
-		$data = $row[$fieldName]['data'];
-		if (FALSE === is_array($data)) {
-			return;
-		}
-		if (FALSE === isset($row['uid']) && intval($id) > 0) {
-			$row['uid'] = $id;
-		}
-		foreach ($data as $sheetName => $sheetFields) {
-			foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
-				$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
-				if (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']) {
-					unset($data[$sheetName]['lDEF'][$sheetFieldName]);
-				}
-			}
-			if (0 === count($data[$sheetName]['lDEF'])) {
-				$data[$sheetName]['lDEF'] = array('flux.placeholder' => array('vDEF' => 0));
-			}
-		}
-		$row[$fieldName]['data'] = $data;
-		$_POST['data'][$this->tableName][$id] = $row;
 	}
 
 	/**
@@ -273,7 +245,46 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
-		unset($operation, $id, $row, $reference);
+		if ('update' === $operation) {
+			$fieldName = $this->getFieldName($reference->datamap[$this->tableName][$id]);
+			if (NULL === $fieldName) {
+				return;
+			}
+			if (FALSE === isset($row[$fieldName])) {
+				return;
+			}
+			$data = $reference->datamap[$this->tableName][$id][$fieldName]['data'];
+			if (FALSE === is_array($data)) {
+				return;
+			}
+			$removals = array();
+			foreach ($data as $sheetName => $sheetFields) {
+				foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
+					if ('_clear' === substr($sheetFieldName, -6)) {
+						array_push($removals, $sheetFieldName);
+					} else {
+						$clearFieldName = $sheetFieldName . '_clear';
+						$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
+						if (TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) && 0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) {
+							array_push($removals, $sheetFieldName);
+						} elseif (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']) {
+							array_push($removals, $sheetFieldName);
+						}
+					}
+				}
+			}
+			$dom = new DOMDocument();
+			$dom->loadXML($row[$fieldName]);
+			$dom->preserveWhiteSpace = FALSE;
+			$dom->formatOutput = TRUE;
+			foreach ($dom->getElementsByTagName('field') as $fieldNode) {
+				if (TRUE === in_array($fieldNode->getAttribute('index'), $removals)) {
+					#$dom->removeChild($fieldNode);
+					$fieldNode->parentNode->removeChild($fieldNode);
+				}
+			}
+			$row[$fieldName] = $dom->saveXML();
+		}
 	}
 
 	/**
@@ -397,7 +408,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 				return $inheritedConfiguration;
 			}
 			$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
-			$this->configurationService->message('Using ' . count($tree) . ' record(s) from root line to inherit configuration', t3lib_div::SYSLOG_SEVERITY_INFO);
 			return $merged;
 		} catch (Exception $error) {
 			$this->configurationService->debug($error);
@@ -466,15 +476,40 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		}
 		$data = array();
 		foreach ($tree as $branch) {
-			$fieldName = $this->getFieldName($branch);
-			if (NULL === $fieldName) {
-				return $data;
+			$values = $this->getFlexFormValues($branch);
+			$variables = $this->getTemplateVariables($branch);
+			foreach ($values as $name => $value) {
+				$stop = (TRUE === isset($variables['fields'][$name]['stopInheritance']));
+				$inherit = (TRUE === isset($variables['fields'][$name]['inheritEmpty']));
+				$empty = (TRUE === empty($value) && $value !== '0' && $value !== 0);
+				if (TRUE === $stop) {
+					unset($values[$name]);
+				} elseif (FALSE === $inherit && TRUE === $empty) {
+					unset($values[$name]);
+				}
 			}
-			$currentData = $this->configurationService->convertFlexFormContentToArray($branch[$fieldName]);
-			$data = t3lib_div::array_merge_recursive_overrule($data, $currentData, FALSE, FALSE, TRUE);
+			$data = $this->arrayMergeRecursive($data, $values);
 		}
 		self::$cacheMergedConfigurations[$key] = $data;
 		return $data;
+	}
+
+	/**
+	 * @param array $array1
+	 * @param array $array2
+	 * @return array
+	 */
+	protected function arrayMergeRecursive($array1, $array2) {
+		foreach ($array2 as $key => $val) {
+			if (is_array($array1[$key])) {
+				if (is_array($array2[$key])) {
+					$val = $this->arrayMergeRecursive($array1[$key], $array2[$key]);
+				}
+			}
+			$array1[$key] = $val;
+		}
+		reset($array1);
+		return $array1;
 	}
 
 	/**

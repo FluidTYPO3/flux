@@ -116,10 +116,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		/** @var $context Tx_Extbase_MVC_Controller_ControllerContext */
 		$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
-		/** @var $request Tx_Extbase_MVC_Request */
-		$request = $this->objectManager->create('Tx_Extbase_MVC_Request');
-		/** @var $response Tx_Extbase_MVC_Response */
-		$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
+		/** @var $request Tx_Extbase_MVC_Web_Request */
+		$request = $this->objectManager->create('Tx_Extbase_MVC_Web_Request');
+		/** @var $response Tx_Extbase_MVC_Web_Response */
+		$response = $this->objectManager->create('Tx_Extbase_MVC_Web_Response');
 		$request->setControllerExtensionName($extensionName);
 		$request->setControllerName($controllerName);
 		$request->setDispatched(TRUE);
@@ -235,7 +235,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return array|NULL
 	 */
 	public function getViewConfigurationForExtensionName($extensionName) {
-		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', array(), $extensionName);
+		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionName);
 		return $configuration;
 	}
 
@@ -246,11 +246,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 *
 	 * @param string $extensionName
 	 * @param string $memberName
-	 * @param array $dontTranslateMembers Array of members not to be translated by path
 	 * @param string $containerExtensionScope If TypoScript is not located under plugin.tx_fed, change the tx_<scope> part by specifying this argument
 	 * @return array
 	 */
-	public function getTypoScriptSubConfiguration($extensionName, $memberName, $dontTranslateMembers = array(), $containerExtensionScope = 'fed') {
+	public function getTypoScriptSubConfiguration($extensionName, $memberName, $containerExtensionScope = 'fed') {
 		$containerExtensionScope = str_replace('_', '', $containerExtensionScope);
 		$cacheKey = $extensionName . $memberName . $containerExtensionScope;
 		if (TRUE === isset(self::$cache[$cacheKey])) {

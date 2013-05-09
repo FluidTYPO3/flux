@@ -60,7 +60,8 @@ class Tx_Flux_Core {
 		if (FALSE === isset(self::$extensions[$providesControllerName])) {
 			self::$extensions[$providesControllerName] = array();
 		}
-		if (FALSE === in_array($extensionKey[$providesControllerName], self::$extensions)) {
+
+		if (FALSE === in_array($extensionKey, self::$extensions[$providesControllerName])) {
 			array_push(self::$extensions[$providesControllerName], $extensionKey);
 		}
 	}

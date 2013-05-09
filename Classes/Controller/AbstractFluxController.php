@@ -38,6 +38,17 @@
 class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controller_ActionController {
 
 	/**
+	 * Exception code for "class not found" - which is thrown, caught but ignored
+	 * when Flux attempts to use a custom controller extension name without also
+	 * replacing the standard controller. In this case the error is friendly enough
+	 * but still takes the form of an Exception - and we have way to change that
+	 * default Extbase behavior.
+	 *
+	 * @var integer
+	 */
+	const EXCEPTION_CUSTOM_CONTROLLER_NOT_FOUND = 1289386765;
+
+	/**
 	 * @var string
 	 */
 	protected $defaultViewObjectName = 'Tx_Flux_MVC_View_ExposedTemplateView';
@@ -93,13 +104,11 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	 */
 	public function initializeView(Tx_Extbase_MVC_View_ViewInterface $view) {
 		try {
+			$this->view = $view;
 			$row = $this->configurationManager->getContentObject()->data;
 			$table = $this->getFluxTableName();
 			$field = $this->getFluxRecordField();
 			$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $field, $row);
-			$extensionKey = $this->provider->getExtensionKey($row);
-			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-			$extensionSignature = str_replace('_', '', $extensionKey);
 			if (NULL === $this->provider) {
 				$this->configurationService->message('Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled Controller - ' .
 					'this is a grave error and indicates that EXT: ' . $extensionName . ' itself is broken - or that EXT:' . $extensionName .
@@ -107,6 +116,9 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 					get_class($this) . ' and the table name is "' . $table . '".', t3lib_div::SYSLOG_SEVERITY_WARNING);
 				return;
 			}
+			$extensionKey = $this->provider->getExtensionKey($row);
+			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+			$extensionSignature = str_replace('_', '', $extensionKey);
 			$this->setup = $this->provider->getTemplatePaths($row);
 			if (FALSE === is_array($this->setup) || 0 === count($this->setup)) {
 				throw new Exception('Unable to read a working path set from the Provider. The extension that caused this error was "' .
@@ -114,30 +126,31 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 					'a valid path set was "' . get_class($this->provider) . '" but it returned an empty array or not an array. View ' .
 					'paths have been reset to paths native to the controller in question.', 1364685651);
 			}
+			$this->settings = (array) $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName);
 			$this->data = $this->provider->getFlexFormValues($row);
-			$settings = $this->configurationService->getTypoScriptSubConfiguration(NULL, 'settings', array(), $extensionSignature);
+			if (TRUE === isset($this->settings['useTypoScript']) && 0 < $this->settings['useTypoScript']) {
+				// an override shared by all Flux enabled controllers: setting plugin.tx_EXTKEY.settings.useTypoScript = 1
+				// will read the "settings" array from that location instead - thus excluding variables from the flexform
+				// which are still available as $this->data but no longer available automatically in the template.
+				$this->settings = $this->configurationService->getTypoScriptSubConfiguration(NULL, 'settings', $extensionSignature);
+			} elseif (TRUE === isset($this->data['settings']) && TRUE === is_array($this->data['settings'])) {
+				// a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
+				// as well as the internal $this->settings array as per expected Extbase behavior.
+				$this->settings = t3lib_div::array_merge_recursive_overrule($this->settings, $this->data['settings'], FALSE, TRUE);
+			}
+			$this->view->assignMultiple($this->data);
+			$this->view->assign('settings', $this->settings);
 			$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
 			if (FALSE === file_exists($templatePathAndFilename)) {
 				throw new Exception('Desired template file "' . $templatePathAndFilename . '" does not exist', 1364741158);
 			}
 			/** @var $view Tx_Flux_MVC_View_ExposedTemplateView */
-			$view->setTemplatePathAndFilename($templatePathAndFilename);
-			$view->setLayoutRootPath($this->setup['layoutRootPath']);
-			$view->setPartialRootPath($this->setup['partialRootPath']);
-			$view->setTemplateRootPath($this->setup['templateRootPath']);
-			$view->assignMultiple($this->data);
-			$view->assign('settings', $settings);
+			$this->view->setTemplatePathAndFilename($templatePathAndFilename);
+			$this->view->setLayoutRootPath($this->setup['layoutRootPath']);
+			$this->view->setPartialRootPath($this->setup['partialRootPath']);
+			$this->view->setTemplateRootPath($this->setup['templateRootPath']);
 		} catch (Exception $error) {
-			if (TRUE === isset($this->settings['displayErrors']) && 0 < $this->settings['displayErrors']) {
-				throw $error;
-			}
-			$this->configurationService->debug($error);
-			$view->assign('class', get_class($this));
-			$view->assign('error', $error);
-			$view->assign('backtrace', $this->getLimitedBacktrace());
-			if ('error' !== $this->request->getControllerActionName()) {
-				$this->forward('error');
-			}
+			$this->handleError($error);
 		}
 	}
 
@@ -169,36 +182,57 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		$row = $this->getRecord();
 		$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($this->fluxTableName, $this->fluxRecordField, $row);
 		$extensionKey = $this->provider->getExtensionKey($row);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 		$pluginSignature = 'tx_' . str_replace('_', '', $extensionKey) . '_content';
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
-		$controllerExtensionName = $this->provider->getControllerExtensionKeyFromRecord($row);
-		// failure toggles. Instructs ConfigurationService to throw Exceptions when not being able to detect. We capture these and pass to debug.
+		$controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
+		$controllerExtensionName = t3lib_div::underscoredToUpperCamelCase($controllerExtensionKey);
 		$requestParameters = (array) t3lib_div::_GET($pluginSignature);
 		$arguments = (array) (TRUE === is_array(t3lib_div::_POST($pluginSignature)) ? t3lib_div::_POST($pluginSignature) : $requestParameters);
 		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : $controllerActionName;
-		if ($extensionName === $this->extensionName) {
+		if ($controllerExtensionName === $this->extensionName) {
 			return $this->view->render();
 		}
 		try {
 			$controllerName = $this->request->getControllerName();
 			$potentialControllerClassName = $this->resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $overriddenControllerActionName, $controllerName);
 			if (NULL === $potentialControllerClassName) {
-				$this->request->setControllerExtensionName($controllerExtensionName);
+				$this->request->setControllerExtensionName($this->extensionName);
 				return $this->view->render();
 			}
+			/** @var $response Tx_Extbase_MVC_Web_Response */
+			$response = $this->objectManager->create('Tx_Extbase_MVC_Web_Response');
 			$potentialControllerInstance = $this->objectManager->get($potentialControllerClassName);
-			/** @var $response Tx_Extbase_MVC_Response */
-			$response = $this->objectManager->create('Tx_Extbase_MVC_Response');
 			$this->request->setControllerActionName($overriddenControllerActionName);
 			$this->request->setControllerExtensionName($controllerExtensionName);
 			$this->request->setArguments($arguments);
 			$potentialControllerInstance->processRequest($this->request, $response);
 			return $response->getContent();
 		} catch (Exception $error) {
-			// no Controller class exists; let built-in View render everything.
+			$code = $error->getCode();
+			if (self::EXCEPTION_CUSTOM_CONTROLLER_NOT_FOUND === $code) {
+				return $this->view->render();
+			}
+			$this->handleError($error);
 		}
 		return $this->view->render();
+	}
+
+	/**
+	 * @param Exception $error
+	 * @throws Exception
+	 * @return void
+	 */
+	public function handleError(Exception $error) {
+		if (TRUE === isset($this->settings['displayErrors']) && 0 < $this->settings['displayErrors']) {
+			throw $error;
+		}
+		$this->configurationService->debug($error);
+		$this->view->assign('class', get_class($this));
+		$this->view->assign('error', $error);
+		$this->view->assign('backtrace', $this->getLimitedBacktrace());
+		if ('error' !== $this->request->getControllerActionName()) {
+			$this->forward('error');
+		}
 	}
 
 	/**

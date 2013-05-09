@@ -122,4 +122,64 @@ class Tx_Flux_Override_Core_Configuration_Flexform_FlexFormTools extends \TYPO3\
 		}
 		return NULL;
 	}
+
+	/**
+	 * Recursively traversing flexform data according to data structure and element data
+	 *
+	 * @param array $dataStruct (Part of) data structure array that applies to the sub section of the flexform data we are processing
+	 * @param array $editData (Part of) edit data array, reflecting current part of data structure
+	 * @param array $PA Additional parameters passed.
+	 * @param string $path Telling the "path" to the element in the flexform XML
+	 * @return array
+	 * @todo Define visibility
+	 */
+	public function traverseFlexFormXMLData_recurse($dataStruct, $editData, &$PA, $path = '') {
+		if (is_array($dataStruct)) {
+			foreach ($dataStruct as $key => $value) {
+				// The value of each entry must be an array.
+				if (is_array($value)) {
+					if ($value['type'] == 'array') {
+						// Array (Section) traversal
+						if ($value['section']) {
+							$cc = 0;
+							if (is_array($editData[$key]['el'])) {
+								if ($this->reNumberIndexesOfSectionData) {
+									$temp = array();
+									$c3 = 0;
+									foreach ($editData[$key]['el'] as $v3) {
+										$temp[++$c3] = $v3;
+									}
+									$editData[$key]['el'] = $temp;
+								}
+								foreach ($editData[$key]['el'] as $k3 => $v3) {
+									if (is_array($v3)) {
+										$cc = $k3;
+										$theType = key($v3);
+										$theDat = $v3[$theType];
+										$newSectionEl = $value['el'][$theType];
+										if (is_array($newSectionEl)) {
+											$this->traverseFlexFormXMLData_recurse(array($theType => $newSectionEl), array($theType => $theDat), $PA, $path . '/' . $key . '/el/' . $cc);
+										}
+									}
+								}
+							}
+						} else {
+							// Array traversal:
+							$this->traverseFlexFormXMLData_recurse($value['el'], $editData[$key]['el'], $PA, $path . '/' . $key . '/el');
+						}
+					} elseif (is_array($value['TCEforms']['config'])) {
+						// Processing a field value:
+						foreach ($PA['vKeys'] as $vKey) {
+							$vKey = 'v' . $vKey;
+							// Call back:
+							if ($PA['callBackMethod_value'] && TRUE === isset($editData[$key][$vKey])) {
+								$this->callBackObj->{$PA['callBackMethod_value']}($value, $editData[$key][$vKey], $PA, $path . '/' . $key . '/' . $vKey, $this);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 }

@@ -10,6 +10,8 @@
 		<label index="tt_content.tx_flux_parent">Parent element</label>
 		<label index="tt_content.tx_flux_column">Content area of parent</label>
 		<label index="tt_content.tx_flux_options">Options</label>
+		<label index="flux.clearValue">Clear value</label>
+		<label index="reference">Reference to content on page '%s' - click to jump to original</label>
 
 		<label index="object.image">Image</label>
 		<label index="object.image.title">Image title/alt text</label>
@@ -47,6 +49,8 @@
 		<label index="tt_content.tx_flux_parent">Übergeordnetes Element</label>
 		<label index="tt_content.tx_flux_column">Übergeordneter Inhaltsbereich</label>
 		<label index="tt_content.tx_flux_options">Optionen</label>
+		<label index="flux.clearValue">Clear value</label>
+		<label index="reference">Reference to content on page '%s' - click to jump to original</label>
 
 		<label index="object.image">Bild</label>
 		<label index="object.image.title">Bild title/alt Text</label>

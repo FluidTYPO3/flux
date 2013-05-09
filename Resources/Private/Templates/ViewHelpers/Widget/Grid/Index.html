@@ -81,7 +81,7 @@ td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
 											</div>
 											<div class="t3-page-ce-dropzone" id="colpos-{record.colPos}-page-{row.pid}-{row.uid}-after-{record.uid}" style="height: 16px;">
 												<div class="t3-page-ce-wrapper-new-ce">
-													<flux:be.link.content.new row="{row}" area="{area.name}" />
+													<flux:be.link.content.new after="{record.uid}" row="{row}" area="{area.name}" />
 													<flux:be.link.content.paste row="{row}" relativeTo="{record}" area="{area.name}" />
 													<flux:be.link.content.paste row="{row}" relativeTo="{record}" area="{area.name}" reference="TRUE" />
 												</div>
