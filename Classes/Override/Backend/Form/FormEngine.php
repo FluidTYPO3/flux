@@ -30,7 +30,7 @@
  * @package Flux
  * @subpackage Override\Backend\Form
  */
-class Tx_Flux_Override_Backend_Form_FormEngine extends \TYPO3\CMS\Backend\Form\FormEngine {
+class Tx_Flux_Override_Backend_Form_FormEngine extends t3lib_TCEforms {
 
 	/**
 	 * Handler for Flex Forms
