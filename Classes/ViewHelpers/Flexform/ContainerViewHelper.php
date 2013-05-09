@@ -24,17 +24,20 @@
  *****************************************************************/
 
 /**
- * ### FlexForm Palette container element
+ * ### FlexForm Field Container element
  *
  * Use around other Flux fields to make these fields nested visually
  * and in variable scopes (i.e. a field called "name" inside a palette
  * called "person" would end up with "person" being an array containing
  * the "name" property, rendered as {person.name} in Fluid.
  *
+ * The field grouping can be hidden or completely removed. In this regard
+ * this element is a simpler version of the Section and Object logic.
+ *
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_PaletteViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_ContainerViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
 
 	/**
 	 * Initialize arguments
