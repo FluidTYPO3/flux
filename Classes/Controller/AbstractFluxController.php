@@ -226,10 +226,16 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 		if (TRUE === isset($this->settings['displayErrors']) && 0 < $this->settings['displayErrors']) {
 			throw $error;
 		}
+		$versionNumbers = explode('.', TYPO3_version);
+		$versionNumbers = array_map('intval', $versionNumbers);
+		$versionVariable = array();
+		list ($versionVariable['major'], $versionVariable['minor'], $versionVariable['bugfix']) = $versionNumbers;
+		$versionVariable['isLongTermSupport'] = (4 === $versionVariable['major'] && 5 === $versionVariable['minor']);
 		$this->configurationService->debug($error);
 		$this->view->assign('class', get_class($this));
 		$this->view->assign('error', $error);
 		$this->view->assign('backtrace', $this->getLimitedBacktrace());
+		$this->view->assign('version', $versionVariable);
 		if ('error' !== $this->request->getControllerActionName()) {
 			$this->forward('error');
 		}
