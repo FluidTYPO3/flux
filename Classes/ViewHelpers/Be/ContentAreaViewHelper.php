@@ -73,13 +73,15 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Flux_Core_ViewHelp
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition, 'uid', 'sorting ASC');
 		$records = $dblist->getResult($res);
 
+		$fluxColumnId = 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX';
+
 		$this->templateVariableContainer->add('records', $records);
 		$this->templateVariableContainer->add('dblist', $dblist);
+		$this->templateVariableContainer->add('fluxColumnId', $fluxColumnId);
 		$content = $this->renderChildren();
 		$this->templateVariableContainer->remove('records');
 		$this->templateVariableContainer->remove('dblist');
-
-		$content = '<div id="column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX">' . $content . '</div>';
+		$this->templateVariableContainer->remove('fluxColumnId', $fluxColumnId);
 
 		return $content;
 	}
