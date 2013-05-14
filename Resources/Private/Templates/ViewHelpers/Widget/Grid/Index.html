@@ -2,8 +2,8 @@
 <table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" width="100%" height="100%">
 	<tbody>
 	<f:for each="{grid}" as="gridrow" iteration="rowIteration">
+		<tr>
 		<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
-			<tr>
 			<f:for each="{gridcolumn.areas}" as="area">
 				<flux:be.contentArea area="{area.name}" row="{row}">
 					<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" valign="top" id="{fluxColumnId}" class="t3-gridCell t3-page-column t3-page-column-12 t3-allow-all">
@@ -39,8 +39,8 @@
 					</td>
 				</flux:be.contentArea>
 			</f:for>
-			</tr>
 		</f:for>
+		</tr>
 	</f:for>
 	</tbody>
 </table>
