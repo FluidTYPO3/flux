@@ -1,100 +1,46 @@
 {namespace flux=Tx_Flux_ViewHelpers}
-<div xmlns="http://www.w3.org/1999/xhtml" lang="en"
-     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers"
-	 id="container-record-{row.uid}"
-	 class="grid-visibility-toggle">
-<style type="text/css">
-<f:format.raw>
-.fce-header { margin-top: 8px; background-color: transparent !important; }
-.fce-container .t3-page-ce-body { margin-bottom: 8px; padding: 5px; }
-td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
-.toggle-content { cursor: pointer; float: right; margin-top: -15px; }
-.content-blind, .content-blind * { display: none; !important }
-.flux-grid { width: 100%; }
-.t3-page-ce .toggle-content { display: none; }
-.t3-page-ce:hover .toggle-content { display: block; }
-</f:format.raw>
-</style>
-<div id="content-blind-{row.uid}" class="content-blind"></div>
-<div id="toggle-content-{row.uid}" class="toggle-content">
-	<span id="toggle-{row.uid}" class="t3-icon t3-icon-actions t3-icon-view-table-{f:if(condition: record.hidden, then: 'expand', else: 'collapse')}"></span>
-</div>
-<div id="grid-container-{row.uid}">
-	<f:render section="Grid" arguments="{_all}" />
-</div>
-<script type="text/javascript">
-	fluxCollapse{row.uid} = function() {
-		var cookie = Ext.decode(Ext.util.Cookies.get('fluxCollapseStates'));
-		if (cookie == '') {
-			cookie = [];
-		};
-		if (Ext.get('content-grid-{row.uid}').isDisplayed()) {
-			Ext.get('content-blind-{row.uid}').insertFirst(Ext.get('content-grid-{row.uid}'));
-			Ext.get('toggle-{row.uid}').replaceClass('t3-icon-view-table-collapse', 't3-icon-view-table-expand');
-			if (cookie.indexOf({row.uid}) < 0) {
-				cookie.push({row.uid});
-			};
-		} else {
-			Ext.get('grid-container-{row.uid}').insertFirst(Ext.get('content-grid-{row.uid}'));
-			Ext.get('toggle-{row.uid}').replaceClass('t3-icon-view-table-expand', 't3-icon-view-table-collapse');
-			for (var i in cookie) {
-				if (cookie[i] == {row.uid}) {
-					delete(cookie[i]);
-				};
-			};
-		};
-		Ext.util.Cookies.set('fluxCollapseStates', Ext.encode(cookie));
-	};
-	Ext.get('toggle-content-{row.uid}').on('click', fluxCollapse{row.uid});
-	if (Ext.get('content-grid-{row.uid}').hasClass('hidden')) {
-		fluxCollapse{row.uid}();
-	};
-</script>
-</div>
-
-<f:section name="Grid">
-	<table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" class="flux-grid{flux:isCollapsed(record: row, then: ' hidden')}">
-		<tbody>
-		<f:for each="{grid}" as="gridrow" iteration="rowIteration">
-			<tr>
-				<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
-					<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" style="{gridcolumn.style}">
-						<f:for each="{gridcolumn.areas}" as="area">
-							<flux:be.contentArea area="{area.name}" row="{row}">
-								<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
-									<div><f:translate key="{area.label}" default="{area.label}" /></div>
+<table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" width="100%" height="100%">
+	<tbody>
+	<f:for each="{grid}" as="gridrow" iteration="rowIteration">
+		<tr>
+		<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
+			<f:for each="{gridcolumn.areas}" as="area">
+				<flux:be.contentArea area="{area.name}" row="{row}">
+					<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" valign="top" id="{fluxColumnId}" class="t3-gridCell t3-page-column t3-page-column-12 t3-allow-all">
+						<div class="t3-page-colHeader t3-row-header">
+							<div class="t3-page-colHeader-icons">
+								<a href="#" class="toggle-content toggle-up" title="Inhaltsanzeige umschalten"><span class="t3-icon t3-icon-actions t3-icon-actions-move t3-icon-move-to-top">&nbsp;</span></a><a href="#" class="toggle-content toggle-down" title="Inhaltsanzeige umschalten"><span class="t3-icon t3-icon-actions t3-icon-actions-move t3-icon-move-to-bottom">&nbsp;</span></a>
+							</div>
+							<div class="t3-page-colHeader-label"><f:translate key="{area.label}" default="{area.label}" /></div>
+						</div>
+						<div class="t3-page-ce-wrapper">
+							<div class="t3-page-ce-dropzone">
+								<div class="t3-page-ce-wrapper-new-ce">
+									<flux:be.link.content.new row="{row}" area="{area.name}" />
+									<flux:be.link.content.paste row="{row}" area="{area.name}" />
+									<flux:be.link.content.paste row="{row}" area="{area.name}" reference="TRUE" />
 								</div>
-								<div class="fce-container t3-page-ce-wrapper">
-									<div class="t3-page-ce">
-										<div class="t3-page-ce-dropzone" id="colpos-{row.colPos}-page-{row.pid}-{area.md5}-top-{row.uid}-{area.name}" style="height: 16px;">
-											<div class="t3-page-ce-wrapper-new-ce">
-												<flux:be.link.content.new row="{row}" area="{area.name}" />
-												<flux:be.link.content.paste row="{row}" area="{area.name}" />
-												<flux:be.link.content.paste row="{row}" area="{area.name}" reference="TRUE" />
-											</div>
+							</div>
+							<f:for each="{records}" as="record">
+								<div class="t3-page-ce" id="element-tt_content-{record.uid}">
+									<div class="t3-page-ce-dragitem">
+										<flux:be.contentElement row="{record}" dblist="{dblist}" />
+									</div>
+									<div class="t3-page-ce-dropzone" id="colpos-{record.colPos}-page-{row.pid}-{row.uid}-after-{record.uid}" style="height: 16px;">
+										<div class="t3-page-ce-wrapper-new-ce">
+											<flux:be.link.content.new after="{record.uid}" row="{row}" area="{area.name}" />
+											<flux:be.link.content.paste row="{row}" relativeTo="{record}" area="{area.name}" />
+											<flux:be.link.content.paste row="{row}" relativeTo="{record}" area="{area.name}" reference="TRUE" />
 										</div>
 									</div>
-									<f:for each="{records}" as="record">
-										<div class="t3-page-ce" id="element-tt_content-{record.uid}">
-											<div class="t3-page-ce-dragitem">
-												<flux:be.contentElement row="{record}" dblist="{dblist}" />
-											</div>
-											<div class="t3-page-ce-dropzone" id="colpos-{record.colPos}-page-{row.pid}-{row.uid}-after-{record.uid}" style="height: 16px;">
-												<div class="t3-page-ce-wrapper-new-ce">
-													<flux:be.link.content.new after="{record.uid}" row="{row}" area="{area.name}" />
-													<flux:be.link.content.paste row="{row}" relativeTo="{record}" area="{area.name}" />
-													<flux:be.link.content.paste row="{row}" relativeTo="{record}" area="{area.name}" reference="TRUE" />
-												</div>
-											</div>
-										</div>
-									</f:for>
 								</div>
-							</flux:be.contentArea>
-						</f:for>
+							</f:for>
+						</div>
 					</td>
-				</f:for>
-			</tr>
+				</flux:be.contentArea>
+			</f:for>
 		</f:for>
-		</tbody>
-	</table>
-</f:section>
+		</tr>
+	</f:for>
+	</tbody>
+</table>
