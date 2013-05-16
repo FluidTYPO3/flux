@@ -88,7 +88,9 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 		$this->assignGridVariables();
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $this->row);
-		if (Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero() === TRUE) {
+		if (TRUE === Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
+			$this->view->setTemplatePathAndFilename(t3lib_extMgm::extPath('flux', 'Resources/Private/Templates/ViewHelpers/Widget/Grid/GridElements.html'));
+		} elseif (TRUE === Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero()) {
 			$this->view->setTemplatePathAndFilename(t3lib_extMgm::extPath('flux', 'Resources/Private/Templates/ViewHelpers/Widget/Grid/Legacy.html'));
 		}
 	}
