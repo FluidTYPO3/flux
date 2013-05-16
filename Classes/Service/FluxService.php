@@ -375,6 +375,23 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
+	 * @param array $config
+	 * @return array|NULL
+	 */
+	public function convertFlexFormConfigurationToDataStructure($config) {
+		/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
+		$flexFormStructureProvider = $this->objectManager->create('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
+		$dataStructArray = $flexFormStructureProvider->render($config);
+		if ((FALSE === is_array($dataStructArray['ROOT']['el']) && FALSE === is_array($dataStructArray['sheets'])) || (count($dataStructArray['sheets']) < 1 && count($dataStructArray['ROOT']['el']) < 1 && count($dataStructArray['sheets'][key($dataStructArray['sheets'])]) === 0)) {
+			$config['parameters'] = array(
+				'userFunction' => 'Tx_Flux_UserFunction_NoFields->renderField'
+			);
+			$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
+		}
+		return $dataStructArray;
+	}
+
+	/**
 	 * Updates $dataStructArray by reference, filling it with a proper data structure
 	 * based on the selected template file.
 	 *
@@ -399,15 +416,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				return;
 			}
 			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths, $extensionName);
-			/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
-			$flexFormStructureProvider = $this->objectManager->create('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
-			$dataStructArray = $flexFormStructureProvider->render($config);
-			if ((FALSE === is_array($dataStructArray['ROOT']['el']) && FALSE === is_array($dataStructArray['sheets'])) || (count($dataStructArray['sheets']) < 1 && count($dataStructArray['ROOT']['el']) < 1 && count($dataStructArray['sheets'][key($dataStructArray['sheets'])]) === 0)) {
-				$config['parameters'] = array(
-					'userFunction' => 'Tx_Flux_UserFunction_NoFields->renderField'
-				);
-				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-			}
+			$dataStructArray = $this->convertFlexFormConfigurationToDataStructure($config);
 		} catch (Exception $e) {
 			$this->message('Attempting to convert FlexForm XML to array using file ' . $templateFile . ' failed - ' .
 				'see next error message');
