@@ -105,10 +105,23 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	public function initializeView(Tx_Extbase_MVC_View_ViewInterface $view) {
 		try {
 			$this->view = $view;
-			$row = $this->configurationManager->getContentObject()->data;
+			$row = $this->getRecord();
+			if (TRUE === empty($row)) {
+				if ('BE' === TYPO3_MODE) {
+					$row = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', "uid = '" . t3lib_div::_GET('id') . "'"));
+				} else {
+					$row = $GLOBALS['TSFE']->page;
+				}
+			}
+			if (TRUE === empty($row)) {
+				$this->configurationService->message('Unable to detect active record; page, content or otherwise.', 1368271141);
+				return;
+			}
 			$table = $this->getFluxTableName();
 			$field = $this->getFluxRecordField();
 			$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $field, $row);
+			$extensionKey = $this->provider->getExtensionKey($row);
+			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 			if (NULL === $this->provider) {
 				$this->configurationService->message('Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled Controller - ' .
 					'this is a grave error and indicates that EXT: ' . $extensionName . ' itself is broken - or that EXT:' . $extensionName .
@@ -116,8 +129,6 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 					get_class($this) . ' and the table name is "' . $table . '".', t3lib_div::SYSLOG_SEVERITY_WARNING);
 				return;
 			}
-			$extensionKey = $this->provider->getExtensionKey($row);
-			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 			$extensionSignature = str_replace('_', '', $extensionKey);
 			$this->setup = $this->provider->getTemplatePaths($row);
 			if (FALSE === is_array($this->setup) || 0 === count($this->setup)) {
@@ -149,6 +160,9 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			$this->view->setLayoutRootPath($this->setup['layoutRootPath']);
 			$this->view->setPartialRootPath($this->setup['partialRootPath']);
 			$this->view->setTemplateRootPath($this->setup['templateRootPath']);
+			$this->view->assign('fluxTableName', $this->fluxTableName);
+			$this->view->assign('fluxRecordField', $this->fluxRecordField);
+			$this->view->assign('record', $row);
 		} catch (Exception $error) {
 			$this->handleError($error);
 		}
