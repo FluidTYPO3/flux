@@ -273,6 +273,24 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
+	 * @param string $extensionKey
+	 * @param string $controllerName
+	 * @return boolean
+	 */
+	public function detectControllerClassPresenceFromExtensionKeyAndControllerType($extensionKey, $controllerName) {
+		if (FALSE !== strpos($extensionKey, '.')) {
+			list ($vendorName, $extensionName) = explode('.', $extensionKey);
+			$potentialClassName = $vendorName . '\\' . $extensionName . '\\Controller\\BackendController';
+			if (TRUE === class_exists($potentialClassName)) {
+				return TRUE;
+			}
+		}
+		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$potentialClassName = 'Tx_' . $extensionName . '_Controller_BackendController';
+		return class_exists($potentialClassName);
+	}
+
+	/**
 	 * Resolve the top-priority ConfigurationPrivider which can provide
 	 * a working FlexForm configuration baed on the given parameters.
 	 *
