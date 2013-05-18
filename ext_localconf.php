@@ -84,3 +84,15 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\Database\\Refer
 	array('className' => 'Tx_Flux_Override_Core_Database_ReferenceIndex');
 
 Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider');
+
+/*
+ * The following stub adds VH aliases for 4.5 to use: f:format.raw -> f:escape, f:format.htmlentities -> f:escape
+ */
+if (0 === strpos(TYPO3_version, '4.5')) {
+	class Tx_Fluid_ViewHelpers_Format_RawViewHelper extends Tx_Fluid_ViewHelpers_EscapeViewHelper {
+
+	}
+	class Tx_Fluid_ViewHelpers_Format_HtmlentitiesViewHelper extends Tx_Fluid_ViewHelpers_EscapeViewHelper {
+
+	}
+}
