@@ -40,6 +40,11 @@ class Tx_Flux_Backend_TceMain {
 	protected $configurationService;
 
 	/**
+	 * @var boolean
+	 */
+	private $cachesCleared = FALSE;
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
@@ -176,6 +181,9 @@ class Tx_Flux_Backend_TceMain {
 	 * @return void
 	 */
 	public function clearCacheCommand($command) {
+		if (TRUE === $this->cachesCleared) {
+			return;
+		}
 		$tables = array_keys($GLOBALS['TCA']);
 		foreach ($tables as $table) {
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL);
@@ -184,6 +192,7 @@ class Tx_Flux_Backend_TceMain {
 				$provider->clearCacheCommand($command);
 			}
 		}
+		$this->cachesCleared = TRUE;
 	}
 
 }
