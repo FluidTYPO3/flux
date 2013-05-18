@@ -390,13 +390,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function getFlexFormValues(array $row) {
 		try {
-			$className = get_class($this);
-			$fieldName = $this->getFieldName($row);
-			if (NULL === $fieldName) {
-				$this->configurationService->message('Returning empty array from ' . $className .
-					' - detected field name NULL and parent getFlexFormValues method is being inherited and used.');
-				return array();
-			}
+			$fieldName = $this->fieldName;
 			$stored = $this->getTemplateVariables($row);
 			$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $stored);
 			$tree = $this->getInheritanceTree($row);
