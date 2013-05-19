@@ -82,7 +82,7 @@ class Tx_Flux_Provider_Structure_FlexFormStructureProvider extends Tx_Flux_Provi
 				/** @var $field Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper */
 				unset($field['sheet']);
 				$name = $field['name'];
-				$sheetStructArray['ROOT']['el'][$name] =  $field->getStructure();
+				$dataStructArray['ROOT']['el'][$name] =  $field->getStructure();
 			}
 		} else {
 			$dataStructArray['sheets'] = array();
