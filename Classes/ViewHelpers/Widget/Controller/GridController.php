@@ -88,8 +88,22 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 		$this->assignGridVariables();
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $this->row);
-		if (Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero() === TRUE) {
-			$this->view->setTemplatePathAndFilename(t3lib_extMgm::extPath('flux', 'Resources/Private/Templates/ViewHelpers/Widget/Grid/Legacy.html'));
+		$paths = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		if (TRUE === isset($paths['plugin.']['tx_flux.']['view.']['templateRootPath'])) {
+			$templateRootPath = $paths['plugin.']['tx_flux.']['view.']['templateRootPath'];
+		} else {
+			$templateRootPath = t3lib_extMgm::extPath('flux', 'Resources/Private/Templates');
 		}
+		if ('/' !== substr($templateRootPath, -1)) {
+			$templateRootPath .= '/';
+		}
+		$templatePathAndFilename = $templateRootPath . 'ViewHelpers/Widget/Grid/Index.html';
+		if (TRUE === Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
+			$templatePathAndFilename = $templateRootPath . 'ViewHelpers/Widget/Grid/GridElements.html';
+		} elseif (TRUE === Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero()) {
+			$templatePathAndFilename = $templateRootPath . 'ViewHelpers/Widget/Grid/Legacy.html';
+		}
+		$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+		$this->view->setTemplatePathAndFilename($templatePathAndFilename);
 	}
 }
