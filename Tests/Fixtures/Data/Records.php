@@ -23,8 +23,6 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Records.php');
-
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
