@@ -1,0 +1,15 @@
+{namespace flux=Tx_Flux_ViewHelpers}
+<f:layout name="Default" />
+<f:section name="Configuration">
+	<flux:flexform id="test">
+		<flux:flexform.sheet name="options">
+			<flux:flexform.field.input name="settings.input" />
+			<flux:flexform.field.checkbox name="settings.checkbox" />
+			<flux:flexform.field.file name="settings.file" />
+			<flux:flexform.field.group name="settings.group" table="pages" />
+			<flux:flexform.field.inline name="settings.inline" table="tt_content" />
+			<flux:flexform.field.select name="settings.select" table="pages" />
+			<flux:flexform.field.text name="settings.text" />
+		</flux:flexform.sheet>
+	</flux:flexform>
+</f:section>
