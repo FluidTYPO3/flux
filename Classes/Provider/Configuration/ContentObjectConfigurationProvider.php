@@ -49,7 +49,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	/**
 	 * @var string
 	 */
-	protected $fieldName = NULL;
+	protected $fieldName = 'pi_flexform';
 
 	/**
 	 * @param array $row
