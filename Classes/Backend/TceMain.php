@@ -155,16 +155,22 @@ class Tx_Flux_Backend_TceMain {
 			}
 			$arguments[] = &$reference;
 				// check for a registered generic ConfigurationProvider for $table
+			$detectedProviders = array();
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
 			foreach ($providers as $provider) {
-				call_user_func_array(array($provider, $methodName), $arguments);
+				$class = get_class($provider);
+				$detectedProviders[$class] = $provider;
 			}
 				// check each field for a registered ConfigurationProvider
 			foreach ($record as $fieldName => $unusedValue) {
 				$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $record);
 				foreach ($providers as $provider) {
-					call_user_func_array(array($provider, $methodName), $arguments);
+					$class = get_class($provider);
+					$detectedProviders[$class] = $provider;
 				}
+			}
+			foreach ($detectedProviders as $provider) {
+				call_user_func_array(array($provider, $methodName), $arguments);
 			}
 			if ($saveRecordData === TRUE && isset($arguments['row']) === TRUE && is_array($arguments['row']) === TRUE && count($arguments['row']) > 0) {
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $clause, $arguments['row']);
