@@ -68,4 +68,19 @@ class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFu
 		$this->assertArrayHasKey(0, $stored['grid'][0], 'Has at least one column in first row');
 	}
 
+	/**
+	 * @test
+	 */
+	public function canReadSheetsFromTemplateUsingServiceToConvertConfigurationToDataStructure() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_SHEETS);
+		$service = $this->createFluxServiceInstance();
+		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
+		$structure = $service->convertFlexFormConfigurationToDataStructure($stored);
+		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
+		$this->assertThat($structure['sheets'], $isArrayConstraint);
+		$this->assertNotEmpty($structure['sheets']);
+		$this->assertArrayHasKey('options', $structure['sheets']);
+		$this->assertArrayHasKey('another', $structure['sheets']);
+	}
+
 }

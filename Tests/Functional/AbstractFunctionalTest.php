@@ -32,6 +32,11 @@ abstract class Tx_Vhs_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit
 	/**
 	 * @var $string
 	 */
+	const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Sheets.html';
+
+	/**
+	 * @var $string
+	 */
 	const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/BasicGrid.html';
 
 	/**
