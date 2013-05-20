@@ -27,39 +27,32 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Vhs_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFunctionalTest {
 
 	/**
-	 * @return
+	 * @test
 	 */
-	const FIXTURE_TEMPLATE_FULL = 'EXT:flux/Tests/Fixtures/Templates/Full.html';
-
-	/**
-	 * @return
-	 */
-	const FIXTURE_TEMPLATE_ABSOLUTEMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
-
-	/**
-	 * @return string
-	 */
-	protected function getShorthandFixtureTemplatePathAndFilename() {
-		return self::FIXTURE_TEMPLATE_ABSOLUTEMINIMAL;
+	public function canTranslateTemplatePath() {
+		$raw = $this->getShorthandFixtureTemplatePathAndFilename();
+		$translated = $this->getAbsoluteFixtureTemplatePathAndFilename();
+		$this->assertNotEquals($raw, $translated);
+		$this->assertStringStartsWith(PATH_site, $translated);
 	}
 
 	/**
-	 * @return string
+	 * @test
 	 */
-	protected function getAbsoluteFixtureTemplatePathAndFilename() {
-		return t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_ABSOLUTEMINIMAL);
-	}
-
-	/**
-	 * @return Tx_Flux_Service_FluxService
-	 */
-	protected function createFluxServiceInstance() {
-		/** @var $fluxService Tx_Flux_Service_FluxService */
-		$fluxService = $this->objectManager->get('Tx_Flux_Service_FluxService');
-		return $fluxService;
+	public function canReadMostBasicTemplate() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename();
+		$service = $this->createFluxServiceInstance();
+		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
+		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
+		$this->assertThat($stored, $isArrayConstraint);
+		$this->assertArrayHasKey('fields', $stored);
+		$this->assertArrayHasKey('label', $stored);
+		$this->assertNotEmpty($stored['label']);
+		$this->assertArrayHasKey('id', $stored);
+		$this->assertNotEmpty($stored['id']);
 	}
 
 }
