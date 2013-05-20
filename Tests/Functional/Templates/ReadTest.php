@@ -32,7 +32,7 @@ class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFu
 	/**
 	 * @test
 	 */
-	public function canTranslateTemplatePath() {
+	public function canTranslateTemplatePathFromShorthandToAbsolute() {
 		$raw = $this->getShorthandFixtureTemplatePathAndFilename();
 		$translated = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$this->assertNotEquals($raw, $translated);
@@ -42,7 +42,7 @@ class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFu
 	/**
 	 * @test
 	 */
-	public function canReadMostBasicTemplate() {
+	public function canReadDefaultStorageArrayFromAbsolutelyMinimalTemplate() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$service = $this->createFluxServiceInstance();
 		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
@@ -58,7 +58,7 @@ class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFu
 	/**
 	 * @test
 	 */
-	public function canReadGridFromTemplate() {
+	public function canReadGridFromTemplateWithoutConvertingToDataStructure() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
 		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
