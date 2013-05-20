@@ -35,6 +35,7 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	public function canExecuteUpdateCommandOnUnrecognisedRecord() {
 		$record = $this->getSimpleRecordFixture();
 		$this->attemptCommandExecution('update', $record);
+		$this->attemptRecordManipulation($record, 'update');
 		$this->anything();
 	}
 
@@ -42,9 +43,9 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	 * @test
 	 */
 	public function canExecuteUpdateCommandOnRecognisedRecord() {
-		$record = $this->getSimpleRecordFixture();
-		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$record = $this->getSimpleRecordFixtureWithSimpleFlexFormSource();
 		$this->attemptCommandExecution('update', $record);
+		$this->attemptRecordManipulation($record, 'update');
 		$this->anything();
 	}
 
@@ -61,8 +62,7 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	 * @test
 	 */
 	public function canExecuteMoveCommandOnRecognisedRecord() {
-		$record = $this->getSimpleRecordFixture();
-		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$record = $this->getSimpleRecordFixtureWithSimpleFlexFormSource();
 		$this->attemptCommandExecution('move', $record);
 		$this->anything();
 	}
@@ -123,6 +123,15 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	 */
 	protected function getSimpleRecordFixture() {
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		return $record;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getSimpleRecordFixtureWithSimpleFlexFormSource() {
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		return $record;
 	}
 
