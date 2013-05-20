@@ -27,32 +27,24 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFunctionalTest {
+class Tx_Vhs_Tests_Functional_Provider_ProviderTest extends Tx_Vhs_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @test
 	 */
-	public function canTranslateTemplatePathFromShorthandToAbsolute() {
-		$raw = $this->getShorthandFixtureTemplatePathAndFilename();
-		$translated = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
-		$this->assertNotEquals($raw, $translated);
-		$this->assertStringStartsWith(PATH_site, $translated);
+	public function canDetectDefaultFluxContentConfigurationProvider() {
+		$service = $this->createFluxServiceInstance();
+		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
+		$this->assertInstanceOf('Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider', $provider);
 	}
 
 	/**
 	 * @test
 	 */
-	public function canReadDefaultStorageArrayFromAbsolutelyMinimalTemplate() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
+	public function canDetectConfigurationProviderWithFieldName() {
 		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
-		$this->assertThat($stored, $isArrayConstraint);
-		$this->assertArrayHasKey('fields', $stored);
-		$this->assertArrayHasKey('label', $stored);
-		$this->assertNotEmpty($stored['label']);
-		$this->assertArrayHasKey('id', $stored);
-		$this->assertNotEmpty($stored['id']);
+		$providers = $service->resolveConfigurationProviders('tt_content', NULL, array(), 'flux');
+		$this->assertArrayHasKey(0, $providers);
 	}
 
 }
