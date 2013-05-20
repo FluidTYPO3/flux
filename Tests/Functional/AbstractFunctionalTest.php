@@ -30,27 +30,27 @@
 abstract class Tx_Vhs_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 
 	/**
-	 * @return
+	 * @var $string
 	 */
-	const FIXTURE_TEMPLATE_FULL = 'EXT:flux/Tests/Fixtures/Templates/Full.html';
+	const FIXTURE_TEMPLATE_ALLFIELDTYPES = 'EXT:flux/Tests/Fixtures/Templates/AllFieldTypes.html';
 
 	/**
-	 * @return
+	 * @var string
 	 */
-	const FIXTURE_TEMPLATE_ABSOLUTEMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
+	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
 
 	/**
 	 * @return string
 	 */
 	protected function getShorthandFixtureTemplatePathAndFilename() {
-		return self::FIXTURE_TEMPLATE_ABSOLUTEMINIMAL;
+		return self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
 	}
 
 	/**
 	 * @return string
 	 */
 	protected function getAbsoluteFixtureTemplatePathAndFilename() {
-		return t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_ABSOLUTEMINIMAL);
+		return t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 	}
 
 	/**
