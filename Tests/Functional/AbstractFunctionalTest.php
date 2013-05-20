@@ -32,6 +32,11 @@ abstract class Tx_Vhs_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit
 	/**
 	 * @var $string
 	 */
+	const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/BasicGrid.html';
+
+	/**
+	 * @var $string
+	 */
 	const FIXTURE_TEMPLATE_ALLFIELDTYPES = 'EXT:flux/Tests/Fixtures/Templates/AllFieldTypes.html';
 
 	/**
@@ -47,10 +52,11 @@ abstract class Tx_Vhs_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit
 	}
 
 	/**
+	 * @param string $shorthandTemplatePath
 	 * @return string
 	 */
-	protected function getAbsoluteFixtureTemplatePathAndFilename() {
-		return t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
+	protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath) {
+		return t3lib_div::getFileAbsFileName($shorthandTemplatePath);
 	}
 
 	/**

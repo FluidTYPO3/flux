@@ -34,7 +34,7 @@ class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFu
 	 */
 	public function canTranslateTemplatePath() {
 		$raw = $this->getShorthandFixtureTemplatePathAndFilename();
-		$translated = $this->getAbsoluteFixtureTemplatePathAndFilename();
+		$translated = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$this->assertNotEquals($raw, $translated);
 		$this->assertStringStartsWith(PATH_site, $translated);
 	}
@@ -43,7 +43,7 @@ class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFu
 	 * @test
 	 */
 	public function canReadMostBasicTemplate() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename();
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$service = $this->createFluxServiceInstance();
 		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
 		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
@@ -53,6 +53,19 @@ class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFu
 		$this->assertNotEmpty($stored['label']);
 		$this->assertArrayHasKey('id', $stored);
 		$this->assertNotEmpty($stored['id']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadGridFromTemplate() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
+		$service = $this->createFluxServiceInstance();
+		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
+		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
+		$this->assertThat($stored['grid'], $isArrayConstraint);
+		$this->assertArrayHasKey(0, $stored['grid'], 'Has at least one row');
+		$this->assertArrayHasKey(0, $stored['grid'][0], 'Has at least one column in first row');
 	}
 
 }
