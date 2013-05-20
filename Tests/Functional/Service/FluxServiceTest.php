@@ -32,7 +32,7 @@ class Tx_Vhs_Tests_Functional_Service_FluxServiceTest extends Tx_Vhs_Tests_Abstr
 	/**
 	 * @test
 	 */
-	public function canInstantiaceFluxService() {
+	public function canInstantiateFluxService() {
 		$service = $this->createFluxServiceInstance();
 		$this->assertInstanceOf('Tx_Flux_Service_FluxService', $service);
 	}
