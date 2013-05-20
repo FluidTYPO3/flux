@@ -46,8 +46,7 @@ class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_Abstract
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$service = $this->createFluxServiceInstance();
 		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
-		$this->assertThat($stored, $isArrayConstraint);
+		$this->assertIsArray($stored);
 		$this->assertArrayHasKey('fields', $stored);
 		$this->assertArrayHasKey('label', $stored);
 		$this->assertNotEmpty($stored['label']);
