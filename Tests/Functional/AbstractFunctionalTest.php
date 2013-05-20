@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Vhs_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 
 	/**
 	 * @var $string

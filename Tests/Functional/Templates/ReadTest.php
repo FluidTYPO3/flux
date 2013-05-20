@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFunctionalTest {
+class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @test
