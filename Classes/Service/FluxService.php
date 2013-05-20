@@ -280,13 +280,13 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	public function detectControllerClassPresenceFromExtensionKeyAndControllerType($extensionKey, $controllerName) {
 		if (FALSE !== strpos($extensionKey, '.')) {
 			list ($vendorName, $extensionName) = explode('.', $extensionKey);
-			$potentialClassName = $vendorName . '\\' . $extensionName . '\\Controller\\BackendController';
+			$potentialClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
 			if (TRUE === class_exists($potentialClassName)) {
 				return TRUE;
 			}
 		}
 		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$potentialClassName = 'Tx_' . $extensionName . '_Controller_BackendController';
+		$potentialClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
 		return class_exists($potentialClassName);
 	}
 
