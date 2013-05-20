@@ -41,10 +41,45 @@ class Tx_Flux_Tests_Functional_Provider_ProviderTest extends Tx_Flux_Tests_Abstr
 	/**
 	 * @test
 	 */
-	public function canDetectConfigurationProviderWithFieldName() {
+	public function canDetectConfigurationProviderWithoutFieldName() {
 		$service = $this->createFluxServiceInstance();
 		$providers = $service->resolveConfigurationProviders('tt_content', NULL, array(), 'flux');
 		$this->assertArrayHasKey(0, $providers);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetectConfigurationProviderWithFieldName() {
+		$service = $this->createFluxServiceInstance();
+		$providers = $service->resolveConfigurationProviders('tt_content', 'pi_flexform', array(), 'flux');
+		$this->assertArrayHasKey(0, $providers);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReturnExtensionKey() {
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$service = $this->createFluxServiceInstance();
+		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
+		$this->assertInstanceOf('Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider', $provider);
+		$extensionKey = $provider->getExtensionKey($record);
+		$this->assertNotEmpty($extensionKey);
+		$this->assertRegExp('/[a-z_]+/', $extensionKey);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetFlexFormValues() {
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$service = $this->createFluxServiceInstance();
+		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
+		$this->assertInstanceOf('Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider', $provider);
+		$values = $provider->getFlexFormValues($record);
+		$this->assertSame($values, array('settings' => array('input' => '0')));
 	}
 
 	/**
