@@ -23,16 +23,29 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
+require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Records.php');
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Vhs_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 
 	/**
 	 * @var $string
 	 */
 	const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Sheets.html';
+
+	/**
+	 * @var $string
+	 */
+	const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/CustomSection.html';
+
+	/**
+	 * @var $string
+	 */
+	const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/EmptyPreview.html';
 
 	/**
 	 * @var $string
@@ -48,6 +61,15 @@ abstract class Tx_Vhs_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit
 	 * @var string
 	 */
 	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
+
+	/**
+	 * @param mixed $value
+	 * @return void
+	 */
+	protected function assertIsArray($value) {
+		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
+		$this->assertThat($value, $isArrayConstraint);
+	}
 
 	/**
 	 * @return string

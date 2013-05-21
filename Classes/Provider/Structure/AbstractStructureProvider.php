@@ -57,44 +57,4 @@ class Tx_Flux_Provider_Structure_AbstractStructureProvider {
 		$this->objectManager = $objectManager;
 	}
 
-	/**
-	 * @param array $configuration
-	 * @param array $fieldConfiguration
-	 * @return array
-	 */
-	protected function getStandardFieldStructureArray($configuration, $fieldConfiguration) {
-		$fieldStructureArray = array(
-			'TCEforms' => array(
-				'label' => $configuration['label'],
-				'required' => $configuration['required'],
-				'config' => $fieldConfiguration,
-				'displayCond' => $configuration['displayCond']
-			)
-		);
-		if ($configuration['wizards']) {
-			$fieldStructureArray['TCEforms']['config']['wizards'] = $this->getWizardStructureArray($configuration);
-		}
-		if ($configuration['requestUpdate']) {
-			$fieldStructureArray['TCEforms']['onChange'] = 'reload';
-		}
-		return $fieldStructureArray;
-	}
-
-	/**
-	 * @param array $configuration
-	 * @return array
-	 */
-	protected function getWizardStructureArray($configuration) {
-		$wizardStructureArray = array();
-		$wizards = t3lib_div::xml2array($configuration['wizards'], '', TRUE);
-		if (isset($wizards['_DOCUMENT_TAG'])) {
-			$wizards = array($wizards);
-		}
-		foreach ($wizards as $wizard) {
-			$key = $wizard['_DOCUMENT_TAG'];
-			$wizardStructureArray[$key] = $wizard;
-		}
-		return $wizardStructureArray;
-	}
-
 }
