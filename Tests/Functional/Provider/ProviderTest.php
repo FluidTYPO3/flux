@@ -92,7 +92,6 @@ class Tx_Flux_Tests_Functional_Provider_ProviderTest extends Tx_Flux_Tests_Abstr
 		$this->assertInstanceOf('Tx_Flux_Provider_ConfigurationProviderInterface', $provider);
 		$paths = $provider->getTemplatePaths($row);
 		$this->assertIsArray($paths);
-		$this->assertArrayHasKey('extensionKey', $paths);
 	}
 
 }
