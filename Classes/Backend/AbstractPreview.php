@@ -117,7 +117,6 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 					$extensionKey = (TRUE === isset($paths['extensionKey']) ? $paths['extensionKey'] : $provider->getExtensionKey($row));
 					$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 
-
 					$templateVariables = $provider->getTemplateVariables($row);
 					$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, 'Content');
 					$view->assignMultiple($templateVariables);

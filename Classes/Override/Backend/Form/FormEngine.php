@@ -280,7 +280,6 @@ class Tx_Flux_Override_Backend_Form_FormEngine extends t3lib_TCEforms {
 
 				case 'file':
 					foreach ($itemArray as $item) {
-						#\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($item);
 						$itemParts = explode('|', $item);
 						if (TRUE === empty($itemParts[1])) {
 							$itemParts[1] = $itemParts[0];

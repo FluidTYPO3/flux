@@ -43,9 +43,9 @@ class Tx_Flux_Utility_Array {
 				$keyWithoutDot = substr($key, 0, -1);
 				$hasNodeWithoutDot = array_key_exists($keyWithoutDot, $typoScriptArray);
 				$typoScriptNodeValue = $hasNodeWithoutDot ? $typoScriptArray[$keyWithoutDot] : NULL;
-				if(is_array($value)) {
+				if (is_array($value)) {
 					$typoScriptArray[$keyWithoutDot] = self::convertTypoScriptArrayToPlainArray($value);
-					if(!is_null($typoScriptNodeValue)) {
+					if (!is_null($typoScriptNodeValue)) {
 						$typoScriptArray[$keyWithoutDot]['_typoScriptNodeValue']  = $typoScriptNodeValue;
 					}
 					unset($typoScriptArray[$key]);

@@ -279,7 +279,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$dom->formatOutput = TRUE;
 			foreach ($dom->getElementsByTagName('field') as $fieldNode) {
 				if (TRUE === in_array($fieldNode->getAttribute('index'), $removals)) {
-					#$dom->removeChild($fieldNode);
 					$fieldNode->parentNode->removeChild($fieldNode);
 				}
 			}
