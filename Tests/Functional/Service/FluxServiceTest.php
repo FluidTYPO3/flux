@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Vhs_Tests_Functional_Service_FluxServiceTest extends Tx_Vhs_Tests_AbstractFunctionalTest {
+class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @test
@@ -40,7 +40,7 @@ class Tx_Vhs_Tests_Functional_Service_FluxServiceTest extends Tx_Vhs_Tests_Abstr
 	/**
 	 * @test
 	 */
-	public function serviceCanCreateExposedViewWithoutExtensionNameAndControllerName() {
+	public function canCreateExposedViewWithoutExtensionNameAndControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView();
 		$this->assertInstanceOf('Tx_Flux_MVC_View_ExposedTemplateView', $view);
@@ -49,7 +49,7 @@ class Tx_Vhs_Tests_Functional_Service_FluxServiceTest extends Tx_Vhs_Tests_Abstr
 	/**
 	 * @test
 	 */
-	public function serviceCanCreateExposedViewWithExtensionNameWithoutControllerName() {
+	public function canCreateExposedViewWithExtensionNameWithoutControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView('Flux');
 		$this->assertInstanceOf('Tx_Flux_MVC_View_ExposedTemplateView', $view);
@@ -58,7 +58,7 @@ class Tx_Vhs_Tests_Functional_Service_FluxServiceTest extends Tx_Vhs_Tests_Abstr
 	/**
 	 * @test
 	 */
-	public function serviceCanCreateExposedViewWithExtensionNameAndControllerName() {
+	public function canCreateExposedViewWithExtensionNameAndControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView('Flux', 'API');
 		$this->assertInstanceOf('Tx_Flux_MVC_View_ExposedTemplateView', $view);
@@ -67,10 +67,23 @@ class Tx_Vhs_Tests_Functional_Service_FluxServiceTest extends Tx_Vhs_Tests_Abstr
 	/**
 	 * @test
 	 */
-	public function serviceCanCreateExposedViewWithoutExtensionNameWithControllerName() {
+	public function canCreateExposedViewWithoutExtensionNameWithControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView(NULL, 'API');
 		$this->assertInstanceOf('Tx_Flux_MVC_View_ExposedTemplateView', $view);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadGridFromTemplateWithoutConvertingToDataStructure() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
+		$service = $this->createFluxServiceInstance();
+		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
+		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
+		$this->assertThat($stored['grid'], $isArrayConstraint);
+		$this->assertArrayHasKey(0, $stored['grid'], 'Has at least one row');
+		$this->assertArrayHasKey(0, $stored['grid'][0], 'Has at least one column in first row');
 	}
 
 }

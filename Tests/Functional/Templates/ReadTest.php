@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFunctionalTest {
+class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @test
@@ -46,41 +46,12 @@ class Tx_Vhs_Tests_Functional_Templates_ReadTest extends Tx_Vhs_Tests_AbstractFu
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$service = $this->createFluxServiceInstance();
 		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
-		$this->assertThat($stored, $isArrayConstraint);
+		$this->assertIsArray($stored);
 		$this->assertArrayHasKey('fields', $stored);
 		$this->assertArrayHasKey('label', $stored);
 		$this->assertNotEmpty($stored['label']);
 		$this->assertArrayHasKey('id', $stored);
 		$this->assertNotEmpty($stored['id']);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canReadGridFromTemplateWithoutConvertingToDataStructure() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
-		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
-		$this->assertThat($stored['grid'], $isArrayConstraint);
-		$this->assertArrayHasKey(0, $stored['grid'], 'Has at least one row');
-		$this->assertArrayHasKey(0, $stored['grid'][0], 'Has at least one column in first row');
-	}
-
-	/**
-	 * @test
-	 */
-	public function canReadSheetsFromTemplateUsingServiceToConvertConfigurationToDataStructure() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_SHEETS);
-		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$structure = $service->convertFlexFormConfigurationToDataStructure($stored);
-		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
-		$this->assertThat($structure['sheets'], $isArrayConstraint);
-		$this->assertNotEmpty($structure['sheets']);
-		$this->assertArrayHasKey('options', $structure['sheets']);
-		$this->assertArrayHasKey('another', $structure['sheets']);
 	}
 
 }
