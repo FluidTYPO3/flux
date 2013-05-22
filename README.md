@@ -5,6 +5,8 @@ TYPO3 Extension Flux: Fluid FlexForms
 
 ## What is it?
 
+It's good.
+
 Flux provides an integration between Fluid templates, controllers and TCEforms, connecting them in a way that allows any TYPO3
 record type to present a dynamic set of property fields which when filled out are passed as values to the template associated
 with that particular record (or record type).
