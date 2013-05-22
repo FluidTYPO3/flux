@@ -8,12 +8,10 @@ env:
 
 before_script:
   - git clone https://github.com/FluidTYPO3/TYPO3-Travis-Integration.git build-environment
-# initial, quick inspection
   - git clone https://github.com/FluidTYPO3/FluidTYPO3-CodingStandards.git build-environment/FluidTYPO3-CodingStandards
-  - php build-environment/FluidTYPO3-CodingStandards/commit_message_inspector.php || { echo 'Commit message does not conform to rules - please correct'; exit 1; }
-# build environment creation
-  - git clone https://github.com/FluidTYPO3/Introduction.git build-environment/Introduction
   - git clone git://github.com/squizlabs/PHP_CodeSniffer.git build-environment/CodeSniffer
+  - git clone https://github.com/FluidTYPO3/Introduction.git build-environment/Introduction
+# build environment creation
   - mkdir repository
   - find . -maxdepth 1 \! -name repository \! -name "build-environment" \! -name . -exec mv {} repository/ \;
 # testing environment installation
@@ -35,6 +33,8 @@ before_script:
   - cp $PWD/typo3conf/ext/flux/Tests/phpunit.xml $PWD/phpunit.xml
 
 script:
+# initial, quick inspection
+  - php build-environment/FluidTYPO3-CodingStandards/commit_message_inspector.php
 # phplint checking on all PHP source files in extension
   - find $PWD/typo3conf/ext/flux -name *.php -exec phpLint {} --fails-on-warning --report-unused \;
 # PHPCodeSniffer code inspection with only errors displayed (no warnings)
