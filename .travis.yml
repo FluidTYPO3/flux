@@ -34,7 +34,7 @@ before_script:
 
 script:
 # initial, quick inspection
-  - php build-environment/FluidTYPO3-CodingStandards/commit_message_inspector.php
+  - php build-environment/FluidTYPO3-CodingStandards/commit_message_inspector.php $PWD/typo3conf/ext/flux
 # phplint checking on all PHP source files in extension
   - find $PWD/typo3conf/ext/flux -name *.php -exec phpLint {} --fails-on-warning --report-unused \;
 # PHPCodeSniffer code inspection with only errors displayed (no warnings)
