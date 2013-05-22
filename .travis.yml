@@ -7,35 +7,47 @@ env:
   - DB=mysql
 
 before_script:
-  - mkdir repository
-  - find . -maxdepth 1 \! -name repository \! -name . -exec mv {} repository/ \;
+  - echo ">>> INITIALISE BUILD"
   - git clone https://github.com/FluidTYPO3/TYPO3-Travis-Integration.git build-environment
-  - source build-environment/install-helper.sh
-  - git clone https://github.com/FluidTYPO3/TYPO3v4-Core.git --recurse-submodules build-environment/typo3 --depth 50
+# initial, quick inspection
+  - echo ">>> Starting commit mesasge validation"
+  - git clone https://github.com/FluidTYPO3/FluidTYPO3-CodingStandards.git build-environment/FluidTYPO3-CodingStandards
+  - php build-environment/FluidTYPO3-CodingStandards/commit_message_inspector.php || { echo 'Commit message does not conform to rules - please correct'; exit 1; }
+  - echo ">>> Commit cover message(s) good"
+# build environment creation
+  - echo ">>> Creating build environment"
   - git clone https://github.com/FluidTYPO3/Introduction.git build-environment/Introduction
+  - git clone git://github.com/squizlabs/PHP_CodeSniffer.git build-environment/CodeSniffer
+  - mkdir repository
+  - find . -maxdepth 1 \! -name repository \! -name "build-environment" \! -name . -exec mv {} repository/ \;
+# testing environment installation
+  - echo ">>> Installing TYPO3"
+  - git clone https://github.com/FluidTYPO3/TYPO3v4-Core.git --recurse-submodules build-environment/typo3 --depth 50
+  - source build-environment/install-helper.sh
   - mkdir fileadmin
   - mkdir uploads
   - mv build-environment/typo3/* ./
-# local init
-  - rm -rf $PWD/typo3conf/ext/flux
-  - mv $PWD/repository $PWD/typo3conf/ext/flux
-  - rm phpunit.xml
-  - cp $PWD/typo3conf/ext/flux/Tests/phpunit.xml $PWD/phpunit.xml
-# continue install
+  - echo ">>> Installing database"
   - if [[ "$DB" == "mysql" ]]; then mysql -e "DROP DATABASE IF EXISTS typo3_test;" -uroot; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS typo3_test;" -uroot; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -uroot typo3_test < build-environment/Introduction/typo3conf/ext/introduction/Resources/Private/Subpackages/Introduction/Database/introduction.sql; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -uroot typo3_test < build-environment/dbimport/cache_tables.sql; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -uroot typo3_test < build-environment/dbimport/cli_users.sql; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -uroot typo3_test < build-environment/dbimport/phpunit.sql; fi
-# prepare the CodeSniffer
-  - git clone git://github.com/squizlabs/PHP_CodeSniffer.git build-environment/CodeSniffer
-  - git clone https://github.com/FluidTYPO3/FluidTYPO3-CodingStandards.git build-environment/FluidTYPO3-CodingStandards
+# copy into place the necessary testing files as provided by the current extension
+  - echo ">>> Preparing test of build"
+  - rm -rf $PWD/typo3conf/ext/flux
+  - mv $PWD/repository $PWD/typo3conf/ext/flux
+  - rm phpunit.xml
+  - cp $PWD/typo3conf/ext/flux/Tests/phpunit.xml $PWD/phpunit.xml
 
 script:
 # phplint checking on all PHP source files in extension
+  - echo ">>> Inspecting PHP syntax"
   - find $PWD/typo3conf/ext/flux -name *.php -exec phpLint {} --fails-on-warning --report-unused \;
 # PHPCodeSniffer code inspection with only errors displayed (no warnings)
+  - echo ">>> Inspecting coding standards"
   - $PWD/build-environment/CodeSniffer/scripts/phpcs -n --standard=$PWD/build-environment/FluidTYPO3-CodingStandards/ruleset.xml $PWD/typo3conf/ext/flux
 # PHPUnit tests from overridden phpunit tests configuration file
+  - echo ">>> Running build tests"
   - php $PWD/typo3/cli_dispatch.phpsh phpunit -c phpunit.xml
