@@ -67,7 +67,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 
 		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,' . $field, $table, sprintf('uid=%d', $uid));
 
-		if (NULL === $row) {
+		if (FALSE === $row) {
 			throw new Tx_Fluid_Core_ViewHelper_Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);
 		}
 		$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $row);
