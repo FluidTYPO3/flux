@@ -276,8 +276,11 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			$callback = t3lib_div::_GET('CB');
 			$pasteCommand = $callback['paste'];
 			$parameters = explode('|', $pasteCommand);
-			list ($pid, $subCommand, $relativeUid, $uid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
-			$clipData = $GLOBALS['BE_USER']->getModuleData('clipboard', $GLOBALS['BE_USER']->getTSConfigVal('options.saveClipboard') ? '' : 'ses');
+			if (1 < substr_count($parameters[1], '-')) {
+				list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
+			} else {
+				$relativeUid = $parameters[1];
+			}
 			if ($command === 'copy') {
 				$copiedUid = $reference->copyMappingArray[$this->tableName][$id];
 				$condition = "uid = '" . $copiedUid . "'";
@@ -293,14 +296,20 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			if (0 < $relativeUid) {
 				$relativeRecord = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $this->tableName, "uid = '" . $relativeUid . "'"));
 				$record['sorting'] = $relativeRecord['sorting'] + 1;
-				$relativeTo = 0 - $relativeUid;
+				$record['pid'] = $relativeRecord['pid'];
+				$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
+				$record['tx_flux_parent'] = $relativeRecord['tx_flux_parent'];
 			} else {
 				$record['sorting'] = 0;
+				if (0 < $pid) {
+					$record['pid'] = $pid;
+				}
+				$record['tx_flux_column'] = '';
+				$record['tx_flux_area'] = '';
 			}
-			$record['pid'] = $pid;
-			$record['tx_flux_column'] = $possibleArea;
-			$record['tx_flux_parent'] = $uid;
 			if (FALSE === empty($possibleArea)) {
+				$record['tx_flux_parent'] = $parentUid;
+				$record['tx_flux_column'] = $possibleArea;
 				$record['colPos'] = -42;
 			}
 			if (FALSE === empty($possibleColPos) || $possibleColPos === 0 || $possibleColPos === '0') {
