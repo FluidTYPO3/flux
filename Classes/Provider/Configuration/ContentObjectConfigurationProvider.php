@@ -301,7 +301,9 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$record['tx_flux_parent'] = $relativeRecord['tx_flux_parent'];
 			} else {
 				$record['sorting'] = 0;
-				$record['pid'] = $pid;
+				if (0 < $pid) {
+					$record['pid'] = $pid;
+				}
 				$record['tx_flux_column'] = '';
 				$record['tx_flux_area'] = '';
 			}
