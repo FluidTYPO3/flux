@@ -70,9 +70,9 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	protected $templatePathAndFilename = NULL;
 
 	/**
-	 * @var array|NULL
+	 * @var array
 	 */
-	protected $templateVariables = NULL;
+	protected $templateVariables = array();
 
 	/**
 	 * @var array|NULL
@@ -174,12 +174,15 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function getTemplatePathAndFilename(array $row) {
 		unset($row);
+		if (0 === strpos($this->templatePathAndFilename, 'EXT:')) {
+			return t3lib_div::getFileAbsFileName($this->templatePathAndFilename);
+		}
 		return $this->templatePathAndFilename;
 	}
 
 	/**
 	 * @param array $row
-	 * @return array|NULL
+	 * @return array
 	 */
 	public function getTemplateVariables(array $row) {
 		unset($row);
