@@ -240,6 +240,15 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
+	 * @param string $extensionName
+	 * @return array|NULL
+	 */
+	public function getBackendViewConfigurationForExtensionName($extensionName) {
+		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionName, 'module');
+		return $configuration;
+	}
+
+	/**
 	 * Gets an array of TypoScript configuration from below plugin.tx_fed -
 	 * if $extensionName is set in parameters it is used to indicate which sub-
 	 * section of the result to return.
@@ -247,19 +256,20 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $extensionName
 	 * @param string $memberName
 	 * @param string $containerExtensionScope If TypoScript is not located under plugin.tx_fed, change the tx_<scope> part by specifying this argument
+	 * @param string $superScope Either "plugin" or "module", depending on the root scope
 	 * @return array
 	 */
-	public function getTypoScriptSubConfiguration($extensionName, $memberName, $containerExtensionScope = 'fed') {
+	public function getTypoScriptSubConfiguration($extensionName, $memberName, $containerExtensionScope = 'fed', $superScope = 'plugin') {
 		$containerExtensionScope = str_replace('_', '', $containerExtensionScope);
 		$cacheKey = $extensionName . $memberName . $containerExtensionScope;
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
 		$config = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		if (FALSE === isset($config['plugin.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'])) {
+		if (FALSE === isset($config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'])) {
 			return NULL;
 		}
-		$config = $config['plugin.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
+		$config = $config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
 		$config = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($config);
 		if ($extensionName) {
 			$config = $config[$extensionName];
