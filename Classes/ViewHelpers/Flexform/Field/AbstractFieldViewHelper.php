@@ -118,6 +118,8 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		} else {
 			$defaultValue = NULL;
 		}
+		$eval = $this->arguments['validate'] . (TRUE === isset($this->arguments['eval']) ? ',' . $this->arguments['eval'] : '');
+		$eval = trim($eval . (TRUE === (boolean) $this->arguments['required'] && FALSE === strpos($eval, 'required') ? ',required' : ''), ',');
 		$config = array(
 			'name' => $this->arguments['name'],
 			'transform' => $this->arguments['transform'],
@@ -135,6 +137,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 			'wrap' => TRUE,
 			'section' => $sectionName,
 			'sectionObjectName' => $sectionObjectName,
+			'eval' => $eval
 		);
 		// Note about future implementations: setting _any_ value here has the implication
 		// that ConfigurationProviders will not allow the field's value to be inherited. A future
