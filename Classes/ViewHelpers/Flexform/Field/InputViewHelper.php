@@ -51,7 +51,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 	 */
 	protected function getBaseConfig() {
 		$config = parent::getBaseConfig();
-		$config['eval'] = $this->arguments['eval'];
 		$config['size'] = $this->arguments['size'];
 		$config['placeholder'] = $this->arguments['placeholder'];
 		$config['max'] = $this->arguments['maxCharacters'];
@@ -78,12 +77,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 			'size' => $configuration['size'],
 			'default' => $configuration['default'],
 			'max' => $configuration['max'],
+			'eval' => $configuration['eval'],
 		);
 		if ($configuration['range']) {
 			$fieldConfiguration['range'] = $configuration['range'];
-		}
-		if (empty($configuration['eval']) === FALSE) {
-			$fieldConfiguration['eval'] = $configuration['eval'];
 		}
 		return $fieldConfiguration;
 	}
