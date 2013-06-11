@@ -20,7 +20,9 @@ script:
 # initial, quick inspection
   - php build-environment/FluidTYPO3-CodingStandards/commit_message_inspector.php $PWD/typo3conf/ext/$REPOSITORY
 # phplint checking on all PHP source files in extension
-  - find $PWD/typo3conf/ext/$REPOSITORY -name *.php -exec phpLint {} --fails-on-warning --report-unused \;
+  - php $PWD/typo3/cli_dispatch.phpsh extbase builder:phpsyntax --extension $REPOSITORY
+# fluid template syntax checking on all files in extension
+  - php $PWD/typo3/cli_dispatch.phpsh extbase builder:fluidsyntax --extension $REPOSITORY
 # PHPCodeSniffer code inspection with only errors displayed (no warnings)
   - $PWD/build-environment/CodeSniffer/scripts/phpcs -n --standard=$PWD/build-environment/FluidTYPO3-CodingStandards/ruleset.xml $PWD/typo3conf/ext/$REPOSITORY
 # PHPUnit tests from overridden phpunit tests configuration file
