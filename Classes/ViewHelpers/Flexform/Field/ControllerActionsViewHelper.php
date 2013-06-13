@@ -84,7 +84,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->overrideArgument('name', 'string', 'Name of the field', FALSE, 'switchableControllerActions');
-		$this->registerArgument('extensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension');
+		$this->registerArgument('extensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension');
 		$this->registerArgument('pluginName', 'string', 'Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName');
 		$this->registerArgument('controllerName', 'string', 'Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied');
 		$this->registerArgument('actions', 'array', 'Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)');
@@ -148,13 +148,21 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 			$exclusions[$controllerName] = t3lib_div::trimExplode(',', $actionsCommaSeparated, TRUE);
 		}
 		$items = array();
-		$extensionName = $this->arguments['extensionName'];
+		list ($vendor, $extensionName) = t3lib_div::trimExplode('.', $this->arguments['extensionName']);
+		if (TRUE === empty($extensionName)) {
+			$extensionName = $vendor;
+			$vendor = NULL;
+		}
 		$pluginName = $this->arguments['pluginName'];
 		$limitByControllerName = $this->arguments['controllerName'];
 		foreach ($actions as $controllerName => $actionsCommaSeparated) {
 			$actions = is_array($actionsCommaSeparated) === TRUE ? $actionsCommaSeparated : t3lib_div::trimExplode(',', $actionsCommaSeparated, TRUE);
 			if ($extensionName && $pluginName) {
-				$controllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
+				if (NULL === $vendor) {
+					$controllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
+				} else {
+					$controllerClassName = $vendor . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
+				}
 				$controllerClassReflection = new ReflectionClass($controllerClassName);
 			} else {
 				$controllerClassName = NULL;
