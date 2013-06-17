@@ -149,6 +149,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			throw new Exception('The template file "' . $templatePathAndFilename . '" was not found.', 1366824347);
 		}
 		$variableCheck = json_encode($variables);
+		$actionName = strtolower(pathinfo($templatePathAndFilename, PATHINFO_FILENAME));
 		$cacheKey = md5($templatePathAndFilename . $variableName . $extensionName . implode('', $paths) . $section . $variableCheck);
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
@@ -164,7 +165,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (TRUE === isset($paths['partialRootPath'])) {
 			$exposedView->setPartialRootPath($paths['partialRootPath']);
 		}
-		$value = $exposedView->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $variableName, $section, $paths, $extensionName);
+		$value = $exposedView->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $variableName, $section, $paths, $extensionName, $actionName);
 		self::$cache[$cacheKey] = $value;
 		return $value;
 	}
@@ -487,6 +488,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		foreach (array_values($flexFormArray) as $languages) {
 			if (!is_array($languages) || !isset($languages[$languagePointer])) {
+				continue;
+			}
+			if (!is_array($languages[$languagePointer])) {
+				$currentNode = $languages[$languagePointer];
 				continue;
 			}
 			foreach ($languages[$languagePointer] as $valueKey => $valueDefinition) {
