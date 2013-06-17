@@ -183,7 +183,7 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 		$paths = $this->expandGenericPathPattern($this->templatePathAndFilenamePattern, FALSE, FALSE);
 		foreach ($paths as &$templatePathAndFilename) {
 			$templatePathAndFilename = str_replace('@action', $actionName, $templatePathAndFilename);
-			if (file_exists($templatePathAndFilename)) {
+			if (TRUE === file_exists($templatePathAndFilename)) {
 				return $templatePathAndFilename;
 			}
 		}
