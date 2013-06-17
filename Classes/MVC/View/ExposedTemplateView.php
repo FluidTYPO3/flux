@@ -148,7 +148,7 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	 * @param boolean $optional
 	 * @return string
 	 */
-	public function renderStandaloneSection($sectionName, $variables, $optional=TRUE) {
+	public function renderStandaloneSection($sectionName, $variables, $optional = TRUE) {
 		$content = NULL;
 		try {
 			$this->baseRenderingContext->setControllerContext($this->controllerContext);
