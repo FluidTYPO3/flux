@@ -489,6 +489,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			if (!is_array($languages) || !isset($languages[$languagePointer])) {
 				continue;
 			}
+			if (!is_array($languages[$languagePointer])) {
+				$currentNode = $languages[$languagePointer];
+				continue;
+			}
 			foreach ($languages[$languagePointer] as $valueKey => $valueDefinition) {
 				if (FALSE === strpos($valueKey, '.')) {
 					$settings[$valueKey] = $this->walkFlexFormNode($valueDefinition, $valuePointer);
