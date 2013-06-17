@@ -52,10 +52,11 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
 	 * @param array $paths Template paths; required if template renders Partials (from inside $sectionName, if specified)
 	 * @param string $extensionName If specified, overrides the extension name stored in the RenderingContext. Use with care.
+	 * @param string $actionName If provided, renders the template as if the action was this action
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL, $paths = NULL, $extensionName = NULL) {
+	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL, $paths = NULL, $extensionName = NULL, $actionName = 'render') {
 		try {
 			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
 				throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
@@ -72,6 +73,7 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 				$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 				$request = $this->controllerContext->getRequest();
+				$request->setControllerActionName($actionName);
 				$request->setControllerExtensionName($extensionName);
 				$this->controllerContext->setRequest($request);
 			}
