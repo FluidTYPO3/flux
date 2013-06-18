@@ -52,10 +52,11 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
 	 * @param array $paths Template paths; required if template renders Partials (from inside $sectionName, if specified)
 	 * @param string $extensionName If specified, overrides the extension name stored in the RenderingContext. Use with care.
+	 * @param string $actionName If provided, renders the template as if the action was this action
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL, $paths = NULL, $extensionName = NULL) {
+	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL, $paths = NULL, $extensionName = NULL, $actionName = 'render') {
 		try {
 			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
 				throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
@@ -72,6 +73,7 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 				$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 				$request = $this->controllerContext->getRequest();
+				$request->setControllerActionName($actionName);
 				$request->setControllerExtensionName($extensionName);
 				$this->controllerContext->setRequest($request);
 			}
@@ -148,7 +150,7 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	 * @param boolean $optional
 	 * @return string
 	 */
-	public function renderStandaloneSection($sectionName, $variables, $optional=TRUE) {
+	public function renderStandaloneSection($sectionName, $variables, $optional = TRUE) {
 		$content = NULL;
 		try {
 			$this->baseRenderingContext->setControllerContext($this->controllerContext);
@@ -168,12 +170,9 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	 * @return string
 	 * @throws Exception
 	 */
-	protected function getTemplatePathAndFilename($actionName = NULL) {
-		if ($this->templatePathAndFilename !== NULL) {
-			return $this->templatePathAndFilename;
-		}
-		if ($actionName === NULL) {
-			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
+	public function getTemplatePathAndFilename($actionName = NULL) {
+		if (NULL === $actionName) {
+			if (FALSE === $this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext) {
 				throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists ' .
 					'(getTemplatePathAndFilename used without action argument)', 1343521593);
 			}
@@ -183,11 +182,84 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 		$paths = $this->expandGenericPathPattern($this->templatePathAndFilenamePattern, FALSE, FALSE);
 		foreach ($paths as &$templatePathAndFilename) {
 			$templatePathAndFilename = str_replace('@action', $actionName, $templatePathAndFilename);
-			if (file_exists($templatePathAndFilename)) {
+			if (TRUE === file_exists($templatePathAndFilename)) {
 				return $templatePathAndFilename;
 			}
 		}
-		return NULL;
+		return $this->templatePathAndFilename;
+	}
+
+	/**
+	 * @param string $pattern Pattern to be resolved
+	 * @param boolean $bubbleControllerAndSubpackage if TRUE, then we successively split off parts from "@controller" and "@subpackage" until both are empty.
+	 * @param boolean $formatIsOptional if TRUE, then half of the resulting strings will have ."@format" stripped off, and the other half will have it.
+	 * @return array unix style path
+	 */
+	protected function expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional) {
+		$extensionKey = $this->controllerContext->getRequest()->getControllerExtensionKey();
+		$pathOverlayConfigurations = $this->buildPathOverlayConfigurations($extensionKey);
+		$templateRootPath = $backupTemplateRootPath = $this->getTemplateRootPath();
+		$partialRootPath = $backupPartialRootPath = $this->getPartialRootPath();
+		$layoutRootPath = $backupLayoutRootPath = $this->getLayoutRootPath();
+		$paths = parent::expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional);
+		foreach ($pathOverlayConfigurations as $overlayPaths) {
+			if (FALSE === empty($overlayPaths['templateRootPath'])) {
+				$templateRootPath = $overlayPaths['templateRootPath'];
+				$this->setTemplateRootPath($templateRootPath);
+			}
+			if (FALSE === empty($overlayPaths['partialRootPath'])) {
+				$partialRootPath = $overlayPaths['partialRootPath'];
+				$this->setPartialRootPath($partialRootPath);
+			}
+			if (FALSE === empty($overlayPaths['layoutRootPath'])) {
+				$layoutRootPath = $overlayPaths['layoutRootPath'];
+				$this->setLayoutRootPath($layoutRootPath);
+			}
+			$subset = parent::expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional);
+			$paths = array_merge($paths, $subset);
+		}
+		$paths = array_unique($paths);
+		$paths = array_reverse($paths);
+		return $paths;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function buildPathOverlayConfigurations() {
+		$extensionKey = $this->controllerContext->getRequest()->getControllerExtensionKey();
+		$configurations = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
+		$templateRootPath = NULL;
+		$partialRootPath = NULL;
+		$layoutRootPath = NULL;
+		$overlays = array();
+		$paths = array();
+		if (TRUE === isset($configurations['overlays'])) {
+			$overlays = $configurations['overlays'];
+		}
+		foreach ($overlays as $overlaySubpackageKey => $configuration) {
+			if (TRUE === isset($configuration['templateRootPath'])) {
+				$templateRootPath = t3lib_div::getFileAbsFileName($configuration['templateRootPath']);
+			}
+			if (TRUE === isset($configuration['partialRootPath'])) {
+				$partialRootPath = t3lib_div::getFileAbsFileName($configuration['partialRootPath']);
+			}
+			if (TRUE === isset($configuration['layoutRootPath'])) {
+				$layoutRootPath = t3lib_div::getFileAbsFileName($configuration['layoutRootPath']);
+			}
+			$paths[$overlaySubpackageKey] = array(
+				'templateRootPath' => rtrim($templateRootPath, ','),
+				'partialRootPath' => rtrim($partialRootPath, ','),
+				'layoutRootPath' => rtrim($layoutRootPath, ',')
+			);
+		}
+		$paths = array_reverse($paths);
+		$paths[] = array(
+			'templateRootPath' => $this->getTemplateRootPath(),
+			'partialRootPath' => $this->getPartialRootPath(),
+			'layoutRootPath' => $this->getLayoutRootPath()
+		);
+		return $paths;
 	}
 
 }
