@@ -81,7 +81,21 @@ class Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider extends Tx_F
 	 * @return void
 	 */
 	public function setTemplatePaths($templatePaths) {
-		$this->templatePaths = $templatePaths;
+        if ($templatePaths === NULL) {
+            $this->templatePaths = $templatePaths;
+        } else {
+            $tempTemplatePaths = array();
+
+            foreach ($templatePaths as $pathType => $templatePath) {
+                if (0 === strpos($templatePath, 'EXT:')) {
+                    $tempTemplatePaths[$pathType] = t3lib_div::getFileAbsFileName($templatePath);
+                } else {
+                    $tempTemplatePaths[$pathType] = $templatePath;
+                }
+            }
+
+            $this->templatePaths = $tempTemplatePaths;
+        }
 	}
 
 	/**
