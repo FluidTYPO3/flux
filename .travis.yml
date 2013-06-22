@@ -19,6 +19,8 @@ before_script:
 script:
 # initial, quick inspection
   - php build-environment/FluidTYPO3-CodingStandards/commit_message_inspector.php $PWD/typo3conf/ext/$REPOSITORY
+# install extension
+  - php $PWD/typo3/cli_dispatch.phpsh extbase builder:install $REPOSITORY
 # phplint checking on all PHP source files in extension
   - php $PWD/typo3/cli_dispatch.phpsh extbase builder:phpsyntax --extension $REPOSITORY
 # fluid template syntax checking on all files in extension
