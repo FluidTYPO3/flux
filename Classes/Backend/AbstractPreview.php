@@ -25,6 +25,8 @@
 
 if (TRUE === file_exists(t3lib_extMgm::extPath('cms', 'layout/class.tx_cms_layout.php'))) {
 	require_once t3lib_extMgm::extPath('cms', 'layout/class.tx_cms_layout.php');
+}
+if (TRUE === file_exists(t3lib_extMgm::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php'))) {
 	require_once t3lib_extMgm::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php');
 }
 
