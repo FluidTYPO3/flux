@@ -55,7 +55,7 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_Vie
 			'&colPos=-42' .
 			'&sys_language_uid=' . $sysLang .
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
-			'&defVals[tt_content][tx_flux_area]=' . $area .
+			'&defVals[tt_content][tx_flux_column]=' . $area .
 			'&returnUrl=' . $returnUri;
 		return $this->wrapLink($icon, $uri);
 	}

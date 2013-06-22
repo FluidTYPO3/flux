@@ -305,7 +305,6 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 					$record['pid'] = $pid;
 				}
 				$record['tx_flux_column'] = '';
-				$record['tx_flux_area'] = '';
 			}
 			if (FALSE === empty($possibleArea)) {
 				$record['tx_flux_parent'] = $parentUid;
