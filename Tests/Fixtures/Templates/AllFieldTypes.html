@@ -7,9 +7,19 @@
 			<flux:flexform.field.checkbox name="settings.checkbox" />
 			<flux:flexform.field.file name="settings.file" />
 			<flux:flexform.field.group name="settings.group" internalType="db" table="pages" />
+			<flux:flexform.field.group name="settings.group" internalType="files" />
 			<flux:flexform.field.inline name="settings.inline" foreignTable="tt_content" />
 			<flux:flexform.field.select name="settings.select" table="pages" />
 			<flux:flexform.field.text name="settings.text" />
+			<flux:flexform.field.tree name="settings.tree" table="pages" parentField="pid" />
+			<flux:flexform.field.controllerActions name="settings.actions" actions="{Flux: 'api'}" />
+			<flux:flexform.field.userFunc name="settings.userFunc" userFunc="Tx_Flux_UserFunction_NoFields->render" />
+			<flux:flexform.field.custom name="settings.custom">
+				Custom field
+			</flux:flexform.field.custom>
+			<flux:flexform.field.custom name="settings.html">
+				HTML field
+			</flux:flexform.field.custom>
 		</flux:flexform.sheet>
 	</flux:flexform>
 </f:section>
