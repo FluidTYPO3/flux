@@ -194,7 +194,7 @@ abstract class Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest extends 
 		$id = $record['uid'];
 		$table = $provider->getTableName($record);
 		$parentInstance->datamap[$table][$id] = $record;
-		$provider->postProcessRecord('update', $id, $record, $parentInstance);
+		$provider->postProcessRecord('void', $id, $record, $parentInstance);
 	}
 
 }
