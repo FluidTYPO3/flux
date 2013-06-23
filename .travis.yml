@@ -15,9 +15,6 @@ before_script:
   - source build-environment/install-typo3.sh
   - source build-environment/install-reintegrate-repository.sh
   - source build-environment/install-phpunit-setup.sh
-  # dependencies
-  - git clone https://github.com/FluidTYPO3/vhs.git $PWD/typo3conf/ext/vhs
-  - php $PWD/typo3/cli_dispatch.phpsh extbase builder:install vhs
 
 script:
 # initial, quick inspection
