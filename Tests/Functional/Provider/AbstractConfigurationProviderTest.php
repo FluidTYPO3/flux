@@ -172,4 +172,29 @@ abstract class Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest extends 
 		$provider->getTemplatePathAndFilename($record);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canPostProcessDataStructure() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$dataStructure = array();
+		$config = array();
+		$provider->postProcessDataStructure($record, $dataStructure, $config);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canPostProcessRecord() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$parentInstance = t3lib_div::makeInstance('t3lib_TCEmain');
+		$record['test'] = 'test';
+		$id = $record['uid'];
+		$table = $provider->getTableName($record);
+		$parentInstance->datamap[$table][$id] = $record;
+		$provider->postProcessRecord('update', $id, $record, $parentInstance);
+	}
+
 }

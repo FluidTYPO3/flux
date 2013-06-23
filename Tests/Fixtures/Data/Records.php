@@ -44,7 +44,20 @@ class Tx_Flux_Tests_Fixtures_Data_Records {
 		'header' => 'Has no parent',
 		'colPos' => 0,
 		'tx_flux_parent' => 0,
-		'tx_flux_column' => ''
+		'tx_flux_column' => '',
+		'test' => '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="options">
+            <language index="lDEF">
+                <field index="settings.flux.placeholder">
+                    <value index="vDEF">0</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>
+'
 	);
 
 	/**
