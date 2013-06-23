@@ -44,7 +44,20 @@ class Tx_Flux_Tests_Fixtures_Data_Records {
 		'header' => 'Has no parent',
 		'colPos' => 0,
 		'tx_flux_parent' => 0,
-		'tx_flux_area' => ''
+		'tx_flux_column' => '',
+		'test' => '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="options">
+            <language index="lDEF">
+                <field index="settings.flux.placeholder">
+                    <value index="vDEF">0</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>
+'
 	);
 
 	/**
@@ -55,7 +68,7 @@ class Tx_Flux_Tests_Fixtures_Data_Records {
 		'header' => 'Is itself parent, has no parent',
 		'colPos' => 0,
 		'tx_flux_parent' => 0,
-		'tx_flux_area' => '',
+		'tx_flux_column' => '',
 		'tx_flux_children' => 1
 	);
 
@@ -67,7 +80,7 @@ class Tx_Flux_Tests_Fixtures_Data_Records {
 		'header' => 'Has parent, is in default content area',
 		'colPos' => -42,
 		'tx_flux_parent' => self::UID_CONTENT_NOPARENTWITHCHILDREN,
-		'tx_flux_area' => self::DEFAULT_CONTENTAREA
+		'tx_flux_column' => self::DEFAULT_CONTENTAREA
 	);
 
 	/**
@@ -78,7 +91,7 @@ class Tx_Flux_Tests_Fixtures_Data_Records {
 		'header' => 'Has parent, is in default content area',
 		'colPos' => -42,
 		'tx_flux_parent' => 0,
-		'tx_flux_area' => '',
+		'tx_flux_column' => '',
 		'tx_flux_children' => 1
 	);
 
