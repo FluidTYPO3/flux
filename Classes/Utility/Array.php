@@ -38,23 +38,7 @@ class Tx_Flux_Utility_Array {
 	 * @return array
 	 */
 	public static function convertTypoScriptArrayToPlainArray(array $typoScriptArray) {
-		foreach ($typoScriptArray as $key => &$value) {
-			if (substr($key, -1) === '.') {
-				$keyWithoutDot = substr($key, 0, -1);
-				$hasNodeWithoutDot = array_key_exists($keyWithoutDot, $typoScriptArray);
-				$typoScriptNodeValue = $hasNodeWithoutDot ? $typoScriptArray[$keyWithoutDot] : NULL;
-				if (is_array($value)) {
-					$typoScriptArray[$keyWithoutDot] = self::convertTypoScriptArrayToPlainArray($value);
-					if (!is_null($typoScriptNodeValue)) {
-						$typoScriptArray[$keyWithoutDot]['_typoScriptNodeValue']  = $typoScriptNodeValue;
-					}
-					unset($typoScriptArray[$key]);
-				} else {
-					$typoScriptArray[$keyWithoutDot] = NULL;
-				}
-			}
-		}
-		return $typoScriptArray;
+		return \t3lib_div::removeDotsFromTS($typoScriptArray);
 	}
 
 }
