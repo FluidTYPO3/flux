@@ -67,12 +67,34 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	}
 
 	/**
-	 * @param string $templateName
+	 * @param mixed $value
+	 * @return void
 	 */
-	protected function assertFluxTemplateLoadsWithoutErrors($templateName) {
+	protected function assertIsString($value) {
+		$isStringConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_STRING);
+		$this->assertThat($value, $isStringConstraint);
+	}
+
+	/**
+	 * @param mixed $value
+	 * @return void
+	 */
+	protected function assertIsInteger($value) {
+		$isIntegerConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_INT);
+		$this->assertThat($value, $isIntegerConstraint);
+	}
+
+	/**
+	 * @param string $templateName
+	 * @param array $variables
+	 */
+	protected function assertFluxTemplateLoadsWithoutErrors($templateName, $variables = array()) {
+		if (0 === count($variables)) {
+			$variables = array('row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren);
+		}
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($templateName);
 		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
+		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', array(), 'Flux', $variables);
 		$this->assertIsArray($stored);
 		$this->assertArrayHasKey('fields', $stored);
 		$this->assertArrayHasKey('label', $stored);
