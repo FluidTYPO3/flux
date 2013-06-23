@@ -32,16 +32,134 @@ class Tx_Flux_Tests_Functional_ViewHelpers_BasicReadTest extends Tx_Flux_Tests_A
 	/**
 	 * @test
 	 */
-	public function canReadTemplateWithAllFieldTypesUsed() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ALLFIELDTYPES);
-		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$this->assertIsArray($stored);
-		$this->assertArrayHasKey('fields', $stored);
-		$this->assertArrayHasKey('label', $stored);
-		$this->assertNotEmpty($stored['label']);
-		$this->assertArrayHasKey('id', $stored);
-		$this->assertNotEmpty($stored['id']);
+	public function canReadTemplateWithSectionObject() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_SECTIONOBJECT);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithInputField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_INPUT);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithTextField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_TEXT);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithCheckboxField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_CHECKBOX);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithFileField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_FILE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithGroupField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_GROUP);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithInlineField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_INLINE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithSelectField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_SELECT);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithTreeField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_TREE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithCustomField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_CUSTOM);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithUserFuncField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_USERFUNC);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithAddWizard() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_ADD);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithColorPickerWizard() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_COLORPICKER);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithEditWizard() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_EDIT);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithLinkWizard() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_LINK);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithListWizard() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_LIST);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithSelectWizard() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_SELECT);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithSliderWizard() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_SLIDER);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithSuggestWizard() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_SUGGEST);
 	}
 
 }
