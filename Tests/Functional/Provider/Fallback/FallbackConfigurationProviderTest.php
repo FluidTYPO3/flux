@@ -119,4 +119,15 @@ class Tx_Flux_Tests_Functional_Provider_Fallback_FallbackConfigurationProviderTe
 		$this->assertSame(Tx_Flux_Utility_Path::translatePath($templatePaths), $provider->getTemplatePaths($record));
 	}
 
+	/**
+	 * @test
+	 */
+	public function canSetConfigurationSectionName() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$section = 'Custom';
+		$provider->setConfigurationSectionName($section);
+		$this->assertSame($section, $provider->getConfigurationSectionName($record));
+	}
+
 }
