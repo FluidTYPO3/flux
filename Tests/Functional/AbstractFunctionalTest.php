@@ -85,6 +85,15 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	}
 
 	/**
+	 * @param mixed $value
+	 * @return void
+	 */
+	protected function assertIsBoolean($value) {
+		$isBooleanConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_BOOL);
+		$this->assertThat($value, $isBooleanConstraint);
+	}
+
+	/**
 	 * @param string $templateName
 	 * @param array $variables
 	 */
