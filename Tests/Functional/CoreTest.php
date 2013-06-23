@@ -32,6 +32,15 @@ class Tx_Flux_Tests_Functional_CoreTest extends Tx_Flux_Tests_AbstractFunctional
 	/**
 	 * @test
 	 */
+	public function returnsEmptyArrayForUnknownExtensionKeysAndControllerObjects() {
+		$fakeControllerName = 'Flux';
+		$registered = Tx_Flux_Core::getRegisteredProviderExtensionKeys($fakeControllerName);
+		$this->assertEmpty($registered);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canRegisterProviderExtensionKey() {
 		$fakeExtensionKey = 'flux';
 		$fakeControllerName = 'Flux';
@@ -54,11 +63,14 @@ class Tx_Flux_Tests_Functional_CoreTest extends Tx_Flux_Tests_AbstractFunctional
 	/**
 	 * @test
 	 */
-	public function canRegisterProviderClassName() {
+	public function canRegisterAndUnregisterProviderClassName() {
 		$providerClassName = 'Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider';
 		Tx_Flux_Core::registerConfigurationProvider($providerClassName);
 		$registered = Tx_Flux_Core::getRegisteredFlexFormProviders();
 		$this->assertContains($providerClassName, $registered);
+		Tx_Flux_Core::unregisterConfigurationProvider($providerClassName);
+		$registered = Tx_Flux_Core::getRegisteredFlexFormProviders();
+		$this->assertNotContains($providerClassName, $registered);
 	}
 
 	/**
