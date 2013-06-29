@@ -52,6 +52,36 @@ class Tx_Flux_Core {
 	private static $extensions = array();
 
 	/**
+	 * Contains all programatically added TypoScript configuration files for auto-inclusion
+	 * @var array
+	 */
+	private static $staticTypoScriptFiles = array();
+
+	/**
+	 * @return array
+	 */
+	public static function getStaticTypoScriptLocations() {
+		return self::$staticTypoScriptFiles;
+	}
+
+	/**
+	 * @param mixed $locationOrLocations
+	 * @return void
+	 */
+	public static function addGlobalTypoScript($locationOrLocations) {
+		if (TRUE === is_array($locationOrLocations) || TRUE === $locationOrLocations instanceof Traversable) {
+			foreach ($locationOrLocations as $location) {
+				self::addGlobalTypoScript($location);
+			}
+			return;
+		} else {
+			if (FALSE === in_array($locationOrLocations, self::$staticTypoScriptFiles)) {
+				array_push(self::$staticTypoScriptFiles, $locationOrLocations);
+			}
+		}
+	}
+
+	/**
 	 * @param string $extensionKey
 	 * @param string $providesControllerName
 	 * @return void

@@ -58,6 +58,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['flux'] = 'EXT:flux/Classes/Backend/TceMain.php:Tx_Flux_Backend_TceMain';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['moveRecordClass']['flux'] = 'EXT:flux/Classes/Backend/TceMain.php:Tx_Flux_Backend_TceMain';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] = 'EXT:flux/Classes/Backend/TceMain.php:&Tx_Flux_Backend_TceMain->clearCacheCommand';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources'][] = 'EXT:flux/Classes/Backend/TypoScriptTemplate.php:Tx_Flux_Backend_TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
+
 
 /*
  * The following code fixes the following issue:
