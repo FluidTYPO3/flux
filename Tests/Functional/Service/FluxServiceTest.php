@@ -76,6 +76,100 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 	/**
 	 * @test
 	 */
+	public function canResolvePrimaryConfigurationProviderWithEmptyArray() {
+		$service = $this->createFluxServiceInstance();
+		$result = $service->resolvePrimaryConfigurationProvider('tt_content', NULL);
+		$this->assertNotEmpty($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canResolveConfigurationProvidersWithEmptyArrayAndTriggerCache() {
+		$service = $this->createFluxServiceInstance();
+		$result = $service->resolvePrimaryConfigurationProvider('tt_content', NULL);
+		$this->assertNotEmpty($result);
+		$result = $service->resolvePrimaryConfigurationProvider('tt_content', NULL);
+		$this->assertNotEmpty($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetStoredVariablesWithPaths() {
+		$templatePathAndFilename = t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
+		$service = $this->createFluxServiceInstance();
+		$paths = array(
+			'templateRootPath' => 'EXT:flux/Resources/Private/Templates',
+			'partialRootPath' => 'EXT:flux/Resources/Private/Partials',
+			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
+		);
+		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths);
+		$this->assertIsArray($stored);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getStoredVariableThrowsExceptionOnInvalidFile() {
+		$templatePathAndFilename = '/void/nothing';
+		$service = $this->createFluxServiceInstance();
+		try {
+			$service->getStoredVariable($templatePathAndFilename, 'storage');
+			$this->fail('Did not throw Exception on invalid file');
+		} catch (Exception $error) {
+			$this->assertSame(1366824347, $error->getCode());
+		}
+	}
+
+	/**
+	 * @test
+	 */
+	public function getGridFromTemplateFileReturnsEmptyArrayOnInvalidFile() {
+		$templatePathAndFilename = '/void/nothing';
+		$service = $this->createFluxServiceInstance();
+		$storage = $service->getGridFromTemplateFile($templatePathAndFilename);
+		$this->assertIsArray($storage);
+		$this->assertEmpty($storage);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getGridFromTemplateFilePassesThroughExceptionIfDebugModeEnabledAtAnyLevel() {
+		$currentMode = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 2;
+		$templatePathAndFilename = '/void/nothing';
+		$service = $this->createFluxServiceInstance();
+		try {
+			$service->getGridFromTemplateFile($templatePathAndFilename);
+			$this->fail('Did not throw Exception on invalid file');
+		} catch (Exception $error) {
+			$this->assertSame(1366824347, $error->getCode());
+		}
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $currentMode;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetStoredVariablesWithPathsAndTriggerCache() {
+		$templatePathAndFilename = t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
+		$service = $this->createFluxServiceInstance();
+		$paths = array(
+			'templateRootPath' => 'EXT:flux/Resources/Private/Templates',
+			'partialRootPath' => 'EXT:flux/Resources/Private/Partials',
+			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
+		);
+		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths);
+		$this->assertIsArray($stored);
+		$readAgain = $service->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths);
+		$this->assertIsArray($readAgain);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canReadGridFromTemplateWithoutConvertingToDataStructure() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
@@ -84,6 +178,43 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 		$this->assertThat($stored['grid'], $isArrayConstraint);
 		$this->assertArrayHasKey(0, $stored['grid'], 'Has at least one row');
 		$this->assertArrayHasKey(0, $stored['grid'][0], 'Has at least one column in first row');
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerType() {
+		$service = $this->createFluxServiceInstance();
+		$result = $service->detectControllerClassPresenceFromExtensionKeyAndControllerType('noname', 'Void');
+		$this->assertFalse($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassExists() {
+		$service = $this->createFluxServiceInstance();
+		class_alias('Tx_Flux_Controller_AbstractFluxController', 'Void\\NoName\\Controller\\FakeController');
+		$result = $service->detectControllerClassPresenceFromExtensionKeyAndControllerType('Void.NoName', 'Fake');
+		$this->assertTrue($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassDoesNotExist() {
+		$service = $this->createFluxServiceInstance();
+		$result = $service->detectControllerClassPresenceFromExtensionKeyAndControllerType('Void.NoName', 'Void');
+		$this->assertFalse($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetBackendViewConfigurationForExtensionName() {
+		$service = $this->createFluxServiceInstance();
+		$config = $service->getBackendViewConfigurationForExtensionName('noname');
+		$this->assertNull($config);
 	}
 
 }
