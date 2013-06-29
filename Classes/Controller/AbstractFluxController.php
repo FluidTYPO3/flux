@@ -173,6 +173,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	 * @return string
 	 */
 	public function errorAction() {
+		$this->clearCacheOnError();
 		$setup = $this->getSetup();
 		$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
