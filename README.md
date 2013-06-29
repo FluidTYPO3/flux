@@ -9,6 +9,14 @@ Flux provides an integration between Fluid templates, controllers and TCEforms, 
 record type to present a dynamic set of property fields which when filled out are passed as values to the template associated
 with that particular record (or record type).
 
+## Code Quality
+
+![Abstraction Instability Chart](Documentation/ComplexityChart.png)
+![Inheritance and dependency risk](Documentation/PyramidChart.png)
+
+_Understanding the [Abstraction Instability Chart](http://pdepend.org/documentation/handbook/reports/abstraction-instability-chart.html)
+and [Pyramid Chart](http://pdepend.org/documentation/handbook/reports/overview-pyramid.html)._
+
 ## What does it do?
 
 Flux uses a range of ViewHelpers to define a set of configuration (fields, their layout, how to process them etc) inside a Fluid
