@@ -193,6 +193,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 	/**
 	 * @return string
 	 * @route off
+	 * @throws Exception
 	 */
 	public function renderAction() {
 		$row = $this->getRecord();
