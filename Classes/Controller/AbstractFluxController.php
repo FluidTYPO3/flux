@@ -228,7 +228,11 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 			if (self::EXCEPTION_CUSTOM_CONTROLLER_NOT_FOUND === $code) {
 				return $this->view->render();
 			}
-			$this->handleError($error);
+			if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors']) {
+				$this->handleError($error);
+			} else {
+				throw $error;
+			}
 		}
 		return $this->view->render();
 	}
