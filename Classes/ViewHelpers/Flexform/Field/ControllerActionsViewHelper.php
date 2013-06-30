@@ -139,11 +139,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	 * @return array
 	 */
 	protected function getActionsForExtensionNameAndPluginName($extensionName, $pluginName) {
-		$actions = (array)$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers']; //['actions']; //[$controllerName] = array('actions' => t3lib_div::trimExplode(',', $actionsList));
+		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers'];
 		foreach ($actions as $controllerName => $definitions) {
 			$actions[$controllerName] = $definitions['actions'];
 		}
-
 		return $actions;
 	}
 
