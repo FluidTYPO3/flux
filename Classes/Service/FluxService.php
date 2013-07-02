@@ -107,7 +107,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return Tx_Flux_MVC_View_ExposedTemplateView
 	 */
 	public function getPreparedExposedTemplateView($extensionName = NULL, $controllerName = NULL) {
-		if (NULL === $extensionName) {
+		if (NULL === $extensionName || FALSE === t3lib_extMgm::isLoaded($extensionName)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
 			$extensionName = 'Flux';
 		}
