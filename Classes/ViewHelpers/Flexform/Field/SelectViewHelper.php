@@ -50,7 +50,8 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 		$this->registerArgument('showThumbs', 'boolean', 'If TRUE, adds thumbnail display when editing in BE', FALSE, TRUE);
 		$this->registerArgument('itemsProcFunc', 'string', 'Optional class name of data provider to fill select options');
 		$this->registerArgument('suggest', 'boolean', 'Add "suggest" box to search for entries', FALSE, FALSE);
-		$this->registerArgument('renderMode', 'string', 'Optional alternative rendering mode, for example "checkbox"', FALSE, 'select');
+		$this->registerArgument('renderMode', 'string', 'Optional alternative rendering mode, for example "checkbox" or "singlebox" ' .
+			'- a full list of supported values and their impact can be found in the TCA documentation for TYPO3', FALSE, 'select');
 		$this->registerArgument('itemListStyle', 'string', 'Overrides the default list style when maxItems > 1', FALSE, NULL);
 		$this->registerArgument('selectedListStyle', 'string', 'Overrides the default selected list style when maxItems > 1 and renderMode is default', FALSE, NULL);
 	}
