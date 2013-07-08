@@ -217,7 +217,7 @@ class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controlle
 				return $this->view->render();
 			}
 			/** @var $response Tx_Extbase_MVC_Web_Response */
-			$response = $this->objectManager->create('Tx_Extbase_MVC_Web_Response');
+			$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
 			$potentialControllerInstance = $this->objectManager->get($potentialControllerClassName);
 			$this->request->setControllerActionName($overriddenControllerActionName);
 			$this->request->setControllerExtensionName($controllerExtensionName);
