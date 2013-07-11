@@ -360,7 +360,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 			if (FALSE === file_exists($templatePathAndFilename)) {
 				/** @var $fallbackStructureProvider Tx_Flux_Provider_Structure_FallbackStructureProvider */
-				$fallbackStructureProvider = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider');
+				$fallbackStructureProvider = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider');
 				$config['parameters'] = array(
 					'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
 				);

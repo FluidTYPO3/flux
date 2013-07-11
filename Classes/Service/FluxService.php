@@ -115,16 +115,16 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			$controllerName = 'Flux';
 		}
 		/** @var $context Tx_Extbase_MVC_Controller_ControllerContext */
-		$context = $this->objectManager->create('Tx_Extbase_MVC_Controller_ControllerContext');
+		$context = $this->objectManager->get('Tx_Extbase_MVC_Controller_ControllerContext');
 		/** @var $request Tx_Extbase_MVC_Web_Request */
-		$request = $this->objectManager->create('Tx_Extbase_MVC_Web_Request');
+		$request = $this->objectManager->get('Tx_Extbase_MVC_Web_Request');
 		/** @var $response Tx_Extbase_MVC_Web_Response */
-		$response = $this->objectManager->create('Tx_Extbase_MVC_Web_Response');
+		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
 		$request->setControllerExtensionName($extensionName);
 		$request->setControllerName($controllerName);
 		$request->setDispatched(TRUE);
 		/** @var $uriBuilder Tx_Extbase_Mvc_Web_Routing_UriBuilder */
-		$uriBuilder = $this->objectManager->create('Tx_Extbase_Mvc_Web_Routing_UriBuilder');
+		$uriBuilder = $this->objectManager->get('Tx_Extbase_Mvc_Web_Routing_UriBuilder');
 		$uriBuilder->setRequest($request);
 		$context->setRequest($request);
 		$context->setResponse($response);
@@ -362,7 +362,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				if (TRUE === isset(self::$cache[$providerCacheKey])) {
 					$provider = &self::$cache[$providerCacheKey];
 				} else {
-					$provider = $this->objectManager->create($providerClassNameOrInstance);
+					$provider = $this->objectManager->get($providerClassNameOrInstance);
 				}
 			}
 			$priority = $provider->getPriority($row);
@@ -409,13 +409,13 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 */
 	public function convertFlexFormConfigurationToDataStructure($config) {
 		/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
-		$flexFormStructureProvider = $this->objectManager->create('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
+		$flexFormStructureProvider = $this->objectManager->get('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
 		$dataStructArray = $flexFormStructureProvider->render($config);
 		if ((FALSE === is_array($dataStructArray['ROOT']['el']) && FALSE === is_array($dataStructArray['sheets'])) || (count($dataStructArray['sheets']) < 1 && count($dataStructArray['ROOT']['el']) < 1 && count($dataStructArray['sheets'][key($dataStructArray['sheets'])]) === 0)) {
 			$config['parameters'] = array(
 				'userFunction' => 'Tx_Flux_UserFunction_NoFields->renderField'
 			);
-			$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
+			$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
 		}
 		return $dataStructArray;
 	}
@@ -441,7 +441,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				$config['parameters'] = array(
 					'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
 				);
-				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
+				$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
 				return;
 			}
 			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths, $extensionName);
@@ -455,7 +455,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				'userFunction' => 'Tx_Flux_UserFunction_ErrorReporter->renderField'
 			);
 			if (FALSE === t3lib_extMgm::isLoaded('templavoila')) {
-				$dataStructArray = $this->objectManager->create('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
+				$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
 			}
 		}
 	}
