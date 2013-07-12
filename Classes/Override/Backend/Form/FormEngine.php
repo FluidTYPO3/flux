@@ -214,9 +214,10 @@ class Tx_Flux_Override_Backend_Form_FormEngine extends t3lib_TCEforms {
 	public function getSingleField_SW($table, $field, $row, &$PA) {
 		try {
 			$field = parent::getSingleField_SW($table, $field, $row, $PA);
-		} catch (\TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException $error) {
-			$message = new t3lib_FlashMessage('WARNING! Removed FAL resource detected. The field "' . $field . '" has been reset to ' .
-				'an empty value in order to prevent fatal, unrecoverable errors', 'WARNING', t3lib_div::SYSLOG_SEVERITY_FATAL);
+		} catch (\TYPO3\CMS\Core\Resource\Exception $error) {
+			$message = new t3lib_FlashMessage('WARNING! FAL resource problem detected. The field "' . $field . '" has been reset to ' .
+				'an empty value in order to prevent fatal, unrecoverable errors. The actual message is a ' . get_class($error) .
+				' which states: (' . $error->getCode() . ') ' . $error->getMessage(), 'WARNING', t3lib_div::SYSLOG_SEVERITY_FATAL);
 			t3lib_FlashMessageQueue::addMessage($message);
 			$PA['itemFormElValue'] = '';
 			$field = parent::getSingleField_SW($table, $field, $row, $PA);
