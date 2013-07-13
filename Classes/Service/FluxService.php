@@ -351,7 +351,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$bindToFieldName = Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing();
 		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
 		$prioritizedProviders = array();
 		foreach ($providers as $providerClassNameOrInstance) {
@@ -373,7 +372,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				$prioritizedProviders[$priority] = array();
 			}
 			$matchesTableName = ($providerTableName === $table);
-			$matchesFieldName = ($providerFieldName === $fieldName || FALSE === $bindToFieldName || NULL === $fieldName);
+			$matchesFieldName = ($providerFieldName === $fieldName || NULL === $fieldName);
 			$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
 			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
 			if ($matchesExtensionKey && $matchesTableName && $matchesFieldName) {
