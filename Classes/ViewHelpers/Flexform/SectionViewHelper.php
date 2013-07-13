@@ -40,7 +40,6 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_ViewHelpers
 		$this->registerArgument('label', 'string', 'Label for section, can be LLL: value. Optional - if not specified, ' .
 			'Flux tries to detect an LLL label named "flux.fluxFormId.sections.foobar" based on section name, in scope of ' .
 			'extension rendering the Flux form.', FALSE, NULL);
-		//$this->registerArgument('maxItems', 'integer', 'Maximum allowed items', FALSE);
 	}
 
 	/**
