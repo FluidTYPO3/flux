@@ -60,9 +60,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 	 * @return array
 	 */
 	protected function getBaseConfig() {
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet')) {
-			$sheet = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet');
-		}
+		$sheet = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet');
 		$wizardXML = NULL;
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards')) {
 			$wizardsBackup = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
@@ -133,7 +131,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 			'displayCond' => $this->arguments['displayCond'],
 			'exclude' => $this->getFlexFormBoolean($this->arguments['exclude']),
 			'wizards' => $wizardXML,
-			'sheet' => TRUE == isset($sheet) ? $sheet : NULL,
+			'sheet' => $sheet,
 			'wrap' => TRUE,
 			'section' => $sectionName,
 			'sectionObjectName' => $sectionObjectName,

@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2010 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -46,7 +46,7 @@ class Tx_Flux_Core {
 	private static $unregisteredProviders = array();
 
 	/**
-	 * Contains all extensions registered with Fluidpages
+	 * Contains all extensions registered with Flux
 	 * @var array
 	 */
 	private static $extensions = array();

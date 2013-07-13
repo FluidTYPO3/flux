@@ -172,12 +172,32 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 	 */
 	public function canReadGridFromTemplateWithoutConvertingToDataStructure() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
-		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
-		$this->assertThat($stored['grid'], $isArrayConstraint);
+		$stored = $this->performBasicTemplateReadTest($templatePathAndFilename);
+		$this->assertIsArray($stored);
 		$this->assertArrayHasKey(0, $stored['grid'], 'Has at least one row');
 		$this->assertArrayHasKey(0, $stored['grid'][0], 'Has at least one column in first row');
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRenderTemplateWithCompactingSwitchedOn() {
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'] = '1';
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_COMPACTED);
+		$service = $this->createFluxServiceInstance();
+		$config = $service->getStoredVariable($templatePathAndFilename, 'storage');
+		$this->assertIsArray($config);
+		$stored = $service->convertFlexFormConfigurationToDataStructure($config);
+		$this->assertIsArray($stored);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRenderTemplateWithCompactingSwitchedOff() {
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'] = '0';
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_SHEETS);
+		$this->performBasicTemplateReadTest($templatePathAndFilename);
 	}
 
 	/**

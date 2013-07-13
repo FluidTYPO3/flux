@@ -44,14 +44,7 @@ class Tx_Flux_Provider_Structure_FlexFormStructureProvider extends Tx_Flux_Provi
 		}
 		$sheets = array();
 		foreach ($configuration['fields'] as $field) {
-			if (FALSE === empty($field['sheet'])) {
-				$sheet = $field['sheet'];
-			} else {
-				$sheet = array(
-					'name' => 'options',
-					'label' => Tx_Extbase_Utility_Localization::translate('tt_content.tx_flux_options', 'Flux'),
-				);
-			}
+			$sheet = $field['sheet'];
 			$groupKey = $sheet['name'];
 			$groupLabel = $sheet['label'];
 			if (is_array($sheets[$groupKey]) === FALSE) {

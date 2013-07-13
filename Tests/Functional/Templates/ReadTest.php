@@ -54,4 +54,26 @@ class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_Abstract
 		$this->assertNotEmpty($stored['id']);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithWarningTriggers() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_CONTAINSWARNINGTRIGGERS);
+		$service = $this->createFluxServiceInstance();
+		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
+		$this->assertIsArray($stored);
+		$this->assertNotEmpty($stored);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithExtensionRelativeIcon() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ICONCONTAINSEXTENSIONKEY);
+		$service = $this->createFluxServiceInstance();
+		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
+		$this->assertIsArray($stored);
+		$this->assertNotEmpty($stored);
+	}
+
 }

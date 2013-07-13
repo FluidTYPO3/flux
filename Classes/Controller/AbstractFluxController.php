@@ -35,7 +35,7 @@
  * @subpackage Controller
  * @route off
  */
-class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controller_ActionController {
+abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controller_ActionController {
 
 	/**
 	 * Exception code for "class not found" - which is thrown, caught but ignored

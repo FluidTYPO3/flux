@@ -80,11 +80,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InlineViewHelper extends Tx_Flux_ViewHe
 	 * @return array
 	 */
 	public function renderConfiguration() {
-
-		if (Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero() === TRUE) {
-			throw new Exception('Sorry - the inline-viewhelper is only available from TYPO3 6.0 and up, due to limitations in the flexform setup.');
-		}
-
 		$config = $this->getBaseConfig();
 		$config['type'] = 'inline';
 		$config['foreign_table'] = $this->arguments['foreignTable'];

@@ -82,6 +82,11 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 			'fields' => array(),
 			'hidefields' => array(),
 		));
+		$sheet = array(
+			'name' => 'options',
+			'label' => Tx_Extbase_Utility_Localization::translate('tt_content.tx_flux_options', 'Flux')
+		);
+		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet', $sheet);
 		$this->renderChildren();
 		return '';
 	}
