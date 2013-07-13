@@ -41,14 +41,13 @@ class Tx_Flux_ViewHelpers_IsCollapsedViewHelper extends Tx_Fluid_Core_ViewHelper
 	 * @return string
 	 */
 	public function render($record) {
-		if (FALSE === isset($_COOKIE['fluxCollapseStates'])) {
-			return $this->renderElseChild();
-		}
-		$cookie = $_COOKIE['fluxCollapseStates'];
-		$cookie = urldecode($cookie);
-		$cookie = json_decode($cookie);
-		if (in_array($record['uid'], $cookie)) {
-			return $this->renderThenChild();
+		if (TRUE === isset($_COOKIE['fluxCollapseStates'])) {
+			$cookie = $_COOKIE['fluxCollapseStates'];
+			$cookie = urldecode($cookie);
+			$cookie = json_decode($cookie);
+			if (in_array($record['uid'], $cookie)) {
+				return $this->renderThenChild();
+			}
 		}
 		return $this->renderElseChild();
 	}
