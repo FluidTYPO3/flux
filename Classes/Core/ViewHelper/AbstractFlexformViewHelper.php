@@ -87,15 +87,15 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 		}
 		if (is_array($section) === TRUE) {
 			$this->configuration['sectionObjectName'] = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
-			array_push($section['fields'], clone $this);
+			array_push($section['fields'], $this);
 			$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section', $section);
 		} elseif ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper', 'insidePalette')) {
 			$fields = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper', 'insidePalette');
-			array_push($fields, clone $this);
+			array_push($fields, $this);
 			$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper', 'insidePalette', $fields);
 		} else {
 			$storage = (array) $this->getStorage();
-			array_push($storage['fields'], clone $this);
+			array_push($storage['fields'], $this);
 			$this->setStorage($storage);
 		}
 	}
