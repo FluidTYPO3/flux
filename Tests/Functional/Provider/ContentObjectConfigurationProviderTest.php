@@ -34,4 +34,14 @@ class Tx_Flux_Tests_Functional_Provider_ContentObjectConfigurationProviderTest e
 	 */
 	protected $configurationProviderClassName = 'Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider';
 
+	/**
+	 * @test
+	 */
+	public function canGetContentObjectType() {
+		$instance = $this->getConfigurationProviderInstance();
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
+		$contentType = $instance->getContentObjectType($record);
+		$this->assertNull($contentType);
+	}
+
 }
