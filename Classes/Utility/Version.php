@@ -33,15 +33,6 @@
 class Tx_Flux_Utility_Version {
 
 	/**
-	 * check for versions of TYPO3 which do not consistently pass $fieldName
-	 *
-	 * @return boolean
-	 */
-	public static function assertHasFixedFlexFormFieldNamePassing() {
-		return self::assertCoreVersionIsAtLeastSixPointZero();
-	}
-
-	/**
 	 * @return boolean
 	 */
 	public static function assertCoreVersionIsBelowSixPointZero() {

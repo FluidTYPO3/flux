@@ -59,7 +59,7 @@ class Tx_Flux_Tests_Functional_View_ViewTest extends Tx_Flux_Tests_AbstractFunct
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		$variables = array(
-			'record' => $record,
+			'row' => $record,
 			'grid' => $service->getGridFromTemplateFile($templatePathAndFilename, array('record' => $record), 'Configuration')
 		);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
@@ -72,6 +72,15 @@ class Tx_Flux_Tests_Functional_View_ViewTest extends Tx_Flux_Tests_AbstractFunct
 		$this->assertContains('content-grid', $preview); // the ID of the Grid must exist
 		$this->assertNotContains('Duplicate variable declarations!', $preview); // the ever-so-dreaded error when variables collide
 		$this->assertGreaterThanOrEqual(1000, strlen($preview)); // If Grid template contains (moderately) few characters, assume error
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRenderPreviewSectionWithCollapsedGrid() {
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$_COOKIE['fluxCollapseStates'] = urlencode(json_encode(array($record['uid'])));
+		$this->canRenderPreviewSectionWithGrid();
 	}
 
 	/**

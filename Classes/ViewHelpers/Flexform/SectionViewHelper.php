@@ -40,7 +40,6 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_ViewHelpers
 		$this->registerArgument('label', 'string', 'Label for section, can be LLL: value. Optional - if not specified, ' .
 			'Flux tries to detect an LLL label named "flux.fluxFormId.sections.foobar" based on section name, in scope of ' .
 			'extension rendering the Flux form.', FALSE, NULL);
-		//$this->registerArgument('maxItems', 'integer', 'Maximum allowed items', FALSE);
 	}
 
 	/**
@@ -57,14 +56,6 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_ViewHelpers
 	 * @return array
 	 */
 	public function renderConfiguration() {
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet') === TRUE) {
-			$sheet = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet');
-		} else {
-			$sheet = array(
-				'name' => 'options',
-				'label' => 'Options',
-			);
-		}
 		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section') === TRUE) {
 			$parentSection = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section');
 			$parentSectionLabels = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels');
@@ -73,15 +64,13 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_ViewHelpers
 			$parentSection = $parentSectionObjectName = $parentSectionLabels = NULL;
 		}
 
-		$baseConfig = array();
-		$baseConfig['name'] = $this->arguments['name'];
-		$baseConfig['label'] = $this->getLabel();
-		//$baseConfig['maxItems'] = $this->arguments['maxItems'];
-		$baseConfig['type'] = 'section';
-		$baseConfig['fields'] = array();
-		$baseConfig['enabled'] = TRUE;
-		$baseConfig['sheet'] = $sheet;
-		$baseConfig['wrap'] = FALSE;
+		$baseConfig = array(
+			'type' => 'section',
+			'sheet' => $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet'),
+			'fields' => array(),
+			'enabled' => TRUE,
+			'wrap' => FALSE
+		);
 
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section', $baseConfig);
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels', array());

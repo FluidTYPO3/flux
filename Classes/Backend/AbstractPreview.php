@@ -77,11 +77,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	 * @throws Exception
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem) {
-		if (Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing() === TRUE) {
-			$fieldName = 'pi_flexform';
-		} else {
-			$fieldName = NULL;
-		}
+		$fieldName = 'pi_flexform';
 		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
 			$targetRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('p.title, t.pid', 'tt_content t, pages p', "t.uid = '" . $row['records'] . "' AND p.uid = t.pid");
 			$targetRecord = array_pop($targetRecords);

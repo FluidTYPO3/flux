@@ -27,21 +27,33 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Provider_ContentObjectConfigurationProviderTest extends Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest {
-
-	/**
-	 * @var string
-	 */
-	protected $configurationProviderClassName = 'Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider';
+class Tx_Flux_Tests_Functional_Utility_AutoloadTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @test
 	 */
-	public function canGetContentObjectType() {
-		$instance = $this->getConfigurationProviderInstance();
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
-		$contentType = $instance->getContentObjectType($record);
-		$this->assertNull($contentType);
+	public function canCreateAutoloadRegistry() {
+		$registry = Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
+		$this->assertIsArray($registry);
+		$this->assertGreaterThan(0, count($registry));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetCachedAutoloadRegistry() {
+		Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
+		$this->assertFileExists(t3lib_div::getFileAbsFileName('typo3temp/flux-manifest.cache'));
+		$registry = Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
+		$this->assertIsArray($registry);
+		$this->assertGreaterThan(0, count($registry));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canResetAutoloadRegistry() {
+		Tx_Flux_Utility_Autoload::resetAutoloadingForExtension('flux');
 	}
 
 }

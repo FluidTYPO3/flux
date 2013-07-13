@@ -76,12 +76,6 @@ if (Tx_Flux_Utility_Version::assertCoreVersionIsAtLeastSixPointZero()) {
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Backend\\Form\\FormEngine'] =
 	array('className' => 'Tx_Flux_Override_Backend_Form_FormEngine');
-$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\Configuration\\FlexForm\\FlexFormTools'] =
-	array('className' => 'Tx_Flux_Override_Core_Configuration_FlexForm_FlexFormTools');
-$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\DataHandling\\DataHandler'] =
-	array('className' => 'Tx_Flux_Override_Core_DataHandling_DataHandler');
-$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Core\\Database\\ReferenceIndex'] =
-	array('className' => 'Tx_Flux_Override_Core_Database_ReferenceIndex');
 
 Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider');
 

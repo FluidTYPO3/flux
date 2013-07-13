@@ -42,4 +42,23 @@ class Tx_Flux_Tests_Fixtures_Data_Xml {
     </data>
 </T3FlexForms>';
 
+	const EXPECTING_FLUX_TRANSFORMATIONS = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="options">
+            <language index="lDEF">
+                <field index="stringToArray">
+                    <value index="vDEF">1,2,3</value>
+                </field>
+                <field index="stringToInteger">
+                    <value index="vDEF">3</value>
+                </field>
+                <field index="stringToFloat">
+                    <value index="vDEF">1.5</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>';
+
 }

@@ -168,4 +168,22 @@ class Tx_Flux_Tests_Functional_CoreTest extends Tx_Flux_Tests_AbstractFunctional
 		$this->assertSame(Tx_Flux_Utility_Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
 	}
 
+	/**
+	 * @test
+	 */
+	public function canAddAndRetrieveGlobalTypoScript() {
+		Tx_Flux_Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
+		$registered = Tx_Flux_Core::getStaticTypoScriptLocations();
+		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canAddAndRetrieveGlobalTypoScriptCollections() {
+		Tx_Flux_Core::addGlobalTypoScript(array(self::FIXTURE_TYPOSCRIPT_DIR));
+		$registered = Tx_Flux_Core::getStaticTypoScriptLocations();
+		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
+	}
+
 }

@@ -138,16 +138,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return string|NULL
 	 */
 	public function getFieldName(array $row) {
-		if (Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing() === TRUE) {
-				// NOTE: only allow returning the real fieldname for Providers which do NOT
-				// override the getFieldName method if the version of TYPO3 is recent enough
-				// for the FlexForm Hook to include the actual field name when calling the
-				// hook that in turn calls this method when resolving Providers. In other words:
-				// becuase of a bug in older TYPO3 versions the field name must be NULL if
-				// TYPO3 version is too old or no FlexForm is rendered.
-			return $this->fieldName;
-		}
-		return NULL;
+		return $this->fieldName;
 	}
 
 	/**
