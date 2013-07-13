@@ -585,7 +585,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			if (TRUE === is_array($value)) {
 				$value = $this->transformAccordingToConfiguration($value, $fluxConfiguration, $prefix . (FALSE === empty($prefix) ? '.' : '') . $index);
 			} elseif (TRUE === isset($fluxConfiguration['fields'])) {
-				foreach ($fluxConfiguration['fields'] as $fieldConfiguration) {
+				foreach ($fluxConfiguration['fields'] as $field) {
+					$fieldConfiguration = $field->renderConfiguration();
 					$fieldName = $fieldConfiguration['name'];
 					$transformType = $fieldConfiguration['transform'];
 					if ($fieldName === $prefix . (FALSE === empty($prefix) ? '.' : '') . $index && FALSE === empty($transformType)) {
