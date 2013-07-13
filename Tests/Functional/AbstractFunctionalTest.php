@@ -57,6 +57,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	const FIXTURE_TEMPLATE_WIZARDS_SELECT = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Select.html';
 	const FIXTURE_TEMPLATE_WIZARDS_SLIDER = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Slider.html';
 	const FIXTURE_TEMPLATE_WIZARDS_SUGGEST = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Suggest.html';
+	const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
 	/**
 	 * @param mixed $value
