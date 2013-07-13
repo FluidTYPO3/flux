@@ -37,6 +37,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	const FIXTURE_TEMPLATE_ICONCONTAINSEXTENSIONKEY = 'EXT:flux/Tests/Fixtures/Templates/IconContainsExtensionKey.html';
 	const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Sheets.html';
 	const FIXTURE_TEMPLATE_COMPACTED = 'EXT:flux/Tests/Fixtures/Templates/CompactToggledOn.html';
+	const FIXTURE_TEMPLATE_TRANSFORMATIONS = 'EXT:flux/Tests/Fixtures/Templates/Transformations.html';
 	const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/CustomSection.html';
 	const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/EmptyPreview.html';
 	const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/BasicGrid.html';
