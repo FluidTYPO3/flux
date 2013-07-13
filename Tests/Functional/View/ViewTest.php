@@ -77,6 +77,15 @@ class Tx_Flux_Tests_Functional_View_ViewTest extends Tx_Flux_Tests_AbstractFunct
 	/**
 	 * @test
 	 */
+	public function canRenderPreviewSectionWithCollapsedGrid() {
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$_COOKIE['fluxCollapseStates'] = urlencode(json_encode(array($record['uid'])));
+		$this->canRenderPreviewSectionWithGrid();
+	}
+
+	/**
+	 * @test
+	 */
 	public function canRenderCustomSection() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_CUSTOM_SECTION);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
