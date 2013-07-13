@@ -33,6 +33,8 @@ require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Records.php');
 abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 
 	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
+	const FIXTURE_TEMPLATE_CONTAINSWARNINGTRIGGERS = 'EXT:flux/Tests/Fixtures/Templates/ContainsWarningTriggers.html';
+	const FIXTURE_TEMPLATE_ICONCONTAINSEXTENSIONKEY = 'EXT:flux/Tests/Fixtures/Templates/IconContainsExtensionKey.html';
 	const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Sheets.html';
 	const FIXTURE_TEMPLATE_COMPACTED = 'EXT:flux/Tests/Fixtures/Templates/CompactToggledOn.html';
 	const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/CustomSection.html';
