@@ -289,16 +289,24 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return boolean
 	 */
 	public function detectControllerClassPresenceFromExtensionKeyAndControllerType($extensionKey, $controllerName) {
+		$potentialClassName = $this->buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerName);
+		return class_exists($potentialClassName);
+	}
+
+	/**
+	 * @param string $extensionKey
+	 * @param string $controllerName
+	 * @return boolean|string
+	 */
+	public function buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerName) {
 		if (FALSE !== strpos($extensionKey, '.')) {
 			list ($vendorName, $extensionName) = explode('.', $extensionKey);
 			$potentialClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
-			if (TRUE === class_exists($potentialClassName)) {
-				return TRUE;
-			}
+		} else {
+			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+			$potentialClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
 		}
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$potentialClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
-		return class_exists($potentialClassName);
+		return $potentialClassName;
 	}
 
 	/**
