@@ -27,7 +27,7 @@
  * @package Flux
  * @subpackage Form
  */
-class Tx_Flux_Form_AbstractFormComponent {
+abstract class Tx_Flux_Form_AbstractFormComponent {
 
 	/**
 	 * @var Tx_Extbase_Object_ObjectManagerInterface
