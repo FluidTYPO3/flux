@@ -84,7 +84,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 * @param string $label
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
-	public function createFieldComponent($type, $name, $label = NULL) {
+	public function createField($type, $name, $label = NULL) {
 		/** @var Tx_Flux_Form_FieldInterface $component */
 		$component = $this->objectManager->get('Tx_Flux_Form_Field_' . $type);
 		$component->setName($name);

@@ -59,7 +59,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	protected function getPreparedComponent($type) {
-		$component = $this->getForm()->createFieldComponent($type, $this->arguments['name'], $this->arguments['label']);
+		$component = $this->getForm()->createField($type, $this->arguments['name'], $this->arguments['label']);
 		$component->setDefault($this->arguments['default']);
 		$component->setRequired($this->arguments['required']);
 		$component->setRepeat($this->arguments['repeat']);
