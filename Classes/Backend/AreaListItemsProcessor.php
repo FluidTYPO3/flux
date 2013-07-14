@@ -86,17 +86,12 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
 		/** @var $provider Tx_Flux_Provider_ConfigurationProviderInterface */
 		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
-		$extensionKey = $provider->getExtensionKey($record);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$values = $provider->getTemplateVariables($record);
-		$templatePathAndFilename = $provider->getTemplatePathAndFilename($record);
-		$grid = $this->fluxService->getGridFromTemplateFile($templatePathAndFilename, $values, 'Configuration', $extensionName);
+		$grid = $provider->getGrid($record)->build();
 		$columns = array();
-		foreach ($grid as $row) {
-			foreach ($row as $column) {
+		foreach ($grid['rows'] as $row) {
+			foreach ($row['columns'] as $column) {
 				foreach ($column['areas'] as $area) {
 					array_push($columns, array($area['label'], $area['name']));
-
 				}
 			}
 		}
