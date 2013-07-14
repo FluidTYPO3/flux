@@ -49,4 +49,73 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 	 */
 	protected $manyToMany = NULL;
 
+	/**
+	 * @param string $type
+	 * @return array
+	 */
+	public function prepareConfiguration($type) {
+		$configuration = parent::prepareConfiguration('select');
+		$configuration['foreign_table'] = $this->getTable();
+		$configuration['foreign_field'] = $this->getForeignField();
+		$configuration['foreign_table_where'] = $this->getCondition();
+		$configuration['MM'] = $this->getManyToMany();
+		return $configuration;
+	}
+
+	/**
+	 * @param string $condition
+	 */
+	public function setCondition($condition) {
+		$this->condition = $condition;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCondition() {
+		return $this->condition;
+	}
+
+	/**
+	 * @param string $foreignField
+	 */
+	public function setForeignField($foreignField) {
+		$this->foreignField = $foreignField;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getForeignField() {
+		return $this->foreignField;
+	}
+
+	/**
+	 * @param NULL|string $manyToMany
+	 */
+	public function setManyToMany($manyToMany) {
+		$this->manyToMany = $manyToMany;
+	}
+
+	/**
+	 * @return NULL|string
+	 */
+	public function getManyToMany() {
+		return $this->manyToMany;
+	}
+
+	/**
+	 * @param string $table
+	 */
+	public function setTable($table) {
+		$this->table = $table;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTable() {
+		return $this->table;
+	}
+
 }
