@@ -40,6 +40,11 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	protected $configurationService;
 
 	/**
+	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 */
+	protected $configurationManager;
+
+	/**
 	 * @var string
 	 */
 	protected $name;
@@ -63,6 +68,14 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
 		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @return void
+	 */
+	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+		$this->configurationManager = $configurationManager;
 	}
 
 	/**
