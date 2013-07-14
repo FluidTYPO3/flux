@@ -28,6 +28,18 @@
  */
 class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 
+	const POSITION_TOP = 'top';
+	const POSITION_BOTTOM = 'bottom';
+	const POSITION_BOTH = 'both';
+	const POSITION_NONE = 'none';
+	const CONTROL_INFO = 'info';
+	const CONTROL_NEW = 'new';
+	const CONTROL_DRAGDROP = 'dragdrop';
+	const CONTROL_SORT = 'sort';
+	const CONTROL_HIDE = 'hide';
+	const CONTROL_DELETE = 'delete';
+	const CONTROL_LOCALISE = 'localize';
+
 	/**
 	 * if FALSE, disables this form.
 	 *
