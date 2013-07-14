@@ -162,15 +162,15 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 	public function getItemListStyle();
 
 	/**
-	 * @param string $localisationMode
+	 * @param string $localizationMode
 	 * @return Tx_Flux_Form_RelationFieldInterface
 	 */
-	public function setLocalisationMode($localisationMode);
+	public function setLocalizationMode($localizationMode);
 
 	/**
 	 * @return string
 	 */
-	public function getLocalisationMode();
+	public function getLocalizationMode();
 
 	/**
 	 * @param boolean $localizeChildrenAtParentLocalization

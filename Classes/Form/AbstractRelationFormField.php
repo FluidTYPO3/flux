@@ -137,7 +137,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 	 *
 	 * @var string
 	 */
-	protected $localisationMode;
+	protected $localizationMode;
 
 	/**
 	 * Defines whether children should be localized when the localization of the
@@ -365,19 +365,19 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 	}
 
 	/**
-	 * @param string $localisationMode
+	 * @param string $localizationMode
 	 * @return Tx_Flux_Form_RelationFieldInterface
 	 */
-	public function setLocalisationMode($localisationMode) {
-		$this->localisationMode = $localisationMode;
+	public function setLocalizationMode($localizationMode) {
+		$this->localizationMode = $localizationMode;
 		return $this;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getLocalisationMode() {
-		return $this->localisationMode;
+	public function getLocalizationMode() {
+		return $this->localizationMode;
 	}
 
 	/**
