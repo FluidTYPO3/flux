@@ -37,6 +37,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_GroupViewHelper extends Tx_Flux_ViewHel
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
+		$this->overrideArgument('items', 'mixed', 'Optional for this ViewHelper type', FALSE, FALSE);
 		$this->registerArgument('internalType', 'string', 'FlexForm-internalType of this Group Selector', FALSE, 'db');
 		$this->registerArgument('allowed', 'string', 'FlexForm-style "allowed" content for a group type field');
 		$this->registerArgument('uploadFolder', 'string', 'Upload folder. DEPRECATED, will be moved to the File field ViewHelper');
