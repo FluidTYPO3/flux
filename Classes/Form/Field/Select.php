@@ -30,12 +30,96 @@
 class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField {
 
 	/**
+	 * Mixed - string (CSV), Traversable or array of items. Format of key/value
+	 * pairs is also optional. For single-dim arrays, key becomes option value
+	 * and each member value becomes label. For multidim/Traversable each member
+	 * is inspected; if it is a raw value it is used for both value and label,
+	 * if it is a scalar value the first item is used as value and the second
+	 * as label.
+	 *
+	 * @var mixed
+	 */
+	protected $items = NULL;
+
+	/**
+	 * If not-FALSE, adds one empty option/value pair to the generated selector
+	 * box and tries to use this property's value (cast to string) as label.
+	 *
+	 * @var boolean|string
+	 */
+	protected $emptyOption = FALSE;
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
 		$configuration = $this->prepareConfiguration('select');
 		$configuration['items'] = $this->getItems();
 		return $configuration;
+	}
+
+	/**
+	 * @param array $items
+	 * @return Tx_Flux_Form_Field_Select
+	 */
+	public function setItems($items) {
+		$this->items = $items;
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getItems() {
+		$items = array();
+		if (TRUE === is_string($this->items)) {
+			$itemNames = t3lib_div::trimExplode(',', $this->arguments['commaSeparatedItems']);
+			foreach ($itemNames as $itemName) {
+				array_push($items, array($itemName, $itemName));
+			}
+		} elseif (TRUE === is_array($this->items) || TRUE === $this->items instanceof Traversable) {
+			foreach ($this->items as $itemIndex => $itemValue) {
+				if (TRUE === is_array($itemValue) || TRUE === $itemValue instanceof ArrayObject) {
+					$index = array_pop($itemValue);
+					$items[$index] = array_pop($itemValue);
+				} else {
+					$items[$itemIndex] = $itemValue;
+				}
+			}
+		} elseif (TRUE === $this->items instanceof Tx_Extbase_Persistence_Query) {
+			/** @var Tx_Extbase_Persistence_Query $query */
+			$query = $this->items;
+			$results = $query->execute();
+			$type = $query->getType();
+			$table = strtolower(str_replace('\\', '_', $type));
+			$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
+			$propertyName = t3lib_div::underscoredToLowerCamelCase($labelField);
+			foreach ($results as $result) {
+				$uid = $result->getUid();
+				$items[$uid] = Tx_Extbase_Reflection_ObjectAccess::getProperty($result, $propertyName);
+			}
+		}
+		$emptyOption = $this->getEmptyOption();
+		if (FALSE !== $emptyOption) {
+			array_unshift($items, array('', $emptyOption));
+		}
+		return $items;
+	}
+
+	/**
+	 * @param boolean|string $emptyOption
+	 * @return Tx_Flux_Form_Field_Select
+	 */
+	public function setEmptyOption($emptyOption) {
+		$this->emptyOption = $emptyOption;
+		return $this;
+	}
+
+	/**
+	 * @return boolean|string
+	 */
+	public function getEmptyOption() {
+		return $this->emptyOption;
 	}
 
 }

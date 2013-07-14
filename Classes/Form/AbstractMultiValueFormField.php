@@ -30,11 +30,6 @@
 abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_AbstractFormField implements Tx_Flux_Form_MultiValueFieldInterface {
 
 	/**
-	 * @var array
-	 */
-	protected $items = array();
-
-	/**
 	 * @var integer
 	 */
 	protected $size = 1;
@@ -52,27 +47,6 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 	/**
 	 * @return array
 	 */
-	public function buildConfiguration() {
-		return array(
-			'type' => 'select',
-			'items' => $this->getItems()
-		);
-	}
-
-	/**
-	 * @param array $items
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
-	 */
-	public function setItems($items) {
-		$this->items = $items;
-		return $this;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getItems() {
-		return $this->items;
 	}
 
 	/**

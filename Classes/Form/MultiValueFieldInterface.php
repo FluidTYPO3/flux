@@ -30,17 +30,6 @@
 interface Tx_Flux_Form_MultiValueFieldInterface extends Tx_Flux_Form_FieldInterface {
 
 	/**
-	 * @param array $items
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
-	 */
-	public function setItems($items);
-
-	/**
-	 * @return array
-	 */
-	public function getItems();
-
-	/**
 	 * @param integer $size
 	 * @return Tx_Flux_Form_MultiValueFieldInterface
 	 */
