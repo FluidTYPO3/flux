@@ -55,12 +55,14 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 		/** @var Tx_Flux_Form $form */
 		$form = $this->objectManager->get('Tx_Flux_Form');
 		$form->setId($this->arguments['id']);
+		$form->setName($this->arguments['id']);
 		$form->setLabel($this->arguments['label']);
 		$form->setDescription($this->arguments['description']);
 		$form->setIcon($this->arguments['icon']);
 		$form->setEnabled($this->arguments['enabled']);
 		$form->setCompact($this->arguments['compact']);
 		$form->setGroup($this->arguments['wizardTab']);
+		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form', $form);
 		$this->renderChildren();
 	}
