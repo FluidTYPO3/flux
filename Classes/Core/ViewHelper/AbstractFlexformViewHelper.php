@@ -49,9 +49,11 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	 */
 	public function render() {
 		$component = $this->getComponent();
-		$this->getContainer()->add($component);
+		$container = $this->getContainer();
+		$container->add($component);
 		$this->setContainer($component);
 		$this->renderChildren();
+		$this->setContainer($container);
 	}
 
 	/**
@@ -64,6 +66,25 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 			$this->viewHelperVariableContainer->add('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form', $form);
 		}
 		return $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form');
+	}
+
+	/**
+	 * @param string $gridName
+	 * @return Tx_Flux_Form
+	 */
+	protected function getGrid($gridName = 'grid') {
+		if (FALSE === $this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids')) {
+			$grid = $this->getForm()->createContainer('Grid', $gridName, 'Grid');
+			$grids = array($gridName => $grid);
+			$this->viewHelperVariableContainer->add('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $grids);
+		}
+		$grids = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids');
+		if (FALSE === isset($grids[$gridName])) {
+			$grid = $this->getForm()->createContainer('Grid', $gridName, 'Grid');
+			$grids[$gridName] = $grid;
+			$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $grids);
+		}
+		return $grids[$gridName];
 	}
 
 	/**

@@ -46,6 +46,26 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
 	}
 
 	/**
+	 * @param string $sectionName
+	 * @param string $formName
+	 * @return Tx_Flux_Form_Form
+	 */
+	public function getForm($sectionName = 'Configuration', $formName = 'form') {
+		$form = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $formName, $sectionName);
+		return $form;
+	}
+
+	/**
+	 * @param string $sectionName
+	 * @param string $gridName
+	 * @return Tx_Flux_Form_Container_Grid
+	 */
+	public function getGrid($sectionName = 'Configuration', $gridName = 'grid') {
+		$grids = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $sectionName);
+		return $grids[$gridName];
+	}
+
+	/**
 	 * Get a variable stored in the Fluid template
 	 * @param string $viewHelperClassName Class name of the ViewHelper which stored the variable
 	 * @param string $name Name of the variable which the ViewHelper stored

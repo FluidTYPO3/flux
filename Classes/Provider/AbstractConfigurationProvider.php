@@ -134,6 +134,38 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	}
 
 	/**
+	 * @param array $row
+	 * @return Tx_Flux_Form
+	 */
+	public function getForm(array $row) {
+		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+		$section = $this->getConfigurationSectionName($row);
+		$formName = 'form';
+		$paths = $this->getTemplatePaths($row);
+		$extensionKey = $this->getExtensionKey($row);
+		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$variables = $this->getTemplateVariables($row);
+		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
+		return $form;
+	}
+
+	/**
+	 * @param array $row
+	 * @return Tx_Flux_Form_Container_Grid
+	 */
+	public function getGrid(array $row) {
+		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+		$section = $this->getConfigurationSectionName($row);
+		$gridName = 'grid';
+		$paths = $this->getTemplatePaths($row);
+		$extensionKey = $this->getExtensionKey($row);
+		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$variables = $this->getTemplateVariables($row);
+		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
+		return $grid;
+	}
+
+	/**
 	 * @param array $row The record row which triggered processing
 	 * @return string|NULL
 	 */
@@ -176,8 +208,10 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getTemplateVariables(array $row) {
-		unset($row);
-		return (array) $this->templateVariables;
+		if (NULL === $this->fieldName) {
+			return array();
+		}
+		return $this->configurationService->convertFlexFormContentToArray($row[$this->fieldName]);
 	}
 
 	/**
@@ -360,7 +394,10 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			}
 			$extensionKey = $this->getExtensionKey($row);
 			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-			$this->configurationService->convertFlexFormTemplateToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section, $extensionName);
+			$variables = $this->getTemplateVariables($row);
+			$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, 'form', $paths, $extensionName, $variables);
+			$dataStructure = $form->build();
+			#$this->configurationService->convertFlexFormTemplateToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section, $extensionName);
 		} catch (Exception $error) {
 			$this->configurationService->debug($error);
 		}
