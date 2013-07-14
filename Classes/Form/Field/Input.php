@@ -66,18 +66,18 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 		$minimum = $this->getMinimum();
 		$maximum = $this->getMaximum();
 		$validate = $this->getValidate();
-		$fieldConfiguration = $this->prepareConfiguration('input');
-		$fieldConfiguration['placeholder'] = $this->getPlaceholder();
-		$fieldConfiguration['size'] = $this->getSize();
-		$fieldConfiguration['max'] = $this->getMaxCharacters();
-		$fieldConfiguration['eval'] = $validate;
+		$configuration = $this->prepareConfiguration('input');
+		$configuration['placeholder'] = $this->getPlaceholder();
+		$configuration['size'] = $this->getSize();
+		$configuration['max'] = $this->getMaxCharacters();
+		$configuration['eval'] = $validate;
 		if ($minimum >= 0 || $maximum >= 0 && in_array('int', t3lib_div::trimExplode(',', $validate))) {
-			$fieldConfiguration['range'] = array(
+			$configuration['range'] = array(
 				'lower' => $minimum,
 				'upper' => $maximum,
 			);
 		}
-		return $fieldConfiguration;
+		return $configuration;
 	}
 
 	/**

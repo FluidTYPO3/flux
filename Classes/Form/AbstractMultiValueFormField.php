@@ -45,8 +45,15 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 	protected $maxItems;
 
 	/**
+	 * @param string $type
 	 * @return array
 	 */
+	public function prepareConfiguration($type) {
+		$configuration = parent::prepareConfiguration($type);
+		$configuration['size'] = $this->getSize();
+		$configuration['maxItems'] = $this->getMaxItems();
+		$configuration['minItems'] = $this->getMinItems();
+		return $configuration;
 	}
 
 	/**
