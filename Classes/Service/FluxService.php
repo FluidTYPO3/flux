@@ -102,14 +102,17 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param string $extensionName
+	 * @param string $extensionKey
 	 * @param string $controllerName
+	 * @param array $paths
+	 * @param array $variables
 	 * @return Tx_Flux_MVC_View_ExposedTemplateView
 	 */
-	public function getPreparedExposedTemplateView($extensionName = NULL, $controllerName = NULL) {
-		if (NULL === $extensionName || FALSE === t3lib_extMgm::isLoaded($extensionName)) {
+	public function getPreparedExposedTemplateView($extensionKey = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
+		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionKey);
+		if (NULL === $extensionKey || FALSE === t3lib_extMgm::isLoaded($extensionKey)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
-			$extensionName = 'Flux';
+			$extensionKey = 'Flux';
 		}
 		if (NULL === $controllerName) {
 			$controllerName = 'Flux';
@@ -120,7 +123,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		$request = $this->objectManager->get('Tx_Extbase_MVC_Web_Request');
 		/** @var $response Tx_Extbase_MVC_Web_Response */
 		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
-		$request->setControllerExtensionName($extensionName);
+		$request->setControllerExtensionName($extensionKey);
 		$request->setControllerName($controllerName);
 		$request->setDispatched(TRUE);
 		/** @var $uriBuilder Tx_Extbase_Mvc_Web_Routing_UriBuilder */
@@ -131,43 +134,50 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		/** @var $exposedView Tx_Flux_MVC_View_ExposedTemplateView */
 		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
 		$exposedView->setControllerContext($context);
+		if (0 < count($variables)) {
+			$exposedView->assignMultiple($variables);
+		}
+		if (TRUE === isset($paths['layoutRootPath']) && FALSE === empty($paths['layoutRootPath'])) {
+			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
+		}
+		if (TRUE === isset($paths['partialRootPath']) && FALSE === empty($paths['partialRootPath'])) {
+			$exposedView->setPartialRootPath($paths['partialRootPath']);
+		}
 		return $exposedView;
 	}
 
 	/**
 	 * @param string $templatePathAndFilename
-	 * @param string $variableName
 	 * @param string $section
+	 * @param string $formName
 	 * @param array $paths
-	 * @param string|NULL $extensionName
+	 * @param string $extensionName
 	 * @param array $variables
+	 * @return Tx_Flux_Form
 	 * @throws Exception
-	 * @return mixed
 	 */
-	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL, $variables = array()) {
-		if (FALSE === file_exists($templatePathAndFilename)) {
-			throw new Exception('The template file "' . $templatePathAndFilename . '" was not found.', 1366824347);
+	public function getFormFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $formName = 'form', $paths = array(), $extensionName = NULL, $variables = array()) {
+		try {
+			if (FALSE === file_exists($templatePathAndFilename)) {
+				throw new Exception('The template file "' . $templatePathAndFilename . '" was not found.', 1366824347);
+			}
+			$variableCheck = json_encode($variables);
+			$cacheKey = md5($templatePathAndFilename . $formName . $extensionName . implode('', $paths) . $section . $variableCheck);
+			if (TRUE === isset(self::$cache[$cacheKey])) {
+				return self::$cache[$cacheKey];
+			}
+			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
+			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+			$form = $exposedView->getForm($section, $formName);
+		} catch (Exception $error) {
+			if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
+				throw $error;
+			} else {
+				t3lib_div::sysLog($error->getMessage(), 'flux');
+				throw $error;
+			}
 		}
-		$variableCheck = json_encode($variables);
-		$actionName = strtolower(pathinfo($templatePathAndFilename, PATHINFO_FILENAME));
-		$cacheKey = md5($templatePathAndFilename . $variableName . $extensionName . implode('', $paths) . $section . $variableCheck);
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
-		$exposedView = $this->getPreparedExposedTemplateView($extensionName);
-		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
-		if (0 < count($variables)) {
-			$exposedView->assignMultiple($variables);
-		}
-		if (TRUE === isset($paths['layoutRootPath'])) {
-			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
-		}
-		if (TRUE === isset($paths['partialRootPath'])) {
-			$exposedView->setPartialRootPath($paths['partialRootPath']);
-		}
-		$value = $exposedView->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $variableName, $section, $paths, $extensionName, $actionName);
-		self::$cache[$cacheKey] = $value;
-		return $value;
+		return $form;
 	}
 
 	/**
@@ -185,50 +195,28 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * selected page template to know exactly how the BackendLayout looks.
 	 *
 	 * @param string $templatePathAndFilename
-	 * @param array $variables
-	 * @param string|NULL $configurationSection
+	 * @param string $section
+	 * @param string $gridName
 	 * @param array $paths
 	 * @param string $extensionName
+	 * @param array $variables
 	 * @return array
 	 * @throws Exception
 	 */
-	public function getGridFromTemplateFile($templatePathAndFilename, array $variables = array(), $configurationSection = NULL, array $paths = array(), $extensionName = NULL) {
+	public function getGridFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $gridName = 'grid', array $paths = array(), $extensionName = NULL, array $variables = array()) {
 		try {
-			$paths = Tx_Flux_Utility_Path::translatePath($paths);
-			$stored = $this->getStoredVariable($templatePathAndFilename, 'storage', $configurationSection, $paths, $extensionName, $variables);
-			$grid = isset($stored['grid']) ? $stored['grid'] : NULL;
+			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
+			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+			$grid = $exposedView->getGrid($section, $gridName);
 		} catch (Exception $error) {
-			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
+			if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
 				throw $error;
 			} else {
-				t3lib_div::sysLog($error->getMessage(), 'flux');
+				$this->debug($error);
+				$grid = array();
 			}
-			$grid = array();
 		}
 		return $grid;
-	}
-
-	/**
-	 * Gets a stored FlexForm configuration and applies any dynamic values to
-	 * create a current representation of the FlexForm sheet+fields array
-	 *
-	 * @param string $templateFile The absolute filename containing the configuration
-	 * @param mixed $values Optional values to use when rendering the configuration
-	 * @param string|NULL $section Optional section name containing the configuration
-	 * @param array|NULL $paths Template paths; required if template renders Partials (from inside section if $section != NULL)
-	 * @param string|NULL $extensionName If specified, uses this extensionName in an injected ControllerContext
-	 * @throws Exception
-	 * @return array
-	 */
-	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL, $extensionName = NULL) {
-		$config = NULL;
-		try {
-			$config = $this->getStoredVariable($templateFile, 'storage', $section, $paths, $extensionName, $values);
-		} catch (Exception $error) {
-			$this->message('Reading file ' . $templateFile . ' caused an error - see next message', t3lib_div::SYSLOG_SEVERITY_FATAL);
-			$this->debug($error);
-		}
-		return $config;
 	}
 
 	/**
