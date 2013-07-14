@@ -55,119 +55,22 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 	}
 
 	/**
-	 * Get a base configuration containing all shared arguments and their values
-	 *
-	 * @return array
+	 * @param string $type
+	 * @return Tx_Flux_Form_FieldInterface
 	 */
-	protected function getBaseConfig() {
-		$sheet = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet');
-		$wizardXML = NULL;
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards')) {
-			$wizardsBackup = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
-			$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
-		}
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section')) {
-			$section = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section');
-			$sectionName = $section['name'];
-		} else {
-			$sectionName = NULL;
-		}
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'fieldName', $this->arguments['name']);
-		$this->renderChildren();
-		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'fieldName');
-		if ($sectionName !== NULL) {
-			if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName')) {
-				$sectionObjectName = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
-			} else {
-				$sectionObjectName = $sectionName . 'Wrap';
-			}
-		} else {
-			$sectionObjectName = NULL;
-		}
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards')) {
-			$wizards = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
-			$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
-			if (TRUE === isset($wizardsBackup)) {
-				$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards', $wizardsBackup);
-			}
-			$wizardXML = '';
-			foreach ($wizards as $xmlOrArray) {
-				if (is_array($xmlOrArray)) {
-					$wizardXML .= t3lib_div::array2xml($xmlOrArray, '', 1, key($xmlOrArray));
-				} else {
-					$wizardXML .= $xmlOrArray;
-				}
-			}
-		}
-		if (FALSE === strpos($this->arguments['name'], '.')) {
-			$segmentsOfAssignedVariableName = array($this->arguments['name']);
-		} else {
-			$segmentsOfAssignedVariableName = explode('.', $this->arguments['name']);
-		}
-		$firstSegmentOfAssignedVariableName = array_shift($segmentsOfAssignedVariableName);
-		if (TRUE === $this->templateVariableContainer->exists($firstSegmentOfAssignedVariableName)) {
-			$value = $this->templateVariableContainer->get($firstSegmentOfAssignedVariableName);
-			if (0 !== count($segmentsOfAssignedVariableName)) {
-				$value = Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($value, implode('.', $segmentsOfAssignedVariableName));
-			}
-			$defaultValue = $value;
-		} elseif (TRUE === isset($this->arguments['default'])) {
-			$defaultValue = $this->arguments['default'];
-		} else {
-			$defaultValue = NULL;
-		}
-		$eval = $this->arguments['validate'] . (TRUE === isset($this->arguments['eval']) ? ',' . $this->arguments['eval'] : '');
-		$eval = trim($eval . (TRUE === (boolean) $this->arguments['required'] && FALSE === strpos($eval, 'required') ? ',required' : ''), ',');
-		$config = array(
-			'name' => $this->arguments['name'],
-			'transform' => $this->arguments['transform'],
-			'label' => $this->getLabel(),
-			'type' => $this->arguments['type'],
-			'default' => $defaultValue,
-			'required' => $this->getFlexFormBoolean($this->arguments['required']),
-			'repeat' => $this->arguments['repeat'],
-			'enabled' => $this->arguments['enabled'],
-			'requestUpdate' => $this->arguments['requestUpdate'],
-			'displayCond' => $this->arguments['displayCond'],
-			'exclude' => $this->getFlexFormBoolean($this->arguments['exclude']),
-			'wizards' => $wizardXML,
-			'sheet' => $sheet,
-			'wrap' => TRUE,
-			'section' => $sectionName,
-			'sectionObjectName' => $sectionObjectName,
-			'eval' => $eval
-		);
-		// Note about future implementations: setting _any_ value here has the implication
-		// that ConfigurationProviders will not allow the field's value to be inherited. A future
-		// implementation may very well call for a way to affect the value inheritance (sliding)
-		// using special options such as "-2" to only inherit values from the top two parent pages
-		// in the rootline - or "2" to inherit from only the closest two pages in the rootline Because
-		// of this the type of this argument is "integer" but type is, at the moment, irrelevant.
-		// This note left here to remind future devs about the exact purpose of the odd var type.
-		if (0 === intval($this->arguments['inherit'])) {
-			$config['stopInheritance'] = TRUE;
-		}
-		if (TRUE === $this->arguments['inheritEmpty']) {
-			$config['inheritEmpty'] = TRUE;
-		}
-		return $config;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function renderConfiguration() {
-		return $this->getBaseConfig();
-	}
-
-	/**
-	 * Get 1 or 0 from a boolean
-	 *
-	 * @param integer $value
-	 * @return integer
-	 */
-	protected function getFlexFormBoolean($value) {
-		return ($value === TRUE ? 1 : 0);
+	protected function getPreparedComponent($type) {
+		$component = $this->getForm()->createFieldComponent($type, $this->arguments['name'], $this->arguments['label']);
+		$component->setDefault($this->arguments['default']);
+		$component->setRequired($this->arguments['required']);
+		$component->setRepeat($this->arguments['repeat']);
+		$component->setExclude($this->arguments['exclude']);
+		$component->setEnable($this->arguments['enable']);
+		$component->setRequestUpdate($this->arguments['requestUpdate']);
+		$component->setDisplayCondition($this->arguments['displayCond']);
+		$component->setInherit($this->arguments['inherit']);
+		$component->setInheritEmpty($this->arguments['inheritEmpty']);
+		$component->setTransform($this->arguments['transform']);
+		return $component;
 	}
 
 }
