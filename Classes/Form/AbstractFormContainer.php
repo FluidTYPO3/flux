@@ -48,6 +48,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	public function add(Tx_Flux_Form_FormInterface $child) {
 		if (FALSE === $this->children->contains($child)) {
 			$this->children->attach($child);
+			$child->setParent($this);
 		}
 	}
 
@@ -71,6 +72,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 			if ($childName === $child->getName()) {
 				$this->children->detach($child);
 				$this->children->rewind();
+				$child->setParent(NULL);
 				return $child;
 			}
 		}
@@ -78,11 +80,16 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	}
 
 	/**
-	 * @param Tx_Flux_Form_FormInterface $child
+	 * @param mixed $childOrChildName
 	 * @return boolean
 	 */
-	public function has(Tx_Flux_Form_FormInterface $child) {
-		return (FALSE !== $this->get($child->getName()));
+	public function has($childOrChildName) {
+		if (TRUE === $childOrChildName instanceof Tx_Flux_Form_FormInterface) {
+			$name = $childOrChildName->getName();
+		} else {
+			$name = $childOrChildName;
+		}
+		return (FALSE !== $this->get($name));
 	}
 
 	/**

@@ -55,6 +55,11 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	protected $label = 'Unnamed FormComponent';
 
 	/**
+	 * @var Tx_Flux_Form_FormContainerInterface
+	 */
+	protected $parent;
+
+	/**
 	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
 	 * @return void
 	 */
@@ -135,7 +140,80 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 * @return string
 	 */
 	public function getLabel() {
-		return $this->label;
+		$label = $this->label;
+		$name = $this->getName();
+		$root = $this->getRoot();
+		if (FALSE === $root instanceof Tx_Flux_Form) {
+			return $label;
+		}
+		$id = $root->getName();
+		$extensionName = $root->getExtensionName();
+		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+		if (TRUE === empty($extensionName)) {
+			$this->configurationService->message('Wanted to generate an automatic LLL label for field "' . $name . '" ' .
+			'but there was no extension name stored in the RenderingContext.', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			return $name;
+		}
+		if (TRUE === isset($label) && FALSE === empty($label)) {
+			return $label;
+		} elseif (TRUE === empty($extensionKey) || FALSE === t3lib_extMgm::isLoaded($extensionKey)) {
+			return $label;
+		}
+		$prefix = '';
+		if (TRUE === $this instanceof Tx_Flux_Form_Container_Sheet) {
+			$prefix = 'sheets';
+		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Section) {
+			$prefix = 'sections';
+		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Content) {
+			$prefix = 'areas';
+		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Object) {
+			$prefix = 'objects';
+		} elseif (TRUE === $this instanceof Tx_Flux_Form_FieldInterface) {
+			if (TRUE === $this->isChildOfType('Object')) {
+				$prefix = 'objects.' . $this->getParent()->getName();
+			} else {
+				$prefix = 'fields';
+			}
+		}
+		$filePrefix = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml';
+		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.' . $name);
+		$this->configurationService->updateLanguageSourceFileIfUpdateFeatureIsEnabledAndIdentifierIsMissing($filePrefix, $labelIdentifier, $id);
+		return $filePrefix . ':' . $labelIdentifier;
+	}
+
+	/**
+	 * @param Tx_Flux_Form_ContainerInterface $parent
+	 * @return Tx_Flux_Form_FormInterface
+	 */
+	public function setParent($parent) {
+		$this->parent = $parent;
+		return $this;
+	}
+
+	/**
+	 * @return Tx_Flux_Form_FormContainerInterface
+	 */
+	public function getParent() {
+		return $this->parent;
+	}
+
+	/**
+	 * @return Tx_Flux_Form_FormContainerInterface
+	 */
+	public function getRoot() {
+		$root = &$this;
+		while ($component = $root->getParent()) {
+			$root = &$component;
+		}
+		return $root;
+	}
+
+	/**
+	 * @param string $type
+	 * @return boolean
+	 */
+	public function isChildOfType($type) {
+		return ('Tx_Flux_Form_Container_' . $type === get_class($this->getParent()));
 	}
 
 }

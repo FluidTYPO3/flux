@@ -36,10 +36,10 @@ interface Tx_Flux_Form_ContainerInterface extends Tx_Flux_Form_FormInterface {
 	public function add(Tx_Flux_Form_FormInterface $child);
 
 	/**
-	 * @param Tx_Flux_Form_FormInterface $child
+	 * @param mixed $childOrChildName
 	 * @return boolean
 	 */
-	public function has(Tx_Flux_Form_FormInterface $child);
+	public function has($childOrChildName);
 
 	/**
 	 * @param string $childName

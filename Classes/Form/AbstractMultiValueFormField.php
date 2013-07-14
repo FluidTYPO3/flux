@@ -35,6 +35,11 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 	protected $size = 1;
 
 	/**
+	 * @var boolean
+	 */
+	protected $multiple = FALSE;
+
+	/**
 	 * @var integer
 	 */
 	protected $minItems = 0;
@@ -43,6 +48,16 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 	 * @var integer
 	 */
 	protected $maxItems;
+
+	/**
+	 * @var string
+	 */
+	protected $itemListStyle;
+
+	/**
+	 * @var string
+	 */
+	protected $selectedListStyle;
 
 	/**
 	 * @param string $type
@@ -70,6 +85,20 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 	 */
 	public function getSize() {
 		return $this->size;
+	}
+
+	/**
+	 * @param boolean $multiple
+	 */
+	public function setMultiple($multiple) {
+		$this->multiple = $multiple;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getMultiple() {
+		return $this->multiple;
 	}
 
 	/**

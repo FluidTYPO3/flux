@@ -33,7 +33,7 @@ class Tx_Flux_Form_Field_Checkbox extends Tx_Flux_Form_AbstractFormField {
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		$fieldConfiguration = $this->prepareConfiguration('checkbox');
+		$fieldConfiguration = $this->prepareConfiguration('check');
 		return $fieldConfiguration;
 	}
 

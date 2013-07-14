@@ -158,7 +158,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	protected function buildChildren() {
 		$structure = array();
 		/** @var Tx_Flux_Form_FormInterface[] $children */
-		$children = $this->children;
+		$children = $this->wizards;
 		foreach ($children as $child) {
 			$name = $child->getName();
 			$structure[$name] = $child->build();

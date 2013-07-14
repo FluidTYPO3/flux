@@ -53,4 +53,27 @@ interface Tx_Flux_Form_FormInterface {
 	 * @return string
 	 */
 	public function getLabel();
+
+	/**
+	 * @param Tx_Flux_Form_ContainerInterface $parent
+	 * @return Tx_Flux_Form_FormInterface
+	 */
+	public function setParent($parent);
+
+	/**
+	 * @return Tx_Flux_Form_FormContainerInterface
+	 */
+	public function getParent();
+
+	/**
+	 * @return Tx_Flux_Form_FormContainerInterface
+	 */
+	public function getRoot();
+
+	/**
+	 * @param string $type
+	 * @return boolean
+	 */
+	public function isChildOfType($type);
+
 }

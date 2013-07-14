@@ -25,51 +25,16 @@
 
 /**
  * @package Flux
- * @subpackage Form
+ * @subpackage Form\Field
  */
-interface Tx_Flux_Form_MultiValueFieldInterface extends Tx_Flux_Form_FieldInterface {
+class Tx_Flux_Form_Field_Relation extends Tx_Flux_Form_AbstractRelationFormField {
 
 	/**
-	 * @param integer $size
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return array
 	 */
-	public function setSize($size);
-
-	/**
-	 * @return integer
-	 */
-	public function getSize();
-
-	/**
-	 * @param boolean $multiple
-	 */
-	public function setMultiple($multiple);
-
-	/**
-	 * @return boolean
-	 */
-	public function getMultiple();
-
-	/**
-	 * @param integer $maxItems
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
-	 */
-	public function setMaxItems($maxItems);
-
-	/**
-	 * @return integer
-	 */
-	public function getMaxItems();
-
-	/**
-	 * @param integer $minItems
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
-	 */
-	public function setMinItems($minItems);
-
-	/**
-	 * @return integer
-	 */
-	public function getMinItems();
+	public function buildConfiguration() {
+		$configuration = $this->prepareConfiguration('select');
+		return $configuration;
+	}
 
 }
