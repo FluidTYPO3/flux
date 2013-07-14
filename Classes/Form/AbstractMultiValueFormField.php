@@ -133,4 +133,36 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 		return $this->minItems;
 	}
 
+	/**
+	 * @param string $itemListStyle
+	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 */
+	public function setItemListStyle($itemListStyle) {
+		$this->itemListStyle = $itemListStyle;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getItemListStyle() {
+		return $this->itemListStyle;
+	}
+
+	/**
+	 * @param string $selectedListStyle
+	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 */
+	public function setSelectedListStyle($selectedListStyle) {
+		$this->selectedListStyle = $selectedListStyle;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSelectedListStyle() {
+		return $this->selectedListStyle;
+	}
+
 }

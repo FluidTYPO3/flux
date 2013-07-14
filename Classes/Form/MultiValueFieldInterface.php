@@ -72,4 +72,26 @@ interface Tx_Flux_Form_MultiValueFieldInterface extends Tx_Flux_Form_FieldInterf
 	 */
 	public function getMinItems();
 
+	/**
+	 * @param string $itemListStyle
+	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 */
+	public function setItemListStyle($itemListStyle);
+
+	/**
+	 * @return string
+	 */
+	public function getItemListStyle();
+
+	/**
+	 * @param string $selectedListStyle
+	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 */
+	public function setSelectedListStyle($selectedListStyle);
+
+	/**
+	 * @return string
+	 */
+	public function getSelectedListStyle();
+
 }
