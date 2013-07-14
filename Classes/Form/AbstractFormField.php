@@ -128,15 +128,6 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	}
 
 	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		return array(
-			'type' => 'passthrough'
-		);
-	}
-
-	/**
 	 * Creates a TCEforms configuration array based on the
 	 * configuration stored in this ViewHelper. Calls the
 	 * expected-to-be-overridden stub method getConfiguration()
@@ -173,6 +164,19 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 			$structure[$name] = $child->build();
 		}
 		return $structure;
+	}
+
+	/**
+	 * @param string $type
+	 * @return array
+	 */
+	protected function prepareConfiguration($type) {
+		$fieldConfiguration = array(
+			'type' => $type,
+			'transform' => $this->getTransform(),
+			'default' => $this->getDefault(),
+		);
+		return $fieldConfiguration;
 	}
 
 	/**

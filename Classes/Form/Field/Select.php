@@ -33,9 +33,9 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		return array(
-			'type' => 'select',
-		);
+		$configuration = $this->prepareConfiguration('select');
+		$configuration['items'] = $this->getItems();
+		return $configuration;
 	}
 
 }

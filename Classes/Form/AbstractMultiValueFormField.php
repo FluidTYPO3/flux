@@ -50,6 +50,16 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 	protected $maxItems;
 
 	/**
+	 * @return array
+	 */
+	public function buildConfiguration() {
+		return array(
+			'type' => 'select',
+			'items' => $this->getItems()
+		);
+	}
+
+	/**
 	 * @param array $items
 	 * @return Tx_Flux_Form_MultiValueFieldInterface
 	 */
