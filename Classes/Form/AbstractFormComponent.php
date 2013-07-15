@@ -201,11 +201,10 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 * @return Tx_Flux_Form_FormContainerInterface
 	 */
 	public function getRoot() {
-		$root = &$this;
-		while ($component = $root->getParent()) {
-			$root = &$component;
+		if (NULL === $this->getParent()) {
+			return $this;
 		}
-		return $root;
+		return $this->getParent()->getRoot();
 	}
 
 	/**

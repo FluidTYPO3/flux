@@ -112,8 +112,10 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 				}
 			}
 			$this->children->attach($child);
+			$child->setParent($this);
 		} else {
 			$this->last()->add($child);
+			$child->setParent($this->last());
 		}
 		return $this;
 	}
