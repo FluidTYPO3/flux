@@ -108,13 +108,8 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 		}
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($templateName);
 		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', array(), 'Flux', $variables);
-		$this->assertIsArray($stored);
-		$this->assertArrayHasKey('fields', $stored);
-		$this->assertArrayHasKey('label', $stored);
-		$this->assertNotEmpty($stored['label']);
-		$this->assertArrayHasKey('id', $stored);
-		$this->assertNotEmpty($stored['id']);
+		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', array(), 'Flux', $variables);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
 	}
 
 	/**
@@ -147,9 +142,9 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	 */
 	protected function performBasicTemplateReadTest($templatePathAndFilename) {
 		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$this->assertIsArray($stored);
-		return $stored;
+		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		return $form;
 	}
 
 }

@@ -45,13 +45,8 @@ class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_Abstract
 	public function canReadDefaultStorageArrayFromAbsolutelyMinimalTemplate() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$this->assertIsArray($stored);
-		$this->assertArrayHasKey('fields', $stored);
-		$this->assertArrayHasKey('label', $stored);
-		$this->assertNotEmpty($stored['label']);
-		$this->assertArrayHasKey('id', $stored);
-		$this->assertNotEmpty($stored['id']);
+		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
 	}
 
 	/**
@@ -60,9 +55,8 @@ class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_Abstract
 	public function canReadTemplateWithWarningTriggers() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_CONTAINSWARNINGTRIGGERS);
 		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$this->assertIsArray($stored);
-		$this->assertNotEmpty($stored);
+		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
 	}
 
 	/**
@@ -71,9 +65,8 @@ class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_Abstract
 	public function canReadTemplateWithExtensionRelativeIcon() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ICONCONTAINSEXTENSIONKEY);
 		$service = $this->createFluxServiceInstance();
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$this->assertIsArray($stored);
-		$this->assertNotEmpty($stored);
+		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
 	}
 
 }

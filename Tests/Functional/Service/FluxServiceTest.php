@@ -96,7 +96,7 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 	/**
 	 * @test
 	 */
-	public function canGetStoredVariablesWithPaths() {
+	public function canGetFormWithPaths() {
 		$templatePathAndFilename = t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
 		$paths = array(
@@ -104,18 +104,18 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 			'partialRootPath' => 'EXT:flux/Resources/Private/Partials',
 			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
 		);
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths);
+		$stored = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths);
 		$this->assertIsArray($stored);
 	}
 
 	/**
 	 * @test
 	 */
-	public function getStoredVariableThrowsExceptionOnInvalidFile() {
+	public function getFormThrowsExceptionOnInvalidFile() {
 		$templatePathAndFilename = '/void/nothing';
 		$service = $this->createFluxServiceInstance();
 		try {
-			$service->getStoredVariable($templatePathAndFilename, 'storage');
+			$service->getFormFromTemplateFile($templatePathAndFilename);
 			$this->fail('Did not throw Exception on invalid file');
 		} catch (Exception $error) {
 			$this->assertSame(1366824347, $error->getCode());
@@ -153,7 +153,7 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 	/**
 	 * @test
 	 */
-	public function canGetStoredVariablesWithPathsAndTriggerCache() {
+	public function canGetFormWithPathsAndTriggerCache() {
 		$templatePathAndFilename = t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
 		$paths = array(
@@ -161,9 +161,9 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 			'partialRootPath' => 'EXT:flux/Resources/Private/Partials',
 			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
 		);
-		$stored = $service->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths);
+		$stored = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths);
 		$this->assertIsArray($stored);
-		$readAgain = $service->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths);
+		$readAgain = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths);
 		$this->assertIsArray($readAgain);
 	}
 
@@ -185,9 +185,9 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'] = '1';
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_COMPACTED);
 		$service = $this->createFluxServiceInstance();
-		$config = $service->getStoredVariable($templatePathAndFilename, 'storage');
-		$this->assertIsArray($config);
-		$stored = $service->convertFlexFormConfigurationToDataStructure($config);
+		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$stored = $form->build();
 		$this->assertIsArray($stored);
 	}
 
