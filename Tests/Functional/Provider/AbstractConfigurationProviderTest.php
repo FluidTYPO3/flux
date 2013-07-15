@@ -66,7 +66,7 @@ abstract class Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest extends 
 	/**
 	 * @test
 	 */
-	public function canGetTemplateVariables() {
+	public function canGetForcedTemplateVariables() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$variables = $provider->getTemplateVariables($record);

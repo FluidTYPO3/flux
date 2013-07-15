@@ -60,7 +60,7 @@ class Tx_Flux_Tests_Functional_View_ViewTest extends Tx_Flux_Tests_AbstractFunct
 		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		$variables = array(
 			'row' => $record,
-			'grid' => $service->getGridFromTemplateFile($templatePathAndFilename, array('record' => $record), 'Configuration')
+			'grid' => $service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', 'grid', array(), 'flux', array('record' => $record))
 		);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
 		$preview = $view->renderStandaloneSection('Preview', $variables, TRUE);

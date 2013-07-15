@@ -104,8 +104,8 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 			'partialRootPath' => 'EXT:flux/Resources/Private/Partials',
 			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
 		);
-		$stored = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths);
-		$this->assertIsArray($stored);
+		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
 	}
 
 	/**
@@ -125,24 +125,13 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 	/**
 	 * @test
 	 */
-	public function getGridFromTemplateFileReturnsEmptyArrayOnInvalidFile() {
-		$templatePathAndFilename = '/void/nothing';
-		$service = $this->createFluxServiceInstance();
-		$storage = $service->getGridFromTemplateFile($templatePathAndFilename);
-		$this->assertIsArray($storage);
-		$this->assertEmpty($storage);
-	}
-
-	/**
-	 * @test
-	 */
 	public function getGridFromTemplateFilePassesThroughExceptionIfDebugModeEnabledAtAnyLevel() {
 		$currentMode = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 2;
 		$templatePathAndFilename = '/void/nothing';
 		$service = $this->createFluxServiceInstance();
 		try {
-			$service->getGridFromTemplateFile($templatePathAndFilename);
+			$service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', 'grid', array(), 'flux');
 			$this->fail('Did not throw Exception on invalid file');
 		} catch (Exception $error) {
 			$this->assertSame(1366824347, $error->getCode());
@@ -161,10 +150,10 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 			'partialRootPath' => 'EXT:flux/Resources/Private/Partials',
 			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
 		);
-		$stored = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths);
-		$this->assertIsArray($stored);
-		$readAgain = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths);
-		$this->assertIsArray($readAgain);
+		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$readAgain = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
+		$this->assertInstanceOf('Tx_Flux_Form', $readAgain);
 	}
 
 	/**
@@ -172,10 +161,8 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 	 */
 	public function canReadGridFromTemplateWithoutConvertingToDataStructure() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
-		$stored = $this->performBasicTemplateReadTest($templatePathAndFilename);
-		$this->assertIsArray($stored);
-		$this->assertArrayHasKey(0, $stored['grid'], 'Has at least one row');
-		$this->assertArrayHasKey(0, $stored['grid'][0], 'Has at least one column in first row');
+		$form = $this->performBasicTemplateReadTest($templatePathAndFilename);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
 	}
 
 	/**

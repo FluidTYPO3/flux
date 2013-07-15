@@ -2,9 +2,8 @@
 <f:layout name="Default" />
 <f:section name="Configuration">
 	<flux:flexform id="test">
-		<flux:flexform.field.select name="settings.select" table="pages" />
 		<flux:flexform.field.select name="settings.selectCustomItems" items="{0: {0: 'test', 1: 'test2'}}" />
 		<flux:flexform.field.select name="settings.selectCustomItemsSimpleArray" items="{0: 'test', 1: 'test2'}" />
-		<flux:flexform.field.select name="settings.selectCommaSeparatedItems" commaSeparatedItems="1,2,3" />
+		<flux:flexform.field.select name="settings.selectCommaSeparatedItems" items="1,2,3" />
 	</flux:flexform>
 </f:section>

@@ -67,13 +67,6 @@ class Tx_Flux_Tests_Functional_ViewHelpers_BasicReadTest extends Tx_Flux_Tests_A
 	/**
 	 * @test
 	 */
-	public function canReadTemplateWithGroupField() {
-		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_GROUP);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canReadTemplateWithInlineField() {
 		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_INLINE);
 	}
