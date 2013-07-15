@@ -33,11 +33,12 @@ class Tx_Flux_Form_Container_Grid extends Tx_Flux_Form_AbstractFormContainer imp
 	 * @return array
 	 */
 	public function build() {
-		return array(
+		$structure = array(
 			'name' => $this->getName(),
 			'label' => $this->getLabel(),
 			'rows' => $this->buildChildren()
 		);
+		return $structure;
 	}
 
 	/**

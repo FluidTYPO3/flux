@@ -33,11 +33,12 @@ class Tx_Flux_Form_Container_Row extends Tx_Flux_Form_AbstractFormContainer impl
 	 * @return array
 	 */
 	public function build() {
-		return array(
+		$structure = array(
 			'name' => $this->getName(),
 			'label' => $this->getLabel(),
 			'columns' => $this->buildChildren()
 		);
+		return $structure;
 	}
 
 	/**

@@ -53,7 +53,7 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 	 * @return array
 	 */
 	public function build() {
-		return array(
+		$structure = array(
 			'name' => $this->getName(),
 			'label' => $this->getLabel(),
 			'colspan' => $this->getColspan(),
@@ -62,6 +62,7 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 			'colPos' => $this->getColumnPosition(),
 			'areas' => $this->buildChildren()
 		);
+		return $structure;
 	}
 
 	/**
