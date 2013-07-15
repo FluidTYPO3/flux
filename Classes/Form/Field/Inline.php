@@ -126,7 +126,7 @@ class Tx_Flux_Form_Field_Inline extends Tx_Flux_Form_AbstractRelationFormField {
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		$configuration = $this->prepareConfiguration('inline');
+		$configuration = parent::prepareConfiguration('inline');
 		$configuration['appearance'] = array(
 			'collapseAll' => $this->getCollapseAll(),
 			'expandSingle' => $this->getExpandSingle(),
