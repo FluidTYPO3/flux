@@ -37,14 +37,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper extends
 	 * @return void
 	 */
 	public function render() {
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards')) {
-			$wizards = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
-		} else {
-			$wizards = array();
-		}
-		$xmlOrArray = $this->build();
-		array_push($wizards, $xmlOrArray);
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards', $wizards);
+
 	}
 
 	/**
