@@ -208,13 +208,15 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getTemplateVariables(array $row) {
-		if (NULL === $this->fieldName) {
-			return array();
+		$file = $this->getTemplatePathAndFilename($row);
+		if (NULL === $this->fieldName || FALSE === file_exists($file)) {
+			return $this->templateVariables;
+		} else {
+			$values = $this->configurationService->convertFlexFormContentToArray($row[$this->fieldName]);
+			$values['row'] = $row;
+			$values['grid'] = $this->getGrid($row);
+			$values['form'] = $this->getForm($row);
 		}
-		$values = $this->configurationService->convertFlexFormContentToArray($row[$this->fieldName]);
-		$values['row'] = $row;
-		$values['grid'] = $this->getGrid($row);
-		$values['form'] = $this->getForm($row);
 		return $values;
 	}
 
