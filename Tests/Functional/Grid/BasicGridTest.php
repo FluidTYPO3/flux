@@ -33,9 +33,10 @@ class Tx_Flux_Tests_Functional_Grid_BasicGridTest extends Tx_Flux_Tests_Abstract
 	 * @test
 	 */
 	public function canRetrieveStoredGrid() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_SECTIONOBJECT);
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
-		$grid = $service->getGridFromTemplateFile($templatePathAndFilename);
+		$grid = $service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', 'grid', array(), 'flux');
+		$this->assertIsValidAndWorkingGridObject($grid);
 	}
 
 }
