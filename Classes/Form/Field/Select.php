@@ -73,7 +73,7 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 	public function getItems() {
 		$items = array();
 		if (TRUE === is_string($this->items)) {
-			$itemNames = t3lib_div::trimExplode(',', $this->arguments['commaSeparatedItems']);
+			$itemNames = t3lib_div::trimExplode(',', $this->items);
 			foreach ($itemNames as $itemName) {
 				array_push($items, array($itemName, $itemName));
 			}
