@@ -142,7 +142,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 			'TCEforms' => array(
 				'label' => $this->getLabel(),
 				'required' => intval($this->getRequired()),
-				'exclude' => $this->getExclude(),
+				'exclude' => intval($this->getExclude()),
 				'config' => $this->buildConfiguration(),
 				'displayCond' => $this->getDisplayCondition()
 			)
@@ -186,7 +186,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	public function setRequired($required) {
-		$this->required = $required;
+		$this->required = (boolean) $required;
 		return $this;
 	}
 
@@ -194,7 +194,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return boolean
 	 */
 	public function getRequired() {
-		return $this->required;
+		return (boolean) $this->required;
 	}
 
 	/**
@@ -255,7 +255,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	public function setRequestUpdate($requestUpdate) {
-		$this->requestUpdate = $requestUpdate;
+		$this->requestUpdate = (boolean) $requestUpdate;
 		return $this;
 	}
 
@@ -263,7 +263,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return boolean
 	 */
 	public function getRequestUpdate() {
-		return $this->requestUpdate;
+		return (boolean) $this->requestUpdate;
 	}
 
 	/**
@@ -287,7 +287,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	public function setInheritEmpty($inheritEmpty) {
-		$this->inheritEmpty = $inheritEmpty;
+		$this->inheritEmpty = (boolean) $inheritEmpty;
 		return $this;
 	}
 
@@ -295,7 +295,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return boolean
 	 */
 	public function getInheritEmpty() {
-		return $this->inheritEmpty;
+		return (boolean) $this->inheritEmpty;
 	}
 
 	/**
@@ -303,7 +303,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	public function setStopInheritance($stopInheritance) {
-		$this->stopInheritance = $stopInheritance;
+		$this->stopInheritance = (boolean) $stopInheritance;
 		return $this;
 	}
 
@@ -311,7 +311,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return boolean
 	 */
 	public function getStopInheritance() {
-		return $this->stopInheritance;
+		return (boolean) $this->stopInheritance;
 	}
 
 	/**
@@ -319,7 +319,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	public function setExclude($exclude) {
-		$this->exclude = $exclude;
+		$this->exclude = (boolean) $exclude;
 		return $this;
 	}
 
@@ -327,7 +327,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return boolean
 	 */
 	public function getExclude() {
-		return $this->exclude;
+		return (boolean) $this->exclude;
 	}
 
 	/**
@@ -335,7 +335,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	public function setEnable($enable) {
-		$this->enable = $enable;
+		$this->enable = (boolean) $enable;
 		return $this;
 	}
 
@@ -343,7 +343,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return boolean
 	 */
 	public function getEnable() {
-		return $this->enable;
+		return (boolean) $this->enable;
 	}
 
 	/**
@@ -351,7 +351,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	public function setClearable($clearable) {
-		$this->clearable = $clearable;
+		$this->clearable = (boolean) $clearable;
 		return $this;
 	}
 
@@ -359,7 +359,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return boolean
 	 */
 	public function getClearable() {
-		return $this->clearable;
+		return (boolean) $this->clearable;
 	}
 
 }
