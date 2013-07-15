@@ -30,7 +30,7 @@
  * @package Flux
  * @subpackage MVC/View
  */
-class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView {
+class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implements Tx_Extbase_MVC_View_ViewInterface {
 
 	/**
 	 * @var Tx_Flux_Service_FluxService
