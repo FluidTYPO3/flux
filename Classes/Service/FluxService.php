@@ -172,12 +172,11 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		} catch (Exception $error) {
 			if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
 				throw $error;
-			} else {
-				t3lib_div::sysLog($error->getMessage(), 'flux');
-				/** @var Tx_Flux_Form $form */
-				$form = $this->objectManager->get('Tx_Flux_Form');
-				$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->render'));
 			}
+			t3lib_div::sysLog($error->getMessage(), 'flux');
+			/** @var Tx_Flux_Form $form */
+			$form = $this->objectManager->get('Tx_Flux_Form');
+			$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->render'));
 		}
 		return $form;
 	}
