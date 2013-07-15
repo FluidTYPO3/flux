@@ -58,7 +58,7 @@ class Tx_Flux_Form_Field_Inline extends Tx_Flux_Form_AbstractRelationFormField {
 	 *
 	 * @var string
 	 */
-	protected $newRecordLinkPosition = self::POSITION_TOP;
+	protected $newRecordLinkPosition = Tx_Flux_Form::POSITION_TOP;
 
 	/**
 	 * For use on bidirectional relations using an intermediary table.

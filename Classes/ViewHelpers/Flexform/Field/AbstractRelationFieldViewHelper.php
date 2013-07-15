@@ -59,10 +59,11 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractRelationFieldViewHelpe
 	}
 
 	/**
+	 * @param string $type
 	 * @return Tx_Flux_Form_RelationFieldInterface
 	 */
-	public function getComponent() {
-		$component = $this->getPreparedComponent('Relation');
+	public function getComponent($type = 'Relation') {
+		$component = $this->getPreparedComponent($type);
 		return $component;
 	}
 

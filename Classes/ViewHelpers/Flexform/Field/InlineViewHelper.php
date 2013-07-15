@@ -55,7 +55,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InlineViewHelper extends Tx_Flux_ViewHe
 	 */
 	public function getComponent() {
 		/** @var Tx_Flux_Form_Field_Inline $component */
-		$component = parent::getComponent();
+		$component = parent::getComponent('Inline');
 		$component->setCollapseAll($this->arguments['collapseAll']);
 		$component->setExpandSingle($this->arguments['expandSingle']);
 		$component->setNewRecordLinkAddTitle($this->arguments['newRecordLinkAddTitle']);

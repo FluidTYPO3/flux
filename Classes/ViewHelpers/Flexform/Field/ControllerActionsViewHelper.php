@@ -94,6 +94,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
+		$this->overrideArgument('items', 'mixed', 'Optional, full list of items to display - note: if used, this overrides any automatic option filling!', FALSE, NULL);
 		$this->overrideArgument('name', 'string', 'Name of the field', FALSE, 'switchableControllerActions');
 		$this->registerArgument('extensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension');
 		$this->registerArgument('pluginName', 'string', 'Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName');
