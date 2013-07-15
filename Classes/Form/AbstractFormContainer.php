@@ -94,12 +94,22 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 
 	/**
 	 * @param string $childName
+	 * @param boolean $recursive
+	 * @param string $requiredClass
 	 * @return Tx_Flux_Form_FormInterface|FALSE
 	 */
-	public function get($childName) {
+	public function get($childName, $recursive = FALSE, $requiredClass = NULL) {
 		foreach ($this->children as $existingChild) {
 			if ($childName === $existingChild->getName()) {
-				return $existingChild;
+				if ($requiredClass === NULL || TRUE === $existingChild instanceof $requiredClass) {
+					return $existingChild;
+				}
+			}
+			if (TRUE === $recursive && TRUE === $existingChild instanceof Tx_Flux_Form_ContainerInterface) {
+				$candidate = $existingChild->get($childName, $recursive);
+				if (FALSE !== $candidate) {
+					return $candidate;
+				}
 			}
 		}
 		return FALSE;

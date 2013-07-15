@@ -464,12 +464,12 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * Note: multi-language flexForms are not supported yet
 	 *
 	 * @param string $flexFormContent flexForm xml string
-	 * @param array $fluxConfiguration An array from a Flux template file. If transformation instructions are contained in this configuration they are applied after conversion to array
+	 * @param Tx_Flux_Form $form An instance of Tx_Flux_Form. If transformation instructions are contained in this configuration they are applied after conversion to array
 	 * @param string $languagePointer language pointer used in the flexForm
 	 * @param string $valuePointer value pointer used in the flexForm
 	 * @return array the processed array
 	 */
-	public function convertFlexFormContentToArray($flexFormContent, $fluxConfiguration = NULL, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
+	public function convertFlexFormContentToArray($flexFormContent, Tx_Flux_Form $form = NULL, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
 		$settings = array();
 		if (TRUE === empty($languagePointer)) {
 			$languagePointer = 'lDEF';
@@ -513,8 +513,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				}
 			}
 		}
-		if (TRUE === is_array($fluxConfiguration)) {
-			$settings = $this->transformAccordingToConfiguration($settings, $fluxConfiguration);
+		if (NULL !== $form) {
+			$settings = $this->transformAccordingToConfiguration($settings, $form);
 		}
 		return $settings;
 	}
@@ -569,25 +569,26 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * attributes on fields to determine how to transform values.
 	 *
 	 * @param array $values
-	 * @param array $fluxConfiguration
+	 * @param Tx_Flux_Form $form
 	 * @param string $prefix
 	 * @return array
 	 */
-	public function transformAccordingToConfiguration($values, $fluxConfiguration = NULL, $prefix = '') {
-		if (FALSE === is_array($values) || NULL === $fluxConfiguration) {
+	public function transformAccordingToConfiguration($values, Tx_Flux_Form $form = NULL, $prefix = '') {
+		if (FALSE === is_array($values) || NULL === $form) {
 			return $values;
 		}
 		foreach ($values as $index => $value) {
 			if (TRUE === is_array($value)) {
-				$value = $this->transformAccordingToConfiguration($value, $fluxConfiguration, $prefix . (FALSE === empty($prefix) ? '.' : '') . $index);
-			} elseif (TRUE === isset($fluxConfiguration['fields'])) {
-				foreach ($fluxConfiguration['fields'] as $field) {
-					$fieldConfiguration = $field->createStructure();
-					$fieldName = $fieldConfiguration['TCEforms']['config']['name'];
-					$transformType = $fieldConfiguration['TCEforms']['config']['transform'];
-					if ($fieldName === $prefix . (FALSE === empty($prefix) ? '.' : '') . $index && FALSE === empty($transformType)) {
-						$value = $this->transformValueToType($value, $transformType);
-					}
+				$value = $this->transformAccordingToConfiguration($value, $form, $prefix . (FALSE === empty($prefix) ? '.' : '') . $index);
+			} else {
+				/** @var Tx_Flux_Form_FieldInterface $field */
+				$field = $form->get($index, TRUE, 'Tx_Flux_Form_FieldInterface');
+				if (FALSE !== $field) {
+					$transformType = $field->getTransform();
+					$fieldName = $field->getName();
+				}
+				if ($fieldName === $prefix . (FALSE === empty($prefix) ? '.' : '') . $index && FALSE === empty($transformType)) {
+					$value = $this->transformValueToType($value, $transformType);
 				}
 			}
 			$values[$index] = $value;
