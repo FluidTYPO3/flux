@@ -388,20 +388,16 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			}
 			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 			if (FALSE === file_exists($templatePathAndFilename)) {
-				/** @var $fallbackStructureProvider Tx_Flux_Provider_Structure_FallbackStructureProvider */
-				$fallbackStructureProvider = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider');
-				$config['parameters'] = array(
-					'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
-				);
-				$dataStructure = $fallbackStructureProvider->render($config);
-				return;
+				/** @var Tx_Flux_Form $form */
+				$form = $this->objectManager->get('Tx_Flux_Form');
+				$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_NoSelection->render'));
+			} else {
+				$extensionKey = $this->getExtensionKey($row);
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+				$variables = $this->getTemplateVariables($row);
+				$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, 'form', $paths, $extensionName, $variables);
 			}
-			$extensionKey = $this->getExtensionKey($row);
-			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-			$variables = $this->getTemplateVariables($row);
-			$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, 'form', $paths, $extensionName, $variables);
 			$dataStructure = $form->build();
-			#$this->configurationService->convertFlexFormTemplateToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section, $extensionName);
 		} catch (Exception $error) {
 			$this->configurationService->debug($error);
 		}
