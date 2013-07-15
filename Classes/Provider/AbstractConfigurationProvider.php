@@ -144,7 +144,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$variables = $this->getTemplateVariables($row);
+		$variables = $this->getFlexFormValues($row);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
 		return $form;
 	}
@@ -160,7 +160,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$variables = $this->getTemplateVariables($row);
+		$variables = $this->getFlexFormValues($row);
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
 		return $grid;
 	}
@@ -211,7 +211,11 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		if (NULL === $this->fieldName) {
 			return array();
 		}
-		return $this->configurationService->convertFlexFormContentToArray($row[$this->fieldName]);
+		$values = $this->configurationService->convertFlexFormContentToArray($row[$this->fieldName]);
+		$values['row'] = $row;
+		$values['grid'] = $this->getGrid($row);
+		$values['form'] = $this->getForm($row);
+		return $values;
 	}
 
 	/**
@@ -424,8 +428,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	public function getFlexFormValues(array $row) {
 		try {
 			$fieldName = $this->fieldName;
-			$stored = $this->getTemplateVariables($row);
-			$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $stored);
+			$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 			$tree = $this->getInheritanceTree($row);
 			if (0 === count($tree)) {
 				return $immediateConfiguration;
@@ -503,8 +506,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		}
 		$data = array();
 		foreach ($tree as $branch) {
-			$values = $this->getFlexFormValues($branch);
-			$variables = $this->getTemplateVariables($branch);
+			$variables = $this->getFlexFormValues($branch);
 			foreach ($variables['fields'] as $field) {
 				$name = $field['configuration']['name'];
 				$stop = (TRUE === isset($field['configuration']['stopInheritance']));
