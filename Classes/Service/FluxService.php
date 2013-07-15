@@ -174,7 +174,9 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				throw $error;
 			} else {
 				t3lib_div::sysLog($error->getMessage(), 'flux');
-				throw $error;
+				/** @var Tx_Flux_Form $form */
+				$form = $this->objectManager->get('Tx_Flux_Form');
+				$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->render'));
 			}
 		}
 		return $form;
