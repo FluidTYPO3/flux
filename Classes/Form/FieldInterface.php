@@ -134,17 +134,6 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 	public function getStopInheritance();
 
 	/**
-	 * @param integer $repeat
-	 * @return Tx_Flux_Form_FieldInterface
-	 */
-	public function setRepeat($repeat);
-
-	/**
-	 * @return integer
-	 */
-	public function getRepeat();
-
-	/**
 	 * @param boolean $exclude
 	 * @return Tx_Flux_Form_FieldInterface
 	 */

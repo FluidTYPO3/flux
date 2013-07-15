@@ -75,11 +75,6 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	protected $clearable = FALSE;
 
 	/**
-	 * @var integer
-	 */
-	protected $repeat;
-
-	/**
 	 * @var boolean
 	 */
 	protected $exclude = TRUE;
@@ -137,10 +132,17 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return array
 	 */
 	public function build() {
+		if (FALSE === $this->getEnable()) {
+			return array();
+		}
+		if (TRUE === $this->getClearable()) {
+			// TODO: add UserFunc wizard with Tx_Flux_UserFunction_ClearValueWizard
+		}
 		$fieldStructureArray = array(
 			'TCEforms' => array(
 				'label' => $this->getLabel(),
 				'required' => intval($this->getRequired()),
+				'exclude' => $this->getExclude(),
 				'config' => $this->buildConfiguration(),
 				'displayCond' => $this->getDisplayCondition()
 			)
@@ -310,22 +312,6 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 */
 	public function getStopInheritance() {
 		return $this->stopInheritance;
-	}
-
-	/**
-	 * @param integer $repeat
-	 * @return Tx_Flux_Form_FieldInterface
-	 */
-	public function setRepeat($repeat) {
-		$this->repeat = $repeat;
-		return $this;
-	}
-
-	/**
-	 * @return integer
-	 */
-	public function getRepeat() {
-		return $this->repeat;
 	}
 
 	/**

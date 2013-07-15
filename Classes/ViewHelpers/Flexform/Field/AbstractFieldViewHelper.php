@@ -43,7 +43,6 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 			'"foobar" is the name of the field.', FALSE, NULL);
 		$this->registerArgument('default', 'string', 'Default value for this attribute');
 		$this->registerArgument('required', 'boolean', 'If TRUE, this attribute must be filled when editing the FCE', FALSE, FALSE);
-		$this->registerArgument('repeat', 'integer', 'Number of times to repeat field while appending number to name', FALSE, 1);
 		$this->registerArgument('exclude', 'boolean', 'If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)', FALSE, FALSE);
 		$this->registerArgument('transform', 'string', 'Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Tx_MyExt_Domain_Model_Object or ObjectStorage with type hint. Also supported are FED Resource classes.');
 		$this->registerArgument('enabled', 'boolean', 'If FALSE, disables the field in the FlexForm', FALSE, TRUE);
@@ -62,7 +61,6 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		$component = $this->getForm()->createField($type, $this->arguments['name'], $this->arguments['label']);
 		$component->setDefault($this->arguments['default']);
 		$component->setRequired($this->arguments['required']);
-		$component->setRepeat($this->arguments['repeat']);
 		$component->setExclude($this->arguments['exclude']);
 		$component->setEnable($this->arguments['enable']);
 		$component->setRequestUpdate($this->arguments['requestUpdate']);
