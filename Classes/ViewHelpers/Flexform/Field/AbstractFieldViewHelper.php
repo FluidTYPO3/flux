@@ -69,6 +69,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		$component->setInheritEmpty($this->arguments['inheritEmpty']);
 		$component->setStopInheritance($this->arguments['stopInheritance']);
 		$component->setTransform($this->arguments['transform']);
+		$component->setClearable($this->arguments['clear']);
 		return $component;
 	}
 
