@@ -52,6 +52,9 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 */
 	public function getForm($sectionName = 'Configuration', $formName = 'form') {
 		$form = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $formName, $sectionName);
+		if (NULL === $form) {
+			$form = $this->objectManager->get('Tx_Flux_Form');
+		}
 		return $form;
 	}
 
@@ -62,7 +65,10 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 */
 	public function getGrid($sectionName = 'Configuration', $gridName = 'grid') {
 		$grids = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $sectionName);
-		return $grids[$gridName];
+		if (TRUE === isset($grids[$gridName])) {
+			return $grids[$gridName];
+		}
+		return $this->objectManager->get('Tx_Flux_Form_Container_Grid');
 	}
 
 	/**
@@ -118,6 +124,9 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 				$this->render();
 			}
 			$this->stopRendering();
+			if (FALSE === $this->baseRenderingContext->getViewHelperVariableContainer()->exists($viewHelperClassName, $name)) {
+				return NULL;
+			}
 			$stored = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
 			$this->configurationService->message('Flux View ' . get_class($this) . ' is able to read stored configuration from file ' .
 				$this->getTemplatePathAndFilename(), t3lib_div::SYSLOG_SEVERITY_INFO);
