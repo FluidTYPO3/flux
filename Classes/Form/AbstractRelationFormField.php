@@ -164,10 +164,13 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 	 * @return array
 	 */
 	public function prepareConfiguration($type) {
-		$configuration = parent::prepareConfiguration('select');
+		$configuration = parent::prepareConfiguration($type);
 		$configuration['foreign_table'] = $this->getTable();
 		$configuration['foreign_field'] = $this->getForeignField();
 		$configuration['foreign_table_where'] = $this->getCondition();
+		$configuration['symmetricSortBy'] = $this->getSymmetricSortby();
+		$configuration['symmetricLabel'] = $this->getSymmetricLabel();
+		$configuration['symmetricField'] = $this->getSymmetricField();
 		$configuration['MM'] = $this->getManyToMany();
 		return $configuration;
 	}

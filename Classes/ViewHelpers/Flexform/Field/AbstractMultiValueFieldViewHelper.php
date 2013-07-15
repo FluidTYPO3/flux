@@ -57,6 +57,8 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractMultiValueFieldViewHel
 		$component->setMaxItems($this->arguments['maxItems']);
 		$component->setSize($this->arguments['size']);
 		$component->setMultiple($this->arguments['multiple']);
+		$component->setItemListStyle($this->arguments['itemListStyle']);
+		$component->setSelectedListStyle($this->arguments['selectedListStyle']);
 		return $component;
 	}
 
