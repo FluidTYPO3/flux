@@ -125,23 +125,6 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 	/**
 	 * @test
 	 */
-	public function getGridFromTemplateFilePassesThroughExceptionIfDebugModeEnabledAtAnyLevel() {
-		$currentMode = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 2;
-		$templatePathAndFilename = '/void/nothing';
-		$service = $this->createFluxServiceInstance();
-		try {
-			$service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', 'grid', array(), 'flux');
-			$this->fail('Did not throw Exception on invalid file');
-		} catch (Exception $error) {
-			$this->assertSame(1366824347, $error->getCode());
-		}
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $currentMode;
-	}
-
-	/**
-	 * @test
-	 */
 	public function canGetFormWithPathsAndTriggerCache() {
 		$templatePathAndFilename = t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
