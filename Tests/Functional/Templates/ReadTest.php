@@ -46,7 +46,7 @@ class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_Abstract
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertIsValidAndWorkingFormObject($form);
 	}
 
 	/**
@@ -56,7 +56,7 @@ class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_Abstract
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_CONTAINSWARNINGTRIGGERS);
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertIsValidAndWorkingFormObject($form);
 	}
 
 	/**
@@ -66,7 +66,7 @@ class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_Abstract
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ICONCONTAINSEXTENSIONKEY);
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertIsValidAndWorkingFormObject($form);
 	}
 
 }

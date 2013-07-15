@@ -99,6 +99,29 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	}
 
 	/**
+	 * @param mixed $value
+	 */
+	protected function assertIsValidAndWorkingFormObject($value) {
+		$this->assertInstanceOf('Tx_Flux_Form', $value);
+		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $value);
+		$this->assertInstanceOf('Tx_Flux_Form_ContainerInterface', $value);
+		/** @var Tx_Flux_Form $value */
+		$structure = $value->build();
+		$this->assertIsArray($structure);
+	}
+
+	/**
+	 * @param mixed $value
+	 */
+	protected function assertIsValidAndWorkingGridObject($value) {
+		$this->assertInstanceOf('Tx_Flux_Form_Container_Grid', $value);
+		$this->assertInstanceOf('Tx_Flux_Form_ContainerInterface', $value);
+		/** @var Tx_Flux_Form $value */
+		$structure = $value->build();
+		$this->assertIsArray($structure);
+	}
+
+	/**
 	 * @param string $templateName
 	 * @param array $variables
 	 */
@@ -143,7 +166,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	protected function performBasicTemplateReadTest($templatePathAndFilename) {
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertIsValidAndWorkingFormObject($form);
 		return $form;
 	}
 
