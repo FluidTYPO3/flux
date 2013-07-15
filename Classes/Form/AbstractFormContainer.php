@@ -50,6 +50,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 			$this->children->attach($child);
 			$child->setParent($this);
 		}
+		return $this;
 	}
 
 	/**
