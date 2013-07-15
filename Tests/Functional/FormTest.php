@@ -145,4 +145,24 @@ class Tx_Flux_Tests_Functional_FormTest extends Tx_Flux_Tests_AbstractFunctional
 		$this->assertTrue($form->has($sheet));
 	}
 
+	/**
+	 * @test
+	 */
+	public function canGetLabelFromVariousObjectsInsideForm() {
+		$form = $this->getEmptyDummyForm();
+		$field = $form->createField('Input', 'test');
+		$objectField = $form->createField('Input', 'objectField');
+		$form->add($field);
+		$section = $form->createContainer('Section', 'section');
+		$object = $form->createContainer('Object', 'object');
+		$object->add($objectField);
+		$section->add($object);
+		$form->add($section);
+		$this->assertInstanceOf('Tx_Flux_Form', $object->getRoot());
+		$this->assertNotEmpty($form->get('options')->getLabel());
+		$this->assertNotEmpty($form->get('test', TRUE)->getLabel());
+		$this->assertNotEmpty($form->get('object', TRUE)->getLabel());
+		$this->assertNotEmpty($form->get('objectField', TRUE)->getLabel());
+	}
+
 }
