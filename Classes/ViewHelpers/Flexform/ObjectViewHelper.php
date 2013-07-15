@@ -54,8 +54,11 @@ class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_Core_ViewHel
 		$object = $this->objectManager->get('Tx_Flux_Form_Container_Object');
 		$object->setName($this->arguments['name']);
 		$object->setLabel($this->arguments['label']);
-		$this->getContainer()->add($object);
+		$container = $this->getContainer();
+		$container->add($object);
 		$this->setContainer($object);
+		$this->renderChildren();
+		$this->setContainer($container);
 	}
 
 }

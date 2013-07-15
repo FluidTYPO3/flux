@@ -47,13 +47,13 @@ class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_Core_ViewHe
 	 * @return string
 	 */
 	public function render() {
-		$area = array(
-			'name' => $this->arguments['name'],
-			'label' => $this->getLabel()
-		);
-		$this->addContentArea($area);
+		/** @var Tx_Flux_Form_Container_Content $content */
+		$content = $this->getForm()->createContainer('Content', $this->arguments['name'], $this->arguments['label']);
+		$container = $this->getContainer();
+		$container->add($content);
+		$this->setContainer($content);
 		$this->renderChildren();
-		return '';
+		$this->setContainer($container);
 	}
 
 }

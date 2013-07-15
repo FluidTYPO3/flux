@@ -51,8 +51,11 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_ViewHelpers
 		$section = $this->objectManager->get('Tx_Flux_Form_Container_Section');
 		$section->setName($this->arguments['name']);
 		$section->setLabel($this->arguments['label']);
-		$this->getContainer()->add($section);
+		$container = $this->getContainer();
+		$container->add($section);
 		$this->setContainer($section);
+		$this->renderChildren();
+		$this->setContainer($container);
 	}
 
 }
