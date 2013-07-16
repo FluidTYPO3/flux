@@ -165,4 +165,57 @@ class Tx_Flux_Tests_Functional_FormTest extends Tx_Flux_Tests_AbstractFunctional
 		$this->assertNotEmpty($form->get('objectField', TRUE)->getLabel());
 	}
 
+	/**
+	 * @test
+	 */
+	public function canAddMultipleFieldsToContainer() {
+		$form = $this->getEmptyDummyForm();
+		$fields = array(
+			$form->createField('Input', 'test1'),
+			$form->createField('Input', 'test2'),
+		);
+		$form->addAll($fields);
+		$this->assertTrue($form->last()->has($fields[0]));
+		$this->assertTrue($form->last()->has($fields[1]));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRemoveFieldFromContainerByName() {
+		$form = $this->getEmptyDummyForm();
+		$field = $form->createField('Input', 'test');
+		$form->add($field);
+		$form->last()->remove('test');
+		$this->assertFalse($form->last()->has('test'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRemoveFieldFromContainerByInstance() {
+		$form = $this->getEmptyDummyForm();
+		$field = $form->createField('Input', 'test');
+		$form->add($field);
+		$form->last()->remove($field);
+		$this->assertFalse($form->last()->has('test'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRemoveBadFieldByNameWithoutErrorAndReturnFalse() {
+		$form = $this->getEmptyDummyForm();
+		$this->assertFalse($form->last()->remove('test'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRemoveBadFieldByInstanceWithoutErrorAndReturnFalse() {
+		$form = $this->getEmptyDummyForm();
+		$field = $form->createField('Input', 'test');
+		$this->assertFalse($form->last()->remove($field));
+	}
+
 }

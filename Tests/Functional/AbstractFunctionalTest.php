@@ -49,6 +49,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	const FIXTURE_TEMPLATE_FIELD_FILE = 'EXT:flux/Tests/Fixtures/Templates/Fields/File.html';
 	const FIXTURE_TEMPLATE_FIELD_GROUP = 'EXT:flux/Tests/Fixtures/Templates/Fields/Group.html';
 	const FIXTURE_TEMPLATE_FIELD_INLINE = 'EXT:flux/Tests/Fixtures/Templates/Fields/Inline.html';
+	const FIXTURE_TEMPLATE_FIELD_RELATION = 'EXT:flux/Tests/Fixtures/Templates/Fields/Relation.html';
 	const FIXTURE_TEMPLATE_FIELD_SELECT = 'EXT:flux/Tests/Fixtures/Templates/Fields/Select.html';
 	const FIXTURE_TEMPLATE_FIELD_TREE = 'EXT:flux/Tests/Fixtures/Templates/Fields/Tree.html';
 	const FIXTURE_TEMPLATE_FIELD_CUSTOM = 'EXT:flux/Tests/Fixtures/Templates/Fields/Custom.html';
@@ -134,6 +135,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', array(), 'Flux', $variables);
 		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertIsArray($form->build());
 	}
 
 	/**

@@ -2,7 +2,6 @@
 <f:layout name="Default" />
 <f:section name="Configuration">
 	<flux:flexform id="test">
-		<flux:flexform.field.input name="settings.input" />
-		<flux:flexform.field.input name="settings.inputDefault" default="test" />
+		<flux:flexform.field.relation name="settings.relation" table="tt_content" />
 	</flux:flexform>
 </f:section>

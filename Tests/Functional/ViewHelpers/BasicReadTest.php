@@ -74,6 +74,13 @@ class Tx_Flux_Tests_Functional_ViewHelpers_BasicReadTest extends Tx_Flux_Tests_A
 	/**
 	 * @test
 	 */
+	public function canReadTemplateWithRelationField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_RELATION);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canReadTemplateWithSelectField() {
 		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_SELECT);
 	}
