@@ -155,4 +155,16 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 	 */
 	public function getEnable();
 
+	/**
+	 * @param Tx_Flux_Form_WizardInterface $wizard
+	 * @return Tx_Flux_Form_FormInterface
+	 */
+	public function add(Tx_Flux_Form_WizardInterface $wizard);
+
+	/**
+	 * @param string $wizardName
+	 * @return Tx_Flux_Form_WizardInterface|FALSE
+	 */
+	public function remove($wizardName);
+
 }

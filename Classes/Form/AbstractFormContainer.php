@@ -27,7 +27,7 @@
  * @package Flux
  * @subpackage Form
  */
-abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractFormComponent implements Tx_Flux_Form_ContainerInterface, Tx_Flux_Form_FieldContainerInterface {
+abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractFormComponent implements Tx_Flux_Form_ContainerInterface {
 
 	/**
 	 * @var SplObjectStorage

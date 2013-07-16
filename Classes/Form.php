@@ -143,6 +143,24 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 		return $dataStructArray;
 	}
 
+	/**
+	 * @return Tx_Flux_Form_Container_Sheet[]
+	 */
+	public function getSheets() {
+		return $this->children;
+	}
+
+	/**
+	 * @return Tx_Flux_Form_FieldInterface[]
+	 */
+	public function getFields() {
+		$fields = array();
+		foreach ($this->getSheets() as $sheet) {
+			$fieldsInSheet = $sheet->getFields();
+			$fields = array_merge($fields, $fieldsInSheet);
+		}
+		return $fields;
+	}
 
 	/**
 	 * @param boolean $compact

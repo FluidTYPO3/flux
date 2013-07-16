@@ -66,6 +66,13 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 	}
 
 	/**
+	 * @return Tx_Flux_Form_FieldInterface[]
+	 */
+	public function getFields() {
+		return $this->children;
+	}
+
+	/**
 	 * @return Tx_Flux_Form_Container_Content[]
 	 */
 	public function getAreas() {

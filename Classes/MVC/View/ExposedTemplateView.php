@@ -51,9 +51,11 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 * @return Tx_Flux_Form_Form
 	 */
 	public function getForm($sectionName = 'Configuration', $formName = 'form') {
+		/** @var Tx_Flux_Form $form */
 		$form = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $formName, $sectionName);
 		if (NULL === $form) {
 			$form = $this->objectManager->get('Tx_Flux_Form');
+			$form->setName($formName);
 		}
 		return $form;
 	}
@@ -64,11 +66,16 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 * @return Tx_Flux_Form_Container_Grid
 	 */
 	public function getGrid($sectionName = 'Configuration', $gridName = 'grid') {
+		/** @var Tx_Flux_Form_Container_Grid[] $grids */
+		/** @var Tx_Flux_Form_Container_Grid $grid */
 		$grids = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $sectionName);
 		if (TRUE === isset($grids[$gridName])) {
-			return $grids[$gridName];
+			$grid = $grids[$gridName];
+		} else {
+			$grid = $this->objectManager->get('Tx_Flux_Form_Container_Grid');
+			$grid->setName($gridName);
 		}
-		return $this->objectManager->get('Tx_Flux_Form_Container_Grid');
+		return $grid;
 	}
 
 	/**

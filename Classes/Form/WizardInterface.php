@@ -34,4 +34,15 @@ interface Tx_Flux_Form_WizardInterface extends Tx_Flux_Form_FormInterface {
 	 */
 	public function buildConfiguration();
 
+	/**
+	 * @param boolean $hideParent
+	 * @return Tx_Flux_Form_WizardInterface
+	 */
+	public function setHideParent($hideParent);
+
+	/**
+	 * @return boolean
+	 */
+	public function getHideParent();
+
 }

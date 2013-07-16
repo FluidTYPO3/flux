@@ -112,6 +112,20 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	}
 
 	/**
+	 * @param string $type
+	 * @param string $name
+	 * @param string $label
+	 * @return Tx_Flux_Form_WizardInterface
+	 */
+	public function createWizard($type, $name, $label = NULL) {
+		/** @var Tx_Flux_Form_WizardInterface $component */
+		$component = $this->objectManager->get('Tx_Flux_Form_Wizard_' . $type);
+		$component->setName($name);
+		$component->setLabel($label);
+		return $component;
+	}
+
+	/**
 	 * @param string $name
 	 * @return Tx_Flux_Form_FormInterface
 	 */

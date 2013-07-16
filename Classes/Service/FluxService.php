@@ -170,14 +170,12 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
 			$form = $exposedView->getForm($section, $formName);
 		} catch (Exception $error) {
-			if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
-				throw $error;
-			}
-			t3lib_div::sysLog($error->getMessage(), 'flux');
+			$this->debug($error);
 			/** @var Tx_Flux_Form $form */
 			$form = $this->objectManager->get('Tx_Flux_Form');
 			$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->render'));
 		}
+		self::$cache[$cacheKey] = $form;
 		return $form;
 	}
 
@@ -210,12 +208,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
 			$grid = $exposedView->getGrid($section, $gridName);
 		} catch (Exception $error) {
-			if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
-				throw $error;
-			} else {
-				$this->debug($error);
-				$grid = array();
-			}
+			$this->debug($error);
+			$grid = array();
 		}
 		return $grid;
 	}
@@ -397,63 +391,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		self::$cache[$cacheKey] = $providersToReturn;
 		return $providersToReturn;
-	}
-
-	/**
-	 * @param array $config
-	 * @return array|NULL
-	 */
-	public function convertFlexFormConfigurationToDataStructure($config) {
-		/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
-		$flexFormStructureProvider = $this->objectManager->get('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
-		$dataStructArray = $flexFormStructureProvider->render($config);
-		if ((FALSE === is_array($dataStructArray['ROOT']['el']) && FALSE === is_array($dataStructArray['sheets'])) || (count($dataStructArray['sheets']) < 1 && count($dataStructArray['ROOT']['el']) < 1 && count($dataStructArray['sheets'][key($dataStructArray['sheets'])]) === 0)) {
-			$config['parameters'] = array(
-				'userFunction' => 'Tx_Flux_UserFunction_NoFields->renderField'
-			);
-			$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-		}
-		return $dataStructArray;
-	}
-
-	/**
-	 * Updates $dataStructArray by reference, filling it with a proper data structure
-	 * based on the selected template file.
-	 *
-	 * @param string $templateFile
-	 * @param array $values
-	 * @param array $paths
-	 * @param array $dataStructArray
-	 * @param string $section
-	 * @param string $extensionName
-	 * @throws Exception
-	 * @return void
-	 */
-	public function convertFlexFormTemplateToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL, $extensionName = NULL) {
-		$className = get_class($this);
-		try {
-			if (NULL === $templateFile) {
-				$this->message('A template file path was NULL - this might indicate an error in class ' . $className);
-				$config['parameters'] = array(
-					'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
-				);
-				$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-				return;
-			}
-			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths, $extensionName);
-			$dataStructArray = $this->convertFlexFormConfigurationToDataStructure($config);
-		} catch (Exception $e) {
-			$this->message('Attempting to convert FlexForm XML to array using file ' . $templateFile . ' failed - ' .
-				'see next error message');
-			$this->debug($e);
-			$config['parameters'] = array(
-				'exception' => $e,
-				'userFunction' => 'Tx_Flux_UserFunction_ErrorReporter->renderField'
-			);
-			if (FALSE === t3lib_extMgm::isLoaded('templavoila')) {
-				$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-			}
-		}
 	}
 
 	/**

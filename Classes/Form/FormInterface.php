@@ -76,4 +76,28 @@ interface Tx_Flux_Form_FormInterface {
 	 */
 	public function isChildOfType($type);
 
+	/**
+	 * @param string $type
+	 * @param string $name
+	 * @param string $label
+	 * @return Tx_Flux_Form_FieldInterface
+	 */
+	public function createField($type, $name, $label = NULL);
+
+	/**
+	 * @param string $type
+	 * @param string $name
+	 * @param string $label
+	 * @return Tx_Flux_Form_ContainerInterface
+	 */
+	public function createContainer($type, $name, $label = NULL);
+
+	/**
+	 * @param string $type
+	 * @param string $name
+	 * @param string $label
+	 * @return Tx_Flux_Form_WizardInterface
+	 */
+	public function createWizard($type, $name, $label = NULL);
+
 }

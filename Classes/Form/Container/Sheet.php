@@ -45,4 +45,11 @@ class Tx_Flux_Form_Container_Sheet extends Tx_Flux_Form_AbstractFormContainer im
 		return $sheetStructArray;
 	}
 
+	/**
+	 * @return Tx_Flux_Form_FieldInterface[]
+	 */
+	public function getFields() {
+		return $this->children;
+	}
+
 }

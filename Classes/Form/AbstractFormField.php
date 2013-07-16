@@ -101,9 +101,9 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @return Tx_Flux_Form_FormInterface
 	 */
 	public function add(Tx_Flux_Form_WizardInterface $wizard) {
-		if (FALSE === $this->wizards->contains($wizard)) {
+		#if (FALSE === $this->wizards->contains($wizard)) {
 			$this->wizards->attach($wizard);
-		}
+		#}
 		return $this;
 	}
 
