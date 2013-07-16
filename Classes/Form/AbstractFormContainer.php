@@ -70,7 +70,9 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 */
 	public function remove($childName) {
 		foreach ($this->children as $child) {
-			if ($childName === $child->getName()) {
+			$isMatchingInstance = (TRUE === $childName instanceof Tx_Flux_Form_FormInterface && $childName->getName() === $child->getName());
+			$isMatchingName = ($childName === $child->getName());
+			if (TRUE === $isMatchingName || TRUE === $isMatchingInstance) {
 				$this->children->detach($child);
 				$this->children->rewind();
 				$child->setParent(NULL);
@@ -101,10 +103,8 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 */
 	public function get($childName, $recursive = FALSE, $requiredClass = NULL) {
 		foreach ($this->children as $existingChild) {
-			if ($childName === $existingChild->getName()) {
-				if ($requiredClass === NULL || TRUE === $existingChild instanceof $requiredClass) {
-					return $existingChild;
-				}
+			if ($childName === $existingChild->getName() && ($requiredClass === NULL || TRUE === $existingChild instanceof $requiredClass)) {
+				return $existingChild;
 			}
 			if (TRUE === $recursive && TRUE === $existingChild instanceof Tx_Flux_Form_ContainerInterface) {
 				$candidate = $existingChild->get($childName, $recursive);

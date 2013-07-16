@@ -168,9 +168,18 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 		$configuration['foreign_table'] = $this->getTable();
 		$configuration['foreign_field'] = $this->getForeignField();
 		$configuration['foreign_table_where'] = $this->getCondition();
+		$configuration['foreign_table_field'] = $this->getForeignTableField();
+		$configuration['foreign_unique'] = $this->getForeignUnique();
+		$configuration['foreign_selector'] = $this->getForeignSelector();
+		$configuration['foreign_sortby'] = $this->getForeignSortby();
+		$configuration['foreign_default_sortby'] = $this->getForeignDefaultSortby();
 		$configuration['symmetricSortBy'] = $this->getSymmetricSortby();
 		$configuration['symmetricLabel'] = $this->getSymmetricLabel();
 		$configuration['symmetricField'] = $this->getSymmetricField();
+		$configuration['localizationMode'] = $this->getLocalizationMode();
+		$configuration['localizeChildrenAtParentLocalization'] = intval($this->getLocalizeChildrenAtParentLocalization());
+		$configuration['disableMovingChildrenWithParent'] = intval($this->getDisableMovingChildrenWithParent());
+		$configuration['showThumbs'] = intval($this->getShowThumbnails());
 		$configuration['MM'] = $this->getManyToMany();
 		return $configuration;
 	}

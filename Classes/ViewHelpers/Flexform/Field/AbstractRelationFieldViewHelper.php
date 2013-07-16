@@ -77,7 +77,19 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractRelationFieldViewHelpe
 		$component->setTable($this->arguments['table']);
 		$component->setCondition($this->arguments['condition']);
 		$component->setManyToMany($this->arguments['mm']);
-
+		$component->setForeignField($this->arguments['foreignField']);
+		$component->setForeignSelector($this->arguments['foreignSelector']);
+		$component->setForeignSortby($this->arguments['foreignSortby']);
+		$component->setForeignDefaultSortby($this->arguments['foreignDefaultSortby']);
+		$component->setForeignTableField($this->arguments['foreignTableField']);
+		$component->setForeignUnique($this->arguments['foreignUnique']);
+		$component->setSymmetricField($this->arguments['symmetricField']);
+		$component->setSymmetricLabel($this->arguments['symmetricLabel']);
+		$component->setSymmetricSortby($this->arguments['symmetricSortby']);
+		$component->setLocalizationMode($this->arguments['localizationMode']);
+		$component->setLocalizeChildrenAtParentLocalization($this->arguments['localizeChildrenAtParentLocalization']);
+		$component->setDisableMovingChildrenWithParent($this->arguments['disableMovingChildrenWithParent']);
+		$component->setShowThumbnails($this->arguments['showThumbs']);
 		return $component;
 	}
 
