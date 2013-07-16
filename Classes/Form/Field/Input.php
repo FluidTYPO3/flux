@@ -82,9 +82,11 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param integer $maxCharacters
+	 * @return Tx_Flux_Form_Field_Input
 	 */
 	public function setMaxCharacters($maxCharacters) {
 		$this->maxCharacters = $maxCharacters;
+		return $this;
 	}
 
 	/**
@@ -96,9 +98,11 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param integer $maximum
+	 * @return Tx_Flux_Form_Field_Input
 	 */
 	public function setMaximum($maximum) {
 		$this->maximum = $maximum;
+		return $this;
 	}
 
 	/**
@@ -110,9 +114,11 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param integer $minimum
+	 * @return Tx_Flux_Form_Field_Input
 	 */
 	public function setMinimum($minimum) {
 		$this->minimum = $minimum;
+		return $this;
 	}
 
 	/**
@@ -124,9 +130,11 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param string $placeholder
+	 * @return Tx_Flux_Form_Field_Input
 	 */
 	public function setPlaceholder($placeholder) {
 		$this->placeholder = $placeholder;
+		return $this;
 	}
 
 	/**
@@ -138,9 +146,11 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param integer $size
+	 * @return Tx_Flux_Form_Field_Input
 	 */
 	public function setSize($size) {
 		$this->size = $size;
+		return $this;
 	}
 
 	/**
@@ -152,9 +162,11 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param string $validate
+	 * @return Tx_Flux_Form_Field_Input
 	 */
 	public function setValidate($validate) {
 		$this->validate = $validate;
+		return $this;
 	}
 
 	/**

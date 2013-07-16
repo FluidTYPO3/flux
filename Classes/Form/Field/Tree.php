@@ -80,9 +80,11 @@ class Tx_Flux_Form_Field_Tree extends Tx_Flux_Form_AbstractRelationFormField {
 
 	/**
 	 * @param string $parentField
+	 * @return Tx_Flux_Form_Field_Tree
 	 */
 	public function setParentField($parentField) {
 		$this->parentField = $parentField;
+		return $this;
 	}
 
 	/**
@@ -94,9 +96,11 @@ class Tx_Flux_Form_Field_Tree extends Tx_Flux_Form_AbstractRelationFormField {
 
 	/**
 	 * @param integer $width
+	 * @return Tx_Flux_Form_Field_Tree
 	 */
 	public function setWidth($width) {
 		$this->width = $width;
+		return $this;
 	}
 
 	/**
@@ -108,9 +112,11 @@ class Tx_Flux_Form_Field_Tree extends Tx_Flux_Form_AbstractRelationFormField {
 
 	/**
 	 * @param boolean $showHeader
+	 * @return Tx_Flux_Form_Field_Tree
 	 */
 	public function setShowHeader($showHeader) {
 		$this->showHeader = $showHeader;
+		return $this;
 	}
 
 	/**

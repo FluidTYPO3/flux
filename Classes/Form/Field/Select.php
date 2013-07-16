@@ -91,7 +91,14 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 			$query = $this->items;
 			$results = $query->execute();
 			$type = $query->getType();
+			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$table = strtolower(str_replace('\\', '_', $type));
+			if (TRUE === isset($typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'])) {
+				$mapping = $typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'];
+				if (TRUE === isset($mapping['mapping.']['tableName'])) {
+					$table = $mapping['mapping.']['tableName'];
+				}
+			}
 			$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
 			$propertyName = t3lib_div::underscoredToLowerCamelCase($labelField);
 			foreach ($results as $result) {

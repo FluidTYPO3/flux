@@ -67,14 +67,16 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 	}
 
 	/**
-	 * @param int $columns
+	 * @param integer $columns
+	 * @return Tx_Flux_Form_Field_Text
 	 */
 	public function setColumns($columns) {
 		$this->columns = $columns;
+		return $this;
 	}
 
 	/**
-	 * @return int
+	 * @return integer
 	 */
 	public function getColumns() {
 		return $this->columns;
@@ -82,7 +84,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 
 	/**
 	 * @param string $defaultExtras
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return Tx_Flux_Form_Field_Text
 	 */
 	public function setDefaultExtras($defaultExtras) {
 		$this->defaultExtras = $defaultExtras;
@@ -98,7 +100,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 
 	/**
 	 * @param boolean $enableRichText
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return Tx_Flux_Form_Field_Text
 	 */
 	public function setEnableRichText($enableRichText) {
 		$this->enableRichText = $enableRichText;
@@ -114,7 +116,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 
 	/**
 	 * @param integer $rows
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return Tx_Flux_Form_Field_Text
 	 */
 	public function setRows($rows) {
 		$this->rows = $rows;
