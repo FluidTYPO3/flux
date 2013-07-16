@@ -111,15 +111,12 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 	/**
 	 * @test
 	 */
-	public function getFormThrowsExceptionOnInvalidFile() {
+	public function getFormReturnsEmptyDummyFormOnInvalidFile() {
 		$templatePathAndFilename = '/void/nothing';
 		$service = $this->createFluxServiceInstance();
-		try {
-			$service->getFormFromTemplateFile($templatePathAndFilename);
-			$this->fail('Did not throw Exception on invalid file');
-		} catch (Exception $error) {
-			$this->assertSame(1366824347, $error->getCode());
-		}
+		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$this->assertIsValidAndWorkingFormObject($form);
+		$this->assertSame(0, count($form->getFields()));
 	}
 
 	/**

@@ -39,13 +39,22 @@ class Tx_Flux_Tests_Functional_FormTest extends Tx_Flux_Tests_AbstractFunctional
 	}
 
 	/**
+	 * @param string $template
 	 * @return Tx_Flux_Form
 	 */
-	protected function getDummyFormFromTemplate() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
+	protected function getDummyFormFromTemplate($template = self::FIXTURE_TEMPLATE_BASICGRID) {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($template);
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', array(), 'flux');
 		return $form;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReturnFormObjectWithoutFormPresentInTemplate() {
+		$form = $this->getDummyFormFromTemplate(self::FIXTURE_TEMPLATE_WITHOUTFORM);
+		$this->assertIsValidAndWorkingFormObject($form);
 	}
 
 	/**

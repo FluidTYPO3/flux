@@ -30,13 +30,68 @@
 class Tx_Flux_Tests_Functional_GridTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
+	 * @param string $gridName
+	 * @param string $template
+	 * @return Tx_Flux_Form_Container_Grid
+	 */
+	protected function getDummyGridFromTemplate($gridName = 'grid', $template = self::FIXTURE_TEMPLATE_BASICGRID) {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($template);
+		$service = $this->createFluxServiceInstance();
+		$grid = $service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', $gridName, array(), 'flux');
+		return $grid;
+	}
+
+	/**
 	 * @test
 	 */
 	public function canRetrieveStoredGrid() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
-		$service = $this->createFluxServiceInstance();
-		$grid = $service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', 'grid', array(), 'flux');
+		$grid = $this->getDummyGridFromTemplate();
 		$this->assertIsValidAndWorkingGridObject($grid);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReturnGridObjectWithoutGridPresentInTemplate() {
+		$grid = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_WITHOUTFORM);
+		$this->assertIsValidAndWorkingGridObject($grid);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReturnFallbackGridObjectWhenUsingIncorrectGridName() {
+		$grid = $this->getDummyGridFromTemplate('doesnotexist', self::FIXTURE_TEMPLATE_BASICGRID);
+		$this->assertIsValidAndWorkingGridObject($grid);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReturnGridObjectWithDualGridsPresentInTemplate() {
+		$grid1 = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_DUALGRID);
+		$grid2 = $this->getDummyGridFromTemplate('grid2', self::FIXTURE_TEMPLATE_DUALGRID);
+		$this->assertIsValidAndWorkingGridObject($grid1);
+		$this->assertIsValidAndWorkingGridObject($grid2);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReturnGridObjectOneFallbackWithDualGridsPresentInTemplate() {
+		$grid1 = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_DUALGRID);
+		$grid2 = $this->getDummyGridFromTemplate('doesnotexist', self::FIXTURE_TEMPLATE_DUALGRID);
+		$this->assertIsValidAndWorkingGridObject($grid1);
+		$this->assertIsValidAndWorkingGridObject($grid2);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReturnOneGridWithTwoRowsFromTemplateWithDualGridsWithSameNameAndOneRowEach() {
+		$grid = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_COLLIDINGGRID);
+		$this->assertIsValidAndWorkingGridObject($grid);
+		$this->assertSame(2, $grid->getRows()->count());
 	}
 
 }
