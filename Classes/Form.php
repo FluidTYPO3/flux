@@ -104,7 +104,9 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 	 * @return Tx_Flux_Form_FormInterface
 	 */
 	public function add(Tx_Flux_Form_FormInterface $child) {
-		if (TRUE === $child instanceof Tx_Flux_Form_ContainerInterface) {
+		if (FALSE === $child instanceof Tx_Flux_Form_ContainerInterface) {
+			$this->last()->add($child);
+		} else {
 			$children = $this->children;
 			foreach ($children as $existingChild) {
 				if ($child->getName() === $existingChild->getName()) {
@@ -113,9 +115,6 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 			}
 			$this->children->attach($child);
 			$child->setParent($this);
-		} else {
-			$this->last()->add($child);
-			$child->setParent($this->last());
 		}
 		return $this;
 	}
