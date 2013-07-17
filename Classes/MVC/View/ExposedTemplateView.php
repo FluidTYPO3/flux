@@ -48,15 +48,11 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	/**
 	 * @param string $sectionName
 	 * @param string $formName
-	 * @return Tx_Flux_Form_Form
+	 * @return Tx_Flux_Form_Form|NULL
 	 */
 	public function getForm($sectionName = 'Configuration', $formName = 'form') {
 		/** @var Tx_Flux_Form $form */
 		$form = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $formName, $sectionName);
-		if (NULL === $form) {
-			$form = $this->objectManager->get('Tx_Flux_Form');
-			$form->setName($formName);
-		}
 		return $form;
 	}
 
