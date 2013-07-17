@@ -139,7 +139,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 			$name = $child->getName();
 			$structure[$name] = $child->build();
 		}
-		return array_reverse($structure, FALSE);;
+		return $structure;
 	}
 
 }
