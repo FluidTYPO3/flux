@@ -134,9 +134,8 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === $this->children->count()) {
 			$dataStructArray['ROOT'] = array(
 				'type' => 'array',
-				'el' => array(),
+				'el' => $this->last()->build(),
 			);
-			$dataStructArray['ROOT']['el'] = $this->last()->build();
 		} else {
 			$dataStructArray['sheets'] = $this->buildChildren();
 		}
