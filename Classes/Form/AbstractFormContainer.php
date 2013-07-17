@@ -131,13 +131,6 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	/**
 	 * @return array
 	 */
-	public function build() {
-		return $this->buildChildren();
-	}
-
-	/**
-	 * @return array
-	 */
 	protected function buildChildren() {
 		$structure = array();
 		/** @var Tx_Flux_Form_FormInterface[] $children */

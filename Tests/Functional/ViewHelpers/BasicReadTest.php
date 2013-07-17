@@ -162,4 +162,14 @@ class Tx_Flux_Tests_Functional_ViewHelpers_BasicReadTest extends Tx_Flux_Tests_A
 		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_SUGGEST);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithMiscellaneousViewHelpers() {
+		$variables = array(
+			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren
+		);
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_MISCELLANEOUS, $variables);
+	}
+
 }

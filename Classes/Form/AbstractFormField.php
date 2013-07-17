@@ -98,13 +98,26 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param Tx_Flux_Form_WizardInterface $wizard
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	public function add(Tx_Flux_Form_WizardInterface $wizard) {
-		#if (FALSE === $this->wizards->contains($wizard)) {
+		if (FALSE === $this->wizards->contains($wizard)) {
 			$this->wizards->attach($wizard);
-		#}
+		}
 		return $this;
+	}
+
+	/**
+	 * @param string $wizardName
+	 * @return Tx_Flux_Form_WizardInterface|FALSE
+	 */
+	public function get($wizardName) {
+		foreach ($this->wizards as $wizard) {
+			if ($wizardName === $wizard->getName()) {
+				return $wizard;
+			}
+		}
+		return FALSE;
 	}
 
 	/**

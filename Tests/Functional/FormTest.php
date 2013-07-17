@@ -227,4 +227,15 @@ class Tx_Flux_Tests_Functional_FormTest extends Tx_Flux_Tests_AbstractFunctional
 		$this->assertFalse($form->last()->remove($field));
 	}
 
+	/**
+	 * @test
+	 */
+	public function canCreateAndAddWizard() {
+		$form = $this->getEmptyDummyForm();
+		$field = $form->createField('Input', 'input');
+		$wizard = $form->createWizard('Add', 'add');
+		$field->add($wizard);
+		$form->add($field);
+	}
+
 }

@@ -29,56 +29,27 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SelectViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper implements Tx_Flux_ViewHelpers_Flexform_Field_Wizard_WizardViewHelperInterface {
+class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SelectViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
 
 	/**
 	 * Initialize arguments
 	 * @return void
 	 */
 	public function initializeArguments() {
+		parent::initializeArguments();
 		$this->registerArgument('mode', 'string', 'Selection mode - substitution, append or prepend', FALSE, 'substitution');
 		$this->registerArgument('items', 'mixed', 'Comma-separated, comma-and-semicolon-separated or array list of possible values', TRUE);
-		$this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the "real" field as a hidden input field and renders the wizard', FALSE, FALSE);
 	}
 
 	/**
-	 * Build the configuration array
-	 *
-	 * @return array
+	 * @return Tx_Flux_Form_Wizard_Select
 	 */
-	public function build() {
-		$fieldName = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'fieldName');
-		return array(
-			$fieldName . '_picker' => array(
-				'type' => 'select',
-				'mode' => $this->arguments['mode'],
-				'hideParent' => (bool) $this->arguments['hideParent'] === TRUE ? 1 : 0,
-				'items' => is_array($this->arguments['items']) ? $this->arguments['items'] : $this->buildItems($this->arguments['items'])
-			)
-		);
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Wizard_Select $component */
+		$component = $this->getPreparedComponent('Select');
+		$component->setMode($this->arguments['mode']);
+		$component->setItems($this->arguments['items']);
+		return $component;
 	}
 
-	/**
-	 * Builds an array of selector options based on a type of string
-	 *
-	 * @param string $itemsString
-	 * @return array
-	 */
-	protected function buildItems($itemsString) {
-		$itemsString = trim($itemsString, ',');
-		if (strpos($itemsString, ',') && strpos($itemsString, ';')) {
-			$return = array();
-			$items = explode(',', $itemsString);
-			foreach ($items as $itemPair) {
-				$item = explode(';', $itemPair);
-				$return[$item[0]] = $item[1];
-			}
-			return $return;
-		} else if (strpos($itemsString, ',')) {
-			$items = explode(',', $itemsString);
-			return array_combine($items, $items);
-		} else {
-			return array($itemsString => $itemsString);
-		}
-	}
 }

@@ -29,35 +29,26 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_EditViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper implements Tx_Flux_ViewHelpers_Flexform_Field_Wizard_WizardViewHelperInterface {
+class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_EditViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
 
 	/**
 	 * Initialize arguments
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('title', 'string', 'Title of the Add Wizard', FALSE, 'Edit selected record');
+		parent::initializeArguments();
 		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 580);
 		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 580);
 		$this->registerArgument('openOnlyIfSelected', 'boolean', 'Only open the edit dialog if an item is selected', FALSE, TRUE);
 	}
 
-	/**
-	 * Build the configuration array
-	 *
-	 * @return array
-	 */
-	public function build() {
-		return array(
-			'edit' => array(
-				'type' => 'popup',
-				'title' => $this->arguments['title'],
-				'icon' => 'edit2.gif',
-				'script' => 'wizard_edit.php',
-				'popup_onlyOpenIfSelected' => (bool) $this->arguments['openOnlyIfSelected'] === TRUE ? 1 : 0,
-				'JSopenParams' => 'height=' . $this->arguments['height'] . ',width=' . $this->arguments['width'] . ',status=0,menubar=0,scrollbars=1'
-			)
-		);
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Wizard_Edit $component */
+		$component = $this->getPreparedComponent('Edit');
+		$component->setOpenOnlyIfSelected($this->arguments['openOnlyIfSelected']);
+		$component->setHeight($this->arguments['height']);
+		$component->setWidth($this->arguments['width']);
+		return $component;
 	}
 
 }
