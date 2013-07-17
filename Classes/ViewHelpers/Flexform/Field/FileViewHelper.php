@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_GroupViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractMultiValueFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -45,18 +45,16 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 	}
 
 	/**
-	 * Render method
-	 * @return array
+	 * @return Tx_Flux_Form_Field_File
 	 */
-	public function renderConfiguration() {
-		$config = $this->getFieldConfig();
-		$config['type'] = 'group';
-		$config['disallowed'] = $this->arguments['disallowed'];
-		$config['max_size'] = $this->arguments['maxSize'];
-		$config['internal_type'] = $this->arguments['internalType'];
-		$config['allowed'] = $this->arguments['allowed'];
-		$config['uploadfolder'] = $this->arguments['uploadFolder'];
-		return $config;
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Field_File $component */
+		$component = $this->getPreparedComponent('File');
+		$component->setMaxSize($this->arguments['maxSize']);
+		$component->setDisallowed($this->arguments['disallowed']);
+		$component->setAllowed($this->arguments['allowed']);
+		$component->setUploadFolder($this->arguments['uploadFolder']);
+		return $component;
 	}
 
 }
