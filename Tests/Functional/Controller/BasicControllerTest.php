@@ -40,15 +40,40 @@ class Tx_Flux_Tests_Functional_Controller_BasicControllerTest extends Tx_Flux_Te
 	}
 
 	/**
+	 * @param string templatePathAndFilename
 	 * @return Tx_Flux_Controller_AbstractFluxController
 	 */
-	protected function createDummyControllerInstance() {
+	protected function createAndTestDummyControllerInstance($templatePathAndFilename) {
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$record['tx_fed_fcefile'] = 'Flux:Default.html';
+		$frontend = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$frontend->cObj = new tslib_cObj();
+		$frontend->cObj->start($record);
 		$this->performDummyRegistration();
 		$service = $this->createFluxServiceInstance();
 		$controllerClassName = $service->buildControllerClassNameFromExtensionKeyAndControllerType('flux', 'Content');
 		/** @var Tx_Flux_Controller_AbstractFluxController $instance */
-		$instance = $this->getAccessibleMock($controllerClassName);
+		$instance = $this->objectManager->get($controllerClassName);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::getProperty($instance, 'configurationManager', TRUE)->setContentObject($frontend->cObj);
 		return $instance;
+	}
+
+	/**
+	 * @param string $controllerName
+	 * @return array
+	 */
+	protected function createDummyRequestAndResponseForFluxController($controllerName = 'Content') {
+		/** @var Tx_Extbase_MVC_Web_Request $request */
+		$request = $this->objectManager->get('Tx_Extbase_MVC_Web_Request');
+		$request->setControllerExtensionName('Flux');
+		$request->setControllerActionName('render');
+		$request->setControllerName($controllerName);
+		$request->setFormat('html');
+		/** @var Tx_Extbase_MVC_Web_Response $response */
+		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
+		return array($request, $response);
 	}
 
 	/**
@@ -72,7 +97,8 @@ class Tx_Flux_Tests_Functional_Controller_BasicControllerTest extends Tx_Flux_Te
 	 * @test
 	 */
 	public function canCreateInstanceOfCustomRegisteredControllerForContent() {
-		$instance = $this->createDummyControllerInstance();
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
+		$instance = $this->createAndTestDummyControllerInstance($templatePathAndFilename);
 		$this->assertInstanceOf('Tx_Flux_Controller_AbstractFluxController', $instance);
 	}
 
@@ -80,23 +106,12 @@ class Tx_Flux_Tests_Functional_Controller_BasicControllerTest extends Tx_Flux_Te
 	 * @test
 	 */
 	public function canExecuteBasicRequestUsingCustomController() {
-		$instance = $this->createDummyControllerInstance();
-		/** @var Tx_Extbase_MVC_Web_Request $request */
-		$request = $this->objectManager->get('Tx_Extbase_MVC_Web_Request');
-		$request->setControllerExtensionName('Flux');
-		$request->setControllerObjectName('Content');
-		$request->setControllerActionName('render');
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
-		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
-		$record['tx_fed_fcefile'] = 'Flux:Default.html';
-		/** @var tslib_fe $contentObject */
-		$contentObject = $this->objectManager->get('tslib_fe', $GLOBALS['TYPO3_CONF_VARS'], 1, 0);
-		$contentObject->currentRecord = $record;
-		$GLOBALS['TSFE'] = $contentObject;
-		/** @var Tx_Extbase_MVC_Web_Response $response */
-		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
-		$instance->processRequest($request, $response);
-		unset($GLOBALS['TSFE']);
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
+		$instance = $this->createAndTestDummyControllerInstance($templatePathAndFilename);
+		$this->assertInstanceOf('Tx_Flux_Controller_AbstractFluxController', $instance);
+		/** @var Tx_Flux_MVC_View_ExposedTemplateView $view */
+		$view = $this->objectManager->get(Tx_Extbase_Reflection_ObjectAccess::getProperty($instance, 'defaultViewObjectName', TRUE));
+		list ($request, $response) = $this->createDummyRequestAndResponseForFluxController('Content');
 	}
 
 }

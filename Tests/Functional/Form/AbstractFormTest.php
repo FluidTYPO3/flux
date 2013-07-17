@@ -79,6 +79,35 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	/**
 	 * @test
 	 */
+	public function ifObjectIsFieldContainerItSupportsFetchingFields() {
+		$instance = $this->createInstance();
+		if (TRUE === $instance instanceof Tx_Flux_Form_FieldContainerInterface) {
+			$fields = $instance->getFields();
+			$this->assertNotEmpty($fields);
+		}
+		$this->performTestBuild($instance);
+	}
+
+	/**
+	 * @test
+	 */
+	public function returnsNameInsteadOfEmptyLabelWhenFormsExtensionKeyAndLabelAreBothEmpty() {
+		$instance = $this->createInstance();
+		if (FALSE === $instance instanceof Tx_Flux_Form && TRUE === $instance instanceof Tx_Flux_Form_FieldInterface) {
+			/** @var Tx_Flux_Form $form */
+			$form = $this->objectManager->get('Tx_Flux_Form');
+			$form->setExtensionName(NULL);
+			$form->add($instance);
+		}
+		$instance->setName('test');
+		$instance->setLabel(NULL);
+		$this->performTestBuild($instance);
+
+	}
+
+	/**
+	 * @test
+	 */
 	public function canCallAllGetterCounterpartsForChainableSetters() {
 		$instance = $this->createInstance();
 		foreach ($this->chainProperties as $propertyName => $propertValue) {

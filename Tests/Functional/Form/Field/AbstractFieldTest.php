@@ -77,6 +77,41 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_
 	/**
 	 * @test
 	 */
+	public function returnsEmptyArrayForDisabledVersionOfField() {
+		$instance = $this->canChainAllChainableSetters();
+		$instance->setEnable(FALSE);
+		$built = $instance->build();
+		$this->assertIsArray($built);
+		$this->assertSame(0, count($built));
+	}
+
+	/**
+	 * @test
+	 */
+	public function returnsEmptyLabelIfFormExtensionNameIsEmpty() {
+		$instance = $this->createInstance();
+		/** @var Tx_Flux_Form $form */
+		$form = $this->objectManager->get('Tx_Flux_Form');
+		$form->add($instance);
+		$form->setExtensionName(NULL);
+		$this->performTestBuild($form);
+	}
+
+	/**
+	 * @test
+	 */
+	public function returnsEmptyLabelIfFormExtensionNameIsNotLoaded() {
+		$instance = $this->createInstance();
+		/** @var Tx_Flux_Form $form */
+		$form = $this->objectManager->get('Tx_Flux_Form');
+		$form->add($instance);
+		$form->setExtensionName('void');
+		$this->performTestBuild($form);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canUseWizards() {
 		$instance = $this->canChainAllChainableSetters();
 		$wizard = $instance->createWizard('Add', 'add');

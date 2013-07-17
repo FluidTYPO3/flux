@@ -230,6 +230,20 @@ class Tx_Flux_Tests_Functional_FormTest extends Tx_Flux_Tests_AbstractFunctional
 	/**
 	 * @test
 	 */
+	public function canCreateAndAddField() {
+
+	}
+
+	/**
+	 * @test
+	 */
+	public function canCreateAndAddContainer() {
+
+	}
+
+	/**
+	 * @test
+	 */
 	public function canCreateAndAddWizard() {
 		$form = $this->getEmptyDummyForm();
 		$field = $form->createField('Input', 'input');

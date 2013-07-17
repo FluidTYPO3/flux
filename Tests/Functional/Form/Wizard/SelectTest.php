@@ -43,6 +43,19 @@ class Tx_Flux_Tests_Functional_Form_Wizard_SelectTest extends Tx_Flux_Tests_Func
 	/**
 	 * @test
 	 */
+	public function addsParentNameToOwnNameWhenParentExists() {
+		/** @var Tx_Flux_Form_WizardInterface $instance */
+		$instance = $this->createInstance();
+		$instance->setName('suffix');
+		$this->assertNotContains('prefix', $instance->getName());
+		$field = $instance->createField('Input', 'prefix');
+		$field->add($instance);
+		$this->assertContains('prefix', $instance->getName());
+	}
+
+	/**
+	 * @test
+	 */
 	public function canUseTraversableAsItemsList() {
 		$items = new ArrayIterator($this->chainProperties['items']);
 		$instance = $this->createInstance();

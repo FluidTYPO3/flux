@@ -35,12 +35,23 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest extends Tx
 	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'hideParent' => FALSE);
 
 	/**
-	 * @return string
+	 * @test
 	 */
-	protected function getWizardObjectClassName() {
-		$class = get_class($this);
-		$segments = explode('_', $class);
-		return 'Tx_Flux_Form_Wizard_' . substr(array_pop($segments), 0, -4);
+	public function canRenderWithParentfield() {
+		/** @var Tx_Flux_Form_WizardInterface $instance */
+		$instance = $this->createInstance();
+		$field = $instance->createField('Input', 'test');
+		$field->add($instance);
+		$this->performTestBuild($instance);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRenderWithoutParentfield() {
+		/** @var Tx_Flux_Form_WizardInterface $instance */
+		$instance = $this->createInstance();
+		$this->performTestBuild($instance);
 	}
 
 	/**
