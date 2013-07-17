@@ -46,9 +46,12 @@ class Tx_Flux_ViewHelpers_Flexform_GridViewHelper extends Tx_Flux_Core_ViewHelpe
 	 */
 	public function render() {
 		$grid = $this->getGrid($this->arguments['name']);
+		$grid->setParent($this->getForm());
 		$grid->setLabel($this->arguments['label']);
+		$container = $this->getContainer();
 		$this->setContainer($grid);
 		$this->renderChildren();
+		$this->setContainer($container);
 	}
 
 }
