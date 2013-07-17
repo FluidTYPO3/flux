@@ -79,6 +79,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractRelationFieldViewHelpe
 		$component->setManyToMany($this->arguments['mm']);
 		$component->setForeignField($this->arguments['foreignField']);
 		$component->setForeignSelector($this->arguments['foreignSelector']);
+		$component->setForeignLabel($this->arguments['foreignLabel']);
 		$component->setForeignSortby($this->arguments['foreignSortby']);
 		$component->setForeignDefaultSortby($this->arguments['foreignDefaultSortby']);
 		$component->setForeignTableField($this->arguments['foreignTableField']);
