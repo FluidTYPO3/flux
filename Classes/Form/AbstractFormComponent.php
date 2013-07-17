@@ -163,15 +163,10 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		$id = $root->getName();
 		$extensionName = $root->getExtensionName();
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-		if (TRUE === empty($extensionName)) {
-			$this->configurationService->message('Wanted to generate an automatic LLL label for field "' . $name . '" ' .
-			'but there was no extension name stored in the RenderingContext.', t3lib_div::SYSLOG_SEVERITY_FATAL);
-			return $name;
-		}
 		if (TRUE === isset($label) && FALSE === empty($label)) {
 			return $label;
-		} elseif (TRUE === empty($extensionKey) || FALSE === t3lib_extMgm::isLoaded($extensionKey)) {
-			return $label;
+		} elseif ((TRUE === empty($extensionKey) || FALSE === t3lib_extMgm::isLoaded($extensionKey)) && TRUE === empty($label)) {
+			return $name;
 		}
 		$prefix = '';
 		if (TRUE === $this instanceof Tx_Flux_Form_Container_Sheet) {
