@@ -62,7 +62,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extend
 		$component->setDefault($this->arguments['default']);
 		$component->setRequired($this->arguments['required']);
 		$component->setExclude($this->arguments['exclude']);
-		$component->setEnable($this->arguments['enable']);
+		$component->setEnable($this->arguments['enabled']);
 		$component->setRequestUpdate($this->arguments['requestUpdate']);
 		$component->setDisplayCondition($this->arguments['displayCond']);
 		$component->setInherit($this->arguments['inherit']);
