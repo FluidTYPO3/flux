@@ -103,6 +103,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	public function add(Tx_Flux_Form_WizardInterface $wizard) {
 		if (FALSE === $this->wizards->contains($wizard)) {
 			$this->wizards->attach($wizard);
+			$wizard->setParent($this);
 		}
 		return $this;
 	}
@@ -129,6 +130,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 			if ($wizardName === $wizard->getName()) {
 				$this->wizards->detach($wizard);
 				$this->wizards->rewind();
+				$wizard->setParent(NULL);
 				return $wizard;
 			}
 		}
