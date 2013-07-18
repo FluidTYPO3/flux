@@ -29,7 +29,9 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_UserFuncViewHelper {
+
+	const DEFAULT_USERFUNCTION = 'EXT:flux/Classes/UserFunction/HtmlOutput.php:Tx_Flux_UserFunction_HtmlOutput->renderField';
 
 	/**
 	 * Initialize
@@ -37,42 +39,37 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
+		$this->overrideArgument('userFunc', 'string', 'User function to render the Closure built by this ViewHelper', FALSE, self::DEFAULT_USERFUNCTION);
 	}
 
 	/**
-	 * @return Tx_Fluid_Core_ViewHelper_TemplateVariableContainer
+	 * @return Tx_Flux_Form_Field_Custom
 	 */
-	public function getTemplateVariableContainer() {
-		return $this->templateVariableContainer;
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Field_Custom $component */
+		$component = parent::getComponent('Custom');
+		$closure = $this->buildClosure();
+		$arguments = array(
+			'parameters' => $this->arguments,
+			'closure' => $closure,
+		);
+		$component->setClosure($closure);
+		$component->setArguments($arguments);
+		return $component;
 	}
 
 	/**
-	 * Render method
-	 * @return void
+	 * @return Closure
 	 */
-	public function render() {
-		$this->configuration = $this->renderConfiguration();
-		$this->structure = $this->createStructure();
-		$this->addField($this->configuration);
-	}
-
-	/**
-	 * Render method
-	 * @return array
-	 */
-	public function renderConfiguration() {
+	protected function buildClosure() {
 		$self = $this;
-		$config = parent::getBaseConfig();
-		$config['type'] = 'user';
-		$config['userFunc'] = 'EXT:flux/Classes/UserFunction/HtmlOutput.php:Tx_Flux_UserFunction_HtmlOutput->renderField';
-		$config['parameters'] = $this->arguments; // will be passed to the UserFunction as argument
-		$config['parameters']['closure'] = function($parameters) use ($self) {
+		$closure = function($parameters) use ($self) {
 			$backupParameters = NULL;
+			$self->getTemplateVariableContainer()->add('parameters', $parameters);
 			if ($self->getTemplateVariableContainer()->exists('parameters') === TRUE) {
 				$backupParameters = $self->getTemplateVariableContainer()->get('parameters');
 				$self->getTemplateVariableContainer()->remove('parameters');
 			}
-			$self->getTemplateVariableContainer()->add('parameters', $parameters);
 			$content = $self->renderChildren();
 			$self->getTemplateVariableContainer()->remove('parameters');
 			if ($backupParameters !== NULL) {
@@ -80,7 +77,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 			}
 			return $content;
 		};
-		$config['arguments'] = $this->arguments;
-		return $config;
+		return $closure;
 	}
+
 }
