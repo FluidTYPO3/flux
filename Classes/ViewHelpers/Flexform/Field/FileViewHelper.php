@@ -38,6 +38,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->registerArgument('maxSize', 'integer', 'Maximum file size allowed in KB');
+		$this->registerArgument('allowed', 'string', 'Defines a list of file types allowed in this field');
 		$this->registerArgument('disallowed', 'string', 'Defines a list of file types NOT allowed in this field');
 		$this->registerArgument('uploadFolder', 'string', 'Upload folder. DEPRECATED, will be moved to the File field ViewHelper');
 	}
