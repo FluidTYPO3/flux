@@ -29,4 +29,14 @@
  */
 class Tx_Flux_Tests_Functional_Form_Container_ColumnTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
 
+	/**
+	 * @test
+	 */
+	public function canUseGetAreasMethod() {
+		/** @var Tx_Flux_Form_Container_Column $instance */
+		$instance = $this->createInstance();
+		$this->performTestBuild($instance);
+		$this->assertEmpty($instance->getAreas());
+	}
+
 }

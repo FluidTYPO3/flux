@@ -29,4 +29,14 @@
  */
 class Tx_Flux_Tests_Functional_Form_Container_RowTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
 
+	/**
+	 * @test
+	 */
+	public function canUseGetColumnsMethod() {
+		/** @var Tx_Flux_Form_Container_Row $instance */
+		$instance = $this->createInstance();
+		$this->performTestBuild($instance);
+		$this->assertEmpty($instance->getColumns());
+	}
+
 }

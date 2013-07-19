@@ -29,4 +29,14 @@
  */
 class Tx_Flux_Tests_Functional_Form_Container_GridTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
 
+	/**
+	 * @test
+	 */
+	public function canUseGetRowsMethod() {
+		/** @var Tx_Flux_Form_Container_Grid $instance */
+		$instance = $this->createInstance();
+		$this->performTestBuild($instance);
+		$this->assertEmpty($instance->getRows());
+	}
+
 }
