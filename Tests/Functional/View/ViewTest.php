@@ -51,7 +51,7 @@ class Tx_Flux_Tests_Functional_View_ViewTest extends Tx_Flux_Tests_AbstractFunct
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 */
 	public function canRenderPreviewSectionWithGrid() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
@@ -75,7 +75,7 @@ class Tx_Flux_Tests_Functional_View_ViewTest extends Tx_Flux_Tests_AbstractFunct
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 */
 	public function canRenderPreviewSectionWithCollapsedGrid() {
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
