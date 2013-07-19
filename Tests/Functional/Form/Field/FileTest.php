@@ -39,7 +39,8 @@ class Tx_Flux_Tests_Functional_Form_Field_FileTest extends Tx_Flux_Tests_Functio
 		'maxSize' => 135153542,
 		'allowed' => 'jpg,gif',
 		'disallowed' => 'doc,docx',
-		'uploadFolder' => ''
+		'uploadFolder' => '',
+		'showThumbnails' => TRUE
 	);
 
 }

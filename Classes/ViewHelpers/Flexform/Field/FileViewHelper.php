@@ -41,6 +41,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 		$this->registerArgument('allowed', 'string', 'Defines a list of file types allowed in this field');
 		$this->registerArgument('disallowed', 'string', 'Defines a list of file types NOT allowed in this field');
 		$this->registerArgument('uploadFolder', 'string', 'Upload folder. DEPRECATED, will be moved to the File field ViewHelper');
+		$this->registerArgument('showThumbnails', 'boolean', 'If TRUE, displays thumbnails for selected values', FALSE, FALSE);
 	}
 
 	/**
@@ -53,6 +54,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 		$component->setDisallowed($this->arguments['disallowed']);
 		$component->setAllowed($this->arguments['allowed']);
 		$component->setUploadFolder($this->arguments['uploadFolder']);
+		$component->setShowThumbnails($this->arguments['showThumbnails']);
 		return $component;
 	}
 

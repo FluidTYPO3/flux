@@ -50,15 +50,21 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 	protected $uploadFolder;
 
 	/**
+	 * @var boolean
+	 */
+	protected $showThumbnails = FALSE;
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
 		$configuration = $this->prepareConfiguration('group');
-		$configuration['disallowed'] = $this->arguments['disallowed'];
-		$configuration['allowed'] = $this->arguments['allowed'];
-		$configuration['max_size'] = $this->arguments['maxSize'];
+		$configuration['disallowed'] = $this->getDisallowed();
+		$configuration['allowed'] = $this->getAllowed();
+		$configuration['max_size'] = $this->getMaxSize();
 		$configuration['internal_type'] = 'file';
-		$configuration['uploadfolder'] = $this->arguments['uploadFolder'];
+		$configuration['uploadfolder'] = $this->getUploadFolder();
+		$configuration['showThumbs'] = $this->getShowThumbnails();
 		return $configuration;
 	}
 
@@ -124,6 +130,22 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 	 */
 	public function getUploadFolder() {
 		return $this->uploadFolder;
+	}
+
+	/**
+	 * @param boolean $showThumbnails
+	 * @return Tx_Flux_Form_Field_File
+	 */
+	public function setShowThumbnails($showThumbnails) {
+		$this->showThumbnails = (boolean) $showThumbnails;
+		return $this;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getShowThumbnails() {
+		return (boolean) $this->showThumbnails;
 	}
 
 }
