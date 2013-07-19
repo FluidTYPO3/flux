@@ -37,11 +37,24 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	protected $configurationService;
 
 	/**
+	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 */
+	protected $objectManager;
+
+	/**
 	 * @param Tx_Flux_Service_FluxService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
 		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @return void
+	 */
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
+		$this->objectManager = $objectManager;
 	}
 
 	/**
