@@ -377,32 +377,8 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
-		try {
-			if (is_array($dataStructure) === FALSE) {
-				$dataStructure = array();
-			}
-			$paths = $this->getTemplatePaths($row);
-			$values = $this->getFlexFormValues($row);
-			$values = array_merge((array) $this->getTemplateVariables($row), $values);
-			$section = $this->getConfigurationSectionName($row);
-			if (strpos($section, 'variable:') !== FALSE) {
-				$section = $values[array_pop(explode(':', $section))];
-			}
-			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-			if (FALSE === file_exists($templatePathAndFilename)) {
-				/** @var Tx_Flux_Form $form */
-				$form = $this->objectManager->get('Tx_Flux_Form');
-				$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_NoSelection->render'));
-			} else {
-				$extensionKey = $this->getExtensionKey($row);
-				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-				$variables = $this->getTemplateVariables($row);
-				$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, 'form', $paths, $extensionName, $variables);
-			}
-			$dataStructure = $form->build();
-		} catch (Exception $error) {
-			$this->configurationService->debug($error);
-		}
+		$form = $this->getForm($row);
+		$dataStructure = $form->build();
 	}
 
 	/**
