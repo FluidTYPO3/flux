@@ -60,12 +60,15 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	 * @return Tx_Flux_Form
 	 */
 	protected function getForm() {
-		if (FALSE === $this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form')) {
-			/** @var Tx_Flux_Form $form */
+		if (TRUE === $this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form')) {
+			$form = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form');
+		} elseif (TRUE === $this->templateVariableContainer->exists('form')) {
+			$form = $this->templateVariableContainer->get('form');
+		} else {
 			$form = $this->objectManager->get('Tx_Flux_Form');
 			$this->viewHelperVariableContainer->add('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form', $form);
 		}
-		return $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form');
+		return $form;
 	}
 
 	/**
@@ -97,12 +100,16 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	 * @return Tx_Flux_Form_ContainerInterface
 	 */
 	protected function getContainer() {
-		if (FALSE === $this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container')) {
+		if (TRUE === $this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container')) {
+			$container = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container');
+		} elseif (TRUE === $this->templateVariableContainer->exists('container')) {
+			$container = $this->templateVariableContainer->get('container');
+		} else {
 			$form = $this->getForm();
 			$container = $form->last();
 			$this->setContainer($container);
 		}
-		return $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container');
+		return $container;
 	}
 
 	/**
@@ -111,6 +118,10 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 	 */
 	protected function setContainer(Tx_Flux_Form_FormInterface $container) {
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container', $container);
+		if ($this->templateVariableContainer->exists('container')) {
+			$this->templateVariableContainer->remove('container');
+		}
+		$this->templateVariableContainer->add('container', $container);
 	}
 
 }
