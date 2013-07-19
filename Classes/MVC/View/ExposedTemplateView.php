@@ -249,20 +249,4 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 		return $paths;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTemplateRootPath() {
-		try {
-			$path = parent::getTemplateRootPath();
-		} catch (Exception $error) {
-			if (TRUE === empty($this->templatePathAndFilename)) {
-				return NULL;
-			} else {
-				$path = pathinfo($this->templatePathAndFilename, PATHINFO_DIRNAME);
-			}
-		}
-		return $path;
-	}
-
 }
