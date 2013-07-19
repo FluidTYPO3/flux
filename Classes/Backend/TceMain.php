@@ -191,8 +191,10 @@ class Tx_Flux_Backend_TceMain {
 			return;
 		}
 		$manifestCacheFiles = glob(t3lib_div::getFileAbsFileName('typo3temp/*-manifest.cache'));
-		foreach ($manifestCacheFiles as $manifestCacheFile) {
-			unlink($manifestCacheFile);
+		if (FALSE !== $manifestCacheFiles) {
+			foreach ($manifestCacheFiles as $manifestCacheFile) {
+				unlink($manifestCacheFile);
+			}
 		}
 		$tables = array_keys($GLOBALS['TCA']);
 		foreach ($tables as $table) {
