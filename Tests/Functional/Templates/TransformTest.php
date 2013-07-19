@@ -63,6 +63,7 @@ class Tx_Flux_Tests_Functional_Templates_TransformTest extends Tx_Flux_Tests_Abs
 	 */
 	public function canTransformStringToInteger() {
 		$data = $this->getTransformedData();
+		$this->assertIsArray($data);
 		$this->assertIsInteger($data['stringToInteger']);
 	}
 
@@ -71,6 +72,7 @@ class Tx_Flux_Tests_Functional_Templates_TransformTest extends Tx_Flux_Tests_Abs
 	 */
 	public function canTransformStringToFloat() {
 		$data = $this->getTransformedData();
+		$this->assertIsArray($data);
 		$this->assertSame(1.5, $data['stringToFloat']);
 	}
 
