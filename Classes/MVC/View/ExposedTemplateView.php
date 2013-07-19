@@ -162,6 +162,9 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 * @throws Exception
 	 */
 	public function getTemplatePathAndFilename($actionName = NULL) {
+		if (TRUE === empty($actionName)) {
+			$actionName = $this->controllerContext->getRequest()->getControllerActionName();
+		}
 		$actionName = ucfirst($actionName);
 		$paths = $this->expandGenericPathPattern($this->templatePathAndFilenamePattern, FALSE, FALSE);
 		foreach ($paths as &$templatePathAndFilename) {
