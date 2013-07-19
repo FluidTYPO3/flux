@@ -150,9 +150,9 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 		if (FALSE === $this->getEnable()) {
 			return array();
 		}
-		if (TRUE === $this->getClearable()) {
+		//if (TRUE === $this->getClearable()) {
 			// TODO: add UserFunc wizard with Tx_Flux_UserFunction_ClearValueWizard
-		}
+		//}
 		$fieldStructureArray = array(
 			'TCEforms' => array(
 				'label' => $this->getLabel(),
