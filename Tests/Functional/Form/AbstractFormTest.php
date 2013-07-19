@@ -82,10 +82,12 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	public function ifObjectIsFieldContainerItSupportsFetchingFields() {
 		$instance = $this->createInstance();
 		if (TRUE === $instance instanceof Tx_Flux_Form_FieldContainerInterface) {
+			$field = $instance->createField('Input', 'test');
+			$instance->add($field);
 			$fields = $instance->getFields();
-			$this->assertNotEmpty($fields);
+			$this->assertNotEmpty($fields, 'The class ' . $this->getObjectClassName() . ' does not appear to support the required FieldContainerInterface implementation');
+			$this->performTestBuild($instance);
 		}
-		$this->performTestBuild($instance);
 	}
 
 	/**

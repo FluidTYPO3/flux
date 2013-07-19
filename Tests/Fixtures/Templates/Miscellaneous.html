@@ -2,8 +2,9 @@
 <f:layout name="Default" />
 <f:section name="Configuration">
 	<flux:flexform id="test" />
-	<flux:be.contentArea row="{record}" area="test" />
-	<flux:be.contentElement row="{record}" />
+	<flux:be.contentArea row="{record}" area="test">
+		<flux:be.contentElement row="{record}" dblist="{dblist}" />
+	</flux:be.contentArea>
 	<flux:be.link.content.new after="1" />
 	<flux:be.link.content.paste relativeTo="1" />
 	<flux:be.link.content.paste relativeTo="1" reference="TRUE" />

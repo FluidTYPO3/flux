@@ -116,7 +116,8 @@ class Tx_Flux_Tests_Functional_Service_FluxServiceTest extends Tx_Flux_Tests_Abs
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
 		$this->assertIsValidAndWorkingFormObject($form);
-		$this->assertSame(0, count($form->getFields()));
+		$this->assertSame(1, count($form->getFields()));
+		$this->assertTrue($form->last()->has('func'));
 	}
 
 	/**

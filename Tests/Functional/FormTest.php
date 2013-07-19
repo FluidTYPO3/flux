@@ -231,14 +231,22 @@ class Tx_Flux_Tests_Functional_FormTest extends Tx_Flux_Tests_AbstractFunctional
 	 * @test
 	 */
 	public function canCreateAndAddField() {
-
+		$form = $this->getEmptyDummyForm();
+		$field = $form->createField('Input', 'input');
+		$form->add($field);
+		$this->assertIsValidAndWorkingFormObject($form);
+		$this->assertTrue($form->last()->has('input'));
 	}
 
 	/**
 	 * @test
 	 */
 	public function canCreateAndAddContainer() {
-
+		$form = $this->getEmptyDummyForm();
+		$container = $form->createContainer('Section', 'section');
+		$form->add($container);
+		$this->assertIsValidAndWorkingFormObject($form);
+		$this->assertTrue($form->has('section'));
 	}
 
 	/**
