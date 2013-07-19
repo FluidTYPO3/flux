@@ -63,7 +63,7 @@ class Tx_Flux_Tests_Functional_View_ViewTest extends Tx_Flux_Tests_AbstractFunct
 			'grid' => $service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', 'grid', array(), 'flux', array('record' => $record))
 		);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$preview = $view->renderStandaloneSection('Preview', $variables, TRUE);
+		$preview = $view->renderStandaloneSection('Preview', $variables);
 		$preview = trim($preview);
 		$this->assertNotEmpty($preview);
 		$this->assertStringStartsWith('<', $preview);

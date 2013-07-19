@@ -258,6 +258,21 @@ class Tx_Flux_Tests_Functional_FormTest extends Tx_Flux_Tests_AbstractFunctional
 		$wizard = $form->createWizard('Add', 'add');
 		$field->add($wizard);
 		$form->add($field);
+		$this->assertIsValidAndWorkingFormObject($form);
+	}
+
+	/**
+	 * @test
+	 */
+	public function supportsFormComponentsPlacedInPartialTemplates() {
+		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_USESPARTIAL);
+		$service = $this->createFluxServiceInstance();
+		$paths = array(
+			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates',
+			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials'
+		);
+		$form = $service->getFormFromTemplateFile($template, 'Configuration', 'form', $paths);
+		$this->assertIsValidAndWorkingFormObject($form);
 	}
 
 }
