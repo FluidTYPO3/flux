@@ -27,7 +27,7 @@
  * @package Flux
  * @subpackage Form\Container
  */
-class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_ContainerInterface, Tx_Flux_Form_FieldContainerInterface {
+class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_ContainerInterface {
 
 	/**
 	 * @var integer
@@ -63,13 +63,6 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 			'areas' => $this->buildChildren()
 		);
 		return $structure;
-	}
-
-	/**
-	 * @return Tx_Flux_Form_FieldInterface[]
-	 */
-	public function getFields() {
-		return $this->children;
 	}
 
 	/**
