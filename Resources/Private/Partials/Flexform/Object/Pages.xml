@@ -1,7 +1,0 @@
-{namespace flux=Tx_Flux_ViewHelpers}
-<flux:flexform.object name="{objectParameters.name}" label="{f:if(condition: objectParameters.label, then: objectParameters.label, else: '{f:translate(key: \\'object.pages\\')}')}">
-    <flux:flexform.field.group name="records" label="{f:translate(key: 'object.pages.records')}" size="{settings.object.pages.size}"
-            minItems="{settings.object.pages.minItems}" maxItems="{settings.object.pages.maxItems}" allowed="pages">
-        <flux:flexform.field.wizard.suggest table="pages" pidList="" searchCondition="doktype = 1" />
-    </flux:flexform.field.group>
-</flux:flexform.object>
