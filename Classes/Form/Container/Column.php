@@ -73,42 +73,48 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 	}
 
 	/**
-	 * @param int $colspan
+	 * @param integer $colspan
+	 * @return Tx_Flux_Form_Container_Column
 	 */
 	public function setColspan($colspan) {
 		$this->colspan = $colspan;
+		return $this;
 	}
 
 	/**
-	 * @return int
+	 * @return integer
 	 */
 	public function getColspan() {
 		return $this->colspan;
 	}
 
 	/**
-	 * @param int $columnPosition
+	 * @param integer $columnPosition
+	 * @return Tx_Flux_Form_Container_Column
 	 */
 	public function setColumnPosition($columnPosition) {
 		$this->columnPosition = $columnPosition;
+		return $this;
 	}
 
 	/**
-	 * @return int
+	 * @return integer
 	 */
 	public function getColumnPosition() {
 		return $this->columnPosition;
 	}
 
 	/**
-	 * @param int $rowspan
+	 * @param integer $rowspan
+	 * @return Tx_Flux_Form_Container_Column
 	 */
 	public function setRowspan($rowspan) {
 		$this->rowspan = $rowspan;
+		return $this;
 	}
 
 	/**
-	 * @return int
+	 * @return integer
 	 */
 	public function getRowspan() {
 		return $this->rowspan;
@@ -116,9 +122,11 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 
 	/**
 	 * @param string $style
+	 * @return Tx_Flux_Form_Container_Column
 	 */
 	public function setStyle($style) {
 		$this->style = $style;
+		return $this;
 	}
 
 	/**
