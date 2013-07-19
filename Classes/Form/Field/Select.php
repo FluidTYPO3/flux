@@ -80,10 +80,9 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 		} elseif (TRUE === is_array($this->items) || TRUE === $this->items instanceof Traversable) {
 			foreach ($this->items as $itemIndex => $itemValue) {
 				if (TRUE === is_array($itemValue) || TRUE === $itemValue instanceof ArrayObject) {
-					$index = array_pop($itemValue);
-					$items[$index] = array_pop($itemValue);
+					array_push($items, $itemValue);
 				} else {
-					$items[$itemIndex] = $itemValue;
+					array_push($items, array($itemValue, $itemIndex));
 				}
 			}
 		} elseif (TRUE === $this->items instanceof Tx_Extbase_Persistence_Query) {
@@ -103,7 +102,7 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 			$propertyName = t3lib_div::underscoredToLowerCamelCase($labelField);
 			foreach ($results as $result) {
 				$uid = $result->getUid();
-				$items[$uid] = Tx_Extbase_Reflection_ObjectAccess::getProperty($result, $propertyName);
+				array_push($items, array(Tx_Extbase_Reflection_ObjectAccess::getProperty($result, $propertyName), $uid));
 			}
 		}
 		$emptyOption = $this->getEmptyOption();
