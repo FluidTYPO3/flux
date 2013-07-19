@@ -48,11 +48,15 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	/**
 	 * @param string $sectionName
 	 * @param string $formName
-	 * @return Tx_Flux_Form_Form|NULL
+	 * @return Tx_Flux_Form_Form
 	 */
 	public function getForm($sectionName = 'Configuration', $formName = 'form') {
 		/** @var Tx_Flux_Form $form */
 		$form = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $formName, $sectionName);
+		if (NULL === $form) {
+			$form = $this->objectManager->get('Tx_Flux_Form');
+			$form->setName($formName);
+		}
 		return $form;
 	}
 
@@ -79,39 +83,16 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 * @param string $viewHelperClassName Class name of the ViewHelper which stored the variable
 	 * @param string $name Name of the variable which the ViewHelper stored
 	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
-	 * @param array $paths Template paths; required if template renders Partials (from inside $sectionName, if specified)
-	 * @param string $extensionName If specified, overrides the extension name stored in the RenderingContext. Use with care.
-	 * @param string $actionName If provided, renders the template as if the action was this action
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL, $paths = NULL, $extensionName = NULL, $actionName = 'render') {
+	protected function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL) {
 		try {
 			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
 				throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
 			}
-			if (NULL !== $paths && FALSE === is_array($paths) && FALSE == $paths instanceof ArrayObject) {
-				throw new Exception('ExposedTemplateView->getStoredVariable received an invalid path set; the value is not an array: ' . gettype($paths), 1365000126);
-			}
-			if (NULL === $extensionName && TRUE === isset($paths['extensionKey'])) {
-				$extensionName = t3lib_div::underscoredToUpperCamelCase($paths['extensionKey']);
-			}
-			if (NULL !== $extensionName) {
-				// Note: the following double conversion is NOT redundant; inconsiderate passing of UpperCamel to t3lib_div
-				// can cause underscores to be unintentionally removed.
-				$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-				$request = $this->controllerContext->getRequest();
-				$request->setControllerActionName($actionName);
-				$request->setControllerExtensionName($extensionName);
-				$this->controllerContext->setRequest($request);
-			}
-			$this->baseRenderingContext->setControllerContext($this->controllerContext);
 			$value = NULL;
-			if (is_array($paths)) {
-				$this->setPartialRootPath($paths['partialRootPath']);
-				$this->setLayoutRootPath($paths['layoutRootPath']);
-			}
+			$this->baseRenderingContext->setControllerContext($this->controllerContext);
 			$this->templateParser->setConfiguration($this->buildParserConfiguration());
 			$parsedTemplate = $this->getParsedTemplate();
 			if (NULL === $parsedTemplate) {
