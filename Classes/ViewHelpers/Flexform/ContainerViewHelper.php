@@ -60,8 +60,11 @@ class Tx_Flux_ViewHelpers_Flexform_ContainerViewHelper extends Tx_Flux_ViewHelpe
 		$container = $this->objectManager->get('Tx_Flux_Form_Container_Container');
 		$container->setName($this->arguments['name']);
 		$container->setLabel($this->arguments['label']);
-		$this->getContainer()->add($container);
+		$existingContainer = $this->getContainer();
+		$existingContainer->add($container);
 		$this->setContainer($container);
+		$this->renderChildren();
+		$this->setContainer($existingContainer);
 	}
 
 }

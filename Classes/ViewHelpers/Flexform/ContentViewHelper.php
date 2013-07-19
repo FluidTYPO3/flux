@@ -49,11 +49,7 @@ class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_Core_ViewHe
 	public function render() {
 		/** @var Tx_Flux_Form_Container_Content $content */
 		$content = $this->getForm()->createContainer('Content', $this->arguments['name'], $this->arguments['label']);
-		$container = $this->getContainer();
-		$container->add($content);
-		$this->setContainer($content);
-		$this->renderChildren();
-		$this->setContainer($container);
+		$this->getContainer()->add($content);
 	}
 
 }
