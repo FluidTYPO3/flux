@@ -400,23 +400,18 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getFlexFormValues(array $row) {
-		try {
-			$fieldName = $this->getFieldName($row);
-			$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
-			$tree = $this->getInheritanceTree($row);
-			if (0 === count($tree)) {
-				return $immediateConfiguration;
-			}
-			$inheritedConfiguration = $this->getMergedConfiguration($tree);
-			if (0 === count($immediateConfiguration)) {
-				return $inheritedConfiguration;
-			}
-			$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
-			return $merged;
-		} catch (Exception $error) {
-			$this->configurationService->debug($error);
-			return array();
+		$fieldName = $this->getFieldName($row);
+		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		$tree = $this->getInheritanceTree($row);
+		if (0 === count($tree)) {
+			return (array) $immediateConfiguration;
 		}
+		$inheritedConfiguration = $this->getMergedConfiguration($tree);
+		if (0 === count($immediateConfiguration)) {
+			return (array) $inheritedConfiguration;
+		}
+		$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
+		return $merged;
 	}
 
 	/**
