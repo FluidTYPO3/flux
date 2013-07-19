@@ -64,7 +64,7 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 		$configuration['max_size'] = $this->getMaxSize();
 		$configuration['internal_type'] = 'file';
 		$configuration['uploadfolder'] = $this->getUploadFolder();
-		$configuration['showThumbs'] = $this->getShowThumbnails();
+		$configuration['show_thumbs'] = $this->getShowThumbnails();
 		return $configuration;
 	}
 
