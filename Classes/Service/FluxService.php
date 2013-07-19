@@ -129,6 +129,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		/** @var $uriBuilder Tx_Extbase_Mvc_Web_Routing_UriBuilder */
 		$uriBuilder = $this->objectManager->get('Tx_Extbase_Mvc_Web_Routing_UriBuilder');
 		$uriBuilder->setRequest($request);
+		$context->setUriBuilder($uriBuilder);
 		$context->setRequest($request);
 		$context->setResponse($response);
 		/** @var $exposedView Tx_Flux_MVC_View_ExposedTemplateView */
