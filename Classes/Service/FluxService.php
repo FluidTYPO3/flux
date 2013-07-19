@@ -203,14 +203,9 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @throws Exception
 	 */
 	public function getGridFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $gridName = 'grid', array $paths = array(), $extensionName = NULL, array $variables = array()) {
-		try {
-			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
-			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
-			$grid = $exposedView->getGrid($section, $gridName);
-		} catch (Exception $error) {
-			$this->debug($error);
-			$grid = array();
-		}
+		$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
+		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+		$grid = $exposedView->getGrid($section, $gridName);
 		return $grid;
 	}
 
