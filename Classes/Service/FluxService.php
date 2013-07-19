@@ -175,7 +175,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			$form = $this->objectManager->get('Tx_Flux_Form');
 			$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->render'));
 		}
-		self::$cache[$cacheKey] = $form;
 		return $form;
 	}
 

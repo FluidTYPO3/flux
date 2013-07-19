@@ -87,41 +87,32 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 * @throws Exception
 	 */
 	protected function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL) {
-		try {
-			if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
-				throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
-			}
-			$value = NULL;
-			$this->baseRenderingContext->setControllerContext($this->controllerContext);
-			$this->templateParser->setConfiguration($this->buildParserConfiguration());
-			$parsedTemplate = $this->getParsedTemplate();
-			if (NULL === $parsedTemplate) {
-				throw new Exception('Unable to fetch a parsed template - this is <b>very likely</b> to be caused by ' .
-					' syntax errors in the template. It may also point to a problem in a core class from Fluid; however, ' .
-					' this is <b>not very likely</b> to be the cause. There almost certainly are earlier errors which should ' .
-					' be handled; if there are then you can safely ignore this message.', t3lib_div::SYSLOG_SEVERITY_WARNING);
-			}
-			$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
-			if (FALSE === empty($sectionName)) {
-				$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
-			} else {
-				$this->render();
-			}
-			$this->stopRendering();
-			if (FALSE === $this->baseRenderingContext->getViewHelperVariableContainer()->exists($viewHelperClassName, $name)) {
-				return NULL;
-			}
-			$stored = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
-			$this->configurationService->message('Flux View ' . get_class($this) . ' is able to read stored configuration from file ' .
-				$this->getTemplatePathAndFilename(), t3lib_div::SYSLOG_SEVERITY_INFO);
-			return $stored;
-		} catch (Exception $error) {
-			$this->configurationService->message('Failed to get stored variable from file ' . $this->getTemplatePathAndFilename() . ' - ' .
-				'additional error messages have been sent', t3lib_div::SYSLOG_SEVERITY_FATAL);
-			$this->configurationService->debug($error);
-			$value = NULL;
+		if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
+			throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
 		}
-		return $value;
+		$this->baseRenderingContext->setControllerContext($this->controllerContext);
+		$this->templateParser->setConfiguration($this->buildParserConfiguration());
+		$parsedTemplate = $this->getParsedTemplate();
+		if (NULL === $parsedTemplate) {
+			throw new Exception('Unable to fetch a parsed template - this is <b>very likely</b> to be caused by ' .
+				' syntax errors in the template. It may also point to a problem in a core class from Fluid; however, ' .
+				' this is <b>not very likely</b> to be the cause. There almost certainly are earlier errors which should ' .
+				' be handled; if there are then you can safely ignore this message.', t3lib_div::SYSLOG_SEVERITY_WARNING);
+		}
+		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
+		if (FALSE === empty($sectionName)) {
+			$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
+		} else {
+			$this->render();
+		}
+		$this->stopRendering();
+		if (FALSE === $this->baseRenderingContext->getViewHelperVariableContainer()->exists($viewHelperClassName, $name)) {
+			return NULL;
+		}
+		$stored = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
+		$this->configurationService->message('Flux View ' . get_class($this) . ' is able to read stored configuration from file ' .
+			$this->getTemplatePathAndFilename(), t3lib_div::SYSLOG_SEVERITY_INFO);
+		return $stored;
 	}
 
 	/**
@@ -129,29 +120,22 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 * @return mixed
 	 */
 	public function getParsedTemplate() {
-		try {
-			if (!$this->templateCompiler) {
+		if (!$this->templateCompiler) {
+			$source = $this->getTemplateSource();
+			$parsedTemplate = $this->templateParser->parse($source);
+			return $parsedTemplate;
+		} else {
+			$templateIdentifier = $this->getTemplateIdentifier();
+			if ($this->templateCompiler->has($templateIdentifier)) {
+				$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
+			} else {
 				$source = $this->getTemplateSource();
 				$parsedTemplate = $this->templateParser->parse($source);
-				return $parsedTemplate;
-			} else {
-				$templateIdentifier = $this->getTemplateIdentifier();
-				if ($this->templateCompiler->has($templateIdentifier)) {
-					$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
-				} else {
-					$source = $this->getTemplateSource();
-					$parsedTemplate = $this->templateParser->parse($source);
-					if ($parsedTemplate->isCompilable()) {
-						$this->templateCompiler->store($templateIdentifier, $parsedTemplate);
-					}
+				if ($parsedTemplate->isCompilable()) {
+					$this->templateCompiler->store($templateIdentifier, $parsedTemplate);
 				}
-				return $parsedTemplate;
 			}
-		} catch (Exception $error) {
-			$this->configurationService->message('Failed to parse Fluid template in file ' . $this->getTemplatePathAndFilename() . ' - ' .
-				'additional error messages have been sent');
-			$this->configurationService->debug($error);
-			return NULL;
+			return $parsedTemplate;
 		}
 	}
 
@@ -165,16 +149,10 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 */
 	public function renderStandaloneSection($sectionName, $variables, $optional = TRUE) {
 		$content = NULL;
-		try {
-			$this->baseRenderingContext->setControllerContext($this->controllerContext);
-			$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
-			$content = $this->renderSection($sectionName, $variables, $optional);
-			$this->stopRendering();
-		} catch (Exception $error) {
-			$this->configurationService->message('Failed to render section "' . $sectionName .'" in file ' . $this->getTemplatePathAndFilename() .
-				' - see next error message', t3lib_div::SYSLOG_SEVERITY_FATAL);
-			$this->configurationService->debug($error);
-		}
+		$this->baseRenderingContext->setControllerContext($this->controllerContext);
+		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
+		$content = $this->renderSection($sectionName, $variables, $optional);
+		$this->stopRendering();
 		return $content;
 	}
 
@@ -184,13 +162,6 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 * @throws Exception
 	 */
 	public function getTemplatePathAndFilename($actionName = NULL) {
-		if (NULL === $actionName) {
-			if (FALSE === $this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext) {
-				throw new Exception('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists ' .
-					'(getTemplatePathAndFilename used without action argument)', 1343521593);
-			}
-			$actionName = $this->controllerContext->getRequest()->getControllerActionName();
-		}
 		$actionName = ucfirst($actionName);
 		$paths = $this->expandGenericPathPattern($this->templatePathAndFilenamePattern, FALSE, FALSE);
 		foreach ($paths as &$templatePathAndFilename) {
