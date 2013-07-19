@@ -401,7 +401,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function getFlexFormValues(array $row) {
 		try {
-			$fieldName = $this->fieldName;
+			$fieldName = $this->getFieldName($row);
 			$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 			$tree = $this->getInheritanceTree($row);
 			if (0 === count($tree)) {
