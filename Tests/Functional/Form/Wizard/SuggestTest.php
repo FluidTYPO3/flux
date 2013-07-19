@@ -29,4 +29,30 @@
  */
 class Tx_Flux_Tests_Functional_Form_Wizard_SuggestTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
 
+	/**
+	 * @test
+	 */
+	public function canUseCommaSeparatedStoragePageUids() {
+		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
+		$wizard = $this->createInstance();
+		$storagePageUidsCommaSeparated = '1,2,3';
+		$storagePageUidsArray = t3lib_div::trimExplode(',', $storagePageUidsCommaSeparated);
+		$wizard->setStoragePageUids($storagePageUidsCommaSeparated);
+		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
+		$this->performTestBuild($wizard);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseArrayStoragePageUids() {
+		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
+		$wizard = $this->createInstance();
+		$storagePageUidsCommaSeparated = '1,2,3';
+		$storagePageUidsArray = t3lib_div::trimExplode(',', $storagePageUidsCommaSeparated);
+		$wizard->setStoragePageUids($storagePageUidsArray);
+		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
+		$this->performTestBuild($wizard);
+	}
+
 }
