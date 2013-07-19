@@ -54,6 +54,7 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 	public function render() {
 		/** @var Tx_Flux_Form $form */
 		$form = $this->objectManager->get('Tx_Flux_Form');
+		$container = $form->last();
 		$form->setId($this->arguments['id']);
 		$form->setName($this->arguments['id']);
 		$form->setLabel($this->arguments['label']);
@@ -64,7 +65,13 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 		$form->setGroup($this->arguments['wizardTab']);
 		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form', $form);
+		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container', $container);
+		$this->templateVariableContainer->add('form', $form);
+		$this->templateVariableContainer->add('container', $container);
 		$this->renderChildren();
+		$this->templateVariableContainer->remove('container');
+		$this->templateVariableContainer->remove('form');
+		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container');
 	}
 
 }
