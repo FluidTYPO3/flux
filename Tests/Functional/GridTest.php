@@ -91,7 +91,7 @@ class Tx_Flux_Tests_Functional_GridTest extends Tx_Flux_Tests_AbstractFunctional
 	public function canReturnOneGridWithTwoRowsFromTemplateWithDualGridsWithSameNameAndOneRowEach() {
 		$grid = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_COLLIDINGGRID);
 		$this->assertIsValidAndWorkingGridObject($grid);
-		$this->assertSame(2, $grid->getRows()->count());
+		$this->assertSame(2, count($grid->getRows()));
 	}
 
 }
