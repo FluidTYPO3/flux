@@ -76,7 +76,7 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 	 * @return Tx_Flux_Form_Container_Content[]
 	 */
 	public function getAreas() {
-		return $this->children;
+		return iterator_to_array($this->children);
 	}
 
 	/**
