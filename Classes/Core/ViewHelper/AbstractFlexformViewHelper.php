@@ -94,7 +94,6 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 			$grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
 			$grids = array($gridName => $grid);
 			$this->viewHelperVariableContainer->add('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $grids);
-			$this->setContainer($grid);
 		} else {
 			$grids = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids');
 			if (TRUE === isset($grids[$gridName])) {
@@ -105,7 +104,6 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Flu
 				$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $grids);
 			}
 		}
-		$this->setContainer($grid);
 		return $grid;
 	}
 
