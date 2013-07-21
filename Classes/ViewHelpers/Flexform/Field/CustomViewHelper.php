@@ -49,12 +49,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 		/** @var Tx_Flux_Form_Field_Custom $component */
 		$component = parent::getComponent('Custom');
 		$closure = $this->buildClosure();
-		$arguments = array(
-			'parameters' => $this->arguments,
-			'closure' => $closure,
-		);
 		$component->setClosure($closure);
-		$component->setArguments($arguments);
 		return $component;
 	}
 
@@ -65,19 +60,27 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 		$self = $this;
 		$closure = function($parameters) use ($self) {
 			$backupParameters = NULL;
-			$self->getTemplateVariableContainer()->add('parameters', $parameters);
+			$backupParameters = NULL;
 			if ($self->getTemplateVariableContainer()->exists('parameters') === TRUE) {
 				$backupParameters = $self->getTemplateVariableContainer()->get('parameters');
 				$self->getTemplateVariableContainer()->remove('parameters');
 			}
+			$self->getTemplateVariableContainer()->add('parameters', $parameters);
 			$content = $self->renderChildren();
 			$self->getTemplateVariableContainer()->remove('parameters');
-			if ($backupParameters !== NULL) {
+			if (NULL !== $backupParameters) {
 				$self->getTemplateVariableContainer()->add('parameters', $backupParameters);
 			}
 			return $content;
 		};
 		return $closure;
+	}
+
+	/**
+	 * @return Tx_Fluid_Core_ViewHelper_TemplateVariableContainer
+	 */
+	public function getTemplateVariableContainer() {
+		return $this->templateVariableContainer;
 	}
 
 }

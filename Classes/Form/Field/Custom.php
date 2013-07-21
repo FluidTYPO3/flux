@@ -38,7 +38,12 @@ class Tx_Flux_Form_Field_Custom extends Tx_Flux_Form_Field_UserFunction {
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		$fieldConfiguration = $this->prepareConfiguration('check');
+		$fieldConfiguration = $this->prepareConfiguration('user');
+		$fieldConfiguration['userFunc'] = 'Tx_Flux_UserFunction_HtmlOutput->renderField';
+		$fieldConfiguration['parameters'] = array(
+			'closure' => $this->getClosure(),
+			'arguments' => $this->getArguments(),
+		);
 		return $fieldConfiguration;
 	}
 
