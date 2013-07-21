@@ -55,9 +55,9 @@ td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
 <f:section name="Grid">
 	<table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" class="flux-grid{flux:isCollapsed(record: row, then: ' hidden')}">
 		<tbody>
-		<f:for each="{grid}" as="gridrow" iteration="rowIteration">
+		<f:for each="{grid.rows}" as="gridrow" iteration="rowIteration">
 			<tr>
-				<f:for each="{gridrow}" as="gridcolumn" iteration="columnIteration">
+				<f:for each="{gridrow.columns}" as="gridcolumn" iteration="columnIteration">
 					<td colspan="{gridcolumn.colspan}" rowspan="{gridcolumn.rowspan}" style="{gridcolumn.style}">
 						<f:for each="{gridcolumn.areas}" as="area">
 							<flux:be.contentArea area="{area.name}" row="{row}">

@@ -30,6 +30,22 @@
 interface Tx_Flux_Provider_ConfigurationProviderInterface {
 
 	/**
+	 * Returns an instance of Tx_Flux_Form as required by this record.
+	 *
+	 * @param array $row
+	 * @return Tx_Flux_Form
+	 */
+	public function getForm(array $row);
+
+	/**
+	 * Returns a Tx_Flux_Form_Container_Grid as required by this record.
+	 *
+	 * @param array $row
+	 * @return Tx_Flux_Form_Container_Grid
+	 */
+	public function getGrid(array $row);
+
+	/**
 	 * Return the extension key this processor belongs to
 	 *
 	 * @param array $row The record which triggered the processing

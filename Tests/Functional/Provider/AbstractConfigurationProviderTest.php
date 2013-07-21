@@ -66,7 +66,7 @@ abstract class Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest extends 
 	/**
 	 * @test
 	 */
-	public function canGetTemplateVariables() {
+	public function canGetForcedTemplateVariables() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$variables = $provider->getTemplateVariables($record);
@@ -90,11 +90,7 @@ abstract class Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest extends 
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$section = $provider->getConfigurationSectionName($record);
-		if (TRUE === empty($section)) {
-			$this->assertNull($section);
-		} else {
-			$this->assertIsString($section);
-		}
+		$this->assertIsString($section);
 	}
 
 	/**

@@ -37,4 +37,20 @@ class Tx_Flux_Tests_Functional_Utility_VersionTest extends Tx_Flux_Tests_Abstrac
 		$this->assertIsBoolean($version);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canAssertIfCoreIsLegacyVersion() {
+		$isLegacy = Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero();
+		$this->assertIsBoolean($isLegacy);
+	}
+
+	/**
+	 * @test
+	 */
+	public function returnsFalseIfExtensionKeyIsNotLoaded() {
+		$isFalseResponse = Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('void', 1, 0, 0);
+		$this->assertFalse($isFalseResponse);
+	}
+
 }

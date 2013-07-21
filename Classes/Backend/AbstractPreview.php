@@ -121,13 +121,13 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 					$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, 'Content');
 					$view->assignMultiple($templateVariables);
 					$view->assign('row', $row);
-					$flexformVariables = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform']);
-					$stored = $this->configurationService->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths, $extensionName, $flexformVariables);
-					$flexformVariables = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform'], $stored);
-					$variables = t3lib_div::array_merge($stored, $flexformVariables);
-					$label = Tx_Extbase_Utility_Localization::translate($stored['label'], $extension);
+					$flexformVariables = $provider->getFlexFormValues($row);
+					$form = $provider->getForm($row);
+					$variables = $provider->getTemplateVariables($row);
+					$variables = t3lib_div::array_merge_recursive_overrule($variables, $flexformVariables);
+					$label = Tx_Extbase_Utility_Localization::translate($form->getLabel(), $extension);
 					if ($label === NULL) {
-						$label = $stored['label'];
+						$label = $form->getLabel();
 					}
 					$variables['label'] = $label;
 					$variables['row'] = $row;

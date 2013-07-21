@@ -67,15 +67,15 @@ class Tx_Flux_Tests_Functional_ViewHelpers_BasicReadTest extends Tx_Flux_Tests_A
 	/**
 	 * @test
 	 */
-	public function canReadTemplateWithGroupField() {
-		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_GROUP);
+	public function canReadTemplateWithInlineField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_INLINE);
 	}
 
 	/**
 	 * @test
 	 */
-	public function canReadTemplateWithInlineField() {
-		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_INLINE);
+	public function canReadTemplateWithRelationField() {
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_FIELD_RELATION);
 	}
 
 	/**
@@ -160,6 +160,16 @@ class Tx_Flux_Tests_Functional_ViewHelpers_BasicReadTest extends Tx_Flux_Tests_A
 	 */
 	public function canReadTemplateWithSuggestWizard() {
 		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_WIZARDS_SUGGEST);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReadTemplateWithMiscellaneousViewHelpers() {
+		$variables = array(
+			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren
+		);
+		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_MISCELLANEOUS, $variables);
 	}
 
 }

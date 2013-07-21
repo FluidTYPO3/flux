@@ -102,14 +102,17 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param string $extensionName
+	 * @param string $extensionKey
 	 * @param string $controllerName
+	 * @param array $paths
+	 * @param array $variables
 	 * @return Tx_Flux_MVC_View_ExposedTemplateView
 	 */
-	public function getPreparedExposedTemplateView($extensionName = NULL, $controllerName = NULL) {
-		if (NULL === $extensionName || FALSE === t3lib_extMgm::isLoaded($extensionName)) {
+	public function getPreparedExposedTemplateView($extensionKey = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
+		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionKey);
+		if (NULL === $extensionKey || FALSE === t3lib_extMgm::isLoaded($extensionKey)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
-			$extensionName = 'Flux';
+			$extensionKey = 'Flux';
 		}
 		if (NULL === $controllerName) {
 			$controllerName = 'Flux';
@@ -120,54 +123,60 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		$request = $this->objectManager->get('Tx_Extbase_MVC_Web_Request');
 		/** @var $response Tx_Extbase_MVC_Web_Response */
 		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
-		$request->setControllerExtensionName($extensionName);
+		$request->setControllerExtensionName($extensionKey);
 		$request->setControllerName($controllerName);
 		$request->setDispatched(TRUE);
 		/** @var $uriBuilder Tx_Extbase_Mvc_Web_Routing_UriBuilder */
 		$uriBuilder = $this->objectManager->get('Tx_Extbase_Mvc_Web_Routing_UriBuilder');
 		$uriBuilder->setRequest($request);
+		$context->setUriBuilder($uriBuilder);
 		$context->setRequest($request);
 		$context->setResponse($response);
 		/** @var $exposedView Tx_Flux_MVC_View_ExposedTemplateView */
 		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
 		$exposedView->setControllerContext($context);
+		if (0 < count($variables)) {
+			$exposedView->assignMultiple($variables);
+		}
+		if (TRUE === isset($paths['layoutRootPath']) && FALSE === empty($paths['layoutRootPath'])) {
+			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
+		}
+		if (TRUE === isset($paths['partialRootPath']) && FALSE === empty($paths['partialRootPath'])) {
+			$exposedView->setPartialRootPath($paths['partialRootPath']);
+		}
 		return $exposedView;
 	}
 
 	/**
 	 * @param string $templatePathAndFilename
-	 * @param string $variableName
 	 * @param string $section
+	 * @param string $formName
 	 * @param array $paths
-	 * @param string|NULL $extensionName
+	 * @param string $extensionName
 	 * @param array $variables
+	 * @return Tx_Flux_Form
 	 * @throws Exception
-	 * @return mixed
 	 */
-	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL, $variables = array()) {
-		if (FALSE === file_exists($templatePathAndFilename)) {
-			throw new Exception('The template file "' . $templatePathAndFilename . '" was not found.', 1366824347);
+	public function getFormFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $formName = 'form', $paths = array(), $extensionName = NULL, $variables = array()) {
+		try {
+			if (FALSE === file_exists($templatePathAndFilename)) {
+				throw new Exception('The template file "' . $templatePathAndFilename . '" was not found.', 1366824347);
+			}
+			$variableCheck = json_encode($variables);
+			$cacheKey = md5($templatePathAndFilename . $formName . $extensionName . implode('', $paths) . $section . $variableCheck);
+			if (TRUE === isset(self::$cache[$cacheKey])) {
+				return self::$cache[$cacheKey];
+			}
+			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
+			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+			$form = $exposedView->getForm($section, $formName);
+		} catch (Exception $error) {
+			$this->debug($error);
+			/** @var Tx_Flux_Form $form */
+			$form = $this->objectManager->get('Tx_Flux_Form');
+			$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->render'));
 		}
-		$variableCheck = json_encode($variables);
-		$actionName = strtolower(pathinfo($templatePathAndFilename, PATHINFO_FILENAME));
-		$cacheKey = md5($templatePathAndFilename . $variableName . $extensionName . implode('', $paths) . $section . $variableCheck);
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
-		$exposedView = $this->getPreparedExposedTemplateView($extensionName);
-		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
-		if (0 < count($variables)) {
-			$exposedView->assignMultiple($variables);
-		}
-		if (TRUE === isset($paths['layoutRootPath'])) {
-			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
-		}
-		if (TRUE === isset($paths['partialRootPath'])) {
-			$exposedView->setPartialRootPath($paths['partialRootPath']);
-		}
-		$value = $exposedView->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $variableName, $section, $paths, $extensionName, $actionName);
-		self::$cache[$cacheKey] = $value;
-		return $value;
+		return $form;
 	}
 
 	/**
@@ -185,50 +194,19 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * selected page template to know exactly how the BackendLayout looks.
 	 *
 	 * @param string $templatePathAndFilename
-	 * @param array $variables
-	 * @param string|NULL $configurationSection
+	 * @param string $section
+	 * @param string $gridName
 	 * @param array $paths
 	 * @param string $extensionName
+	 * @param array $variables
 	 * @return array
 	 * @throws Exception
 	 */
-	public function getGridFromTemplateFile($templatePathAndFilename, array $variables = array(), $configurationSection = NULL, array $paths = array(), $extensionName = NULL) {
-		try {
-			$paths = Tx_Flux_Utility_Path::translatePath($paths);
-			$stored = $this->getStoredVariable($templatePathAndFilename, 'storage', $configurationSection, $paths, $extensionName, $variables);
-			$grid = isset($stored['grid']) ? $stored['grid'] : NULL;
-		} catch (Exception $error) {
-			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-				throw $error;
-			} else {
-				t3lib_div::sysLog($error->getMessage(), 'flux');
-			}
-			$grid = array();
-		}
+	public function getGridFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $gridName = 'grid', array $paths = array(), $extensionName = NULL, array $variables = array()) {
+		$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
+		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+		$grid = $exposedView->getGrid($section, $gridName);
 		return $grid;
-	}
-
-	/**
-	 * Gets a stored FlexForm configuration and applies any dynamic values to
-	 * create a current representation of the FlexForm sheet+fields array
-	 *
-	 * @param string $templateFile The absolute filename containing the configuration
-	 * @param mixed $values Optional values to use when rendering the configuration
-	 * @param string|NULL $section Optional section name containing the configuration
-	 * @param array|NULL $paths Template paths; required if template renders Partials (from inside section if $section != NULL)
-	 * @param string|NULL $extensionName If specified, uses this extensionName in an injected ControllerContext
-	 * @throws Exception
-	 * @return array
-	 */
-	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL, $extensionName = NULL) {
-		$config = NULL;
-		try {
-			$config = $this->getStoredVariable($templateFile, 'storage', $section, $paths, $extensionName, $values);
-		} catch (Exception $error) {
-			$this->message('Reading file ' . $templateFile . ' caused an error - see next message', t3lib_div::SYSLOG_SEVERITY_FATAL);
-			$this->debug($error);
-		}
-		return $config;
 	}
 
 	/**
@@ -411,63 +389,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param array $config
-	 * @return array|NULL
-	 */
-	public function convertFlexFormConfigurationToDataStructure($config) {
-		/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
-		$flexFormStructureProvider = $this->objectManager->get('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
-		$dataStructArray = $flexFormStructureProvider->render($config);
-		if ((FALSE === is_array($dataStructArray['ROOT']['el']) && FALSE === is_array($dataStructArray['sheets'])) || (count($dataStructArray['sheets']) < 1 && count($dataStructArray['ROOT']['el']) < 1 && count($dataStructArray['sheets'][key($dataStructArray['sheets'])]) === 0)) {
-			$config['parameters'] = array(
-				'userFunction' => 'Tx_Flux_UserFunction_NoFields->renderField'
-			);
-			$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-		}
-		return $dataStructArray;
-	}
-
-	/**
-	 * Updates $dataStructArray by reference, filling it with a proper data structure
-	 * based on the selected template file.
-	 *
-	 * @param string $templateFile
-	 * @param array $values
-	 * @param array $paths
-	 * @param array $dataStructArray
-	 * @param string $section
-	 * @param string $extensionName
-	 * @throws Exception
-	 * @return void
-	 */
-	public function convertFlexFormTemplateToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL, $extensionName = NULL) {
-		$className = get_class($this);
-		try {
-			if (NULL === $templateFile) {
-				$this->message('A template file path was NULL - this might indicate an error in class ' . $className);
-				$config['parameters'] = array(
-					'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
-				);
-				$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-				return;
-			}
-			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths, $extensionName);
-			$dataStructArray = $this->convertFlexFormConfigurationToDataStructure($config);
-		} catch (Exception $e) {
-			$this->message('Attempting to convert FlexForm XML to array using file ' . $templateFile . ' failed - ' .
-				'see next error message');
-			$this->debug($e);
-			$config['parameters'] = array(
-				'exception' => $e,
-				'userFunction' => 'Tx_Flux_UserFunction_ErrorReporter->renderField'
-			);
-			if (FALSE === t3lib_extMgm::isLoaded('templavoila')) {
-				$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-			}
-		}
-	}
-
-	/**
 	 * Parses the flexForm content and converts it to an array
 	 * The resulting array will be multi-dimensional, as a value "bla.blubb"
 	 * results in two levels, and a value "bla.blubb.bla" results in three levels.
@@ -475,12 +396,12 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * Note: multi-language flexForms are not supported yet
 	 *
 	 * @param string $flexFormContent flexForm xml string
-	 * @param array $fluxConfiguration An array from a Flux template file. If transformation instructions are contained in this configuration they are applied after conversion to array
+	 * @param Tx_Flux_Form $form An instance of Tx_Flux_Form. If transformation instructions are contained in this configuration they are applied after conversion to array
 	 * @param string $languagePointer language pointer used in the flexForm
 	 * @param string $valuePointer value pointer used in the flexForm
 	 * @return array the processed array
 	 */
-	public function convertFlexFormContentToArray($flexFormContent, $fluxConfiguration = NULL, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
+	public function convertFlexFormContentToArray($flexFormContent, Tx_Flux_Form $form = NULL, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
 		$settings = array();
 		if (TRUE === empty($languagePointer)) {
 			$languagePointer = 'lDEF';
@@ -524,8 +445,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				}
 			}
 		}
-		if (TRUE === is_array($fluxConfiguration)) {
-			$settings = $this->transformAccordingToConfiguration($settings, $fluxConfiguration);
+		if (NULL !== $form) {
+			$settings = $this->transformAccordingToConfiguration($settings, $form);
 		}
 		return $settings;
 	}
@@ -580,25 +501,26 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * attributes on fields to determine how to transform values.
 	 *
 	 * @param array $values
-	 * @param array $fluxConfiguration
+	 * @param Tx_Flux_Form $form
 	 * @param string $prefix
 	 * @return array
 	 */
-	public function transformAccordingToConfiguration($values, $fluxConfiguration = NULL, $prefix = '') {
-		if (FALSE === is_array($values) || NULL === $fluxConfiguration) {
+	public function transformAccordingToConfiguration($values, Tx_Flux_Form $form = NULL, $prefix = '') {
+		if (FALSE === is_array($values) || NULL === $form) {
 			return $values;
 		}
 		foreach ($values as $index => $value) {
 			if (TRUE === is_array($value)) {
-				$value = $this->transformAccordingToConfiguration($value, $fluxConfiguration, $prefix . (FALSE === empty($prefix) ? '.' : '') . $index);
-			} elseif (TRUE === isset($fluxConfiguration['fields'])) {
-				foreach ($fluxConfiguration['fields'] as $field) {
-					$fieldConfiguration = $field->createStructure();
-					$fieldName = $fieldConfiguration['TCEforms']['config']['name'];
-					$transformType = $fieldConfiguration['TCEforms']['config']['transform'];
-					if ($fieldName === $prefix . (FALSE === empty($prefix) ? '.' : '') . $index && FALSE === empty($transformType)) {
-						$value = $this->transformValueToType($value, $transformType);
-					}
+				$value = $this->transformAccordingToConfiguration($value, $form, $prefix . (FALSE === empty($prefix) ? '.' : '') . $index);
+			} else {
+				/** @var Tx_Flux_Form_FieldInterface $field */
+				$field = $form->get($index, TRUE, 'Tx_Flux_Form_FieldInterface');
+				if (FALSE !== $field) {
+					$transformType = $field->getTransform();
+					$fieldName = $field->getName();
+				}
+				if ($fieldName === $prefix . (FALSE === empty($prefix) ? '.' : '') . $index && FALSE === empty($transformType)) {
+					$value = $this->transformValueToType($value, $transformType);
 				}
 			}
 			$values[$index] = $value;
@@ -754,6 +676,64 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		t3lib_FlashMessageQueue::addMessage($flashMessage);
 		self::$sentDebugMessages[$hash] = TRUE;
 		return NULL;
+	}
+
+	/**
+	 * @param string $file
+	 * @param string $identifier
+	 * @param string $id
+	 */
+	public function updateLanguageSourceFileIfUpdateFeatureIsEnabledAndIdentifierIsMissing($file, $identifier, $id) {
+		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles']) {
+			return;
+		}
+		$this->message('Generated automatic LLL path for entity called "' . $identifier . '" which is a ' .
+		get_class($this), t3lib_div::SYSLOG_SEVERITY_INFO, 'Flux FlexForm LLL label generation');
+		$debugTitle = 'Flux LLL file rewriting';
+		$allowed = 'a-z\.';
+		$pattern = '/[^' . $allowed . ']+/i';
+		if (preg_match($pattern, $id) || preg_match($pattern, $identifier)) {
+			$this->message('Cowardly refusing to create an invalid LLL reference called "' . $identifier . '" ' .
+			' in a Flux form called "' . $id . '" - one or both contains invalid characters. Allowed: dots and "' .
+			$allowed . '".', t3lib_div::SYSLOG_SEVERITY_NOTICE, $debugTitle);
+			return;
+		}
+		$file = substr($file, 4);
+		$filePathAndFilename = t3lib_div::getFileAbsFileName($file);
+		$dom = new DOMDocument('1.0', 'utf-8');
+		$dom->preserveWhiteSpace = FALSE;
+		$dom->load($filePathAndFilename);
+		$dom->formatOutput = TRUE;
+		foreach ($dom->getElementsByTagName('languageKey') as $languageNode) {
+			$nodes = array();
+			foreach ($languageNode->getElementsByTagName('label') as $labelNode) {
+				$key = (string) $labelNode->attributes->getNamedItem('index')->firstChild->textContent;
+				if ($key === $identifier) {
+					$this->message('Skipping LLL file merge for label "' . $identifier.
+					'"; it already exists in file "' . $filePathAndFilename . '"');
+					return;
+				}
+				$nodes[$key] = $labelNode;
+			}
+			$node = $dom->createElement('label', $identifier);
+			$attribute = $dom->createAttribute('index');
+			$attribute->appendChild($dom->createTextNode($identifier));
+			$node->appendChild($attribute);
+			$nodes[$identifier] = $node;
+			ksort($nodes);
+			foreach ($nodes as $labelNode) {
+				$languageNode->appendChild($labelNode);
+			}
+		}
+		$xml = $dom->saveXML();
+		if (FALSE === $xml) {
+			$this->message('Skipping LLL file saving due to an error while generating the XML.',
+				t3lib_div::SYSLOG_SEVERITY_FATAL);
+		} else {
+			$this->message('Rewrote "' . $file . '" by adding placeholder label for "' . $identifier . '"',
+				t3lib_div::SYSLOG_SEVERITY_INFO, $debugTitle);
+			file_put_contents($filePathAndFilename, $xml);
+		}
 	}
 
 }

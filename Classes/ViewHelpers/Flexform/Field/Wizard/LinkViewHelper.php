@@ -29,42 +29,38 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper implements Tx_Flux_ViewHelpers_Flexform_Field_Wizard_WizardViewHelperInterface {
+class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+
+	/**
+	 * @var string
+	 */
+	protected $label = 'Select link';
 
 	/**
 	 * Initialize arguments
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('title', 'string', 'Title of the Link Wizard', FALSE, 'Select link');
+		parent::initializeArguments();
 		$this->registerArgument('activeTab', 'string', 'Active tab of the link popup', FALSE, 'file');
 		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 500);
 		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 500);
-		$this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the "real" field as a hidden input field and renders the wizard', FALSE, FALSE);
 		$this->registerArgument('allowedExtensions', 'string', 'Comma-separated list of extensions that are allowed to be selected. Default is all types.', FALSE, FALSE);
 		$this->registerArgument('blindLinkOptions', 'string', 'Blind link options', FALSE, '');
 	}
 
 	/**
-	 * Build the configuration array
-	 *
-	 * @return array
+	 * @return Tx_Flux_Form_Wizard_Link
 	 */
-	public function build() {
-		return array(
-			'link' => array(
-				'type' => 'popup',
-				'title' => $this->arguments['title'],
-				'icon' => 'link_popup.gif',
-				'script' => 'browse_links.php?mode=wizard&act=' . $this->arguments['activeTab'],
-				'hideParent' => (bool) $this->arguments['hideParent'] === TRUE ? 1 : 0,
-				'JSopenParams' => 'height=' . $this->arguments['height'] . ',width=' . $this->arguments['width'] . ',status=0,menubar=0,scrollbars=1',
-				'params' => array(
-					'blindLinkOptions' => $this->arguments['blindLinkOptions'],
-					'allowedExtensions' => $this->arguments['allowedExtensions'],
-				),
-			)
-		);
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Wizard_Link $component */
+		$component = $this->getPreparedComponent('Link');
+		$component->setActiveTab($this->arguments['activeTab']);
+		$component->setWidth($this->arguments['width']);
+		$component->setHeight($this->arguments['height']);
+		$component->setAllowedExtensions($this->arguments['allowedExtensions']);
+		$component->setBlindLinkOptions($this->arguments['blindLinkOptions']);
+		return $component;
 	}
 
 }

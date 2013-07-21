@@ -32,12 +32,12 @@
 class Tx_Flux_ViewHelpers_Flexform_Field_CheckboxViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
 
 	/**
-	 * @return array
+	 * @return Tx_Flux_Form_Field_Checkbox
 	 */
-	public function renderConfiguration() {
-		$configuration = $this->getBaseConfig();
-		$configuration['type'] = 'check';
-		return $configuration;
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Field_Checkbox $checkbox */
+		$checkbox = $this->getPreparedComponent('Checkbox');
+		return $checkbox;
 	}
 
 }

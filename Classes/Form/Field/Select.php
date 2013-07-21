@@ -1,0 +1,131 @@
+<?php
+/*****************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ *****************************************************************/
+
+/**
+ * @package Flux
+ * @subpackage Form\Field
+ */
+class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField {
+
+	/**
+	 * Mixed - string (CSV), Traversable or array of items. Format of key/value
+	 * pairs is also optional. For single-dim arrays, key becomes option value
+	 * and each member value becomes label. For multidim/Traversable each member
+	 * is inspected; if it is a raw value it is used for both value and label,
+	 * if it is a scalar value the first item is used as value and the second
+	 * as label.
+	 *
+	 * @var mixed
+	 */
+	protected $items = NULL;
+
+	/**
+	 * If not-FALSE, adds one empty option/value pair to the generated selector
+	 * box and tries to use this property's value (cast to string) as label.
+	 *
+	 * @var boolean|string
+	 */
+	protected $emptyOption = FALSE;
+
+	/**
+	 * @return array
+	 */
+	public function buildConfiguration() {
+		$configuration = parent::prepareConfiguration('select');
+		$configuration['items'] = $this->getItems();
+		return $configuration;
+	}
+
+	/**
+	 * @param array $items
+	 * @return Tx_Flux_Form_Field_Select
+	 */
+	public function setItems($items) {
+		$this->items = $items;
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getItems() {
+		$items = array();
+		if (TRUE === is_string($this->items)) {
+			$itemNames = t3lib_div::trimExplode(',', $this->items);
+			foreach ($itemNames as $itemName) {
+				array_push($items, array($itemName, $itemName));
+			}
+		} elseif (TRUE === is_array($this->items) || TRUE === $this->items instanceof Traversable) {
+			foreach ($this->items as $itemIndex => $itemValue) {
+				if (TRUE === is_array($itemValue) || TRUE === $itemValue instanceof ArrayObject) {
+					array_push($items, $itemValue);
+				} else {
+					array_push($items, array($itemValue, $itemIndex));
+				}
+			}
+		} elseif (TRUE === $this->items instanceof Tx_Extbase_Persistence_Query) {
+			/** @var Tx_Extbase_Persistence_Query $query */
+			$query = $this->items;
+			$results = $query->execute();
+			$type = $query->getType();
+			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$table = strtolower(str_replace('\\', '_', $type));
+			if (TRUE === isset($typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'])) {
+				$mapping = $typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'];
+				if (TRUE === isset($mapping['mapping.']['tableName'])) {
+					$table = $mapping['mapping.']['tableName'];
+				}
+			}
+			$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
+			$propertyName = t3lib_div::underscoredToLowerCamelCase($labelField);
+			foreach ($results as $result) {
+				$uid = $result->getUid();
+				array_push($items, array(Tx_Extbase_Reflection_ObjectAccess::getProperty($result, $propertyName), $uid));
+			}
+		}
+		$emptyOption = $this->getEmptyOption();
+		if (FALSE !== $emptyOption) {
+			array_unshift($items, array('', $emptyOption));
+		}
+		return $items;
+	}
+
+	/**
+	 * @param boolean|string $emptyOption
+	 * @return Tx_Flux_Form_Field_Select
+	 */
+	public function setEmptyOption($emptyOption) {
+		$this->emptyOption = $emptyOption;
+		return $this;
+	}
+
+	/**
+	 * @return boolean|string
+	 */
+	public function getEmptyOption() {
+		return $this->emptyOption;
+	}
+
+}

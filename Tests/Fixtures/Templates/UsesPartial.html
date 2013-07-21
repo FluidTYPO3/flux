@@ -1,0 +1,8 @@
+{namespace flux=Tx_Flux_ViewHelpers}
+<f:layout name="Default" />
+<f:section name="Configuration">
+	<flux:flexform id="test">
+		<flux:flexform.field.input name="native" label="Native field" />
+		<f:render partial="FormComponents" arguments="{form: form, container: container}" />
+	</flux:flexform>
+</f:section>

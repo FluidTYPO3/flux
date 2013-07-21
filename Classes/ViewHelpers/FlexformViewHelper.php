@@ -49,46 +49,29 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 
 	/**
 	 * Render method
-	 * @return string
+	 * @return void
 	 */
 	public function render() {
-		$icon = $this->arguments['icon'];
-		if (0 === strpos($icon, 'EXT:')) {
-			$icon = t3lib_div::getFileAbsFileName($icon);
-		}
-		$id = $this->arguments['id'];
-		$allowed = 'a-z';
-		$pattern = '/[^' . $allowed . ']+/i';
-		if (preg_match($pattern, $id)) {
-			$this->configurationService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
-				are: "' . $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent
-				you from utilising some features, fx automatic LLL reference building, but is not fatal', t3lib_div::SYSLOG_SEVERITY_NOTICE);
-		}
-		$description = $this->arguments['description'];
-		if (TRUE === empty($description)) {
-			$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
-			$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-			$description = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $id . '.description';
-		}
-		$this->setStorage(array(
-			'label' => $this->getLabel(),
-			'description' => $description,
-			'icon' => $icon,
-			'compact' => $this->arguments['compact'],
-			'enabled' => $this->arguments['enabled'],
-			'wizardTab' => $this->arguments['wizardTab'],
-			'mergeValues' => $this->arguments['mergeValues'],
-			'id' => $id,
-			'fields' => array(),
-			'hidefields' => array(),
-		));
-		$sheet = array(
-			'name' => 'options',
-			'label' => Tx_Extbase_Utility_Localization::translate('tt_content.tx_flux_options', 'Flux')
-		);
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet', $sheet);
+		/** @var Tx_Flux_Form $form */
+		$form = $this->objectManager->get('Tx_Flux_Form');
+		$container = $form->last();
+		$form->setId($this->arguments['id']);
+		$form->setName($this->arguments['id']);
+		$form->setLabel($this->arguments['label']);
+		$form->setDescription($this->arguments['description']);
+		$form->setIcon($this->arguments['icon']);
+		$form->setEnabled($this->arguments['enabled']);
+		$form->setCompact($this->arguments['compact']);
+		$form->setGroup($this->arguments['wizardTab']);
+		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
+		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form', $form);
+		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container', $container);
+		$this->templateVariableContainer->add('form', $form);
+		$this->templateVariableContainer->add('container', $container);
 		$this->renderChildren();
-		return '';
+		$this->templateVariableContainer->remove('container');
+		$this->templateVariableContainer->remove('form');
+		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container');
 	}
 
 }

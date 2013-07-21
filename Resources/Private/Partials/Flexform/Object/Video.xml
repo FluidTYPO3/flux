@@ -1,6 +1,0 @@
-{namespace flux=Tx_Flux_ViewHelpers}
-<flux:flexform.object name="{objectParameters.name}" label="{f:if(condition: objectParameters.label, then: objectParameters.label, else: '{f:translate(key: \\'object.video\\')}')}">
-    <flux:flexform.field.input name="title" label="{f:translate(key: 'object.video.title')}" eval="trim" placeholder="{f:translate(key: 'object.video.title')}" />
-    <flux:flexform.field.file name="filename" label="{f:translate(key: 'object.video.file')}" />
-    <flux:flexform.field.text name="caption" label="{f:translate(key: 'object.video.caption')}" enableRichText="{settings.object.video.richTextCaptions}" />
-</flux:flexform.object>

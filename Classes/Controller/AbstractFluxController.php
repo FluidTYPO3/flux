@@ -140,6 +140,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 			}
 			$this->settings = (array) $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName, $pluginName);
 			$this->data = $this->provider->getFlexFormValues($row);
+			$this->view = $this->configurationService->getPreparedExposedTemplateView($this->extensionName, $this->request->getControllerName(), $this->setup, $this->data);
 			if (TRUE === isset($this->settings['useTypoScript']) && 0 < $this->settings['useTypoScript']) {
 				// an override shared by all Flux enabled controllers: setting plugin.tx_EXTKEY.settings.useTypoScript = 1
 				// will read the "settings" array from that location instead - thus excluding variables from the flexform
