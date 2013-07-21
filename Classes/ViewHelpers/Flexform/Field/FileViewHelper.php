@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_GroupViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractMultiValueFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -38,25 +38,24 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->registerArgument('maxSize', 'integer', 'Maximum file size allowed in KB');
+		$this->registerArgument('allowed', 'string', 'Defines a list of file types allowed in this field');
 		$this->registerArgument('disallowed', 'string', 'Defines a list of file types NOT allowed in this field');
-		$this->overrideArgument('internalType', 'string', 'FlexForm-internalType of this Group Selector', FALSE, 'file');
-			// TODO: after removing this next argument from the GroupViewHelper, change this to registerArgument()
-		$this->overrideArgument('uploadFolder', 'string', 'Upload folder. DEPRECATED, will be moved to the File field ViewHelper');
+		$this->registerArgument('uploadFolder', 'string', 'Upload folder. DEPRECATED, will be moved to the File field ViewHelper');
+		$this->registerArgument('showThumbnails', 'boolean', 'If TRUE, displays thumbnails for selected values', FALSE, FALSE);
 	}
 
 	/**
-	 * Render method
-	 * @return array
+	 * @return Tx_Flux_Form_Field_File
 	 */
-	public function renderConfiguration() {
-		$config = $this->getFieldConfig();
-		$config['type'] = 'group';
-		$config['disallowed'] = $this->arguments['disallowed'];
-		$config['max_size'] = $this->arguments['maxSize'];
-		$config['internal_type'] = $this->arguments['internalType'];
-		$config['allowed'] = $this->arguments['allowed'];
-		$config['uploadfolder'] = $this->arguments['uploadFolder'];
-		return $config;
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Field_File $component */
+		$component = $this->getPreparedComponent('File');
+		$component->setMaxSize($this->arguments['maxSize']);
+		$component->setDisallowed($this->arguments['disallowed']);
+		$component->setAllowed($this->arguments['allowed']);
+		$component->setUploadFolder($this->arguments['uploadFolder']);
+		$component->setShowThumbnails($this->arguments['showThumbnails']);
+		return $component;
 	}
 
 }

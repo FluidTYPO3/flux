@@ -29,13 +29,14 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SuggestViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper implements Tx_Flux_ViewHelpers_Flexform_Field_Wizard_WizardViewHelperInterface {
+class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SuggestViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
 
 	/**
 	 * Initialize arguments
 	 * @return void
 	 */
 	public function initializeArguments() {
+		parent::initializeArguments();
 		$this->registerArgument('table', 'string', 'Table to search. If left out will use the table defined by the parent field', FALSE, NULL);
 		$this->registerArgument('pidList', 'string', 'List of storage page UIDs', FALSE, '0');
 		$this->registerArgument('pidDepth', 'integer', 'Depth of recursive storage page UID lookups', FALSE, 99);
@@ -49,25 +50,22 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SuggestViewHelper extends Tx_Flu
 	}
 
 	/**
-	 * Build the configuration array
-	 *
-	 * @return array
+	 * @return Tx_Flux_Form_Wizard_Suggest
 	 */
-	public function build() {
-		if ($this->arguments['table']) {
-			return array(
-				'suggest' . $this->arguments['table'] => array(
-					'type' => 'suggest',
-					$this->arguments['table'] => (array) $this->arguments
-				)
-			);
-		} else {
-			return array(
-				'suggest' => array(
-					'type' => 'suggest',
-				)
-			);
-		}
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Wizard_Suggest $component */
+		$component = $this->getPreparedComponent('Suggest');
+		$component->setTable($this->arguments['table']);
+		$component->setStoragePageUids($this->arguments['pidList']);
+		$component->setStoragePageRecursiveDepth($this->arguments['pidDepth']);
+		$component->setMinimumCharacters($this->arguments['minimumCharacters']);
+		$component->setMaxPathTitleLength($this->arguments['maxPathTitleLength']);
+		$component->setSearchWholePhrase($this->arguments['setSearchWholePhrase']);
+		$component->setSearchCondition($this->arguments['searchCondition']);
+		$component->setCssClass($this->arguments['cssClass']);
+		$component->setReceiverClass($this->arguments['receiverClass']);
+		$component->setRenderFunction($this->arguments['renderFunc']);
+		return $component;
 	}
 
 }

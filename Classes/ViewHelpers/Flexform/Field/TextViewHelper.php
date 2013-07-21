@@ -45,39 +45,17 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 	}
 
 	/**
-	 * @return array
+	 * @return Tx_Flux_Form_Field_Text
 	 */
-	public function renderConfiguration() {
-		$configuration = $this->getBaseConfig();
-		$fieldConfiguration = array(
-			'type' => 'text',
-			'name' => $configuration['name'],
-			'rows' => $configuration['rows'],
-			'cols' => $configuration['cols'],
-			'sheet' => $configuration['sheet'],
-			'eval' => $configuration['eval'],
-			'default' => $configuration['default']
-		);
-		return $fieldConfiguration;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function createStructure() {
-		if (TRUE === $this->arguments['enableRichText'] && '' == $this->arguments['defaultExtras']) {
-			/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
-			$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-			/** @var $configurationManager Tx_Extbase_Configuration_ConfigurationManagerInterface */
-			$configurationManager = $objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
-			$typoScript = $configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-			$defaultExtras = $typoScript['plugin.']['tx_flux.']['settings.']['flexform.']['rteDefaults'];
-		} else {
-			$defaultExtras = $this->arguments['defaultExtras'];
-		}
-		$structure = parent::createStructure();
-		$structure['TCEforms']['defaultExtras'] = $defaultExtras;
-		return $structure;
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Field_Text $text */
+		$text = $this->getPreparedComponent('Text', $this->arguments['name'], $this->arguments['label']);
+		$text->setValidate($this->arguments['validate']);
+		$text->setColumns($this->arguments['cols']);
+		$text->setRows($this->arguments['rows']);
+		$text->setDefaultExtras($this->arguments['defaultExtras']);
+		$text->setEnableRichText($this->arguments['enableRichText']);
+		return $text;
 	}
 
 }

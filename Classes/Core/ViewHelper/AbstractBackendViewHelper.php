@@ -59,20 +59,6 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper extends Tx_Flui
 	}
 
 	/**
-	 * @return string
-	 */
-	protected function getFormToken() {
-		return t3lib_BEfunc::getUrlToken('editRecord');
-	}
-
-	/**
-	 * @return string
-	 */
-	protected function getLinkChecksum() {
-		return $GLOBALS['BE_USER']->veriCode();
-	}
-
-	/**
 	 * @param integer $pid
 	 * @return string
 	 */

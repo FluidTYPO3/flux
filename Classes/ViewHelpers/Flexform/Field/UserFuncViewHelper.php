@@ -38,17 +38,20 @@ class Tx_Flux_ViewHelpers_Flexform_Field_UserFuncViewHelper extends Tx_Flux_View
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->registerArgument('userFunc', 'string', 'Classname->function notation of UserFunc to be called, example "Tx_Myext_Configuration_FlexForms_MyField->renderField" - Extbase classes need autoload registry for this', TRUE);
+		$this->registerArgument('arguments', 'array', 'Optional array of arguments to pass to the UserFunction building this field');
 	}
 
 	/**
 	 * Render method
-	 * @return array
+	 * @param string $type
+	 * @return Tx_Flux_Form_Field_UserFunction
 	 */
-	public function renderConfiguration() {
-		$config = $this->getBaseConfig();
-		$config['type'] = 'user';
-		$config['userFunc'] = $this->arguments['userFunc'];
-		return $config;
+	public function getComponent($type = 'UserFunction') {
+		/** @var Tx_Flux_Form_Field_UserFunction $user */
+		$user = $this->getPreparedComponent($type);
+		$user->setFunction($this->arguments['userFunc']);
+		$user->setArguments($this->arguments['arguments']);
+		return $user;
 	}
 
 }

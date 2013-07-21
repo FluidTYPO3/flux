@@ -134,6 +134,38 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	}
 
 	/**
+	 * @param array $row
+	 * @return Tx_Flux_Form
+	 */
+	public function getForm(array $row) {
+		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+		$section = $this->getConfigurationSectionName($row);
+		$formName = 'form';
+		$paths = $this->getTemplatePaths($row);
+		$extensionKey = $this->getExtensionKey($row);
+		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$variables = $this->getFlexFormValues($row);
+		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
+		return $form;
+	}
+
+	/**
+	 * @param array $row
+	 * @return Tx_Flux_Form_Container_Grid
+	 */
+	public function getGrid(array $row) {
+		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+		$section = $this->getConfigurationSectionName($row);
+		$gridName = 'grid';
+		$paths = $this->getTemplatePaths($row);
+		$extensionKey = $this->getExtensionKey($row);
+		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$variables = $this->getFlexFormValues($row);
+		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
+		return $grid;
+	}
+
+	/**
 	 * @param array $row The record row which triggered processing
 	 * @return string|NULL
 	 */
@@ -176,8 +208,16 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getTemplateVariables(array $row) {
-		unset($row);
-		return (array) $this->templateVariables;
+		$file = $this->getTemplatePathAndFilename($row);
+		if (NULL === $this->fieldName || FALSE === file_exists($file)) {
+			return $this->templateVariables;
+		} else {
+			$values = $this->configurationService->convertFlexFormContentToArray($row[$this->fieldName]);
+			$values['row'] = $row;
+			$values['grid'] = $this->getGrid($row);
+			$values['form'] = $this->getForm($row);
+		}
+		return $values;
 	}
 
 	/**
@@ -337,33 +377,8 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
-		try {
-			if (is_array($dataStructure) === FALSE) {
-				$dataStructure = array();
-			}
-			$paths = $this->getTemplatePaths($row);
-			$values = $this->getFlexFormValues($row);
-			$values = array_merge((array) $this->getTemplateVariables($row), $values);
-			$section = $this->getConfigurationSectionName($row);
-			if (strpos($section, 'variable:') !== FALSE) {
-				$section = $values[array_pop(explode(':', $section))];
-			}
-			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-			if (FALSE === file_exists($templatePathAndFilename)) {
-				/** @var $fallbackStructureProvider Tx_Flux_Provider_Structure_FallbackStructureProvider */
-				$fallbackStructureProvider = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider');
-				$config['parameters'] = array(
-					'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
-				);
-				$dataStructure = $fallbackStructureProvider->render($config);
-				return;
-			}
-			$extensionKey = $this->getExtensionKey($row);
-			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-			$this->configurationService->convertFlexFormTemplateToDataStructure($templatePathAndFilename, $values, $paths, $dataStructure, $section, $extensionName);
-		} catch (Exception $error) {
-			$this->configurationService->debug($error);
-		}
+		$form = $this->getForm($row);
+		$dataStructure = $form->build();
 	}
 
 	/**
@@ -385,24 +400,18 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getFlexFormValues(array $row) {
-		try {
-			$fieldName = $this->fieldName;
-			$stored = $this->getTemplateVariables($row);
-			$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $stored);
-			$tree = $this->getInheritanceTree($row);
-			if (0 === count($tree)) {
-				return $immediateConfiguration;
-			}
-			$inheritedConfiguration = $this->getMergedConfiguration($tree);
-			if (0 === count($immediateConfiguration)) {
-				return $inheritedConfiguration;
-			}
-			$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
-			return $merged;
-		} catch (Exception $error) {
-			$this->configurationService->debug($error);
-			return array();
+		$fieldName = $this->getFieldName($row);
+		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		$tree = $this->getInheritanceTree($row);
+		if (0 === count($tree)) {
+			return (array) $immediateConfiguration;
 		}
+		$inheritedConfiguration = $this->getMergedConfiguration($tree);
+		if (0 === count($immediateConfiguration)) {
+			return (array) $inheritedConfiguration;
+		}
+		$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
+		return $merged;
 	}
 
 	/**
@@ -466,12 +475,12 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		}
 		$data = array();
 		foreach ($tree as $branch) {
+			$fields = $this->getForm($branch)->getFields();
 			$values = $this->getFlexFormValues($branch);
-			$variables = $this->getTemplateVariables($branch);
-			foreach ($variables['fields'] as $field) {
-				$name = $field['configuration']['name'];
-				$stop = (TRUE === isset($field['configuration']['stopInheritance']));
-				$inherit = (TRUE === isset($field['configuration']['inheritEmpty']));
+			foreach ($fields as $field) {
+				$name = $field->getName();
+				$stop = (TRUE === $field->getStopInheritance());
+				$inherit = (TRUE === $field->getInheritEmpty());
 				$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
 				if (TRUE === $stop) {
 					unset($values[$name]);

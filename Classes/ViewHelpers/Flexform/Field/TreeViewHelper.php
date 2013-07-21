@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractRelationFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -45,19 +45,16 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelp
 
 	/**
 	 * Render method
-	 * @return void
+	 * @return Tx_Flux_Form_Field_Tree
 	 */
-	public function render() {
-		$config = $this->getFieldConfig();
-		$config['type'] = 'Select';
-		$config['renderMode'] = 'tree';
-		$config['treeConfig'] = array(
-			'parentField' => $this->arguments['parentField'],
-			'expandAll' => $this->arguments['expandAll'],
-			'showHeader' => $this->arguments['showHeader'],
-			'width' => $this->arguments['width']
-		);
-		$this->addField($config);
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Field_Tree $tree */
+		$tree = $this->getPreparedComponent('Tree');
+		$tree->setParentField($this->arguments['parentField']);
+		$tree->setExpandAll($this->arguments['expandAll']);
+		$tree->setShowHeader($this->arguments['showHeader']);
+		$tree->setWidth($this->arguments['width']);
+		return $tree;
 	}
 
 }

@@ -47,86 +47,15 @@ class Tx_Flux_ViewHelpers_Flexform_SectionViewHelper extends Tx_Flux_ViewHelpers
 	 * @return void
 	 */
 	public function render() {
-		$this->configuration = $this->renderConfiguration();
-		$this->structure = $this->createStructure();
-		$this->addField($this->configuration);
-	}
-
-	/**
-	 * @return array
-	 */
-	public function renderConfiguration() {
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section') === TRUE) {
-			$parentSection = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section');
-			$parentSectionLabels = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels');
-			$parentSectionObjectName = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
-		} else {
-			$parentSection = $parentSectionObjectName = $parentSectionLabels = NULL;
-		}
-
-		$baseConfig = array(
-			'type' => 'section',
-			'sheet' => $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet'),
-			'fields' => array(),
-			'enabled' => TRUE,
-			'wrap' => FALSE
-		);
-
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section', $baseConfig);
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels', array());
+		/** @var Tx_Flux_Form_Container_Section $section */
+		$section = $this->objectManager->get('Tx_Flux_Form_Container_Section');
+		$section->setName($this->arguments['name']);
+		$section->setLabel($this->arguments['label']);
+		$container = $this->getContainer();
+		$container->add($section);
+		$this->setContainer($section);
 		$this->renderChildren();
-
-		$compiledConfig = (array) $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section');
-		$compiledConfig['labels'] = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels');
-
-		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section');
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section', $parentSection);
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels', $parentSectionLabels);
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName', $parentSectionObjectName);
-
-		$config = array_merge($baseConfig, $compiledConfig);
-		return $config;
+		$this->setContainer($container);
 	}
-
-	/**
-	 * @return array
-	 */
-	public function createStructure() {
-		$configuration = $this->configuration;
-		$fieldStructureArray = array(
-			'title' => $configuration['label'], // read only by >4.7 and required in order to prevent the tx_templavoila from generating a deprecation warning
-			'tx_templavoila' => array( // TODO: remove this when <4.7 no longer needs to be supported.
-				'title' => $configuration['label']
-			),
-			'type' => 'array',
-			'section' => 1,
-			'el' => array()
-		);
-		$objects = array();
-		foreach ($configuration['fields'] as $field) {
-			$name = $field['sectionObjectName'];
-			if (isset($objects[$name]) === FALSE) {
-				$objects[$name] = array();
-			}
-			array_push($objects[$name], $field);
-		};
-		foreach ($objects as $objectName => $objectFields) {
-			$fieldStructureArray['el'][$objectName] = array(
-				'type' => 'array',
-				'title' => $configuration['labels'][$objectName],
-				'tx_templavoila' => array(
-					'title' => $configuration['labels'][$objectName]
-				),
-				'el' => array(),
-			);
-			foreach ($objectFields as $field) {
-				/** @var $field Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper */
-				$name = $field['name'];
-				$fieldStructureArray['el'][$objectName]['el'][$name] = $field->getStructure();
-			}
-		}
-		return $fieldStructureArray;
-	}
-
 
 }

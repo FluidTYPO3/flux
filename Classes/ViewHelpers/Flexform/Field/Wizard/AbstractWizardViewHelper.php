@@ -29,31 +29,41 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
 
 	/**
-	 * Render method
-	 *
+	 * @var string
+	 */
+	protected $label = NULL;
+
+	/**
+	 * Initialize
 	 * @return void
 	 */
-	public function render() {
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards')) {
-			$wizards = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards');
-		} else {
-			$wizards = array();
-		}
-		$xmlOrArray = $this->build();
-		array_push($wizards, $xmlOrArray);
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'wizards', $wizards);
+	public function initializeArguments() {
+		$this->registerArgument('label', 'string', 'Optional title of this Wizard', FALSE, $this->label);
+		$this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the parent field', FALSE, FALSE);
 	}
 
 	/**
-	 * Stub method: overridden by every Wizard ViewHelper type
-	 *
-	 * @return NULL
+	 * @return void
 	 */
-	public function build() {
-		return NULL;
+	public function render() {
+		$component = $this->getComponent();
+		$field = $this->getContainer();
+		$field->add($component);
+	}
+
+	/**
+	 * @param string $type
+	 * @return Tx_Flux_Form_WizardInterface
+	 */
+	protected function getPreparedComponent($type) {
+		/** @var Tx_Flux_Form_WizardInterface $component */
+		$component = $this->objectManager->get('Tx_Flux_Form_Wizard_' . $type);
+		$component->setHideParent($this->arguments['hideParent']);
+		$component->setLabel($this->arguments['label']);
+		return $component;
 	}
 
 }

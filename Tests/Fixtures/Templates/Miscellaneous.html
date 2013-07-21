@@ -1,0 +1,13 @@
+{namespace flux=Tx_Flux_ViewHelpers}
+<f:layout name="Default" />
+<f:section name="Configuration">
+	<flux:flexform id="test" />
+	<flux:be.contentArea row="{record}" area="test">
+		<f:for each="{records}" as="record">
+			<flux:be.contentElement row="{record}" dblist="{dblist}" />
+		<flux:be.link.content.new row="{record}" after="{record.uid}" />
+		<flux:be.link.content.paste row="{record}" relativeTo="{record.uid}" />
+		<flux:be.link.content.paste row="{record}" relativeTo="{record.uid}" reference="TRUE" />
+		</f:for>
+	</flux:be.contentArea>
+</f:section>
