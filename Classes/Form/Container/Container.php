@@ -33,14 +33,8 @@ class Tx_Flux_Form_Container_Container extends Tx_Flux_Form_AbstractFormContaine
 	 * @return array
 	 */
 	public function build() {
-		$label = $this->getLabel();
 		$structureArray = array(
-			'title' => $label, // read only by >4.7 and required in order to prevent the tx_templavoila from generating a deprecation warning
-			'tx_templavoila' => array( // TODO: remove this when <4.7 no longer needs to be supported.
-				'title' => $label
-			),
 			'type' => 'array',
-			'section' => 1,
 			'el' => $this->buildChildren()
 		);
 		return $structureArray;
