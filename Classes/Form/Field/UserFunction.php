@@ -30,6 +30,11 @@
 class Tx_Flux_Form_Field_UserFunction extends Tx_Flux_Form_AbstractFormField implements Tx_Flux_Form_FieldInterface {
 
 	/**
+	 * @var array
+	 */
+	protected $arguments = array();
+
+	/**
 	 * @var string
 	 */
 	protected $function;
@@ -57,6 +62,22 @@ class Tx_Flux_Form_Field_UserFunction extends Tx_Flux_Form_AbstractFormField imp
 	 */
 	public function getFunction() {
 		return $this->function;
+	}
+
+	/**
+	 * @param array $arguments
+	 * @return Tx_Flux_Form_Field_Custom
+	 */
+	public function setArguments($arguments) {
+		$this->arguments = $arguments;
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getArguments() {
+		return $this->arguments;
 	}
 
 }

@@ -29,11 +29,6 @@
  */
 class Tx_Flux_Form_Field_Custom extends Tx_Flux_Form_Field_UserFunction {
 
-	/**
-	 * @var array
-	 */
-	protected $arguments = array();
-
 	/*
 	 * @var Closure
 	 */
@@ -61,22 +56,6 @@ class Tx_Flux_Form_Field_Custom extends Tx_Flux_Form_Field_UserFunction {
 	 */
 	public function getClosure() {
 		return $this->closure;
-	}
-
-	/**
-	 * @param array $arguments
-	 * @return Tx_Flux_Form_Field_Custom
-	 */
-	public function setArguments($arguments) {
-		$this->arguments = $arguments;
-		return $this;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getArguments() {
-		return $this->arguments;
 	}
 
 }
