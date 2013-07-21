@@ -65,9 +65,8 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 		$form->setGroup($this->arguments['wizardTab']);
 		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
 		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form', $form);
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container', $container);
 		$this->templateVariableContainer->add('form', $form);
-		$this->templateVariableContainer->add('container', $container);
+		$this->setContainer($container);
 		$this->renderChildren();
 		$this->templateVariableContainer->remove('container');
 		$this->templateVariableContainer->remove('form');
