@@ -257,6 +257,9 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 				you from utilising some features, fx automatic LLL reference building, but is not fatal', t3lib_div::SYSLOG_SEVERITY_NOTICE);
 		}
 		$this->id = $id;
+		if (TRUE === empty($this->name)) {
+			$this->name = $id;
+		}
 		return $this;
 	}
 
