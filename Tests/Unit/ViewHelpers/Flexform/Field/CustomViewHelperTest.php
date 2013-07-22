@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelperTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
 
 	/**
 	 * @test
