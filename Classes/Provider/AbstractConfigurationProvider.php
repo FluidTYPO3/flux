@@ -448,6 +448,43 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	}
 
 	/**
+	 * Get preview chunks - header and content - as array($header, $content)
+	 *
+	 * @param array $row The record data to be analysed for variables to use in a rendered preview
+	 * @return array
+	 */
+	public function getPreview(array $row) {
+		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+		if (FALSE === file_exists($templatePathAndFilename)) {
+			return array(NULL, NULL);
+		}
+		$extensionKey = $this->getExtensionKey($row);
+		$flexformVariables = $this->getFlexFormValues($row);
+		$templateVariables = $this->getTemplateVariables($row);
+		$variables = $this->arrayMergeRecursive($templateVariables, $flexformVariables);
+		$paths = $this->getTemplatePaths($row);
+		$form = $this->getForm($row);
+		$formLabel = $form->getLabel();
+		$label = Tx_Extbase_Utility_Localization::translate($formLabel, $extensionKey);
+		if ($label === NULL) {
+			$label = $formLabel;
+		}
+		$variables['label'] = $label;
+		$variables['row'] = $row;
+
+		$view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, 'Content', $paths, $variables);
+		$view->setTemplatePathAndFilename($templatePathAndFilename);
+
+		$previewContent = $view->renderStandaloneSection('Preview', $variables);
+		$previewContent = trim($previewContent);
+		$headerContent = '';
+		if (FALSE === empty($label) || FALSE === empty($row['header'])) {
+			$headerContent = '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
+		}
+		return array($headerContent, $previewContent);
+	}
+
+	/**
 	 * @param array $row
 	 * @param string $propertyPath
 	 * @return mixed
