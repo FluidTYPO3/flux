@@ -50,15 +50,31 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 	}
 
 	/**
+	 * @return Tx_Fluid_Core_ViewHelper_AbstractViewHelper
+	 */
+	protected function createInstance() {
+		$className = $this->getViewHelperClassName();
+		/** @var Tx_Fluid_Core_ViewHelper_AbstractViewHelper $instance */
+		$instance = $this->objectManager->get($className);
+		if (TRUE === method_exists($instance, 'injectConfigurationManager')) {
+			$cObject = new tslib_cObj();
+			$cObject->start(Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren, 'tt_content');
+			/** @var Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager */
+			$configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
+			$configurationManager->setContentObject($cObject);
+			$instance->injectConfigurationManager($configurationManager);
+		}
+		return $instance;
+	}
+
+	/**
 	 * @param array $arguments
 	 * @param array $variables
 	 * @param Tx_Fluid_Core_Parser_SyntaxTree_NodeInterface $childNode
 	 * @return Tx_Fluid_Core_ViewHelper_TemplateVariableContainer
 	 */
 	protected function executeViewHelper($arguments = array(), $variables = array(), $childNode = NULL) {
-		$className = $this->getViewHelperClassName();
-		/** @var Tx_Fluid_Core_ViewHelper_AbstractViewHelper $instance */
-		$instance = $this->objectManager->get($className);
+		$instance = $this->createInstance();
 		/** @var Tx_Fluid_Core_ViewHelper_TemplateVariableContainer $container */
 		$container = $this->objectManager->get('Tx_Fluid_Core_ViewHelper_TemplateVariableContainer');
 		/** @var Tx_Fluid_Core_ViewHelper_ViewHelperVariableContainer $viewHelperContainer */
@@ -83,6 +99,8 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 		$renderingContext->setControllerContext($controllerContext);
 		$renderingContext->injectTemplateVariableContainer($container);
 		$renderingContext->injectViewHelperVariableContainer($viewHelperContainer);
+		$instance->setArguments($arguments);
+		$instance->setRenderingContext($renderingContext);
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'templateVariableContainer', $container, TRUE);
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'viewHelperVariableContainer', $viewHelperContainer, TRUE);
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, TRUE);
@@ -91,14 +109,13 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 			$widgetContext = $this->objectManager->get('Tx_Fluid_Core_Widget_WidgetContext');
 			Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'widgetContext', $widgetContext, TRUE);
 		}
-		$instance->setArguments($arguments);
-		$instance->setViewHelperNode($node);
 		if (NULL !== $childNode) {
 			$node->addChildNode($childNode);
 			if ($instance instanceof Tx_Fluid_Core_ViewHelper_Facets_ChildNodeAccessInterface) {
 				$instance->setChildNodes(array($childNode));
 			}
 		}
+		$instance->setViewHelperNode($node);
 		$output = $instance->initializeArgumentsAndRender();
 		return $output;
 	}

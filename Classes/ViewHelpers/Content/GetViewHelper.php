@@ -95,9 +95,9 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
 			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
 			AND deleted = 0 AND hidden = 0";
-		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $conditions, 'uid', $order, $limit);
-		$elements = (FALSE === (boolean) $this->arguments['render']) ? $rows : $this->getRenderedRecord($rows);
-		if (FALSE === isset($this->arguments['as'])) {
+		$rows = (array) $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $conditions, 'uid', $order, $limit);
+		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);
+		if (TRUE === empty($this->arguments['as'])) {
 			$content = $elements;
 		} else {
 			$as = $this->arguments['as'];
@@ -126,7 +126,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 	 * @param array $rows database rows of records (each item is a tt_content table record)
 	 * @return array
 	 */
-	protected function getRenderedRecord($rows) {
+	protected function getRenderedRecords($rows) {
 		$elements = array();
 		foreach ($rows as $row) {
 			$conf = array(
@@ -134,7 +134,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 				'source' => $row['uid'],
 				'dontCheckPid' => 1
 			);
-			array_push($elements, $GLOBALS['TSFE']->cObj->RECORDS($conf));
+			array_push($elements, $this->configurationManager->getContentObject()->RECORDS($conf));
 		}
 		return $elements;
 	}
