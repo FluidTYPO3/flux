@@ -53,6 +53,8 @@ class Tx_Flux_Form_Field_CustomTest extends Tx_Flux_Tests_Functional_Form_Field_
 		$instance = $this->canChainAllChainableSetters($arguments);
 		$closure = $instance->getClosure();
 		$this->assertSame($arguments['closure'], $closure);
+		$output = $closure($arguments);
+		$this->assertNotEmpty($output);
 	}
 
 }
