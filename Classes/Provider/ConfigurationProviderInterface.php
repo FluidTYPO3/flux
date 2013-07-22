@@ -132,7 +132,7 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 
 	/**
 	 * @abstract
-	 * @param array $row The record data, by reference. Changing fields' values changes the record's values before display
+	 * @param array $row The record data. Changing fields' values changes the record's values before display
 	 * @return integer
 	 */
 	public function getPriority(array $row);
