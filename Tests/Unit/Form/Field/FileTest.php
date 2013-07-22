@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Wizard_SliderTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
+class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -35,9 +35,12 @@ class Tx_Flux_Tests_Functional_Form_Wizard_SliderTest extends Tx_Flux_Tests_Func
 	protected $chainProperties = array(
 		'name' => 'test',
 		'label' => 'Test field',
-		'hideParent' => FALSE,
-		'step' => 10,
-		'width' => 100
+		'enable' => TRUE,
+		'maxSize' => 135153542,
+		'allowed' => 'jpg,gif',
+		'disallowed' => 'doc,docx',
+		'uploadFolder' => '',
+		'showThumbnails' => TRUE
 	);
 
 }

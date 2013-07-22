@@ -27,32 +27,31 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Wizard_SuggestTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
+class Tx_Flux_Form_Field_InlineTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
 
 	/**
-	 * @test
+	 * @var array
 	 */
-	public function canUseCommaSeparatedStoragePageUids() {
-		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
-		$wizard = $this->createInstance();
-		$storagePageUidsCommaSeparated = '1,2,3';
-		$storagePageUidsArray = t3lib_div::trimExplode(',', $storagePageUidsCommaSeparated);
-		$wizard->setStoragePageUids($storagePageUidsCommaSeparated);
-		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
-		$this->performTestBuild($wizard);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canUseArrayStoragePageUids() {
-		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
-		$wizard = $this->createInstance();
-		$storagePageUidsCommaSeparated = '1,2,3';
-		$storagePageUidsArray = t3lib_div::trimExplode(',', $storagePageUidsCommaSeparated);
-		$wizard->setStoragePageUids($storagePageUidsArray);
-		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
-		$this->performTestBuild($wizard);
-	}
+	protected $chainProperties = array(
+		'collapseAll' => FALSE,
+		'expandSingle' => FALSE,
+		'newRecordLinkAddTitle' => FALSE,
+		'newRecordLinkPosition' => Tx_Flux_Form::POSITION_TOP,
+		'useCombination' => FALSE,
+		'useSortable' => FALSE,
+		'showPossibleLocalizationRecords' => FALSE,
+		'showRemovedLocalizationRecords' => FALSE,
+		'showAllLocalizationLink' => FALSE,
+		'showSynchronizationLink' => FALSE,
+		'enabledControls' => array(
+			Tx_Flux_Form::CONTROL_INFO => FALSE,
+			Tx_Flux_Form::CONTROL_NEW => TRUE,
+			Tx_Flux_Form::CONTROL_DRAGDROP => TRUE,
+			Tx_Flux_Form::CONTROL_SORT => TRUE,
+			Tx_Flux_Form::CONTROL_HIDE => TRUE,
+			Tx_Flux_Form::CONTROL_DELETE => FALSE,
+			Tx_Flux_Form::CONTROL_LOCALISE => FALSE,
+		)
+	);
 
 }

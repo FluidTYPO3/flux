@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Field_CheckboxTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class Tx_Flux_Form_Field_RelationTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -35,9 +35,8 @@ class Tx_Flux_Tests_Functional_Form_Field_CheckboxTest extends Tx_Flux_Tests_Fun
 	protected $chainProperties = array(
 		'name' => 'test',
 		'label' => 'Test field',
-		'enable' => TRUE,
-		'default' => 1,
-		'requestUpdate' => TRUE,
+		'table' => 'pages',
+		'foreignLabel' => 'uid'
 	);
 
 }

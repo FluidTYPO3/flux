@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Field_RelationTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class Tx_Flux_Form_Wizard_LinkTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
 
 	/**
 	 * @var array
@@ -35,8 +35,31 @@ class Tx_Flux_Tests_Functional_Form_Field_RelationTest extends Tx_Flux_Tests_Fun
 	protected $chainProperties = array(
 		'name' => 'test',
 		'label' => 'Test field',
-		'table' => 'pages',
-		'foreignLabel' => 'uid'
+		'hideParent' => FALSE,
+		'blindLinkOptions' => array('new', 'info'),
+		'allowedExtensions' => array('pdf', 'txt'),
+		'height' => 400,
+		'width' => 300
 	);
+
+	/**
+	 * @test
+	 */
+	public function canUseStringAsBlindLinkOptionsList() {
+		$extensions = implode(',', $this->chainProperties['blindLinkOptions']);
+		$instance = $this->createInstance();
+		$fetched = $instance->setBlindLinkOptions($extensions)->getBlindLinkOptions();
+		$this->assertSame($this->chainProperties['blindLinkOptions'], $fetched);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseStringAsAllowedExtensionList() {
+		$extensions = implode(',', $this->chainProperties['allowedExtensions']);
+		$instance = $this->createInstance();
+		$fetched = $instance->setAllowedExtensions($extensions)->getAllowedExtensions();
+		$this->assertSame($this->chainProperties['allowedExtensions'], $fetched);
+	}
 
 }

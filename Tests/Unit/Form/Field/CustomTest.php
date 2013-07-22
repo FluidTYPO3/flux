@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Field_CustomTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class Tx_Flux_Form_Field_CustomTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
 
 	/**
 	 * @var array

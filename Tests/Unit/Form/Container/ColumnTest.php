@@ -27,31 +27,16 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Field_InlineTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class Tx_Flux_Form_Container_ColumnTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
 
 	/**
-	 * @var array
+	 * @test
 	 */
-	protected $chainProperties = array(
-		'collapseAll' => FALSE,
-		'expandSingle' => FALSE,
-		'newRecordLinkAddTitle' => FALSE,
-		'newRecordLinkPosition' => Tx_Flux_Form::POSITION_TOP,
-		'useCombination' => FALSE,
-		'useSortable' => FALSE,
-		'showPossibleLocalizationRecords' => FALSE,
-		'showRemovedLocalizationRecords' => FALSE,
-		'showAllLocalizationLink' => FALSE,
-		'showSynchronizationLink' => FALSE,
-		'enabledControls' => array(
-			Tx_Flux_Form::CONTROL_INFO => FALSE,
-			Tx_Flux_Form::CONTROL_NEW => TRUE,
-			Tx_Flux_Form::CONTROL_DRAGDROP => TRUE,
-			Tx_Flux_Form::CONTROL_SORT => TRUE,
-			Tx_Flux_Form::CONTROL_HIDE => TRUE,
-			Tx_Flux_Form::CONTROL_DELETE => FALSE,
-			Tx_Flux_Form::CONTROL_LOCALISE => FALSE,
-		)
-	);
+	public function canUseGetAreasMethod() {
+		/** @var Tx_Flux_Form_Container_Column $instance */
+		$instance = $this->createInstance();
+		$this->performTestBuild($instance);
+		$this->assertEmpty($instance->getAreas());
+	}
 
 }

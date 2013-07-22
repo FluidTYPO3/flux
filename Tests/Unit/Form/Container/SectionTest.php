@@ -27,6 +27,6 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Container_ObjectTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
+class Tx_Flux_Form_Container_SectionTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
 
 }

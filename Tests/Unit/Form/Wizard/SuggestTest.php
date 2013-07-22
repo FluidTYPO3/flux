@@ -27,39 +27,32 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Wizard_LinkTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
-
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'hideParent' => FALSE,
-		'blindLinkOptions' => array('new', 'info'),
-		'allowedExtensions' => array('pdf', 'txt'),
-		'height' => 400,
-		'width' => 300
-	);
+class Tx_Flux_Form_Wizard_SuggestTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
 
 	/**
 	 * @test
 	 */
-	public function canUseStringAsBlindLinkOptionsList() {
-		$extensions = implode(',', $this->chainProperties['blindLinkOptions']);
-		$instance = $this->createInstance();
-		$fetched = $instance->setBlindLinkOptions($extensions)->getBlindLinkOptions();
-		$this->assertSame($this->chainProperties['blindLinkOptions'], $fetched);
+	public function canUseCommaSeparatedStoragePageUids() {
+		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
+		$wizard = $this->createInstance();
+		$storagePageUidsCommaSeparated = '1,2,3';
+		$storagePageUidsArray = t3lib_div::trimExplode(',', $storagePageUidsCommaSeparated);
+		$wizard->setStoragePageUids($storagePageUidsCommaSeparated);
+		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
+		$this->performTestBuild($wizard);
 	}
 
 	/**
 	 * @test
 	 */
-	public function canUseStringAsAllowedExtensionList() {
-		$extensions = implode(',', $this->chainProperties['allowedExtensions']);
-		$instance = $this->createInstance();
-		$fetched = $instance->setAllowedExtensions($extensions)->getAllowedExtensions();
-		$this->assertSame($this->chainProperties['allowedExtensions'], $fetched);
+	public function canUseArrayStoragePageUids() {
+		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
+		$wizard = $this->createInstance();
+		$storagePageUidsCommaSeparated = '1,2,3';
+		$storagePageUidsArray = t3lib_div::trimExplode(',', $storagePageUidsCommaSeparated);
+		$wizard->setStoragePageUids($storagePageUidsArray);
+		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
+		$this->performTestBuild($wizard);
 	}
 
 }

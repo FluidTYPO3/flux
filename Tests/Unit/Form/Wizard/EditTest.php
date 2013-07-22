@@ -27,16 +27,18 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Container_ColumnTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
+class Tx_Flux_Form_Wizard_EditTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
 
 	/**
-	 * @test
+	 * @var array
 	 */
-	public function canUseGetAreasMethod() {
-		/** @var Tx_Flux_Form_Container_Column $instance */
-		$instance = $this->createInstance();
-		$this->performTestBuild($instance);
-		$this->assertEmpty($instance->getAreas());
-	}
+	protected $chainProperties = array(
+		'name' => 'test',
+		'label' => 'Test field',
+		'hideParent' => FALSE,
+		'openOnlyIfSelected' => FALSE,
+		'width' => 400,
+		'height' => 500
+	);
 
 }

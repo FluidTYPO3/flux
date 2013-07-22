@@ -27,20 +27,6 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
-
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'enable' => TRUE,
-		'maxSize' => 135153542,
-		'allowed' => 'jpg,gif',
-		'disallowed' => 'doc,docx',
-		'uploadFolder' => '',
-		'showThumbnails' => TRUE
-	);
+class Tx_Flux_Form_Container_SheetTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
 
 }

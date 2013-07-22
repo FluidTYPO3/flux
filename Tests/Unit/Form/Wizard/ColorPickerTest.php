@@ -27,6 +27,18 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Container_ContainerTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
+class Tx_Flux_Form_Wizard_ColorPickerTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
+
+	/**
+	 * @var array
+	 */
+	protected $chainProperties = array(
+		'name' => 'test',
+		'label' => 'Test field',
+		'hideParent' => FALSE,
+		'dimensions' => '40x40',
+		'width' => 100,
+		'height' => 100
+	);
 
 }

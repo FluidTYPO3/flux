@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Form_Wizard_ColorPickerTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
+class Tx_Flux_Form_Field_TreeTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -35,10 +35,8 @@ class Tx_Flux_Tests_Functional_Form_Wizard_ColorPickerTest extends Tx_Flux_Tests
 	protected $chainProperties = array(
 		'name' => 'test',
 		'label' => 'Test field',
-		'hideParent' => FALSE,
-		'dimensions' => '40x40',
-		'width' => 100,
-		'height' => 100
+		'table' => 'pages',
+		'parentField' => 'pid',
 	);
 
 }
