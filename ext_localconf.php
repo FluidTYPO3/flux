@@ -62,7 +62,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['i
 
 /*
  * The following code fixes the following issue:
- * https://github.com/NamelessCoder/flux/issues/19
+ * https://github.com/FluidTYPO3/flux/issues/19
  * Basically, the implementation of preProcess() changes between TYPO3 v4 and v6,
  * and this code includes the appropriate class file to make the hook work on both
  * platforms.
