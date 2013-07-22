@@ -44,6 +44,24 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	}
 
 	/**
+	 * @test
+	 */
+	public function canGenerateLocalisableLabel() {
+		$instance = $this->createInstance();
+		$instance->setLabel(NULL);
+		if (FALSE === $instance instanceof Tx_Flux_Form) {
+			/** @var Tx_Flux_Form $form */
+			$form = $this->objectManager->get('Tx_Flux_Form');
+			$form->setId('testFormId');
+			$form->setExtensionName('Flux');
+			$form->add($instance);
+			$label = $instance->getLabel();
+			$this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xml:flux', $label);
+			$this->assertContains('testFormId', $label);
+		}
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function getObjectClassName() {

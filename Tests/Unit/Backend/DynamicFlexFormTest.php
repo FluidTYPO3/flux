@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Hook_DynamicFlexFormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class Tx_Flux_Backend_DynamicFlexFormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @test
@@ -52,7 +52,6 @@ class Tx_Flux_Tests_Functional_Hook_DynamicFlexFormTest extends Tx_Flux_Tests_Ab
 		$dataStructure = array();
 		$config = array();
 		$table = 'tt_content';
-		$fieldName = 'pi_flexform';
 		$instance->getFlexFormDS_postProcessDS($dataStructure, $config, $row, $table, $fieldName);
 		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
 		$this->assertThat($dataStructure, $isArrayConstraint);

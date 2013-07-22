@@ -27,33 +27,39 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Utility_AutoloadTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class Tx_Flux_Tests_Fixtures_Class_DummyContentConfigurationProvider extends Tx_Flux_Provider_AbstractConfigurationProvider {
 
 	/**
-	 * @test
+	 * @var integer
 	 */
-	public function canCreateAutoloadRegistry() {
-		$registry = Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
-		$this->assertIsArray($registry);
-		$this->assertGreaterThan(0, count($registry));
-	}
+	protected $priority = 100;
 
 	/**
-	 * @test
+	 * @var string
 	 */
-	public function canGetCachedAutoloadRegistry() {
-		Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
-		$this->assertFileExists(t3lib_div::getFileAbsFileName('typo3temp/flux-manifest.cache'));
-		$registry = Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
-		$this->assertIsArray($registry);
-		$this->assertGreaterThan(0, count($registry));
-	}
+	protected $tableName = 'tt_content';
 
 	/**
-	 * @test
+	 * @var string
 	 */
-	public function canResetAutoloadRegistry() {
-		Tx_Flux_Utility_Autoload::resetAutoloadingForExtension('flux');
+	protected $extensionKey = 'flux';
+
+	/**
+	 * @var string
+	 */
+	protected $fieldName = 'pi_flexform';
+
+	/**
+	 * @var string
+	 */
+	protected $templatePathAndFilename = 'EXT:flux/Tests/Fixtures/Templates/DummyConfigurationProvider.html';
+
+	/**
+	 * @param array $row
+	 * @return NULL|string|void
+	 */
+	public function getTemplatePathAndFilename(array $row) {
+		return t3lib_div::getFileAbsFileName($this->templatePathAndFilename);
 	}
 
 }

@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Hook_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @test

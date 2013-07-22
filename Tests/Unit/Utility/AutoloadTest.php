@@ -27,30 +27,33 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Utility_VersionTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class Tx_Flux_Utility_AutoloadTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @test
 	 */
-	public function canGetExtensionVersionNumbers() {
-		$version = Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('flux', 6, 0, 0);
-		$this->assertIsBoolean($version);
+	public function canCreateAutoloadRegistry() {
+		$registry = Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
+		$this->assertIsArray($registry);
+		$this->assertGreaterThan(0, count($registry));
 	}
 
 	/**
 	 * @test
 	 */
-	public function canAssertIfCoreIsLegacyVersion() {
-		$isLegacy = Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero();
-		$this->assertIsBoolean($isLegacy);
+	public function canGetCachedAutoloadRegistry() {
+		Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
+		$this->assertFileExists(t3lib_div::getFileAbsFileName('typo3temp/flux-manifest.cache'));
+		$registry = Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
+		$this->assertIsArray($registry);
+		$this->assertGreaterThan(0, count($registry));
 	}
 
 	/**
 	 * @test
 	 */
-	public function returnsFalseIfExtensionKeyIsNotLoaded() {
-		$isFalseResponse = Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('void', 1, 0, 0);
-		$this->assertFalse($isFalseResponse);
+	public function canResetAutoloadRegistry() {
+		Tx_Flux_Utility_Autoload::resetAutoloadingForExtension('flux');
 	}
 
 }
