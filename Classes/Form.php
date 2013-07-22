@@ -145,7 +145,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 	 * @return Tx_Flux_Form_Container_Sheet[]
 	 */
 	public function getSheets() {
-		return $this->children;
+		return (array) iterator_to_array($this->children, TRUE);
 	}
 
 	/**
