@@ -78,9 +78,6 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 		$this->view->assign('row', $this->row);
 		$paths = $this->configurationService->getViewConfigurationForExtensionName('flux');
 		$templateRootPath = TRUE === isset($paths['templateRootPath']) ? $paths['templateRootPath'] : NULL;
-		if (TRUE === empty($templateRootPath)) {
-			$templateRootPath = t3lib_extMgm::extPath('flux', 'Resources/Private/Templates');
-		}
 		$templateRootPath = rtrim($templateRootPath, '/');
 		$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Index.html';
 		if (TRUE === Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {

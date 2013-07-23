@@ -104,7 +104,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 	 * @return Tx_Flux_Form_FormInterface
 	 */
 	public function add(Tx_Flux_Form_FormInterface $child) {
-		if (FALSE === $child instanceof Tx_Flux_Form_ContainerInterface) {
+		if (FALSE === $child instanceof Tx_Flux_Form_Container_Sheet) {
 			$this->last()->add($child);
 		} else {
 			$children = $this->children;
@@ -145,7 +145,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 	 * @return Tx_Flux_Form_Container_Sheet[]
 	 */
 	public function getSheets() {
-		return $this->children;
+		return (array) iterator_to_array($this->children, TRUE);
 	}
 
 	/**
@@ -257,6 +257,9 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 				you from utilising some features, fx automatic LLL reference building, but is not fatal', t3lib_div::SYSLOG_SEVERITY_NOTICE);
 		}
 		$this->id = $id;
+		if (TRUE === empty($this->name)) {
+			$this->name = $id;
+		}
 		return $this;
 	}
 

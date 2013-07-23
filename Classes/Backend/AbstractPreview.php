@@ -44,16 +44,6 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Fluid_View_StandaloneView
-	 */
-	protected $view;
-
-	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
-	 */
-	protected $configurationManager;
-
-	/**
 	 * @var Tx_Flux_Service_FluxService
 	 */
 	protected $configurationService;
@@ -63,9 +53,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
-		$this->view = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
 	}
 
 	/**
@@ -93,61 +81,14 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
 		foreach ($providers as $provider) {
 			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
-			$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
-			if (file_exists($templatePathAndFilename) === FALSE) {
-				$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+			list ($previewHeader, $previewContent) = $provider->getPreview($row);
+			if (FALSE === empty($previewHeader)) {
+				$drawItem = FALSE;
+				$headerContent .= '<div><strong>' . $previewHeader . '</strong> <i>' . $row['header'] . '</i></div>';
 			}
-			if (file_exists($templatePathAndFilename)) {
-				$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-				$extension = $provider->getExtensionKey($row);
-				$providerTemplatePaths = $provider->getTemplatePaths($row);
-				if ($providerTemplatePaths === NULL) {
-					continue;
-				}
-				if ($provider->getTemplatePaths($row)) {
-					$paths = $provider->getTemplatePaths($row);
-				} else if (t3lib_extMgm::isLoaded($provider->getExtensionKey($row))) {
-					$extension = str_replace('_', '', $extension);
-					$paths = $typoScript['plugin.']['tx_' . $extension . '.']['view.'];
-				} else {
-					$paths = $typoScript['plugin.']['tx_flux.']['view.'];
-				}
-				$paths = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($paths);
-				try {
-					$extensionKey = (TRUE === isset($paths['extensionKey']) ? $paths['extensionKey'] : $provider->getExtensionKey($row));
-					$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-
-					$templateVariables = $provider->getTemplateVariables($row);
-					$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, 'Content');
-					$view->assignMultiple($templateVariables);
-					$view->assign('row', $row);
-					$flexformVariables = $provider->getFlexFormValues($row);
-					$form = $provider->getForm($row);
-					$variables = $provider->getTemplateVariables($row);
-					$variables = t3lib_div::array_merge_recursive_overrule($variables, $flexformVariables);
-					$label = Tx_Extbase_Utility_Localization::translate($form->getLabel(), $extension);
-					if ($label === NULL) {
-						$label = $form->getLabel();
-					}
-					$variables['label'] = $label;
-					$variables['row'] = $row;
-
-					$view->setTemplatePathAndFilename($templatePathAndFilename);
-					$view->assignMultiple($variables);
-
-					$previewContent = $view->renderStandaloneSection('Preview', $variables);
-					$previewContent = trim($previewContent);
-					if (empty($label) === FALSE) {
-						$headerContent .= '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
-					}
-					if (empty($previewContent) === FALSE) {
-						$drawItem = FALSE;
-						$itemContent .= $previewContent;
-					}
-				} catch (Exception $error) {
-					$this->configurationService->debug($error);
-					$drawItem = FALSE;
-				}
+			if (FALSE === empty($previewContent)) {
+				$drawItem = FALSE;
+				$itemContent .= $previewContent;
 			}
 		}
 	}

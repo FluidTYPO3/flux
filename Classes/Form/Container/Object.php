@@ -49,7 +49,7 @@ class Tx_Flux_Form_Container_Object extends Tx_Flux_Form_Container_Container imp
 	 * @return Tx_Flux_Form_FieldInterface[]
 	 */
 	public function getFields() {
-		return iterator_to_array($this->children);
+		return (array) iterator_to_array($this->children);
 	}
 
 }

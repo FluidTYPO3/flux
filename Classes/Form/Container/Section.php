@@ -29,4 +29,16 @@
  */
 class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_Container_Container {
 
+	/**
+	 * @return array
+	 */
+	public function build() {
+		$structureArray = array(
+			'type' => 'array',
+			'section' => 1,
+			'el' => $this->buildChildren()
+		);
+		return $structureArray;
+	}
+
 }

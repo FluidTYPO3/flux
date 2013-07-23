@@ -120,7 +120,7 @@ class Tx_Flux_MVC_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView im
 	 * @return mixed
 	 */
 	public function getParsedTemplate() {
-		if (!$this->templateCompiler) {
+		if (!$this->templateCompiler || 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['disableCompiler']) {
 			$source = $this->getTemplateSource();
 			$parsedTemplate = $this->templateParser->parse($source);
 			return $parsedTemplate;

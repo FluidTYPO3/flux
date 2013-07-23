@@ -132,10 +132,19 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 
 	/**
 	 * @abstract
-	 * @param array $row The record data, by reference. Changing fields' values changes the record's values before display
+	 * @param array $row The record data. Changing fields' values changes the record's values before display
 	 * @return integer
 	 */
 	public function getPriority(array $row);
+
+	/**
+	 * Returns array($header, $content) preview chunks
+	 *
+	 * @abstract
+	 * @param array $row The record data to be analysed for variables to use in a rendered preview
+	 * @return array
+	 */
+	public function getPreview(array $row);
 
 	/**
 	 * Post-process record data for the table that this ConfigurationProvider
