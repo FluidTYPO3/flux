@@ -30,6 +30,14 @@
 class Tx_Flux_ViewHelpers_Be_ContentElementViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
 
 	/**
+	 * Setup
+	 */
+	protected function setUp() {
+		parent::setUp();
+		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+	}
+
+	/**
 	 * @test
 	 */
 	public function canRender() {
