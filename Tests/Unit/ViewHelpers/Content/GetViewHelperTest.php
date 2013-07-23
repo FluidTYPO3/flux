@@ -35,7 +35,8 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 	public function canRenderViewHelper() {
 		$arguments = array(
 			'area' => 'void',
-			'as' => 'records'
+			'as' => 'records',
+			'order' => 'sorting'
 		);
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
@@ -52,6 +53,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 		$arguments = array(
 			'area' => 'void',
 			'as' => 'records',
+			'order' => 'sorting',
 			'loadRegister' => array(
 				'maxImageWidth' => 300
 			)
@@ -70,7 +72,8 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 	public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup() {
 		$arguments = array(
 			'area' => 'void',
-			'as' => 'nameTaken'
+			'as' => 'nameTaken',
+			'order' => 'sorting'
 		);
 		$variables = array(
 			'nameTaken' => 'taken',
@@ -87,7 +90,8 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 	public function canRenderViewHelperWithNonExistingAsArgument() {
 		$arguments = array(
 			'area' => 'void',
-			'as' => 'freevariablename'
+			'as' => 'freevariablename',
+			'order' => 'sorting'
 		);
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
@@ -103,7 +107,8 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 	public function canReturnArrayOfUnrenderedContentElements() {
 		$arguments = array(
 			'area' => 'void',
-			'render' => FALSE
+			'render' => FALSE,
+			'order' => 'sorting'
 		);
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
@@ -118,7 +123,8 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 	public function canReturnArrayOfRenderedContentElements() {
 		$arguments = array(
 			'area' => 'void',
-			'render' => TRUE
+			'render' => TRUE,
+			'order' => 'sorting'
 		);
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
