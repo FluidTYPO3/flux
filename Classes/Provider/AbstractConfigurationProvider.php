@@ -475,7 +475,12 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		$view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, 'Content', $paths, $variables);
 		$view->setTemplatePathAndFilename($templatePathAndFilename);
 
+		$existingContentObject = $this->configurationManager->getContentObject();
+		$contentObject = new tslib_cObj();
+		$contentObject->start($row, $this->getTableName($row));
+		$this->configurationManager->setContentObject($contentObject);
 		$previewContent = $view->renderStandaloneSection('Preview', $variables);
+		$this->configurationManager->setContentObject($existingContentObject);
 		$previewContent = trim($previewContent);
 		$headerContent = '';
 		if (FALSE === empty($label) || FALSE === empty($row['header'])) {
