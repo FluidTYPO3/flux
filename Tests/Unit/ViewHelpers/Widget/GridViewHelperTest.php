@@ -30,6 +30,14 @@
 class Tx_Flux_ViewHelpers_Widget_GridViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
 
 	/**
+	 * Setup
+	 */
+	protected function setUp() {
+		parent::setUp();
+		$GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
+	}
+
+	/**
 	 * @test
 	 */
 	public function canRenderWithoutTriggers() {

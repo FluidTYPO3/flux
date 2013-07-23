@@ -30,6 +30,14 @@
 class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
 
 	/**
+	 * Setup
+	 */
+	protected function setUp() {
+		parent::setUp();
+		$GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
+	}
+
+	/**
 	 * @test
 	 */
 	public function canRenderWithRowAndArea() {
