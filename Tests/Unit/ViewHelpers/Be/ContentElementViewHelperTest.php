@@ -34,6 +34,7 @@ class Tx_Flux_ViewHelpers_Be_ContentElementViewHelperTest extends Tx_Flux_ViewHe
 	 */
 	protected function setUp() {
 		parent::setUp();
+		$GLOBALS['TBE_TEMPLATE'] = new template();
 		$GLOBALS['SOBE'] = new TYPO3backend();
 		$GLOBALS['SOBE']->doc = new mediumDoc();
 		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
