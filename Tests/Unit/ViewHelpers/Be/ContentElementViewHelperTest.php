@@ -34,6 +34,8 @@ class Tx_Flux_ViewHelpers_Be_ContentElementViewHelperTest extends Tx_Flux_ViewHe
 	 */
 	protected function setUp() {
 		parent::setUp();
+		$GLOBALS['SOBE'] = new TYPO3backend();
+		$GLOBALS['SOBE']->doc = new mediumDoc();
 		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
 	}
 
@@ -41,7 +43,6 @@ class Tx_Flux_ViewHelpers_Be_ContentElementViewHelperTest extends Tx_Flux_ViewHe
 	 * @test
 	 */
 	public function canRender() {
-		$GLOBALS['SOBE']->doc = new mediumDoc();
 		$arguments = array(
 			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
 			'area' => 'test',
