@@ -46,7 +46,8 @@ abstract class Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper extends Tx_Flui
 	 * @return string
 	 */
 	protected function getIcon($icon, $title = NULL) {
-		return t3lib_iconWorks::getSpriteIcon($icon, array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new'));
+		$configuration = array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new');
+		return t3lib_iconWorks::getSpriteIcon($icon, $configuration);
 	}
 
 	/**

@@ -135,9 +135,6 @@ class Tx_Flux_Backend_TceMain {
 			if (strpos($id, 'NEW') !== FALSE) {
 				$id = $reference->substNEWwithIDs[$id];
 			}
-			if ($record === NULL) {
-				$record = array();
-			}
 			$clause = "uid = '" . $id . "'";
 			$saveRecordData = FALSE;
 			if (count($record) === 0) {

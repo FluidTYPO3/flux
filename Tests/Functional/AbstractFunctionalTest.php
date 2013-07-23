@@ -115,6 +115,14 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 		/** @var Tx_Flux_Form $value */
 		$structure = $value->build();
 		$this->assertIsArray($structure);
+		// scan for and attempt building of closures in structure
+		foreach ($value->getFields() as $field) {
+			if (TRUE === $field instanceof Tx_Flux_Form_Field_Custom) {
+				$closure = $field->getClosure();
+				$output = $closure($field->getArguments());
+				$this->assertNotEmpty($output);
+			}
+		}
 	}
 
 	/**

@@ -45,7 +45,7 @@ class Tx_Flux_Form_Container_Grid extends Tx_Flux_Form_AbstractFormContainer imp
 	 * @return Tx_Flux_Form_Container_Row[]
 	 */
 	public function getRows() {
-		return iterator_to_array($this->children);
+		return (array) iterator_to_array($this->children);
 	}
 
 }

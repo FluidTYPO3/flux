@@ -120,11 +120,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 * @return Tx_Flux_Form_FormInterface|FALSE
 	 */
 	public function last() {
-		$result = FALSE;
-		foreach ($this->children as $result) {
-			continue;
-		}
-		$this->children->rewind();
+		$result = array_pop(iterator_to_array($this->children));
 		return $result;
 	}
 

@@ -45,7 +45,7 @@ class Tx_Flux_Form_Container_Row extends Tx_Flux_Form_AbstractFormContainer impl
 	 * @return Tx_Flux_Form_Container_Column[]
 	 */
 	public function getColumns() {
-		return iterator_to_array($this->children);
+		return (array) iterator_to_array($this->children);
 	}
 
 }

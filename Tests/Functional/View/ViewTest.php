@@ -108,6 +108,32 @@ class Tx_Flux_Tests_Functional_View_ViewTest extends Tx_Flux_Tests_AbstractFunct
 	}
 
 	/**
+	 * @test
+	 */
+	public function canRenderWithDisabledCompiler() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_CUSTOM_SECTION);
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['disableCompiler'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['disableCompiler'] = 1;
+		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
+		$sectionContent = $view->render();
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['disableCompiler'] = $backup;
+		$sectionContent = trim($sectionContent);
+		$this->assertEmpty($sectionContent);
+		$this->assertNotContains('<', $sectionContent);
+		$this->assertNotContains('>', $sectionContent);
+	}
+
+	/**
+	 * @test
+	 */
+	public function createsDefaultFormFromInvalidTemplate() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_WITHOUTFORM);
+		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
+		$form = $view->getForm('Configuration');
+		$this->assertIsValidAndWorkingFormObject($form);
+	}
+
+	/**
 	 * @param $templatePathAndFilename
 	 * @return Tx_Flux_MVC_View_ExposedTemplateView
 	 */
