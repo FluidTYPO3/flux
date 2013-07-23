@@ -104,7 +104,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
 	 * @return Tx_Flux_Form_FormInterface
 	 */
 	public function add(Tx_Flux_Form_FormInterface $child) {
-		if (FALSE === $child instanceof Tx_Flux_Form_ContainerInterface) {
+		if (FALSE === $child instanceof Tx_Flux_Form_Container_Sheet) {
 			$this->last()->add($child);
 		} else {
 			$children = $this->children;
