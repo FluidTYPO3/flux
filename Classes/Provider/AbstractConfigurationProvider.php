@@ -144,7 +144,8 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$variables = $this->getFlexFormValues($row);
+		$fieldName = $this->getFieldName($row);
+		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
 		return $form;
 	}
@@ -160,7 +161,8 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$variables = $this->getFlexFormValues($row);
+		$fieldName = $this->getFieldName($row);
+		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
 		return $grid;
 	}
@@ -204,20 +206,49 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	}
 
 	/**
+	 * Converts the contents of the provided row's Flux-enabled field,
+	 * at the same time running through the inheritance tree generated
+	 * by getInheritanceTree() in order to apply inherited values.
+	 *
 	 * @param array $row
 	 * @return array
 	 */
-	public function getTemplateVariables(array $row) {
-		$file = $this->getTemplatePathAndFilename($row);
-		if (NULL === $this->fieldName || FALSE === file_exists($file)) {
-			return $this->templateVariables;
-		} else {
-			$values = $this->configurationService->convertFlexFormContentToArray($row[$this->fieldName]);
-			$values['row'] = $row;
-			$values['grid'] = $this->getGrid($row);
-			$values['form'] = $this->getForm($row);
+	public function getFlexFormValues(array $row) {
+		$cacheKey = md5(json_encode($row));
+		if (TRUE === isset(self::$cacheMergedConfigurations[$cacheKey])) {
+			return self::$cacheMergedConfigurations[$cacheKey];
 		}
-		return $values;
+		$fieldName = $this->getFieldName($row);
+		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		$tree = $this->getInheritanceTree($row);
+		if (0 === count($tree)) {
+			self::$cacheMergedConfigurations[$cacheKey] = $immediateConfiguration;
+			return (array) $immediateConfiguration;
+		}
+		$inheritedConfiguration = $this->getMergedConfiguration($tree);
+		if (0 === count($immediateConfiguration)) {
+			self::$cacheMergedConfigurations[$cacheKey] = $inheritedConfiguration;
+			return (array) $inheritedConfiguration;
+		}
+		$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
+		self::$cacheMergedConfigurations[$cacheKey] = $merged;
+		return $merged;
+	}
+
+	/**
+	 * @param array $row
+	 * @return array|NULL
+	 */
+	public function getTemplateVariables(array $row) {
+		$variables = (array) $this->templateVariables;
+		$variables['record'] = $row;
+		$variables['page'] = $GLOBALS['TSFE']->page;
+		$variables['user'] = $GLOBALS['TSFE']->fe_user->user;
+		if (TRUE === file_exists($this->getTemplatePathAndFilename($row))) {
+			$variables['grid'] = $this->getGrid($row);
+			$variables['form'] = $this->getForm($row);
+		}
+		return $variables;
 	}
 
 	/**
@@ -392,29 +423,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	}
 
 	/**
-	 * Converts the contents of the provided row's Flux-enabled field,
-	 * at the same time running through the inheritance tree generated
-	 * by getInheritanceTree() in order to apply inherited values.
-	 *
-	 * @param array $row
-	 * @return array
-	 */
-	public function getFlexFormValues(array $row) {
-		$fieldName = $this->getFieldName($row);
-		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
-		$tree = $this->getInheritanceTree($row);
-		if (0 === count($tree)) {
-			return (array) $immediateConfiguration;
-		}
-		$inheritedConfiguration = $this->getMergedConfiguration($tree);
-		if (0 === count($immediateConfiguration)) {
-			return (array) $inheritedConfiguration;
-		}
-		$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
-		return $merged;
-	}
-
-	/**
 	 * Gets an inheritance tree (ordered parent -> ... -> this record)
 	 * of record arrays containing raw values.
 	 *
@@ -565,18 +573,22 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	protected function arrayDiffRecursive($array1, $array2) {
 		foreach ($array1 as $key => $value) {
 			if (TRUE === isset($array2[$key])) {
-				if (TRUE === is_array($value)) {
+				if (TRUE === is_array($value) && TRUE === is_array($array2[$key])) {
 					$diff = $this->arrayDiffRecursive($value, $array2[$key]);
-					if (0 !== count($diff)) {
+					if (0 === count($diff)) {
+						unset($array1[$key]);
+					} else {
 						$array1[$key] = $diff;
 					}
-				} elseif ($value != $array2[$key]) {
-					$array1[$key] = $array2[$key];
-				} else {
+				} elseif ($value == $array2[$key]) {
 					unset($array1[$key]);
 				}
-			} else {
-				unset($array1[$key]);
+				unset($array2[$key]);
+			}
+		}
+		foreach ($array2 as $key => $value) {
+			if (FALSE === isset($array1[$key])) {
+				$array1[$key] = $value;
 			}
 		}
 		return $array1;

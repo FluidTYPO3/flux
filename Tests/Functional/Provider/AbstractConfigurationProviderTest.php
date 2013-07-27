@@ -50,7 +50,9 @@ abstract class Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest extends 
 	 * @return array
 	 */
 	protected function getBasicRecord() {
-		return Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		return $record;
 	}
 
 	/**
