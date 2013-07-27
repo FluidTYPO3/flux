@@ -92,7 +92,7 @@ class Tx_Flux_Tests_Functional_Provider_Fallback_FallbackConfigurationProviderTe
 		$record = $this->getBasicRecord();
 		$variables = array('test' => 'test');
 		$provider->setTemplateVariables($variables);
-		$this->assertSame($variables, $provider->getTemplateVariables($record));
+		$this->assertArrayHasKey('test', $provider->getTemplateVariables($record));
 	}
 
 	/**
