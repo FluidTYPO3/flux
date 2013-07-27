@@ -4,6 +4,15 @@ if (!defined('TYPO3_MODE')) {
 }
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF);
 
+if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['reportErrors']) {
+	// Note: constants used only when Flux is configured to report errors remotely. Reports
+	// are completely anonymised, containing only exception code and version information.
+	define('FLUX_REMOTE_REPORT_ERROR', 'http://fedext.net/report/error.php');
+	// Note: monitored-exceptions.json contains a very simple list of Exception codes. The
+	// JSON file is downloaded and cached locally in typo3temp with a TTL of 24 hours.
+	define('FLUX_REMOTE_REPORT_MONITORED_EXCEPTIONS', 'http://fedext.net/report/monitored-exceptions.json');
+}
+
 // Register CLI
 if (TYPO3_MODE === 'BE') {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['cliKeys']['flux'] = array(

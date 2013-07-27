@@ -642,6 +642,26 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 */
 	public function debugException(Exception $error) {
 		$this->message($error->getMessage() . ' (' . $error->getCode() . ')', t3lib_div::SYSLOG_SEVERITY_FATAL);
+		if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['reportErrors']) {
+			$monitoredExceptionsFile = t3lib_div::getFileAbsFileName('typo3temp/monitored-exceptions.json');
+			if (TRUE === file_exists($monitoredExceptionsFile) && filemtime($monitoredExceptionsFile) < time()-86400) {
+				unlink($monitoredExceptionsFile);
+			}
+			if (FALSE === file_exists($monitoredExceptionsFile)) {
+				$monitoredExceptionsFileContents = file_get_contents(FLUX_REMOTE_REPORT_MONITORED_EXCEPTIONS);
+				t3lib_div::writeFile($monitoredExceptionsFile, $monitoredExceptionsFileContents);
+			} else {
+				$monitoredExceptionsFileContents = file_get_contents($monitoredExceptionsFile);
+			}
+			$monitoredExceptions = json_decode($monitoredExceptionsFileContents);
+			if (TRUE === in_array($error->getCode(), (array) $monitoredExceptions)) {
+				$hasGitFolder = file_exists(t3lib_extMgm::extPath('flux', '.git'));
+				$fluxVersion = t3lib_extMgm::getExtensionVersion('flux');
+				$requestUrl = FLUX_REMOTE_REPORT_ERROR;
+				$requestUrl .= '?typo3=' . TYPO3_version . '&flux=' . $fluxVersion . '&git=' . intval($hasGitFolder) . '&exception=' . $error->getCode();
+				file_get_contents($requestUrl);
+			}
+		}
 	}
 
 	/**
