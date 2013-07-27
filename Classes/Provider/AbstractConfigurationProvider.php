@@ -397,17 +397,24 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getFlexFormValues(array $row) {
+		$cacheKey = 'values_' . $this->tableName . $this->fieldName . $row['uid'];
+		if (TRUE === isset(self::$cacheMergedConfigurations[$cacheKey])) {
+			return self::$cacheMergedConfigurations[$cacheKey];
+		}
 		$fieldName = $this->getFieldName($row);
 		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$tree = $this->getInheritanceTree($row);
 		if (0 === count($tree)) {
+			self::$cacheMergedConfigurations[$cacheKey] = $immediateConfiguration;
 			return (array) $immediateConfiguration;
 		}
 		$inheritedConfiguration = $this->getMergedConfiguration($tree);
 		if (0 === count($immediateConfiguration)) {
+			self::$cacheMergedConfigurations[$cacheKey] = $inheritedConfiguration;
 			return (array) $inheritedConfiguration;
 		}
 		$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
+		self::$cacheMergedConfigurations[$cacheKey] = $merged;
 		return $merged;
 	}
 
