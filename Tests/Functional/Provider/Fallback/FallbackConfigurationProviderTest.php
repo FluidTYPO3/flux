@@ -109,6 +109,17 @@ class Tx_Flux_Tests_Functional_Provider_Fallback_FallbackConfigurationProviderTe
 	/**
 	 * @test
 	 */
+	public function canUseAbsoluteTemplatePathDirectly() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
+		$provider->setTemplatePathAndFilename($template);
+		$this->assertSame($provider->getTemplatePathAndFilename($record), $template);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canSetTemplatePaths() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
@@ -128,6 +139,94 @@ class Tx_Flux_Tests_Functional_Provider_Fallback_FallbackConfigurationProviderTe
 		$section = 'Custom';
 		$provider->setConfigurationSectionName($section);
 		$this->assertSame($section, $provider->getConfigurationSectionName($record));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseInheritanceTree() {
+		$provider = $this->getConfigurationProviderInstance();
+		$provider->setFieldName('pi_flexform');
+		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_FIELD_INPUT));
+		$record = $this->getBasicRecord();
+		$byPathExists = $this->callInaccessibleMethod($provider, 'getInheritedPropertyValueByDottedPath', $record, 'settings');
+		$byDottedPathExists = $this->callInaccessibleMethod($provider, 'getInheritedPropertyValueByDottedPath', $record, 'settings.input');
+		$byPathDoesNotExist = $this->callInaccessibleMethod($provider, 'getInheritedPropertyValueByDottedPath', $record, 'void.doesnotexist');
+		$this->assertEmpty($byPathDoesNotExist);
+		$this->assertEmpty($byPathExists);
+		$this->assertEmpty($byDottedPathExists);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canOperateArrayMergeFunction() {
+		$provider = $this->getConfigurationProviderInstance();
+		$array1 = array(
+			'foo' => array(
+				'bar' => TRUE
+			)
+		);
+		$array2 = array(
+			'foo' => array(
+				'foo' => TRUE
+			)
+		);
+		$expected = array(
+			'foo' => array(
+				'bar' => TRUE,
+				'foo' => TRUE
+			)
+		);
+		$product = $this->callInaccessibleMethod($provider, 'arrayMergeRecursive', $array1, $array2);
+		$this->assertSame($expected, $product);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canOperateArrayDiffFunction() {
+		$provider = $this->getConfigurationProviderInstance();
+		$array1 = array(
+			'bar' => TRUE,
+			'baz' => TRUE,
+			'same' => array(
+				'foo' => TRUE
+			),
+			'foo' => array(
+				'bar' => TRUE,
+				'foo' => TRUE
+			)
+		);
+		$array2 = array(
+			'bar' => TRUE,
+			'baz' => FALSE,
+			'new' => TRUE,
+			'same' => array(
+				'foo' => TRUE
+			),
+			'foo' => array(
+				'bar' => TRUE
+			)
+		);
+		$expected = array(
+			'baz' => TRUE,
+			'foo' => array(
+				'foo' => TRUE
+			),
+			'new' => TRUE,
+		);
+		$product = $this->callInaccessibleMethod($provider, 'arrayDiffRecursive', $array1, $array2);
+		$this->assertSame($expected, $product);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canExecuteClearCacheCommand() {
+		$provider = $this->getConfigurationProviderInstance();
+		$return = $provider->clearCacheCommand(array('all'));
+		$this->assertEmpty($return);
 	}
 
 }
