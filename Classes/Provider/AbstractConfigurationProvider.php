@@ -214,9 +214,9 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getFlexFormValues(array $row) {
-		$cacheKey = 'values_' . get_class($this) . $this->tableName . $this->fieldName . $row['uid'];
+		$cacheKey = md5(json_encode($row));
 		if (TRUE === isset(self::$cacheMergedConfigurations[$cacheKey])) {
-			#return self::$cacheMergedConfigurations[$cacheKey];
+			return self::$cacheMergedConfigurations[$cacheKey];
 		}
 		$fieldName = $this->getFieldName($row);
 		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
