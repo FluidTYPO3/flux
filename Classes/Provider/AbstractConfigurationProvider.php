@@ -520,18 +520,22 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	protected function arrayDiffRecursive($array1, $array2) {
 		foreach ($array1 as $key => $value) {
 			if (TRUE === isset($array2[$key])) {
-				if (TRUE === is_array($value)) {
+				if (TRUE === is_array($value) && TRUE === is_array($array2[$key])) {
 					$diff = $this->arrayDiffRecursive($value, $array2[$key]);
-					if (0 !== count($diff)) {
+					if (0 === count($diff)) {
+						unset($array1[$key]);
+					} else {
 						$array1[$key] = $diff;
 					}
-				} elseif ($value != $array2[$key]) {
-					$array1[$key] = $array2[$key];
-				} else {
+				} elseif ($value == $array2[$key]) {
 					unset($array1[$key]);
 				}
-			} else {
-				unset($array1[$key]);
+				unset($array2[$key]);
+			}
+		}
+		foreach ($array2 as $key => $value) {
+			if (FALSE === isset($array1[$key])) {
+				$array1[$key] = $value;
 			}
 		}
 		return $array1;
