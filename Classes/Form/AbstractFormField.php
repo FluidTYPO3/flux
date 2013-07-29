@@ -150,9 +150,6 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 		if (FALSE === $this->getEnable()) {
 			return array();
 		}
-		//if (TRUE === $this->getClearable()) {
-			// TODO: add UserFunc wizard with Tx_Flux_UserFunction_ClearValueWizard
-		//}
 		$fieldStructureArray = array(
 			'TCEforms' => array(
 				'label' => $this->getLabel(),
@@ -162,7 +159,17 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 				'displayCond' => $this->getDisplayCondition()
 			)
 		);
-		$fieldStructureArray['TCEforms']['config']['wizards'] = $this->buildChildren();
+		$wizards = $this->buildChildren();
+		if (TRUE === $this->getClearable()) {
+			array_push($wizards, array(
+				'type' => 'userFunc',
+				'userFunc' => 'Tx_Flux_UserFunction_ClearValueWizard->renderField',
+				'params' => array(
+					'itemName' => $this->getName(),
+				),
+			));
+		}
+		$fieldStructureArray['TCEforms']['config']['wizards'] = $wizards;
 		if (TRUE === $this->getRequestUpdate()) {
 			$fieldStructureArray['TCEforms']['onChange'] = 'reload';
 		}
