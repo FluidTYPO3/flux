@@ -66,8 +66,8 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 	public function prepareConfiguration($type) {
 		$configuration = parent::prepareConfiguration($type);
 		$configuration['size'] = $this->getSize();
-		$configuration['maxItems'] = $this->getMaxItems();
-		$configuration['minItems'] = $this->getMinItems();
+		$configuration['maxitems'] = $this->getMaxItems();
+		$configuration['minitems'] = $this->getMinItems();
 		$configuration['multiple'] = $this->getMultiple();
 		$configuration['itemListStyle'] = $this->getItemListStyle();
 		$configuration['selectedListStyle'] = $this->getSelectedListStyle();
