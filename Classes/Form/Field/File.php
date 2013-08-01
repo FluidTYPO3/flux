@@ -80,7 +80,11 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 			$files = array();
 			$filePaths = t3lib_div::trimExplode(',', $default);
 			foreach ($filePaths as $path) {
-				$files[] = $path . '|' . $path;
+				if (FALSE === strpos($path, '|')) {
+					$files[] = $path . '|' . $path;
+				} else {
+					$files[] = $path;
+				}
 			}
 			$default = implode(',', $files);
 		}
