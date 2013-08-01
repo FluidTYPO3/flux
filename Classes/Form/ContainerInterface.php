@@ -30,6 +30,14 @@
 interface Tx_Flux_Form_ContainerInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
+	 * @param string $childName
+	 * @param boolean $recursive
+	 * @param string $requiredClass
+	 * @return Tx_Flux_Form_FormInterface|FALSE
+	 */
+	public function get($childName, $recursive = FALSE, $requiredClass = NULL);
+
+	/**
 	 * @param Tx_Flux_Form_FormInterface $child
 	 * @return Tx_Flux_Form_FormInterface
 	 */
