@@ -81,7 +81,7 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 			$filePaths = t3lib_div::trimExplode(',', $default);
 			foreach ($filePaths as $path) {
 				if (FALSE === strpos($path, '|')) {
-					$files[] = $path . '|' . $path;
+					$files[] = $path . '|' . rawurlencode($path);
 				} else {
 					$files[] = $path;
 				}
@@ -171,4 +171,5 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 	public function getShowThumbnails() {
 		return (boolean) $this->showThumbnails;
 	}
+
 }
