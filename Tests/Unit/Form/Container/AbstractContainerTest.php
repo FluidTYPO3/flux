@@ -46,6 +46,24 @@ abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest ext
 	/**
 	 * @test
 	 */
+	public function returnsFalseIfChildObjectNameDoesNotExist() {
+		$instance = $this->createInstance();
+		$result = $instance->get('doesNotExist');
+		$this->assertFalse($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function returnsFalseIfChildObjectNameDoesNotExistRecursively() {
+		$instance = $this->createInstance();
+		$result = $instance->get('doesNotExist');
+		$this->assertFalse($result);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canCreateFromDefinitionContainingFields() {
 		$properties = array($this->chainProperties);
 		$properties['fields'] = array(
