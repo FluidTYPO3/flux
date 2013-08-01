@@ -26,7 +26,7 @@
 /**
  * @package Flux
  */
-class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer {
+class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_FieldContainerInterface {
 
 	const POSITION_TOP = 'top';
 	const POSITION_BOTTOM = 'bottom';
