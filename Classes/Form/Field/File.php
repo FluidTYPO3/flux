@@ -69,6 +69,30 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 	}
 
 	/**
+	 * Overrides parent method to ensure properly formatted
+	 * default values for files
+	 *
+	 * @param mixed $default
+	 * @return Tx_Flux_Form_FieldInterface
+	 */
+	public function setDefault($default) {
+		if (NULL !== $default) {
+			$files = array();
+			$filePaths = t3lib_div::trimExplode(',', $default);
+			foreach ($filePaths as $path) {
+				if (FALSE === strpos($path, '|')) {
+					$files[] = $path . '|' . rawurlencode($path);
+				} else {
+					$files[] = $path;
+				}
+			}
+			$default = implode(',', $files);
+		}
+		$this->default = $default;
+		return $this;
+	}
+
+	/**
 	 * @param string $allowed
 	 * @return Tx_Flux_Form_Field_File
 	 */
