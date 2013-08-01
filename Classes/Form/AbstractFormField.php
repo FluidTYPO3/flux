@@ -97,6 +97,32 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	}
 
 	/**
+	 * @param array $settings
+	 * @return Tx_Flux_Form_FormFieldInterface
+	 * @throws Exception
+	 */
+	public static function createFromDefinition(array $settings) {
+		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
+		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$className = 'Tx_Flux_Form_Field_' . $settings['type'];
+		if (FALSE === class_exists($className)) {
+			$className = $settings['type'];
+		}
+		if (FALSE === class_exists($className)) {
+			throw new Exception('Invalid class- or type-name used in type of field "' . $settings['name'] . '"; "' . $className . '" is invalid', 1375373527);
+		}
+		/** @var Tx_Flux_FormInterface $object */
+		$object = $objectManager->get($className);
+		foreach ($settings as $settingName => $settingValue) {
+			$setterMethodName = Tx_Extbase_Reflection_ObjectAccess::buildSetterMethodName($settingName);
+			if (TRUE === method_exists($object, $setterMethodName)) {
+				Tx_Extbase_Reflection_ObjectAccess::setProperty($object, $settingName, $settingValue);
+			}
+		}
+		return $object;
+	}
+
+	/**
 	 * @param Tx_Flux_Form_WizardInterface $wizard
 	 * @return Tx_Flux_Form_FieldInterface
 	 */

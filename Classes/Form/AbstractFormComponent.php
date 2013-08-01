@@ -84,6 +84,34 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	}
 
 	/**
+	 * @param array $settings
+	 * @return Tx_Flux_Form_FormInterface
+	 */
+	public static function createFromDefinition(array $settings) {
+		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
+		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$className = get_called_class();
+		/** @var Tx_Flux_FormInterface $object */
+		$object = $objectManager->get($className);
+		foreach ($settings as $settingName => $settingValue) {
+			$setterMethodName = Tx_Extbase_Reflection_ObjectAccess::buildSetterMethodName($settingName);
+			if (TRUE === method_exists($object, $setterMethodName)) {
+				Tx_Extbase_Reflection_ObjectAccess::setProperty($object, $settingName, $settingValue);
+			}
+		}
+		if (TRUE === $object instanceof Tx_Flux_Form_FieldContainerInterface && TRUE === isset($settings['fields'])) {
+			foreach ($settings['fields'] as $fieldName => $fieldSettings) {
+				if (FALSE === isset($fieldSettings['name'])) {
+					$fieldSettings['name'] = $fieldName;
+				}
+				$field = Tx_Flux_Form_AbstractFormField::createFromDefinition($fieldSettings);
+				$object->add($field);
+			}
+		}
+		return $object;
+	}
+
+	/**
 	 * @param string $type
 	 * @param string $name
 	 * @param string $label
