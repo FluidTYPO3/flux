@@ -109,7 +109,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 			$className = $settings['type'];
 		}
 		if (FALSE === class_exists($className)) {
-			throw new Exception('Invalid class- or type-name used in type of field "' . $settings['name'] . '"; "' . $className . '" is invalid', 1375373527);
+			throw new RuntimeException('Invalid class- or type-name used in type of field "' . $settings['name'] . '"; "' . $className . '" is invalid', 1375373527);
 		}
 		/** @var Tx_Flux_FormInterface $object */
 		$object = $objectManager->get($className);
