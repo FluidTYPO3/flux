@@ -29,4 +29,27 @@
  */
 class Tx_Flux_Form_Container_SectionTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
 
+	/**
+	 * @test
+	 */
+	public function canCreateFromDefinitionWithObjects() {
+		$definition = array(
+			'name' => 'test',
+			'label' => 'Test section',
+			'objects' => array(
+				'object1' => array(
+					'label' => 'Test object',
+					'fields' => array(
+						'foo' => array(
+							'type' => 'Input',
+							'label' => 'Foo input'
+						)
+					)
+				)
+			)
+		);
+		$section = Tx_Flux_Form_Container_Section::createFromDefinition($definition);
+		$this->assertInstanceOf('Tx_Flux_Form_Container_Section', $section);
+	}
+
 }

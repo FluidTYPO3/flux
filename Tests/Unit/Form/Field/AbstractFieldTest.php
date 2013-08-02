@@ -164,4 +164,18 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_
 		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canCreateSectionUsingShortcutMethod() {
+		$definition = array(
+			'name' => 'test',
+			'label' => 'Test section',
+			'type' => 'Section'
+		);
+		$section = Tx_Flux_Form_AbstractFormField::createFromDefinition($definition);
+		$this->assertInstanceOf('Tx_Flux_Form_Container_Section', $section);
+		$this->assertSame($definition['name'], $section->getName());
+	}
+
 }
