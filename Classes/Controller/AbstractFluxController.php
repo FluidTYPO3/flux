@@ -133,7 +133,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 			$pluginName = $this->request->getPluginName();
 			$this->setup = $this->provider->getTemplatePaths($row);
 			if (FALSE === is_array($this->setup) || 0 === count($this->setup)) {
-				throw new Exception('Unable to read a working path set from the Provider. The extension that caused this error was "' .
+				throw new RuntimeException('Unable to read a working path set from the Provider. The extension that caused this error was "' .
 					$extensionName . '" and the controller was "' . get_class($this) . '". The provider which should have returned ' .
 					'a valid path set was "' . get_class($this->provider) . '" but it returned an empty array or not an array. View ' .
 					'paths have been reset to paths native to the controller in question.', 1364685651);
@@ -156,7 +156,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 			$this->view->assign('settings', $this->settings);
 			$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
 			if (FALSE === file_exists($templatePathAndFilename)) {
-				throw new Exception('Desired template file "' . $templatePathAndFilename . '" does not exist', 1364741158);
+				throw new RuntimeException('Desired template file "' . $templatePathAndFilename . '" does not exist', 1364741158);
 			}
 			/** @var $view Tx_Flux_MVC_View_ExposedTemplateView */
 			$this->view->setTemplatePathAndFilename($templatePathAndFilename);
@@ -246,7 +246,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	 * @return void
 	 */
 	public function handleError(Exception $error) {
-		if (TRUE === isset($this->settings['displayErrors']) && 0 < $this->settings['displayErrors']) {
+		if (FALSE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors']) {
 			throw $error;
 		}
 		$versionNumbers = explode('.', TYPO3_version);
@@ -257,7 +257,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 		$this->configurationService->debug($error);
 		$this->view->assign('class', get_class($this));
 		$this->view->assign('error', $error);
-		$this->view->assign('backtrace', $this->getLimitedBacktrace());
+		$this->view->assign('backtrace', debug_backtrace());
 		$this->view->assign('version', $versionVariable);
 		if ('error' !== $this->request->getControllerActionName()) {
 			$this->forward('error');
@@ -298,20 +298,6 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	 */
 	protected function getFluxTableName() {
 		return $this->fluxTableName;
-	}
-
-	/**
-	 * @return array
-	 */
-	private function getLimitedBacktrace() {
-		$trace = debug_backtrace();
-		foreach ($trace as $index => $step) {
-			if (($step['class'] === 'TYPO3\\CMS\\Extbase\\Core\\Bootstrap' || $step['class'] === 'Tx_Extbase_Core_Bootstrap') && $step['function'] === 'run') {
-				$trace = array_slice($trace, 1, $index);
-				break;
-			}
-		}
-		return $trace;
 	}
 
 	/**
