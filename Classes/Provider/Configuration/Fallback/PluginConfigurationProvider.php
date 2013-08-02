@@ -35,6 +35,16 @@ class Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider extend
 	protected $listType = NULL;
 
 	/**
+	 * @var string
+	 */
+	protected $tableName = 'tt_content';
+
+	/**
+	 * @var string
+	 */
+	protected $fieldName = 'pi_flexform';
+
+	/**
 	 * @param string $listType
 	 * @return void
 	 */
