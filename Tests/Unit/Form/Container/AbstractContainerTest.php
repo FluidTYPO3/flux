@@ -43,4 +43,43 @@ abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest ext
 		return $instance;
 	}
 
+	/**
+	 * @test
+	 */
+	public function returnsFalseIfChildObjectNameDoesNotExist() {
+		$instance = $this->createInstance();
+		$result = $instance->get('doesNotExist');
+		$this->assertSame(FALSE, $result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function returnsFalseIfChildObjectNameDoesNotExistRecursively() {
+		$instance = $this->createInstance();
+		$subContainer = $instance->createContainer('Container', 'testcontainer');
+		$subField = $instance->createField('Input', 'test');
+		$subContainer->add($subField);
+		$instance->add($subContainer);
+		$result = $instance->get('doesNotExist', TRUE);
+		$this->assertSame(FALSE, $result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canCreateFromDefinitionContainingFields() {
+		$properties = array($this->chainProperties);
+		$properties['fields'] = array(
+			'foo' => array(
+				'type' => 'Input'
+			),
+			'bar' => array(
+				'type' => 'Input'
+			),
+		);
+		$instance = call_user_func_array(array($this->getObjectClassName(), 'createFromDefinition'), array($properties));
+		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
+	}
+
 }

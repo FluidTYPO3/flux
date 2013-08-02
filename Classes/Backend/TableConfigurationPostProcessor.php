@@ -1,5 +1,5 @@
 <?php
-/*****************************************************************
+/***************************************************************
  *  Copyright notice
  *
  *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
@@ -21,38 +21,27 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ ***************************************************************/
 
 /**
+ * Table Configuration (TCA) post processor
+ *
+ * Simply loads the Flux service and lets methods
+ * on this Service load necessary configuration.
+ *
  * @package Flux
- * @subpackage Form
+ * @subpackage Backend
  */
-interface Tx_Flux_Form_ContainerInterface extends Tx_Flux_Form_FormInterface {
+class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables_PostProcessingHook {
 
 	/**
-	 * @param string $childName
-	 * @param boolean $recursive
-	 * @param string $requiredClass
-	 * @return Tx_Flux_Form_FormInterface|FALSE
+	 * @return void
 	 */
-	public function get($childName, $recursive = FALSE, $requiredClass = NULL);
-
-	/**
-	 * @param Tx_Flux_Form_FormInterface $child
-	 * @return Tx_Flux_Form_FormInterface
-	 */
-	public function add(Tx_Flux_Form_FormInterface $child);
-
-	/**
-	 * @param mixed $childOrChildName
-	 * @return boolean
-	 */
-	public function has($childOrChildName);
-
-	/**
-	 * @param string $childName
-	 * @return Tx_Flux_Form_FormInterface|FALSE
-	 */
-	public function remove($childName);
+	public function processData() {
+		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var Tx_Flux_Service_FluxService $fluxService */
+		$fluxService = $objectManager->get('Tx_Flux_Service_FluxService');
+		$fluxService->initializeObject();
+	}
 
 }
