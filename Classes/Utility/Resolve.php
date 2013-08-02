@@ -41,8 +41,7 @@ class Tx_Flux_Utility_Resolve {
 	 * @return string|NULL
 	 */
 	public static function resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $action, $controllerObjectShortName, $failHardClass = FALSE, $failHardAction = FALSE) {
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$potentialControllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerObjectShortName . 'Controller';
+		$potentialControllerClassName = self::buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerObjectShortName);
 		if (FALSE === class_exists($potentialControllerClassName)) {
 			if (TRUE === $failHardClass) {
 				throw new RuntimeException('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($extensionKey, TRUE) .
@@ -57,6 +56,22 @@ class Tx_Flux_Utility_Resolve {
 			return NULL;
 		}
 		return $potentialControllerClassName;
+	}
+
+	/**
+	 * @param string $extensionKey
+	 * @param string $controllerName
+	 * @return boolean|string
+	 */
+	private static function buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerName) {
+		if (FALSE !== strpos($extensionKey, '.')) {
+			list ($vendorName, $extensionName) = explode('.', $extensionKey);
+			$potentialClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
+		} else {
+			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+			$potentialClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
+		}
+		return $potentialClassName;
 	}
 
 }

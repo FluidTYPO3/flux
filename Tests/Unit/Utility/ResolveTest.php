@@ -70,4 +70,21 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'void', 'Content', FALSE, TRUE);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassExists() {
+		class_alias('Tx_Flux_Controller_AbstractFluxController', 'Void\\NoName\\Controller\\FakeController');
+		$result = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Fake');
+		$this->assertSame('Void\\NoName\\Controller\\FakeController', $result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassDoesNotExist() {
+		$result = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Void');
+		$this->assertNull($result);
+	}
+
 }
