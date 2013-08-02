@@ -180,15 +180,20 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 		if (FALSE === $this->getEnable()) {
 			return array();
 		}
+		$configuration = $this->buildConfiguration();
 		$fieldStructureArray = array(
 			'TCEforms' => array(
 				'label' => $this->getLabel(),
 				'required' => intval($this->getRequired()),
 				'exclude' => intval($this->getExclude()),
-				'config' => $this->buildConfiguration(),
-				'displayCond' => $this->getDisplayCondition()
+				'config' => $configuration,
+				'displayCond' => $this->getDisplayCondition(),
 			)
 		);
+		if (TRUE === isset($configuration['defaultExtras'])) {
+			$fieldStructureArray['TCEforms']['defaultExtras'] = $configuration['defaultExtras'];
+			unset($fieldStructureArray['TCEforms']['config']['defaultExtras']);
+		}
 		$wizards = $this->buildChildren();
 		if (TRUE === $this->getClearable()) {
 			array_push($wizards, array(

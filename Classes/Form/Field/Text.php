@@ -57,7 +57,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 		$configuration['rows'] = $this->getRows();
 		$configuration['cols'] = $this->getColumns();
 		$defaultExtras = $this->getDefaultExtras();
-		if (TRUE === $this->enableRichText && TRUE === empty($defaultExtras)) {
+		if (TRUE === $this->getEnableRichText() && TRUE === empty($defaultExtras)) {
 			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$configuration['defaultExtras'] = $typoScript['plugin.']['tx_flux.']['settings.']['flexform.']['rteDefaults'];
 		} else {
@@ -103,7 +103,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 	 * @return Tx_Flux_Form_Field_Text
 	 */
 	public function setEnableRichText($enableRichText) {
-		$this->enableRichText = $enableRichText;
+		$this->enableRichText = (boolean) $enableRichText;
 		return $this;
 	}
 
@@ -111,7 +111,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 	 * @return boolean
 	 */
 	public function getEnableRichText() {
-		return $this->enableRichText;
+		return (boolean) $this->enableRichText;
 	}
 
 	/**

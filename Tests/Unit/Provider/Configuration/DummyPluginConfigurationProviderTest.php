@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2013 Claus Due <claus@wildside.dk>
  *
  *  All rights reserved
  *
@@ -21,24 +21,29 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ * ************************************************************* */
+
+require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/DummyPluginConfigurationProvider.php');
 
 /**
- * Array utilities
- *
- * @author Claus Due, Wildside A/S
+ * @author Claus Due <claus@wildside.dk>
  * @package Flux
- * @subpackage Utility
  */
-class Tx_Flux_Utility_Array {
+class Tx_Flux_Provider_Configuration_DummyPluginConfigurationProviderTest extends Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest {
 
 	/**
-	 * @static
-	 * @param array $typoScriptArray
-	 * @return array
+	 * @var string
 	 */
-	public static function convertTypoScriptArrayToPlainArray(array $typoScriptArray) {
-		return \t3lib_div::removeDotsFromTS($typoScriptArray);
+	protected $configurationProviderClassName = 'Tx_Flux_Tests_Fixtures_Class_DummyPluginConfigurationProvider';
+
+	/**
+	 * @test
+	 */
+	public function canGetListType() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$listType = $provider->getListType($record);
+		$this->assertSame('test', $listType);
 	}
 
 }

@@ -27,48 +27,31 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Provider_Fallback_FallbackPluginConfigurationProviderTest extends Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest {
+class Tx_Flux_Tests_Fixtures_Class_DummyPluginConfigurationProvider extends Tx_Flux_Provider_AbstractPluginConfigurationProvider {
 
 	/**
 	 * @var string
 	 */
-	protected $configurationProviderClassName = 'Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider';
+	protected $tableName = 'test';
 
 	/**
-	 * @test
+	 * @var string
 	 */
-	public function canGetExtensionKey() {
-		$provider = $this->getConfigurationProviderInstance();
-		$record = $this->getBasicRecord();
-		$extensionKey = $provider->getExtensionKey($record);
-		$this->assertNull($extensionKey);
-	}
+	protected $extensionKey = 'test';
 
 	/**
-	 * @test
+	 * @var string
 	 */
-	public function canSetPluginListType() {
-		$provider = $this->getConfigurationProviderInstance();
-		$provider->setListType('fluidcontent_content');
-	}
+	protected $fieldName = 'test';
 
 	/**
-	 * @test
+	 * @var string
 	 */
-	public function canGetPluginListType() {
-		$provider = $this->getConfigurationProviderInstance();
-		$record = $this->getBasicRecord();
-		$provider->getListType($record);
-	}
+	protected $listType = 'test';
 
 	/**
-	 * @test
+	 * @var string
 	 */
-	public function canGetTableName() {
-		$provider = $this->getConfigurationProviderInstance();
-		$record = $this->getBasicRecord();
-		$tableName = $provider->getTableName($record);
-		$this->assertNull($tableName);
-	}
+	protected $templatePathAndFilename = 'EXT:flux/Tests/Fixtures/Templates/DummyConfigurationProvider.html';
 
 }

@@ -175,34 +175,6 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	/**
 	 * @test
 	 */
-	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerType() {
-		$service = $this->createFluxServiceInstance();
-		$result = $service->detectControllerClassPresenceFromExtensionKeyAndControllerType('noname', 'Void');
-		$this->assertFalse($result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassExists() {
-		$service = $this->createFluxServiceInstance();
-		class_alias('Tx_Flux_Controller_AbstractFluxController', 'Void\\NoName\\Controller\\FakeController');
-		$result = $service->detectControllerClassPresenceFromExtensionKeyAndControllerType('Void.NoName', 'Fake');
-		$this->assertTrue($result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassDoesNotExist() {
-		$service = $this->createFluxServiceInstance();
-		$result = $service->detectControllerClassPresenceFromExtensionKeyAndControllerType('Void.NoName', 'Void');
-		$this->assertFalse($result);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canGetBackendViewConfigurationForExtensionName() {
 		$service = $this->createFluxServiceInstance();
 		$config = $service->getBackendViewConfigurationForExtensionName('noname');
