@@ -27,7 +27,7 @@
  * @package Flux
  * @subpackage Form\Container
  */
-class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_Container_Container {
+class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_ContainerInterface {
 
 	/**
 	 * @param array $settings
@@ -45,11 +45,11 @@ class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_Container_Container {
 			}
 		}
 		if (TRUE === isset($settings['objects'])) {
-			foreach ($settings['objects'] as $fieldName => $fieldSettings) {
-				if (FALSE === isset($fieldSettings['name'])) {
-					$fieldSettings['name'] = $fieldName;
+			foreach ($settings['objects'] as $fieldName => $objectSettings) {
+				if (FALSE === isset($objectSettings['name'])) {
+					$objectSettings['name'] = $fieldName;
 				}
-				$object = Tx_Flux_Form_Container_Object::createFromDefinition($fieldSettings);
+				$object = Tx_Flux_Form_Container_Object::createFromDefinition($objectSettings);
 				$section->add($object);
 			}
 		}
