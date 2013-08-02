@@ -29,7 +29,7 @@ require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/BasicFluxContro
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class Tx_Flux_Controller_FluxControllerTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @return void
@@ -69,6 +69,7 @@ class Tx_Flux_Tests_Functional_Controller_BasicControllerTest extends Tx_Flux_Te
 		$request->setControllerExtensionName('Flux');
 		$request->setControllerActionName('render');
 		$request->setControllerName($controllerName);
+		$request->setControllerObjectName(Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', $controllerName));
 		$request->setFormat('html');
 		/** @var Tx_Extbase_MVC_Web_Response $response */
 		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
@@ -151,12 +152,43 @@ class Tx_Flux_Tests_Functional_Controller_BasicControllerTest extends Tx_Flux_Te
 	 * @test
 	 */
 	public function canExecuteBasicRequestUsingCustomController() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
-		$instance = $this->createAndTestDummyControllerInstance($templatePathAndFilename);
-		$this->assertInstanceOf('Tx_Flux_Controller_AbstractFluxController', $instance);
-		/** @var Tx_Flux_MVC_View_ExposedTemplateView $view */
-		$view = $this->objectManager->get(Tx_Extbase_Reflection_ObjectAccess::getProperty($instance, 'defaultViewObjectName', TRUE));
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = 0;
 		list ($request, $response) = $this->createDummyRequestAndResponseForFluxController('Content');
+		/** @var Tx_Extbase_MVC_Dispatcher $dispatcher */
+		$dispatcher = $this->objectManager->get('Tx_Extbase_MVC_Dispatcher');
+		$this->setExpectedException('RuntimeException', NULL, 1364741158);
+		$dispatcher->dispatch($request, $response);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = $backup;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canExecuteBasicRequestUsingCustomControllerToRenderErrorAction() {
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = 0;
+		list ($request, $response) = $this->createDummyRequestAndResponseForFluxController('Content');
+		$request->setControllerActionName('error');
+		/** @var Tx_Extbase_MVC_Dispatcher $dispatcher */
+		$dispatcher = $this->objectManager->get('Tx_Extbase_MVC_Dispatcher');
+		$this->setExpectedException('RuntimeException', NULL, 1364741158);
+		$dispatcher->dispatch($request, $response);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = $backup;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canExecuteBasicRequestUsingCustomControllerAndHandleError() {
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = 1;
+		list ($request, $response) = $this->createDummyRequestAndResponseForFluxController('Content');
+		/** @var Tx_Extbase_MVC_Dispatcher $dispatcher */
+		$dispatcher = $this->objectManager->get('Tx_Extbase_MVC_Dispatcher');
+		$this->setExpectedException('Tx_Fluid_View_Exception_InvalidTemplateResourceException', '"" is not a valid template resource URI');
+		$dispatcher->dispatch($request, $response);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = $backup;
 	}
 
 }
