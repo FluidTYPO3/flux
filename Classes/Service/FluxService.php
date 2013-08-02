@@ -102,6 +102,13 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function initializeObject() {
+		$this->loadTypoScriptConfigurationProviderInstances();
+	}
+
+	/**
 	 * @param string $extensionKey
 	 * @param string $controllerName
 	 * @param array $paths
@@ -345,6 +352,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			return self::$cache[$cacheKey];
 		}
 		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
+		$typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
+		$providers = array_merge($providers, $typoScriptConfigurationProviders);
 		$prioritizedProviders = array();
 		foreach ($providers as $providerClassNameOrInstance) {
 			if (is_object($providerClassNameOrInstance)) {
@@ -393,6 +402,32 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		self::$cache[$cacheKey] = $providersToReturn;
 		return $providersToReturn;
+	}
+
+	/**
+	 * @return Tx_Flux_Provider_ConfigurationProviderInterface[]
+	 */
+	protected function loadTypoScriptConfigurationProviderInstances() {
+		$cacheKey = 'typoscript_providers';
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
+		}
+		$typoScriptSettings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		if (FALSE === isset($typoScriptSettings['plugin.']['tx_flux.']['providers.'])) {
+			self::$cache[$cacheKey] = array();
+			return array();
+		}
+		$providerConfigurations = t3lib_div::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
+		$providers = array();
+		foreach ($providerConfigurations as $name => $providerSettings) {
+			/** @var Tx_Flux_Provider_Configuration_TypoScriptConfigurationProvider $provider */
+			$provider = $this->objectManager->get('Tx_Flux_Provider_Configuration_TypoScriptConfigurationProvider');
+			$provider->setName($name);
+			$provider->loadSettings($providerSettings);
+			$providers[$name] = $provider;
+		}
+		self::$cache[$cacheKey] = $providers;
+		return $providers;
 	}
 
 	/**

@@ -275,4 +275,36 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$this->assertIsValidAndWorkingFormObject($form);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canCreateFromDefinition() {
+		$properties = array(
+			'name' => 'test',
+			'label' => 'Test field'
+		);
+		$instance = Tx_Flux_Form::createFromDefinition($properties);
+		$this->assertInstanceOf('Tx_Flux_Form', $instance);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canCreateFromDefinitionWithSheets() {
+		$properties = array(
+			'name' => 'test',
+			'label' => 'Test field',
+			'sheets' => array(
+				'sheet' => array(
+					'fields' => array()
+				),
+				'anotherSheet' => array(
+					'fields' => array()
+				),
+			)
+		);
+		$instance = Tx_Flux_Form::createFromDefinition($properties);
+		$this->assertInstanceOf('Tx_Flux_Form', $instance);
+	}
+
 }
