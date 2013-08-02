@@ -149,7 +149,7 @@ class Tx_Flux_Controller_FluxControllerTest extends Tx_Flux_Tests_AbstractFuncti
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 */
 	public function canExecuteBasicRequestUsingCustomController() {
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'];
@@ -163,7 +163,7 @@ class Tx_Flux_Controller_FluxControllerTest extends Tx_Flux_Tests_AbstractFuncti
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 */
 	public function canExecuteBasicRequestUsingCustomControllerToRenderErrorAction() {
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'];
@@ -178,7 +178,7 @@ class Tx_Flux_Controller_FluxControllerTest extends Tx_Flux_Tests_AbstractFuncti
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 */
 	public function canExecuteBasicRequestUsingCustomControllerAndHandleError() {
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'];
