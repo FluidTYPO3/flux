@@ -30,6 +30,24 @@
 class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_Container_Container {
 
 	/**
+	 * @param array $settings
+	 * @return Tx_Flux_Form_Container_Section
+	 */
+	public static function createFromDefinition(array $settings) {
+		$section = parent::createFromDefinition($settings);
+		if (TRUE === isset($settings['objects'])) {
+			foreach ($settings['objects'] as $fieldName => $fieldSettings) {
+				if (FALSE === isset($fieldSettings['name'])) {
+					$fieldSettings['name'] = $fieldName;
+				}
+				$object = Tx_Flux_Form_Container_Object::createFromDefinition($fieldSettings);
+				$section->add($object);
+			}
+		}
+		return $section;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function build() {
