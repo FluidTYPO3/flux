@@ -104,7 +104,11 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	public static function createFromDefinition(array $settings) {
 		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$className = 'Tx_Flux_Form_Field_' . $settings['type'];
+		if ('Section' === $settings['type']) {
+			$className = 'Tx_Flux_Form_Container_' . $settings['type'];
+		} else {
+			$className = 'Tx_Flux_Form_Field_' . $settings['type'];
+		}
 		if (FALSE === class_exists($className)) {
 			$className = $settings['type'];
 		}
