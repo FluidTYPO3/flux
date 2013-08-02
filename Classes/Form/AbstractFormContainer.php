@@ -35,14 +35,6 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	protected $children;
 
 	/**
-	 * @param array $settings
-	 * @return Tx_Flux_Form_ContainerInterface
-	 */
-	public static function createFromDefinition(array $settings) {
-		return parent::createFromDefinition($settings);
-	}
-
-	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
