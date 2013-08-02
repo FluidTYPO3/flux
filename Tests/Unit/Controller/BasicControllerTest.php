@@ -93,11 +93,58 @@ class Tx_Flux_Tests_Functional_Controller_BasicControllerTest extends Tx_Flux_Te
 
 	/**
 	 * @test
+	 * @return Tx_Flux_Controller_AbstractFluxController
 	 */
 	public function canCreateInstanceOfCustomRegisteredControllerForContent() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$instance = $this->createAndTestDummyControllerInstance($templatePathAndFilename);
 		$this->assertInstanceOf('Tx_Flux_Controller_AbstractFluxController', $instance);
+		return $instance;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetData() {
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		$data = $this->callInaccessibleMethod($instance, 'getData');
+		$this->assertIsArray($data);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetSetup() {
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		$setup = $this->callInaccessibleMethod($instance, 'getSetup');
+		$this->assertIsArray($setup);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetRecord() {
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		$record = $this->callInaccessibleMethod($instance, 'getRecord');
+		$this->assertIsArray($record);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetFluxRecordField() {
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		$field = $this->callInaccessibleMethod($instance, 'getFluxRecordField');
+		$this->assertSame('pi_flexform', $field);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetFluxTableName() {
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		$table = $this->callInaccessibleMethod($instance, 'getFluxTableName');
+		$this->assertSame('tt_content', $table);
 	}
 
 	/**
