@@ -188,7 +188,6 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 				'exclude' => intval($this->getExclude()),
 				'config' => $configuration,
 				'displayCond' => $this->getDisplayCondition(),
-				'defaultExtras' => TRUE === isset($configuration['defaultExtras']) ? $configuration['defaultExtras'] : '',
 			)
 		);
 		if (TRUE === isset($configuration['defaultExtras'])) {
