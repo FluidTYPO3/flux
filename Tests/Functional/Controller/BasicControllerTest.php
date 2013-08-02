@@ -51,8 +51,7 @@ class Tx_Flux_Tests_Functional_Controller_BasicControllerTest extends Tx_Flux_Te
 		$frontend->cObj = new tslib_cObj();
 		$frontend->cObj->start($record);
 		$this->performDummyRegistration();
-		$service = $this->createFluxServiceInstance();
-		$controllerClassName = $service->buildControllerClassNameFromExtensionKeyAndControllerType('flux', 'Content');
+		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
 		/** @var Tx_Flux_Controller_AbstractFluxController $instance */
 		$instance = $this->objectManager->get($controllerClassName);
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
@@ -88,9 +87,8 @@ class Tx_Flux_Tests_Functional_Controller_BasicControllerTest extends Tx_Flux_Te
 	 */
 	public function canDetectPresenceOfRegisteredCustomControllerForContent() {
 		$this->performDummyRegistration();
-		$service = $this->createFluxServiceInstance();
-		$hasController = $service->detectControllerClassPresenceFromExtensionKeyAndControllerType('flux', 'Content');
-		$this->assertTrue($hasController);
+		$hasController = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$this->assertTrue(class_exists($hasController));
 	}
 
 	/**
