@@ -263,7 +263,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			return NULL;
 		}
 		$config = $config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
-		$config = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($config);
+		$config = t3lib_div::removeDotsFromTS($config);
 		if ($extensionName) {
 			$config = $config[$extensionName];
 		}
