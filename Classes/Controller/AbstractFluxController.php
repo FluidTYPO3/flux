@@ -213,7 +213,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 		}
 		try {
 			$controllerName = $this->request->getControllerName();
-			$potentialControllerClassName = $this->resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $overriddenControllerActionName, $controllerName);
+			$potentialControllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $overriddenControllerActionName, $controllerName);
 			if (NULL === $potentialControllerClassName) {
 				$this->request->setControllerExtensionName($this->extensionName);
 				return $this->view->render();
@@ -319,34 +319,6 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	 */
 	public function getRecord() {
 		return $this->configurationManager->getContentObject()->data;
-	}
-
-	/**
-	 * @param string $extensionKey
-	 * @param string $action
-	 * @param string $controllerObjectShortName
-	 * @param boolean $failHardClass
-	 * @param boolean $failHardAction
-	 * @throws Exception
-	 * @return string|NULL
-	 */
-	protected function resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $action, $controllerObjectShortName, $failHardClass = FALSE, $failHardAction = FALSE) {
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$potentialControllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerObjectShortName . 'Controller';
-		if (FALSE === class_exists($potentialControllerClassName)) {
-			if (TRUE === $failHardClass) {
-				throw new Exception('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($extensionKey, TRUE) .
-					' but the resulting class name was not found.', 1364498093);
-			}
-			return NULL;
-		}
-		if (FALSE === method_exists($potentialControllerClassName, $action . 'Action')) {
-			if (TRUE === $failHardAction) {
-				throw new Exception('Class ' . $potentialControllerClassName . ' does not contain a method named ' . $action . 'Action', 1364498223);
-			}
-			return NULL;
-		}
-		return $potentialControllerClassName;
 	}
 
 }
