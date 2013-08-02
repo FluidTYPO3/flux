@@ -27,7 +27,7 @@
  * @package Flux
  * @subpackage Provider
  */
-abstract class Tx_Flux_Provider_AbstractPluginConfigurationProvider extends Tx_Flux_Provider_AbstractConfigurationProvider {
+abstract class Tx_Flux_Provider_AbstractPluginConfigurationProvider extends Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider_PluginConfigurationProviderInterface {
 
 	/**
 	 * @var string

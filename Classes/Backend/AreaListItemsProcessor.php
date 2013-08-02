@@ -83,11 +83,21 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * @return array
 	 */
 	public function getContentAreasDefinedInContentElement($uid) {
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		$columns = array();
+		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'");
+		if (0 === count($rows)) {
+			return $columns;
+		}
+		$record = array_pop($rows);
+		if (NULL === $record) {
+			return $columns;
+		}
 		/** @var $provider Tx_Flux_Provider_ConfigurationProviderInterface */
 		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
+		if (NULL === $provider) {
+			return $columns;
+		}
 		$grid = $provider->getGrid($record)->build();
-		$columns = array();
 		foreach ($grid['rows'] as $row) {
 			foreach ($row['columns'] as $column) {
 				foreach ($column['areas'] as $area) {

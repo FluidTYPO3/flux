@@ -58,7 +58,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	public function getTemplatePaths(array $row) {
 		$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		$extensionIdentity = str_replace('_', '', $this->getExtensionKey($row));
-		$paths = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray((array) $typoScript['plugin.']['tx_' . $extensionIdentity . '.']['view.']);
+		$paths = t3lib_div::removeDotsFromTS((array) $typoScript['plugin.']['tx_' . $extensionIdentity . '.']['view.']);
 		$paths = Tx_Flux_Utility_Path::translatePath($paths);
 		return $paths;
 	}

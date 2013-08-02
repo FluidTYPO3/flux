@@ -148,6 +148,9 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
 		foreach ($form->getFields() as $field) {
+			if (FALSE === $field instanceof Tx_Flux_Form_FieldInterface) {
+				continue;
+			}
 			$name = $field->getName();
 			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);
 			if (NULL !== $inheritedValue) {

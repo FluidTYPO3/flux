@@ -41,8 +41,13 @@ abstract class Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest extends 
 	 * @return Tx_Flux_Provider_ConfigurationProviderInterface
 	 */
 	protected function getConfigurationProviderInstance() {
+		$potentialClassName = substr(get_class($this), 0, -4);
 		/** @var Tx_Flux_Provider_ConfigurationProviderInterface $instance */
-		$instance = $this->objectManager->get($this->configurationProviderClassName);
+		if (TRUE === class_exists($potentialClassName)) {
+			$instance = $this->objectManager->get($potentialClassName);
+		} else {
+			$instance = $this->objectManager->get($this->configurationProviderClassName);
+		}
 		return $instance;
 	}
 
@@ -53,6 +58,28 @@ abstract class Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest extends 
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		return $record;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetForm() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$form = $provider->getForm($record);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetGrid() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
+		$provider = $this->getConfigurationProviderInstance();
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($provider, 'templatePathAndFilename', $templatePathAndFilename, TRUE);
+		$record = $this->getBasicRecord();
+		$form = $provider->getGrid($record);
+		$this->assertInstanceOf('Tx_Flux_Form_Container_Grid', $form);
 	}
 
 	/**
