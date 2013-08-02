@@ -49,7 +49,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest ext
 	public function returnsFalseIfChildObjectNameDoesNotExist() {
 		$instance = $this->createInstance();
 		$result = $instance->get('doesNotExist');
-		$this->assertFalse($result);
+		$this->assertSame(FALSE, $result);
 	}
 
 	/**
@@ -57,8 +57,12 @@ abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest ext
 	 */
 	public function returnsFalseIfChildObjectNameDoesNotExistRecursively() {
 		$instance = $this->createInstance();
-		$result = $instance->get('doesNotExist');
-		$this->assertFalse($result);
+		$subContainer = $instance->createContainer('Container', 'testcontainer');
+		$subField = $instance->createField('Input', 'test');
+		$subContainer->add($subField);
+		$instance->add($subContainer);
+		$result = $instance->get('doesNotExist', TRUE);
+		$this->assertSame(FALSE, $result);
 	}
 
 	/**
