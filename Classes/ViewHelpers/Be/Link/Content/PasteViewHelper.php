@@ -46,6 +46,60 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_V
 	 * @return string
 	 */
 	public function render() {
+		$data = $this->getClipBoardData();
+		if (NULL === $data) {
+			return '';
+		}
+		return $this->createIconWithUrl();
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function createIconWithUrl() {
+		$reference = (boolean) $this->arguments['reference'];
+		$clipBoard = new t3lib_clipboard();
+		if (TRUE === $reference) {
+			$label = 'Paste as reference in this position';
+			$icon = 'actions-insert-reference';
+		} else {
+			$label = 'Paste in this position';
+			$icon = 'actions-document-paste-after';
+		}
+		$relativeTo = $this->getRelativeToValue();
+		$icon = $this->getIcon($icon, $label);
+		$uri = "javascript:top.content.list_frame.location.href=top.TS.PATH_typo3+'";
+		$uri .= $clipBoard->pasteUrl('tt_content', $relativeTo);
+		$uri .= "';";
+		return $this->wrapLink($icon, $uri);
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getRelativeToValue() {
+		$reference = (boolean) $this->arguments['reference'];
+		if (TRUE === $reference) {
+			$command = 'reference';
+		} else {
+			$command = 'paste';
+		}
+		$row = $this->arguments['row'];
+		$area = $this->arguments['area'];
+		$pid = $row['pid'];
+		$uid = $row['uid'];
+		$relativeUid = TRUE === isset($this->arguments['relativeTo']['uid']) ? $this->arguments['relativeTo']['uid'] : 0;
+		$relativeTo = $pid . '-' . $command . '-' . $relativeUid . '-' . $uid;
+		if (FALSE === empty($area)) {
+			$relativeTo .= '-' . $area;
+		}
+		return $relativeTo;
+	}
+
+	/**
+	 * @return array|NULL
+	 */
+	protected function getClipBoardData() {
 		$reference = (boolean) $this->arguments['reference'];
 		$clipData = $GLOBALS['BE_USER']->getModuleData('clipboard', $GLOBALS['BE_USER']->getTSConfigVal('options.saveClipboard') ? '' : 'ses');
 		$mode = TRUE === isset($clipData['current']) ? $clipData['current'] : 'normal';
@@ -56,29 +110,7 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_V
 		if (FALSE === isset($clipData[$mode]['mode']) && TRUE === $reference) {
 			return NULL;
 		}
-		$row = $this->arguments['row'];
-		$area = $this->arguments['area'];
-		$pid = $row['pid'];
-		$uid = $row['uid'];
-		$relativeUid = TRUE === isset($this->arguments['relativeTo']['uid']) ? $this->arguments['relativeTo']['uid'] : 0;
-		$clipBoard = new t3lib_clipboard();
-		if (TRUE === $reference) {
-			$command = 'reference';
-			$label = 'Paste as reference in this position';
-			$icon = 'actions-insert-reference';
-		} else {
-			$command = 'paste';
-			$label = 'Paste in this position';
-			$icon = 'actions-document-paste-after';
-		}
-		$relativeTo = $pid . '-' . $command . '-' . $relativeUid . '-' . $uid;
-		if (FALSE === empty($area)) {
-			$relativeTo .= '-' . $area;
-		}
-		$icon = $this->getIcon($icon, $label);
-		$uri = "javascript:top.content.list_frame.location.href=top.TS.PATH_typo3+'";
-		$uri .= $clipBoard->pasteUrl('tt_content', $relativeTo);
-		$uri .= "';";
-		return $this->wrapLink($icon, $uri);
+		return $clipData;
 	}
+
 }
