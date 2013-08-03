@@ -87,4 +87,25 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$this->assertNull($result);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canDetectRequestArgumentsBasedOnPluginSignature() {
+		$result = Tx_Flux_Utility_Resolve::resolveOverriddenFluxControllerActionNameFromRequestParameters('tx_void_fake');
+		$this->assertNull($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetectCurrentPageRecord() {
+		$result = Tx_Flux_Utility_Resolve::resolveCurrentPageRecord();
+		$this->assertNull($result);
+		$expected = array('uid' => 99999999);
+		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$GLOBALS['TSFE']->page = $expected;
+		$result = Tx_Flux_Utility_Resolve::resolveCurrentPageRecord();
+		$this->assertSame($result, $expected);
+	}
+
 }

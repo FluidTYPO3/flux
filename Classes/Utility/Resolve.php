@@ -59,6 +59,29 @@ class Tx_Flux_Utility_Resolve {
 	}
 
 	/**
+	 * @param string $pluginSignature
+	 * @return string|NULL
+	 */
+	public static function resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature) {
+		$requestParameters = (array) t3lib_div::_GET($pluginSignature);
+		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : NULL;
+		return $overriddenControllerActionName;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function resolveCurrentPageRecord() {
+		if (TRUE === isset($GLOBALS['TSFE']->page)) {
+			$record = $GLOBALS['TSFE']->page;
+		} elseif ('BE' === TYPO3_MODE) {
+			$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', "uid = '" . t3lib_div::_GET('id') . "'");
+			$record = array_pop($records);
+		}
+		return $record;
+	}
+
+	/**
 	 * @param string $extensionKey
 	 * @param string $controllerName
 	 * @return boolean|string
