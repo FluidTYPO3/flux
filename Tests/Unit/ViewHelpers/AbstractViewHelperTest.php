@@ -71,9 +71,11 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 	 * @param array $arguments
 	 * @param array $variables
 	 * @param Tx_Fluid_Core_Parser_SyntaxTree_NodeInterface $childNode
-	 * @return Tx_Fluid_Core_ViewHelper_TemplateVariableContainer
+	 * @param string $extensionName
+	 * @param string $pluginName
+	 * @return Tx_Fluid_Core_ViewHelper_AbstractViewHelper
 	 */
-	protected function executeViewHelper($arguments = array(), $variables = array(), $childNode = NULL) {
+	protected function buildViewHelperInstance($arguments = array(), $variables = array(), $childNode = NULL, $extensionName = NULL, $pluginName = NULL) {
 		$instance = $this->createInstance();
 		/** @var Tx_Fluid_Core_ViewHelper_TemplateVariableContainer $container */
 		$container = $this->objectManager->get('Tx_Fluid_Core_ViewHelper_TemplateVariableContainer');
@@ -87,6 +89,12 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 		$uriBuilder = $this->objectManager->get('Tx_Extbase_MVC_Web_Routing_UriBuilder');
 		/** @var Tx_Extbase_Mvc_Web_Request $request */
 		$request = $this->objectManager->get('Tx_Extbase_Mvc_Web_Request');
+		if (NULL !== $extensionName) {
+			$request->setControllerExtensionName($extensionName);
+		}
+		if (NULL !== $pluginName) {
+			$request->setPluginName($pluginName);
+		}
 		/** @var Tx_Extbase_Mvc_Web_Response $response */
 		$response = $this->objectManager->get('Tx_Extbase_Mvc_Web_Response');
 		/** @var Tx_Extbase_MVC_Controller_ControllerContext $controllerContext */
@@ -95,15 +103,12 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 		$controllerContext->setResponse($response);
 		$controllerContext->setUriBuilder($uriBuilder);
 		/** @var Tx_Fluid_Core_Rendering_RenderingContext $renderingContext */
-		$renderingContext = $this->getAccessibleMock('Tx_Fluid_Core_Rendering_RenderingContext');
+		$renderingContext = $this->objectManager->get('Tx_Fluid_Core_Rendering_RenderingContext');
 		$renderingContext->setControllerContext($controllerContext);
-		$renderingContext->injectTemplateVariableContainer($container);
 		$renderingContext->injectViewHelperVariableContainer($viewHelperContainer);
+		$renderingContext->injectTemplateVariableContainer($container);
 		$instance->setArguments($arguments);
 		$instance->setRenderingContext($renderingContext);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'templateVariableContainer', $container, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'viewHelperVariableContainer', $viewHelperContainer, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, TRUE);
 		if (TRUE === $instance instanceof Tx_Fluidwidget_Core_Widget_AbstractWidgetViewHelper) {
 			/** @var Tx_Fluid_Core_Widget_WidgetContext $widgetContext */
 			$widgetContext = $this->objectManager->get('Tx_Fluid_Core_Widget_WidgetContext');
@@ -116,6 +121,19 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 			}
 		}
 		$instance->setViewHelperNode($node);
+		return $instance;
+	}
+
+	/**
+	 * @param array $arguments
+	 * @param array $variables
+	 * @param Tx_Fluid_Core_Parser_SyntaxTree_NodeInterface $childNode
+	 * @param string $extensionName
+	 * @param string $pluginName
+	 * @return mixed|Tx_Fluid_Core_ViewHelper_AbstractViewHelper
+	 */
+	protected function executeViewHelper($arguments = array(), $variables = array(), $childNode = NULL, $extensionName = NULL, $pluginName = NULL) {
+		$instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
 		$output = $instance->initializeArgumentsAndRender();
 		return $output;
 	}

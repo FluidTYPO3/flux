@@ -25,6 +25,8 @@
 
 require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
 require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Records.php');
+require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/BasicFluxController.php');
+
 
 /**
  * @author Claus Due <claus@wildside.dk>
@@ -50,6 +52,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	const FIXTURE_TEMPLATE_FIELD_INPUT = 'EXT:flux/Tests/Fixtures/Templates/Fields/Input.html';
 	const FIXTURE_TEMPLATE_FIELD_TEXT = 'EXT:flux/Tests/Fixtures/Templates/Fields/Text.html';
 	const FIXTURE_TEMPLATE_FIELD_CHECKBOX = 'EXT:flux/Tests/Fixtures/Templates/Fields/Checkbox.html';
+	const FIXTURE_TEMPLATE_FIELD_CONTROLLERACTIONS = 'EXT:flux/Tests/Fixtures/Templates/Fields/ControllerActions.html';
 	const FIXTURE_TEMPLATE_FIELD_FILE = 'EXT:flux/Tests/Fixtures/Templates/Fields/File.html';
 	const FIXTURE_TEMPLATE_FIELD_GROUP = 'EXT:flux/Tests/Fixtures/Templates/Fields/Group.html';
 	const FIXTURE_TEMPLATE_FIELD_INLINE = 'EXT:flux/Tests/Fixtures/Templates/Fields/Inline.html';

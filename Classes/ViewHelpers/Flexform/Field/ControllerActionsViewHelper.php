@@ -99,7 +99,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		$this->registerArgument('extensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension');
 		$this->registerArgument('pluginName', 'string', 'Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName');
 		$this->registerArgument('controllerName', 'string', 'Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied');
-		$this->registerArgument('actions', 'array', 'Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)');
+		$this->registerArgument('actions', 'array', 'Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)', FALSE, array());
 		$this->registerArgument('excludeActions', 'array', 'Array of "ControllerName" => "csv,of,actions" which must be excluded', FALSE, array());
 		$this->registerArgument('prefixOnRequiredArguments', 'string', 'A short string denoting that the method takes arguments, ex * (which should then be explained in the documentation for your extension about how to setup your plugins', FALSE, '*');
 		$this->registerArgument('disableLocalLanguageLabels', 'boolean', 'If TRUE, disables LLL label usage and just uses the class comment or Controller->action syntax', FALSE, FALSE);
@@ -108,132 +108,47 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	}
 
 	/**
-	 * Render method
-	 *
-	 * @return array
-	 * @throws Exception
+	 * @return Tx_Flux_Form_Field_ControllerActions
+	 * @throws RuntimeException
 	 */
-	public function renderConfiguration() {
+	public function getComponent() {
 		$extensionName = $this->arguments['extensionName'];
 		$pluginName = $this->arguments['pluginName'];
 		$actions = $this->arguments['actions'];
-		if (empty($extensionName) === TRUE && empty($pluginName) === TRUE && empty($actions) === TRUE) {
-			throw new Exception('Either "actions", or both "extensionName" and "pluginName" must be used on flux:flexform.field.switchableControllerActions. None were found.', 1346514748);
+		$controllerName = $this->arguments['controllerName'];
+		$controllerContext = $this->renderingContext->getControllerContext();
+		if (TRUE === $actions instanceof Traversable) {
+			$actions = iterator_to_array($actions);
 		}
-		if (is_array($actions) === FALSE) {
-			if (empty($extensionName) === TRUE || empty($pluginName) === TRUE) {
-				throw new Exception('Both extensionName (' . $extensionName . ') and pluginName (' . $pluginName . ') must be specified, one or both were empty', 1346519840);
+		if (NULL !== $controllerContext) {
+			if (TRUE === empty($extensionName)) {
+				$extensionName = $controllerContext->getRequest()->getControllerExtensionName();
 			}
-			$actions = $this->getActionsForExtensionNameAndPluginName($extensionName, $pluginName);
-		}
-		$config = $this->getFieldConfig();
-		$config['type'] = 'select';
-		$config['items'] = $this->renderItemsForActions($actions);
-		return $config;
-	}
-
-	/**
-	 * Reads a list of allowed actions for $extensionName's plugin $pluginName
-	 *
-	 * @param string $extensionName
-	 * @param string $pluginName
-	 * @return array
-	 */
-	protected function getActionsForExtensionNameAndPluginName($extensionName, $pluginName) {
-		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers'];
-		foreach ($actions as $controllerName => $definitions) {
-			$actions[$controllerName] = $definitions['actions'];
-		}
-		return $actions;
-	}
-
-	/**
-	 * Renders the TCA-style items array based on the Extbase FlexForm-style
-	 * definitions of selectable actions (specified manually or read based on
-	 * ViewHelper arguments)
-	 *
-	 * @param array $actions
-	 * @return array
-	 */
-	protected function renderItemsForActions(array $actions) {
-		$subActions = $this->arguments['subActions'];
-		$exclusions = $this->arguments['excludeActions'];
-		foreach ($exclusions as $controllerName => $actionsCommaSeparated) {
-			$exclusions[$controllerName] = t3lib_div::trimExplode(',', $actionsCommaSeparated, TRUE);
-		}
-		$items = array();
-		list ($vendor, $extensionName) = t3lib_div::trimExplode('.', $this->arguments['extensionName']);
-		if (TRUE === empty($extensionName)) {
-			$extensionName = $vendor;
-			$vendor = NULL;
-		}
-		$pluginName = $this->arguments['pluginName'];
-		$limitByControllerName = $this->arguments['controllerName'];
-		foreach ($actions as $controllerName => $actionsCommaSeparated) {
-			$actions = is_array($actionsCommaSeparated) === TRUE ? $actionsCommaSeparated : t3lib_div::trimExplode(',', $actionsCommaSeparated, TRUE);
-			if ($extensionName && $pluginName) {
-				if (NULL === $vendor) {
-					$controllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
-				} else {
-					$controllerClassName = $vendor . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
-				}
-				$controllerClassReflection = new ReflectionClass($controllerClassName);
-			} else {
-				$controllerClassName = NULL;
-				$controllerClassReflection = NULL;
+			if (TRUE === empty($pluginName)) {
+				$pluginName = $controllerContext->getRequest()->getPluginName();
 			}
-			foreach ($actions as $actionName) {
-				$hasRequiredArguments = FALSE;
-				$hasLocalLanguageLabel = FALSE;
-				if (is_array($exclusions[$controllerName]) === TRUE && in_array($actionName, $exclusions[$controllerName]) === TRUE) {
-					continue;
-				} elseif ($limitByControllerName && $controllerName !== $limitByControllerName) {
-					continue;
-				} elseif ($controllerClassReflection) {
-					if (method_exists($controllerClassName, $actionName . 'Action') === FALSE) {
-						continue;
-					}
-					/** @var ReflectionMethod $methodReflection */
-					$methodReflection = $controllerClassReflection->getMethod($actionName . 'Action');
-					$hasRequiredArguments = (boolean)($methodReflection->getNumberOfRequiredParameters() > 0);
-					$labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
-					if ($this->arguments['disableLocalLanguageLabels'] || file_exists(t3lib_extMgm::extPath(t3lib_div::camelCaseToLowerCaseUnderscored($extensionName), $this->arguments['localLanguageFileRelativePath'])) === FALSE) {
-						$line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
-						$label = trim(trim($line), '* ');
-						if (substr($label, 0, 1) === '@') {
-							$label = NULL;
-						}
-					} else {
-						$label = 'LLL:EXT:' . t3lib_div::camelCaseToLowerCaseUnderscored($extensionName) . $this->arguments['localLanguageFileRelativePath'] . ':' . $labelPath;
-						$hasLocalLanguageLabel = TRUE;
-					}
-				} else {
-					$label = $actionName;
-				}
-				$label = trim($label);
-				if (empty($label) === TRUE) {
-					$label = $controllerName . '->' . $actionName;
-				}
-				if ($hasRequiredArguments === TRUE && $hasLocalLanguageLabel === FALSE && empty($this->arguments['prefixOnRequiredArguments']) === FALSE) {
-					$label = $this->arguments['prefixOnRequiredArguments'] . ' ' . $label;
-				}
-				$actionKey = array($controllerName . '->' . $actionName);
-
-				if (isset($subActions[$controllerName][$actionName])) {
-					$subActionsArray = t3lib_div::trimExplode(',', $subActions[$controllerName][$actionName]);
-					foreach ($subActionsArray as $allowedActionName) {
-						$actionKey[] = $controllerName . '->' . $allowedActionName;
-					}
-				}
-
-				$values = array(
-					implode(';', $actionKey),
-					$label,
-				);
-				array_push($items, $values);
+			if (TRUE === empty($controllerName)) {
+				$controllerName = $controllerContext->getRequest()->getControllerName();
 			}
 		}
-
-		return $items;
+		if (TRUE === empty($extensionName) && TRUE === empty($pluginName) && 1 > count($actions)) {
+			throw new RuntimeException('Either "actions", or both "extensionName" and "pluginName" must be used on ' .
+				'flux:flexform.field.controllerActions. None were found and none were detected from the ControllerContext Request.', 1346514748);
+		}
+		/** @var Tx_Flux_Form_Field_ControllerActions $component */
+		$component = $this->getPreparedComponent('ControllerActions');
+		$component->setItems($this->arguments['items']);
+		$component->setExtensionName($extensionName);
+		$component->setPluginName($pluginName);
+		$component->setControllerName($controllerName);
+		$component->setActions($actions);
+		$component->setExcludeActions($this->arguments['excludeAction']);
+		$component->setPrefixOnRequiredArguments($this->arguments['prefixOnRequiredArguments']);
+		$component->setDisableLocalLanguageLabels($this->arguments['disableLocalLanguageLables']);
+		$component->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
+		$component->setSubActions($this->arguments['subActions']);
+		return $component;
 	}
+
+
 }
