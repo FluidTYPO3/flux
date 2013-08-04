@@ -29,4 +29,27 @@
  */
 class Tx_Flux_Controller_ContentController extends Tx_Flux_Controller_AbstractFluxController {
 
+	/**
+	 * Fake Action
+	 *
+	 * @return void
+	 */
+	public function fakeAction() {
+	}
+
+	/**
+	 * @return void
+	 */
+	public function fakeWithoutDescriptionAction() {
+	}
+
+	/**
+	 * Fake Action
+	 *
+	 * @param string $required
+	 * @return void
+	 */
+	public function fakeWithRequiredArgumentAction($required) {
+	}
+
 }
