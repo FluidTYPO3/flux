@@ -107,9 +107,25 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 */
 	public function canGetFlexformValues() {
 		$provider = $this->getConfigurationProviderInstance();
+		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
 		$record = $this->getBasicRecord();
-		$values = $provider->getFlexformValues($record);
-		$this->assertIsArray($values);
+		$values1 = $provider->getFlexformValues($record);
+		$values2 = $provider->getFlexformValues($record);
+		$this->assertIsArray($values1);
+		$this->assertSame($values1, $values2);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetTemplateVariables() {
+		$provider = $this->getConfigurationProviderInstance();
+		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
+		$record = $this->getBasicRecord();
+		$values1 = $provider->getTemplateVariables($record);
+		#$values2 = $provider->getTemplateVariables($record);
+		$this->assertIsArray($values1);
+		#$this->assertSame($values1, $values2);
 	}
 
 	/**

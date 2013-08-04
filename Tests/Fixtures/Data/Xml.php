@@ -47,14 +47,32 @@ class Tx_Flux_Tests_Fixtures_Data_Xml {
     <data>
         <sheet index="options">
             <language index="lDEF">
-                <field index="stringToArray">
+                <field index="transform.unknown">
+                    <value index="vDEF">0</value>
+                </field>
+                <field index="transform.stringToArray">
                     <value index="vDEF">1,2,3</value>
                 </field>
-                <field index="stringToInteger">
+                <field index="transform.stringToInteger">
                     <value index="vDEF">3</value>
                 </field>
-                <field index="stringToFloat">
+                <field index="transform.stringToFloat">
                     <value index="vDEF">1.5</value>
+                </field>
+                <field index="transform.nullToInvalidClassName">
+                    <value index="vDEF"></value>
+                </field>
+                <field index="transform.nullToGenericObject">
+                    <value index="vDEF"></value>
+                </field>
+                <field index="transform.nullToGenericObjectCollection">
+                    <value index="vDEF"></value>
+                </field>
+                <field index="transform.nullToDomainObject">
+                    <value index="vDEF"></value>
+                </field>
+                <field index="transform.nullToDomainObjectCollection">
+                    <value index="vDEF">0,1,2</value>
                 </field>
             </language>
         </sheet>

@@ -79,6 +79,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @return void
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
+		parent::preProcessRecord($row, $id, $reference);
 		if (is_array($row['pi_flexform']['data'])) {
 			foreach ((array) $row['pi_flexform']['data']['options']['lDEF'] as $key=>$value) {
 				if (strpos($key, 'tt_content') === 0) {
@@ -174,6 +175,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @return void
 	 */
 	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference) {
+		parent::postProcessDatabaseOperation($status, $id, $row, $reference);
 		if ($status === 'new') {
 			$newUid = $reference->substNEWwithIDs[$id];
 			$this->adjustColumnPositionBasedOnCommandUrl($newUid);
@@ -235,6 +237,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @return void
 	 */
 	public function preProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
+		parent::preProcessCommand($command, $id, $row, $relativeTo, $reference);
 		if ($command === 'move') {
 			$this->adjustColumnPositionBasedOnCommandUrl($id);
 			if (strpos($relativeTo, 'FLUX') !== FALSE) {
@@ -280,6 +283,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @return void
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
+		parent::postProcessCommand($command, $id, $row, $relativeTo, $reference);
 		$pasteCommands = array('copy', 'move');
 		if (TRUE === in_array($command, $pasteCommands)) {
 			$callback = t3lib_div::_GET('CB');
@@ -328,20 +332,11 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	}
 
 	/**
-	 * @param array $row
-	 * @param mixed $dataStructure
-	 * @param array $conf
-	 * @return void
-	 */
-	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
-		unset($row, $dataStructure, $conf);
-	}
-
-	/**
 	 * @param array $command
 	 * @return void
 	 */
 	public function clearCacheCommand($command = array()) {
+		parent::clearCacheCommand($command);
 		if (TRUE === isset($command['uid'])) {
 			return;
 		}

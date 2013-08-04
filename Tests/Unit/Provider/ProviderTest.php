@@ -275,7 +275,7 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	 */
 	public function canGetAndSetListType() {
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
-		/** @var Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider $instance */
+		/** @var Tx_Flux_Provider_ProviderInterface $instance */
 		$instance = $this->getConfigurationProviderInstance();
 		$instance->setExtensionKey('flux');
 		$listType = $instance->getListType($record);
@@ -297,7 +297,7 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	 * @test
 	 */
 	public function canCreateFormFromDefinitionWithAllSupportedNodes() {
-		/** @var Tx_Flux_Provider_Configuration_TypoScriptConfigurationProvider $provider */
+		/** @var Tx_Flux_Provider_ProviderInterface $instance */
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$provider->loadSettings($this->definition);
@@ -309,7 +309,7 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	 * @test
 	 */
 	public function canCreateGridFromDefinitionWithAllSupportedNodes() {
-		/** @var Tx_Flux_Provider_Configuration_TypoScriptConfigurationProvider $provider */
+		/** @var Tx_Flux_Provider_ProviderInterface $instance */
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$provider->loadSettings($this->definition);
@@ -337,19 +337,6 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 		$extensionKey = $provider->getExtensionKey($record);
 		$this->assertNotEmpty($extensionKey);
 		$this->assertRegExp('/[a-z_]+/', $extensionKey);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canGetFlexFormValues() {
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
-		$service = $this->createFluxServiceInstance();
-		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
-		$this->assertInstanceOf('Tx_Flux_Provider_ContentProvider', $provider);
-		$values = $provider->getFlexFormValues($record);
-		$this->assertSame($values, array('settings' => array('input' => '0')));
 	}
 
 	/**

@@ -96,16 +96,27 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	/**
 	 * @test
 	 */
+	public function canGetTypoScriptSubConfigurationWithNonexistingExtensionNameAndReturnEmptyArray() {
+		$service = $this->createFluxServiceInstance();
+		$config = $service->getTypoScriptSubConfiguration('doesnotexist', 'view', 'flux');
+		$this->assertIsArray($config);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canGetFormWithPaths() {
-		$templatePathAndFilename = t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
 		$paths = array(
 			'templateRootPath' => 'EXT:flux/Resources/Private/Templates',
 			'partialRootPath' => 'EXT:flux/Resources/Private/Partials',
 			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
 		);
-		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$form1 = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
+		$form2 = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
+		$this->assertInstanceOf('Tx_Flux_Form', $form1);
+		$this->assertInstanceOf('Tx_Flux_Form', $form2);
 	}
 
 	/**
@@ -179,6 +190,102 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$service = $this->createFluxServiceInstance();
 		$config = $service->getBackendViewConfigurationForExtensionName('noname');
 		$this->assertNull($config);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canSendDebugMessages() {
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
+		$service = $this->createFluxServiceInstance();
+		$message = uniqid('message_');
+		$service->message($message);
+		$service->message($message);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canSendDebugMessagesInProductionContext() {
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 2;
+		$service = $this->createFluxServiceInstance();
+		$message = uniqid('message_');
+		$service->message($message);
+		$service->message($message);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDebugProvider() {
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
+		$service = $this->createFluxServiceInstance();
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', NULL, $record, 'flux');
+		$service->debugProvider($provider);
+		$service->debugProvider($provider);
+		$service->debug($provider);
+		$service->debug($provider);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDebugView() {
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
+		$service = $this->createFluxServiceInstance();
+		$view = $service->getPreparedExposedTemplateView('flux', 'Content');
+		$service->debugView($view);
+		$service->debugView($view);
+		$service->debug($view);
+		$service->debug($view);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDebugRandomObject() {
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
+		$service = $this->createFluxServiceInstance();
+		$object = Tx_Flux_Form::createFromDefinition(array('name' => 'test'));
+		$service->debug($object);
+		$service->debug($object);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDebugException() {
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
+		$service = $this->createFluxServiceInstance();
+		$exception = new RuntimeException('Hello world', 1);
+		$service->debug($exception);
+		$service->debug($exception);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDebugRandomString() {
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
+		$service = $this->createFluxServiceInstance();
+		$string = 'Hello world';
+		$service->debug($string);
+		$service->debug($string);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
 	}
 
 }
