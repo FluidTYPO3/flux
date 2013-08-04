@@ -155,6 +155,16 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	}
 
 	/**
+	 * @return void
+	 */
+	public function truncateFluidCodeCache() {
+		$files = glob(t3lib_div::getFileAbsFileName('typo3temp/Cache/Code/fluid_template/*.php'));
+		if (TRUE === is_array($files)) {
+			array_walk($files, 'unlink');
+		}
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function getShorthandFixtureTemplatePathAndFilename() {
