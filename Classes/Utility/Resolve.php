@@ -140,4 +140,24 @@ class Tx_Flux_Utility_Resolve {
 		return $potentialClassName;
 	}
 
+	/**
+	 * @param integer $uid
+	 * @return string
+	 */
+	public static function detectParentElementAreaFromRecord($uid) {
+		$uid = abs($uid);
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		return $record['tx_flux_column'];
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return integer
+	 */
+	public static function detectParentUidFromRecord($uid) {
+		$uid = abs($uid);
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		return intval($record['tx_flux_parent']);
+	}
+
 }

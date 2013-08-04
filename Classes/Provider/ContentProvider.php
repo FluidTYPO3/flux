@@ -257,8 +257,8 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 				$row['sorting'] = -1;
 			} elseif ($relativeTo < 0) {
 				// Triggers when sorting a CE after another CE, $relativeTo is negative value of CE's UID
-				$row['tx_flux_column'] = $this->detectParentElementAreaFromRecord($relativeTo);
-				$row['tx_flux_parent'] = $this->detectParentUidFromRecord($relativeTo);
+				$row['tx_flux_column'] = Tx_Flux_Utility_Resolve::detectParentElementAreaFromRecord($relativeTo);
+				$row['tx_flux_parent'] = Tx_Flux_Utility_Resolve::detectParentUidFromRecord($relativeTo);
 			}
 			if (strpos($row['tx_flux_column'], ':') !== FALSE) {
 				// TODO: after migration to "parent" usage, remember to change this next line
@@ -332,23 +332,6 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	}
 
 	/**
-	 * @param array $command
-	 * @return void
-	 */
-	public function clearCacheCommand($command = array()) {
-		parent::clearCacheCommand($command);
-		if (TRUE === isset($command['uid'])) {
-			return;
-		}
-		$files = glob(PATH_site . 'typo3temp/flux-*');
-		if (TRUE === is_array($files)) {
-			foreach ($files as $fileName) {
-				unlink($fileName);
-			}
-		}
-	}
-
-	/**
 	 * @param integer $id
 	 * @return void
 	 */
@@ -371,26 +354,6 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
 			}
 		}
-	}
-
-	/**
-	 * @param integer $uid
-	 * @return string
-	 */
-	public function detectParentElementAreaFromRecord($uid) {
-		$uid = abs($uid);
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		return $record['tx_flux_column'];
-	}
-
-	/**
-	 * @param integer $uid
-	 * @return integer
-	 */
-	public function detectParentUidFromRecord($uid) {
-		$uid = abs($uid);
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		return intval($record['tx_flux_parent']);
 	}
 
 }

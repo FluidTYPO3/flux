@@ -536,7 +536,15 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @return void
 	 */
 	public function clearCacheCommand($command = array()) {
-		return;
+		if (TRUE === isset($command['uid'])) {
+			return;
+		}
+		$files = glob(PATH_site . 'typo3temp/flux-*');
+		if (TRUE === is_array($files)) {
+			foreach ($files as $fileName) {
+				unlink($fileName);
+			}
+		}
 	}
 
 	/**
@@ -825,9 +833,9 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	}
 
 	/**
-	 * @param Tx_Flux_Grid $grid
+	 * @param Tx_Flux_Form_Container_Grid $grid
 	 */
-	public function setGrid(Tx_Flux_Grid $grid) {
+	public function setGrid(Tx_Flux_Form_Container_Grid $grid) {
 		$this->grid = $grid;
 	}
 
