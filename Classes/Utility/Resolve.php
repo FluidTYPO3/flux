@@ -32,6 +32,32 @@
 class Tx_Flux_Utility_Resolve {
 
 	/**
+	 * @var boolean
+	 */
+	protected static $initialized = FALSE;
+
+	/**
+	 * @var boolean
+	 */
+	protected static $hasGridElementsVersionTwo = FALSE;
+
+	/**
+	 * @var boolean
+	 */
+	protected static $isLegacyCoreVersion = FALSE;
+
+	/**
+	 * @return void
+	 */
+	private static function initialize() {
+		if (FALSE === self::$initialized) {
+			self::$hasGridElementsVersionTwo = Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
+			self::$isLegacyCoreVersion = Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero();
+		}
+		self::$initialized = TRUE;
+	}
+
+	/**
 	 * @param string $extensionKey
 	 * @param string $action
 	 * @param string $controllerObjectShortName
@@ -79,6 +105,23 @@ class Tx_Flux_Utility_Resolve {
 			$record = array_pop($records);
 		}
 		return $record;
+	}
+
+	/**
+	 * @param string $templateRootPath
+	 * @return string
+	 */
+	public static function resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath) {
+		self::initialize();
+		$templateRootPath = rtrim($templateRootPath, '/');
+		$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Index.html';
+		if (TRUE === self::$hasGridElementsVersionTwo) {
+			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/GridElements.html';
+		} elseif (TRUE === self::$isLegacyCoreVersion) {
+			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Legacy.html';
+		}
+		$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+		return $templatePathAndFilename;
 	}
 
 	/**

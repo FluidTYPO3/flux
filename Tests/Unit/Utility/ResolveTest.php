@@ -98,6 +98,26 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	/**
 	 * @test
 	 */
+	public function canDetectWidgetTemplatePathAndFilenameAndTrimsTrailingSlash() {
+		$templateRootPath = t3lib_extMgm::extPath('flux', 'Resources/Private/Templates/');
+		$expectedDefault = $templateRootPath . 'ViewHelpers/Widget/Grid/Index.html';
+		$expectedLegacy = $templateRootPath . 'ViewHelpers/Widget/Grid/Legacy.html';
+		$expectedWithGridelementsVersionTwo = $templateRootPath . 'ViewHelpers/Widget/Grid/GridElements.html';
+		$utility = new Tx_Flux_Utility_Resolve();
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'initialized', TRUE, TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', FALSE, TRUE);
+		$this->assertSame($expectedDefault, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', TRUE, TRUE);
+		$this->assertSame($expectedWithGridelementsVersionTwo, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', FALSE, TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', TRUE, TRUE);
+		$this->assertSame($expectedLegacy, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'initialized', FALSE, TRUE);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canDetectCurrentPageRecord() {
 		$result = Tx_Flux_Utility_Resolve::resolveCurrentPageRecord();
 		$this->assertNull($result);
