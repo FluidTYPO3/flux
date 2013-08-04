@@ -97,11 +97,21 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 		if (NULL === $provider) {
 			return $columns;
 		}
-		$grid = $provider->getGrid($record)->build();
-		foreach ($grid['rows'] as $row) {
-			foreach ($row['columns'] as $column) {
-				foreach ($column['areas'] as $area) {
-					array_push($columns, array($area['label'], $area['name']));
+		return $this->getGridFromConfigurationProviderAndRecord($provider, $record);
+	}
+
+	/**
+	 * @param Tx_Flux_Provider_ConfigurationProviderInterface $provider
+	 * @param array $record
+	 * @return mixed
+	 */
+	protected function getGridFromConfigurationProviderAndRecord(Tx_Flux_Provider_ConfigurationProviderInterface $provider, array $record) {
+		$columns = array();
+		$grid = $provider->getGrid($record);
+		foreach ($grid->getRows() as $row) {
+			foreach ($row->getColumns() as $column) {
+				foreach ($column->getAreas() as $area) {
+					array_push($columns, array($area->getLabel(), $area->getName()));
 				}
 			}
 		}

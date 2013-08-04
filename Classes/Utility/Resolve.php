@@ -32,6 +32,32 @@
 class Tx_Flux_Utility_Resolve {
 
 	/**
+	 * @var boolean
+	 */
+	protected static $initialized = FALSE;
+
+	/**
+	 * @var boolean
+	 */
+	protected static $hasGridElementsVersionTwo = FALSE;
+
+	/**
+	 * @var boolean
+	 */
+	protected static $isLegacyCoreVersion = FALSE;
+
+	/**
+	 * @return void
+	 */
+	private static function initialize() {
+		if (FALSE === self::$initialized) {
+			self::$hasGridElementsVersionTwo = Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
+			self::$isLegacyCoreVersion = Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero();
+		}
+		self::$initialized = TRUE;
+	}
+
+	/**
 	 * @param string $extensionKey
 	 * @param string $action
 	 * @param string $controllerObjectShortName
@@ -56,6 +82,46 @@ class Tx_Flux_Utility_Resolve {
 			return NULL;
 		}
 		return $potentialControllerClassName;
+	}
+
+	/**
+	 * @param string $pluginSignature
+	 * @return string|NULL
+	 */
+	public static function resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature) {
+		$requestParameters = (array) t3lib_div::_GET($pluginSignature);
+		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : NULL;
+		return $overriddenControllerActionName;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function resolveCurrentPageRecord() {
+		if (TRUE === isset($GLOBALS['TSFE']->page)) {
+			$record = $GLOBALS['TSFE']->page;
+		} elseif ('BE' === TYPO3_MODE) {
+			$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', "uid = '" . t3lib_div::_GET('id') . "'");
+			$record = array_pop($records);
+		}
+		return $record;
+	}
+
+	/**
+	 * @param string $templateRootPath
+	 * @return string
+	 */
+	public static function resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath) {
+		self::initialize();
+		$templateRootPath = rtrim($templateRootPath, '/');
+		$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Index.html';
+		if (TRUE === self::$hasGridElementsVersionTwo) {
+			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/GridElements.html';
+		} elseif (TRUE === self::$isLegacyCoreVersion) {
+			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Legacy.html';
+		}
+		$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+		return $templatePathAndFilename;
 	}
 
 	/**

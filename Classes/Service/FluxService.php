@@ -151,6 +151,9 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (TRUE === isset($paths['partialRootPath']) && FALSE === empty($paths['partialRootPath'])) {
 			$exposedView->setPartialRootPath($paths['partialRootPath']);
 		}
+		if (TRUE === isset($paths['templateRootPath']) && FALSE === empty($paths['templateRootPath'])) {
+			$exposedView->setTemplateRootPath($paths['templateRootPath']);
+		}
 		return $exposedView;
 	}
 
