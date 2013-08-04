@@ -307,6 +307,7 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 * @return string
 	 */
 	public function getControllerActionFromRecord(array $row);
+
 	/**
 	 * @param array $row
 	 * @return string
