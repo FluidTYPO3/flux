@@ -57,10 +57,10 @@ class Tx_Flux_Backend_PreviewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$itemContent = '';
 		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$row['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
-		Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Tests_Fixtures_Class_DummyContentConfigurationProvider');
+		Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider');
 		$instance = $this->objectManager->get(array_pop(explode(':', $function)));
 		$instance->preProcess($caller, $drawItem, $headerContent, $itemContent, $row);
-		Tx_Flux_Core::unregisterConfigurationProvider('Tx_Flux_Tests_Fixtures_Class_DummyContentConfigurationProvider');
+		Tx_Flux_Core::unregisterConfigurationProvider('Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider');
 	}
 
 }

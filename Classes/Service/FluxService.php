@@ -286,7 +286,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $fieldName
 	 * @param array $row
 	 * @param string $extensionKey
-	 * @return Tx_Flux_Provider_ConfigurationProviderInterface|NULL
+	 * @return Tx_Flux_Provider_ProviderInterface|NULL
 	 */
 	public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		if (is_array($row) === FALSE) {
@@ -317,9 +317,9 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $fieldName
 	 * @param array $row
 	 * @param string $extensionKey
-	 * @return Tx_Flux_Provider_ConfigurationProviderInterface[]
+	 * @return Tx_Flux_Provider_ProviderInterface[]
 	 */
-	public function resolveConfigurationProviders($table, $fieldName, array $row=NULL, $extensionKey=NULL) {
+	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		if (is_array($row) === FALSE) {
 			$row = array();
 		}
@@ -344,30 +344,11 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				}
 			}
 			$priority = $provider->getPriority($row);
-			$providerFieldName = $provider->getFieldName($row);
-			$providerExtensionKey = $provider->getExtensionKey($row);
-			$providerTableName = $provider->getTableName($row);
 			if (FALSE === is_array($prioritizedProviders[$priority])) {
 				$prioritizedProviders[$priority] = array();
 			}
-			$matchesTableName = ($providerTableName === $table);
-			$matchesFieldName = ($providerFieldName === $fieldName || NULL === $fieldName);
-			$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
-			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
-			if ($matchesExtensionKey && $matchesTableName && $matchesFieldName) {
-				if ($provider instanceof Tx_Flux_Provider_ContentObjectConfigurationProviderInterface) {
-					/** @var Tx_Flux_Provider_ContentObjectConfigurationProviderInterface $provider */
-					if (FALSE === isset($row['CType']) || $provider->getContentObjectType($row) === $row['CType']) {
-						$prioritizedProviders[$priority][] = $provider;
-					}
-				} elseif (TRUE === $provider instanceof Tx_Flux_Provider_PluginConfigurationProviderInterface) {
-					/** @var Tx_Flux_Provider_PluginConfigurationProviderInterface $provider */
-					if (FALSE === isset($row['list_type']) || $provider->getListType($row) === $row['list_type']) {
-						$prioritizedProviders[$priority][] = $provider;
-					}
-				} else {
-					$prioritizedProviders[$priority][] = $provider;
-				}
+			if (TRUE === $provider->trigger($row, $table, $fieldName, $extensionKey)) {
+				$prioritizedProviders[$priority][] = $provider;
 			}
 		}
 		ksort($prioritizedProviders);
@@ -382,7 +363,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @return Tx_Flux_Provider_ConfigurationProviderInterface[]
+	 * @return Tx_Flux_Provider_ProviderInterface[]
 	 */
 	protected function loadTypoScriptConfigurationProviderInstances() {
 		$cacheKey = 'typoscript_providers';
@@ -397,8 +378,13 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		$providerConfigurations = t3lib_div::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
 		$providers = array();
 		foreach ($providerConfigurations as $name => $providerSettings) {
-			/** @var Tx_Flux_Provider_Configuration_TypoScriptConfigurationProvider $provider */
-			$provider = $this->objectManager->get('Tx_Flux_Provider_Configuration_TypoScriptConfigurationProvider');
+			if (TRUE === isset($providerSettings['className']) && TRUE === class_exists($providerSettings['className'])) {
+				$className = $providerSettings['className'];
+			} else {
+				$className = 'Tx_Flux_Provider_Provider';
+			}
+			/** @var Tx_Flux_Provider_ProviderInterface $provider */
+			$provider = $this->objectManager->get($className);
 			$provider->setName($name);
 			$provider->loadSettings($providerSettings);
 			$providers[$name] = $provider;
@@ -630,7 +616,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		if (TRUE === $instance instanceof Tx_Flux_MVC_View_ExposedTemplateView) {
 			$this->debugView($instance);
-		} elseif (TRUE === $instance instanceof Tx_Flux_Provider_ConfigurationProviderInterface) {
+		} elseif (TRUE === $instance instanceof Tx_Flux_Provider_ProviderInterface) {
 			$this->debugProvider($instance);
 		} elseif (TRUE === $instance instanceof Exception) {
 			$this->debugException($instance);
@@ -685,10 +671,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param Tx_Flux_Provider_ConfigurationProviderInterface $provider
+	 * @param Tx_Flux_Provider_ProviderInterface $provider
 	 * @return void
 	 */
-	public function debugProvider(Tx_Flux_Provider_ConfigurationProviderInterface $provider) {
+	public function debugProvider(Tx_Flux_Provider_ProviderInterface $provider) {
 		Tx_Extbase_Utility_Debugger::var_dump($provider);
 	}
 

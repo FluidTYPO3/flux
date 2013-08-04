@@ -34,7 +34,7 @@
  * @package Flux
  * @subpackage Provider
  */
-class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends Tx_Flux_Provider_AbstractContentObjectConfigurationProvider implements Tx_Flux_Provider_ConfigurationProviderInterface {
+class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInterface {
 
 	/**
 	 * @var string
@@ -49,6 +49,11 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	/**
 	 * @var string
 	 */
+	protected $tableName = 'tt_content';
+
+	/**
+	 * @var string
+	 */
 	protected $fieldName = 'pi_flexform';
 
 	/**
@@ -56,9 +61,13 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return array|mixed|NULL
 	 */
 	public function getTemplatePaths(array $row) {
-		$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		$extensionIdentity = str_replace('_', '', $this->getExtensionKey($row));
-		$paths = t3lib_div::removeDotsFromTS((array) $typoScript['plugin.']['tx_' . $extensionIdentity . '.']['view.']);
+		if (TRUE === is_array($this->templatePaths)) {
+			$paths = $this->templatePaths;
+		} else {
+			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$extensionIdentity = str_replace('_', '', $this->getExtensionKey($row));
+			$paths = t3lib_div::removeDotsFromTS((array) $typoScript['plugin.']['tx_' . $extensionIdentity . '.']['view.']);
+		}
 		$paths = Tx_Flux_Utility_Path::translatePath($paths);
 		return $paths;
 	}

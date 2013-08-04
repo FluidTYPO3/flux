@@ -53,8 +53,8 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canRegisterProviderInstance() {
-		/** @var Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider $provider */
-		$provider = $this->objectManager->get('Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider');
+		/** @var Tx_Flux_Provider_ProviderInterface $provider */
+		$provider = $this->objectManager->get('Tx_Flux_Provider_Provider');
 		Tx_Flux_Core::registerConfigurationProvider($provider);
 		$registered = Tx_Flux_Core::getRegisteredFlexFormProviders();
 		$this->assertContains($provider, $registered);
@@ -64,7 +64,7 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canRegisterAndUnregisterProviderClassName() {
-		$providerClassName = 'Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider';
+		$providerClassName = 'Tx_Flux_Provider_Provider';
 		Tx_Flux_Core::registerConfigurationProvider($providerClassName);
 		$registered = Tx_Flux_Core::getRegisteredFlexFormProviders();
 		$this->assertContains($providerClassName, $registered);
@@ -77,7 +77,7 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function throwsExceptionOnInvalidClassName() {
-		$providerClassName = 'Tx_Flux_Provider_Configuration_DoesNotExistConfigurationProvider';
+		$providerClassName = 'Tx_Flux_Provider_DoesNotExistProvider';
 		try {
 			Tx_Flux_Core::registerConfigurationProvider($providerClassName);
 		} catch (Exception $error) {
@@ -106,7 +106,7 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$paths = array('templateRootPath' => 'EXT:flux/Resources/Private/Templates');
 		$extensionKey = 'fake';
 		$contentObjectType = 'void';
-		$providerClassName = 'Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider';
+		$providerClassName = 'Tx_Flux_Provider_ProviderInterface';
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['CType'] = $contentObjectType;
@@ -131,7 +131,7 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$extensionKey = 'more_fake';
 		$pluginType = 'void';
 		$fieldName = NULL;
-		$providerClassName = 'Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider';
+		$providerClassName = 'Tx_Flux_Provider_ProviderInterface';
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['list_type'] = $pluginType;
@@ -155,7 +155,7 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$paths = array('templateRootPath' => 'EXT:flux/Resources/Private/Templates');
 		$table = 'fake';
 		$fieldName = NULL;
-		$providerClassName = 'Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider';
+		$providerClassName = 'Tx_Flux_Provider_ProviderInterface';
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$absoluteTemplatePathAndFilename = t3lib_div::getFileAbsFileName($relativeTemplatePathAndFilename);

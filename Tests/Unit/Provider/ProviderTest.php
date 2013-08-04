@@ -27,12 +27,53 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Provider_Fallback_FallbackConfigurationProviderTest extends Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest {
+class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTest {
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $configurationProviderClassName = 'Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider';
+	protected $definition = array(
+		'name' => 'test',
+		'label' => 'Test provider',
+		'tableName' => 'tt_content',
+		'fieldName' => 'pi_flexform',
+		'form' => array(
+			'sheets' => array(
+				'foo' => array(
+					'fields' => array(
+						'test' => array(
+							'type' => 'Input',
+						)
+					)
+				),
+				'bar' => array(
+					'fields' => array(
+						'test2' => array(
+							'type' => 'Input',
+						)
+					)
+				),
+			),
+			'fields' => array(
+				'test3' => array(
+					'type' => 'Input',
+				)
+			),
+		),
+		'grid' => array(
+			'rows' => array(
+				'foo' => array(
+					'columns' => array(
+						'bar' => array(
+							'areas' => array(
+
+							)
+						)
+					)
+				)
+			)
+		)
+	);
 
 	/**
 	 * @test
@@ -227,6 +268,100 @@ class Tx_Flux_Tests_Functional_Provider_Fallback_FallbackConfigurationProviderTe
 		$provider = $this->getConfigurationProviderInstance();
 		$return = $provider->clearCacheCommand(array('all'));
 		$this->assertEmpty($return);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetAndSetListType() {
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
+		/** @var Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider $instance */
+		$instance = $this->getConfigurationProviderInstance();
+		$instance->setExtensionKey('flux');
+		$listType = $instance->getListType($record);
+		$this->assertNull($listType);
+		$instance->setListType('test');
+		$this->assertSame('test', $instance->getListType($record));
+	}
+	/**
+	 * @test
+	 */
+	public function canGetContentObjectType() {
+		$instance = $this->getConfigurationProviderInstance();
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
+		$contentType = $instance->getContentObjectType($record);
+		$this->assertNull($contentType);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canCreateFormFromDefinitionWithAllSupportedNodes() {
+		/** @var Tx_Flux_Provider_Configuration_TypoScriptConfigurationProvider $provider */
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$provider->loadSettings($this->definition);
+		$form = $provider->getForm($record);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canCreateGridFromDefinitionWithAllSupportedNodes() {
+		/** @var Tx_Flux_Provider_Configuration_TypoScriptConfigurationProvider $provider */
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$provider->loadSettings($this->definition);
+		$grid = $provider->getGrid($record);
+		$this->assertInstanceOf('Tx_Flux_Form_Container_Grid', $grid);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetName() {
+		$provider = $this->getConfigurationProviderInstance();
+		$provider->loadSettings($this->definition);
+		$this->assertSame($provider->getName(), $this->definition['name']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReturnExtensionKey() {
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$service = $this->createFluxServiceInstance();
+		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
+		$this->assertInstanceOf('Tx_Flux_Provider_ContentProvider', $provider);
+		$extensionKey = $provider->getExtensionKey($record);
+		$this->assertNotEmpty($extensionKey);
+		$this->assertRegExp('/[a-z_]+/', $extensionKey);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetFlexFormValues() {
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$service = $this->createFluxServiceInstance();
+		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
+		$this->assertInstanceOf('Tx_Flux_Provider_ContentProvider', $provider);
+		$values = $provider->getFlexFormValues($record);
+		$this->assertSame($values, array('settings' => array('input' => '0')));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canReturnPathSetByRecordWithoutParentAndWithoutChildren() {
+		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$service = $this->createFluxServiceInstance();
+		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);
+		$this->assertInstanceOf('Tx_Flux_Provider_ProviderInterface', $provider);
+		$paths = $provider->getTemplatePaths($row);
+		$this->assertIsArray($paths);
 	}
 
 }

@@ -30,19 +30,19 @@ require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Records.php');
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @var string
 	 */
-	protected $configurationProviderClassName = 'Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider';
+	protected $configurationProviderClassName = 'Tx_Flux_Provider_ContentProvider';
 
 	/**
-	 * @return Tx_Flux_Provider_ConfigurationProviderInterface
+	 * @return Tx_Flux_Provider_ProviderInterface
 	 */
 	protected function getConfigurationProviderInstance() {
 		$potentialClassName = substr(get_class($this), 0, -4);
-		/** @var Tx_Flux_Provider_ConfigurationProviderInterface $instance */
+		/** @var Tx_Flux_Provider_ProviderInterface $instance */
 		if (TRUE === class_exists($potentialClassName)) {
 			$instance = $this->objectManager->get($potentialClassName);
 		} else {

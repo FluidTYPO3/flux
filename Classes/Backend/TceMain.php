@@ -197,7 +197,7 @@ class Tx_Flux_Backend_TceMain {
 		foreach ($tables as $table) {
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL);
 			foreach ($providers as $provider) {
-				/** @var $provider Tx_Flux_Provider_ConfigurationProviderInterface */
+				/** @var $provider Tx_Flux_Provider_ProviderInterface */
 				$provider->clearCacheCommand($command);
 			}
 		}

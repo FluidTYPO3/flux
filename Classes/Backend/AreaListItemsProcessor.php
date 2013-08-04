@@ -92,7 +92,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 		if (NULL === $record) {
 			return $columns;
 		}
-		/** @var $provider Tx_Flux_Provider_ConfigurationProviderInterface */
+		/** @var $provider Tx_Flux_Provider_ProviderInterface */
 		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
 		if (NULL === $provider) {
 			return $columns;
@@ -101,11 +101,11 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	}
 
 	/**
-	 * @param Tx_Flux_Provider_ConfigurationProviderInterface $provider
+	 * @param Tx_Flux_Provider_ProviderInterface $provider
 	 * @param array $record
 	 * @return mixed
 	 */
-	protected function getGridFromConfigurationProviderAndRecord(Tx_Flux_Provider_ConfigurationProviderInterface $provider, array $record) {
+	protected function getGridFromConfigurationProviderAndRecord(Tx_Flux_Provider_ProviderInterface $provider, array $record) {
 		$columns = array();
 		$grid = $provider->getGrid($record);
 		foreach ($grid->getRows() as $row) {

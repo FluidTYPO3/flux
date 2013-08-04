@@ -64,7 +64,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Flux_Provider_ConfigurationProviderInterface
+	 * @var Tx_Flux_Provider_ProviderInterface
 	 */
 	protected $provider;
 
