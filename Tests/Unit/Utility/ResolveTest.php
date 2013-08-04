@@ -87,4 +87,45 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$this->assertNull($result);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canDetectRequestArgumentsBasedOnPluginSignature() {
+		$result = Tx_Flux_Utility_Resolve::resolveOverriddenFluxControllerActionNameFromRequestParameters('tx_void_fake');
+		$this->assertNull($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetectWidgetTemplatePathAndFilenameAndTrimsTrailingSlash() {
+		$templateRootPath = t3lib_extMgm::extPath('flux', 'Resources/Private/Templates/');
+		$expectedDefault = $templateRootPath . 'ViewHelpers/Widget/Grid/Index.html';
+		$expectedLegacy = $templateRootPath . 'ViewHelpers/Widget/Grid/Legacy.html';
+		$expectedWithGridelementsVersionTwo = $templateRootPath . 'ViewHelpers/Widget/Grid/GridElements.html';
+		$utility = new Tx_Flux_Utility_Resolve();
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'initialized', TRUE, TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', FALSE, TRUE);
+		$this->assertSame($expectedDefault, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', TRUE, TRUE);
+		$this->assertSame($expectedWithGridelementsVersionTwo, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', FALSE, TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', TRUE, TRUE);
+		$this->assertSame($expectedLegacy, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($utility, 'initialized', FALSE, TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetectCurrentPageRecord() {
+		$result = Tx_Flux_Utility_Resolve::resolveCurrentPageRecord();
+		$this->assertNull($result);
+		$expected = array('uid' => 99999999);
+		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$GLOBALS['TSFE']->page = $expected;
+		$result = Tx_Flux_Utility_Resolve::resolveCurrentPageRecord();
+		$this->assertSame($result, $expected);
+	}
+
 }

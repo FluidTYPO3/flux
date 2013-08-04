@@ -106,29 +106,19 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 		try {
 			$this->view = $view;
 			$row = $this->getRecord();
-			if (TRUE === empty($row)) {
-				if ('BE' === TYPO3_MODE) {
-					$row = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', "uid = '" . t3lib_div::_GET('id') . "'"));
-				} else {
-					$row = $GLOBALS['TSFE']->page;
-				}
-			}
-			if (TRUE === empty($row)) {
-				$this->configurationService->message('Unable to detect active record; page, content or otherwise.', 1368271141);
-				return;
-			}
 			$table = $this->getFluxTableName();
 			$field = $this->getFluxRecordField();
 			$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $field, $row);
-			$extensionKey = $this->provider->getExtensionKey($row);
-			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
 			if (NULL === $this->provider) {
 				$this->configurationService->message('Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled Controller - ' .
-					'this is a grave error and indicates that EXT: ' . $extensionName . ' itself is broken - or that EXT:' . $extensionName .
+					'this is a grave error and indicates that EXT: ' . $this->extensionName . ' itself is broken - or that EXT:' . $this->extensionName .
 					' has been overridden by another implementation which is broken. The controller that caused this error was ' .
 					get_class($this) . ' and the table name is "' . $table . '".', t3lib_div::SYSLOG_SEVERITY_WARNING);
 				return;
 			}
+			$extensionKey = $this->provider->getExtensionKey($row);
+			$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+			$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
 			$extensionSignature = str_replace('_', '', $extensionKey);
 			$pluginName = $this->request->getPluginName();
 			$this->setup = $this->provider->getTemplatePaths($row);
@@ -151,20 +141,11 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 				// as well as the internal $this->settings array as per expected Extbase behavior.
 				$this->settings = t3lib_div::array_merge_recursive_overrule($this->settings, $this->data['settings'], FALSE, TRUE);
 			}
+			$this->view->setTemplatePathAndFilename($templatePathAndFilename);
 			$this->view->assignMultiple($this->provider->getTemplateVariables($row));
 			$this->view->assignMultiple($this->data);
 			$this->view->assign('settings', $this->settings);
-			$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
-			if (FALSE === file_exists($templatePathAndFilename)) {
-				throw new RuntimeException('Desired template file "' . $templatePathAndFilename . '" does not exist', 1364741158);
-			}
-			/** @var $view Tx_Flux_MVC_View_ExposedTemplateView */
-			$this->view->setTemplatePathAndFilename($templatePathAndFilename);
-			$this->view->setLayoutRootPath($this->setup['layoutRootPath']);
-			$this->view->setPartialRootPath($this->setup['partialRootPath']);
-			$this->view->setTemplateRootPath($this->setup['templateRootPath']);
-			$this->view->assign('fluxTableName', $this->fluxTableName);
-			$this->view->assign('fluxRecordField', $this->fluxRecordField);
+			$this->view->assign('provider', $this->provider);
 			$this->view->assign('record', $row);
 		} catch (Exception $error) {
 			$this->handleError($error);
@@ -199,45 +180,36 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	 */
 	public function renderAction() {
 		$row = $this->getRecord();
-		$this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($this->fluxTableName, $this->fluxRecordField, $row);
 		$extensionKey = $this->provider->getExtensionKey($row);
 		$pluginSignature = 'tx_' . str_replace('_', '', $extensionKey) . '_content';
-		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
 		$controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
 		$controllerExtensionName = t3lib_div::underscoredToUpperCamelCase($controllerExtensionKey);
-		$requestParameters = (array) t3lib_div::_GET($pluginSignature);
-		$arguments = (array) (TRUE === is_array(t3lib_div::_POST($pluginSignature)) ? t3lib_div::_POST($pluginSignature) : $requestParameters);
-		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : $controllerActionName;
+		$requestParameterActionName = Tx_Flux_Utility_Resolve::resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature);
+		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
+		$overriddenControllerActionName = NULL !== $requestParameterActionName ? $requestParameterActionName : $controllerActionName;
+		$controllerName = $this->request->getControllerName();
+		$potentialControllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $overriddenControllerActionName, $controllerName);
+		if (NULL === $potentialControllerClassName) {
+			$this->request->setControllerExtensionName($this->extensionName);
+		} else {
+			$this->request->setControllerExtensionName($controllerExtensionName);
+		}
 		if ($controllerExtensionName === $this->extensionName) {
 			return $this->view->render();
 		}
-		try {
-			$controllerName = $this->request->getControllerName();
-			$potentialControllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $overriddenControllerActionName, $controllerName);
-			if (NULL === $potentialControllerClassName) {
-				$this->request->setControllerExtensionName($this->extensionName);
-				return $this->view->render();
-			}
+		if (NULL === $potentialControllerClassName) {
+			$this->request->setControllerExtensionName($this->extensionName);
+			return $this->view->render();
+		} else {
 			/** @var $response Tx_Extbase_MVC_Web_Response */
 			$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
+			$arguments = (array) (TRUE === is_array(t3lib_div::_POST($pluginSignature)) ? t3lib_div::_POST($pluginSignature) : t3lib_div::_GET($pluginSignature));
 			$potentialControllerInstance = $this->objectManager->get($potentialControllerClassName);
 			$this->request->setControllerActionName($overriddenControllerActionName);
-			$this->request->setControllerExtensionName($controllerExtensionName);
 			$this->request->setArguments($arguments);
 			$potentialControllerInstance->processRequest($this->request, $response);
 			return $response->getContent();
-		} catch (Exception $error) {
-			$code = $error->getCode();
-			if (self::EXCEPTION_CUSTOM_CONTROLLER_NOT_FOUND === $code) {
-				return $this->view->render();
-			}
-			if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors']) {
-				$this->handleError($error);
-			} else {
-				throw $error;
-			}
 		}
-		return $this->view->render();
 	}
 
 	/**
@@ -302,9 +274,17 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 
 	/**
 	 * @return array
+	 * @throws RuntimeException
 	 */
 	public function getRecord() {
-		return $this->configurationManager->getContentObject()->data;
+		$row = $this->configurationManager->getContentObject()->data;
+		if (TRUE === empty($row)) {
+			$row = Tx_Flux_Utility_Resolve::resolveCurrentPageRecord();
+		}
+		if (TRUE === empty($row)) {
+			throw new RuntimeException('Unable to detect active record; page, content or otherwise.', 1368271141);
+		}
+		return $row;
 	}
 
 }
