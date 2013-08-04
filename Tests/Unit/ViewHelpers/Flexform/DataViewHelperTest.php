@@ -30,14 +30,28 @@
 class Tx_Flux_ViewHelpers_Flexform_DataViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
 
 	/**
+	 * @param string $table
+	 * @return array
+	 */
+	protected function getTestingRecordUid($table) {
+		$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', $table, '1=1', 'uid', 1);
+		if (FALSE === is_array($records)) {
+			return 0;
+		}
+		$record = array_pop($records);
+		return TRUE === is_array($record) ? array_pop($record) : 0;
+	}
+
+	/**
 	 * @test
 	 */
 	public function failsWithInvalidTable() {
 		$arguments = array(
 			'table' => 'invalid',
 			'field' => 'pi_flexform',
-			'uid' => array_pop(array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', 'tt_content', '1=1')))
+			'uid' => $this->getTestingRecordUid('invalid')
 		);
+		$this->setUseOutputBuffering(TRUE);
 		$this->executeViewHelper($arguments);
 	}
 
@@ -48,8 +62,9 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelperTest extends Tx_Flux_ViewHelper
 		$arguments = array(
 			'table' => 'tt_content',
 			'field' => 'invalid',
-			'uid' => array_pop(array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', 'tt_content', '1=1')))
+			'uid' => $this->getTestingRecordUid('tt_content')
 		);
+		$this->setUseOutputBuffering(TRUE);
 		$output = $this->executeViewHelper($arguments);
 		$this->assertContains('Either table', $output);
 		$this->assertContains('field', $output);
@@ -64,7 +79,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelperTest extends Tx_Flux_ViewHelper
 		$arguments = array(
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
-			'uid' => array_pop(array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', 'tt_content', '1=1')))
+			'uid' => $this->getTestingRecordUid('tt_content')
 		);
 		$this->executeViewHelper($arguments);
 	}
@@ -74,9 +89,9 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelperTest extends Tx_Flux_ViewHelper
 	 */
 	public function canExecuteViewHelperWithUnregisteredTableAndReturnEmptyArray() {
 		$arguments = array(
-			'table' => 'sys_log',
+			'table' => 'be_users',
 			'field' => 'uid',
-			'uid' => array_pop(array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', 'tt_content', '1=1')))
+			'uid' => $this->getTestingRecordUid('be_users')
 		);
 		$output = $this->executeViewHelper($arguments);
 		$this->assertIsArray($output);
@@ -90,7 +105,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelperTest extends Tx_Flux_ViewHelper
 		$arguments = array(
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
-			'uid' => array_pop(array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', 'tt_content', '1=1')))
+			'uid' => $this->getTestingRecordUid('tt_content')
 		);
 		$this->executeViewHelper($arguments);
 		$this->executeViewHelper($arguments);
