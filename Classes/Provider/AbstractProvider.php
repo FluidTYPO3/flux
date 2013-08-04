@@ -189,11 +189,11 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @return boolean
 	 */
 	public function trigger(array $row, $table, $field, $extensionKey = NULL) {
-		$providerFieldName = $this->getFieldName($row);
-		$providerTableName = $this->getTableName($row);
-		$providerExtensionKey = $this->getExtensionKey($row);
-		$contentObjectType = $this->getContentObjectType();
-		$listType = $this->getListType();
+		$providerFieldName = $this->fieldName;
+		$providerTableName = $this->tableName;
+		$providerExtensionKey = $this->extensionKey;
+		$contentObjectType = $this->contentObjectType;
+		$listType = $this->listType;
 		$matchesContentType = (TRUE === empty($contentObjectType) || (FALSE === empty($row['CType']) && $row['CType'] === $contentObjectType));
 		$matchesPluginType = (TRUE === empty($listType) || (FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
 		$matchesTableName = ($providerTableName === $table || NULL === $table);
