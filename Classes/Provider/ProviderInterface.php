@@ -314,4 +314,14 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 */
 	public function getControllerActionReferenceFromRecord(array $row);
 
+	/**
+	 * @param Tx_Flux_Form $form
+	 */
+	public function setForm(Tx_Flux_Form $form);
+
+	/**
+	 * @param Tx_Flux_Form_Container_Grid $grid
+	 */
+	public function setGrid(Tx_Flux_Form_Container_Grid $grid);
+
 }

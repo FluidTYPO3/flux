@@ -236,4 +236,35 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$provider->postProcessRecord('void', $id, $record, $parentInstance);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canExecuteClearCacheCommand() {
+		$provider = $this->getConfigurationProviderInstance();
+		$return = $provider->clearCacheCommand(array('all'));
+		$this->assertEmpty($return);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canSetForm() {
+		$form = Tx_Flux_Form::createFromDefinition(array('name' => 'test'));
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$provider = $this->getConfigurationProviderInstance();
+		$provider->setForm($form);
+		$this->assertSame($form, $provider->getForm($record));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canSetGrid() {
+		$grid = Tx_Flux_Form_Container_Grid::createFromDefinition(array('name' => 'test'));
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$provider = $this->getConfigurationProviderInstance();
+		$provider->setGrid($grid);
+		$this->assertSame($grid, $provider->getGrid($record));
+	}
+
 }

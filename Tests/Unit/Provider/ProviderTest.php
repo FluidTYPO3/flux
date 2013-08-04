@@ -265,9 +265,8 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	 * @test
 	 */
 	public function canExecuteClearCacheCommand() {
-		$provider = $this->getConfigurationProviderInstance();
-		$return = $provider->clearCacheCommand(array('all'));
-		$this->assertEmpty($return);
+		touch(t3lib_div::getFileAbsFileName('typo3temp/flux-test.manifest'));
+		parent::canExecuteClearCacheCommand();
 	}
 
 	/**
