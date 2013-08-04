@@ -144,6 +144,18 @@ class Tx_Flux_MVC_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFun
 	/**
 	 * @test
 	 */
+	public function renderingTemplateTwiceTriggersTemplateCompilerSaving() {
+		$this->truncateFluidCodeCache();
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
+		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
+		$view->render();
+		$view->getForm();
+		$view->getForm();
+	}
+
+	/**
+	 * @test
+	 */
 	public function throwsRuntimeExceptionIfImproperlyInitialized() {
 		$this->truncateFluidCodeCache();
 		$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
