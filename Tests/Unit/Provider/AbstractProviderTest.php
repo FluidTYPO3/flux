@@ -122,10 +122,8 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
 		$record = $this->getBasicRecord();
-		$values1 = $provider->getTemplateVariables($record);
-		#$values2 = $provider->getTemplateVariables($record);
-		$this->assertIsArray($values1);
-		#$this->assertSame($values1, $values2);
+		$values = $provider->getTemplateVariables($record);
+		$this->assertIsArray($values);
 	}
 
 	/**
