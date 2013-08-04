@@ -195,6 +195,20 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	/**
 	 * @test
 	 */
+	public function canGetViewConfigurationForExtensionNameWhichDoesNotExistAndConstructDefaults() {
+		$expected = array(
+			'templateRootPath' => 'EXT:void/Resources/Private/Templates',
+			'partialRootPath' => 'EXT:void/Resources/Private/Partials',
+			'layoutRootPath' => 'EXT:void/Resources/Private/Layouts',
+		);
+		$service = $this->createFluxServiceInstance();
+		$config = $service->getViewConfigurationForExtensionName('void');
+		$this->assertSame($expected, $config);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canSendDebugMessages() {
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
