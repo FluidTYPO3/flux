@@ -33,7 +33,7 @@ class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_AbstractFormContainer 
 	 * @param array $settings
 	 * @return Tx_Flux_Form_Container_Section
 	 */
-	public static function createFromDefinition(array $settings) {
+	public static function create(array $settings) {
 		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		/** @var Tx_Flux_Form_Container_Section */
@@ -49,7 +49,7 @@ class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_AbstractFormContainer 
 				if (FALSE === isset($objectSettings['name'])) {
 					$objectSettings['name'] = $fieldName;
 				}
-				$object = Tx_Flux_Form_Container_Object::createFromDefinition($objectSettings);
+				$object = Tx_Flux_Form_Container_Object::create($objectSettings);
 				$section->add($object);
 			}
 		}

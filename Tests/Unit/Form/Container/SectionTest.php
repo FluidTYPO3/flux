@@ -48,7 +48,7 @@ class Tx_Flux_Form_Container_SectionTest extends Tx_Flux_Tests_Functional_Form_C
 				)
 			)
 		);
-		$section = Tx_Flux_Form_Container_Section::createFromDefinition($definition);
+		$section = Tx_Flux_Form_Container_Section::create($definition);
 		$this->assertInstanceOf('Tx_Flux_Form_Container_Section', $section);
 	}
 

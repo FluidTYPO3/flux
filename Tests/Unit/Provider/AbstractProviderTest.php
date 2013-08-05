@@ -304,7 +304,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 * @test
 	 */
 	public function canSetForm() {
-		$form = Tx_Flux_Form::createFromDefinition(array('name' => 'test'));
+		$form = Tx_Flux_Form::create(array('name' => 'test'));
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setForm($form);
@@ -314,7 +314,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 * @test
 	 */
 	public function canSetGrid() {
-		$grid = Tx_Flux_Form_Container_Grid::createFromDefinition(array('name' => 'test'));
+		$grid = Tx_Flux_Form_Container_Grid::create(array('name' => 'test'));
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setGrid($grid);

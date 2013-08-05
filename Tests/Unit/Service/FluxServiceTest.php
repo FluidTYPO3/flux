@@ -270,7 +270,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
 		$service = $this->createFluxServiceInstance();
-		$object = Tx_Flux_Form::createFromDefinition(array('name' => 'test'));
+		$object = Tx_Flux_Form::create(array('name' => 'test'));
 		$service->debug($object);
 		$service->debug($object);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
