@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
  *
  *  All rights reserved
  *
@@ -24,48 +24,31 @@
  ***************************************************************/
 
 /**
- * Backend ViewHelper base class
+ * Miscellaneous Utility
  *
+ * @author Claus Due, Wildside A/S
  * @package Flux
- * @subpackage Core\ViewHelper
+ * @subpackage Utility
  */
-abstract class Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_Flux_Utility_Miscellaneous {
 
 	/**
-	 * Initialize
-	 * @return void
-	 */
-	public function initializeArguments() {
-		$this->registerArgument('row', 'array', 'Record row', TRUE);
-		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
-	}
-
-	/**
-	 * @param string $icon
-	 * @param string $title
-	 * @return string
-	 */
-	protected function getIcon($icon, $title = NULL) {
+	* @param string $icon
+	* @param string $title
+	* @return string
+	*/
+	public static function getIcon($icon, $title = NULL) {
 		$configuration = array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new');
 		return t3lib_iconWorks::getSpriteIcon($icon, $configuration);
 	}
 
 	/**
-	 * @param string $inner
-	 * @param string $uri
-	 * @return string
-	 */
-	protected function wrapLink($inner, $uri) {
+	* @param string $inner
+	* @param string $uri
+	* @return string
+	*/
+	public static function wrapLink($inner, $uri) {
 		return '<a href="' . $uri . '">' . $inner . '</a>' . LF;
-	}
-
-	/**
-	 * @param integer $pid
-	 * @return string
-	 */
-	protected function getReturnUri($pid) {
-		$uri = $_SERVER['REQUEST_URI'];
-		return urlencode($uri);
 	}
 
 }

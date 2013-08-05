@@ -80,33 +80,4 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelperTest extends Tx_Flux_Vi
 		$this->assertNotEmpty($relativeToValue);
 	}
 
-	/**
-	 * @test
-	 */
-	public function canCreateIconWithUrl() {
-		$arguments = array(
-			'area' => 'test',
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
-			'after' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren['uid']
-		);
-		$instance = $this->buildViewHelperInstance($arguments);
-		$iconWithUrl = $this->callInaccessibleMethod($instance, 'createIconWithUrl');
-		$this->assertNotEmpty($iconWithUrl);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canCreateIconWithUrlAsReference() {
-		$arguments = array(
-			'area' => 'test',
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
-			'after' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren['uid'],
-			'reference' => TRUE
-		);
-		$instance = $this->buildViewHelperInstance($arguments);
-		$iconWithUrl = $this->callInaccessibleMethod($instance, 'createIconWithUrl');
-		$this->assertNotEmpty($iconWithUrl);
-	}
-
 }

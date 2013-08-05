@@ -31,7 +31,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize arguments

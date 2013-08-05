@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage Core/ViewHelper
  */
-abstract class Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+abstract class Tx_Flux_ViewHelpers_AbstractFlexformViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
 	/**
 	 * @var Tx_Flux_Service_FluxService
