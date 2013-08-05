@@ -324,7 +324,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (is_array($row) === FALSE) {
 			$row = array();
 		}
-		$rowIdentity = TRUE === isset($row['uid']) ? $row['uid'] : NULL;
+		$rowIdentity = TRUE === isset($row['uid']) ? $row['uid'] : uniqid();
 		$cacheKey = $table . $fieldName . $rowIdentity . $extensionKey;
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
