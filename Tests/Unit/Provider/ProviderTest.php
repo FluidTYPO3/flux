@@ -78,69 +78,6 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	/**
 	 * @test
 	 */
-	public function canOperateArrayMergeFunction() {
-		$provider = $this->getConfigurationProviderInstance();
-		$array1 = array(
-			'foo' => array(
-				'bar' => TRUE
-			)
-		);
-		$array2 = array(
-			'foo' => array(
-				'foo' => TRUE
-			)
-		);
-		$expected = array(
-			'foo' => array(
-				'bar' => TRUE,
-				'foo' => TRUE
-			)
-		);
-		$product = $this->callInaccessibleMethod($provider, 'arrayMergeRecursive', $array1, $array2);
-		$this->assertSame($expected, $product);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canOperateArrayDiffFunction() {
-		$provider = $this->getConfigurationProviderInstance();
-		$array1 = array(
-			'bar' => TRUE,
-			'baz' => TRUE,
-			'same' => array(
-				'foo' => TRUE
-			),
-			'foo' => array(
-				'bar' => TRUE,
-				'foo' => TRUE
-			)
-		);
-		$array2 = array(
-			'bar' => TRUE,
-			'baz' => FALSE,
-			'new' => TRUE,
-			'same' => array(
-				'foo' => TRUE
-			),
-			'foo' => array(
-				'bar' => TRUE
-			)
-		);
-		$expected = array(
-			'baz' => TRUE,
-			'foo' => array(
-				'foo' => TRUE
-			),
-			'new' => TRUE,
-		);
-		$product = $this->callInaccessibleMethod($provider, 'arrayDiffRecursive', $array1, $array2);
-		$this->assertSame($expected, $product);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canGetName() {
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->loadSettings($this->definition);

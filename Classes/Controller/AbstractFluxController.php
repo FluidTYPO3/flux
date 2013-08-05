@@ -139,7 +139,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 			} elseif (TRUE === isset($this->data['settings']) && TRUE === is_array($this->data['settings'])) {
 				// a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
 				// as well as the internal $this->settings array as per expected Extbase behavior.
-				$this->settings = t3lib_div::array_merge_recursive_overrule($this->settings, $this->data['settings'], FALSE, TRUE);
+				$this->settings = Tx_Flux_Utility_RecursiveArray::merge($this->settings, $this->data['settings']);
 			}
 			$this->view->setTemplatePathAndFilename($templatePathAndFilename);
 			$this->view->assignMultiple($this->provider->getTemplateVariables($row));
