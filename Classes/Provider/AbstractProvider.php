@@ -606,7 +606,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$extensionKey = $this->getExtensionKey($row);
 		$flexformVariables = $this->getFlexFormValues($row);
 		$templateVariables = $this->getTemplateVariables($row);
-		$variables = $this->arrayMergeRecursive($templateVariables, $flexformVariables);
+		$variables = Tx_Flux_Utility_RecursiveArray::merge($templateVariables, $flexformVariables);
 		$paths = $this->getTemplatePaths($row);
 		$form = $this->getForm($row);
 		$formLabel = $form->getLabel();
