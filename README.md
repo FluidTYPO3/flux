@@ -65,6 +65,12 @@ Therefore the best advise is this:
   for your records or when you create - well, used to create, anyway ;) - XML based FlexForms. Many names are the same and the
   attributes are available are (as far as possible) replicated in Flux field ViewHelpers.
 
+## Known Issues
+
+* Keep In mind to have you PHP configured correctly to accept a fairly large number of input fields. When nesting
+  sections / objects the number of fields submitted, rises drastically. The php.ini configuration setting to think about, is
+  ``max_input_vars``. If this number is too small, the TYPO3 Backend (effectively PHP) will decline the submission of the
+  Backend Form and will die with an "Invalid CSRF Token" message.
 
 ## References
 
