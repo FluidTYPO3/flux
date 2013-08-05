@@ -80,7 +80,7 @@ class Tx_Flux_Utility_ClipBoard {
 	 * @return string
 	 */
 	public static function createIconWithUrl($relativeTo, $reference = FALSE) {
-		$data = Tx_Flux_Utility_ClipBoard::getClipBoardData($reference);
+		$data = self::getClipBoardData($reference);
 		if (NULL === $data) {
 			return '';
 		}
