@@ -91,7 +91,7 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$service = $this->createFluxServiceInstance();
 		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
-		$this->assertInstanceOf('Tx_Flux_Provider_ContentProvider', $provider);
+		$this->assertInstanceOf('Tx_Flux_Provider_ProviderInterface', $provider);
 		$extensionKey = $provider->getExtensionKey($record);
 		$this->assertNotEmpty($extensionKey);
 		$this->assertRegExp('/[a-z_]+/', $extensionKey);
