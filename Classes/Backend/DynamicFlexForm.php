@@ -69,14 +69,11 @@ class Tx_Flux_Backend_DynamicFlexForm {
 			// respect to which ConfigurationProvider(s) are returned.
 			$fieldName = NULL;
 		}
-		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
-		foreach ($providers as $provider) {
-			try {
-				/** @var Tx_Flux_Provider_ProviderInterface $provider */
-				$provider->postProcessDataStructure($row, $dataStructArray, $conf);
-			} catch (Exception $e) {
-				$this->configurationService->debug($e);
-			}
+		$provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $fieldName, $row);
+		try {
+			$provider->postProcessDataStructure($row, $dataStructArray, $conf);
+		} catch (Exception $e) {
+			$this->configurationService->debug($e);
 		}
 	}
 
