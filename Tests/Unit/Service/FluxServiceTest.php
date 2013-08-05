@@ -43,7 +43,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canCreateExposedViewWithoutExtensionNameAndControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView();
-		$this->assertInstanceOf('Tx_Flux_MVC_View_ExposedTemplateView', $view);
+		$this->assertInstanceOf('Tx_Flux_View_ExposedTemplateView', $view);
 	}
 
 	/**
@@ -52,7 +52,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canCreateExposedViewWithExtensionNameWithoutControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView('Flux');
-		$this->assertInstanceOf('Tx_Flux_MVC_View_ExposedTemplateView', $view);
+		$this->assertInstanceOf('Tx_Flux_View_ExposedTemplateView', $view);
 	}
 
 	/**
@@ -61,7 +61,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canCreateExposedViewWithExtensionNameAndControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView('Flux', 'API');
-		$this->assertInstanceOf('Tx_Flux_MVC_View_ExposedTemplateView', $view);
+		$this->assertInstanceOf('Tx_Flux_View_ExposedTemplateView', $view);
 	}
 
 	/**
@@ -70,7 +70,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canCreateExposedViewWithoutExtensionNameWithControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView(NULL, 'API');
-		$this->assertInstanceOf('Tx_Flux_MVC_View_ExposedTemplateView', $view);
+		$this->assertInstanceOf('Tx_Flux_View_ExposedTemplateView', $view);
 	}
 
 	/**

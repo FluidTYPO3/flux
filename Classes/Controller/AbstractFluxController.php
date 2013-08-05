@@ -51,7 +51,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	/**
 	 * @var string
 	 */
-	protected $defaultViewObjectName = 'Tx_Flux_MVC_View_ExposedTemplateView';
+	protected $defaultViewObjectName = 'Tx_Flux_View_ExposedTemplateView';
 
 	/**
 	 * @var string

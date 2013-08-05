@@ -113,7 +113,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $controllerName
 	 * @param array $paths
 	 * @param array $variables
-	 * @return Tx_Flux_MVC_View_ExposedTemplateView
+	 * @return Tx_Flux_View_ExposedTemplateView
 	 */
 	public function getPreparedExposedTemplateView($extensionKey = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionKey);
@@ -139,8 +139,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		$context->setUriBuilder($uriBuilder);
 		$context->setRequest($request);
 		$context->setResponse($response);
-		/** @var $exposedView Tx_Flux_MVC_View_ExposedTemplateView */
-		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
+		/** @var $exposedView Tx_Flux_View_ExposedTemplateView */
+		$exposedView = $this->objectManager->get('Tx_Flux_View_ExposedTemplateView');
 		$exposedView->setControllerContext($context);
 		if (0 < count($variables)) {
 			$exposedView->assignMultiple($variables);
@@ -600,7 +600,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (TRUE === isset(self::$sentDebugMessages[$hash])) {
 			return;
 		}
-		if (TRUE === $instance instanceof Tx_Flux_MVC_View_ExposedTemplateView) {
+		if (TRUE === $instance instanceof Tx_Flux_View_ExposedTemplateView) {
 			$this->debugView($instance);
 		} elseif (TRUE === $instance instanceof Tx_Flux_Provider_ProviderInterface) {
 			$this->debugProvider($instance);
@@ -649,10 +649,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param Tx_Flux_MVC_View_ExposedTemplateView $view
+	 * @param Tx_Flux_View_ExposedTemplateView $view
 	 * @return void
 	 */
-	public function debugView(Tx_Flux_MVC_View_ExposedTemplateView $view) {
+	public function debugView(Tx_Flux_View_ExposedTemplateView $view) {
 		Tx_Extbase_Utility_Debugger::var_dump($view);
 	}
 

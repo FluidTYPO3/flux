@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_MVC_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
 	 * @test
@@ -158,7 +158,7 @@ class Tx_Flux_MVC_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFun
 	 */
 	public function throwsRuntimeExceptionIfImproperlyInitialized() {
 		$this->truncateFluidCodeCache();
-		$view = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
+		$view = $this->objectManager->get('Tx_Flux_View_ExposedTemplateView');
 		$this->setExpectedException('RuntimeException', NULL, 1343521593);
 		$this->callInaccessibleMethod($view, 'getStoredVariable', 'Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage');
 	}
@@ -257,7 +257,7 @@ class Tx_Flux_MVC_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFun
 
 	/**
 	 * @param $templatePathAndFilename
-	 * @return Tx_Flux_MVC_View_ExposedTemplateView
+	 * @return Tx_Flux_View_ExposedTemplateView
 	 */
 	protected function getPreparedViewWithTemplateFile($templatePathAndFilename) {
 		$this->assertFileExists($templatePathAndFilename);
