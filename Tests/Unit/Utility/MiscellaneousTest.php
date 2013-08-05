@@ -30,6 +30,14 @@
 class Tx_Flux_Utility_MiscellaneousTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
+	 * Setup
+	 */
+	protected function setUp() {
+		parent::setUp();
+		$GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
+	}
+
+	/**
 	 * @return array
 	 */
 	protected function getClipBoardDataFixture() {
