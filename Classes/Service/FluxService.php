@@ -537,10 +537,9 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			return floatval($value);
 		} elseif ('array' === $dataType) {
 			return explode(',', $value);
-		} elseif (0 === strpos($dataType, 'Tx_')) {
+		} else {
 			return $this->getObjectOfType($dataType, $value);
 		}
-		return $value;
 	}
 
 	/**
@@ -578,10 +577,8 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 				$container = $this->objectManager->get($container);
 				return $container;
 			}
-		} else {
-			// passthrough; neither object nor type hinted collection object
-			return $uids;
 		}
+		return $uids;
 	}
 
 	/**
