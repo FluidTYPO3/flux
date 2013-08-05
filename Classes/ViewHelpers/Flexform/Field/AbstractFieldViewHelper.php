@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize arguments

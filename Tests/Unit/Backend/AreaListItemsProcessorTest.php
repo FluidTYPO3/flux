@@ -55,8 +55,8 @@ class Tx_Flux_Backend_AreaListItemsProcessorTest extends Tx_Flux_Tests_AbstractF
 	public function canGetGridFromProviderAndRecord() {
 		$instance = new Tx_Flux_Backend_AreaListItemsProcessor();
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		/** @var Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider $provider */
-		$provider = $this->objectManager->get('Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider');
+		/** @var Tx_Flux_Provider_ProviderInterface $provider */
+		$provider = $this->objectManager->get('Tx_Flux_Provider_Provider');
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID));
 		$grid = $this->callInaccessibleMethod($instance, 'getGridFromConfigurationProviderAndRecord', $provider, $record);
 		$this->assertIsArray($grid);

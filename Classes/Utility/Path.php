@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage Utility
  */
-class Tx_Flux_Utility_Path implements t3lib_Singleton {
+class Tx_Flux_Utility_Path {
 
 	/**
 	 * @var array

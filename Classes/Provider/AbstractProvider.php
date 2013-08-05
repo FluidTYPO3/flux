@@ -27,27 +27,45 @@
  * @package Flux
  * @subpackage Provider
  */
-class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider_ConfigurationProviderInterface {
+class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInterface {
 
 	/**
 	 * @var array
 	 */
-	private static $cacheTree = array();
+	private static $cache = array();
 
 	/**
-	 * @var array
+	 * @var string
 	 */
-	private static $cacheMergedConfigurations = array();
+	protected $name = NULL;
 
 	/**
+	 * Fill with the table column name which should trigger this Provider.
+	 *
 	 * @var string
 	 */
 	protected $fieldName = NULL;
 
 	/**
+	 * Fill with the name of the DB table which should trigger this Provider.
+	 *
 	 * @var string
 	 */
 	protected $tableName = NULL;
+
+	/**
+	 * Fill with the "list_type" value that should trigger this Provider.
+	 *
+	 * @var string
+	 */
+	protected $listType = NULL;
+
+	/**
+	 * Fill with the "CType" value that should trigger this Provider.
+	 *
+	 * @var string
+	 */
+	protected $contentObjectType = NULL;
 
 	/**
 	 * @var string
@@ -95,6 +113,16 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	protected $priority = 50;
 
 	/**
+	 * @var Tx_Flux_Form
+	 */
+	protected $form = NULL;
+
+	/**
+	 * @var Tx_Flux_Grid
+	 */
+	protected $grid = NULL;
+
+	/**
 	 * @var Tx_Extbase_Object_ObjectManagerInterface
 	 */
 	protected $objectManager;
@@ -134,10 +162,57 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	}
 
 	/**
+	 * @param array $settings
+	 * @return void
+	 */
+	public function loadSettings(array $settings) {
+		if (TRUE === isset($settings['name'])) {
+			$this->setName($settings['name']);
+		}
+		if (TRUE === isset($settings['form'])) {
+			$settings['form'] = Tx_Flux_Form::createFromDefinition($settings['form']);
+		}
+		if (TRUE === isset($settings['grid'])) {
+			$settings['grid'] = Tx_Flux_Form_Container_Grid::createFromDefinition($settings['grid']);
+		}
+		foreach ($settings as $name => $value) {
+			$this->$name = $value;
+		}
+		$GLOBALS['TCA'][$this->tableName]['columns'][$this->fieldName]['config']['type'] = 'flex';
+	}
+
+	/**
+	 * @param array $row
+	 * @param string $table
+	 * @param string $field
+	 * @param string $extensionKey
+	 * @return boolean
+	 */
+	public function trigger(array $row, $table, $field, $extensionKey = NULL) {
+		$providerFieldName = $this->fieldName;
+		$providerTableName = $this->tableName;
+		$providerExtensionKey = $this->extensionKey;
+		$contentObjectType = $this->contentObjectType;
+		$listType = $this->listType;
+		$rowIsEmpty = (0 === count($row));
+		$matchesContentType = (TRUE === empty($contentObjectType) || (FALSE === empty($row['CType']) && $row['CType'] === $contentObjectType));
+		$matchesPluginType = (TRUE === empty($listType) || (FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
+		$matchesTableName = ($providerTableName === $table || NULL === $table);
+		$matchesFieldName = ($providerFieldName === $field || NULL === $field);
+		$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
+		$isFullMatch = ($matchesExtensionKey && $matchesTableName && $matchesFieldName && $matchesContentType && $matchesPluginType);
+		$isFallbackMatch = ($matchesTableName && $matchesFieldName && $rowIsEmpty);
+		return ($isFullMatch || $isFallbackMatch);
+	}
+
+	/**
 	 * @param array $row
 	 * @return Tx_Flux_Form
 	 */
 	public function getForm(array $row) {
+		if (NULL !== $this->form) {
+			return $this->form;
+		}
 		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 		$section = $this->getConfigurationSectionName($row);
 		$formName = 'form';
@@ -148,9 +223,6 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
 		foreach ($form->getFields() as $field) {
-			if (FALSE === $field instanceof Tx_Flux_Form_FieldInterface) {
-				continue;
-			}
 			$name = $field->getName();
 			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);
 			if (NULL !== $inheritedValue) {
@@ -165,6 +237,9 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return Tx_Flux_Form_Container_Grid
 	 */
 	public function getGrid(array $row) {
+		if (NULL !== $this->grid) {
+			return $this->grid;
+		}
 		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 		$section = $this->getConfigurationSectionName($row);
 		$gridName = 'grid';
@@ -175,6 +250,34 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
 		return $grid;
+	}
+
+	/**
+	 * @param string $listType
+	 */
+	public function setListType($listType) {
+		$this->listType = $listType;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getListType() {
+		return $this->listType;
+	}
+
+	/**
+	 * @param string $contentObjectType
+	 */
+	public function setContentObjectType($contentObjectType) {
+		$this->contentObjectType = $contentObjectType;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getContentObjectType() {
+		return $this->contentObjectType;
 	}
 
 	/**
@@ -224,24 +327,24 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getFlexFormValues(array $row) {
-		$cacheKey = md5(json_encode($row));
-		if (TRUE === isset(self::$cacheMergedConfigurations[$cacheKey])) {
-			return self::$cacheMergedConfigurations[$cacheKey];
+		$cacheKey = 'values_' . md5(json_encode($row));
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
 		}
 		$fieldName = $this->getFieldName($row);
-		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], NULL, NULL, NULL);
 		$tree = $this->getInheritanceTree($row);
 		if (0 === count($tree)) {
-			self::$cacheMergedConfigurations[$cacheKey] = $immediateConfiguration;
+			self::$cache[$cacheKey] = $immediateConfiguration;
 			return (array) $immediateConfiguration;
 		}
 		$inheritedConfiguration = $this->getMergedConfiguration($tree);
 		if (0 === count($immediateConfiguration)) {
-			self::$cacheMergedConfigurations[$cacheKey] = $inheritedConfiguration;
+			self::$cache[$cacheKey] = $inheritedConfiguration;
 			return (array) $inheritedConfiguration;
 		}
-		$merged = t3lib_div::array_merge_recursive_overrule($inheritedConfiguration, $immediateConfiguration);
-		self::$cacheMergedConfigurations[$cacheKey] = $merged;
+		$merged = Tx_Flux_Utility_RecursiveArray::merge($inheritedConfiguration, $immediateConfiguration);
+		self::$cache[$cacheKey] = $merged;
 		return $merged;
 	}
 
@@ -301,6 +404,13 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getName() {
+		return $this->name;
+	}
+
+	/**
 	 * Pre-process record data for the table that this ConfigurationProvider
 	 * is attached to.
 	 *
@@ -310,6 +420,18 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
+		$fieldName = $this->getFieldName($row);
+		$tableName = $this->getTableName($row);
+		if (is_array($row[$fieldName]['data'])) {
+			foreach ((array) $row[$fieldName]['data']['options']['lDEF'] as $key=>$value) {
+				if (strpos($key, $tableName) === 0) {
+					$realKey = array_pop(explode('.', $key));
+					if (isset($row[$realKey])) {
+						$row[$realKey] = $value['vDEF'];
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -429,7 +551,15 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return void
 	 */
 	public function clearCacheCommand($command = array()) {
-		return;
+		if (TRUE === isset($command['uid'])) {
+			return;
+		}
+		$files = glob(PATH_site . 'typo3temp/flux-*');
+		if (TRUE === is_array($files)) {
+			foreach ($files as $fileName) {
+				unlink($fileName);
+			}
+		}
 	}
 
 	/**
@@ -440,9 +570,9 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	public function getInheritanceTree(array $row) {
-		$recordUid = $row['uid'];
-		if (TRUE === isset(self::$cacheTree[$recordUid])) {
-			return self::$cacheTree[$recordUid];
+		$cacheKey = 'tree_' . $row['uid'];
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
 		}
 		$records = array();
 		if (NULL === $this->getFieldName($row)) {
@@ -461,7 +591,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			array_push($records, $record);
 		}
 		$records = array_reverse($records);
-		self::$cacheTree[$recordUid] = $records;
+		self::$cache[$cacheKey] = $records;
 		return $records;
 	}
 
@@ -479,7 +609,7 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 		$extensionKey = $this->getExtensionKey($row);
 		$flexformVariables = $this->getFlexFormValues($row);
 		$templateVariables = $this->getTemplateVariables($row);
-		$variables = $this->arrayMergeRecursive($templateVariables, $flexformVariables);
+		$variables = Tx_Flux_Utility_RecursiveArray::merge($templateVariables, $flexformVariables);
 		$paths = $this->getTemplatePaths($row);
 		$form = $this->getForm($row);
 		$formLabel = $form->getLabel();
@@ -529,9 +659,9 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 * @return array
 	 */
 	protected function getMergedConfiguration(array $tree) {
-		$key = md5(json_encode($tree));
-		if (TRUE === isset(self::$cacheMergedConfigurations[$key])) {
-			return self::$cacheMergedConfigurations[$key];
+		$key = 'merged_' . md5(json_encode($tree));
+		if (TRUE === isset(self::$cache[$key])) {
+			return self::$cache[$key];
 		}
 		$data = array();
 		foreach ($tree as $branch) {
@@ -551,57 +681,10 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 					unset($values[$name]);
 				}
 			}
-			$data = $this->arrayMergeRecursive($data, $values);
+			$data = Tx_Flux_Utility_RecursiveArray::merge($data, $values);
 		}
-		self::$cacheMergedConfigurations[$key] = $data;
+		self::$cache[$key] = $data;
 		return $data;
-	}
-
-	/**
-	 * @param array $array1
-	 * @param array $array2
-	 * @return array
-	 */
-	protected function arrayMergeRecursive($array1, $array2) {
-		foreach ($array2 as $key => $val) {
-			if (is_array($array1[$key])) {
-				if (is_array($array2[$key])) {
-					$val = $this->arrayMergeRecursive($array1[$key], $array2[$key]);
-				}
-			}
-			$array1[$key] = $val;
-		}
-		reset($array1);
-		return $array1;
-	}
-
-	/**
-	 * @param array $array1
-	 * @param array $array2
-	 * @return array
-	 */
-	protected function arrayDiffRecursive($array1, $array2) {
-		foreach ($array1 as $key => $value) {
-			if (TRUE === isset($array2[$key])) {
-				if (TRUE === is_array($value) && TRUE === is_array($array2[$key])) {
-					$diff = $this->arrayDiffRecursive($value, $array2[$key]);
-					if (0 === count($diff)) {
-						unset($array1[$key]);
-					} else {
-						$array1[$key] = $diff;
-					}
-				} elseif ($value == $array2[$key]) {
-					unset($array1[$key]);
-				}
-				unset($array2[$key]);
-			}
-		}
-		foreach ($array2 as $key => $value) {
-			if (FALSE === isset($array1[$key])) {
-				$array1[$key] = $value;
-			}
-		}
-		return $array1;
 	}
 
 	/**
@@ -645,6 +728,83 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 	 */
 	public function getControllerActionReferenceFromRecord(array $row) {
 		return NULL;
+	}
+
+	/**
+	 * @param string $tableName
+	 * @return void
+	 */
+	public function setTableName($tableName) {
+		$this->tableName = $tableName;
+	}
+
+	/**
+	 * @param string $fieldName
+	 * @return void
+	 */
+	public function setFieldName($fieldName) {
+		$this->fieldName = $fieldName;
+	}
+
+	/**
+	 * @param string $extensionKey
+	 * @return void
+	 */
+	public function setExtensionKey($extensionKey) {
+		$this->extensionKey = $extensionKey;
+	}
+
+	/**
+	 * @param array|NULL $templateVariables
+	 * @return void
+	 */
+	public function setTemplateVariables($templateVariables) {
+		$this->templateVariables = $templateVariables;
+	}
+
+	/**
+	 * @param string $templatePathAndFilename
+	 * @return void
+	 */
+	public function setTemplatePathAndFilename($templatePathAndFilename) {
+		$this->templatePathAndFilename = $templatePathAndFilename;
+	}
+
+	/**
+	 * @param array|NULL $templatePaths
+	 * @return void
+	 */
+	public function setTemplatePaths($templatePaths) {
+		$this->templatePaths = $templatePaths;
+	}
+
+	/**
+	 * @param string|NULL $configurationSectionName
+	 * @return void
+	 */
+	public function setConfigurationSectionName($configurationSectionName) {
+		$this->configurationSectionName = $configurationSectionName;
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function setName($name) {
+		$this->name = $name;
+	}
+
+	/**
+	 * @param Tx_Flux_Form $form
+	 */
+	public function setForm(Tx_Flux_Form $form) {
+		$this->form = $form;
+	}
+
+	/**
+	 * @param Tx_Flux_Form_Container_Grid $grid
+	 */
+	public function setGrid(Tx_Flux_Form_Container_Grid $grid) {
+		$this->grid = $grid;
 	}
 
 }

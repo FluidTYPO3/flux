@@ -29,13 +29,15 @@
  * @package Flux
  * @subpackage ViewHelpers\Be\Uri\Content
  */
-class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper {
+class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
 	/**
+	 * Initialize
 	 * @return void
 	 */
 	public function initializeArguments() {
-		parent::initializeArguments();
+		$this->registerArgument('row', 'array', 'Record row', TRUE);
+		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
 		$this->registerArgument('reference', 'boolean', 'If TRUE, pastes as reference', FALSE, FALSE);
 		$this->registerArgument('relativeTo', 'array', 'If filled with an array, assumes clicable icon is placed below this content record', FALSE, array());
 	}
@@ -46,32 +48,9 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_V
 	 * @return string
 	 */
 	public function render() {
-		$data = $this->getClipBoardData();
-		if (NULL === $data) {
-			return '';
-		}
-		return $this->createIconWithUrl();
-	}
-
-	/**
-	 * @return string
-	 */
-	protected function createIconWithUrl() {
 		$reference = (boolean) $this->arguments['reference'];
-		$clipBoard = new t3lib_clipboard();
-		if (TRUE === $reference) {
-			$label = 'Paste as reference in this position';
-			$icon = 'actions-insert-reference';
-		} else {
-			$label = 'Paste in this position';
-			$icon = 'actions-document-paste-after';
-		}
 		$relativeTo = $this->getRelativeToValue();
-		$icon = $this->getIcon($icon, $label);
-		$uri = "javascript:top.content.list_frame.location.href=top.TS.PATH_typo3+'";
-		$uri .= $clipBoard->pasteUrl('tt_content', $relativeTo);
-		$uri .= "';";
-		return $this->wrapLink($icon, $uri);
+		return Tx_Flux_Utility_ClipBoard::createIconWithUrl($relativeTo, $reference);
 	}
 
 	/**
@@ -94,23 +73,6 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_V
 			$relativeTo .= '-' . $area;
 		}
 		return $relativeTo;
-	}
-
-	/**
-	 * @return array|NULL
-	 */
-	protected function getClipBoardData() {
-		$reference = (boolean) $this->arguments['reference'];
-		$clipData = $GLOBALS['BE_USER']->getModuleData('clipboard', $GLOBALS['BE_USER']->getTSConfigVal('options.saveClipboard') ? '' : 'ses');
-		$mode = TRUE === isset($clipData['current']) ? $clipData['current'] : 'normal';
-		$hasClip = TRUE === isset($clipData[$mode]['el']) && 0 < count($clipData[$mode]['el']);
-		if (FALSE === $hasClip) {
-			return NULL;
-		}
-		if (FALSE === isset($clipData[$mode]['mode']) && TRUE === $reference) {
-			return NULL;
-		}
-		return $clipData;
 	}
 
 }

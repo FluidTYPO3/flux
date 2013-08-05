@@ -24,17 +24,11 @@
  *****************************************************************/
 
 /**
+ * Base implementation of Provider concept.
+ *
  * @package Flux
- * @subpackage Provider
+ * @subpackage Provider/Configuration/Fallback
  */
-interface Tx_Flux_Provider_ContentObjectConfigurationProviderInterface extends Tx_Flux_Provider_ConfigurationProviderInterface {
-
-	/**
-	 * Get the CType value that will trigger processing
-	 *
-	 * @param array $row The record row which triggered processing
-	 * @return string
-	 */
-	public function getContentObjectType(array $row);
+class Tx_Flux_Provider_Provider extends Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInterface {
 
 }

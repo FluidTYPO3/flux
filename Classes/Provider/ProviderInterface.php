@@ -27,7 +27,25 @@
  * @package Flux
  * @subpackage Provider
  */
-interface Tx_Flux_Provider_ConfigurationProviderInterface {
+interface Tx_Flux_Provider_ProviderInterface {
+
+	/**
+	 * @param array $settings
+	 * @return void
+	 */
+	public function loadSettings(array $settings);
+
+	/**
+	 * Must return TRUE if this ConfigurationProvider instance wants
+	 * to be the one used for proccesing $row
+	 *
+	 * @param array $row
+	 * @param string $table
+	 * @param string $field
+	 * @param string $extensionKey
+	 * @return boolean
+	 */
+	public function trigger(array $row, $table, $field, $extensionKey = NULL);
 
 	/**
 	 * Returns an instance of Tx_Flux_Form as required by this record.
@@ -98,7 +116,6 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 */
 	public function getFieldName(array $row);
 
-
 	/**
 	 * Get the list_type value that will trigger processing
 	 *
@@ -106,6 +123,58 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 * @return string|NULL
 	 */
 	public function getTableName(array $row);
+
+	/**
+	 * @param string $tableName
+	 * @return void
+	 */
+	public function setTableName($tableName);
+
+	/**
+	 * @param string $fieldName
+	 * @return void
+	 */
+	public function setFieldName($fieldName);
+
+	/**
+	 * @return string
+	 */
+	public function getName();
+
+	/**
+	 * @param string $name
+	 */
+	public function setName($name);
+
+	/**
+	 * @param string $extensionKey
+	 * @return void
+	 */
+	public function setExtensionKey($extensionKey);
+
+	/**
+	 * @param array|NULL $templateVariables
+	 * @return void
+	 */
+	public function setTemplateVariables($templateVariables);
+
+	/**
+	 * @param string $templatePathAndFilename
+	 * @return void
+	 */
+	public function setTemplatePathAndFilename($templatePathAndFilename);
+
+	/**
+	 * @param array|NULL $templatePaths
+	 * @return void
+	 */
+	public function setTemplatePaths($templatePaths);
+
+	/**
+	 * @param string|NULL $configurationSectionName
+	 * @return void
+	 */
+	public function setConfigurationSectionName($configurationSectionName);
 
 	/**
 	 * Post-process the TCEforms DataStructure for a record associated
@@ -227,7 +296,6 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 */
 	public function getInheritanceTree(array $row);
 
-
 	/**
 	 * @param array $row
 	 * @return string
@@ -245,5 +313,15 @@ interface Tx_Flux_Provider_ConfigurationProviderInterface {
 	 * @return string
 	 */
 	public function getControllerActionReferenceFromRecord(array $row);
+
+	/**
+	 * @param Tx_Flux_Form $form
+	 */
+	public function setForm(Tx_Flux_Form $form);
+
+	/**
+	 * @param Tx_Flux_Form_Container_Grid $grid
+	 */
+	public function setGrid(Tx_Flux_Form_Container_Grid $grid);
 
 }

@@ -82,7 +82,7 @@ if (Tx_Flux_Utility_Version::assertCoreVersionIsAtLeastSixPointZero()) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = 'EXT:flux/Classes/Backend/Preview.php:Tx_Flux_Backend_Preview';
 }
 
-Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider');
+Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Provider_ContentProvider');
 
 /*
  * The following stub adds VH aliases for 4.5 to use: f:format.raw -> f:escape, f:format.htmlentities -> f:escape

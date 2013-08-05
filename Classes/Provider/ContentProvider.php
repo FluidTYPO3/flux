@@ -34,7 +34,7 @@
  * @package Flux
  * @subpackage Provider
  */
-class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends Tx_Flux_Provider_AbstractContentObjectConfigurationProvider implements Tx_Flux_Provider_ConfigurationProviderInterface {
+class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInterface {
 
 	/**
 	 * @var string
@@ -49,6 +49,11 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	/**
 	 * @var string
 	 */
+	protected $tableName = 'tt_content';
+
+	/**
+	 * @var string
+	 */
 	protected $fieldName = 'pi_flexform';
 
 	/**
@@ -56,9 +61,13 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return array|mixed|NULL
 	 */
 	public function getTemplatePaths(array $row) {
-		$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		$extensionIdentity = str_replace('_', '', $this->getExtensionKey($row));
-		$paths = t3lib_div::removeDotsFromTS((array) $typoScript['plugin.']['tx_' . $extensionIdentity . '.']['view.']);
+		if (TRUE === is_array($this->templatePaths)) {
+			$paths = $this->templatePaths;
+		} else {
+			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$extensionIdentity = str_replace('_', '', $this->getExtensionKey($row));
+			$paths = t3lib_div::removeDotsFromTS((array) $typoScript['plugin.']['tx_' . $extensionIdentity . '.']['view.']);
+		}
 		$paths = Tx_Flux_Utility_Path::translatePath($paths);
 		return $paths;
 	}
@@ -70,16 +79,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return void
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
-		if (is_array($row['pi_flexform']['data'])) {
-			foreach ((array) $row['pi_flexform']['data']['options']['lDEF'] as $key=>$value) {
-				if (strpos($key, 'tt_content') === 0) {
-					$realKey = array_pop(explode('.', $key));
-					if (isset($row[$realKey])) {
-						$row[$realKey] = $value['vDEF'];
-					}
-				}
-			}
-		}
+		parent::preProcessRecord($row, $id, $reference);
 		if (count($row) === 1 && isset($row['colPos'])) {
 				// dropping an element in a column header dropzone in 6.0 only sends the "colPos"
 				// and this colPos may contain nothing but positive integers. Bring the severe hacking.
@@ -165,6 +165,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return void
 	 */
 	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference) {
+		parent::postProcessDatabaseOperation($status, $id, $row, $reference);
 		if ($status === 'new') {
 			$newUid = $reference->substNEWwithIDs[$id];
 			$this->adjustColumnPositionBasedOnCommandUrl($newUid);
@@ -226,6 +227,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return void
 	 */
 	public function preProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
+		parent::preProcessCommand($command, $id, $row, $relativeTo, $reference);
 		if ($command === 'move') {
 			$this->adjustColumnPositionBasedOnCommandUrl($id);
 			if (strpos($relativeTo, 'FLUX') !== FALSE) {
@@ -245,8 +247,8 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$row['sorting'] = -1;
 			} elseif ($relativeTo < 0) {
 				// Triggers when sorting a CE after another CE, $relativeTo is negative value of CE's UID
-				$row['tx_flux_column'] = $this->detectParentElementAreaFromRecord($relativeTo);
-				$row['tx_flux_parent'] = $this->detectParentUidFromRecord($relativeTo);
+				$row['tx_flux_column'] = Tx_Flux_Utility_Resolve::detectParentElementAreaFromRecord($relativeTo);
+				$row['tx_flux_parent'] = Tx_Flux_Utility_Resolve::detectParentUidFromRecord($relativeTo);
 			}
 			if (strpos($row['tx_flux_column'], ':') !== FALSE) {
 				// TODO: after migration to "parent" usage, remember to change this next line
@@ -271,6 +273,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	 * @return void
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
+		parent::postProcessCommand($command, $id, $row, $relativeTo, $reference);
 		$pasteCommands = array('copy', 'move');
 		if (TRUE === in_array($command, $pasteCommands)) {
 			$callback = t3lib_div::_GET('CB');
@@ -319,32 +322,6 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 	}
 
 	/**
-	 * @param array $row
-	 * @param mixed $dataStructure
-	 * @param array $conf
-	 * @return void
-	 */
-	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
-		unset($row, $dataStructure, $conf);
-	}
-
-	/**
-	 * @param array $command
-	 * @return void
-	 */
-	public function clearCacheCommand($command = array()) {
-		if (TRUE === isset($command['uid'])) {
-			return;
-		}
-		$files = glob(PATH_site . 'typo3temp/flux-*');
-		if (TRUE === is_array($files)) {
-			foreach ($files as $fileName) {
-				unlink($fileName);
-			}
-		}
-	}
-
-	/**
 	 * @param integer $id
 	 * @return void
 	 */
@@ -367,26 +344,6 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
 			}
 		}
-	}
-
-	/**
-	 * @param integer $uid
-	 * @return string
-	 */
-	public function detectParentElementAreaFromRecord($uid) {
-		$uid = abs($uid);
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		return $record['tx_flux_column'];
-	}
-
-	/**
-	 * @param integer $uid
-	 * @return integer
-	 */
-	public function detectParentUidFromRecord($uid) {
-		$uid = abs($uid);
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		return intval($record['tx_flux_parent']);
 	}
 
 }

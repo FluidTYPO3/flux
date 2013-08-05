@@ -132,33 +132,27 @@ class Tx_Flux_Backend_TceMain {
 	 */
 	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, &$reference) {
 		try {
-			if (strpos($id, 'NEW') !== FALSE) {
+			if (FALSE !== strpos($id, 'NEW')) {
 				$id = $reference->substNEWwithIDs[$id];
 			}
 			$clause = "uid = '" . $id . "'";
-			$saveRecordData = FALSE;
-			if (count($record) === 0) {
-				$saveRecordData = TRUE;
+			if (0 === count($record)) {
+				// patch: when a record is completely empty but a UID exists
 				$loadedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $table, $clause);
-				if (is_array($loadedRecord) === TRUE) {
-					$loadedRecord = array_pop($loadedRecord);
-				} else {
-					$loadedRecord = array();
-				}
-				$record = &$loadedRecord;
-				if (isset($arguments['row']) === TRUE) {
+				if (TRUE === is_array($loadedRecord)) {
+					$record = array_pop($loadedRecord);
 					$arguments['row'] = &$record;
 				}
 			}
 			$arguments[] = &$reference;
-				// check for a registered generic ConfigurationProvider for $table
+			// check for a registered generic ConfigurationProvider for $table
 			$detectedProviders = array();
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
 			foreach ($providers as $provider) {
 				$class = get_class($provider);
 				$detectedProviders[$class] = $provider;
 			}
-				// check each field for a registered ConfigurationProvider
+			// check each field for a registered ConfigurationProvider
 			foreach ($record as $fieldName => $unusedValue) {
 				$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $record);
 				foreach ($providers as $provider) {
@@ -169,11 +163,8 @@ class Tx_Flux_Backend_TceMain {
 			foreach ($detectedProviders as $provider) {
 				call_user_func_array(array($provider, $methodName), $arguments);
 			}
-			if ($saveRecordData === TRUE && isset($arguments['row']) === TRUE && is_array($arguments['row']) === TRUE && count($arguments['row']) > 0) {
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $clause, $arguments['row']);
-			}
 		} catch (Exception $error) {
-			$this->configurationService->debugException($error);
+			$this->configurationService->debug($error);
 		}
 	}
 
@@ -197,7 +188,7 @@ class Tx_Flux_Backend_TceMain {
 		foreach ($tables as $table) {
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL);
 			foreach ($providers as $provider) {
-				/** @var $provider Tx_Flux_Provider_ConfigurationProviderInterface */
+				/** @var $provider Tx_Flux_Provider_ProviderInterface */
 				$provider->clearCacheCommand($command);
 			}
 		}
