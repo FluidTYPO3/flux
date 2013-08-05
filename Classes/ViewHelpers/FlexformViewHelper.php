@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers
  */
-class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -41,10 +41,12 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 			'tries to detect an LLL label named "flux.fluxFormId", in scope of extension rendering the Flux form.', FALSE, NULL);
 		$this->registerArgument('description', 'string', 'Short description of this content element', FALSE, NULL);
 		$this->registerArgument('icon', 'string', 'Optional icon file to use when displaying this content element in the new content element wizard', FALSE, '../typo3conf/ext/flux/Resources/Public/Icons/Plugin.png');
-		$this->registerArgument('mergeValues', 'boolean', 'If TRUE, enables overriding of record values with corresponding values from this FlexForm', FALSE, FALSE);
+		$this->registerArgument('mergeValues', 'boolean', 'DEPRECATED AND IGNORED. To cause value merging, simly prefix your field names with the table name, e.g. ' .
+			'"tt_content.header" will overwrite the "header" column in the record with the FlexForm field value when saving the record.', FALSE, FALSE);
 		$this->registerArgument('enabled', 'boolean', 'If FALSE, makes the FCE inactive', FALSE, TRUE);
 		$this->registerArgument('wizardTab', 'string', 'Optional tab name (usually extension key) in which to place the content element in the new content element wizard', FALSE, 'FCE');
-		$this->registerArgument('compact', 'boolean', 'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
+		$this->registerArgument('compact', 'boolean', 'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES ' .
+			'AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
 	}
 
 	/**
@@ -68,8 +70,6 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 		$this->templateVariableContainer->add('form', $form);
 		$this->setContainer($container);
 		$this->renderChildren();
-		$this->templateVariableContainer->remove('container');
-		$this->templateVariableContainer->remove('form');
 		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container');
 	}
 

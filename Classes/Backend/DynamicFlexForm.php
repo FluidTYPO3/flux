@@ -72,7 +72,7 @@ class Tx_Flux_Backend_DynamicFlexForm {
 		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
 		foreach ($providers as $provider) {
 			try {
-				/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
+				/** @var Tx_Flux_Provider_ProviderInterface $provider */
 				$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 			} catch (Exception $e) {
 				$this->configurationService->debug($e);

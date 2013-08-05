@@ -52,10 +52,19 @@ class Tx_Flux_Tests_Functional_Templates_TransformTest extends Tx_Flux_Tests_Abs
 	/**
 	 * @test
 	 */
+	public function returnSameValueOnUnknownTransformation() {
+		$data = $this->getTransformedData();
+		$this->assertIsArray($data);
+		$this->assertSame('0', $data['transform']['unknown']);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canTransformStringToArray() {
 		$data = $this->getTransformedData();
 		$this->assertIsArray($data);
-		$this->assertIsArray($data['stringToArray']);
+		$this->assertIsArray($data['transform']['stringToArray']);
 	}
 
 	/**
@@ -64,7 +73,7 @@ class Tx_Flux_Tests_Functional_Templates_TransformTest extends Tx_Flux_Tests_Abs
 	public function canTransformStringToInteger() {
 		$data = $this->getTransformedData();
 		$this->assertIsArray($data);
-		$this->assertIsInteger($data['stringToInteger']);
+		$this->assertIsInteger($data['transform']['stringToInteger']);
 	}
 
 	/**
@@ -73,7 +82,7 @@ class Tx_Flux_Tests_Functional_Templates_TransformTest extends Tx_Flux_Tests_Abs
 	public function canTransformStringToFloat() {
 		$data = $this->getTransformedData();
 		$this->assertIsArray($data);
-		$this->assertSame(1.5, $data['stringToFloat']);
+		$this->assertSame(1.5, $data['transform']['stringToFloat']);
 	}
 
 }

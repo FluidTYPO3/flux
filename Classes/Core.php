@@ -119,11 +119,11 @@ class Tx_Flux_Core {
 	public static function registerConfigurationProvider($classNameOrInstance) {
 		if (is_object($classNameOrInstance) === FALSE) {
 			if (class_exists($classNameOrInstance) === FALSE) {
-				throw new Exception('ConfigurationProvider class ' . $classNameOrInstance . ' does not exists', 1327173514);
+				throw new Exception('Provider class ' . $classNameOrInstance . ' does not exists', 1327173514);
 			}
 		}
-		if (in_array('Tx_Flux_Provider_ConfigurationProviderInterface', class_implements($classNameOrInstance)) === FALSE) {
-			throw new Exception(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement one of the Provider interfaces from Flux/Provider', 1327173536);
+		if (in_array('Tx_Flux_Provider_ProviderInterface', class_implements($classNameOrInstance)) === FALSE) {
+			throw new Exception(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
 		}
 		if (in_array($classNameOrInstance, self::$unregisteredProviders) === FALSE && in_array($classNameOrInstance, self::$providers) === FALSE) {
 			array_push(self::$providers, $classNameOrInstance);
@@ -151,9 +151,10 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function registerFluidFlexFormPlugin($extensionKey, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
+		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider */
-		$provider = $objectManager->get('Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider');
+		/** @var $provider Tx_Flux_Provider_ProviderInterface */
+		$provider = $objectManager->get('Tx_Flux_Provider_ContentProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName('');
 		$provider->setExtensionKey($extensionKey);
@@ -181,8 +182,8 @@ class Tx_Flux_Core {
 	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
 		/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider */
-		$provider = $objectManager->get('Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider');
+		/** @var $provider Tx_Flux_Provider_ProviderInterface */
+		$provider = $objectManager->get('Tx_Flux_Provider_ContentProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName('');
 		$provider->setExtensionKey($extensionKey);
@@ -210,8 +211,8 @@ class Tx_Flux_Core {
 	public static function registerFluidFlexFormTable($table, $fieldName, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
 		/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider */
-		$provider = $objectManager->get('Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider');
+		/** @var $provider Tx_Flux_Provider_ProviderInterface */
+		$provider = $objectManager->get('Tx_Flux_Provider_Provider');
 		$provider->setTableName($table);
 		$provider->setFieldName($fieldName);
 		$provider->setTemplatePathAndFilename($templateFilename);

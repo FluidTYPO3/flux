@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
  *
  *  All rights reserved
  *
@@ -21,27 +21,34 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ ***************************************************************/
 
 /**
- * @author Claus Due <claus@wildside.dk>
+ * Miscellaneous Utility
+ *
+ * @author Claus Due, Wildside A/S
  * @package Flux
+ * @subpackage Utility
  */
-class Tx_Flux_Tests_Functional_Provider_ContentObjectConfigurationProviderTest extends Tx_Flux_Tests_Provider_AbstractConfigurationProviderTest {
+class Tx_Flux_Utility_Miscellaneous {
 
 	/**
-	 * @var string
-	 */
-	protected $configurationProviderClassName = 'Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider';
+	* @param string $icon
+	* @param string $title
+	* @return string
+	*/
+	public static function getIcon($icon, $title = NULL) {
+		$configuration = array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new');
+		return t3lib_iconWorks::getSpriteIcon($icon, $configuration);
+	}
 
 	/**
-	 * @test
-	 */
-	public function canGetContentObjectType() {
-		$instance = $this->getConfigurationProviderInstance();
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
-		$contentType = $instance->getContentObjectType($record);
-		$this->assertNull($contentType);
+	* @param string $inner
+	* @param string $uri
+	* @return string
+	*/
+	public static function wrapLink($inner, $uri) {
+		return '<a href="' . $uri . '">' . $inner . '</a>' . LF;
 	}
 
 }

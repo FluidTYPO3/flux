@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * @var string

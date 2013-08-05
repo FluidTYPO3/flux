@@ -78,7 +78,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 			$dataArray = array();
 			foreach ($providers as $provider) {
 				$data = (array) $provider->getFlexFormValues($row);
-				$dataArray = t3lib_div::array_merge_recursive_overrule($dataArray, $data);
+				$dataArray = Tx_Flux_Utility_RecursiveArray::merge($dataArray, $data);
 			}
 		}
 

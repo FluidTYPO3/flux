@@ -27,7 +27,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider extends Tx_Flux_Provider_AbstractConfigurationProvider {
+class Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider extends Tx_Flux_Provider_AbstractProvider {
 
 	/**
 	 * @var string

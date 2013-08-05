@@ -98,6 +98,22 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	/**
 	 * @test
 	 */
+	public function canDetectParentElementAreaFromRecord() {
+		$result = Tx_Flux_Utility_Resolve::detectParentElementAreaFromRecord(0);
+		$this->assertNull($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetectParentUidFromRecord() {
+		$result = Tx_Flux_Utility_Resolve::detectParentUidFromRecord(0);
+		$this->assertIsInteger($result);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canDetectWidgetTemplatePathAndFilenameAndTrimsTrailingSlash() {
 		$templateRootPath = t3lib_extMgm::extPath('flux', 'Resources/Private/Templates/');
 		$expectedDefault = $templateRootPath . 'ViewHelpers/Widget/Grid/Index.html';

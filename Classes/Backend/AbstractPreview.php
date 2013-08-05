@@ -80,7 +80,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 		$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
 		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
 		foreach ($providers as $provider) {
-			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
+			/** @var Tx_Flux_Provider_ProviderInterface $provider */
 			list ($previewHeader, $previewContent) = $provider->getPreview($row);
 			if (FALSE === empty($previewHeader)) {
 				$drawItem = FALSE;

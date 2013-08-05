@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers
  */
-class Tx_Flux_ViewHelpers_VariableViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_VariableViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * @param string $name
