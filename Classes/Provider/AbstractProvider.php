@@ -170,10 +170,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			$this->setName($settings['name']);
 		}
 		if (TRUE === isset($settings['form'])) {
-			$settings['form'] = Tx_Flux_Form::createFromDefinition($settings['form']);
+			$settings['form'] = Tx_Flux_Form::create($settings['form']);
 		}
 		if (TRUE === isset($settings['grid'])) {
-			$settings['grid'] = Tx_Flux_Form_Container_Grid::createFromDefinition($settings['grid']);
+			$settings['grid'] = Tx_Flux_Form_Container_Grid::create($settings['grid']);
 		}
 		foreach ($settings as $name => $value) {
 			$this->$name = $value;

@@ -162,7 +162,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 		if (TRUE === $this instanceof Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest) {
 			$properties['type'] = substr(array_pop(explode('_', get_class($this))), 0, -4);
 		}
-		$instance = call_user_func_array(array($this->getObjectClassName(), 'createFromDefinition'), array($properties));
+		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
 		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
 	}
 

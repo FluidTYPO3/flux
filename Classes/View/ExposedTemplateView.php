@@ -68,7 +68,7 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 		if (TRUE === isset($grids[$gridName])) {
 			$grid = $grids[$gridName];
 		} else {
-			$grid = Tx_Flux_Form_Container_Grid::createFromDefinition(array('name' => $gridName));
+			$grid = Tx_Flux_Form_Container_Grid::create(array('name' => $gridName));
 		}
 		return $grid;
 	}
