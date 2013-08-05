@@ -44,7 +44,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	/**
 	 * @var integer
 	 */
-	protected $priority = 0;
+	protected $priority = 50;
 
 	/**
 	 * @var string
