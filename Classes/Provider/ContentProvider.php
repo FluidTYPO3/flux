@@ -80,16 +80,6 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
 		parent::preProcessRecord($row, $id, $reference);
-		if (is_array($row['pi_flexform']['data'])) {
-			foreach ((array) $row['pi_flexform']['data']['options']['lDEF'] as $key=>$value) {
-				if (strpos($key, 'tt_content') === 0) {
-					$realKey = array_pop(explode('.', $key));
-					if (isset($row[$realKey])) {
-						$row[$realKey] = $value['vDEF'];
-					}
-				}
-			}
-		}
 		if (count($row) === 1 && isset($row['colPos'])) {
 				// dropping an element in a column header dropzone in 6.0 only sends the "colPos"
 				// and this colPos may contain nothing but positive integers. Bring the severe hacking.

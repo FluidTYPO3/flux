@@ -417,6 +417,18 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @return void
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
+		$fieldName = $this->getFieldName($row);
+		$tableName = $this->getTableName($row);
+		if (is_array($row[$fieldName]['data'])) {
+			foreach ((array) $row[$fieldName]['data']['options']['lDEF'] as $key=>$value) {
+				if (strpos($key, $tableName) === 0) {
+					$realKey = array_pop(explode('.', $key));
+					if (isset($row[$realKey])) {
+						$row[$realKey] = $value['vDEF'];
+					}
+				}
+			}
+		}
 	}
 
 	/**
