@@ -68,8 +68,6 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 		$this->templateVariableContainer->add('form', $form);
 		$this->setContainer($container);
 		$this->renderChildren();
-		$this->templateVariableContainer->remove('container');
-		$this->templateVariableContainer->remove('form');
 		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container');
 	}
 
