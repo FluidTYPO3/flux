@@ -47,7 +47,7 @@ class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_Ab
 	 * @test
 	 */
 	public function canSetDefaultValueFromSimpleString() {
-		$instance = Tx_Flux_Form::createFromDefinition(array())->createField('File', 'file');
+		$instance = Tx_Flux_Form::create(array())->createField('File', 'file');
 		$defaultValue = 'testfile.jpg';
 		$instance->setDefault($defaultValue);
 		$this->assertSame($defaultValue . '|' . $defaultValue, $instance->getDefault());
@@ -57,7 +57,7 @@ class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_Ab
 	 * @test
 	 */
 	public function canSetDefaultValueFromAlreadyCorrectString() {
-		$instance = Tx_Flux_Form::createFromDefinition(array())->createField('File', 'file');
+		$instance = Tx_Flux_Form::create(array())->createField('File', 'file');
 		$defaultValue = 'testfile.jpg|testfile.jpg';
 		$instance->setDefault($defaultValue);
 		$this->assertSame($defaultValue, $instance->getDefault());
@@ -67,7 +67,7 @@ class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_Ab
 	 * @test
 	 */
 	public function canSetDefaultValueFromCsvOfSimpleStrings() {
-		$instance = Tx_Flux_Form::createFromDefinition(array())->createField('File', 'file');
+		$instance = Tx_Flux_Form::create(array())->createField('File', 'file');
 		$defaultValue = 'testfile1.jpg,testfile2.jpg';
 		$expected = 'testfile1.jpg|testfile1.jpg,testfile2.jpg|testfile2.jpg';
 		$instance->setDefault($defaultValue);
@@ -78,7 +78,7 @@ class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_Ab
 	 * @test
 	 */
 	public function canSetDefaultValueFromCsvfAlreadyCorrectStrings() {
-		$instance = Tx_Flux_Form::createFromDefinition(array())->createField('File', 'file');
+		$instance = Tx_Flux_Form::create(array())->createField('File', 'file');
 		$defaultValue = 'testfile1.jpg|testfile1.jpg,testfile2.jpg|testfile2.jpg';
 		$instance->setDefault($defaultValue);
 		$this->assertSame($defaultValue, $instance->getDefault());

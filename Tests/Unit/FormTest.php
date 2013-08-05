@@ -283,7 +283,7 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 			'name' => 'test',
 			'label' => 'Test field'
 		);
-		$instance = Tx_Flux_Form::createFromDefinition($properties);
+		$instance = Tx_Flux_Form::create($properties);
 		$this->assertInstanceOf('Tx_Flux_Form', $instance);
 	}
 
@@ -303,7 +303,7 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 				),
 			)
 		);
-		$instance = Tx_Flux_Form::createFromDefinition($properties);
+		$instance = Tx_Flux_Form::create($properties);
 		$this->assertInstanceOf('Tx_Flux_Form', $instance);
 	}
 

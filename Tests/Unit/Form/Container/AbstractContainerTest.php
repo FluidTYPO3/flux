@@ -78,7 +78,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest ext
 				'type' => 'Input'
 			),
 		);
-		$instance = call_user_func_array(array($this->getObjectClassName(), 'createFromDefinition'), array($properties));
+		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
 		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
 	}
 
