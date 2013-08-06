@@ -122,13 +122,11 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	/**
 	 * @test
 	 */
-	public function getFormReturnsEmptyDummyFormOnInvalidFile() {
+	public function getFormReturnsNullOnInvalidFile() {
 		$templatePathAndFilename = '/void/nothing';
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
-		$this->assertIsValidAndWorkingFormObject($form);
-		$this->assertSame(1, count($form->getFields()));
-		$this->assertTrue($form->last()->has('func'));
+		$this->assertNull($form);
 	}
 
 	/**
