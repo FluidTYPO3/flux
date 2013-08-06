@@ -62,6 +62,16 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 	/**
 	 * @test
 	 */
+	public function canSetAndGetSeparator() {
+		$component = $this->createInstance();
+		$separator = ' :: ';
+		$component->setSeparator($separator);
+		$this->assertSame($separator, $component->getSeparator());
+	}
+
+	/**
+	 * @test
+	 */
 	public function acceptsNamespacedClasses() {
 		$expectedClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
 		class_alias('Tx_Flux_Controller_ContentController', $expectedClassName);
@@ -118,30 +128,28 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 		$controllerName = 'Content';
 		$actionName = 'fake';
 		$expectedLabel = 'Fake Action';
-		$invalidLanguageFileRelativeLocation = '/void/doesnotexist.xml';
-		$label = $this->buildLabelForControllerAndAction($controllerName, $actionName, $invalidLanguageFileRelativeLocation);
+		$label = $this->buildLabelForControllerAndAction($controllerName, $actionName);
 		$this->assertSame($expectedLabel, $label);
 	}
 
 	/**
 	 * @test
 	 */
-	public function canGenerateEmptyLabelFromActionMethodWithoutHumanReadableAnnotation() {
+	public function canGenerateDefaultLabelFromActionMethodWithoutHumanReadableAnnotation() {
 		$controllerName = 'Content';
 		$actionName = 'fakeWithoutDescription';
-		$expectedLabel = NULL;
-		$invalidLanguageFileRelativeLocation = '/void/doesnotexist.xml';
-		$label = $this->buildLabelForControllerAndAction($controllerName, $actionName, $invalidLanguageFileRelativeLocation);
+		$expectedLabel = $actionName . '->' . $controllerName;
+		$label = $this->buildLabelForControllerAndAction($controllerName, $actionName);
 		$this->assertSame($expectedLabel, $label);
 	}
 
 	/**
 	 * @test
 	 */
-	public function generatesLabelForControllerActionsWhichDoNotExist() {
+	public function generatesDefaultLabelForControllerActionsWhichDoNotExist() {
 		$controllerName = 'Content';
-		$actionName = 'fictional';
-		$expectedLabel = 'LLL:EXT:flux/Resources/Private/Language/locallang.xml:test.content.fictional';
+		$actionName = 'fictionalaction';
+		$expectedLabel = $actionName . '->' . $controllerName;
 		$label = $this->buildLabelForControllerAndAction($controllerName, $actionName);
 		$this->assertSame($expectedLabel, $label);
 	}
@@ -280,6 +288,8 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 		$component->setPluginName('Test');
 		if (NULL !== $languageFileRelativeLocation) {
 			$component->setLocalLanguageFileRelativePath($languageFileRelativeLocation);
+		} else {
+			$component->setDisableLocalLanguageLabels(TRUE);
 		}
 		$label = $this->callInaccessibleMethod($component, 'getLabelForControllerAction', $controllerName, $actionName);
 		return $label;
