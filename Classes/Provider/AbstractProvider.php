@@ -178,6 +178,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		foreach ($settings as $name => $value) {
 			$this->$name = $value;
 		}
+		if (TRUE === isset($settings['listType'])) {
+			$listType = $settings['listType'];
+			$GLOBALS['TCA'][$this->tableName]['types']['list']['subtypes_addlist'][$listType] = $this->fieldName;
+		}
 		$GLOBALS['TCA'][$this->tableName]['columns'][$this->fieldName]['config']['type'] = 'flex';
 	}
 
