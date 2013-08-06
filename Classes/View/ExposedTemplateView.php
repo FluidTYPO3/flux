@@ -65,10 +65,9 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 		/** @var Tx_Flux_Form_Container_Grid[] $grids */
 		/** @var Tx_Flux_Form_Container_Grid $grid */
 		$grids = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $sectionName);
+		$grid = NULL;
 		if (TRUE === isset($grids[$gridName])) {
 			$grid = $grids[$gridName];
-		} else {
-			$grid = Tx_Flux_Form_Container_Grid::create(array('name' => $gridName));
 		}
 		return $grid;
 	}

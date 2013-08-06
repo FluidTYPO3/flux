@@ -51,7 +51,7 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 * Returns an instance of Tx_Flux_Form as required by this record.
 	 *
 	 * @param array $row
-	 * @return Tx_Flux_Form
+	 * @return Tx_Flux_Form|NULL
 	 */
 	public function getForm(array $row);
 

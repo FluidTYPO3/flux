@@ -207,13 +207,16 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 
 	/**
 	 * @param array $row
-	 * @return Tx_Flux_Form
+	 * @return Tx_Flux_Form|NULL
 	 */
 	public function getForm(array $row) {
 		if (NULL !== $this->form) {
 			return $this->form;
 		}
 		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+		if (FALSE === file_exists($templatePathAndFilename)) {
+			return NULL;
+		}
 		$section = $this->getConfigurationSectionName($row);
 		$formName = 'form';
 		$paths = $this->getTemplatePaths($row);
@@ -222,6 +225,9 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
+		if (NULL === $form) {
+			return NULL;
+		}
 		foreach ($form->getFields() as $field) {
 			$name = $field->getName();
 			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);
@@ -541,7 +547,9 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 */
 	public function postProcessDataStructure(array &$row, &$dataStructure, array $conf) {
 		$form = $this->getForm($row);
-		$dataStructure = $form->build();
+		if (NULL !== $form) {
+			$dataStructure = $form->build();
+		}
 	}
 
 	/**

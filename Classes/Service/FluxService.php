@@ -164,19 +164,19 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param array $paths
 	 * @param string $extensionName
 	 * @param array $variables
-	 * @return Tx_Flux_Form
+	 * @return Tx_Flux_Form|NULL
 	 * @throws Exception
 	 */
 	public function getFormFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $formName = 'form', $paths = array(), $extensionName = NULL, $variables = array()) {
+		if (FALSE === file_exists($templatePathAndFilename)) {
+			return NULL;
+		}
+		$variableCheck = json_encode($variables);
+		$cacheKey = md5($templatePathAndFilename . $formName . $extensionName . implode('', $paths) . $section . $variableCheck);
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
+		}
 		try {
-			$variableCheck = json_encode($variables);
-			$cacheKey = md5($templatePathAndFilename . $formName . $extensionName . implode('', $paths) . $section . $variableCheck);
-			if (TRUE === isset(self::$cache[$cacheKey])) {
-				return self::$cache[$cacheKey];
-			}
-			if (FALSE === file_exists($templatePathAndFilename)) {
-				throw new Exception('The template file "' . $templatePathAndFilename . '" was not found.', 1366824347);
-			}
 			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
 			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
 			$form = $exposedView->getForm($section, $formName);
@@ -210,13 +210,16 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param array $paths
 	 * @param string $extensionName
 	 * @param array $variables
-	 * @return array
+	 * @return Tx_Flux_Form_Container_Grid|NULL
 	 * @throws Exception
 	 */
 	public function getGridFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $gridName = 'grid', array $paths = array(), $extensionName = NULL, array $variables = array()) {
 		$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
 		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
 		$grid = $exposedView->getGrid($section, $gridName);
+		if (NULL === $grid) {
+			$grid = Tx_Flux_Form_Container_Grid::create(array('name' => $gridName));
+		}
 		return $grid;
 	}
 
