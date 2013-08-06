@@ -150,8 +150,10 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($templateName);
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', array(), 'Flux', $variables);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
-		$this->assertIsArray($form->build());
+		if (NULL !== $form) {
+			$this->assertInstanceOf('Tx_Flux_Form', $form);
+			$this->assertIsArray($form->build());
+		}
 	}
 
 	/**

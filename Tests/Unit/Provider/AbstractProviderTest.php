@@ -125,7 +125,9 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$form = $provider->getForm($record);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		if ($form) {
+			$this->assertInstanceOf('Tx_Flux_Form', $form);
+		}
 	}
 
 	/**

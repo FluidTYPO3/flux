@@ -218,7 +218,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
 		$grid = $exposedView->getGrid($section, $gridName);
 		if (NULL === $grid) {
-			$grid = Tx_Flux_Form_Container_Grid::createFromDefinition(array('name' => $gridName));
+			$grid = Tx_Flux_Form_Container_Grid::create(array('name' => $gridName));
 		}
 		return $grid;
 	}
