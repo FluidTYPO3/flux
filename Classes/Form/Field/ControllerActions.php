@@ -84,22 +84,6 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	protected $prefixOnRequiredArguments = '*';
 
 	/**
-	 * If TRUE, disables LLL label usage and just uses the class
-	 * comment or Controller->action syntax.
-	 *
-	 * @var boolean
-	 */
-	protected $disableLocalLanguageLabels = FALSE;
-
-	/**
-	 * Relative (from extension $extensionName) path to locallang
-	 * file containing the action method labels.
-	 *
-	 * @var string
-	 */
-	protected $localLanguageFileRelativePath = '/Resources/Private/Language/locallang_db.xml';
-
-	/**
 	 * Array of also allowed actions which will be allowed when
 	 * a particular Controller+action is selected - but will not
 	 * be displayed as selectable options.
@@ -196,23 +180,6 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	public function getControllerName() {
 		return $this->controllerName;
 	}
-
-	/**
-	 * @param boolean $disableLocalLanguageLabels
-	 * @return Tx_Flux_Form_Field_ControllerActions
-	 */
-	public function setDisableLocalLanguageLabels($disableLocalLanguageLabels) {
-		$this->disableLocalLanguageLabels = (boolean) $disableLocalLanguageLabels;
-		return $this;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getDisableLocalLanguageLabels() {
-		return (boolean) $this->disableLocalLanguageLabels;
-	}
-
 	/**
 	 * @param array $excludeActions
 	 * @return Tx_Flux_Form_Field_ControllerActions
@@ -243,22 +210,6 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 */
 	public function getExtensionName() {
 		return $this->extensionName;
-	}
-
-	/**
-	 * @param string $localLanguageFileRelativePath
-	 * @return Tx_Flux_Form_Field_ControllerActions
-	 */
-	public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath) {
-		$this->localLanguageFileRelativePath = $localLanguageFileRelativePath;
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getLocalLanguageFileRelativePath() {
-		return $this->localLanguageFileRelativePath;
 	}
 
 	/**

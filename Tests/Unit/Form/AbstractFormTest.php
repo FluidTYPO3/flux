@@ -46,6 +46,16 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	/**
 	 * @test
 	 */
+	public function canGenerateRawLabelWhenLanguageLabelsDisabled() {
+		$instance = $this->createInstance();
+		$instance->setLabel(NULL);
+		$instance->setDisableLocalLanguageLabels(TRUE);
+		$this->assertNull($instance->getLabel());
+	}
+
+	/**
+	 * @test
+	 */
 	public function canGenerateLocalisableLabel() {
 		$instance = $this->createInstance();
 		$instance->setLabel(NULL);

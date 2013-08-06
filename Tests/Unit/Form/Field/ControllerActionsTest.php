@@ -41,7 +41,7 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 		'actions' => array(),
 		'disableLocalLanguageLabels' => FALSE,
 		'excludeActions' => array(),
-		'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
+		'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang.xml',
 		'prefixOnRequiredArguments' => '*',
 		'subActions' => array()
 	);
@@ -138,10 +138,10 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 	/**
 	 * @test
 	 */
-	public function generatesNullLabelForControllerActionsWhichDoNotExist() {
+	public function generatesLabelForControllerActionsWhichDoNotExist() {
 		$controllerName = 'Content';
 		$actionName = 'fictional';
-		$expectedLabel = NULL;
+		$expectedLabel = 'LLL:EXT:flux/Resources/Private/Language/locallang.xml:test.content.fictional';
 		$label = $this->buildLabelForControllerAndAction($controllerName, $actionName);
 		$this->assertSame($expectedLabel, $label);
 	}
@@ -237,7 +237,7 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 			)
 		);
 		$expected = array(
-			array('Content->fake;Content->render', 'Fake Action')
+			array('Content->fake;Content->render', 'LLL:EXT:flux/Resources/Private/Language/locallang.xml:.content.fake')
 		);
 		/** @var Tx_Flux_Form_Field_ControllerActions $component */
 		$component = $this->createInstance();
