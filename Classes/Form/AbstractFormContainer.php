@@ -132,8 +132,11 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 		/** @var Tx_Flux_Form_FormInterface[] $children */
 		$children = $this->children;
 		foreach ($children as $child) {
-			$name = $child->getName();
-			$structure[$name] = $child->build();
+			$isEmptySheet = $child instanceof Tx_Flux_Form_Container_Sheet && 0 === $child->children->count();
+			if (FALSE === ($isEmptySheet)) {
+				$name = $child->getName();
+				$structure[$name] = $child->build();
+			}
 		}
 		return $structure;
 	}
