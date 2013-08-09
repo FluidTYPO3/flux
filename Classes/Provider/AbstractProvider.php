@@ -199,12 +199,12 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$contentObjectType = $this->contentObjectType;
 		$listType = $this->listType;
 		$rowIsEmpty = (0 === count($row));
-		$matchesContentType = (TRUE === empty($contentObjectType) || (FALSE === empty($row['CType']) && $row['CType'] === $contentObjectType));
-		$matchesPluginType = (TRUE === empty($listType) || (FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
+		$matchesContentType = ((TRUE === empty($contentObjectType) && TRUE === empty($row['CType'])) || (FALSE === empty($row['CType']) && $row['CType'] === $contentObjectType));
+		$matchesPluginType = ((TRUE === empty($listType) && TRUE === empty($row['list_type'])) || (FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
 		$matchesTableName = ($providerTableName === $table || NULL === $table);
 		$matchesFieldName = ($providerFieldName === $field || NULL === $field);
 		$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
-		$isFullMatch = ($matchesExtensionKey && $matchesTableName && $matchesFieldName && $matchesContentType && $matchesPluginType);
+		$isFullMatch = (($matchesExtensionKey && $matchesTableName && $matchesFieldName) && ($matchesContentType || $matchesPluginType));
 		$isFallbackMatch = ($matchesTableName && $matchesFieldName && $rowIsEmpty);
 		return ($isFullMatch || $isFallbackMatch);
 	}
