@@ -93,7 +93,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
 		$parameters = t3lib_div::_GET();
 		Tx_Flux_Utility_ContentManipulator::affectRecordByRequestParameters($row, $parameters, $reference);
-			// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
+		// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
 		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
 			$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
 		}
