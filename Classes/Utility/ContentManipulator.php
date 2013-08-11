@@ -217,26 +217,26 @@ class Tx_Flux_Utility_ContentManipulator {
 	 * @param array $backtrace
 	 * @return boolean
 	 */
-	protected static function affectRecordByBacktrace(array &$row, array $backtrace) {
+	public static function affectRecordByBacktrace(array &$row, array $backtrace) {
 		$retrievedArgument = NULL;
+		$targetClass = 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands';
+		$targetFunction = 'moveContentElement';
 		foreach (array_reverse($backtrace) as $stackItem) {
-			if ($stackItem['class'] === 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands') {
-				if ($stackItem['function'] === 'moveContentElement') {
-					$retrievedArgument = $stackItem['args'][1];
-					$segments = explode('-', $retrievedArgument);
-					$slice = array_slice($segments, count($segments) - 3);
-					if ($slice[0] === 'top') {
-						$row['tx_flux_parent'] = $slice[1];
-						$row['tx_flux_column'] = $slice[2];
-						$row['colPos'] = -42;
-					} elseif ($slice[0] === 'after') {
-						$row['pid'] = 0 - $slice[1];
-						$row['tx_flux_column'] = $slice[2];
-					} else {
-						$row['tx_flux_parent'] = $row['tx_flux_column'] = '';
-					}
-					break;
+			if ($stackItem['class'] === $targetClass && $stackItem['function'] === $targetFunction) {
+				$retrievedArgument = $stackItem['args'][1];
+				$segments = explode('-', $retrievedArgument);
+				$slice = array_slice($segments, count($segments) - 3);
+				if ($slice[0] === 'top') {
+					$row['tx_flux_parent'] = $slice[1];
+					$row['tx_flux_column'] = $slice[2];
+					$row['colPos'] = -42;
+				} elseif ($slice[0] === 'after') {
+					$row['pid'] = 0 - $slice[1];
+					$row['tx_flux_column'] = $slice[2];
+				} else {
+					$row['tx_flux_parent'] = $row['tx_flux_column'] = '';
 				}
+				break;
 			}
 		}
 		return TRUE;

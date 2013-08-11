@@ -30,6 +30,30 @@
 class Tx_Flux_Utility_ContentManipulatorTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
+	 * @var array
+	 */
+	private static $BACKTRACE_FIXTURE = array(
+		array(
+			'class' => 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands',
+			'function' => 'moveContentElement',
+			'args' => array()
+		),
+		array(
+			'class' => 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands',
+			'function' => 'unrecognised',
+			'args' => array()
+		),
+		array(
+			'class' => 'Unrecognised',
+			'function' => 'void',
+			'args' => array(
+				'foo',
+				'bar'
+			)
+		)
+	);
+
+	/**
 	 * @test
 	 */
 	public function canDetectParentElementAreaFromRecord() {
@@ -88,6 +112,59 @@ class Tx_Flux_Utility_ContentManipulatorTest extends Tx_Flux_Tests_AbstractFunct
 		$this->assertSame('areaname', $record['tx_flux_column']);
 		$this->assertSame('999999', $record['tx_flux_parent']);
 		$this->assertNotSame($oldSorting, $record['sorting']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function affectsRecordByBacktraceWithDropTargetTop() {
+		$expectedParent = 123;
+		$expectedColumn = 'myarea';
+		$backtrace = self::$BACKTRACE_FIXTURE;
+		$backtrace[0]['args'] = array(
+			0 => 'unused',
+			1 => 'void-void-void-void-top-' . $expectedParent . '-' . $expectedColumn
+		);
+		$row = $this->fireBacktraceDetection($backtrace);
+		$this->assertEquals($expectedColumn, $row['tx_flux_column']);
+		$this->assertEquals($expectedParent, $row['tx_flux_parent']);
+		$this->assertEquals(-42, $row['colPos']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function affectsRecordByBacktraceWithDropTargetAfter() {
+		$expectedParent = 123;
+		$expectedColumn = '';
+		$backtrace = self::$BACKTRACE_FIXTURE;
+		$backtrace[0]['args'] = array(
+			0 => 'unused',
+			1 => 'void-void-void-void-after-' . $expectedParent . '-' . $expectedColumn
+		);
+		$row = $this->fireBacktraceDetection($backtrace);
+		$this->assertEquals($expectedColumn, $row['tx_flux_column']);
+		$this->assertEquals(0 - $expectedParent, $row['pid']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function affectsRecordByBacktraceWithDropTargetNone() {
+		$backtrace = self::$BACKTRACE_FIXTURE;
+		$row = $this->fireBacktraceDetection($backtrace);
+		$this->assertEmpty($row['tx_flux_column']);
+		$this->assertEmpty($row['tx_flux_parent']);
+	}
+
+	/**
+	 * @param array $backtrace
+	 * @return array
+	 */
+	protected function fireBacktraceDetection($backtrace) {
+		$row = array();
+		Tx_Flux_Utility_ContentManipulator::affectRecordByBacktrace($row, $backtrace);
+		return $row;
 	}
 
 }
