@@ -77,6 +77,7 @@ class Tx_Flux_Utility_ContentManipulator {
 		$id = $row['uid'];
 		if (1 < substr_count($parameters[1], '-')) {
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
+			$relativeUid = 0 - $relativeUid;
 		} else {
 			$relativeUid = $parameters[1];
 		}
@@ -92,23 +93,26 @@ class Tx_Flux_Utility_ContentManipulator {
 			$condition = "uid = '" . $id . "'";
 			$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $condition));
 		}
-		if (0 < $relativeUid) {
-			$relativeRecord = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $relativeUid . "'"));
-			$record['sorting'] = $relativeRecord['sorting'] + 1;
+		if (0 > $relativeUid) {
+			$relativeRecord = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . abs($relativeUid) . "'"));
+			$record['sorting'] = $relativeRecord['sorting'] + 128;
 			$record['pid'] = $relativeRecord['pid'];
+			$record['colPos'] = $relativeRecord['colPos'];
 			$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
 			$record['tx_flux_parent'] = $relativeRecord['tx_flux_parent'];
+		} elseif (FALSE === empty($possibleArea)) {
+			$record['tx_flux_parent'] = $parentUid;
+			$record['tx_flux_column'] = $possibleArea;
+			$record['colPos'] = -42;
 		} else {
 			$record['sorting'] = 0;
 			if (0 < $pid) {
 				$record['pid'] = $pid;
+			} else {
+				$record['pid'] = $relativeUid;
 			}
 			$record['tx_flux_column'] = '';
-		}
-		if (FALSE === empty($possibleArea)) {
-			$record['tx_flux_parent'] = $parentUid;
-			$record['tx_flux_column'] = $possibleArea;
-			$record['colPos'] = -42;
+			$record['tx_flux_parent'] = '';
 		}
 		if (FALSE === empty($possibleColPos) || $possibleColPos === 0 || $possibleColPos === '0') {
 			$record['colPos'] = $possibleColPos;
