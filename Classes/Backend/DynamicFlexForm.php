@@ -70,6 +70,9 @@ class Tx_Flux_Backend_DynamicFlexForm {
 			$fieldName = NULL;
 		}
 		$provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $fieldName, $row);
+		if (NULL === $provider) {
+			return;
+		}
 		try {
 			$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 		} catch (Exception $e) {
