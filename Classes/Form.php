@@ -146,24 +146,44 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 				'langDisable' => 1
 			),
 		);
+		$copy = clone $this;
+		foreach ($this->getSheets(TRUE) as $sheet) {
+			if (0 === count($sheet->getFields())) {
+				$copy->remove($sheet->getName());
+			}
+		}
+		$sheets = $copy->getSheets();
 		$compactExtensionToggleOn = 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'];
-		$compactConfigurationToggleOn = 0 < $this->getCompact();
-		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === $this->children->count()) {
+		$compactConfigurationToggleOn = 0 < $copy->getCompact();
+		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets)) {
 			$dataStructArray['ROOT'] = array(
 				'type' => 'array',
-				'el' => $this->last()->build(),
+				'el' => $copy->last()->build(),
 			);
+		} elseif (0 < count($sheets)) {
+			$dataStructArray['sheets'] = $copy->buildChildren();
 		} else {
-			$dataStructArray['sheets'] = $this->buildChildren();
+			$dataStructArray['ROOT'] = array(
+				'type' => 'array',
+				'el' => array()
+			);
 		}
 		return $dataStructArray;
 	}
 
 	/**
+	 * @param boolean $includeEmpty
 	 * @return Tx_Flux_Form_Container_Sheet[]
 	 */
-	public function getSheets() {
-		return (array) iterator_to_array($this->children, TRUE);
+	public function getSheets($includeEmpty = FALSE) {
+		$sheets = array();
+		foreach ($this->children as $index => $sheet) {
+			if (0 === count($sheet->getFields()) && FALSE === $includeEmpty) {
+				continue;
+			}
+			$sheets[$index] = $sheet;
+		}
+		return $sheets;
 	}
 
 	/**
