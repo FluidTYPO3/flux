@@ -42,6 +42,19 @@ class Tx_Flux_Tests_Fixtures_Data_Xml {
     </data>
 </T3FlexForms>';
 
+	const EXPECTING_FLUX_PRUNING = '<T3FlexForms>
+    <data>
+        <sheet index="options">
+            <language index="lDEF">
+                <field index="settings.input">
+                    <value index="vDEF">0</value>
+                </field>
+                <field index=""></field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>';
+
 	const EXPECTING_FLUX_TRANSFORMATIONS = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>

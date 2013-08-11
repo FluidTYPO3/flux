@@ -229,9 +229,6 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
-		if (NULL === $form) {
-			return NULL;
-		}
 		foreach ($form->getFields() as $field) {
 			$name = $field->getName();
 			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);

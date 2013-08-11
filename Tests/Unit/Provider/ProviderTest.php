@@ -121,4 +121,28 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 		$this->assertIsArray($paths);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canCreateFormFromDefinitionWithAllSupportedNodes() {
+		/** @var Tx_Flux_Provider_ProviderInterface $instance */
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$provider->loadSettings($this->definition);
+		$form = $provider->getForm($record);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canCreateGridFromDefinitionWithAllSupportedNodes() {
+		/** @var Tx_Flux_Provider_ProviderInterface $instance */
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$provider->loadSettings($this->definition);
+		$grid = $provider->getGrid($record);
+		$this->assertInstanceOf('Tx_Flux_Form_Container_Grid', $grid);
+	}
+
 }
