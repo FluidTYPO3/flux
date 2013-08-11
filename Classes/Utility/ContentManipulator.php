@@ -38,14 +38,14 @@ class Tx_Flux_Utility_ContentManipulator {
 	 * @param t3lib_TCEmain $tceMain
 	 * @return boolean
 	 */
-	public static function affectRecordByRequestParameters(array $row, $parameters, t3lib_TCEmain $tceMain) {
+	public static function affectRecordByRequestParameters(array &$row, $parameters, t3lib_TCEmain $tceMain) {
 		$url = TRUE === isset($parameters['returnUrl']) ? $parameters['returnUrl'] : NULL;
 		$urlHashCutoffPoint = strrpos($url, '#');
 		$area = NULL;
 		if ($urlHashCutoffPoint > 0) {
 			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
 			if (strpos($area, ':') === FALSE) {
-				return;
+				return FALSE;
 			}
 		}
 		list ($contentAreaFromUrl, $parentUidFromUrl, $afterElementUid) = explode(':', $area);
@@ -55,16 +55,13 @@ class Tx_Flux_Utility_ContentManipulator {
 		if ($parentUidFromUrl > 0) {
 			$row['tx_flux_parent'] = $parentUidFromUrl;
 		}
-		if (strpos($row['tx_flux_column'], ':') !== FALSE) {
-			// TODO: after migration to "parent" usage, remember to change this next line
-			list ($row['tx_flux_column'], $row['tx_flux_parent']) = explode(':', $row['tx_flux_column']);
-		}
 		if ($row['tx_flux_parent'] > 0) {
 			$row['colPos'] = -42;
 			if (0 > $afterElementUid) {
 				$row['sorting'] = $tceMain->resorting('tt_content', $row['pid'], 'sorting', abs($afterElementUid));
 			}
 		}
+		return TRUE;
 	}
 
 	/**
@@ -175,8 +172,8 @@ class Tx_Flux_Utility_ContentManipulator {
 			$row['sorting'] = -1;
 		} elseif (0 > $relativeTo) {
 			// Triggers when sorting a CE after another CE, $relativeTo is negative value of CE's UID
-			$row['tx_flux_column'] = Tx_Flux_Utility_Resolve::detectParentElementAreaFromRecord($relativeTo);
-			$row['tx_flux_parent'] = Tx_Flux_Utility_Resolve::detectParentUidFromRecord($relativeTo);
+			$row['tx_flux_column'] = self::detectParentElementAreaFromRecord($relativeTo);
+			$row['tx_flux_parent'] = self::detectParentUidFromRecord($relativeTo);
 		}
 		if ($row['tx_flux_parent'] > 0) {
 			$row['colPos'] = -42;
@@ -236,6 +233,26 @@ class Tx_Flux_Utility_ContentManipulator {
 			}
 		}
 		return TRUE;
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return string
+	 */
+	public static function detectParentElementAreaFromRecord($uid) {
+		$uid = abs($uid);
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		return $record['tx_flux_column'];
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return integer
+	 */
+	public static function detectParentUidFromRecord($uid) {
+		$uid = abs($uid);
+		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
+		return intval($record['tx_flux_parent']);
 	}
 
 }
