@@ -56,6 +56,19 @@ class Tx_Flux_Provider_ContentProviderTest extends Tx_Flux_Provider_AbstractProv
 	/**
 	 * @test
 	 */
+	public function triggersContentManipulatorOnPasteCommandWithCallbackInUrl() {
+		$_GET['CB'] = array('paste' => 'tt_content|0');
+		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$service = $this->createFluxServiceInstance();
+		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);
+		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$relativeUid = 0;
+		$provider->postProcessCommand('move', 0, $row, $relativeUid, $tceMain);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canGetExtensionKey() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
