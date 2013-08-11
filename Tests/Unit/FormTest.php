@@ -245,8 +245,8 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$form = $this->getEmptyDummyForm();
 		$container = $form->createContainer('Section', 'section');
 		$form->add($container);
-		$this->assertIsValidAndWorkingFormObject($form);
 		$this->assertTrue($form->last()->has('section'));
+		$this->assertIsValidAndWorkingFormObject($form);
 	}
 
 	/**
