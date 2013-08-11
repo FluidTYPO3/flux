@@ -64,9 +64,8 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 		if (TRUE === is_array($this->templatePaths)) {
 			$paths = $this->templatePaths;
 		} else {
-			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-			$extensionIdentity = str_replace('_', '', $this->getExtensionKey($row));
-			$paths = t3lib_div::removeDotsFromTS((array) $typoScript['plugin.']['tx_' . $extensionIdentity . '.']['view.']);
+			$extensionKey = $this->getExtensionKey($row);
+			$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 		}
 		$paths = Tx_Flux_Utility_Path::translatePath($paths);
 		return $paths;
@@ -80,40 +79,8 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 */
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
 		parent::preProcessRecord($row, $id, $reference);
-		if (count($row) === 1 && isset($row['colPos'])) {
-				// dropping an element in a column header dropzone in 6.0 only sends the "colPos"
-				// and this colPos may contain nothing but positive integers. Bring the severe hacking.
-			$backtrace = debug_backtrace();
-			$retrievedArgument = NULL;
-			foreach (array_reverse($backtrace) as $stackItem) {
-				if ($stackItem['class'] === 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands') {
-					if ($stackItem['function'] === 'moveContentElement') {
-						$retrievedArgument = $stackItem['args'][1];
-						$segments = explode('-', $retrievedArgument);
-						$slice = array_slice($segments, count($segments) - 3);
-						if ($slice[0] === 'top') {
-							$row['tx_flux_parent'] = $slice[1];
-							$row['tx_flux_column'] = $slice[2];
-							$row['colPos'] = -42;
-						} elseif ($slice[0] === 'after') {
-							$row['pid'] = 0 - $slice[1];
-							$row['tx_flux_column'] = $slice[2];
-						} else {
-							$row['tx_flux_parent'] = $row['tx_flux_column'] = '';
-						}
-						break;
-					}
-				}
-			}
-		}
-		if ($row['pid'] < 0) {
-				// inserting a new element after another element. Check column position of that element.
-			$relativeTo = abs($row['pid']);
-			$relativeToRecord = t3lib_BEfunc::getRecord($this->tableName, $relativeTo);
-			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
-			$row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
-		}
-		unset($id, $reference);
+		$relativeTo = 0;
+		Tx_Flux_Utility_ContentManipulator::moveRecord($row, $relativeTo, $reference);
 	}
 
 	/**
@@ -124,37 +91,12 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
-		$url = t3lib_div::_GET('returnUrl');
-		$urlHashCutoffPoint = strrpos($url, '#');
-		$area = NULL;
-		if ($urlHashCutoffPoint > 0) {
-			$area = substr($url, 1 - (strlen($url) - $urlHashCutoffPoint));
-			if (strpos($area, ':') === FALSE) {
-				return;
-			}
-		}
-		list ($contentAreaFromUrl, $parentUidFromUrl, $afterElementUid) = explode(':', $area);
-		if ($contentAreaFromUrl) {
-			$row['tx_flux_column'] = $contentAreaFromUrl;
-		}
-		if ($parentUidFromUrl > 0) {
-			$row['tx_flux_parent'] = $parentUidFromUrl;
-		}
-		if (strpos($row['tx_flux_column'], ':') !== FALSE) {
-			// TODO: after migration to "parent" usage, remember to change this next line
-			list ($row['tx_flux_column'], $row['tx_flux_parent']) = explode(':', $row['tx_flux_column']);
-		}
-		if ($row['tx_flux_parent'] > 0) {
-			$row['colPos'] = -42;
-			if (0 > $afterElementUid) {
-				$row['sorting'] = $reference->resorting($this->tableName, $row['pid'], 'sorting', abs($afterElementUid));
-			}
-		}
+		$parameters = t3lib_div::_GET();
+		Tx_Flux_Utility_ContentManipulator::affectRecordByRequestParameters($row, $parameters, $reference);
 			// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
 		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
 			$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
 		}
-		unset($id, $operation);
 	}
 
 	/**
@@ -167,51 +109,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference) {
 		parent::postProcessDatabaseOperation($status, $id, $row, $reference);
 		if ($status === 'new') {
-			$newUid = $reference->substNEWwithIDs[$id];
-			$this->adjustColumnPositionBasedOnCommandUrl($newUid);
-			$oldUid = $row['t3_origuid'];
-			$languageFieldName = $GLOBALS['TCA'][$this->tableName]['ctrl']['languageField'];
-			$newLanguageUid = NULL;
-			if ($oldUid) {
-				$oldRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,pid,' . $languageFieldName, $this->tableName, "uid = '" . $oldUid . "'");
-				if (empty($row[$languageFieldName]) === FALSE) {
-					$newLanguageUid = $row[$languageFieldName];
-				} elseif (empty($oldRecord[$languageFieldName]) === FALSE) {
-					$newLanguageUid = $oldRecord[$languageFieldName];
-				} else {
-					$newLanguageUid = 1; // TODO: resolve config.sys_language_uid but WITHOUT using Extbase TS resolution, consider pid of new record
-				}
-				$clause = "(tx_flux_column LIKE '%:" . $oldUid . "' || tx_flux_parent = '" . $oldUid . "') AND deleted = 0 AND hidden = 0";
-				$children = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,pid,sys_language_uid,tx_flux_column,tx_flux_parent', 'tt_content', $clause);
-				if (count($children) < 1) {
-					return;
-				}
-				// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
-				foreach ($children as $child) {
-					if (strpos($child['tx_flux_column'], ':') === FALSE) {
-						$area = $child['tx_flux_column'];
-					} else {
-						$areaAndUid = explode(':', $child['tx_flux_column']);
-						$area = $areaAndUid[0];
-					}
-					$overrideValues = array(
-						'tx_flux_column' => $area,
-						'tx_flux_parent' => $newUid,
-						$languageFieldName => $newLanguageUid
-					);
-					if ($oldRecord[$languageFieldName] !== $newLanguageUid && $oldRecord['pid'] === $row['pid']) {
-						$childUid = $reference->localize($this->tableName, $child['uid'], $newLanguageUid);
-						$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->tableName, "uid = '" . $childUid . "'", $overrideValues);
-					} elseif ($child['tx_flux_parent'] < 1) {
-						// patch; copying of elements which previously had no parent entered needs to be done
-						// manually in this case because the TCA cascading that happens on "inline" type fields
-						// does not trigger because the child element uses the old way of storing relationships.
-						// The new copies will use the new way of storing relationships.
-						$childUid = $reference->copyRecord($this->tableName, $child['uid'], $row['pid']);
-						$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->tableName, "uid = '" . $childUid . "'", $overrideValues);
-					}
-				}
-			}
+			Tx_Flux_Utility_ContentManipulator::initializeRecord($row, $reference);
 		}
 	}
 
@@ -229,36 +127,8 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	public function preProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
 		parent::preProcessCommand($command, $id, $row, $relativeTo, $reference);
 		if ($command === 'move') {
-			$this->adjustColumnPositionBasedOnCommandUrl($id);
-			if (strpos($relativeTo, 'FLUX') !== FALSE) {
-				// Triggers when CE is dropped on a nested content area's header dropzone (EXT:gridelements)
-				list ($areaName, $parentElementUid, $pid) = explode('-', trim($relativeTo, '-'));
-				$row['tx_flux_column'] = $areaName;
-				$row['tx_flux_parent'] = $parentElementUid;
-				$row['pid'] = $pid;
-				$row['sorting'] = -1;
-				$relativeTo = $pid;
-			} elseif (strpos($relativeTo, 'x') > 0) {
-				// Triggers when CE is dropped on a root (not CE) column header's dropzone (EXT:gridelements)
-				// set colPos and remove FCE relation
-				list ($relativeTo, $colPos) = explode('x', $relativeTo);
-				$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
-				$row['colPos'] = $colPos;
-				$row['sorting'] = -1;
-			} elseif ($relativeTo < 0) {
-				// Triggers when sorting a CE after another CE, $relativeTo is negative value of CE's UID
-				$row['tx_flux_column'] = Tx_Flux_Utility_Resolve::detectParentElementAreaFromRecord($relativeTo);
-				$row['tx_flux_parent'] = Tx_Flux_Utility_Resolve::detectParentUidFromRecord($relativeTo);
-			}
-			if (strpos($row['tx_flux_column'], ':') !== FALSE) {
-				// TODO: after migration to "parent" usage, remember to change this next line
-				list ($row['tx_flux_column'], $row['tx_flux_parent']) = explode(':', $row['tx_flux_column']);
-			}
-			if ($row['tx_flux_parent'] > 0) {
-				$row['colPos'] = -42;
-			}
+			Tx_Flux_Utility_ContentManipulator::moveRecord($row, $relativeTo, $reference);
 		}
-		unset($id, $reference);
 	}
 
 	/**
@@ -279,70 +149,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 			$callback = t3lib_div::_GET('CB');
 			$pasteCommand = $callback['paste'];
 			$parameters = explode('|', $pasteCommand);
-			if (1 < substr_count($parameters[1], '-')) {
-				list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
-			} else {
-				$relativeUid = $parameters[1];
-			}
-			if ($command === 'copy') {
-				$copiedUid = $reference->copyMappingArray[$this->tableName][$id];
-				$condition = "uid = '" . $copiedUid . "'";
-				$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $this->tableName, $condition));
-				if ('reference' === $subCommand) {
-					$record['CType'] = 'shortcut';
-					$record['records'] = $id;
-				}
-			} else {
-				$condition = "uid = '" . $id . "'";
-				$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $this->tableName, $condition));
-			}
-			if (0 < $relativeUid) {
-				$relativeRecord = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $this->tableName, "uid = '" . $relativeUid . "'"));
-				$record['sorting'] = $relativeRecord['sorting'] + 1;
-				$record['pid'] = $relativeRecord['pid'];
-				$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
-				$record['tx_flux_parent'] = $relativeRecord['tx_flux_parent'];
-			} else {
-				$record['sorting'] = 0;
-				if (0 < $pid) {
-					$record['pid'] = $pid;
-				}
-				$record['tx_flux_column'] = '';
-			}
-			if (FALSE === empty($possibleArea)) {
-				$record['tx_flux_parent'] = $parentUid;
-				$record['tx_flux_column'] = $possibleArea;
-				$record['colPos'] = -42;
-			}
-			if (FALSE === empty($possibleColPos) || $possibleColPos === 0 || $possibleColPos === '0') {
-				$record['colPos'] = $possibleColPos;
-			}
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->tableName, $condition, $record);
-		}
-	}
-
-	/**
-	 * @param integer $id
-	 * @return void
-	 */
-	protected function adjustColumnPositionBasedOnCommandUrl($id) {
-		$commandUrl = t3lib_div::_GET('cmd');
-		if (empty($commandUrl)) {
-			return;
-		}
-		$instruction = array_pop(array_pop($commandUrl));
-		$command = key($instruction);
-		$relativeTo = $instruction[$command];
-		if ($command === 'copy' || $command === 'move') {
-			if (strpos($relativeTo, 'x') !== FALSE) {
-				// Triggers when an URL-based copy/paste or cut/paste action is performed and
-				// the target is a column directly in the page (i.e. not nested content column).
-				// The implication: content-to-parent relationship should be nullified
-				$row = array();
-				$row['tx_flux_parent'] = $row['tx_flux_column'] = NULL;
-				$row['colPos'] = array_pop(explode('x', $relativeTo));
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
-			}
+			Tx_Flux_Utility_ContentManipulator::pasteAfter($command, $row, $parameters, $reference);
 		}
 	}
 
