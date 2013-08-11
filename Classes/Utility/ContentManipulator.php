@@ -206,13 +206,6 @@ class Tx_Flux_Utility_ContentManipulator {
 				if ($oldRecord[$languageFieldName] !== $newLanguageUid && $oldRecord['pid'] === $row['pid']) {
 					$childUid = $tceMain->localize('tt_content', $child['uid'], $newLanguageUid);
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $childUid . "'", $overrideValues);
-				} elseif ($child['tx_flux_parent'] < 1) {
-					// patch; copying of elements which previously had no parent entered needs to be done
-					// manually in this case because the TCA cascading that happens on "inline" type fields
-					// does not trigger because the child element uses the old way of storing relationships.
-					// The new copies will use the new way of storing relationships.
-					$childUid = $tceMain->copyRecord('tt_content', $child['uid'], $row['pid']);
-					$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $childUid . "'", $overrideValues);
 				}
 			}
 		}
