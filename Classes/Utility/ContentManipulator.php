@@ -128,27 +128,7 @@ class Tx_Flux_Utility_ContentManipulator {
 			// dropping an element in a column header dropzone in 6.0 only sends the "colPos"
 			// and this colPos may contain nothing but positive integers. Bring the severe hacking.
 			$backtrace = debug_backtrace();
-			$retrievedArgument = NULL;
-			foreach (array_reverse($backtrace) as $stackItem) {
-				if ($stackItem['class'] === 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands') {
-					if ($stackItem['function'] === 'moveContentElement') {
-						$retrievedArgument = $stackItem['args'][1];
-						$segments = explode('-', $retrievedArgument);
-						$slice = array_slice($segments, count($segments) - 3);
-						if ($slice[0] === 'top') {
-							$row['tx_flux_parent'] = $slice[1];
-							$row['tx_flux_column'] = $slice[2];
-							$row['colPos'] = -42;
-						} elseif ($slice[0] === 'after') {
-							$row['pid'] = 0 - $slice[1];
-							$row['tx_flux_column'] = $slice[2];
-						} else {
-							$row['tx_flux_parent'] = $row['tx_flux_column'] = '';
-						}
-						break;
-					}
-				}
-			}
+			self::affectRecordByBacktrace($row, $backtrace);
 		} elseif ($row['pid'] < 0) {
 			// inserting a new element after another element. Check column position of that element.
 			$relativeTo = abs($row['pid']);
@@ -229,6 +209,36 @@ class Tx_Flux_Utility_ContentManipulator {
 					// The new copies will use the new way of storing relationships.
 					$childUid = $tceMain->copyRecord('tt_content', $child['uid'], $row['pid']);
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $childUid . "'", $overrideValues);
+				}
+			}
+		}
+		return TRUE;
+	}
+
+	/**
+	 * @param array $row
+	 * @param array $backtrace
+	 * @return boolean
+	 */
+	protected static function affectRecordByBacktrace(array &$row, array $backtrace) {
+		$retrievedArgument = NULL;
+		foreach (array_reverse($backtrace) as $stackItem) {
+			if ($stackItem['class'] === 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands') {
+				if ($stackItem['function'] === 'moveContentElement') {
+					$retrievedArgument = $stackItem['args'][1];
+					$segments = explode('-', $retrievedArgument);
+					$slice = array_slice($segments, count($segments) - 3);
+					if ($slice[0] === 'top') {
+						$row['tx_flux_parent'] = $slice[1];
+						$row['tx_flux_column'] = $slice[2];
+						$row['colPos'] = -42;
+					} elseif ($slice[0] === 'after') {
+						$row['pid'] = 0 - $slice[1];
+						$row['tx_flux_column'] = $slice[2];
+					} else {
+						$row['tx_flux_parent'] = $row['tx_flux_column'] = '';
+					}
+					break;
 				}
 			}
 		}
