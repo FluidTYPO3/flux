@@ -128,7 +128,7 @@ class Tx_Flux_Utility_ContentManipulator {
 	 * @return boolean
 	 */
 	public static function moveRecord(array &$row, &$relativeTo) {
-		if (count($row) === 1 && isset($row['colPos'])) {
+		if (0 <= intval($relativeTo)) {
 			// dropping an element in a column header dropzone in 6.0 only sends the "colPos"
 			// and this colPos may contain nothing but positive integers. Bring the severe hacking.
 			$backtrace = debug_backtrace();
@@ -147,7 +147,7 @@ class Tx_Flux_Utility_ContentManipulator {
 			$row['pid'] = $pid;
 			$row['sorting'] = -1;
 			$relativeTo = $pid;
-		} elseif (0 < strpos($relativeTo, 'x') || 0 <= intval($relativeTo)) {
+		} elseif (0 < strpos($relativeTo, 'x')) {
 			// Triggers when CE is dropped on a root (not CE) column header's dropzone (EXT:gridelements)
 			// set colPos and remove FCE relation
 			list ($relativeTo, $colPos) = explode('x', $relativeTo);

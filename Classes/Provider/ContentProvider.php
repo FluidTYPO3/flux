@@ -72,18 +72,6 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	}
 
 	/**
-	 * @param array $row
-	 * @param integer $id
-	 * @param t3lib_TCEmain $reference
-	 * @return void
-	 */
-	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
-		parent::preProcessRecord($row, $id, $reference);
-		$relativeTo = 0;
-		Tx_Flux_Utility_ContentManipulator::moveRecord($row, $relativeTo, $reference);
-	}
-
-	/**
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row
@@ -114,24 +102,6 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	}
 
 	/**
-	 * Pre-process a command executed on a record form the table this ConfigurationProvider
-	 * is attached to.
-	 *
-	 * @param string $command
-	 * @param integer $id
-	 * @param array $row
-	 * @param integer $relativeTo
-	 * @param t3lib_TCEmain $reference
-	 * @return void
-	 */
-	public function preProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
-		parent::preProcessCommand($command, $id, $row, $relativeTo, $reference);
-		if ($command === 'move') {
-			Tx_Flux_Utility_ContentManipulator::moveRecord($row, $relativeTo, $reference);
-		}
-	}
-
-	/**
 	 * Post-process a command executed on a record form the table this ConfigurationProvider
 	 * is attached to.
 	 *
@@ -147,9 +117,14 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 		$pasteCommands = array('copy', 'move');
 		if (TRUE === in_array($command, $pasteCommands)) {
 			$callback = t3lib_div::_GET('CB');
-			$pasteCommand = $callback['paste'];
-			$parameters = explode('|', $pasteCommand);
-			Tx_Flux_Utility_ContentManipulator::pasteAfter($command, $row, $parameters, $reference);
+			if (TRUE === isset($callback['paste'])) {
+				$pasteCommand = $callback['paste'];
+				$parameters = explode('|', $pasteCommand);
+				Tx_Flux_Utility_ContentManipulator::pasteAfter($command, $row, $parameters, $reference);
+			} else {
+				Tx_Flux_Utility_ContentManipulator::moveRecord($row, $relativeTo, $reference);
+			}
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
 		}
 	}
 
