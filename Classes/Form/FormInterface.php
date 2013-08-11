@@ -55,6 +55,29 @@ interface Tx_Flux_Form_FormInterface {
 	public function getLabel();
 
 	/**
+	 * @param string $localLanguageFileRelativePath
+	 * @return Tx_Flux_FormInterface
+	 */
+	public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath);
+
+	/**
+	 * @return string
+	 */
+	public function getLocalLanguageFileRelativePath();
+
+
+	/**
+	 * @param boolean $disableLocalLanguageLabels
+	 * @return Tx_Flux_FormInterface
+	 */
+	public function setDisableLocalLanguageLabels($disableLocalLanguageLabels);
+
+	/**
+	 * @return boolean
+	 */
+	public function getDisableLocalLanguageLabels();
+
+	/**
 	 * @param Tx_Flux_Form_ContainerInterface $parent
 	 * @return Tx_Flux_Form_FormInterface
 	 */

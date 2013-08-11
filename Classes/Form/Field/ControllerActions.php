@@ -84,20 +84,12 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	protected $prefixOnRequiredArguments = '*';
 
 	/**
-	 * If TRUE, disables LLL label usage and just uses the class
-	 * comment or Controller->action syntax.
-	 *
-	 * @var boolean
-	 */
-	protected $disableLocalLanguageLabels = FALSE;
-
-	/**
-	 * Relative (from extension $extensionName) path to locallang
-	 * file containing the action method labels.
+	 * Separator for non-LLL action labels which have no manual
+	 * label set.
 	 *
 	 * @var string
 	 */
-	protected $localLanguageFileRelativePath = '/Resources/Private/Language/locallang_db.xml';
+	protected $separator = '->';
 
 	/**
 	 * Array of also allowed actions which will be allowed when
@@ -196,23 +188,6 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	public function getControllerName() {
 		return $this->controllerName;
 	}
-
-	/**
-	 * @param boolean $disableLocalLanguageLabels
-	 * @return Tx_Flux_Form_Field_ControllerActions
-	 */
-	public function setDisableLocalLanguageLabels($disableLocalLanguageLabels) {
-		$this->disableLocalLanguageLabels = (boolean) $disableLocalLanguageLabels;
-		return $this;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getDisableLocalLanguageLabels() {
-		return (boolean) $this->disableLocalLanguageLabels;
-	}
-
 	/**
 	 * @param array $excludeActions
 	 * @return Tx_Flux_Form_Field_ControllerActions
@@ -246,22 +221,6 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	}
 
 	/**
-	 * @param string $localLanguageFileRelativePath
-	 * @return Tx_Flux_Form_Field_ControllerActions
-	 */
-	public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath) {
-		$this->localLanguageFileRelativePath = $localLanguageFileRelativePath;
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getLocalLanguageFileRelativePath() {
-		return $this->localLanguageFileRelativePath;
-	}
-
-	/**
 	 * @param string $pluginName
 	 * @return Tx_Flux_Form_Field_ControllerActions
 	 */
@@ -275,6 +234,22 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 */
 	public function getPluginName() {
 		return $this->pluginName;
+	}
+
+	/**
+	 * @param string $separator
+	 * @return Tx_Flux_Form_Field_ControllerActions
+	 */
+	public function setSeparator($separator) {
+		$this->separator = $separator;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSeparator() {
+		return $this->separator;
 	}
 
 	/**
@@ -380,27 +355,22 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 		$localLanguageFileRelativePath = $this->getLocalLanguageFileRelativePath();
 		$extensionName = $this->getExtensionName();
 		$pluginName = $this->getPluginName();
+		$separator = $this->getSeparator();
 		list (, $extensionKey) = $this->getVendorNameAndExtensionKeyFromExtensionName($extensionName);
 		$controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
 		$disableLocalLanguageLabels = $this->getDisableLocalLanguageLabels();
 		$labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
 		$hasLocalLanguageFile = file_exists(t3lib_extMgm::extPath($extensionKey, $localLanguageFileRelativePath));
-		if ((TRUE === $disableLocalLanguageLabels || FALSE === $hasLocalLanguageFile) && NULL !== $controllerClassName) {
-			$glue = FALSE === strpos($controllerClassName, '\\') ? '_' : '\\';
-			$controllerName = array_pop(t3lib_div::trimExplode($glue, $controllerClassName));
-			$controllerName = substr($controllerName, 0, -10);
-			if (FALSE === method_exists($controllerClassName, $actionName . 'Action')) {
-				$label = NULL;
-			} else {
-				$methodReflection = $this->reflectAction($controllerName, $actionName);
-				$line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
-				$label = trim(trim($line), '* ');
-				if (substr($label, 0, 1) === '@') {
-					$label = NULL;
-				}
-			}
-		} else {
+		$label = $actionName . $separator . $controllerName;
+		if (FALSE === $disableLocalLanguageLabels && TRUE === $hasLocalLanguageFile) {
 			$label = 'LLL:EXT:' . t3lib_div::camelCaseToLowerCaseUnderscored($extensionName) . $localLanguageFileRelativePath . ':' . $labelPath;
+		} elseif (TRUE === method_exists($controllerClassName, $actionName . 'Action') && TRUE === $disableLocalLanguageLabels) {
+			$methodReflection = $this->reflectAction($controllerName, $actionName);
+			$line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
+			$line = trim(trim($line), '* ');
+			if (substr($line, 0, 1) !== '@') {
+				$label = $line;
+			}
 		}
 		return $label;
 	}
@@ -460,6 +430,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 * @return array
 	 */
 	protected function buildItemsForActions(array $actions) {
+		$separator = $this->getSeparator();
 		$subActions = $this->getSubActions();
 		$exclusions = $this->getExcludeActions();
 		foreach ($exclusions as $controllerName => $controllerActionList) {
@@ -478,23 +449,16 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 					continue;
 				} elseif ($limitByControllerName && $controllerName !== $limitByControllerName) {
 					continue;
-				} else {
-					$label = $this->getLabelForControllerAction($controllerName, $actionName);
 				}
-				$label = trim($label);
-				if (empty($label) === TRUE) {
-					$label = $controllerName . '->' . $actionName;
-				}
+				$label = $this->getLabelForControllerAction($controllerName, $actionName);
 				$label = $this->prefixLabel($controllerName, $actionName, $label);
-				$actionKey = array($controllerName . '->' . $actionName);
-
+				$actionKey = array($controllerName . $separator . $actionName);
 				if (isset($subActions[$controllerName][$actionName])) {
 					$subActionsArray = $this->convertActionListToArray($subActions[$controllerName][$actionName]);
 					foreach ($subActionsArray as $allowedActionName) {
-						$actionKey[] = $controllerName . '->' . $allowedActionName;
+						$actionKey[] = $controllerName . $separator . $allowedActionName;
 					}
 				}
-
 				$values = array(
 					implode(';', $actionKey),
 					$label,
@@ -502,7 +466,6 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 				array_push($items, $values);
 			}
 		}
-
 		return $items;
 	}
 

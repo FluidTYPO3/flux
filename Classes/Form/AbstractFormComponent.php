@@ -55,6 +55,22 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	protected $label = 'Unnamed FormComponent';
 
 	/**
+	 * If TRUE, disables LLL label usage and always returns the
+	 * raw value of $label.
+	 *
+	 * @var boolean
+	 */
+	protected $disableLocalLanguageLabels = FALSE;
+
+	/**
+	 * Relative (from extension $extensionName) path to locallang
+	 * file containing labels for the LLL values built by this class.
+	 *
+	 * @var string
+	 */
+	protected $localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xml';
+
+	/**
 	 * @var Tx_Flux_Form_FormContainerInterface
 	 */
 	protected $parent;
@@ -122,6 +138,8 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		$component = $this->objectManager->get('Tx_Flux_Form_Field_' . $type);
 		$component->setName($name);
 		$component->setLabel($label);
+		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
+		$component->setDisableLocalLanguageLabels($this->getDisableLocalLanguageLabels());
 		return $component;
 	}
 
@@ -136,6 +154,8 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		$component = $this->objectManager->get('Tx_Flux_Form_Container_' . $type);
 		$component->setName($name);
 		$component->setLabel($label);
+		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
+		$component->setDisableLocalLanguageLabels($this->getDisableLocalLanguageLabels());
 		return $component;
 	}
 
@@ -150,6 +170,8 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		$component = $this->objectManager->get('Tx_Flux_Form_Wizard_' . $type);
 		$component->setName($name);
 		$component->setLabel($label);
+		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
+		$component->setDisableLocalLanguageLabels($this->getDisableLocalLanguageLabels());
 		return $component;
 	}
 
@@ -183,6 +205,9 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	public function getLabel() {
 		$label = $this->label;
+		if (TRUE === $this->getDisableLocalLanguageLabels()) {
+			return $label;
+		}
 		$name = $this->getName();
 		$root = $this->getRoot();
 		if (FALSE === $root instanceof Tx_Flux_Form) {
@@ -212,10 +237,43 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 				$prefix = 'fields';
 			}
 		}
-		$filePrefix = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml';
+		$filePrefix = 'LLL:EXT:' . $extensionKey . $this->localLanguageFileRelativePath;
 		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.' . $name);
 		$this->configurationService->updateLanguageSourceFileIfUpdateFeatureIsEnabledAndIdentifierIsMissing($filePrefix, $labelIdentifier, $id);
 		return $filePrefix . ':' . $labelIdentifier;
+	}
+
+	/**
+	 * @param string $localLanguageFileRelativePath
+	 * @return Tx_Flux_FormInterface
+	 */
+	public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath) {
+		$this->localLanguageFileRelativePath = $localLanguageFileRelativePath;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLocalLanguageFileRelativePath() {
+		return $this->localLanguageFileRelativePath;
+	}
+
+
+	/**
+	 * @param boolean $disableLocalLanguageLabels
+	 * @return Tx_Flux_FormInterface
+	 */
+	public function setDisableLocalLanguageLabels($disableLocalLanguageLabels) {
+		$this->disableLocalLanguageLabels = (boolean) $disableLocalLanguageLabels;
+		return $this;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getDisableLocalLanguageLabels() {
+		return (boolean) $this->disableLocalLanguageLabels;
 	}
 
 	/**

@@ -72,5 +72,27 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelperTest extends
 		$this->setExpectedException('RuntimeException', NULL, 1346514748);
 		$instance->initializeArgumentsAndRender();
 	}
+	/**
+	 * @test
+	 */
+	public function supportsUseOfControllerAndActionSeparator() {
+		$arguments = array(
+			'label' => 'Test field',
+			'extensionName' => 'Flux',
+			'pluginName' => 'API',
+			'controllerName' => 'Flux',
+			'actions' => array(),
+			'disableLocalLanguageLabels' => FALSE,
+			'excludeActions' => array(),
+			'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
+			'prefixOnRequiredArguments' => '*',
+			'subActions' => array(),
+			'separator' => ' :: '
+		);
+		$instance = $this->buildViewHelperInstance($arguments, array(), NULL, $arguments['extensionName'], $arguments['pluginName']);;
+		$instance->initializeArgumentsAndRender();
+		$component = $instance->getComponent();
+		$this->assertSame($arguments['separator'], $component->getSeparator());
+	}
 
 }

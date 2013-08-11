@@ -87,6 +87,18 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	/**
 	 * @test
 	 */
+	public function canCreateInstanceWithListType() {
+		$definition = $this->definition;
+		$definition['listType'] = 'felogin_pi1';
+		$provider = $this->getConfigurationProviderInstance();
+		$provider->loadSettings($definition);
+		$this->assertSame($provider->getName(), $definition['name']);
+		$this->assertSame($provider->getListType(), $definition['listType']);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canReturnExtensionKey() {
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$service = $this->createFluxServiceInstance();
