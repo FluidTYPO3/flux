@@ -377,6 +377,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 */
 	public function getTemplatePaths(array $row) {
 		unset($row);
+		if (FALSE === is_array($this->templatePaths) && FALSE === empty($this->extensionKey) && TRUE === t3lib_extMgm::isLoaded($this->extensionKey)) {
+			$extensionName = t3lib_div::underscoredToUpperCamelCase($this->extensionKey);
+			$this->templatePaths = $this->configurationService->getViewConfigurationForExtensionName($extensionName);
+		}
 		if (TRUE === is_array($this->templatePaths)) {
 			return Tx_Flux_Utility_Path::translatePath($this->templatePaths);
 		}
