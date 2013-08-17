@@ -148,7 +148,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 		);
 		$copy = clone $this;
 		foreach ($this->getSheets(TRUE) as $sheet) {
-			if (0 === count($sheet->getFields())) {
+			if (FALSE === $sheet->hasChildren()) {
 				$copy->remove($sheet->getName());
 			}
 		}
