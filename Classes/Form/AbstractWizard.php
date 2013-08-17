@@ -86,5 +86,11 @@ abstract class Tx_Flux_Form_AbstractWizard extends Tx_Flux_Form_AbstractFormComp
 		return $this->hideParent;
 	}
 
+	/**
+	 * @return boolean
+	 */
+	public function hasChildren() {
+		return FALSE;
+	}
 }
 

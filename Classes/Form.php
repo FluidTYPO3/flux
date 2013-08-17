@@ -329,4 +329,15 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 		return $description;
 	}
 
+	/**
+	 * @return boolean
+	 */
+	public function hasChildren() {
+		foreach ($this->children as $child) {
+			if (TRUE === $child->hasChildren()) {
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
 }
