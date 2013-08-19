@@ -303,7 +303,12 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 * @return array
 	 */
 	protected function getActionsForExtensionNameAndPluginName() {
-		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$this->extensionName]['plugins'][$this->pluginName]['controllers'];
+		$extensionName = $this->getExtensionName();
+		$pluginName = $this->getPluginName();
+		if (FALSE !== strpos($extensionName, '.')) {
+			list (, $extensionName) = t3lib_div::trimExplode('.', $extensionName);
+		}
+		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers'];
 		foreach ($actions as $controllerName => $definitions) {
 			$actions[$controllerName] = $definitions['actions'];
 		}
