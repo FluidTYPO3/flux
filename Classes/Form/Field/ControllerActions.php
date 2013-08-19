@@ -465,8 +465,8 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 					}
 				}
 				$values = array(
-					implode(';', $actionKey),
 					$label,
+					implode(';', $actionKey),
 				);
 				array_push($items, $values);
 			}
