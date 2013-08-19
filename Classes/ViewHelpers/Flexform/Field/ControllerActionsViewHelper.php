@@ -146,7 +146,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		$component->setActions($actions);
 		$component->setExcludeActions($this->arguments['excludeAction']);
 		$component->setPrefixOnRequiredArguments($this->arguments['prefixOnRequiredArguments']);
-		$component->setDisableLocalLanguageLabels($this->arguments['disableLocalLanguageLables']);
+		$component->setDisableLocalLanguageLabels($this->arguments['disableLocalLanguageLabels']);
 		$component->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
 		$component->setSubActions($this->arguments['subActions']);
 		if (FALSE === empty($separator)) {
