@@ -124,7 +124,15 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		}
 		if (NULL !== $controllerContext) {
 			if (TRUE === empty($extensionName)) {
-				$extensionName = $controllerContext->getRequest()->getControllerExtensionName();
+				$request = $controllerContext->getRequest();
+				$vendorName = NULL;
+				if (TRUE === method_exists($request, 'getControllerVendorName')) {
+					$vendorName = $request->getControllerVendorName();
+				}
+				$extensionName = $request->getControllerExtensionName();
+				if (NULL !== $vendorName) {
+					$extensionName = $vendorName . '.' . $extensionName;
+				}
 			}
 			if (TRUE === empty($pluginName)) {
 				$pluginName = $controllerContext->getRequest()->getPluginName();
