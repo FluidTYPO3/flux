@@ -59,7 +59,7 @@
  * And there are a couple of ways to define/resolve labels for actions:
  *
  * - You can add an LLL label in your locallang_db file:
- *   lowercasepluginnanem.lowercasecontrollername.actionfunctionname
+ *   lowercasepluginname.lowercasecontrollername.actionfunctionname
  *   example index: myext.articlecontroller.show
  * - You can do nothing, in which case the very first line of
  *   the PHP doc-comment of each action method is used. This value can
