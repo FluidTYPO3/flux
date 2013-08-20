@@ -245,7 +245,7 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 			)
 		);
 		$expected = array(
-			array('Content->fake;Content->render', 'LLL:EXT:flux/Resources/Private/Language/locallang.xml:.content.fake')
+			array('LLL:EXT:flux/Resources/Private/Language/locallang.xml:.content.fake', 'Content->fake;Content->render')
 		);
 		/** @var Tx_Flux_Form_Field_ControllerActions $component */
 		$component = $this->createInstance();
