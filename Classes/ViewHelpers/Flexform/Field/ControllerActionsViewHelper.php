@@ -98,7 +98,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		$this->overrideArgument('name', 'string', 'Name of the field', FALSE, 'switchableControllerActions');
 		$this->registerArgument('extensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension');
 		$this->registerArgument('pluginName', 'string', 'Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName');
-		$this->registerArgument('controllerName', 'string', 'Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied');
+		$this->registerArgument('controllerName', 'string', 'Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied', FALSE, NULL);
 		$this->registerArgument('actions', 'array', 'Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)', FALSE, array());
 		$this->registerArgument('excludeActions', 'array', 'Array of "ControllerName" => "csv,of,actions" which must be excluded', FALSE, array());
 		$this->registerArgument('prefixOnRequiredArguments', 'string', 'A short string denoting that the method takes arguments, ex * (which should then be explained in the documentation for your extension about how to setup your plugins', FALSE, '*');
@@ -137,9 +137,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 			}
 			if (TRUE === empty($pluginName)) {
 				$pluginName = $controllerContext->getRequest()->getPluginName();
-			}
-			if (TRUE === empty($controllerName)) {
-				$controllerName = $controllerContext->getRequest()->getControllerName();
 			}
 		}
 		if (TRUE === empty($extensionName) && TRUE === empty($pluginName) && 1 > count($actions)) {
