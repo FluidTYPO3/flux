@@ -368,6 +368,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	protected function getLabelForControllerAction($controllerName, $actionName) {
 		$localLanguageFileRelativePath = $this->getLocalLanguageFileRelativePath();
 		$extensionName = $this->getExtensionName();
+		$extensionName = $this->removeVendorPrefixFromExtensionName($extensionName);
 		$pluginName = $this->getPluginName();
 		$separator = $this->getSeparator();
 		list (, $extensionKey) = $this->getVendorNameAndExtensionKeyFromExtensionName($extensionName);
