@@ -106,7 +106,6 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		$this->registerArgument('localLanguageFileRelativePath', 'string', 'Relative (from extension $extensionName) path to locallang file containing the action method labels', FALSE, '/Resources/Private/Language/locallang_db.xml');
 		$this->registerArgument('subActions', 'array', "Array of sub actions {ControllerName: {list: 'update,delete'}, OtherController: {new: 'create'}} which are also allowed but not presented as options when the mapped action is selected (in example: if ControllerName->list is selected, ControllerName->update and ControllerName->delete are allowed - but cannot be selected).", FALSE, array());
 		$this->registerArgument('separator', 'string', 'Separator string (glue) for Controller->action values, defaults to "->". Empty values result in default being used.', FALSE, NULL);
-		$this->overrideArgument('requestUpdate', 'boolean', 'If TRUE, the form is force-saved and reloaded when field value changes', FALSE, TRUE);
 	}
 
 	/**
