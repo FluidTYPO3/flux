@@ -138,4 +138,10 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 		return $structure;
 	}
 
+	/**
+	 * @return boolean
+	 */
+	public function hasChildren() {
+		return 0 < $this->children->count();
+	}
 }

@@ -419,4 +419,11 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 		return (boolean) $this->clearable;
 	}
 
+	/**
+	 * @return boolean
+	 */
+	public function hasChildren() {
+		return 0 < $this->wizards->count();
+	}
+
 }
