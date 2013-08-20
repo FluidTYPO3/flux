@@ -304,10 +304,8 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 */
 	protected function getActionsForExtensionNameAndPluginName() {
 		$extensionName = $this->getExtensionName();
+		$extensionName = $this->removeVendorPrefixFromExtensionName($extensionName);
 		$pluginName = $this->getPluginName();
-		if (FALSE !== strpos($extensionName, '.')) {
-			list (, $extensionName) = t3lib_div::trimExplode('.', $extensionName);
-		}
 		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers'];
 		foreach ($actions as $controllerName => $definitions) {
 			$actions[$controllerName] = $definitions['actions'];
@@ -327,6 +325,17 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 		}
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 		return array($vendorName, $extensionKey);
+	}
+
+	/**
+	 * @param string $extensionName
+	 * @return string
+	 */
+	protected function removeVendorPrefixFromExtensionName($extensionName) {
+		if (FALSE !== strpos($extensionName, '.')) {
+			list (, $extensionName) = t3lib_div::trimExplode('.', $extensionName);
+		}
+		return $extensionName;
 	}
 
 	/**
