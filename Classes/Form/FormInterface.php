@@ -100,6 +100,11 @@ interface Tx_Flux_Form_FormInterface {
 	public function isChildOfType($type);
 
 	/**
+	 * @return boolean
+	 */
+	public function hasChildren();
+
+	/**
 	 * @param string $type
 	 * @param string $name
 	 * @param string $label
