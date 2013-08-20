@@ -292,10 +292,9 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 		if (0 < count($basicItems)) {
 			return $basicItems;
 		} else {
-			if (0 === count($this->getActions())) {
+			$actions = $this->getActions();
+			if (0 === count($actions)) {
 				$actions = $this->getActionsForExtensionNameAndPluginName($this->extensionName, $this->pluginName);
-			} else {
-				$actions = $this->getActions();
 			}
 			return $this->buildItemsForActions($actions);
 		}
