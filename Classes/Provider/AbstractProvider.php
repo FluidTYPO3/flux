@@ -170,7 +170,13 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			$this->setName($settings['name']);
 		}
 		if (TRUE === isset($settings['form'])) {
-			$settings['form'] = Tx_Flux_Form::create($settings['form']);
+			$form = Tx_Flux_Form::create($settings['form']);
+			if (TRUE === isset($settings['extensionKey'])) {
+				$extensionKey = $settings['extensionKey'];
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+				$form->setExtensionName($extensionName);
+			}
+			$settings['form'] = $form;
 		}
 		if (TRUE === isset($settings['grid'])) {
 			$settings['grid'] = Tx_Flux_Form_Container_Grid::create($settings['grid']);
