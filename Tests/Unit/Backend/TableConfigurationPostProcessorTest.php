@@ -37,4 +37,21 @@ class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_
 		$object->processData();
 	}
 
+	/**
+	 * @test
+	 */
+	public function canCreateTcaFromFluxForm() {
+		$table = 'this_table_does_not_exist';
+		$field = 'input';
+		$form = Tx_Flux_Form::create();
+		$form->createField('Input', $field);
+		Tx_Flux_Core::registerFormForTable($form, $table);
+		$object = t3lib_div::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
+		$object->processData();
+		$this->assertArrayHasKey($table, $GLOBALS['TCA']);
+		$this->assertArrayHasKey($field, $GLOBALS['TCA'][$table]['columns']);
+		$this->assertContains($GLOBALS['TCA'][$table]['interface']['showRecordFieldList'], $field);
+		$this->assertContains($GLOBALS['TCA'][$table]['types'][0]['showitem'], $field);
+	}
+
 }

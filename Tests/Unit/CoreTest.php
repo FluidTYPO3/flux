@@ -41,6 +41,21 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	/**
 	 * @test
 	 */
+	public function canRegisterFormInstanceForTable() {
+		$table = 'this_table_does_not_exist';
+		$form = Tx_Flux_Form::create();
+		Tx_Flux_Core::registerFormForTable($form, $table);
+		$forms = Tx_Flux_Core::getRegisteredFormsForTables();
+		$this->assertArrayHasKey($table, $forms);
+		$returnedForm = Tx_Flux_Core::getRegisteredFormsForTable($table);
+		$incorrectReturnedForm = Tx_Flux_Core::getRegisteredFormsForTable($table . 'badname');
+		$this->assertSame($form, $returnedForm);
+		$this->assertNull($incorrectReturnedForm);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canRegisterProviderExtensionKey() {
 		$fakeExtensionKey = 'flux';
 		$fakeControllerName = 'Flux';
