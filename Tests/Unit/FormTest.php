@@ -223,8 +223,9 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function canRemoveBadFieldByInstanceWithoutErrorAndReturnFalse() {
 		$form = $this->getEmptyDummyForm();
-		$field = $form->createField('Input', 'test');
-		$this->assertFalse($form->last()->remove($field));
+		$field = Tx_Flux_Form_Field_Input::create(array('type' => 'Input', 'name' => 'badname'));
+		$child = $form->last()->remove($field);
+		$this->assertFalse($child);
 	}
 
 	/**
