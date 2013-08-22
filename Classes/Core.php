@@ -40,6 +40,12 @@ class Tx_Flux_Core {
 	private static $providers = array();
 
 	/**
+	 * Contains all Forms for tables registered with Flux
+	 * @var array
+	 */
+	private static $forms = array();
+
+	/**
 	 * Contains ConfigurationProviders which have been unregistered
 	 * @var array
 	 */
@@ -79,6 +85,18 @@ class Tx_Flux_Core {
 				array_push(self::$staticTypoScriptFiles, $locationOrLocations);
 			}
 		}
+	}
+
+	/**
+	 * @param Tx_Flux_Form $form
+	 * @param string $table
+	 * @return void
+	 */
+	public static function registerFormForTable(Tx_Flux_Form $form, $table) {
+		if (NULL === $form->getName()) {
+			$form->setName($table);
+		}
+		self::$forms[$table] = $form;
 	}
 
 	/**
@@ -243,6 +261,24 @@ class Tx_Flux_Core {
 	public static function getRegisteredFlexFormProviders() {
 		reset(self::$providers);
 		return self::$providers;
+	}
+
+	/**
+	 * @return Tx_Flux_Form[]
+	 */
+	public static function getRegisteredFormsForTables() {
+		return self::$forms;
+	}
+
+	/**
+	 * @param string $table
+	 * @return Tx_Flux_Form|NULL
+	 */
+	public static function getRegisteredFormsForTable($table) {
+		if (TRUE === isset(self::$forms[$table])) {
+			return self::$forms[$table];
+		}
+		return NULL;
 	}
 
 }

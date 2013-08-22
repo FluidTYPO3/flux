@@ -35,6 +35,21 @@
 class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables_PostProcessingHook {
 
 	/**
+	 * @var array
+	 */
+	private static $tableTemplate = array(
+		'title'     => NULL,
+		'label'     => NULL,
+		'tstamp'    => 'tstamp',
+		'crdate'    => 'crdate',
+		'cruser_id' => 'cruser_id',
+		'dividers2tabs' => TRUE,
+		'enablecolumns' => array(),
+		'iconfile' => '',
+		'hideTable' => FALSE,
+	);
+
+	/**
 	 * @return void
 	 */
 	public function processData() {
@@ -42,6 +57,40 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		/** @var Tx_Flux_Service_FluxService $fluxService */
 		$fluxService = $objectManager->get('Tx_Flux_Service_FluxService');
 		$fluxService->initializeObject();
+		$forms = Tx_Flux_Core::getRegisteredFormsForTables();
+		foreach ($forms as $fullTableName => $form) {
+			$extensionName = $form->getExtensionName();
+			$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+			$tableConfiguration = self::$tableTemplate;
+			$tableConfiguration['title'] = $form->getLabel();
+			$fields = array();
+			foreach ($form->getFields() as $field) {
+				$name = $field->getName();
+				$fields[$name] = array(
+					'label' => $field->getLabel(),
+					'config' => $field->buildConfiguration(),
+					'exclude' => $field->getExclude()
+				);
+			}
+			reset($fields);
+			$tableConfiguration['label'] = key($fields);
+			$tableConfiguration['iconfile'] = t3lib_extMgm::extRelPath($extensionKey) . $form->getIcon();
+			$showRecordsFieldList = implode(',', array_keys($fields));
+			$GLOBALS['TCA'][$fullTableName] = array(
+				'ctrl' => $tableConfiguration,
+				'interface' => array(
+					'showRecordFieldList' => $showRecordsFieldList
+				),
+				'columns' => $fields,
+				'types' => array(
+					0 => array(
+						'showitem' => $showRecordsFieldList
+					)
+				)
+			);
+		}
 	}
+
+
 
 }
