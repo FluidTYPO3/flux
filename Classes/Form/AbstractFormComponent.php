@@ -52,7 +52,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	/**
 	 * @var string
 	 */
-	protected $label = 'Unnamed FormComponent';
+	protected $label;
 
 	/**
 	 * If TRUE, disables LLL label usage and always returns the

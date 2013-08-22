@@ -170,7 +170,13 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			$this->setName($settings['name']);
 		}
 		if (TRUE === isset($settings['form'])) {
-			$settings['form'] = Tx_Flux_Form::create($settings['form']);
+			$form = Tx_Flux_Form::create($settings['form']);
+			if (TRUE === isset($settings['extensionKey'])) {
+				$extensionKey = $settings['extensionKey'];
+				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+				$form->setExtensionName($extensionName);
+			}
+			$settings['form'] = $form;
 		}
 		if (TRUE === isset($settings['grid'])) {
 			$settings['grid'] = Tx_Flux_Form_Container_Grid::create($settings['grid']);
@@ -199,12 +205,12 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$contentObjectType = $this->contentObjectType;
 		$listType = $this->listType;
 		$rowIsEmpty = (0 === count($row));
-		$matchesContentType = (TRUE === empty($contentObjectType) || (FALSE === empty($row['CType']) && $row['CType'] === $contentObjectType));
-		$matchesPluginType = (TRUE === empty($listType) || (FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
+		$matchesContentType = ((TRUE === empty($contentObjectType) && TRUE === empty($row['CType'])) || (FALSE === empty($row['CType']) && $row['CType'] === $contentObjectType));
+		$matchesPluginType = ((TRUE === empty($listType) && TRUE === empty($row['list_type'])) || (FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
 		$matchesTableName = ($providerTableName === $table || NULL === $table);
 		$matchesFieldName = ($providerFieldName === $field || NULL === $field);
 		$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
-		$isFullMatch = ($matchesExtensionKey && $matchesTableName && $matchesFieldName && $matchesContentType && $matchesPluginType);
+		$isFullMatch = (($matchesExtensionKey && $matchesTableName && $matchesFieldName) && ($matchesContentType || $matchesPluginType));
 		$isFallbackMatch = ($matchesTableName && $matchesFieldName && $rowIsEmpty);
 		return ($isFullMatch || $isFallbackMatch);
 	}
@@ -377,6 +383,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 */
 	public function getTemplatePaths(array $row) {
 		unset($row);
+		if (FALSE === is_array($this->templatePaths) && FALSE === empty($this->extensionKey) && TRUE === t3lib_extMgm::isLoaded($this->extensionKey)) {
+			$extensionName = t3lib_div::underscoredToUpperCamelCase($this->extensionKey);
+			$this->templatePaths = $this->configurationService->getViewConfigurationForExtensionName($extensionName);
+		}
 		if (TRUE === is_array($this->templatePaths)) {
 			return Tx_Flux_Utility_Path::translatePath($this->templatePaths);
 		}

@@ -375,7 +375,6 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		}
 		$typoScriptSettings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		if (FALSE === isset($typoScriptSettings['plugin.']['tx_flux.']['providers.'])) {
-			self::$cache[$cacheKey] = array();
 			return array();
 		}
 		$providerConfigurations = t3lib_div::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
