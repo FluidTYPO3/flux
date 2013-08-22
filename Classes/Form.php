@@ -92,7 +92,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	 * @param array $settings
 	 * @return Tx_Flux_Form
 	 */
-	public static function create(array $settings) {
+	public static function create(array $settings = array()) {
 		$form = parent::create($settings);
 		if (TRUE === isset($settings['sheets'])) {
 			foreach ($settings['sheets'] as $sheetName => $sheetSettings) {
