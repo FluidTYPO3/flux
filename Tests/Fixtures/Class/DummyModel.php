@@ -41,6 +41,7 @@ class Tx_Flux_Domain_Model_Dummy extends Tx_Extbase_DomainObject_AbstractEntity 
 	protected $crdate;
 
 	/**
+	 * @Flux/Label
 	 * @Flux/Form input(size: 40)
 	 * @var string
 	 */

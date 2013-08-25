@@ -140,9 +140,10 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 	 * @return Tx_Flux_Form
 	 */
 	protected function generateFormInstanceFromClassName($class, $table) {
+		$labelFields = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux/Label', NULL);
 		$extensionName = $this->getExtensionNameFromModelClassName($class);
 		$values = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux/Form', NULL);
-		$labels = array_keys(Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux/Label', NULL));
+		$labels = TRUE === is_array($labelFields) ? array_keys($labelFields) : array(key($values));
 		$hasVisibilityToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux/Hide');
 		$hasDeleteToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux/Delete');
 		$hasStartTimeToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux/StartTime');
