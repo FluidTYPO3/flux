@@ -91,18 +91,19 @@ class Tx_Flux_Utility_Annotation {
 	 */
 	protected static function parseAnnotationArguments($argumentsAsString) {
 		$pattern = Tx_Fluid_Core_Parser_TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_ARRAY_PARTS;
-		$matches = self::matchValueAgainstPattern($pattern, $argumentsAsString);
+		$matches = array();
+		preg_match_all($pattern, $argumentsAsString, $matches, PREG_SET_ORDER);
 		$arguments = array();
 		foreach ($matches as $match) {
 			$name = $match['Key'];
-			if (TRUE === isset($match['Number'])) {
+			if (TRUE === isset($match['Subarray'])) {
+				$arguments[$name] = self::parseAnnotationArguments($match['Subarray']);
+			} elseif (TRUE === isset($match['Number'])) {
 				if (TRUE === ctype_digit($match['Number'])) {
 					$arguments[$name] = intval($match['Number']);
 				} elseif (FALSE !== strpos($match['Number'], '.')) {
 					$arguments[$name] = floatval($match['Number']);
 				}
-			} elseif (TRUE === isset($match['Subarray'])) {
-				$arguments[$name] = self::parseAnnotationArguments($match['Subarray']);
 			} elseif (TRUE === isset($match['QuotedString'])) {
 				$arguments[$name] = trim($match['QuotedString'], '\'');
 			}
@@ -114,7 +115,7 @@ class Tx_Flux_Utility_Annotation {
 	 * @param mixed $annotation
 	 * @return string
 	 */
-	protected static function parseAnnotation($annotation) {
+	public static function parseAnnotation($annotation) {
 		if (TRUE === empty($annotation)) {
 			return TRUE;
 		} elseif (TRUE === is_array($annotation)) {
@@ -124,20 +125,6 @@ class Tx_Flux_Utility_Annotation {
 			return array_map(array(self, 'parseAnnotation'), $annotation);
 		}
 		$pattern = Tx_Fluid_Core_Parser_TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
-		$parseableAnnotation = self::buildParseableAnnotation($annotation);
-		$matches = self::matchValueAgainstPattern($pattern, $parseableAnnotation);
-		$structure = array(
-			'type' => $matches[0]['MethodIdentifier'],
-			'config' => self::parseAnnotationArguments($matches['0']['ViewHelperArguments'])
-		);
-		return $structure;
-	}
-
-	/**
-	 * @param string $annotation
-	 * @return string
-	 */
-	protected function buildParseableAnnotation($annotation) {
 		$annotation = trim($annotation);
 		if (FALSE === strpos($annotation, '(') && FALSE === strpos($annotation, ')')) {
 			$annotation .= '()';
@@ -145,18 +132,13 @@ class Tx_Flux_Utility_Annotation {
 		if (0 !== strpos($annotation, '{')) {
 			$annotation = '{flux:' . $annotation . '}';
 		}
-		return $annotation;
-	}
-
-	/**
-	 * @param string $pattern
-	 * @param string $value
-	 * @return array
-	 */
-	protected function matchValueAgainstPattern($pattern, $value) {
 		$matches = array();
-		preg_match_all($pattern, $value, $matches, PREG_SET_ORDER);
-		return $matches;
+		preg_match_all($pattern, $annotation, $matches, PREG_SET_ORDER);
+		$structure = array(
+			'type' => $matches[0]['MethodIdentifier'],
+			'config' => self::parseAnnotationArguments($matches['0']['ViewHelperArguments'])
+		);
+		return $structure;
 	}
 
 }
