@@ -463,7 +463,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 */
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
 		if ('update' === $operation) {
-			$fieldName = $this->getFieldName($reference->datamap[$this->tableName][$id]);
+			$fieldName = $this->getFieldName((array) $reference->datamap[$this->tableName][$id]);
 			if (NULL === $fieldName) {
 				return;
 			}
