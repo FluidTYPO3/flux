@@ -125,14 +125,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		if (NULL !== $controllerContext) {
 			if (TRUE === empty($extensionName)) {
 				$request = $controllerContext->getRequest();
-				$vendorName = NULL;
-				if (TRUE === method_exists($request, 'getControllerVendorName')) {
-					$vendorName = $request->getControllerVendorName();
-				}
-				$extensionName = $request->getControllerExtensionName();
-				if (NULL !== $vendorName) {
-					$extensionName = $vendorName . '.' . $extensionName;
-				}
+				$extensionName = $this->getFullExtensionNameFromRequest($request);
 			}
 			if (TRUE === empty($pluginName)) {
 				$pluginName = $controllerContext->getRequest()->getPluginName();
@@ -160,5 +153,20 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		return $component;
 	}
 
+	/**
+	 * @param Tx_Extbase_MVC_Web_Request $request
+	 * @return string
+	 */
+	protected function getFullExtensionNameFromRequest(Tx_Extbase_MVC_Web_Request $request) {
+		$vendorName = NULL;
+		if (TRUE === method_exists($request, 'getControllerVendorName')) {
+			$vendorName = $request->getControllerVendorName();
+		}
+		$extensionName = $request->getControllerExtensionName();
+		if (NULL !== $vendorName) {
+			$extensionName = $vendorName . '.' . $extensionName;
+		}
+		return $extensionName;
+	}
 
 }
