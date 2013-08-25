@@ -49,6 +49,22 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 	/**
 	 * @test
 	 */
+	public function canRemoveVendorPrefixFromExtensionName() {
+		$component = $this->createInstance();
+		$keys = array(
+			// actual => expected
+			'Void.Fake' => 'Fake',
+			'Void' => 'Void',
+			'void' => 'void'
+		);
+		foreach ($keys as $actual => $expected) {
+			$this->assertEquals($expected, $this->callInaccessibleMethod($component, 'removeVendorPrefixFromExtensionName', $actual));
+		}
+	}
+
+	/**
+	 * @test
+	 */
 	public function canUseRawItems() {
 		$component = $this->createInstance();
 		$items = array(

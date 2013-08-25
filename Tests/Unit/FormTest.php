@@ -308,4 +308,37 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$this->assertInstanceOf('Tx_Flux_Form', $instance);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canDetermineHasChildrenFalse() {
+		$instance = Tx_Flux_Form::create();
+		$this->assertFalse($instance->hasChildren());
+	}
+
+	/**
+	 * @test
+	 */
+	public function canDetermineHasChildrenTrue() {
+		$instance = Tx_Flux_Form::create();
+		$instance->createField('Input', 'test');
+		$this->assertTrue($instance->hasChildren());
+	}
+
+	/**
+	 * @test
+	 */
+	public function canSetAndGetOptions() {
+		$instance = Tx_Flux_Form::create();
+		$instance->setOption('test', 'testing');
+		$this->assertSame('testing', $instance->getOption('test'));
+		$this->assertIsArray($instance->getOptions());
+		$this->assertArrayHasKey('test', $instance->getOptions());
+		$options = array('foo' => 'bar');
+		$instance->setOptions($options);
+		$this->assertSame('bar', $instance->getOption('foo'));
+		$this->assertArrayHasKey('foo', $instance->getOptions());
+		$this->assertArrayNotHasKey('test', $instance->getOptions());
+	}
+
 }

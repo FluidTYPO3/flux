@@ -41,14 +41,35 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	/**
 	 * @test
 	 */
+	public function canRegisterFormInstanceForModelClassName() {
+		$class = 'Tx_Flux_Domain_Model_Fake';
+		$form = Tx_Flux_Form::create();
+		Tx_Flux_Core::registerFormForModelObjectClassName($class, $form);
+		$registered = Tx_Flux_Core::getRegisteredFormForModelObjectClass($class);
+		$this->assertEquals($form, $registered);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRegisterAutoFormInstanceForModelClassName() {
+		$class = 'Tx_Flux_Domain_Model_Fake';
+		Tx_Flux_Core::registerAutoFormForModelObjectClassName($class);
+		$registered = Tx_Flux_Core::getRegisteredFormForModelObjectClass($class);
+		$this->assertEquals(NULL, $registered);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canRegisterFormInstanceForTable() {
 		$table = 'this_table_does_not_exist';
 		$form = Tx_Flux_Form::create();
-		Tx_Flux_Core::registerFormForTable($form, $table);
+		Tx_Flux_Core::registerFormForTable($table, $form);
 		$forms = Tx_Flux_Core::getRegisteredFormsForTables();
 		$this->assertArrayHasKey($table, $forms);
-		$returnedForm = Tx_Flux_Core::getRegisteredFormsForTable($table);
-		$incorrectReturnedForm = Tx_Flux_Core::getRegisteredFormsForTable($table . 'badname');
+		$returnedForm = Tx_Flux_Core::getRegisteredFormForTable($table);
+		$incorrectReturnedForm = Tx_Flux_Core::getRegisteredFormForTable($table . 'badname');
 		$this->assertSame($form, $returnedForm);
 		$this->assertNull($incorrectReturnedForm);
 	}

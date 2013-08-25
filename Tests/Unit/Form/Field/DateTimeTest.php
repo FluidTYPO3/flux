@@ -27,31 +27,14 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class Tx_Flux_Form_Field_DateTimeTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
 
 	/**
-	 * @test
+	 * @var array
 	 */
-	public function canLoadFluxService() {
-		$object = t3lib_div::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
-		$object->processData();
-	}
-
-	/**
-	 * @test
-	 */
-	public function canCreateTcaFromFluxForm() {
-		$table = 'this_table_does_not_exist';
-		$field = 'input';
-		$form = Tx_Flux_Form::create();
-		$form->createField('Input', $field);
-		Tx_Flux_Core::registerFormForTable($table, $form);
-		$object = t3lib_div::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
-		$object->processData();
-		$this->assertArrayHasKey($table, $GLOBALS['TCA']);
-		$this->assertArrayHasKey($field, $GLOBALS['TCA'][$table]['columns']);
-		$this->assertContains($GLOBALS['TCA'][$table]['interface']['showRecordFieldList'], $field);
-		$this->assertContains($GLOBALS['TCA'][$table]['types'][0]['showitem'], $field);
-	}
+	protected $chainProperties = array(
+		'name' => 'test',
+		'label' => 'Test field',
+	);
 
 }
