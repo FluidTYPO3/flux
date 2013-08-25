@@ -106,8 +106,6 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		if (TRUE === $form->getOption('frontendUserGroup')) {
 			$enableColumns['fe_group'] = 'fe_group';
 		}
-		#\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($enableColumns);
-		#exit();
 		$tableConfiguration['iconfile'] = t3lib_extMgm::extRelPath($extensionKey) . $form->getIcon();
 		$showRecordsFieldList = implode(',', array_keys($fields));
 		$GLOBALS['TCA'][$table] = array(
@@ -187,6 +185,5 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		}
 		return $extensionName;
 	}
-
 
 }
