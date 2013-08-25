@@ -176,7 +176,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 			$extensionName = substr($parts[0], 3);
 		} else {
 			$parts = explode('\\', $class);
-			$candidate = array_slice($parts, 0);
+			$candidate = array_slice($parts, 0, -3);
 			if (1 === count($candidate)) {
 				$extensionName = array_pop($candidate);
 			} else {
