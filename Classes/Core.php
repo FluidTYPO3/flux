@@ -298,8 +298,8 @@ class Tx_Flux_Core {
 	 * @param string $table
 	 * @return Tx_Flux_Form|NULL
 	 */
-	public static function getRegisteredFormsForTable($table) {
-		if (TRUE === isset(self::$forms[$table])) {
+	public static function getRegisteredFormForTable($table) {
+		if (TRUE === isset(self::$forms['tables'][$table])) {
 			return self::$forms['tables'][$table];
 		}
 		return NULL;
@@ -316,7 +316,7 @@ class Tx_Flux_Core {
 	 * @param string $class
 	 * @return Tx_Flux_Form|NULL
 	 */
-	public static function getRegisteredFormsForModelObjectClass($class) {
+	public static function getRegisteredFormForModelObjectClass($class) {
 		if (TRUE === isset(self::$forms['models'][$class])) {
 			return self::$forms['models'][$class];
 		}
