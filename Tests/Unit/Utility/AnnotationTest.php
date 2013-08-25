@@ -35,7 +35,7 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 	 * @test
 	 */
 	public function canParseAnnotationsFromModelClassNameWithoutPropertyName() {
-		$class = 'Tx_Flux_Domain_Model_DummyModel';
+		$class = 'Tx_Flux_Domain_Model_Dummy';
 		$annotation = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux/Hide');
 		$this->assertTrue($annotation);
 	}
@@ -44,7 +44,7 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 	 * @test
 	 */
 	public function canParseAnnotationsFromModelClassNameWithPropertyNameAndTriggerCache() {
-		$class = 'Tx_Flux_Domain_Model_DummyModel';
+		$class = 'Tx_Flux_Domain_Model_Dummy';
 		Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux/Form', 'crdate');
 		$annotation = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux/Form', 'crdate');
 		$this->assertIsArray($annotation);
@@ -143,13 +143,6 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 		$expected = TRUE;
 		$result = Tx_Flux_Utility_Annotation::parseAnnotation($annotations);
 		$this->assertEquals($expected, $result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canFetchFluxFormFromModelClassName() {
-
 	}
 
 }

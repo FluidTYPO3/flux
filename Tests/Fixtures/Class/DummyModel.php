@@ -32,13 +32,19 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Domain_Model_DummyModel extends Tx_Extbase_DomainObject_AbstractEntity {
+class Tx_Flux_Domain_Model_Dummy extends Tx_Extbase_DomainObject_AbstractEntity {
 
 	/**
 	 * @Flux/Form dateTime
 	 * @var DateTime
 	 */
 	protected $crdate;
+
+	/**
+	 * @Flux/Form input(size: 40)
+	 * @var string
+	 */
+	protected $title;
 
 	/**
 	 * @param DateTime $crdate
@@ -53,6 +59,21 @@ class Tx_Flux_Domain_Model_DummyModel extends Tx_Extbase_DomainObject_AbstractEn
 	 */
 	public function getCrdate() {
 		return $this->crdate;
+	}
+
+	/**
+	 * @param string $title
+	 * @return void
+	 */
+	public function setTitle($title) {
+		$this->title = $title;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->title;
 	}
 
 	/**
