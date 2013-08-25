@@ -76,8 +76,8 @@ class Tx_Flux_Utility_Annotation {
 					}
 				}
 			}
+			$annotations = self::parseAnnotation($annotations);
 		}
-		$annotations = self::parseAnnotation($annotations);
 		self::$cache['annotations'][$className][$annotationName] = $annotations;
 		if (NULL !== $propertyName && TRUE === isset($annotations[$propertyName])) {
 			return $annotations[$propertyName];
@@ -96,7 +96,7 @@ class Tx_Flux_Utility_Annotation {
 		$arguments = array();
 		foreach ($matches as $match) {
 			$name = $match['Key'];
-			if (TRUE === isset($match['Subarray'])) {
+			if (TRUE === isset($match['Subarray']) && 0 < strlen($match['Subarray'])) {
 				$arguments[$name] = self::parseAnnotationArguments($match['Subarray']);
 			} elseif (TRUE === isset($match['Number'])) {
 				if (TRUE === ctype_digit($match['Number'])) {
