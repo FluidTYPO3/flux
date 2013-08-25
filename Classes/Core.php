@@ -88,11 +88,11 @@ class Tx_Flux_Core {
 	}
 
 	/**
-	 * @param Tx_Flux_Form $form
 	 * @param string $table
+	 * @param Tx_Flux_Form $form
 	 * @return void
 	 */
-	public static function registerFormForTable(Tx_Flux_Form $form, $table) {
+	public static function registerFormForTable($table, Tx_Flux_Form $form) {
 		if (NULL === $form->getName()) {
 			$form->setName($table);
 		}
