@@ -235,13 +235,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
-		foreach ($form->getFields() as $field) {
-			$name = $field->getName();
-			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);
-			if (NULL !== $inheritedValue) {
-				$field->setDefault($inheritedValue);
-			}
-		}
+		$form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
 		return $form;
 	}
 
@@ -654,6 +648,22 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			$headerContent = '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
 		}
 		return array($headerContent, $previewContent);
+	}
+
+	/**
+	 * @param Tx_Flux_Form $form
+	 * @param array $row
+	 * @return Tx_Flux_Form
+	 */
+	protected function setDefaultValuesInFieldsWithInheritedValues(Tx_Flux_Form $form, array $row) {
+		foreach ($form->getFields() as $field) {
+			$name = $field->getName();
+			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);
+			if (NULL !== $inheritedValue) {
+				$field->setDefault($inheritedValue);
+			}
+		}
+		return $form;
 	}
 
 	/**
