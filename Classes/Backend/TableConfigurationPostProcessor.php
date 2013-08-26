@@ -83,7 +83,6 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		$extensionNameWithoutVendor = FALSE === strpos($extensionName, '.') ? $extensionName : array_pop(explode('.', $extensionName));
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionNameWithoutVendor);
 		$tableConfiguration = self::$tableTemplate;
-		$tableConfiguration['title'] = $form->getLabel();
 		$fields = array();
 		$labelFields = $form->getOption('labels');
 		$enableColumns = array();
@@ -128,10 +127,10 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		}
 		if (NULL === $labelFields) {
 			reset($fields);
-			$GLOBALS['TCA'][$table]['label'] = key($fields);
+			$GLOBALS['TCA'][$table]['ctrl']['label'] = key($fields);
 		} else {
-			$GLOBALS['TCA'][$table]['label'] = array_shift($labelFields);
-			$GLOBALS['TCA'][$table]['label_alt'] = implode(',', $labelFields);
+			$GLOBALS['TCA'][$table]['ctrl']['label'] = array_shift($labelFields);
+			$GLOBALS['TCA'][$table]['ctrl']['label_alt'] = implode(',', $labelFields);
 		}
 	}
 
