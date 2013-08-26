@@ -439,11 +439,11 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
 		$fieldName = $this->getFieldName($row);
 		$tableName = $this->getTableName($row);
-		if (is_array($row[$fieldName]['data'])) {
-			foreach ((array) $row[$fieldName]['data']['options']['lDEF'] as $key=>$value) {
-				if (strpos($key, $tableName) === 0) {
+		if (TRUE === is_array($row[$fieldName]['data']) && TRUE === is_array($row[$fieldName]['data']['options']['lDEF'])) {
+			foreach ($row[$fieldName]['data']['options']['lDEF'] as $key => $value) {
+				if (0 === strpos($key, $tableName)) {
 					$realKey = array_pop(explode('.', $key));
-					if (isset($row[$realKey])) {
+					if (TRUE === isset($row[$realKey])) {
 						$row[$realKey] = $value['vDEF'];
 					}
 				}
