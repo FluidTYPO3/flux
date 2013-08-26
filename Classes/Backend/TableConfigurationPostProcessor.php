@@ -80,7 +80,8 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 	 */
 	protected function processFormForTable($table, Tx_Flux_Form $form) {
 		$extensionName = $form->getExtensionName();
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+		$extensionNameWithoutVendor = FALSE === strpos($extensionName, '.') ? $extensionName : array_pop(explode('.', $extensionName));
+		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionNameWithoutVendor);
 		$tableConfiguration = self::$tableTemplate;
 		$tableConfiguration['title'] = $form->getLabel();
 		$fields = array();
