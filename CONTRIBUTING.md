@@ -39,10 +39,10 @@ tests for all of these factors) there are a few things you can do.
   "real" work on top of this.
 * Recommendation: plan a few steps ahead, try to group your work into logical "chunks" of code
   which are easier to manage, then commit each "chunk" of work as you finish it. There is one
-  time management strategy worth mentioning in this context: the [Pomodoro] [1] strategy.
+  time management strategy worth mentioning in this context: the [Pomodoro][pomodoro] technique.
 
 The full guide is available at http://fedext.net/overview/contributing/contribution-guide.html
 
 Last words: welcome to the growing list of contributors! :)
 
-[1] http://www.pomodorotechnique.com/ "The Pomodory Technique"
+[pomodoro]: http://www.pomodorotechnique.com/ "The Pomodory Technique"
