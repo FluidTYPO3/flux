@@ -79,6 +79,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
+		parent::postProcessRecord($operation, $id, $row, $reference);
 		$parameters = t3lib_div::_GET();
 		Tx_Flux_Utility_ContentManipulator::affectRecordByRequestParameters($row, $parameters, $reference);
 		// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
