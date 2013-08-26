@@ -82,7 +82,6 @@ class Tx_Flux_Core {
 			foreach ($locationOrLocations as $location) {
 				self::addGlobalTypoScript($location);
 			}
-			return;
 		} else {
 			if (FALSE === in_array($locationOrLocations, self::$staticTypoScriptFiles)) {
 				array_push(self::$staticTypoScriptFiles, $locationOrLocations);
