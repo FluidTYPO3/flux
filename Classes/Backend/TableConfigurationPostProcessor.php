@@ -142,13 +142,13 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 	protected function generateFormInstanceFromClassName($class, $table) {
 		$labelFields = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Label', NULL);
 		$extensionName = $this->getExtensionNameFromModelClassName($class);
-		$values = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Form', NULL);
+		$values = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Form\\Field', NULL);
 		$labels = TRUE === is_array($labelFields) ? array_keys($labelFields) : array(key($values));
-		$hasVisibilityToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Hide');
-		$hasDeleteToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Delete');
-		$hasStartTimeToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\StartTime');
-		$hasEndTimeToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\EndTime');
-		$hasFrontendGroupToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\FrontendUserGroup');
+		$hasVisibilityToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\Hide');
+		$hasDeleteToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\Delete');
+		$hasStartTimeToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\StartTime');
+		$hasEndTimeToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\EndTime');
+		$hasFrontendGroupToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\FrontendUserGroup');
 		$form = Tx_Flux_Form::create();
 		$form->setName($table);
 		$form->setExtensionName($extensionName);

@@ -24,25 +24,25 @@
  * ************************************************************* */
 
 /**
- * @Flux\Hide
- * @Flux\Delete
- * @Flux\StartTime
- * @Flux\EndTime
- * @Flux\FrontendUserGroup
+ * @Flux\Control\Hide
+ * @Flux\Control\Delete
+ * @Flux\Control\StartTime
+ * @Flux\Control\EndTime
+ * @Flux\Control\FrontendUserGroup
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
 class Tx_Flux_Domain_Model_Dummy extends Tx_Extbase_DomainObject_AbstractEntity {
 
 	/**
-	 * @Flux\Form dateTime
+	 * @Flux\Form\Field dateTime
 	 * @var DateTime
 	 */
 	protected $crdate;
 
 	/**
 	 * @Flux\Label
-	 * @Flux\Form input(size: 40)
+	 * @Flux\Form\Field input(size: 40)
 	 * @var string
 	 */
 	protected $title;
