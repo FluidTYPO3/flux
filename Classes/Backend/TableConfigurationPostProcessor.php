@@ -123,7 +123,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 			)
 		);
 		if (TRUE === $form->getOption('delete')) {
-			$GLOBALS['TCA'][$table]['delete'] = 'deleted';
+			$GLOBALS['TCA'][$table]['ctrl']['delete'] = 'deleted';
 		}
 		if (NULL === $labelFields) {
 			reset($fields);
