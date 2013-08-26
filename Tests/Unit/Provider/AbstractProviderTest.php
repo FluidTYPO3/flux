@@ -332,6 +332,23 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	/**
 	 * @test
 	 */
+	public function canSetExtensionKeyAndPassToFormThroughLoadSettings() {
+		$provider = $this->getConfigurationProviderInstance();
+		$settings = array(
+			'extensionKey' => 'my_ext',
+			'form' => array(
+				'name' => 'test'
+			)
+		);
+		$provider->loadSettings($settings);
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
+		$this->assertSame('my_ext', $provider->getExtensionKey($record));
+		$this->assertSame('MyExt', $provider->getForm($record)->getExtensionName());
+	}
+
+	/**
+	 * @test
+	 */
 	public function canSetTemplateVariables() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
