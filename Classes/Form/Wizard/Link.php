@@ -72,6 +72,11 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 	/**
 	 * @var mixed
 	 */
+	protected $blindLinkFields = '';
+
+	/**
+	 * @var mixed
+	 */
 	protected $allowedExtensions;
 
 	/**
@@ -83,6 +88,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 			'JSopenParams' => 'height=' . $this->getHeight() . ',width=' . $this->getWidth() . ',status=0,menubar=0,scrollbars=1',
 			'params' => array(
 				'blindLinkOptions' => implode(',', $this->getBlindLinkOptions()),
+				'blindLinkFields' => implode(',', $this->getBlindLinkFields()),
 				'allowedExtensions' => implode(',', $this->getAllowedExtensions()),
 			)
 		);
@@ -154,6 +160,25 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 			return t3lib_div::trimExplode(',', $this->blindLinkOptions);
 		}
 		return $this->blindLinkOptions;
+	}
+
+	/**
+	 * @param string $blindLinkFields
+	 * @return Tx_Flux_Form_Wizard_Link
+	 */
+	public function setblindLinkFields($blindLinkFields) {
+		$this->blindLinkFields = $blindLinkFields;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getblindLinkFields() {
+		if (FALSE === is_array($this->blindLinkFields) && FALSE === $this->blindLinkFields instanceof Traversable) {
+			return t3lib_div::trimExplode(',', $this->blindLinkFields);
+		}
+		return $this->blindLinkFields;
 	}
 
 	/**

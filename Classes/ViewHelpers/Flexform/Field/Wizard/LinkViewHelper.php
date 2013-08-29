@@ -47,6 +47,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_V
 		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 500);
 		$this->registerArgument('allowedExtensions', 'string', 'Comma-separated list of extensions that are allowed to be selected. Default is all types.', FALSE, FALSE);
 		$this->registerArgument('blindLinkOptions', 'string', 'Blind link options', FALSE, '');
+		$this->registerArgument('blindLinkFields', 'string', 'Blind link fields', FALSE, '');
 	}
 
 	/**
@@ -60,6 +61,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_V
 		$component->setHeight($this->arguments['height']);
 		$component->setAllowedExtensions($this->arguments['allowedExtensions']);
 		$component->setBlindLinkOptions($this->arguments['blindLinkOptions']);
+		$component->setBlindLinkFields($this->arguments['blindLinkFields']);
 		return $component;
 	}
 
