@@ -144,7 +144,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 	}
 
 	/**
-	 * @param string $blindLinkOptions
+	 * @param mixed $blindLinkOptions
 	 * @return Tx_Flux_Form_Wizard_Link
 	 */
 	public function setBlindLinkOptions($blindLinkOptions) {
@@ -153,7 +153,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 	}
 
 	/**
-	 * @return string
+	 * @return mixed
 	 */
 	public function getBlindLinkOptions() {
 		if (FALSE === is_array($this->blindLinkOptions) && FALSE === $this->blindLinkOptions instanceof Traversable) {
@@ -163,7 +163,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 	}
 
 	/**
-	 * @param string $blindLinkFields
+	 * @param mixed $blindLinkFields
 	 * @return Tx_Flux_Form_Wizard_Link
 	 */
 	public function setblindLinkFields($blindLinkFields) {
@@ -172,7 +172,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 	}
 
 	/**
-	 * @return string
+	 * @return mixed
 	 */
 	public function getblindLinkFields() {
 		if (FALSE === is_array($this->blindLinkFields) && FALSE === $this->blindLinkFields instanceof Traversable) {
