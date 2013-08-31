@@ -166,7 +166,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 	 * @param mixed $blindLinkFields
 	 * @return Tx_Flux_Form_Wizard_Link
 	 */
-	public function setblindLinkFields($blindLinkFields) {
+	public function setBlindLinkFields($blindLinkFields) {
 		$this->blindLinkFields = $blindLinkFields;
 		return $this;
 	}
@@ -174,7 +174,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 	/**
 	 * @return mixed
 	 */
-	public function getblindLinkFields() {
+	public function getBlindLinkFields() {
 		if (FALSE === is_array($this->blindLinkFields) && FALSE === $this->blindLinkFields instanceof Traversable) {
 			return t3lib_div::trimExplode(',', $this->blindLinkFields);
 		}
