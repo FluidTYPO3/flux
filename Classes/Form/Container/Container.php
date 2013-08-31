@@ -35,6 +35,7 @@ class Tx_Flux_Form_Container_Container extends Tx_Flux_Form_AbstractFormContaine
 	public function build() {
 		$structureArray = array(
 			'type' => 'array',
+			'title' => $this->getLabel(),
 			'el' => $this->buildChildren()
 		);
 		return $structureArray;
