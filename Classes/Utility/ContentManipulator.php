@@ -24,7 +24,7 @@
  ***************************************************************/
 
 /**
- * ClipBoard Utility
+ * Content Manipulation Utility
  *
  * @author Claus Due, Wildside A/S
  * @package Flux

@@ -109,6 +109,19 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	/**
 	 * @test
 	 */
+	public function canGetFormWithFieldsFromTemplate() {
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_FIELD_CHECKBOX);
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$provider->setTemplatePathAndFilename($templatePathAndFilename);
+		$form = $provider->getForm($record);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertTrue($form->get('options')->has('settings.checkbox'));
+	}
+
+	/**
+	 * @test
+	 */
 	public function canGetGrid() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$provider = $this->getConfigurationProviderInstance();
@@ -267,15 +280,111 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	/**
 	 * @test
 	 */
+	public function canPostProcessDataStructureWithManualFormInstance() {
+		$provider = $this->getConfigurationProviderInstance();
+		$form = Tx_Flux_Form::create();
+		$record = $this->getBasicRecord();
+		$dataStructure = array();
+		$config = array();
+		$provider->setForm($form);
+		$provider->postProcessDataStructure($record, $dataStructure, $config);
+		$this->assertIsArray($dataStructure);
+		$this->assertNotEquals(array(), $dataStructure);
+		$this->assertNotEmpty($dataStructure);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canPostProcessRecord() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$parentInstance = t3lib_div::makeInstance('t3lib_TCEmain');
 		$record['test'] = 'test';
 		$id = $record['uid'];
-		$table = $provider->getTableName($record);
-		$parentInstance->datamap[$table][$id] = $record;
-		$provider->postProcessRecord('void', $id, $record, $parentInstance);
+		$tableName = $provider->getTableName($record);
+		if (TRUE === empty($tableName)) {
+			$tableName = 'tt_content';
+			$provider->setTableName($tableName);
+		}
+		$fieldName = $provider->getFieldName($record);
+		if (TRUE === empty($fieldName)) {
+			$fieldName = 'pi_flexform';
+			$provider->setFieldName($fieldName);
+		}
+		$record[$fieldName] = array(
+			'data' => array(
+				'options' => array(
+					'lDEF' => array(
+						'settings.input' => array(
+							'vDEF' => 'test'
+						),
+						'settings.input_clear' => array(
+							'vDEF' => 1
+						)
+					)
+				)
+			)
+		);
+		$parentInstance->datamap[$tableName][$id] = $record;
+		$record[$fieldName] = Tx_Flux_Tests_Fixtures_Data_Xml::EXPECTING_FLUX_REMOVALS;
+		$provider->postProcessRecord('update', $id, $record, $parentInstance);
+		$this->assertIsString($record[$fieldName]);
+		$this->assertNotContains('settings.input', $record[$fieldName]);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canPostProcessRecordWithNullFieldName() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$parentInstance = t3lib_div::makeInstance('t3lib_TCEmain');
+		$record['test'] = 'test';
+		$id = $record['uid'];
+		$tableName = $provider->getTableName($record);
+		if (TRUE === empty($tableName)) {
+			$tableName = 'tt_content';
+			$provider->setTableName($tableName);
+		}
+		$fieldName = NULL;
+		$provider->setFieldName(NULL);
+		$parentInstance->datamap[$tableName][$id] = $record;
+		$provider->postProcessRecord('update', $id, $record, $parentInstance);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canPreProcessRecordAndTransferDataToRecordValues() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$parentInstance = t3lib_div::makeInstance('t3lib_TCEmain');
+		$tableName = $provider->getTableName($record);
+		if (TRUE === empty($tableName)) {
+			$tableName = 'tt_content';
+			$provider->setTableName($tableName);
+		}
+		$fieldName = $provider->getFieldName($record);
+		if (TRUE === empty($fieldName)) {
+			$fieldName = 'pi_flexform';
+			$provider->setFieldName($fieldName);
+		}
+		$record['header'] = 'old';
+		$record[$fieldName] = array(
+			'data' => array(
+				'options' => array(
+					'lDEF' => array(
+						$tableName . '.header' => array(
+							'vDEF' => 'overridden-header'
+						)
+					)
+				)
+			)
+		);
+		$id = $record['uid'];
+		$provider->preProcessRecord($record, $id, $parentInstance);
+		$this->assertSame($record['header'], $record[$fieldName]['data']['options']['lDEF'][$tableName . '.header']['vDEF']);
 	}
 
 	/**
@@ -327,6 +436,23 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$record = $this->getBasicRecord();
 		$provider->setExtensionKey('test');
 		$this->assertSame('test', $provider->getExtensionKey($record));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canSetExtensionKeyAndPassToFormThroughLoadSettings() {
+		$provider = $this->getConfigurationProviderInstance();
+		$settings = array(
+			'extensionKey' => 'my_ext',
+			'form' => array(
+				'name' => 'test'
+			)
+		);
+		$provider->loadSettings($settings);
+		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
+		$this->assertSame('my_ext', $provider->getExtensionKey($record));
+		$this->assertSame('MyExt', $provider->getForm($record)->getExtensionName());
 	}
 
 	/**

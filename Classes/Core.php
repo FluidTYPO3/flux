@@ -40,6 +40,15 @@ class Tx_Flux_Core {
 	private static $providers = array();
 
 	/**
+	 * Contains all Forms for tables registered with Flux
+	 * @var array
+	 */
+	private static $forms = array(
+		'models' => array(),
+		'tables' => array()
+	);
+
+	/**
 	 * Contains ConfigurationProviders which have been unregistered
 	 * @var array
 	 */
@@ -73,12 +82,44 @@ class Tx_Flux_Core {
 			foreach ($locationOrLocations as $location) {
 				self::addGlobalTypoScript($location);
 			}
-			return;
 		} else {
 			if (FALSE === in_array($locationOrLocations, self::$staticTypoScriptFiles)) {
 				array_push(self::$staticTypoScriptFiles, $locationOrLocations);
 			}
 		}
+	}
+
+	/**
+	 * @param string $table
+	 * @param Tx_Flux_Form $form
+	 * @return void
+	 */
+	public static function registerFormForTable($table, Tx_Flux_Form $form) {
+		if (NULL === $form->getName()) {
+			$form->setName($table);
+		}
+		self::$forms['tables'][$table] = $form;
+	}
+
+	/**
+	 * Registers automatic Form instance building and use as TCA for a model object class/table.
+	 *
+	 * @param string $className
+	 * @return void
+	 */
+	public static function registerAutoFormForModelObjectClassName($className) {
+		self::registerFormForModelObjectClassName($className);
+	}
+
+	/**
+	 * Registers a Form instance to use when TCA for a model object class/table is requested.
+	 *
+	 * @param string $className
+	 * @param Tx_Flux_Form $form
+	 * @return void
+	 */
+	public static function registerFormForModelObjectClassName($className, Tx_Flux_Form $form = NULL) {
+		self::$forms['models'][$className] = $form;
 	}
 
 	/**
@@ -243,6 +284,42 @@ class Tx_Flux_Core {
 	public static function getRegisteredFlexFormProviders() {
 		reset(self::$providers);
 		return self::$providers;
+	}
+
+	/**
+	 * @return Tx_Flux_Form[]
+	 */
+	public static function getRegisteredFormsForTables() {
+		return self::$forms['tables'];
+	}
+
+	/**
+	 * @param string $table
+	 * @return Tx_Flux_Form|NULL
+	 */
+	public static function getRegisteredFormForTable($table) {
+		if (TRUE === isset(self::$forms['tables'][$table])) {
+			return self::$forms['tables'][$table];
+		}
+		return NULL;
+	}
+
+	/**
+	 * @return Tx_Flux_Form[]
+	 */
+	public static function getRegisteredFormsForModelObjectClasses() {
+		return self::$forms['models'];
+	}
+
+	/**
+	 * @param string $class
+	 * @return Tx_Flux_Form|NULL
+	 */
+	public static function getRegisteredFormForModelObjectClass($class) {
+		if (TRUE === isset(self::$forms['models'][$class])) {
+			return self::$forms['models'][$class];
+		}
+		return NULL;
 	}
 
 }

@@ -95,4 +95,29 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelperTest extends
 		$this->assertSame($arguments['separator'], $component->getSeparator());
 	}
 
+	/**
+	 * @test
+	 */
+	public function canGetCombinedExtensionKeyFromRequest() {
+		$arguments = array(
+			'label' => 'Test field',
+			'pluginName' => 'API',
+			'controllerName' => 'Flux',
+			'actions' => array(),
+			'disableLocalLanguageLabels' => FALSE,
+			'excludeActions' => array(),
+			'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
+			'prefixOnRequiredArguments' => '*',
+			'subActions' => array(),
+			'separator' => ' :: '
+		);
+		$instance = $this->buildViewHelperInstance($arguments);
+		$request = new Tx_Extbase_MVC_Web_Request();
+		$request->setControllerExtensionName('Flux');
+		$request->setControllerVendorName('FluidTYPO3');
+		$expected = 'FluidTYPO3.Flux';
+		$result = $this->callInaccessibleMethod($instance, 'getFullExtensionNameFromRequest', $request);
+		$this->assertEquals($expected, $result);
+	}
+
 }

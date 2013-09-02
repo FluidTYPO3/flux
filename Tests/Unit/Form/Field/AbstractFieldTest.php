@@ -128,6 +128,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_
 		$instance->add($wizard);
 		$built = $this->performTestBuild($instance);
 		$this->assertIsArray($built);
+		$this->assertTrue($instance->hasChildren());
 	}
 
 	/**

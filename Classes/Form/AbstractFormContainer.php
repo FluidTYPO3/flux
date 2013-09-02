@@ -42,6 +42,42 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	}
 
 	/**
+	 * @param string $type
+	 * @param string $name
+	 * @param null $label
+	 * @return Tx_Flux_Form_FieldInterface
+	 */
+	public function createField($type, $name, $label = NULL) {
+		$field = parent::createField($type, $name, $label);
+		$this->add($field);
+		return $field;
+	}
+
+	/**
+	 * @param string $type
+	 * @param string $name
+	 * @param null $label
+	 * @return Tx_Flux_Form_ContainerInterface
+	 */
+	public function createContainer($type, $name, $label = NULL) {
+		$container = parent::createContainer($type, $name, $label);
+		$this->add($container);
+		return $container;
+	}
+
+	/**
+	 * @param string $type
+	 * @param string $name
+	 * @param null $label
+	 * @return Tx_Flux_Form_WizardInterface
+	 */
+	public function createWizard($type, $name, $label = NULL) {
+		$wizard = parent::createWizard($type, $name, $label);
+		$this->add($wizard);
+		return $wizard;
+	}
+
+	/**
 	 * @param Tx_Flux_Form_FormInterface $child
 	 * @return Tx_Flux_Form_FormInterface
 	 */
