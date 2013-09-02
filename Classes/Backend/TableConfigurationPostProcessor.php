@@ -88,11 +88,8 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		$enableColumns = array();
 		foreach ($form->getFields() as $field) {
 			$name = $field->getName();
-			$fields[$name] = array(
-				'label' => $field->getLabel(),
-				'config' => $field->buildConfiguration(),
-				'exclude' => $field->getExclude()
-			);
+			// note: extracts the TCEforms sub-array from the configuration, as required in TCA.
+			$fields[$name] = array_pop($field->build());
 		}
 		if (TRUE === $form->getOption('hide')) {
 			$enableColumns['disabled'] = 'hidden';
