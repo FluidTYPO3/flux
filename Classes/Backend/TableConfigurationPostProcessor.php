@@ -107,6 +107,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 			$enableColumns['fe_group'] = 'fe_group';
 		}
 		$tableConfiguration['iconfile'] = t3lib_extMgm::extRelPath($extensionKey) . $form->getIcon();
+		$tableConfiguration['enablecolumns'] = $enableColumns;
 		$showRecordsFieldList = implode(',', array_keys($fields));
 		$GLOBALS['TCA'][$table] = array(
 			'title' => $form->getLabel(),
@@ -115,7 +116,6 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 				'showRecordFieldList' => $showRecordsFieldList
 			),
 			'columns' => $fields,
-			'enableColumns' => $enableColumns,
 			'types' => array(
 				0 => array(
 					'showitem' => $showRecordsFieldList
