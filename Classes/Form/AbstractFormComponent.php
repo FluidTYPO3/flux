@@ -241,7 +241,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		}
 		$filePrefix = 'LLL:EXT:' . $extensionKey . $this->localLanguageFileRelativePath;
 		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.' . $name);
-		$this->configurationService->updateLanguageSourceFileIfUpdateFeatureIsEnabledAndIdentifierIsMissing($filePrefix, $labelIdentifier, $id);
+		Tx_Flux_Utility_LanguageFile::autoWriteLanguageLabel($filePrefix, $labelIdentifier, $id);
 		return $filePrefix . ':' . $labelIdentifier;
 	}
 
