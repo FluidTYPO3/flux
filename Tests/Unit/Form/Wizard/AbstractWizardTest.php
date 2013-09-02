@@ -37,6 +37,15 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest extends Tx
 	/**
 	 * @test
 	 */
+	public function hasChildrenAlwaysReturnsFalse() {
+		/** @var Tx_Flux_Form_WizardInterface $instance */
+		$instance = $this->createInstance();
+		$this->assertFalse($instance->hasChildren());
+	}
+
+	/**
+	 * @test
+	 */
 	public function canRenderWithParentfield() {
 		/** @var Tx_Flux_Form_WizardInterface $instance */
 		$instance = $this->createInstance();

@@ -89,10 +89,15 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	protected $description;
 
 	/**
+	 * @var array
+	 */
+	protected $options = array();
+
+	/**
 	 * @param array $settings
 	 * @return Tx_Flux_Form
 	 */
-	public static function create(array $settings) {
+	public static function create(array $settings = array()) {
 		$form = parent::create($settings);
 		if (TRUE === isset($settings['sheets'])) {
 			foreach ($settings['sheets'] as $sheetName => $sheetSettings) {
@@ -330,6 +335,37 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	}
 
 	/**
+	 * @param array $options
+	 * @return void
+	 */
+	public function setOptions(array $options) {
+		$this->options = $options;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getOptions() {
+		return $this->options;
+	}
+
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 */
+	public function setOption($name, $value) {
+		$this->options[$name] = $value;
+	}
+
+	/**
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function getOption($name) {
+		return TRUE === isset($this->options[$name]) ? $this->options[$name] : NULL;
+	}
+
+	/**
 	 * @return boolean
 	 */
 	public function hasChildren() {
@@ -340,4 +376,5 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 		}
 		return FALSE;
 	}
+
 }

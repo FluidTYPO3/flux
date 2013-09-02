@@ -44,14 +44,21 @@ class Tx_Flux_Backend_DynamicFlexFormTest extends Tx_Flux_Tests_AbstractFunction
 	}
 
 	/**
+	 * @test
+	 */
+	public function canExecuteDataStructurePostProcessHookWithNullFieldAndBadTableName() {
+		$this->canExecuteDataStructurePostProcessHookInternal(NULL, 'badtablename');
+	}
+
+	/**
 	 * @param string $fieldName
+	 * @param string $table
 	 * @return void
 	 */
-	protected function canExecuteDataStructurePostProcessHookInternal($fieldName = 'pi_flexform') {
+	protected function canExecuteDataStructurePostProcessHookInternal($fieldName = 'pi_flexform', $table = 'tt_content') {
 		$instance = $this->getInstance();
 		$dataStructure = array();
 		$config = array();
-		$table = 'tt_content';
 		$instance->getFlexFormDS_postProcessDS($dataStructure, $config, $row, $table, $fieldName);
 		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
 		$this->assertThat($dataStructure, $isArrayConstraint);
