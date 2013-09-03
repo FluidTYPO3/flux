@@ -40,10 +40,9 @@ class Tx_Flux_Controller_FluxControllerTest extends Tx_Flux_Tests_AbstractFuncti
 	}
 
 	/**
-	 * @param string templatePathAndFilename
 	 * @return Tx_Flux_Controller_AbstractFluxController
 	 */
-	protected function createAndTestDummyControllerInstance($templatePathAndFilename) {
+	protected function createAndTestDummyControllerInstance() {
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		$record['tx_fed_fcefile'] = 'Flux:Default.html';
@@ -97,8 +96,7 @@ class Tx_Flux_Controller_FluxControllerTest extends Tx_Flux_Tests_AbstractFuncti
 	 * @return Tx_Flux_Controller_AbstractFluxController
 	 */
 	public function canCreateInstanceOfCustomRegisteredControllerForContent() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
-		$instance = $this->createAndTestDummyControllerInstance($templatePathAndFilename);
+		$instance = $this->createAndTestDummyControllerInstance();
 		$this->assertInstanceOf('Tx_Flux_Controller_AbstractFluxController', $instance);
 		return $instance;
 	}
@@ -151,44 +149,76 @@ class Tx_Flux_Controller_FluxControllerTest extends Tx_Flux_Tests_AbstractFuncti
 	/**
 	 * @disabledtest
 	 */
+	public function canPerformSubRenderingWithMatchingExtensionName() {
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('Flux', 'Content');
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'view', $view, TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
+		$this->setExpectedException('Tx_Fluid_View_Exception_InvalidTemplateResourceException', NULL, 1257246929);
+		$this->callInaccessibleMethod($instance, 'performSubRendering', 'Flux', 'Content', 'render', 'tx_flux_content');
+	}
+
+	/**
+	 * @disabledtest
+	 */
+	public function canPerformSubRenderingWithForeignExtensionNameWhichContainsAlternativeController() {
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		class_alias('Tx_Flux_Controller_ContentController', 'Tx_Other_Controller_ContentController');
+		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('Other', 'Content');
+		list ($request, ) = $this->createDummyRequestAndResponseForFluxController();
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'view', $view, TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'request', $request, TRUE);
+		$this->setExpectedException('Tx_Fluid_View_Exception_InvalidTemplateResourceException', NULL, 1257246929);
+		$this->callInaccessibleMethod($instance, 'performSubRendering', 'Other', 'Content', 'render', 'tx_flux_content');
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseTypoScriptSettingsInsteadOfFlexFormDataWhenRequested() {
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		$settings = array(
+			'useTypoScript' => TRUE
+		);
+		$previousSettings = Tx_Extbase_Reflection_ObjectAccess::getProperty($instance, 'settings', TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'settings', $settings, TRUE);
+		$this->callInaccessibleMethod($instance, 'initializeProvider');
+		$this->callInaccessibleMethod($instance, 'initializeOverriddenSettings');
+		$overriddenSettings = Tx_Extbase_Reflection_ObjectAccess::getProperty($instance, 'settings', TRUE);
+		$this->assertNotSame($previousSettings, $overriddenSettings);
+	}
+
+	/**
+	 * @disabledtest
+	 */
+	public function canCallSubControllerErrorAction() {
+		list ($request, ) = $this->createDummyRequestAndResponseForFluxController();
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		$class = get_class($instance);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'request', $request, TRUE);
+		$this->callInaccessibleMethod($instance, 'callSubControllerAction', $class, 'error', 'tx_flux_api');
+	}
+
+	/**
+	 * @test
+	 */
+	public function throwsRuntimeExceptionWhenInitializingProviderAndNoneIsDetected() {
+		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'fluxTableName', 'void', TRUE);
+		$this->setExpectedException('RuntimeException', NULL, 1377458581);
+		$this->callInaccessibleMethod($instance, 'initializeProvider');
+	}
+
+	/**
+	 * @disabledtest
+	 */
 	public function canExecuteBasicRequestUsingCustomController() {
-		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'];
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = 0;
 		list ($request, $response) = $this->createDummyRequestAndResponseForFluxController('Content');
 		/** @var Tx_Extbase_MVC_Dispatcher $dispatcher */
 		$dispatcher = $this->objectManager->get('Tx_Extbase_MVC_Dispatcher');
-		$this->setExpectedException('RuntimeException', NULL, 1364741158);
+		$this->setExpectedException('Tx_Fluid_View_Exception_InvalidTemplateResourceException', NULL, 1257246929);
 		$dispatcher->dispatch($request, $response);
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = $backup;
-	}
-
-	/**
-	 * @disabledtest
-	 */
-	public function canExecuteBasicRequestUsingCustomControllerToRenderErrorAction() {
-		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'];
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = 0;
-		list ($request, $response) = $this->createDummyRequestAndResponseForFluxController('Content');
-		$request->setControllerActionName('error');
-		/** @var Tx_Extbase_MVC_Dispatcher $dispatcher */
-		$dispatcher = $this->objectManager->get('Tx_Extbase_MVC_Dispatcher');
-		$this->setExpectedException('RuntimeException', NULL, 1364741158);
-		$dispatcher->dispatch($request, $response);
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = $backup;
-	}
-
-	/**
-	 * @disabledtest
-	 */
-	public function canExecuteBasicRequestUsingCustomControllerAndHandleError() {
-		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'];
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = 1;
-		list ($request, $response) = $this->createDummyRequestAndResponseForFluxController('Content');
-		/** @var Tx_Extbase_MVC_Dispatcher $dispatcher */
-		$dispatcher = $this->objectManager->get('Tx_Extbase_MVC_Dispatcher');
-		$this->setExpectedException('Tx_Fluid_View_Exception_InvalidTemplateResourceException', '"" is not a valid template resource URI');
-		$dispatcher->dispatch($request, $response);
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['handleErrors'] = $backup;
 	}
 
 }
