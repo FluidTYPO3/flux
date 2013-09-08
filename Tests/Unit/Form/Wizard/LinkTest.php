@@ -37,6 +37,7 @@ class Tx_Flux_Form_Wizard_LinkTest extends Tx_Flux_Tests_Functional_Form_Field_A
 		'label' => 'Test field',
 		'hideParent' => FALSE,
 		'blindLinkOptions' => array('new', 'info'),
+		'blindLinkFields' => array('title', 'uid'),
 		'allowedExtensions' => array('pdf', 'txt'),
 		'height' => 400,
 		'width' => 300
@@ -50,6 +51,16 @@ class Tx_Flux_Form_Wizard_LinkTest extends Tx_Flux_Tests_Functional_Form_Field_A
 		$instance = $this->createInstance();
 		$fetched = $instance->setBlindLinkOptions($extensions)->getBlindLinkOptions();
 		$this->assertSame($this->chainProperties['blindLinkOptions'], $fetched);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseStringAsBlindLinkFieldsList() {
+		$extensions = implode(',', $this->chainProperties['blindLinkFields']);
+		$instance = $this->createInstance();
+		$fetched = $instance->setBlindLinkFields($extensions)->getBlindLinkFields();
+		$this->assertSame($this->chainProperties['blindLinkFields'], $fetched);
 	}
 
 	/**
