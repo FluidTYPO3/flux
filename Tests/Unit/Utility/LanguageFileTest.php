@@ -37,4 +37,28 @@ class Tx_Flux_Utility_LanguageFileTest extends Tx_Flux_Tests_AbstractFunctionalT
 		$this->callInaccessibleMethod($instance, 'message', 'Test');
 	}
 
+	/**
+	 * @test
+	 */
+	public function performsEarlyReturnOnUnsupportedFileExtension() {
+		$return = Tx_Flux_Utility_LanguageFile::writeLanguageLabel('/dev/null', 'void', 'void');
+		$this->assertEmpty($return);
+	}
+
+	/**
+	 * @test
+	 */
+	public function performsEarlyReturnOnInvalidId() {
+		$return = Tx_Flux_Utility_LanguageFile::writeLanguageLabel('/dev/null', 'void', 'this-is-an-invalid-id');
+		$this->assertEmpty($return);
+	}
+
+	/**
+	 * @test
+	 */
+	public function silentlyFailsOnWriteProtectedFile() {
+		$return = Tx_Flux_Utility_LanguageFile::writeLanguageLabel(t3lib_extMgm::extPath('flux', 'Resources/Private/Languages/locallang.xml'), 'void', 'void');
+		$this->assertEmpty($return);
+	}
+
 }

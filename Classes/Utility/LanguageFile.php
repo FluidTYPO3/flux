@@ -59,7 +59,7 @@ XML;
 
 	const TEMPLATE_XLF = <<< XML
 <xliff version="1.0">
-	<file source-language="" datatype="plaintext" original="messages" date="" product-name="">
+	<file source-language="en" datatype="plaintext" original="messages" date="" product-name="">
 		<header/>
 		<body></body>
 	</file>
@@ -79,8 +79,8 @@ XML;
 	 * @param string $id
 	 */
 	public static function writeLanguageLabel($file, $identifier, $id) {
-		$pattern = '/[^a-z]+/i';
-		$patternIdentifier = '/[^a-z\.]+/i';
+		$pattern = '/[^a-z0-9]+/i';
+		$patternIdentifier = '/[^a-z0-9\.]+/i';
 		if (preg_match($pattern, $id) || preg_match($patternIdentifier, $identifier)) {
 			self::message('Cowardly refusing to create an invalid LLL reference called "' . $identifier . '" ' .
 				' in a Flux form called "' . $id . '" - one or both contains invalid characters.');
@@ -96,13 +96,10 @@ XML;
 		$kickstartMethodName = 'kickstart' . ucfirst($extension) . 'File';
 		$languages = self::getLanguageKeys();
 		$exists = call_user_func_array(array(self, $kickstartMethodName), array($filePathAndFilename, $languages));
-		if (FALSE === $exists) {
-			self::message('File "' . $filePathAndFilename . '" could not be (re-)written.', t3lib_div::SYSLOG_SEVERITY_FATAL);
-		} else {
+		if (TRUE === $exists) {
 			$source = call_user_func_array(array(self, $buildMethodName), array($filePathAndFilename, $identifier));
 			if (TRUE === $source) {
-				self::message('Skipping LLL file merge for label "' . $identifier.
-					'"; it already exists in file "' . $filePathAndFilename . '"');
+				self::message('LLL file merge for label "' . $identifier. '" was succesful or exists');
 			} elseif (FALSE === $source) {
 				self::message('Skipping LLL file saving due to an error while generating the XML.', t3lib_div::SYSLOG_SEVERITY_FATAL);
 			} else {
@@ -157,6 +154,9 @@ XML;
 		$dom = self::prepareDomDocument($filePathAndFilename);
 		$dom->getElementsByTagName('description')->item(0)->nodeValue = 'Labels for languages: ' . implode(', ', $languages);
 		$dataNode = $dom->getElementsByTagName('data')->item(0);
+		if (NULL === $dataNode) {
+			return FALSE;
+		}
 		$missingLanguages = $languages;
 		if (0 < $dataNode->childNodes->length) {
 			$missingLanguages = $languages;
@@ -198,6 +198,51 @@ XML;
 	 */
 	public static function buildSourceForXlfFile($filePathAndFilename, $identifier) {
 		$filePathAndFilename = self::sanitizeFilePathAndFilename($filePathAndFilename, 'xlf');
+		$languages = self::getLanguageKeys();
+		foreach ($languages as $language) {
+			$hasIdentifier = FALSE;
+			$translationPathAndFilename = self::localizeXlfFilePathAndFilename($filePathAndFilename, $language);
+			$dom = self::prepareDomDocument($translationPathAndFilename);
+			$dateNode = $dom->createAttribute('date');
+			$dateNode->nodeValue = date('c');
+			$dom->getElementsByTagName('file')->item(0)->appendChild($dateNode);
+			$body = $dom->getElementsByTagName('body')->item(0);
+			foreach ($dom->getElementsByTagName('trans-unit') as $node) {
+				if ($node->getAttribute('id') === $identifier) {
+					$hasIdentifier = TRUE;
+					break;
+				}
+			}
+			if (FALSE === $hasIdentifier) {
+				self::createXlfLanguageNode($dom, $body, $identifier);
+			}
+			$xml = $dom->saveXML();
+			if (FALSE == t3lib_div::writeFile($translationPathAndFilename, $xml)) {
+				self::message('Unable to write to file "' . $translationPathAndFilename . '" - permission issue?', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			}
+			self::$documents[$translationPathAndFilename] = $dom;
+		}
+		return TRUE;
+	}
+
+	/**
+	 * @param DomDocument $dom
+	 * @param DomNode $parent
+	 * @param string $identifier
+	 * @return void
+	 */
+	protected static function createXlfLanguageNode(DomDocument $dom, DomNode $parent, $identifier) {
+		$labelNode = $dom->createElement('trans-unit');
+		$idAttribute = $dom->createAttribute('id');
+		$idAttribute->nodeValue = $identifier;
+		$spaceAttribute = $dom->createAttribute('xml:space');
+		$spaceAttribute->nodeValue = 'preserve';
+		$sourceNode = $dom->createElement('source');
+		$sourceNode->nodeValue = $identifier;
+		$labelNode->appendChild($idAttribute);
+		$labelNode->appendChild($spaceAttribute);
+		$labelNode->appendChild($sourceNode);
+		$parent->appendChild($labelNode);
 	}
 
 	/**
@@ -214,15 +259,35 @@ XML;
 			return $results;
 		}
 		$filePathAndFilename = self::sanitizeFilePathAndFilename($filePathAndFilename, 'xlf');
-		$basename = pathinfo($filePathAndFilename, PATHINFO_FILENAME);
-		if ('default' !== $languageOrLanguages) {
-			$filePathAndFilename = str_replace($basename, $languageOrLanguages . '.' . $basename, $filePathAndFilename);
-		}
+		$filePathAndFilename = self::localizeXlfFilePathAndFilename($filePathAndFilename, $languageOrLanguages);
 		if (FALSE === file_exists($filePathAndFilename)) {
 			t3lib_div::writeFile($filePathAndFilename, self::TEMPLATE_XLF);
 		}
+		if (TRUE === isset(self::$documents[$filePathAndFilename])) {
+			return self::$documents[$filePathAndFilename];
+		}
+		$truncated = substr($filePathAndFilename, strlen(PATH_site) + 1);
+		$truncatedParts = explode('/', $truncated);
 		$dom = self::prepareDomDocument($filePathAndFilename);
+		$fileNode = $dom->getElementsByTagName('file')->item(0);
+		$productNode = $dom->createAttribute('product-name');
+		$productNode->nodeValue = $truncatedParts[2];
+		$fileNode->appendChild($productNode);
+		self::$documents[$filePathAndFilename] = $dom;
 		return file_exists($filePathAndFilename);
+	}
+
+	/**
+	 * @param string $filePathAndFilename
+	 * @param string $language
+	 * @return mixed
+	 */
+	protected static function localizeXlfFilePathAndFilename($filePathAndFilename, $language) {
+		$basename = pathinfo($filePathAndFilename, PATHINFO_FILENAME);
+		if ('default' !== $language) {
+			$filePathAndFilename = str_replace($basename, $language . '.' . $basename, $filePathAndFilename);
+		}
+		return $filePathAndFilename;
 	}
 
 	/**
@@ -246,11 +311,10 @@ XML;
 		if (TRUE === isset(self::$documents[$filePathAndFilename])) {
 			return self::$documents[$filePathAndFilename];
 		}
-		$xml = file_get_contents(t3lib_div::getFileAbsFileName($filePathAndFilename));
 		$dom = new DOMDocument('1.0', 'utf-8');
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->formatOutput = TRUE;
-		$dom->loadXML($xml);
+		$dom->load($filePathAndFilename);
 		self::$documents[$filePathAndFilename] = $dom;
 		return $dom;
 	}
