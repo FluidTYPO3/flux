@@ -122,6 +122,9 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function registerFormForModelObjectClassName($className, Tx_Flux_Form $form = NULL) {
+		if (NULL !== $form && TRUE === isset($GLOBALS['_EXTKEY']) && NULL === $form->getExtensionName()) {
+			$form->setExtensionName(t3lib_div::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
+		}
 		self::$forms['models'][$className] = $form;
 	}
 

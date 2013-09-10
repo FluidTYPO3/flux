@@ -70,6 +70,9 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 			if (NULL === $form) {
 				$form = $this->generateFormInstanceFromClassName($modelClassName, $fullTableName);
 			}
+			if (NULL === $form->getName()) {
+				$form->setName($fullTableName);
+			}
 			$this->processFormForTable($fullTableName, $form);
 		}
 	}
