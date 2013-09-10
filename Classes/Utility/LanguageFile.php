@@ -79,8 +79,8 @@ XML;
 	 * @param string $id
 	 */
 	public static function writeLanguageLabel($file, $identifier, $id) {
-		$pattern = '/[^a-z0-9]+/i';
-		$patternIdentifier = '/[^a-z0-9\.]+/i';
+		$pattern = '/[^a-z0-9_]+/i';
+		$patternIdentifier = '/[^a-z0-9\._]+/i';
 		if (preg_match($pattern, $id) || preg_match($patternIdentifier, $identifier)) {
 			self::message('Cowardly refusing to create an invalid LLL reference called "' . $identifier . '" ' .
 				' in a Flux form called "' . $id . '" - one or both contains invalid characters.');
@@ -99,15 +99,15 @@ XML;
 		if (TRUE === $exists) {
 			$source = call_user_func_array(array(self, $buildMethodName), array($filePathAndFilename, $identifier));
 			if (TRUE === $source) {
-				self::message('LLL file merge for label "' . $identifier. '" was succesful or exists');
+				self::message('Wrote "LLL:' . $file . ':' . $identifier . '" - or label already exists');
+				return;
 			} elseif (FALSE === $source) {
 				self::message('Skipping LLL file saving due to an error while generating the XML.', t3lib_div::SYSLOG_SEVERITY_FATAL);
 			} else {
-				self::message('Rewrote "' . $file . '" by adding placeholder label for "' . $identifier . '"');
+				self::message('Wrote "LLL:' . $file . ':' . $identifier . '"');
 				file_put_contents($filePathAndFilename, $source);
 			}
 		}
-		self::message('Generated automatic LLL path for entity called "' . $identifier . '" in file "' . $file . '"');
 	}
 
 	/**
@@ -354,6 +354,9 @@ XML;
 	 * @return void
 	 */
 	protected static function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_INFO) {
+		if (FALSE === isset($GLOBALS['BE_USER'])) {
+			return;
+		}
 		self::getServiceInstance()->message($message, $severity, 'Flux Language File Utility');
 	}
 

@@ -74,7 +74,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	 *
 	 * @var string
 	 */
-	protected $extensionName = 'Flux';
+	protected $extensionName;
 
 	/**
 	 * If TRUE, removes sheet wrappers if there is only a single sheet.
@@ -292,7 +292,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	 * @return Tx_Flux_Form_FormInterface
 	 */
 	public function setId($id) {
-		$allowed = 'a-z';
+		$allowed = 'a-z0-9_';
 		$pattern = '/[^' . $allowed . ']+/i';
 		if (preg_match($pattern, $id)) {
 			$this->configurationService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
