@@ -56,6 +56,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 		$configuration = $this->prepareConfiguration('text');
 		$configuration['rows'] = $this->getRows();
 		$configuration['cols'] = $this->getColumns();
+		$configuration['eval'] = $this->getValidate();
 		$defaultExtras = $this->getDefaultExtras();
 		if (TRUE === $this->getEnableRichText() && TRUE === empty($defaultExtras)) {
 			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
