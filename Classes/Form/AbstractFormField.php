@@ -184,7 +184,6 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 		$fieldStructureArray = array(
 			'TCEforms' => array(
 				'label' => $this->getLabel(),
-				'required' => intval($this->getRequired()),
 				'exclude' => intval($this->getExclude()),
 				'config' => $configuration,
 				'displayCond' => $this->getDisplayCondition(),

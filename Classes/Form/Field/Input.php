@@ -173,7 +173,18 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 	 * @return string
 	 */
 	public function getValidate() {
-		return $this->validate;
+		if (FALSE === (boolean) $this->getRequired()) {
+			$validate = $this->validate;
+		} else {
+			if (TRUE === empty($this->validate)) {
+				$validate = 'required';
+			} else {
+				$validators = t3lib_div::trimExplode(',', $this->validate);
+				array_push($validators, 'required');
+				$validate = implode(',', $validators);
+			}
+		}
+		return $validate;
 	}
 
 }
