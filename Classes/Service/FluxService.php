@@ -518,7 +518,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			if (TRUE === class_exists($repositoryClassName)) {
 				$repository = $this->objectManager->get($repositoryClassName);
 				$uid = array_pop($identifiers);
-				return $repository->findOneByUid($uid);
+				return $repository->findByUid($uid);
 			}
 		} elseif (TRUE === class_exists($dataType)) {
 			// using constructor value to support objects like DateTime
