@@ -29,19 +29,18 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Grid
  */
-class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Optional column name', FALSE, 'Column');
+		$this->registerArgument('name', 'string', 'Optional column name', FALSE, 'column');
+		$this->registerArgument('label', 'string', 'Optional column label', FALSE, 'Column');
 		$this->registerArgument('colPos', 'integer', 'Optional column position. If you do not specify this it will be automatically assigned - so specify it if your template is dynamic and the output relies on this, as page rendering does for example!', FALSE, -1);
 		$this->registerArgument('colspan', 'integer', 'Column span');
 		$this->registerArgument('rowspan', 'integer', 'Row span');
-		$this->registerArgument('repeat', 'integer', 'number of times to repeat this colum while appending $iteration to name', FALSE, 1);
-		$this->registerArgument('width', 'string', 'DEPRECATED');
 		$this->registerArgument('style', 'string', 'Inline style to add when rendering the column');
 	}
 
@@ -49,22 +48,17 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_Core_Vi
 	 * @return string
 	 */
 	public function render() {
-		for ($i = 0; $i < $this->arguments['repeat']; $i++) {
-			$column = array(
-				'name' => $this->arguments['name'],
-				'colPos' => $this->arguments['colPos'],
-				'colspan' => $this->arguments['colspan'],
-				'rowspan' => $this->arguments['rowspan'],
-				'repeat' => $this->arguments['repeat'],
-				'style' => $this->arguments['style'],
-				'areas' => array()
-			);
-			$this->addGridColumn($column);
-			$this->templateVariableContainer->add('cycle', $i + 1);
-			$this->renderChildren();
-			$this->templateVariableContainer->remove('cycle');
-		}
-		return '';
+		/** @var Tx_Flux_Form_Container_Column $column */
+		$column = $this->getForm()->createContainer('Column', $this->arguments['name'], $this->arguments['label']);
+		$column->setColspan($this->arguments['colspan']);
+		$column->setRowspan($this->arguments['rowspan']);
+		$column->setStyle($this->arguments['style']);
+		$column->setColumnPosition($this->arguments['colPos']);
+		$container = $this->getContainer();
+		$container->add($column);
+		$this->setContainer($column);
+		$this->renderChildren();
+		$this->setContainer($container);
 	}
 
 }

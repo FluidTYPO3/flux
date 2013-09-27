@@ -23,8 +23,12 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-require_once t3lib_extMgm::extPath('cms', 'layout/class.tx_cms_layout.php');
-require_once t3lib_extMgm::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php');
+if (TRUE === file_exists(t3lib_extMgm::extPath('cms', 'layout/class.tx_cms_layout.php'))) {
+	require_once t3lib_extMgm::extPath('cms', 'layout/class.tx_cms_layout.php');
+}
+if (TRUE === file_exists(t3lib_extMgm::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php'))) {
+	require_once t3lib_extMgm::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php');
+}
 
 /**
  * Fluid Template preview renderer
@@ -40,16 +44,6 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Fluid_View_StandaloneView
-	 */
-	protected $view;
-
-	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
-	 */
-	protected $configurationManager;
-
-	/**
 	 * @var Tx_Flux_Service_FluxService
 	 */
 	protected $configurationService;
@@ -59,9 +53,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	 */
 	public function __construct() {
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
-		$this->view = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
 	}
 
 	/**
@@ -73,11 +65,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	 * @throws Exception
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem) {
-		if (Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing() === TRUE) {
-			$fieldName = 'pi_flexform';
-		} else {
-			$fieldName = NULL;
-		}
+		$fieldName = 'pi_flexform';
 		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
 			$targetRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('p.title, t.pid', 'tt_content t, pages p', "t.uid = '" . $row['records'] . "' AND p.uid = t.pid");
 			$targetRecord = array_pop($targetRecords);
@@ -92,62 +80,15 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 		$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
 		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
 		foreach ($providers as $provider) {
-			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
-			$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
-			if (file_exists($templatePathAndFilename) === FALSE) {
-				$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+			/** @var Tx_Flux_Provider_ProviderInterface $provider */
+			list ($previewHeader, $previewContent) = $provider->getPreview($row);
+			if (FALSE === empty($previewHeader)) {
+				$drawItem = FALSE;
+				$headerContent .= '<div><strong>' . $previewHeader . '</strong> <i>' . $row['header'] . '</i></div>';
 			}
-			if (file_exists($templatePathAndFilename)) {
-				$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-				$extension = $provider->getExtensionKey($row);
-				$providerTemplatePaths = $provider->getTemplatePaths($row);
-				if ($providerTemplatePaths === NULL) {
-					continue;
-				}
-				if ($provider->getTemplatePaths($row)) {
-					$paths = $provider->getTemplatePaths($row);
-				} else if (t3lib_extMgm::isLoaded($provider->getExtensionKey($row))) {
-					$extension = str_replace('_', '', $extension);
-					$paths = $typoScript['plugin.']['tx_' . $extension . '.']['view.'];
-				} else {
-					$paths = $typoScript['plugin.']['tx_flux.']['view.'];
-				}
-				$paths = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($paths);
-				try {
-					$extensionKey = (TRUE === isset($paths['extensionKey']) ? $paths['extensionKey'] : $provider->getExtensionKey($row));
-					$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-
-					$templateVariables = $provider->getTemplateVariables($row);
-					$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, 'Content');
-					$view->assignMultiple($templateVariables);
-					$view->assign('row', $row);
-					$flexformVariables = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform']);
-					$stored = $this->configurationService->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths, $extensionName, $flexformVariables);
-					$flexformVariables = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform'], $stored);
-					$variables = t3lib_div::array_merge($stored, $flexformVariables);
-					$label = Tx_Extbase_Utility_Localization::translate($stored['label'], $extension);
-					if ($label === NULL) {
-						$label = $stored['label'];
-					}
-					$variables['label'] = $label;
-					$variables['row'] = $row;
-
-					$view->setTemplatePathAndFilename($templatePathAndFilename);
-					$view->assignMultiple($variables);
-
-					$previewContent = $view->renderStandaloneSection('Preview', $variables);
-					$previewContent = trim($previewContent);
-					if (empty($label) === FALSE) {
-						$headerContent .= '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
-					}
-					if (empty($previewContent) === FALSE) {
-						$drawItem = FALSE;
-						$itemContent .= $previewContent;
-					}
-				} catch (Exception $error) {
-					$this->configurationService->debug($error);
-					$drawItem = FALSE;
-				}
+			if (FALSE === empty($previewContent)) {
+				$drawItem = FALSE;
+				$itemContent .= $previewContent;
 			}
 		}
 	}

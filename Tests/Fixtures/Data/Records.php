@@ -30,11 +30,22 @@
 class Tx_Flux_Tests_Fixtures_Data_Records {
 
 	const DEFAULT_CONTENTAREA = 'content';
-	const UID_CONTENT_NOPARENTNOCHILDREN = 1;
-	const UID_CONTENT_NOPARENTWITHCHILDREN = 2;
-	const UID_CONTENT_PARENT = 3;
-	const UID_CONTENT_CHILD = 4;
-	const UID_CONTENT_PARENTANDCHILDREN = 5;
+	const UID_CONTENT_NOPARENTNOCHILDREN = 90000001;
+	const UID_CONTENT_NOPARENTWITHCHILDREN = 90000002;
+	const UID_CONTENT_PARENT = 90000003;
+	const UID_CONTENT_CHILD = 90000004;
+	const UID_CONTENT_PARENTANDCHILDREN = 90000005;
+
+	const UID_TEMPLATE_ROOT = 91000001;
+
+	/**
+	 * @var array
+	 */
+	public static $sysTemplateRoot = array(
+		'uid' => self::UID_TEMPLATE_ROOT,
+		'root' => 1,
+		'include_static_file' => '',
+	);
 
 	/**
 	 * @var array
@@ -44,7 +55,20 @@ class Tx_Flux_Tests_Fixtures_Data_Records {
 		'header' => 'Has no parent',
 		'colPos' => 0,
 		'tx_flux_parent' => 0,
-		'tx_flux_area' => ''
+		'tx_flux_column' => '',
+		'test' => '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="options">
+            <language index="lDEF">
+                <field index="settings.flux.placeholder">
+                    <value index="vDEF">0</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>
+'
 	);
 
 	/**
@@ -55,7 +79,7 @@ class Tx_Flux_Tests_Fixtures_Data_Records {
 		'header' => 'Is itself parent, has no parent',
 		'colPos' => 0,
 		'tx_flux_parent' => 0,
-		'tx_flux_area' => '',
+		'tx_flux_column' => '',
 		'tx_flux_children' => 1
 	);
 
@@ -67,7 +91,7 @@ class Tx_Flux_Tests_Fixtures_Data_Records {
 		'header' => 'Has parent, is in default content area',
 		'colPos' => -42,
 		'tx_flux_parent' => self::UID_CONTENT_NOPARENTWITHCHILDREN,
-		'tx_flux_area' => self::DEFAULT_CONTENTAREA
+		'tx_flux_column' => self::DEFAULT_CONTENTAREA
 	);
 
 	/**
@@ -78,7 +102,7 @@ class Tx_Flux_Tests_Fixtures_Data_Records {
 		'header' => 'Has parent, is in default content area',
 		'colPos' => -42,
 		'tx_flux_parent' => 0,
-		'tx_flux_area' => '',
+		'tx_flux_column' => '',
 		'tx_flux_children' => 1
 	);
 

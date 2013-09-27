@@ -46,23 +46,14 @@ class Tx_Flux_ViewHelpers_Widget_GridViewHelper extends Tx_Fluid_Core_Widget_Abs
 
 	/**
 	 * @return string
-	 * @throws Exception
 	 */
 	public function render() {
-		if (TYPO3_MODE !== 'BE') {
-			return '';
-		}
-		if (t3lib_extMgm::isLoaded('vhs') === FALSE && Tx_Flux_Utility_Version::assertCoreVersionIsAtLeastSixPointZero() === TRUE) {
-			throw new Exception('Usage of flux:widget.grid on TYPO3 6.0 and above requires EXT:vhs to be installed. ' .
-				'Remember to add both Flux and VHS as dependencies if you are creating a new extension which uses the Grid', 1354464588);
-		}
 		if ($this->templateVariableContainer->exists('grid')) {
 			$this->controller->setGrid($this->templateVariableContainer->get('grid'));
 		}
 		if ($this->templateVariableContainer->exists('row')) {
 			$this->controller->setRow($this->templateVariableContainer->get('row'));
 		}
-
 		return $this->initiateSubRequest();
 	}
 

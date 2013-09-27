@@ -1,0 +1,10 @@
+{namespace flux=Tx_Flux_ViewHelpers}
+<f:layout name="Default" />
+<f:section name="Configuration">
+	<flux:flexform id="test">
+		<flux:flexform.field.select name="settings.selectCustomItems" items="{0: {0: 'test', 1: 'test2'}}" />
+		<flux:flexform.field.select name="settings.selectCustomItemsSimpleArray" items="{0: 'test', 1: 'test2'}" />
+		<flux:flexform.field.select name="settings.selectCommaSeparatedItems" items="1,2,3" />
+		<flux:flexform.field.select name="settings.multiple" items="1,2,3" size="2" multiple="TRUE" />
+	</flux:flexform>
+</f:section>

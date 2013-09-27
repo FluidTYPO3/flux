@@ -83,20 +83,35 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * @return array
 	 */
 	public function getContentAreasDefinedInContentElement($uid) {
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		/** @var $provider Tx_Flux_Provider_ConfigurationProviderInterface */
-		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
-		$extensionKey = $provider->getExtensionKey($record);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$values = $provider->getTemplateVariables($record);
-		$templatePathAndFilename = $provider->getTemplatePathAndFilename($record);
-		$grid = $this->fluxService->getGridFromTemplateFile($templatePathAndFilename, $values, 'Configuration', $extensionName);
 		$columns = array();
-		foreach ($grid as $row) {
-			foreach ($row as $column) {
-				foreach ($column['areas'] as $area) {
-					array_push($columns, array($area['label'], $area['name']));
+		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'");
+		if (0 === count($rows)) {
+			return $columns;
+		}
+		$record = array_pop($rows);
+		if (NULL === $record) {
+			return $columns;
+		}
+		/** @var $provider Tx_Flux_Provider_ProviderInterface */
+		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
+		if (NULL === $provider) {
+			return $columns;
+		}
+		return $this->getGridFromConfigurationProviderAndRecord($provider, $record);
+	}
 
+	/**
+	 * @param Tx_Flux_Provider_ProviderInterface $provider
+	 * @param array $record
+	 * @return mixed
+	 */
+	protected function getGridFromConfigurationProviderAndRecord(Tx_Flux_Provider_ProviderInterface $provider, array $record) {
+		$columns = array();
+		$grid = $provider->getGrid($record);
+		foreach ($grid->getRows() as $row) {
+			foreach ($row->getColumns() as $column) {
+				foreach ($column->getAreas() as $area) {
+					array_push($columns, array($area->getLabel(), $area->getName()));
 				}
 			}
 		}

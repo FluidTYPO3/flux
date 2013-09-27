@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers
  */
-class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -41,49 +41,36 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 			'tries to detect an LLL label named "flux.fluxFormId", in scope of extension rendering the Flux form.', FALSE, NULL);
 		$this->registerArgument('description', 'string', 'Short description of this content element', FALSE, NULL);
 		$this->registerArgument('icon', 'string', 'Optional icon file to use when displaying this content element in the new content element wizard', FALSE, '../typo3conf/ext/flux/Resources/Public/Icons/Plugin.png');
-		$this->registerArgument('mergeValues', 'boolean', 'If TRUE, enables overriding of record values with corresponding values from this FlexForm', FALSE, FALSE);
+		$this->registerArgument('mergeValues', 'boolean', 'DEPRECATED AND IGNORED. To cause value merging, simly prefix your field names with the table name, e.g. ' .
+			'"tt_content.header" will overwrite the "header" column in the record with the FlexForm field value when saving the record.', FALSE, FALSE);
 		$this->registerArgument('enabled', 'boolean', 'If FALSE, makes the FCE inactive', FALSE, TRUE);
 		$this->registerArgument('wizardTab', 'string', 'Optional tab name (usually extension key) in which to place the content element in the new content element wizard', FALSE, 'FCE');
-		$this->registerArgument('compact', 'boolean', 'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
+		$this->registerArgument('compact', 'boolean', 'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES ' .
+			'AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
 	}
 
 	/**
 	 * Render method
-	 * @return string
+	 * @return void
 	 */
 	public function render() {
-		$icon = $this->arguments['icon'];
-		if (0 === strpos($icon, 'EXT:')) {
-			$icon = t3lib_div::getFileAbsFileName($icon);
-		}
-		$id = $this->arguments['id'];
-		$allowed = 'a-z';
-		$pattern = '/[^' . $allowed . ']+/i';
-		if (preg_match($pattern, $id)) {
-			$this->configurationService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
-				are: "' . $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent
-				you from utilising some features, fx automatic LLL reference building, but is not fatal', t3lib_div::SYSLOG_SEVERITY_NOTICE);
-		}
-		$description = $this->arguments['description'];
-		if (TRUE === empty($description)) {
-			$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
-			$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-			$description = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $id . '.description';
-		}
-		$this->setStorage(array(
-			'label' => $this->getLabel(),
-			'description' => $description,
-			'icon' => $icon,
-			'compact' => $this->arguments['compact'],
-			'enabled' => $this->arguments['enabled'],
-			'wizardTab' => $this->arguments['wizardTab'],
-			'mergeValues' => $this->arguments['mergeValues'],
-			'id' => $id,
-			'fields' => array(),
-			'hidefields' => array(),
-		));
+		/** @var Tx_Flux_Form $form */
+		$form = $this->objectManager->get('Tx_Flux_Form');
+		$container = $form->last();
+		$form->setId($this->arguments['id']);
+		$form->setName($this->arguments['id']);
+		$form->setLabel($this->arguments['label']);
+		$form->setDescription($this->arguments['description']);
+		$form->setIcon($this->arguments['icon']);
+		$form->setEnabled($this->arguments['enabled']);
+		$form->setCompact($this->arguments['compact']);
+		$form->setGroup($this->arguments['wizardTab']);
+		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
+		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form', $form);
+		$this->templateVariableContainer->add('form', $form);
+		$this->setContainer($container);
 		$this->renderChildren();
-		return '';
+		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container');
 	}
 
 }

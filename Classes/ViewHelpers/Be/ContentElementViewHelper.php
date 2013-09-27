@@ -27,7 +27,16 @@
  * @package Flux
  * @subpackage ViewHelpers\Be
  */
-class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper {
+class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+
+	/**
+	 * Initialize
+	 * @return void
+	 */
+	public function initializeArguments() {
+		$this->registerArgument('row', 'array', 'Record row', TRUE);
+		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
+	}
 
 	/**
 	 * @param mixed $dblist

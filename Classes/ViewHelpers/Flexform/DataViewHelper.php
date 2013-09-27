@@ -65,11 +65,12 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 		    return self::$dataCache[$uid.$table.$field];
 		}
 
-		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,' . $field, $table, sprintf('uid=%d', $uid));
+		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,' . $field, $table, sprintf('uid=%d', $uid));
 
-		if (FALSE === $row) {
+		if (FALSE === $rows || 0 === count($rows)) {
 			throw new Tx_Fluid_Core_ViewHelper_Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);
 		}
+		$row = array_pop($rows);
 		$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $row);
 		if (0 === count($providers)) {
 			$dataArray = $this->configurationService->convertFlexFormContentToArray($row[$field]);
@@ -77,7 +78,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 			$dataArray = array();
 			foreach ($providers as $provider) {
 				$data = (array) $provider->getFlexFormValues($row);
-				$dataArray = t3lib_div::array_merge_recursive_overrule($dataArray, $data);
+				$dataArray = Tx_Flux_Utility_RecursiveArray::merge($dataArray, $data);
 			}
 		}
 

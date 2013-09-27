@@ -52,41 +52,19 @@ class Tx_Flux_ViewHelpers_Flexform_ContainerViewHelper extends Tx_Flux_ViewHelpe
 	}
 
 	/**
-	 * @var array<Tx_Flux_ViewHelpers_Field_AbstractFieldViewHelper>
-	 */
-	protected $childInstances;
-
-	/**
-	 * @return NULL
+	 * Render method
+	 * @return void
 	 */
 	public function render() {
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper', 'insidePalette', array());
+		/** @var Tx_Flux_Form_Container_Container $container */
+		$container = $this->objectManager->get('Tx_Flux_Form_Container_Container');
+		$container->setName($this->arguments['name']);
+		$container->setLabel($this->arguments['label']);
+		$existingContainer = $this->getContainer();
+		$existingContainer->add($container);
+		$this->setContainer($container);
 		$this->renderChildren();
-		$this->childInstances = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper', 'insidePalette');
-		$this->configuration = array(
-			'name' => $this->getName()
-		);
-		$this->structure = $this->createStructure();
-		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper', 'insidePalette');
-		$this->addField();
-		return NULL;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function createStructure() {
-		$elements = array();
-		foreach ($this->childInstances as $childNode) {
-			$elementName = $childNode->getName();
-			$configuration = $childNode->createStructure();
-			$elements[$elementName] = $configuration;
-		}
-		$structure = array(
-			'type' => 'array',
-			'el' => $elements
-		);
-		return $structure;
+		$this->setContainer($existingContainer);
 	}
 
 }

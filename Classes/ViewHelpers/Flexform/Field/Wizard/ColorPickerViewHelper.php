@@ -29,38 +29,36 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ColorPickerViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper implements Tx_Flux_ViewHelpers_Flexform_Field_Wizard_WizardViewHelperInterface {
+class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ColorPickerViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+
+	/**
+	 * @var string
+	 */
+	protected $label = 'Choose color';
 
 	/**
 	 * Initialize arguments
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('title', 'string', 'Title of the Add Wizard', FALSE, 'Choose color');
+		parent::initializeArguments();
 		$this->registerArgument('dim', 'string', 'Dimensions (WxH, e.g. 20x20) of color picker', FALSE, '20x20');
 		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 450);
 		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 720);
 		$this->registerArgument('exampleImg', 'string', 'Example image from which to pick colors', FALSE, 'EXT:flux/Resources/Public/Icons/ColorWheel.png');
-		$this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the "real" field as a hidden input field and renders the wizard', FALSE, FALSE);
 	}
 
 	/**
-	 * Build the configuration array
-	 *
-	 * @return array
+	 * @return Tx_Flux_Form_Wizard_ColorPicker
 	 */
-	public function build() {
-		return array(
-			'color' => array(
-				'type' => 'colorbox',
-				'title' => $this->arguments['title'],
-				'script' => 'wizard_colorpicker.php',
-				'hideParent' => (bool) $this->arguments['hideParent'] === TRUE ? 1 : 0,
-				'dim' => $this->arguments['dim'],
-				'exampleImg' => $this->arguments['exampleImg'],
-				'JSopenParams' => 'height=' . $this->arguments['height'] . ',width=' . $this->arguments['width'] . ',status=0,menubar=0,scrollbars=1'
-			)
-		);
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Wizard_ColorPicker $component */
+		$component = $this->getPreparedComponent('ColorPicker');
+		$component->setIcon($this->arguments['exampleImg']);
+		$component->setDimensions($this->arguments['dim']);
+		$component->setWidth($this->arguments['width']);
+		$component->setHeight($this->arguments['height']);
+		return $component;
 	}
 
 }

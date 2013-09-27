@@ -1,13 +1,20 @@
-TYPO3 Extension Flux: Fluid FlexForms
-=====================================
+Flux: Fluid FlexForms
+=====================
+
+> Flux uses Fluid ViewHelpers to define a form structure which can be rendered in the TYPO3 backend when editing special types of
+> records - used for example by the Fluid Content extension to enable dynamic content elements based on Fluid templates. Can be
+> used in your own plugins to enable dynamic forms and a few extra features such as adding nested content elements to your plugin
+> or performing special actions whenever a record from your extension is saved, moved, deleted and so on.
 
 [![Build Status](https://travis-ci.org/FluidTYPO3/flux.png?branch=master)](https://travis-ci.org/FluidTYPO3/flux)
 
-## What is it?
+## Code Quality
 
-Flux provides an integration between Fluid templates, controllers and TCEforms, connecting them in a way that allows any TYPO3
-record type to present a dynamic set of property fields which when filled out are passed as values to the template associated
-with that particular record (or record type).
+![Abstraction Instability Chart](Documentation/ComplexityChart.png)
+![Inheritance and dependency risk](Documentation/PyramidChart.png)
+
+_Understanding the [Abstraction Instability Chart](http://pdepend.org/documentation/handbook/reports/abstraction-instability-chart.html)
+and [Pyramid Chart](http://pdepend.org/documentation/handbook/reports/overview-pyramid.html)._
 
 ## What does it do?
 
@@ -58,6 +65,12 @@ Therefore the best advise is this:
   for your records or when you create - well, used to create, anyway ;) - XML based FlexForms. Many names are the same and the
   attributes are available are (as far as possible) replicated in Flux field ViewHelpers.
 
+## Known Issues
+
+* Keep In mind to have you PHP configured correctly to accept a fairly large number of input fields. When nesting
+  sections / objects the number of fields submitted, rises drastically. The php.ini configuration setting to think about, is
+  ``max_input_vars``. If this number is too small, the TYPO3 Backend (effectively PHP) will decline the submission of the
+  Backend Form and will die with an "Invalid CSRF Token" message.
 
 ## References
 

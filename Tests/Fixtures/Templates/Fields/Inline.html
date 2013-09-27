@@ -1,0 +1,8 @@
+{namespace flux=Tx_Flux_ViewHelpers}
+<f:layout name="Default" />
+<f:section name="Configuration">
+	<flux:flexform id="test">
+		<flux:flexform.field.inline name="settings.inline" table="tt_content" />
+		<flux:flexform.field.inline name="settings.inlineCustomControls" table="tt_content" enabledControls="{0: 'new', 1: 'info'}" />
+	</flux:flexform>
+</f:section>

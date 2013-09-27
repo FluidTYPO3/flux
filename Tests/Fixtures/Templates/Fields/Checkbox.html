@@ -1,0 +1,9 @@
+{namespace flux=Tx_Flux_ViewHelpers}
+<f:layout name="Default" />
+<f:section name="Configuration">
+	<flux:flexform id="test">
+		<flux:flexform.field.checkbox name="settings.checkbox" />
+		<flux:flexform.field.checkbox name="settings.checkbox2" requestUpdate="TRUE" />
+		<flux:flexform.field.checkbox name="settings.checkbox2" default="1" />
+	</flux:flexform>
+</f:section>

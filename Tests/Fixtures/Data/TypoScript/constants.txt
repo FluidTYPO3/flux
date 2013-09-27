@@ -1,0 +1,2 @@
+# cat=FLUX/dummy; type=boolean; label=Dummy setting
+plugin.tx_flux.settings.dummy = 1
