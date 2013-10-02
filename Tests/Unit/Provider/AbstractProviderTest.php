@@ -78,8 +78,6 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		/** @var Tx_Flux_Provider_ProviderInterface $instance */
 		$instance = $this->getConfigurationProviderInstance();
 		$instance->setExtensionKey('flux');
-		$listType = $instance->getListType($record);
-		$this->assertNull($listType);
 		$instance->setListType('test');
 		$this->assertSame('test', $instance->getListType($record));
 	}
