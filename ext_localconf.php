@@ -33,31 +33,6 @@ t3lib_extMgm::addTypoScript($_EXTKEY, 'setup', '
 		flexform {
 			rteDefaults = richtext[*]:rte_transform[mode=ts_css]
 		}
-		object {
-			image {
-				richTextCaptions = 1
-				sliderWidth = 600
-				sliderStep = 5
-				maxWidth = 1920
-				maxHeight = 1080
-			}
-			video {
-				richTextCaptions = 1
-			}
-			pages {
-				minItems = 0
-				maxItems = 20
-				size = 4
-			}
-			content {
-				minItems = 0
-				maxItems = 20
-				size = 4
-			}
-			file {
-				richTextCaptions = 1
-			}
-		}
 	}
 ');
 
