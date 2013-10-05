@@ -694,7 +694,12 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		}
 		$data = array();
 		foreach ($tree as $branch) {
-			$fields = $this->getForm($branch)->getFields();
+			$form = $this->getForm($branch);
+			if (NULL === $form) {
+				self::$cache[$key] = $data;
+				return $data;
+			}
+			$fields = $form->getFields();
 			$values = $this->getFlexFormValues($branch);
 			foreach ($fields as $field) {
 				$name = $field->getName();
