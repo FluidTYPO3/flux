@@ -56,10 +56,11 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 	 * @param integer $uid
 	 * @param string $table
 	 * @param string $field
+	 * @param string $as
 	 * @throws Tx_Fluid_Core_ViewHelper_Exception
 	 * @return array
 	 */
-	public function render($uid, $table, $field) {
+	public function render($uid, $table, $field, $as = NULL) {
 
 		if (TRUE === isset(self::$dataCache[$uid.$table.$field])) {
 		    return self::$dataCache[$uid.$table.$field];
@@ -83,6 +84,22 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 		}
 
 		self::$dataCache[$uid.$table.$field] = $dataArray;
+
+		if (NULL !== $as) {
+			if ($this->templateVariableContainer->exists($as)) {
+				$backupVariable = $this->templateVariableContainer->get($as);
+				$this->templateVariableContainer->remove($as);
+			}
+			$this->templateVariableContainer->add($as, $dataArray);
+			$content = $this->renderChildren();
+			$this->templateVariableContainer->remove($as);
+
+			if (TRUE === isset($backupVariable)) {
+				$this->templateVariableContainer->add($as, $backupVariable);
+			}
+
+			return $content;
+		}
 
 		return $dataArray;
 	}
