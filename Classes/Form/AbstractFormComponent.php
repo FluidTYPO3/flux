@@ -228,6 +228,8 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 			$prefix = 'sections';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Container) {
 			$prefix = 'containers';
+		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Column) {
+			$prefix = 'columns';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Content) {
 			$prefix = 'areas';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Object) {
