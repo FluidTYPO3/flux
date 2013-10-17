@@ -37,7 +37,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_ViewHel
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Optional column name', FALSE, 'column');
-		$this->registerArgument('label', 'string', 'Optional column label', FALSE, 'Column');
+		$this->registerArgument('label', 'string', 'Optional column label', FALSE, NULL);
 		$this->registerArgument('colPos', 'integer', 'Optional column position. If you do not specify this it will be automatically assigned - so specify it if your template is dynamic and the output relies on this, as page rendering does for example!', FALSE, -1);
 		$this->registerArgument('colspan', 'integer', 'Column span');
 		$this->registerArgument('rowspan', 'integer', 'Row span');
