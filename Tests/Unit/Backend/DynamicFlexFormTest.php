@@ -76,4 +76,3 @@ class Tx_Flux_Backend_DynamicFlexFormTest extends Tx_Flux_Tests_AbstractFunction
 	}
 
 }
-
