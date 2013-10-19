@@ -93,4 +93,3 @@ abstract class Tx_Flux_Form_AbstractWizard extends Tx_Flux_Form_AbstractFormComp
 		return FALSE;
 	}
 }
-
