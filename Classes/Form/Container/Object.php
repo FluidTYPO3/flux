@@ -27,7 +27,7 @@
  * @package Flux
  * @subpackage Form\Container
  */
-class Tx_Flux_Form_Container_Object extends Tx_Flux_Form_Container_Container implements Tx_Flux_Form_ContainerInterface, Tx_Flux_Form_FieldContainerInterface {
+class Tx_Flux_Form_Container_Object extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_ContainerInterface, Tx_Flux_Form_FieldContainerInterface {
 
 	/**
 	 * @return array
