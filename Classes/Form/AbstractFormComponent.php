@@ -211,10 +211,12 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		$name = $this->getName();
 		$root = $this->getRoot();
 		if (FALSE === $root instanceof Tx_Flux_Form) {
-			return $label;
+			$id = 'form';
+			$extensionName = 'Flux';
+		} else {
+			$id = $root->getName();
+			$extensionName = $root->getExtensionName();
 		}
-		$id = $root->getName();
-		$extensionName = $root->getExtensionName();
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 		if (TRUE === isset($label) && FALSE === empty($label)) {
 			return $label;
