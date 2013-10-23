@@ -49,6 +49,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	public function canGetLabel() {
 		$className = $this->getObjectClassName();
 		$instance = $this->objectManager->get($className);
+		$instance->setName('test');
 		if (TRUE === $instance instanceof Tx_Flux_Form_FieldInterface || TRUE === $instance instanceof Tx_Flux_Form_ContainerInterface) {
 			$form = Tx_Flux_Form::create(array('extensionKey' => 'flux'));
 			$form->add($instance);
