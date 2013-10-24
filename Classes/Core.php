@@ -148,14 +148,16 @@ class Tx_Flux_Core {
 	 * @param mixed $variables Optional array of variables to pass to Fluid template
 	 * @param mixed|NULL Optional section name containing the configuration
 	 * @param mixed|NULL Optional paths array / Closure to return paths
+	 * @param string $fieldName Optional fieldname if not from pi_flexform
 	 * @return void
 	 */
-	public static function registerFluidFlexFormPlugin($extensionKey, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
+	public static function registerFluidFlexFormPlugin($extensionKey, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL, $fieldName='pi_flexform') {
+		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider */
 		$provider = $objectManager->get('Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider');
 		$provider->setTableName('tt_content');
-		$provider->setFieldName('');
+		$provider->setFieldName($fieldName);
 		$provider->setExtensionKey($extensionKey);
 		$provider->setListType($pluginSignature);
 		$provider->setTemplatePathAndFilename($templateFilename);
@@ -176,15 +178,16 @@ class Tx_Flux_Core {
 	 * @param mixed $variables Optional array of variables to pass to Fluid template
 	 * @param mixed|NULL Optional section name containing the configuration
 	 * @param mixed|NULL Optional paths array / Closure to return paths
+	 * @param string $fieldName Optional fieldname if not from pi_flexform
 	 * @return void
 	 */
-	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
+	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL, $fieldName='pi_flexform') {
 		/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider */
 		$provider = $objectManager->get('Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider');
 		$provider->setTableName('tt_content');
-		$provider->setFieldName('');
+		$provider->setFieldName($fieldName);
 		$provider->setExtensionKey($extensionKey);
 		$provider->setTemplatePathAndFilename($templateFilename);
 		$provider->setTemplateVariables($variables);
