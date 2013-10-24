@@ -253,6 +253,10 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 	 * @return string
 	 */
 	protected function getTemplateIdentifier($actionName = NULL) {
+		if (TRUE === method_exists(get_parent_class($this), __FUNCTION__)) {
+			return parent::getTemplateIdentifier($actionName);
+		}
+
 		return 'viewhelpertest_' . sha1($this->templateSource);
 	}
 
