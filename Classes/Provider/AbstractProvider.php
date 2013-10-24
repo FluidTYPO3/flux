@@ -373,18 +373,40 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 
 	/**
 	 * @param array $row
-	 * @return array|NULL
+	 * @return array
 	 */
 	public function getTemplatePaths(array $row) {
-		unset($row);
-		if (FALSE === is_array($this->templatePaths) && FALSE === empty($this->extensionKey) && TRUE === t3lib_extMgm::isLoaded($this->extensionKey)) {
-			$extensionName = t3lib_div::underscoredToUpperCamelCase($this->extensionKey);
-			$this->templatePaths = $this->configurationService->getViewConfigurationForExtensionName($extensionName);
+		if (FALSE === is_array($this->templatePaths)) {
+			$extensionKey = $this->getExtensionKey($row);
+			if (FALSE === empty($extensionKey) && TRUE === t3lib_extMgm::isLoaded($extensionKey)) {
+				$this->templatePaths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
+			}
 		}
+
+		$paths = NULL;
 		if (TRUE === is_array($this->templatePaths)) {
-			return Tx_Flux_Utility_Path::translatePath($this->templatePaths);
+			$paths = Tx_Flux_Utility_Path::translatePath($this->templatePaths);
 		}
-		return array();
+
+		if (NULL !== $paths && FALSE === is_array($paths)) {
+			$this->configurationService->message('Translated paths may not be mixed.', t3lib_div::SYSLOG_SEVERITY_WARNING);
+			$paths = NULL;
+		}
+
+		if (NULL === $paths) {
+			$extensionKey = $this->getExtensionKey($row);
+			if (FALSE === empty($extensionKey) && TRUE === t3lib_extMgm::isLoaded($extensionKey)) {
+				$paths = array(
+					t3lib_extMgm::extPath($extensionKey, 'Resources/Private/Templates/'),
+					t3lib_extMgm::extPath($extensionKey, 'Resources/Private/Partials/'),
+					t3lib_extMgm::extPath($extensionKey, 'Resources/Private/Layouts/')
+				);
+			} else {
+				$paths = array();
+			}
+		}
+
+		return $paths;
 	}
 
 	/**
