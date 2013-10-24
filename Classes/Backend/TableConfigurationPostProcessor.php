@@ -110,6 +110,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		$tableConfiguration['enablecolumns'] = $enableColumns;
 		$showRecordsFieldList = $this->buildShowItemList($form);
 		$GLOBALS['TCA'][$table] = array(
+			'title' => $form->getLabel(),
 			'ctrl' => $tableConfiguration,
 			'interface' => array(
 				'showRecordFieldList' => implode(',', array_keys($fields))

@@ -54,7 +54,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_
 		$this->assertContains($field, $GLOBALS['TCA'][$table]['interface']['showRecordFieldList']);
 		$this->assertContains($field, $GLOBALS['TCA'][$table]['types'][0]['showitem']);
 		$this->assertEquals($GLOBALS['TCA'][$table]['ctrl']['label'], 'title');
-		$this->assertStringStartsWith('LLL:EXT', $GLOBALS['TCA'][$table]['ctrl']['title']);
+		$this->assertStringStartsWith('LLL:EXT', $GLOBALS['TCA'][$table]['title']);
 	}
 
 	/**
