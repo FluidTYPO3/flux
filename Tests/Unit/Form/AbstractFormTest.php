@@ -46,6 +46,56 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	/**
 	 * @test
 	 */
+	public function canGetLabel() {
+		$className = $this->getObjectClassName();
+		$instance = $this->objectManager->get($className);
+		$instance->setName('test');
+		if (TRUE === $instance instanceof Tx_Flux_Form_FieldInterface || TRUE === $instance instanceof Tx_Flux_Form_ContainerInterface) {
+			$form = Tx_Flux_Form::create(array('extensionKey' => 'flux'));
+			$form->add($instance);
+		}
+		$label = $instance->getLabel();
+		$this->assertNotEmpty($label);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canAutoWriteLabel() {
+		$languageFile = 'LLL:typo3temp/test.xml';
+		$absoluteLanguageFile = t3lib_div::getFileAbsFileName(substr($languageFile, 4));
+		$className = $this->getObjectClassName();
+		$instance = $this->objectManager->get($className);
+		$instance->setName('thisIsASpecialFieldName');
+		$id = 'somename';
+		$form = Tx_Flux_Form::create();
+		$form->setId($id);
+		$form->setExtensionName('Flux');
+		if (FALSE === $instance instanceof Tx_Flux_Form_WizardInterface) {
+			$form->add($instance);
+		} else {
+			$field = $form->createField('Input', 'dummy');
+			$field->add($instance);
+		}
+		$probe = $instance->getName();
+		$label = $instance->getLabel();
+		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'];
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = 1;
+		Tx_Flux_Utility_LanguageFile::reset();
+		// note: double call is not an error - designed to trigger caches and assumes no errors happens during that phase
+		$this->callInaccessibleMethod($instance, 'writeLanguageLabel', $languageFile, array_pop(explode(':', $label)), $id);
+		Tx_Flux_Utility_LanguageFile::reset();
+		$this->callInaccessibleMethod($instance, 'writeLanguageLabel', $languageFile, array_pop(explode(':', $label)), $id);
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = $backup;
+		$this->assertNotEmpty($label);
+		$this->assertFileExists($absoluteLanguageFile);
+		$this->assertContains($probe, file_get_contents($absoluteLanguageFile));
+		unlink($absoluteLanguageFile);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canGenerateRawLabelWhenLanguageLabelsDisabled() {
 		$instance = $this->createInstance();
 		$instance->setLabel(NULL);

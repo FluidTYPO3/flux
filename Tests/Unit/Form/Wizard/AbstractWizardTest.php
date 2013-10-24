@@ -35,6 +35,20 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest extends Tx
 	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'hideParent' => FALSE);
 
 	/**
+	 * @return void
+	 */
+	public function canAutoWriteLabel() {
+
+	}
+
+	/**
+	 * @return void
+	 */
+	public function canGetLabel() {
+
+	}
+
+	/**
 	 * @test
 	 */
 	public function hasChildrenAlwaysReturnsFalse() {

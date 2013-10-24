@@ -211,10 +211,12 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		$name = $this->getName();
 		$root = $this->getRoot();
 		if (FALSE === $root instanceof Tx_Flux_Form) {
-			return $label;
+			$id = 'form';
+			$extensionName = 'Flux';
+		} else {
+			$id = $root->getName();
+			$extensionName = $root->getExtensionName();
 		}
-		$id = $root->getName();
-		$extensionName = $root->getExtensionName();
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 		if (TRUE === isset($label) && FALSE === empty($label)) {
 			return $label;
@@ -228,12 +230,14 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 			$prefix = 'sections';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Container) {
 			$prefix = 'containers';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Column) {
-			$prefix = 'columns';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Content) {
-			$prefix = 'areas';
+		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Grid) {
+			$prefix = 'grids';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Object) {
 			$prefix = 'objects';
+		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Content) {
+			$prefix = 'areas';
+		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Container) {
+			$prefix = 'containers';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_FieldInterface) {
 			if (TRUE === $this->isChildOfType('Object')) {
 				$prefix = 'objects.' . $this->getParent()->getName();
@@ -243,8 +247,20 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		}
 		$filePrefix = 'LLL:EXT:' . $extensionKey . $this->localLanguageFileRelativePath;
 		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.' . $name);
-		Tx_Flux_Utility_LanguageFile::autoWriteLanguageLabel($filePrefix, $labelIdentifier, $id);
+		$this->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
 		return $filePrefix . ':' . $labelIdentifier;
+	}
+
+	/**
+	 * @param string $filePrefix
+	 * @param string $labelIdentifier
+	 * @param string $id
+	 * @return void
+	 */
+	protected function writeLanguageLabel($filePrefix, $labelIdentifier, $id) {
+		if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles']) {
+			Tx_Flux_Utility_LanguageFile::writeLanguageLabel($filePrefix, $labelIdentifier, $id);
+		}
 	}
 
 	/**

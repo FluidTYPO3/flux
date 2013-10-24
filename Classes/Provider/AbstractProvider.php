@@ -659,7 +659,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		foreach ($form->getFields() as $field) {
 			$name = $field->getName();
 			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);
-			if (NULL !== $inheritedValue) {
+			if (NULL !== $inheritedValue && TRUE === $field instanceof Tx_Flux_Form_FieldInterface) {
 				$field->setDefault($inheritedValue);
 			}
 		}

@@ -70,6 +70,9 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 			if (NULL === $form) {
 				$form = $this->generateFormInstanceFromClassName($modelClassName, $fullTableName);
 			}
+			if (NULL === $form->getName()) {
+				$form->setName($fullTableName);
+			}
 			$this->processFormForTable($fullTableName, $form);
 		}
 	}
@@ -105,9 +108,9 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		}
 		$tableConfiguration['iconfile'] = t3lib_extMgm::extRelPath($extensionKey) . $form->getIcon();
 		$tableConfiguration['enablecolumns'] = $enableColumns;
+		$tableConfiguration['title'] = $form->getLabel();
 		$showRecordsFieldList = implode(',', array_keys($fields));
 		$GLOBALS['TCA'][$table] = array(
-			'title' => $form->getLabel(),
 			'ctrl' => $tableConfiguration,
 			'interface' => array(
 				'showRecordFieldList' => $showRecordsFieldList

@@ -37,4 +37,20 @@ class Tx_Flux_Utility_LanguageFileTest extends Tx_Flux_Tests_AbstractFunctionalT
 		$this->callInaccessibleMethod($instance, 'message', 'Test');
 	}
 
+	/**
+	 * @test
+	 */
+	public function performsEarlyReturnOnUnsupportedFileExtension() {
+		$return = Tx_Flux_Utility_LanguageFile::writeLanguageLabel('/dev/null', 'void', 'void');
+		$this->assertEmpty($return);
+	}
+
+	/**
+	 * @test
+	 */
+	public function performsEarlyReturnOnInvalidId() {
+		$return = Tx_Flux_Utility_LanguageFile::writeLanguageLabel('/dev/null', 'void', 'this-is-an-invalid-id');
+		$this->assertEmpty($return);
+	}
+
 }

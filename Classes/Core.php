@@ -98,6 +98,9 @@ class Tx_Flux_Core {
 		if (NULL === $form->getName()) {
 			$form->setName($table);
 		}
+		if (NULL === $form->getExtensionName() && TRUE === isset($GLOBALS['_EXTKEY'])) {
+			$form->setExtensionName(t3lib_div::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
+		}
 		self::$forms['tables'][$table] = $form;
 	}
 
@@ -119,6 +122,9 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function registerFormForModelObjectClassName($className, Tx_Flux_Form $form = NULL) {
+		if (NULL !== $form && TRUE === isset($GLOBALS['_EXTKEY']) && NULL === $form->getExtensionName()) {
+			$form->setExtensionName(t3lib_div::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
+		}
 		self::$forms['models'][$className] = $form;
 	}
 
