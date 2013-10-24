@@ -36,12 +36,14 @@ class Tx_Flux_Domain_Model_Dummy extends Tx_Extbase_DomainObject_AbstractEntity 
 
 	/**
 	 * @Flux\Form\Field dateTime
+	 * @Flux\Form\Sheet options
 	 * @var DateTime
 	 */
 	protected $crdate;
 
 	/**
 	 * @Flux\Label
+	 * @Flux\Form\Sheet options
 	 * @Flux\Form\Field input(size: 40)
 	 * @var string
 	 */

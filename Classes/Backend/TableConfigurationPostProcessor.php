@@ -108,12 +108,12 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		}
 		$tableConfiguration['iconfile'] = t3lib_extMgm::extRelPath($extensionKey) . $form->getIcon();
 		$tableConfiguration['enablecolumns'] = $enableColumns;
-		$tableConfiguration['title'] = $form->getLabel();
-		$showRecordsFieldList = implode(',', array_keys($fields));
+		$showRecordsFieldList = $this->buildShowItemList($form);
 		$GLOBALS['TCA'][$table] = array(
+			'title' => $form->getLabel(),
 			'ctrl' => $tableConfiguration,
 			'interface' => array(
-				'showRecordFieldList' => $showRecordsFieldList
+				'showRecordFieldList' => implode(',', array_keys($fields))
 			),
 			'columns' => $fields,
 			'types' => array(
@@ -143,6 +143,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		$labelFields = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Label', NULL);
 		$extensionName = $this->getExtensionNameFromModelClassName($class);
 		$values = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Form\\Field', NULL);
+		$sheets = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Form\\Sheet', NULL);
 		$labels = TRUE === is_array($labelFields) ? array_keys($labelFields) : array(key($values));
 		$hasVisibilityToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\Hide');
 		$hasDeleteToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\Delete');
@@ -158,10 +159,26 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		$form->setOption('start', $hasStartTimeToggle);
 		$form->setOption('end', $hasEndTimeToggle);
 		$form->setOption('frontendUserGroup', $hasFrontendGroupToggle);
-		foreach ($values as $propertyName => $settings) {
-			$field = $form->createField($settings['type'], $propertyName);
-			foreach ($settings['config'] as $parameter => $value) {
-				Tx_Extbase_Reflection_ObjectAccess::setProperty($field, $parameter, $value);
+		if (FALSE === is_array($sheets) || 0 === count($sheets)) {
+			$sheets = array_combine(array_keys($values), array_fill(0, count($values), array('type' => $form->last()->getName())));
+		}
+		$fields = array();
+		foreach ($sheets as $propertyName => $sheetAnnotation) {
+			$sheetName = $sheetAnnotation['type'];
+			if (FALSE === isset($fields[$sheetName])) {
+				$fields[$sheetName] = array();
+			}
+			array_push($fields[$sheetName], $propertyName);
+		}
+		foreach ($fields as $sheetName => $propertyNames) {
+			$form->remove($sheetName);
+			$sheets[$sheetName] = $form->createContainer('Sheet', $sheetName);
+			foreach ($propertyNames as $propertyName) {
+				$settings = $values[$propertyName];
+				$field = $sheets[$sheetName]->createField($settings['type'], $propertyName);
+				foreach ($settings['config'] as $parameter => $value) {
+					Tx_Extbase_Reflection_ObjectAccess::setProperty($field, $parameter, $value);
+				}
 			}
 		}
 		return $form;
@@ -185,6 +202,21 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 			}
 		}
 		return $extensionName;
+	}
+
+	/**
+	 * @param Tx_Flux_Form $form
+	 * @return string
+	 */
+	protected function buildShowItemList(Tx_Flux_Form $form) {
+		$parts = array();
+		foreach ($form->getSheets(FALSE) as $sheet) {
+			array_push($parts, '--div--;' . $sheet->getLabel());
+			foreach ($sheet->getFields() as $field) {
+				array_push($parts, $field->getName());
+			}
+		}
+		return implode(', ', $parts);
 	}
 
 }

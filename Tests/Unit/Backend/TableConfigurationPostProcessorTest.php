@@ -51,10 +51,10 @@ class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_
 		$object->processData();
 		$this->assertArrayHasKey($table, $GLOBALS['TCA']);
 		$this->assertArrayHasKey($field, $GLOBALS['TCA'][$table]['columns']);
-		$this->assertContains($GLOBALS['TCA'][$table]['interface']['showRecordFieldList'], $field);
-		$this->assertContains($GLOBALS['TCA'][$table]['types'][0]['showitem'], $field);
+		$this->assertContains($field, $GLOBALS['TCA'][$table]['interface']['showRecordFieldList']);
+		$this->assertContains($field, $GLOBALS['TCA'][$table]['types'][0]['showitem']);
 		$this->assertEquals($GLOBALS['TCA'][$table]['ctrl']['label'], 'title');
-		$this->assertStringStartsWith('LLL:EXT', $GLOBALS['TCA'][$table]['ctrl']['title']);
+		$this->assertStringStartsWith('LLL:EXT', $GLOBALS['TCA'][$table]['title']);
 	}
 
 	/**
