@@ -218,9 +218,14 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 			$extensionName = $root->getExtensionName();
 		}
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-		if (TRUE === isset($label) && FALSE === empty($label)) {
-			return $label;
-		} elseif ((TRUE === empty($extensionKey) || FALSE === t3lib_extMgm::isLoaded($extensionKey)) && TRUE === empty($label)) {
+		if (FALSE === empty($label)) {
+			if (0 === strpos($label, 'LLL:') && 0 !== strpos($label, 'LLL:EXT:')) {
+				$name = substr($label, 4);
+			} else {
+				return $label;
+			}
+		}
+		if ((TRUE === empty($extensionKey) || FALSE === t3lib_extMgm::isLoaded($extensionKey))) {
 			return $name;
 		}
 		$prefix = '';
