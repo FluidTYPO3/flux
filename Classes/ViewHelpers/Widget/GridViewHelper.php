@@ -23,6 +23,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+require_once t3lib_extMgm::extPath('fluid', 'Classes/Core/Widget/AbstractWidgetViewHelper.php');
+
 /**
  * Grid Widget for rendering a grid in previews of BE elements
  *

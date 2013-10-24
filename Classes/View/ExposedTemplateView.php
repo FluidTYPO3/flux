@@ -246,4 +246,14 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 		return $value;
 	}
 
+	/**
+	 * We use a checksum of the template source as the template identifier
+	 *
+	 * @param string $actionName
+	 * @return string
+	 */
+	protected function getTemplateIdentifier($actionName = NULL) {
+		return 'viewhelpertest_' . sha1($this->templateSource);
+	}
+
 }
