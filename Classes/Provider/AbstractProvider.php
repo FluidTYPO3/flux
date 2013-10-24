@@ -339,7 +339,8 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			return self::$cache[$cacheKey];
 		}
 		$fieldName = $this->getFieldName($row);
-		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], NULL, NULL, NULL);
+		$form = $this->getForm($row);
+		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, NULL, NULL);
 		$tree = $this->getInheritanceTree($row);
 		if (0 === count($tree)) {
 			self::$cache[$cacheKey] = $immediateConfiguration;
