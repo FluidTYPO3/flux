@@ -377,16 +377,16 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @return array
 	 */
 	public function getTemplatePaths(array $row) {
-		if (FALSE === is_array($this->templatePaths)) {
+		$paths = $this->templatePaths;
+		if (FALSE === is_array($paths)) {
 			$extensionKey = $this->getExtensionKey($row);
 			if (FALSE === empty($extensionKey) && TRUE === t3lib_extMgm::isLoaded($extensionKey)) {
-				$this->templatePaths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
+				$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 			}
 		}
 
-		$paths = NULL;
-		if (TRUE === is_array($this->templatePaths)) {
-			$paths = Tx_Flux_Utility_Path::translatePath($this->templatePaths);
+		if (TRUE === is_array($paths)) {
+			$paths = Tx_Flux_Utility_Path::translatePath($paths);
 		}
 
 		if (NULL !== $paths && FALSE === is_array($paths)) {
