@@ -57,21 +57,6 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	protected $fieldName = 'pi_flexform';
 
 	/**
-	 * @param array $row
-	 * @return array|mixed|NULL
-	 */
-	public function getTemplatePaths(array $row) {
-		if (TRUE === is_array($this->templatePaths)) {
-			$paths = $this->templatePaths;
-		} else {
-			$extensionKey = $this->getExtensionKey($row);
-			$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
-		}
-		$paths = Tx_Flux_Utility_Path::translatePath($paths);
-		return $paths;
-	}
-
-	/**
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row

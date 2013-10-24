@@ -94,7 +94,7 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 * layoutRootPath, templateRootPath members must be in the returned array
 	 *
 	 * @param array $row
-	 * @return array|NULL
+	 * @return array
 	 */
 	public function getTemplatePaths(array $row);
 
