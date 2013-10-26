@@ -203,7 +203,7 @@ class Tx_Flux_Core {
 		/** @var $provider Tx_Flux_Provider_ProviderInterface */
 		$provider = $objectManager->get('Tx_Flux_Provider_ContentProvider');
 		$provider->setTableName('tt_content');
-		$provider->setFieldName('');
+		$provider->setFieldName('pi_flexform');
 		$provider->setExtensionKey($extensionKey);
 		$provider->setListType($pluginSignature);
 		$provider->setTemplatePathAndFilename($templateFilename);
