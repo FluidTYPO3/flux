@@ -233,10 +233,10 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 			$prefix = 'sheets';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Section) {
 			$prefix = 'sections';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Container) {
-			$prefix = 'containers';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Grid) {
 			$prefix = 'grids';
+		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Column) {
+			$prefix = 'columns';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Object) {
 			$prefix = 'objects';
 		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Content) {
