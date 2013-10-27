@@ -32,19 +32,34 @@ class Tx_Flux_Backend_PreviewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	/**
 	 * @test
 	 */
-	public function canExecuteNewRenderer() {
+	public function canExecuteRenderer() {
 		$caller = $this->objectManager->get('TYPO3\\CMS\\Backend\\View\\PageLayoutView');
-		$function = 'EXT:flux/Classes/Backend/PreviewSix.php:Tx_Flux_Backend_PreviewSix';
+		$function = 'EXT:flux/Classes/Backend/PreviewSix.php:Tx_Flux_Backend_Preview';
 		$this->callUserFunction($function, $caller);
 	}
 
 	/**
 	 * @test
 	 */
-	public function canExecuteOldRenderer() {
-		$caller = $this->objectManager->get('tx_cms_layout');
-		$function = 'EXT:flux/Classes/Backend/Preview.php:Tx_Flux_Backend_Preview';
-		$this->callUserFunction($function, $caller);
+	public function canGenerateShortcutIconAndLink() {
+		$className = 'Tx_Flux_Backend_Preview';
+		$instance = $this->getMock($className, array('getPageTitleAndPidFromContentUid'));
+		$instance->expects($this->once())->method('getPageTitleAndPidFromContentUid')->with(1)->will($this->returnValue(array('pid' => 1, 'title' => 'test')));
+		$headerContent = $itemContent = '';
+		$drawItem = TRUE;
+		$row = array('uid' => 1, 'CType' => 'shortcut', 'records' => 1);
+		$instance->renderPreview($headerContent, $itemContent, $row, $drawItem);
+		$this->assertContains('href="?id=1#c1"', $itemContent);
+		$this->assertContains('<span class="t3-icon t3-icon-actions-insert t3-icon-insert-reference t3-icon-actions t3-icon-actions-insert-reference"></span>', $itemContent);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetPageTitleAndPidFromContentUid() {
+		$className = 'Tx_Flux_Backend_Preview';
+		$instance = $this->getMock($className);
+		$this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
 	}
 
 	/**
