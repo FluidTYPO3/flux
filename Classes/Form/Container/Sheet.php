@@ -46,13 +46,28 @@ class Tx_Flux_Form_Container_Sheet extends Tx_Flux_Form_AbstractFormContainer im
 	}
 
 	/**
+	 * @return array
+	 */
+	protected function buildChildren() {
+		$structure = array();
+		/** @var Tx_Flux_Form_FormInterface[] $children */
+		$children = $this->getFields();
+		foreach ($children as $child) {
+			$name = $child->getName();
+			$structure[$name] = $child->build();
+		}
+		return $structure;
+	}
+
+	/**
 	 * @return Tx_Flux_Form_FieldInterface[]
 	 */
 	public function getFields() {
 		$fields = array();
 		foreach ($this->children as $child) {
 			$isContainerWithChildren = (TRUE === $child instanceof Tx_Flux_Form_ContainerInterface && TRUE === $child->hasChildren());
-			if (TRUE === $isContainerWithChildren || TRUE === $child instanceof Tx_Flux_Form_FieldInterface) {
+			$isFieldNotInsideObject = (TRUE === $child instanceof Tx_Flux_Form_FieldInterface && FALSE === $child->getParent() instanceof Tx_Flux_Form_Container_Object);
+			if (TRUE === $isContainerWithChildren || TRUE === $isFieldNotInsideObject) {
 				$name = $child->getName();
 				$fields[$name] = $child;
 			}
