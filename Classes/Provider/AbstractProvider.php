@@ -138,6 +138,11 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	protected $configurationService;
 
 	/**
+	 * @var Tx_Flux_Service_ContentService
+	 */
+	protected $contentService;
+
+	/**
 	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
 	 * @return void
 	 */
@@ -159,6 +164,14 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 */
 	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
 		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param Tx_Flux_Service_ContentService $contentService
+	 * @return void
+	 */
+	public function injectContentService(Tx_Flux_Service_ContentService $contentService) {
+		$this->contentService = $contentService;
 	}
 
 	/**
@@ -499,10 +512,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 						array_push($removals, $sheetFieldName);
 					} else {
 						$clearFieldName = $sheetFieldName . '_clear';
+						$clearFieldValue = TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) ? $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] : 0;
 						$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
-						if (TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) && 0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) {
-							array_push($removals, $sheetFieldName);
-						} elseif (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']) {
+						$shouldClearField = (0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] || (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']));
+						if (TRUE === $shouldClearField) {
 							array_push($removals, $sheetFieldName);
 						}
 					}
@@ -611,25 +624,11 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$records = array();
-		if (NULL === $this->getFieldName($row)) {
-			return $records;
+		self::$cache[$cacheKey] = array();
+		if (NULL !== $this->getFieldName($row)) {
+			self::$cache[$cacheKey] = $this->loadRecordTreeFromDatabase($row);
 		}
-		$parentFieldName = $this->getParentFieldName($row);
-		$record = $row;
-		if (FALSE === isset($record[$parentFieldName])) {
-			$record[$parentFieldName] = $this->getParentFieldValue($record);
-		}
-		while ($record[$parentFieldName] > 0) {
-			$tableName = $this->getTableName($row);
-			$resource = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $tableName, "uid = '" . $record[$parentFieldName] . "'");
-			$record = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resource);
-			$parentFieldName = $this->getParentFieldName($record);
-			array_push($records, $record);
-		}
-		$records = array_reverse($records);
-		self::$cache[$cacheKey] = $records;
-		return $records;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -651,9 +650,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$form = $this->getForm($row);
 		$formLabel = $form->getLabel();
 		$label = Tx_Extbase_Utility_Localization::translate($formLabel, $extensionKey);
-		if ($label === NULL) {
-			$label = $formLabel;
-		}
+		$label = NULL === $label ? $formLabel : $label;
 		$variables['label'] = $label;
 		$variables['row'] = $row;
 
@@ -699,10 +696,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$tree = $this->getInheritanceTree($row);
 		$inheritedConfiguration = $this->getMergedConfiguration($tree);
 		if (FALSE === strpos($propertyPath, '.')) {
-			if (TRUE === isset($inheritedConfiguration[$propertyPath])) {
-				return Tx_Extbase_Reflection_ObjectAccess::getProperty($inheritedConfiguration, $propertyPath);
-			}
-			return NULL;
+			return TRUE === isset($inheritedConfiguration[$propertyPath]) ? Tx_Extbase_Reflection_ObjectAccess::getProperty($inheritedConfiguration, $propertyPath) : NULL;
 		}
 		return Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($inheritedConfiguration, $propertyPath);
 	}
@@ -776,7 +770,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$parentFieldName = $this->getParentFieldName($row);
 		$tableName = $this->getTableName($row);
 		if (NULL !== $parentFieldName && FALSE === isset($row[$parentFieldName])) {
-			$row = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows($parentFieldName, $tableName, "uid = '" . $row['uid'] . "'"));
+			$row = $this->loadRecordFromDatabase($row['uid']);
 		}
 		return $row[$parentFieldName];
 	}
@@ -886,6 +880,36 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 */
 	public function setGrid(Tx_Flux_Form_Container_Grid $grid) {
 		$this->grid = $grid;
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return array|FALSE
+	 */
+	protected function loadRecordFromDatabase($uid) {
+		$tableName = $this->tableName;
+		$resource = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $tableName, "uid = '" . $uid . "'");
+		$record = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resource);
+		return $record;
+	}
+
+	/**
+	 * @param array $record
+	 * @return array
+	 */
+	protected function loadRecordTreeFromDatabase($record) {
+		$parentFieldName = $this->getParentFieldName($record);
+		if (FALSE === isset($record[$parentFieldName])) {
+			$record[$parentFieldName] = $this->getParentFieldValue($record);
+		}
+		$records = array();
+		while ($record[$parentFieldName] > 0) {
+			$record = $this->loadRecordFromDatabase($record[$parentFieldName]);
+			$parentFieldName = $this->getParentFieldName($record);
+			array_push($records, $record);
+		}
+		$records = array_reverse($records);
+		return $records;
 	}
 
 }

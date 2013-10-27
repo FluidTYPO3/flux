@@ -61,30 +61,26 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 	 * @return array
 	 */
 	public function render($uid, $table, $field, $as = NULL) {
-
 		if (TRUE === isset(self::$dataCache[$uid.$table.$field])) {
-		    return self::$dataCache[$uid.$table.$field];
-		}
-
-		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,' . $field, $table, sprintf('uid=%d', $uid));
-
-		if (FALSE === $rows || 0 === count($rows)) {
-			throw new Tx_Fluid_Core_ViewHelper_Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);
-		}
-		$row = array_pop($rows);
-		$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $row);
-		if (0 === count($providers)) {
-			$dataArray = $this->configurationService->convertFlexFormContentToArray($row[$field]);
+		    $dataArray = self::$dataCache[$uid.$table.$field];
 		} else {
-			$dataArray = array();
-			foreach ($providers as $provider) {
-				$data = (array) $provider->getFlexFormValues($row);
-				$dataArray = Tx_Flux_Utility_RecursiveArray::merge($dataArray, $data);
+			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,' . $field, $table, sprintf('uid=%d', $uid));
+			if (FALSE === $rows || 0 === count($rows)) {
+				throw new Tx_Fluid_Core_ViewHelper_Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);
 			}
+			$row = array_pop($rows);
+			$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $row);
+			if (0 === count($providers)) {
+				$dataArray = $this->configurationService->convertFlexFormContentToArray($row[$field]);
+			} else {
+				$dataArray = array();
+				foreach ($providers as $provider) {
+					$data = (array) $provider->getFlexFormValues($row);
+					$dataArray = Tx_Flux_Utility_RecursiveArray::merge($dataArray, $data);
+				}
+			}
+			self::$dataCache[$uid.$table.$field] = $dataArray;
 		}
-
-		self::$dataCache[$uid.$table.$field] = $dataArray;
-
 		if (NULL !== $as) {
 			if ($this->templateVariableContainer->exists($as)) {
 				$backupVariable = $this->templateVariableContainer->get($as);
@@ -93,14 +89,11 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 			$this->templateVariableContainer->add($as, $dataArray);
 			$content = $this->renderChildren();
 			$this->templateVariableContainer->remove($as);
-
 			if (TRUE === isset($backupVariable)) {
 				$this->templateVariableContainer->add($as, $backupVariable);
 			}
-
 			return $content;
 		}
-
 		return $dataArray;
 	}
 }

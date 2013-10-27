@@ -32,10 +32,13 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	/**
 	 * @test
 	 */
-	public function canExecuteClearAllCacheCommand() {
+	public function canExecuteClearAllCacheCommandAndPassToProvidersForEveryTcaTable() {
 		$instance = $this->getInstance();
 		$mockedFluxService = $this->getMock('Tx_Flux_Service_FluxService', array('resolveConfigurationProviders'));
-		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array()));
+		$mockedProvider = $this->getMock('Tx_Flux_Provider_Provider', array('clearCacheCommand'));
+		$expectedExecutions = count($GLOBALS['TCA']);
+		$mockedProvider->expects($this->exactly($expectedExecutions))->method('clearCacheCommand')->with('all');
+		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array($mockedProvider)));
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
 		$instance->clearCacheCommand('all');
 	}

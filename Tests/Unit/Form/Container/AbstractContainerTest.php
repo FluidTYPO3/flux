@@ -46,6 +46,21 @@ abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest ext
 	/**
 	 * @test
 	 */
+	public function canUseShorthandLanguageLabel() {
+		$className = $this->getObjectClassName();
+		$instance = $this->getMock($className, array('getExtensionKey', 'getName', 'getRoot'));
+		$instance->expects($this->never())->method('getExtensioKey');
+		$instance->expects($this->once())->method('getRoot')->will($this->returnValue(NULL));
+		$instance->expects($this->once())->method('getName')->will($this->returnValue('form'));
+		$instance->setLabel('LLL:shorthand');
+		$result = $instance->getLabel();
+		$this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xml:flux.form', $result);
+		$this->assertStringEndsWith('shorthand', $result);
+	}
+
+	/**
+	 * @test
+	 */
 	public function returnsFalseIfChildObjectNameDoesNotExist() {
 		$instance = $this->createInstance();
 		$result = $instance->get('doesNotExist');

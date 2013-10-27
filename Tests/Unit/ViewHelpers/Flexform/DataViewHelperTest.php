@@ -111,4 +111,30 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelperTest extends Tx_Flux_ViewHelper
 		$this->executeViewHelper($arguments);
 	}
 
+	/**
+	 * @test
+	 */
+	public function supportsAsArgument() {
+		$arguments = array(
+			'table' => 'tt_content',
+			'field' => 'pi_flexform',
+			'uid' => $this->getTestingRecordUid('tt_content'),
+			'as' => 'test'
+		);
+		$this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments);
+	}
+
+	/**
+	 * @test
+	 */
+	public function supportsAsArgumentAndBacksUpExistingVariable() {
+		$arguments = array(
+			'table' => 'tt_content',
+			'field' => 'pi_flexform',
+			'uid' => $this->getTestingRecordUid('tt_content'),
+			'as' => 'test'
+		);
+		$this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments, array('test' => 'somevar'));
+	}
+
 }

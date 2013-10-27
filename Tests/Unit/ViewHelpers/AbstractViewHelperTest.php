@@ -30,6 +30,23 @@
 abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 
 	/**
+	 * @test
+	 */
+	public function canCreateViewHelperInstance() {
+		$instance = $this->createInstance();
+		$this->assertInstanceOf($this->getViewHelperClassName(), $instance);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canPrepareArguments() {
+		$instance = $this->createInstance();
+		$arguments = $instance->prepareArguments();
+		$this->assertThat($arguments, new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY));
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function getViewHelperClassName() {
@@ -43,6 +60,9 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 	 * @return Tx_Fluid_Core_Parser_SyntaxTree_NodeInterface
 	 */
 	protected function createNode($type, $value) {
+		if ('Boolean' === $type) {
+			$value = $this->createNode('Text', strval($value));
+		}
 		/** @var Tx_Fluid_Core_Parser_SyntaxTree_NodeInterface $node */
 		$className = 'Tx_Fluid_Core_Parser_SyntaxTree_' . $type . 'Node';
 		$node = new $className($value);
@@ -64,6 +84,7 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 			$configurationManager->setContentObject($cObject);
 			$instance->injectConfigurationManager($configurationManager);
 		}
+		$instance->initialize();
 		return $instance;
 	}
 
@@ -81,8 +102,8 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 		$container = $this->objectManager->get('Tx_Fluid_Core_ViewHelper_TemplateVariableContainer');
 		/** @var Tx_Fluid_Core_ViewHelper_ViewHelperVariableContainer $viewHelperContainer */
 		$viewHelperContainer = $this->objectManager->get('Tx_Fluid_Core_ViewHelper_ViewHelperVariableContainer');
-		foreach ($variables as $name => $value) {
-			$container->add($name, $value);
+		if (0 < count($variables)) {
+			Tx_Extbase_Reflection_ObjectAccess::setProperty($container, 'variables', $variables, TRUE);
 		}
 		$node = new Tx_Fluid_Core_Parser_SyntaxTree_ViewHelperNode($instance, $arguments);
 		/** @var Tx_Extbase_MVC_Web_Routing_UriBuilder $uriBuilder */
@@ -133,6 +154,22 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 	 * @return mixed|Tx_Fluid_Core_ViewHelper_AbstractViewHelper
 	 */
 	protected function executeViewHelper($arguments = array(), $variables = array(), $childNode = NULL, $extensionName = NULL, $pluginName = NULL) {
+		$instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
+		$output = $instance->initializeArgumentsAndRender();
+		return $output;
+	}
+
+	/**
+	 * @param string $nodeType
+	 * @param mixed $nodeValue
+	 * @param array $arguments
+	 * @param array $variables
+	 * @param string $extensionName
+	 * @param string $pluginName
+	 * @return mixed|Tx_Fluid_Core_ViewHelper_AbstractViewHelper
+	 */
+	protected function executeViewHelperUsingTagContent($nodeType, $nodeValue, $arguments = array(), $variables = array(), $extensionName = NULL, $pluginName = NULL) {
+		$childNode = $this->createNode($nodeType, $nodeValue);
 		$instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
 		$output = $instance->initializeArgumentsAndRender();
 		return $output;

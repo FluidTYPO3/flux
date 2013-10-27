@@ -64,4 +64,21 @@ class Tx_Flux_Backend_AreaListItemsProcessorTest extends Tx_Flux_Tests_AbstractF
 
 	}
 
+	/**
+	 * @test
+	 */
+	public function callsGetContentAreasDefinedInElementIfUrlContainsParent() {
+		$class = substr(get_class($this), 0, -4);
+		$item1 = array('removable', 'removable');
+		$item2 = array('test', 'test');
+		$instance = $this->getMock($class, array('getContentAreasDefinedInContentElement', 'getUrlRequestedArea', 'getUrlRequestedParent'));
+		$instance->expects($this->once())->method('getUrlRequestedArea')->will($this->returnValue('test'));
+		$instance->expects($this->once())->method('getUrlRequestedParent')->will($this->returnValue(1));
+		$instance->expects($this->once())->method('getContentAreasDefinedInContentElement')->will($this->returnValue(array($item1, $item2)));
+		$parameters = array('items' => array());
+		$instance->itemsProcFunc($parameters);
+		$this->assertEquals($item2, reset($parameters['items']));
+		$this->assertEquals(1, count($parameters['items']));
+	}
+
 }

@@ -55,8 +55,8 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * @return void
 	 */
 	public function itemsProcFunc(&$params) {
-		$urlRequestedArea = $_GET['defVals']['tt_content']['tx_flux_column'];
-		$urlRequestedParent = $urlRequestedValue = $_GET['defVals']['tt_content']['tx_flux_parent'];
+		$urlRequestedArea = $this->getUrlRequestedArea();
+		$urlRequestedParent = $urlRequestedValue = $this->getUrlRequestedParent();
 		if ($urlRequestedParent) {
 			$parentUid = $urlRequestedParent;
 		} else {
@@ -83,21 +83,42 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * @return array
 	 */
 	public function getContentAreasDefinedInContentElement($uid) {
-		$columns = array();
-		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'");
-		if (0 === count($rows)) {
-			return $columns;
-		}
-		$record = array_pop($rows);
-		if (NULL === $record) {
-			return $columns;
-		}
+		$record = $this->getContentRecordByUid($uid);
 		/** @var $provider Tx_Flux_Provider_ProviderInterface */
 		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
-		if (NULL === $provider) {
-			return $columns;
-		}
-		return $this->getGridFromConfigurationProviderAndRecord($provider, $record);
+		return NULL === $provider ? array() : $this->getGridFromConfigurationProviderAndRecord($provider, $record);
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getUrlRequestedArea() {
+		return $_GET['defVals']['tt_content']['tx_flux_column'];
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getUrlRequestedParent() {
+		return $_GET['defVals']['tt_content']['tx_flux_parent'];
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return array
+	 */
+	protected function getContentRecordByUid($uid) {
+		$record = $this->loadContentRecordFromDatabase($uid);
+		return (array) $record;
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return array|FALSE
+	 */
+	protected function loadContentRecordFromDatabase($uid) {
+		$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', "uid = '" . $uid . "'");
+		return $record;
 	}
 
 	/**

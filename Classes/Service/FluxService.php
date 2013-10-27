@@ -36,12 +36,12 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	/**
 	 * @var array
 	 */
-	private static $sentDebugMessages = array();
+	protected static $sentDebugMessages = array();
 
 	/**
 	 * @var array
 	 */
-	private static $friendlySeverities = array(
+	protected static $friendlySeverities = array(
 		t3lib_div::SYSLOG_SEVERITY_INFO,
 		t3lib_div::SYSLOG_SEVERITY_NOTICE
 	);
@@ -49,7 +49,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	/**
 	 * @var array
 	 */
-	private static $cache = array();
+	protected static $cache = array();
 
 	/**
 	 * @var string
@@ -179,15 +179,14 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		try {
 			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
 			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
-			$form = $exposedView->getForm($section, $formName);
+			self::$cache[$cacheKey] = $exposedView->getForm($section, $formName);
 		} catch (Exception $error) {
 			$this->debug($error);
 			/** @var Tx_Flux_Form $form */
-			$form = $this->objectManager->get('Tx_Flux_Form');
-			$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->renderField'));
-			self::$cache[$cacheKey] = $form;
+			self::$cache[$cacheKey] = $this->objectManager->get('Tx_Flux_Form');
+			self::$cache[$cacheKey]->add(self::$cache[$cacheKey]->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->renderField'));
 		}
-		return $form;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -377,7 +376,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			return array();
 		}
 		$providerConfigurations = t3lib_div::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
-		$providers = array();
+		self::$cache[$cacheKey] = array();
 		foreach ($providerConfigurations as $name => $providerSettings) {
 			if (TRUE === isset($providerSettings['className']) && TRUE === class_exists($providerSettings['className'])) {
 				$className = $providerSettings['className'];
@@ -388,10 +387,9 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			$provider = $this->objectManager->get($className);
 			$provider->setName($name);
 			$provider->loadSettings($providerSettings);
-			$providers[$name] = $provider;
+			self::$cache[$cacheKey][$name] = $provider;
 		}
-		self::$cache[$cacheKey] = $providers;
-		return $providers;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -600,6 +598,13 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		t3lib_FlashMessageQueue::addMessage($flashMessage);
 		self::$sentDebugMessages[$hash] = TRUE;
 		return NULL;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function flushCache() {
+		self::$cache = array();
 	}
 
 }

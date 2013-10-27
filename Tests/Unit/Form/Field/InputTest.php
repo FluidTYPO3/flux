@@ -44,4 +44,23 @@ class Tx_Flux_Form_Field_InputTest extends Tx_Flux_Tests_Functional_Form_Field_A
 		'requestUpdate' => TRUE,
 	);
 
+	/**
+	 * @test
+	 */
+	public function canUseRequiredProperty() {
+		$instance = $this->canChainAllChainableSetters();
+		$instance->setRequired(TRUE);
+		$this->assertEquals('trim,int,required', $instance->getValidate());
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseRequiredPropertyThroughValidateProperty() {
+		$instance = $this->canChainAllChainableSetters();
+		$instance->setValidate(NULL);
+		$instance->setRequired(TRUE);
+		$this->assertEquals('required', $instance->getValidate());
+	}
+
 }

@@ -70,12 +70,12 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	/**
 	 * @var array
 	 */
-	private $setup = array();
+	protected $setup = array();
 
 	/**
 	 * @var array
 	 */
-	private $data = array();
+	protected $data = array();
 
 	/**
 	 * @param Tx_Flux_Service_FluxService $configurationService
@@ -206,12 +206,11 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature) {
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 		$potentialControllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
-		if ($extensionName === $this->extensionName) {
-			return $this->view->render();
-		} elseif (TRUE === class_exists($potentialControllerClassName)) {
-			return $this->callSubControllerAction($extensionName, $potentialControllerClassName, $actionName, $pluginSignature);
-		}
-		return $this->view->render();
+		$foreignControllerClass = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
+		$isForeign = $extensionName !== $this->extensionName;
+		$isValidController = class_exists($potentialControllerClassName);
+		$shouldRelay = TRUE === $isForeign && TRUE === $isValidController;
+		return TRUE === $shouldRelay ? $this->callSubControllerAction($extensionName, $foreignControllerClass, $actionName, $pluginSignature) : $this->view->render();
 	}
 
 	/**
