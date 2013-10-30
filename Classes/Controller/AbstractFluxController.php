@@ -205,22 +205,24 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 		if ($extensionName === $this->extensionName) {
 			return $this->view->render();
 		} elseif (TRUE === class_exists($potentialControllerClassName)) {
-			return $this->callSubControllerAction($potentialControllerClassName, $actionName, $pluginSignature);
+			return $this->callSubControllerAction($extensionName, $potentialControllerClassName, $actionName, $pluginSignature);
 		}
 		return $this->view->render();
 	}
 
 	/**
+	 * @param string $extensionName
 	 * @param string $controllerClassName
 	 * @param string $controllerActionName
 	 * @param string $pluginSignature
 	 * @return string
 	 */
-	protected function callSubControllerAction($controllerClassName, $controllerActionName, $pluginSignature) {
+	protected function callSubControllerAction($extensionName, $controllerClassName, $controllerActionName, $pluginSignature) {
 		/** @var $response Tx_Extbase_MVC_Web_Response */
 		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
 		$arguments = (array) (TRUE === is_array(t3lib_div::_POST($pluginSignature)) ? t3lib_div::_POST($pluginSignature) : t3lib_div::_GET($pluginSignature));
 		$potentialControllerInstance = $this->objectManager->get($controllerClassName);
+		$this->request->setControllerExtensionName($extensionName);
 		$this->request->setControllerActionName($controllerActionName);
 		$this->request->setArguments($arguments);
 		$potentialControllerInstance->processRequest($this->request, $response);
