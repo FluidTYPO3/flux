@@ -34,4 +34,9 @@ interface Tx_Flux_Form_FieldContainerInterface extends Tx_Flux_Form_FormInterfac
 	 */
 	public function getFields();
 
+	/**
+	 * @return string
+	 */
+	public function getTransform();
+
 }

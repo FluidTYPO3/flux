@@ -35,6 +35,11 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	protected $children;
 
 	/**
+	 * @var string
+	 */
+	protected $transform;
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
@@ -179,5 +184,21 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 */
 	public function hasChildren() {
 		return 0 < $this->children->count();
+	}
+
+	/**
+	 * @param string $transform
+	 * @return Tx_Flux_Form_FieldInterface
+	 */
+	public function setTransform($transform) {
+		$this->transform = $transform;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTransform() {
+		return $this->transform;
 	}
 }
