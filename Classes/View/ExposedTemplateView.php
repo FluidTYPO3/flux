@@ -166,9 +166,6 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 		$extensionKey = $this->controllerContext->getRequest()->getControllerExtensionKey();
 		$configurations = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 		$pathOverlayConfigurations = $this->buildPathOverlayConfigurations($configurations);
-		$templateRootPath = $backupTemplateRootPath = $this->getTemplateRootPath();
-		$partialRootPath = $backupPartialRootPath = $this->getPartialRootPath();
-		$layoutRootPath = $backupLayoutRootPath = $this->getLayoutRootPath();
 		$paths = parent::expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional);
 		foreach ($pathOverlayConfigurations as $overlayPaths) {
 			if (FALSE === empty($overlayPaths['templateRootPath'])) {
