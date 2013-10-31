@@ -135,7 +135,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	public function createField($type, $name, $label = NULL) {
 		/** @var Tx_Flux_Form_FieldInterface $component */
-		$component = $this->objectManager->get('Tx_Flux_Form_Field_' . $type);
+		$component = $this->objectManager->get(TRUE === class_exists('Tx_Flux_Form_Field_' . $type) ? 'Tx_Flux_Form_Field_' . $type : $type);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -151,7 +151,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	public function createContainer($type, $name, $label = NULL) {
 		/** @var Tx_Flux_Form_ContainerInterface $component */
-		$component = $this->objectManager->get('Tx_Flux_Form_Container_' . $type);
+		$component = $this->objectManager->get(TRUE === class_exists('Tx_Flux_Form_Container_' . $type) ? 'Tx_Flux_Form_Container_' . $type : $type);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -167,7 +167,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	public function createWizard($type, $name, $label = NULL) {
 		/** @var Tx_Flux_Form_WizardInterface $component */
-		$component = $this->objectManager->get('Tx_Flux_Form_Wizard_' . $type);
+		$component = $this->objectManager->get(TRUE === class_exists('Tx_Flux_Form_Wizard_' . $type) ? 'Tx_Flux_Form_Wizard_' . $type : $type);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
