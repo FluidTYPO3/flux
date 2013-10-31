@@ -45,6 +45,7 @@ class Tx_Flux_Form_Field_UserFunction extends Tx_Flux_Form_AbstractFormField imp
 	public function buildConfiguration() {
 		$configuration = $this->prepareConfiguration('user');
 		$configuration['userFunc'] = $this->getFunction();
+		$configuration['arguments'] = $this->getArguments();
 		return $configuration;
 	}
 
