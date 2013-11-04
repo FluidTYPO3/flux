@@ -153,7 +153,7 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 				return $templatePathAndFilename;
 			}
 		}
-		return $this->templatePathAndFilename;
+		return parent::getTemplatePathAndFilename($actionName);
 	}
 
 	/**
