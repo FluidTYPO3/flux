@@ -392,24 +392,22 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 */
 	public function getTemplatePaths(array $row) {
 		$paths = $this->templatePaths;
+		$extensionKey = $this->getExtensionKey($row);
+		if (FALSE !== strpos($extensionKey, '.')) {
+			$extensionKey = strtolower(array_pop(explode('.', $extensionKey)));
+		}
 		if (FALSE === is_array($paths)) {
-			$extensionKey = $this->getExtensionKey($row);
 			if (FALSE === empty($extensionKey) && TRUE === t3lib_extMgm::isLoaded($extensionKey)) {
 				$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 			}
 		}
 
-		if (TRUE === is_array($paths)) {
-			$paths = Tx_Flux_Utility_Path::translatePath($paths);
-		}
-
 		if (NULL !== $paths && FALSE === is_array($paths)) {
-			$this->configurationService->message('Translated paths may not be mixed.', t3lib_div::SYSLOG_SEVERITY_WARNING);
+			$this->configurationService->message('Template paths resolved for "' . $extensionKey . '" was not an array.', t3lib_div::SYSLOG_SEVERITY_WARNING);
 			$paths = NULL;
 		}
 
 		if (NULL === $paths) {
-			$extensionKey = $this->getExtensionKey($row);
 			if (FALSE === empty($extensionKey) && TRUE === t3lib_extMgm::isLoaded($extensionKey)) {
 				$paths = array(
 					t3lib_extMgm::extPath($extensionKey, 'Resources/Private/Templates/'),
@@ -419,6 +417,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			} else {
 				$paths = array();
 			}
+		}
+
+		if (TRUE === is_array($paths)) {
+			$paths = Tx_Flux_Utility_Path::translatePath($paths);
 		}
 
 		return $paths;
