@@ -267,7 +267,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	protected function writeLanguageLabel($filePrefix, $labelIdentifier, $id) {
 		if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles']) {
-			Tx_Flux_Utility_LanguageFile::writeLanguageLabel($filePrefix, $labelIdentifier, $id);
+			$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
 		}
 	}
 

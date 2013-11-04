@@ -24,14 +24,18 @@
  ***************************************************************/
 
 /**
- * Language File Utility
+ * Language File Service
  *
  * @author Claus Due, Wildside A/S
  * @package Flux
- * @subpackage Utility
+ * @subpackage Service
  */
-class Tx_Flux_Utility_LanguageFile {
+class Tx_Flux_Service_LanguageFileService {
 
+	/**
+	 * @var Tx_Flux_Service_FluxService
+	 */
+	protected $configurationService;
 	/**
 	 * @var Tx_Flux_Service_FluxService
 	 */
@@ -67,9 +71,17 @@ XML;
 XML;
 
 	/**
+	 * @param Tx_Flux_Service_FluxService $configurationService
 	 * @return void
 	 */
-	public static function reset() {
+	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function reset() {
 		self::$documents = array();
 	}
 
@@ -78,15 +90,15 @@ XML;
 	 * @param string $identifier
 	 * @param string $id
 	 */
-	public static function writeLanguageLabel($file, $identifier, $id) {
+	public function writeLanguageLabel($file, $identifier, $id) {
 		$pattern = '/[^a-z0-9_]+/i';
 		$patternIdentifier = '/[^a-z0-9\._]+/i';
 		if (preg_match($pattern, $id) || preg_match($patternIdentifier, $identifier)) {
-			self::message('Cowardly refusing to create an invalid LLL reference called "' . $identifier . '" ' .
+			$this->message('Cowardly refusing to create an invalid LLL reference called "' . $identifier . '" ' .
 				' in a Flux form called "' . $id . '" - one or both contains invalid characters.');
 			return;
 		}
-		$file = substr($file, 4);
+		$file = 0 === strpos($file, 'LLL:') ? substr($file, 4) : $file;
 		$filePathAndFilename = t3lib_div::getFileAbsFileName($file);
 		$extension = pathinfo($filePathAndFilename, PATHINFO_EXTENSION);
 		if (FALSE === in_array($extension, self::$validExtensions)) {
@@ -94,18 +106,18 @@ XML;
 		}
 		$buildMethodName = 'buildSourceFor' . ucfirst($extension) . 'File';
 		$kickstartMethodName = 'kickstart' . ucfirst($extension) . 'File';
-		$languages = self::getLanguageKeys();
+		$languages = $this->getLanguageKeys();
 		$exists = call_user_func_array(array(self, $kickstartMethodName), array($filePathAndFilename, $languages));
 		if (TRUE === $exists) {
 			$source = call_user_func_array(array(self, $buildMethodName), array($filePathAndFilename, $identifier));
 			if (TRUE === $source) {
-				self::message('Wrote "LLL:' . $file . ':' . $identifier . '" - or label already exists');
-				return;
-			} elseif (FALSE === $source) {
-				self::message('Skipping LLL file saving due to an error while generating the XML.', t3lib_div::SYSLOG_SEVERITY_FATAL);
-			} else {
-				self::message('Wrote "LLL:' . $file . ':' . $identifier . '"');
-				file_put_contents($filePathAndFilename, $source);
+				$this->message('Wrote "LLL:' . $file . ':' . $identifier . '" - or label already exists');
+			} elseif (TRUE === is_string($source)) {
+				if (TRUE === $this->writeFile($filePathAndFilename, $source)) {
+					$this->message('Wrote "LLL:' . $file . ':' . $identifier . '"');
+				} else {
+					$this->message('Unable to write LLL:' . $file . ':' . $identifier . '" - permission problem?', t3lib_div::SYSLOG_SEVERITY_FATAL);
+				}
 			}
 		}
 	}
@@ -115,9 +127,9 @@ XML;
 	 * @param string $identifier
 	 * @return string|boolean
 	 */
-	public static function buildSourceForXmlFile($filePathAndFilename, $identifier) {
-		$filePathAndFilename = self::sanitizeFilePathAndFilename($filePathAndFilename, 'xml');
-		$dom = self::prepareDomDocument($filePathAndFilename);
+	public function buildSourceForXmlFile($filePathAndFilename, $identifier) {
+		$filePathAndFilename = $this->sanitizeFilePathAndFilename($filePathAndFilename, 'xml');
+		$dom = $this->prepareDomDocument($filePathAndFilename);
 		foreach ($dom->getElementsByTagName('languageKey') as $languageNode) {
 			$nodes = array();
 			foreach ($languageNode->getElementsByTagName('label') as $labelNode) {
@@ -146,12 +158,12 @@ XML;
 	 * @param array $languages
 	 * @return boolean
 	 */
-	public static function kickstartXmlFile($filePathAndFilename, $languages = array('default')) {
-		$filePathAndFilename = self::sanitizeFilePathAndFilename($filePathAndFilename, 'xml');
+	public function kickstartXmlFile($filePathAndFilename, $languages = array('default')) {
+		$filePathAndFilename = $this->sanitizeFilePathAndFilename($filePathAndFilename, 'xml');
 		if (FALSE === file_exists($filePathAndFilename)) {
-			t3lib_div::writeFile($filePathAndFilename, self::TEMPLATE_XML);
+			$this->writeFile($filePathAndFilename, self::TEMPLATE_XML);
 		}
-		$dom = self::prepareDomDocument($filePathAndFilename);
+		$dom = $this->prepareDomDocument($filePathAndFilename);
 		$dom->getElementsByTagName('description')->item(0)->nodeValue = 'Labels for languages: ' . implode(', ', $languages);
 		$dataNode = $dom->getElementsByTagName('data')->item(0);
 		if (NULL === $dataNode) {
@@ -168,7 +180,7 @@ XML;
 			}
 		}
 		foreach ($missingLanguages as $missingLanguageKey) {
-			self::createXmlLanguageNode($dom, $dataNode, $missingLanguageKey);
+			$this->createXmlLanguageNode($dom, $dataNode, $missingLanguageKey);
 		}
 		self::$documents[$filePathAndFilename] = $dom;
 		return file_exists($filePathAndFilename);
@@ -180,7 +192,7 @@ XML;
 	 * @param string $languageKey
 	 * @return void
 	 */
-	protected static function createXmlLanguageNode(DomDocument $dom, DomNode $parent, $languageKey) {
+	protected function createXmlLanguageNode(DomDocument $dom, DomNode $parent, $languageKey) {
 		$languageNode = $dom->createElement('languageKey');
 		$indexAttribute = $dom->createAttribute('index');
 		$indexAttribute->nodeValue = $languageKey;
@@ -194,35 +206,35 @@ XML;
 	/**
 	 * @param string $filePathAndFilename
 	 * @param string $identifier
-	 * @return string|NULL
+	 * @return string|boolean
 	 */
-	public static function buildSourceForXlfFile($filePathAndFilename, $identifier) {
-		$filePathAndFilename = self::sanitizeFilePathAndFilename($filePathAndFilename, 'xlf');
-		$languages = self::getLanguageKeys();
+	public function buildSourceForXlfFile($filePathAndFilename, $identifier) {
+		$filePathAndFilename = $this->sanitizeFilePathAndFilename($filePathAndFilename, 'xlf');
+		$languages = $this->getLanguageKeys();
 		foreach ($languages as $language) {
 			$hasIdentifier = FALSE;
-			$translationPathAndFilename = self::localizeXlfFilePathAndFilename($filePathAndFilename, $language);
-			$dom = self::prepareDomDocument($translationPathAndFilename);
+			$translationPathAndFilename = $this->localizeXlfFilePathAndFilename($filePathAndFilename, $language);
+			$dom = $this->prepareDomDocument($translationPathAndFilename);
 			$dateNode = $dom->createAttribute('date');
 			$dateNode->nodeValue = date('c');
 			$dom->getElementsByTagName('file')->item(0)->appendChild($dateNode);
 			$body = $dom->getElementsByTagName('body')->item(0);
 			foreach ($dom->getElementsByTagName('trans-unit') as $node) {
 				if ($node->getAttribute('id') === $identifier) {
-					$hasIdentifier = TRUE;
-					break;
+					return TRUE;
 				}
 			}
 			if (FALSE === $hasIdentifier) {
-				self::createXlfLanguageNode($dom, $body, $identifier);
+				$this->createXlfLanguageNode($dom, $body, $identifier);
 			}
 			$xml = $dom->saveXML();
-			if (FALSE == t3lib_div::writeFile($translationPathAndFilename, $xml)) {
-				self::message('Unable to write to file "' . $translationPathAndFilename . '" - permission issue?', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			if (FALSE === $this->writeFile($translationPathAndFilename, $xml)) {
+				$this->message('Unable to write to file "' . $translationPathAndFilename . '" - permission issue?', t3lib_div::SYSLOG_SEVERITY_FATAL);
+				return FALSE;
 			}
 			self::$documents[$translationPathAndFilename] = $dom;
 		}
-		return TRUE;
+		return $xml;
 	}
 
 	/**
@@ -231,7 +243,7 @@ XML;
 	 * @param string $identifier
 	 * @return void
 	 */
-	protected static function createXlfLanguageNode(DomDocument $dom, DomNode $parent, $identifier) {
+	protected function createXlfLanguageNode(DomDocument $dom, DomNode $parent, $identifier) {
 		$labelNode = $dom->createElement('trans-unit');
 		$idAttribute = $dom->createAttribute('id');
 		$idAttribute->nodeValue = $identifier;
@@ -250,25 +262,25 @@ XML;
 	 * @param array $languageOrLanguages
 	 * @return boolean|array
 	 */
-	public static function kickstartXlfFile($filePathAndFilename, $languageOrLanguages = array('default')) {
+	public function kickstartXlfFile($filePathAndFilename, $languageOrLanguages = array('default')) {
 		if (TRUE === is_array($languageOrLanguages)) {
 			$results = array();
 			foreach ($languageOrLanguages as $language) {
-				$results[$language] = self::kickstartXlfFile($filePathAndFilename, $language);
+				$results[$language] = $this->kickstartXlfFile($filePathAndFilename, $language);
 			}
 			return $results;
 		}
-		$filePathAndFilename = self::sanitizeFilePathAndFilename($filePathAndFilename, 'xlf');
-		$filePathAndFilename = self::localizeXlfFilePathAndFilename($filePathAndFilename, $languageOrLanguages);
+		$filePathAndFilename = $this->sanitizeFilePathAndFilename($filePathAndFilename, 'xlf');
+		$filePathAndFilename = $this->localizeXlfFilePathAndFilename($filePathAndFilename, $languageOrLanguages);
 		if (FALSE === file_exists($filePathAndFilename)) {
-			t3lib_div::writeFile($filePathAndFilename, self::TEMPLATE_XLF);
+			$this->writeFile($filePathAndFilename, self::TEMPLATE_XLF);
 		}
 		if (TRUE === isset(self::$documents[$filePathAndFilename])) {
 			return self::$documents[$filePathAndFilename];
 		}
 		$truncated = substr($filePathAndFilename, strlen(PATH_site) + 1);
 		$truncatedParts = explode('/', $truncated);
-		$dom = self::prepareDomDocument($filePathAndFilename);
+		$dom = $this->prepareDomDocument($filePathAndFilename);
 		$fileNode = $dom->getElementsByTagName('file')->item(0);
 		$productNode = $dom->createAttribute('product-name');
 		$productNode->nodeValue = $truncatedParts[2];
@@ -282,7 +294,7 @@ XML;
 	 * @param string $language
 	 * @return mixed
 	 */
-	protected static function localizeXlfFilePathAndFilename($filePathAndFilename, $language) {
+	protected function localizeXlfFilePathAndFilename($filePathAndFilename, $language) {
 		$basename = pathinfo($filePathAndFilename, PATHINFO_FILENAME);
 		if ('default' !== $language) {
 			$filePathAndFilename = str_replace($basename, $language . '.' . $basename, $filePathAndFilename);
@@ -295,7 +307,7 @@ XML;
 	 * @param string $extension
 	 * @return string
 	 */
-	protected static function sanitizeFilePathAndFilename($filePathAndFilename, $extension) {
+	protected function sanitizeFilePathAndFilename($filePathAndFilename, $extension) {
 		$detectedExtension = pathinfo($filePathAndFilename, PATHINFO_EXTENSION);
 		if ($extension !== $detectedExtension) {
 			$filePathAndFilename .= '.' . $extension;
@@ -307,14 +319,15 @@ XML;
 	 * @param $filePathAndFilename
 	 * @return DomDocument
 	 */
-	protected static function prepareDomDocument($filePathAndFilename) {
+	protected function prepareDomDocument($filePathAndFilename) {
 		if (TRUE === isset(self::$documents[$filePathAndFilename])) {
 			return self::$documents[$filePathAndFilename];
 		}
+		$contents = $this->readFile($filePathAndFilename);
 		$dom = new DOMDocument('1.0', 'utf-8');
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->formatOutput = TRUE;
-		$dom->load($filePathAndFilename);
+		$dom->loadXML($contents);
 		self::$documents[$filePathAndFilename] = $dom;
 		return $dom;
 	}
@@ -322,14 +335,8 @@ XML;
 	/**
 	 * @return array
 	 */
-	protected static function getLanguageKeys() {
-		$cObj = new tslib_cObj();
-		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 0, 0);
-		$GLOBALS['TSFE']->sys_page = new t3lib_pageSelect();
-		$select = 'flag';
-		$from = 'sys_language';
-		$where = '1=1' . $cObj->enableFields('sys_language');
-		$sysLanguages = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($select, $from, $where);
+	protected function getLanguageKeys() {
+		$sysLanguages = $this->loadLanguageRecordsFromDatabase();
 		$languageKeys = array('default');
 		foreach ($sysLanguages as $language) {
 			array_push($languageKeys, $language['flag']);
@@ -338,14 +345,17 @@ XML;
 	}
 
 	/**
-	 * @return Tx_Flux_Service_FluxService
+	 * @return array
 	 */
-	protected static function getServiceInstance() {
-		if (NULL === self::$service) {
-			$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-			self::$service = $objectManager->get('Tx_Flux_Service_FluxService');
-		}
-		return self::$service;
+	protected function loadLanguageRecordsFromDatabase() {
+		$cObj = new tslib_cObj();
+		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 0, 0);
+		$GLOBALS['TSFE']->sys_page = new t3lib_pageSelect();
+		$select = 'flag';
+		$from = 'sys_language';
+		$where = '1=1' . $cObj->enableFields('sys_language');
+		$sysLanguages = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($select, $from, $where);
+		return (array) $sysLanguages;
 	}
 
 	/**
@@ -353,11 +363,27 @@ XML;
 	 * @param integer $severity
 	 * @return void
 	 */
-	protected static function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_INFO) {
-		if (FALSE === isset($GLOBALS['BE_USER'])) {
-			return;
+	protected function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_INFO) {
+		if (TRUE === isset($GLOBALS['BE_USER'])) {
+			$this->configurationService->message($message, $severity, 'Flux Language File Utility');
 		}
-		self::getServiceInstance()->message($message, $severity, 'Flux Language File Utility');
+	}
+
+	/**
+	 * @param string $filePathAndFilename
+	 * @param string $content
+	 * @return boolean
+	 */
+	protected function writeFile($filePathAndFilename, $content) {
+		return t3lib_div::writeFile($filePathAndFilename, $content);
+	}
+
+	/**
+	 * @param string $filePathAndFilename
+	 * @return string
+	 */
+	protected function readFile($filePathAndFilename) {
+		return file_get_contents($filePathAndFilename);
 	}
 
 }

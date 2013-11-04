@@ -81,10 +81,10 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 		$label = $instance->getLabel();
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = 1;
-		Tx_Flux_Utility_LanguageFile::reset();
+		$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->reset();
 		// note: double call is not an error - designed to trigger caches and assumes no errors happens during that phase
 		$this->callInaccessibleMethod($instance, 'writeLanguageLabel', $languageFile, array_pop(explode(':', $label)), $id);
-		Tx_Flux_Utility_LanguageFile::reset();
+		$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->reset();
 		$this->callInaccessibleMethod($instance, 'writeLanguageLabel', $languageFile, array_pop(explode(':', $label)), $id);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = $backup;
 		$this->assertNotEmpty($label);
