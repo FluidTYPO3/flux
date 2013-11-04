@@ -232,7 +232,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 */
 	public function getViewConfigurationForExtensionName($extensionName) {
 		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionName);
-		if (FALSE === is_array($configuration) || 0 === count($configuration)) {
+		if (FALSE === is_array($configuration) || 0 === count($configuration) || TRUE === empty($configuration['templateRootPath'])) {
 			$configuration = array(
 				'templateRootPath' => 'EXT:' . $extensionName . '/Resources/Private/Templates',
 				'partialRootPath' => 'EXT:' . $extensionName . '/Resources/Private/Partials',
