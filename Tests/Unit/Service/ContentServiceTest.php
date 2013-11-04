@@ -341,6 +341,98 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 	}
 
 	/**
+	 * @test
+	 */
+	public function pasteAfterAsCopyRelativeToRecord() {
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+		$mock = $this->createMock($methods);
+		$command = 'copy';
+		$row = array(
+			'uid' => 1
+		);
+		$copiedRow = array(
+			'uid' => 3,
+			'sorting' => 0,
+			'pid' => 1,
+			'tx_flux_column' => '',
+			'tx_flux_parent' => ''
+		);
+		$parameters = array(
+			1,
+			-2
+		);
+		$tceMain = new t3lib_TCEmain();
+		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
+		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($copiedRow['uid'])->will($this->returnValue($copiedRow));
+		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+	}
+
+	/**
+	 * @test
+	 */
+	public function pasteAfterAsReferenceRelativeToRecord() {
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+		$mock = $this->createMock($methods);
+		$command = 'copy';
+		$row = array(
+			'uid' => 1
+		);
+		$copiedRow = array(
+			'uid' => 3,
+			'sorting' => 0,
+			'pid' => 1,
+			'tx_flux_column' => '',
+			'tx_flux_parent' => ''
+		);
+		$parameters = array(
+			1,
+			'1-reference-2-2-0'
+		);
+		$tceMain = new t3lib_TCEmain();
+		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
+		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($copiedRow['uid'])->will($this->returnValue($copiedRow));
+		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+	}
+
+	/**
+	 * @test
+	 */
+	public function pasteAfterAsMoveRelativeToRecord() {
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+		$mock = $this->createMock($methods);
+		$command = 'move';
+		$row = array(
+			'uid' => 1
+		);
+		$parameters = array(
+			1,
+			1,
+		);
+		$tceMain = new t3lib_TCEmain();
+		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($row));
+		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+	}
+
+	/**
+	 * @test
+	 */
+	public function pasteAfterAsMoveIntoContentArea() {
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+		$mock = $this->createMock($methods);
+		$command = 'move';
+		$row = array(
+			'uid' => 1
+		);
+		$parameters = array(
+			1,
+			'1-move-2-2-area-1',
+		);
+		$tceMain = new t3lib_TCEmain();
+		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($row));
+		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+	}
+
+	/**
 	 * @param array $backtrace
 	 * @return array
 	 */

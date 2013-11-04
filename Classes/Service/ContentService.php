@@ -80,7 +80,7 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
 			$relativeUid = 0 - $relativeUid;
 		} else {
-			$relativeUid = $parameters[1];
+			list ($pid, $relativeUid) = $parameters;
 		}
 		if ($command === 'copy') {
 			$copiedUid = $tceMain->copyMappingArray['tt_content'][$id];
@@ -93,24 +93,20 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 		} else {
 			$record = $this->loadRecordFromDatabase($id);
 		}
-		if (0 > $relativeUid) {
+		if (FALSE === empty($possibleArea)) {
+			$record['tx_flux_parent'] = $parentUid;
+			$record['tx_flux_column'] = $possibleArea;
+			$record['colPos'] = -42;
+		} elseif (0 > $relativeUid) {
 			$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid));
 			$record['sorting'] = $relativeRecord['sorting'] + 128;
 			$record['pid'] = $relativeRecord['pid'];
 			$record['colPos'] = $relativeRecord['colPos'];
 			$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
 			$record['tx_flux_parent'] = $relativeRecord['tx_flux_parent'];
-		} elseif (FALSE === empty($possibleArea)) {
-			$record['tx_flux_parent'] = $parentUid;
-			$record['tx_flux_column'] = $possibleArea;
-			$record['colPos'] = -42;
-		} else {
+		} elseif (0 < $relativeUid) {
 			$record['sorting'] = 0;
-			if (0 < $pid) {
-				$record['pid'] = $pid;
-			} else {
-				$record['pid'] = $relativeUid;
-			}
+			$record['pid'] = $relativeUid;
 			$record['tx_flux_column'] = '';
 			$record['tx_flux_parent'] = '';
 		}
@@ -118,6 +114,9 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 			$record['colPos'] = $possibleColPos;
 		}
 		$row = $record;
+		if (TRUE === isset($pid)) {
+			$record['pid'] = $pid;
+		}
 		$this->updateRecordInDatabase($record, $id);
 	}
 
