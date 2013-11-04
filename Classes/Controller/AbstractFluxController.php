@@ -154,11 +154,15 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	protected function initializeViewObject() {
 		$row = $this->getRecord();
 		$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
-		$extensionKey = $this->provider->getExtensionKey($row);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = $this->provider->getExtensionKey($row);
+		$extensionKey = t3lib_div::underscoredToUpperCamelCase(FALSE === strpos($extensionName, '.') ? $extensionName : array_pop(explode('.', $extensionName)));
 		$controller = $this->request->getControllerName();
 		$this->view = $this->configurationService->getPreparedExposedTemplateView($extensionName, $controller, $this->setup, $this->data);
-		$this->view->setTemplatePathAndFilename($templatePathAndFilename);
+		$this->request->setControllerExtensionName($extensionKey);
+		$this->view->setControllerContext($this->controllerContext);
+		if (FALSE === empty($templatePathAndFilename)) {
+			$this->view->setTemplatePathAndFilename($templatePathAndFilename);
+		}
 	}
 
 	/**
