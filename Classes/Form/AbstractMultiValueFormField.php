@@ -92,9 +92,11 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 
 	/**
 	 * @param boolean $multiple
+	 * @return Tx_Flux_Form_MultiValueFieldInterface
 	 */
 	public function setMultiple($multiple) {
 		$this->multiple = $multiple;
+		return $this;
 	}
 
 	/**
