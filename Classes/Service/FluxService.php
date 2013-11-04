@@ -482,9 +482,12 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 */
 	private function getObjectOfType($dataType, $uids) {
 		$identifiers = TRUE === is_array($uids) ? $uids : t3lib_div::trimExplode(',', trim($uids, ','), TRUE);
+		$identifiers = array_map('intval', $identifiers);
+		$isModel = (FALSE !== strpos($dataType, '_Domain_Model_') || FALSE !== strpos($dataType, '\\Domain\\Model\\'));
+		list ($container, $object) = FALSE !== strpos($dataType, '<') ? explode('<', trim($dataType, '>')) : array(NULL, $dataType);
+		$repositoryClassName = str_replace('_Domain_Model_', '_Domain_Repository_', str_replace('\\Domain\\Model\\', '\\Domain\\Repository\\', $object)) . 'Repository';
 		// Fast decisions
-		if (FALSE !== strpos($dataType, '_Domain_Model_') && FALSE === strpos($dataType, '<')) {
-			$repositoryClassName = str_replace('_Model_', '_Repository_', $dataType) . 'Repository';
+		if (TRUE === $isModel && NULL === $container) {
 			if (TRUE === class_exists($repositoryClassName)) {
 				$repository = $this->objectManager->get($repositoryClassName);
 				$uid = array_pop($identifiers);
@@ -495,15 +498,17 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			return $this->objectManager->get($dataType, $uids);
 		}
 		// slower decisions with support for type-hinted collection objects
-		list ($container, $object) = explode('<', trim($dataType, '>'));
 		if ($container && $object) {
-			if (FALSE !== strpos($object, '_Domain_Model_') && 0 < count($identifiers)) {
-				$repositoryClassName = str_replace('_Model_', '_Repository_', $object) . 'Repository';
+			if (TRUE === $isModel && TRUE === class_exists($repositoryClassName) && 0 < count($identifiers)) {
 				/** @var $repository Tx_Extbase_Persistence_Repository */
 				$repository = $this->objectManager->get($repositoryClassName);
-				$query = $repository->createQuery();
-				$query->matching($query->in('uid', $identifiers));
-				return $query->execute();
+				if (TRUE === method_exists($repository, 'findByIdentifiers')) {
+					return $repository->findByIdentifiers($identifiers);
+				} else {
+					$query = $repository->createQuery();
+					$query->matching($query->in('uid', $identifiers));
+					return $query->execute();
+				}
 			} else {
 				$container = $this->objectManager->get($container);
 				return $container;
