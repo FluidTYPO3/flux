@@ -274,7 +274,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	 */
 	public function getRecord() {
 		$row = $this->configurationManager->getContentObject()->data;
-		return $row;
+		return (array) $row;
 	}
 
 }
