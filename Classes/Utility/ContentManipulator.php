@@ -89,6 +89,7 @@ class Tx_Flux_Utility_ContentManipulator {
 				$record['CType'] = 'shortcut';
 				$record['records'] = $id;
 			}
+			$id = $copiedUid;
 		} else {
 			$condition = "uid = '" . $id . "'";
 			$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $condition));
@@ -117,6 +118,7 @@ class Tx_Flux_Utility_ContentManipulator {
 		if (FALSE === empty($possibleColPos) || $possibleColPos === 0 || $possibleColPos === '0') {
 			$record['colPos'] = $possibleColPos;
 		}
+		$row = $record;
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', $condition, $record);
 	}
 
