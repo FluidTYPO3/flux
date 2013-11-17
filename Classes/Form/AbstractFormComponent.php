@@ -220,7 +220,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 		if (FALSE === empty($label)) {
 			if (0 === strpos($label, 'LLL:') && 0 !== strpos($label, 'LLL:EXT:')) {
-				$name = substr($label, 4);
+				return Tx_Extbase_Utility_Localization::translate(substr($label, 4), $extensionKey);
 			} else {
 				return $label;
 			}
