@@ -123,10 +123,19 @@ class Tx_Flux_Form_Field_Inline extends Tx_Flux_Form_AbstractRelationFormField {
 	);
 
 	/**
+	 * Array of field=>value pairs which are always used in conditions as well as inserted into new
+	 * records created through this form component.
+	 *
+	 * @var array
+	 */
+	protected $foreignMatchFields = array();
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
 		$configuration = parent::prepareConfiguration('inline');
+		$configuration['foreign_match_fields'] = $this->getForeignMatchFields();
 		$configuration['appearance'] = array(
 			'collapseAll' => $this->getCollapseAll(),
 			'expandSingle' => $this->getExpandSingle(),
@@ -322,6 +331,22 @@ class Tx_Flux_Form_Field_Inline extends Tx_Flux_Form_AbstractRelationFormField {
 	 */
 	public function getUseSortable() {
 		return $this->useSortable;
+	}
+
+	/**
+	 * @param array $foreignMatchFields
+	 * @return Tx_Flux_Form_Field_Inline
+	 */
+	public function setForeignMatchFields(array $foreignMatchFields) {
+		$this->foreignMatchFields = $foreignMatchFields;
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getForeignMatchFields() {
+		return $this->foreignMatchFields;
 	}
 
 }

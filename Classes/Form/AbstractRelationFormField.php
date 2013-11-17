@@ -40,6 +40,14 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 	protected $condition;
 
 	/**
+	 * Optional filter - as an array($userFunctionReferenceString, $parameters)
+	 * - to further condition which records are allowed to be selected in this field.
+	 *
+	 * @var array
+	 */
+	protected $filter = array();
+
+	/**
 	 * The foreign_field is the field of the child record pointing to the
 	 * parent record. This defines where to store the uid of the parent record.
 	 *
@@ -181,6 +189,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 		$configuration['disableMovingChildrenWithParent'] = intval($this->getDisableMovingChildrenWithParent());
 		$configuration['showThumbs'] = intval($this->getShowThumbnails());
 		$configuration['MM'] = $this->getManyToMany();
+		$configuration['filter'] = $this->getFilter();
 		return $configuration;
 	}
 
@@ -198,6 +207,22 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 	 */
 	public function getCondition() {
 		return $this->condition;
+	}
+
+	/**
+	 * @param array $filter
+	 * @return Tx_Flux_Form_RelationFieldInterface
+	 */
+	public function setFilter(array $filter) {
+		$this->filter = $filter;
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getFilter() {
+		return $this->filter;
 	}
 
 	/**
