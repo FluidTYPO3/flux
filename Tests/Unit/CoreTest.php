@@ -146,7 +146,7 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['CType'] = $contentObjectType;
-		$absoluteTemplatePathAndFilename = t3lib_div::getFileAbsFileName($relativeTemplatePathAndFilename);
+		$absoluteTemplatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
 		$configurationSectionName = 'Configuration';
 		Tx_Flux_Core::registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
@@ -171,7 +171,7 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['list_type'] = $pluginType;
-		$absoluteTemplatePathAndFilename = t3lib_div::getFileAbsFileName($relativeTemplatePathAndFilename);
+		$absoluteTemplatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
 		$configurationSectionName = 'Configuration';
 		Tx_Flux_Core::registerFluidFlexFormPlugin($extensionKey, $pluginType, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
@@ -194,7 +194,7 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$providerClassName = 'Tx_Flux_Provider_ProviderInterface';
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$absoluteTemplatePathAndFilename = t3lib_div::getFileAbsFileName($relativeTemplatePathAndFilename);
+		$absoluteTemplatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
 		$configurationSectionName = 'Configuration';
 		Tx_Flux_Core::registerFluidFlexFormTable($table, $fieldName, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);

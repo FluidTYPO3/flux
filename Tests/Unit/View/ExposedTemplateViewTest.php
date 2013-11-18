@@ -171,8 +171,8 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 		$validTemplatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$validTemplateSource = file_get_contents($validTemplatePathAndFilename);
 		$invalidTemplateSource = $validTemplateSource . LF . LF . '</f:section>' . LF;
-		$temporaryFilePathAndFilename = t3lib_div::getFileAbsFileName('typo3temp/flux-temp-' . uniqid() . '.html');
-		t3lib_div::writeFile($temporaryFilePathAndFilename, $invalidTemplateSource);
+		$temporaryFilePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/flux-temp-' . uniqid() . '.html');
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($temporaryFilePathAndFilename, $invalidTemplateSource);
 		$view = $this->getPreparedViewWithTemplateFile($temporaryFilePathAndFilename);
 		$this->setExpectedException('Tx_Fluid_Core_Parser_Exception');
 		$this->callInaccessibleMethod($view, 'getStoredVariable', 'Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage');
@@ -214,14 +214,14 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 	 */
 	public function canBuildPathOverlayConfiguration() {
 		$overlayPaths = array(
-			'templateRootPath' => t3lib_extMgm::extPath('extbase', 'Resources/Private/Templates'),
-			'partialRootPath' => t3lib_extMgm::extPath('extbase', 'Resources/Private/Partials'),
-			'layoutRootPath' => t3lib_extMgm::extPath('extbase', 'Resources/Private/Layouts'),
+			'templateRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('extbase', 'Resources/Private/Templates'),
+			'partialRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('extbase', 'Resources/Private/Partials'),
+			'layoutRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('extbase', 'Resources/Private/Layouts'),
 		);
 		$templatePaths = array(
-			'templateRootPath' => t3lib_extMgm::extPath('flux', 'Resources/Private/Templates'),
-			'partialRootPath' => t3lib_extMgm::extPath('flux', 'Resources/Private/Partials'),
-			'layoutRootPath' => t3lib_extMgm::extPath('flux', 'Resources/Private/Layouts'),
+			'templateRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates'),
+			'partialRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Resources/Private/Partials'),
+			'layoutRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts'),
 			'overlays' => array(
 				'test' => $overlayPaths
 			)
@@ -245,11 +245,11 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 	public function canGetTemplateByActionName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView('Flux', 'API');
-		$controllerContext = Tx_Extbase_Reflection_ObjectAccess::getProperty($view, 'controllerContext', TRUE);
+		$controllerContext = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($view, 'controllerContext', TRUE);
 		$controllerContext->getRequest()->setControllerActionName('index');
 		$controllerContext->getRequest()->setControllerName('Grid');
 		$view->setControllerContext($controllerContext);
-		$view->setTemplateRootPath(t3lib_extMgm::extPath('flux', 'Resources/Private/Templates/ViewHelpers/Widget/'));
+		$view->setTemplateRootPath(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/ViewHelpers/Widget/'));
 		$output = $view->getTemplatePathAndFilename('index');
 		$this->assertNotEmpty($output);
 		$this->assertFileExists($output);

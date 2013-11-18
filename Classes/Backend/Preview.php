@@ -33,14 +33,14 @@ class Tx_Flux_Backend_Preview extends Tx_Flux_Backend_AbstractPreview {
 
 	/**
 	 *
-	 * @param tx_cms_layout $parentObject
+	 * @param \TYPO3\CMS\Backend\View\PageLayoutView $parentObject
 	 * @param boolean $drawItem
 	 * @param string $headerContent
 	 * @param string $itemContent
 	 * @param array $row
 	 * @return void
 	 */
-	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
+	public function preProcess(\TYPO3\CMS\Backend\View\PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
 		$this->renderPreview($headerContent, $itemContent, $row, $drawItem);
 		unset($parentObject);
 	}

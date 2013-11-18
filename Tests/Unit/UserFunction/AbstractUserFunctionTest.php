@@ -88,7 +88,7 @@ abstract class Tx_Flux_UserFunction_AbstractUserFunctionTest extends Tx_Flux_Tes
 	 */
 	public function canCallMethodAndReceiveOutput() {
 		$userFunctionReference = $this->getClassName() . '->' . $this->methodName;
-		$output = t3lib_div::callUserFunction($userFunctionReference, $this->getParameters(), $this->getCallerInstance());
+		$output = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($userFunctionReference, $this->getParameters(), $this->getCallerInstance());
 		if (TRUE === $this->expectsNull) {
 			$this->assertNull($output);
 		} else {

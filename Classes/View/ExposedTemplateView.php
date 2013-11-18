@@ -30,7 +30,7 @@
  * @package Flux
  * @subpackage MVC/View
  */
-class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implements Tx_Extbase_MVC_View_ViewInterface {
+class Tx_Flux_View_ExposedTemplateView extends \TYPO3\CMS\Fluid\View\TemplateView implements \TYPO3\CMS\Extbase\Mvc\View\ViewInterface {
 
 	/**
 	 * @var Tx_Flux_Service_FluxService
@@ -81,13 +81,13 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 	 * @throws Exception
 	 */
 	protected function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL) {
-		if ($this->controllerContext instanceof Tx_Extbase_MVC_Controller_ControllerContext === FALSE) {
+		if ($this->controllerContext instanceof \TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext === FALSE) {
 			throw new RuntimeException('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
 		}
 		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->templateParser->setConfiguration($this->buildParserConfiguration());
 		$parsedTemplate = $this->getParsedTemplate();
-		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
+		$this->startRendering(\TYPO3\CMS\Fluid\View\AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
 		if (FALSE === empty($sectionName)) {
 			$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
 		} else {
@@ -99,12 +99,12 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 		}
 		$stored = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
 		$this->configurationService->message('Flux View ' . get_class($this) . ' is able to read stored configuration from file ' .
-			$this->getTemplatePathAndFilename(), t3lib_div::SYSLOG_SEVERITY_INFO);
+			$this->getTemplatePathAndFilename(), \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_INFO);
 		return $stored;
 	}
 
 	/**
-	 * @return Tx_Fluid_Core_Parser_ParsedTemplateInterface
+	 * @return \TYPO3\CMS\Fluid\Core\Parser\ParsedTemplateInterface
 	 */
 	public function getParsedTemplate() {
 		$templateIdentifier = $this->getTemplateIdentifier();
@@ -130,7 +130,7 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 	public function renderStandaloneSection($sectionName, $variables, $optional = TRUE) {
 		$content = NULL;
 		$this->baseRenderingContext->setControllerContext($this->controllerContext);
-		$this->startRendering(Tx_Fluid_View_AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
+		$this->startRendering(\TYPO3\CMS\Fluid\View\AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
 		$content = $this->renderSection($sectionName, $variables, $optional);
 		$this->stopRendering();
 		return $content;
@@ -204,13 +204,13 @@ class Tx_Flux_View_ExposedTemplateView extends Tx_Fluid_View_TemplateView implem
 		}
 		foreach ($overlays as $overlaySubpackageKey => $overlay) {
 			if (TRUE === isset($overlay['templateRootPath'])) {
-				$templateRootPath = t3lib_div::getFileAbsFileName($overlay['templateRootPath']);
+				$templateRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($overlay['templateRootPath']);
 			}
 			if (TRUE === isset($overlay['partialRootPath'])) {
-				$partialRootPath = t3lib_div::getFileAbsFileName($overlay['partialRootPath']);
+				$partialRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($overlay['partialRootPath']);
 			}
 			if (TRUE === isset($overlay['layoutRootPath'])) {
-				$layoutRootPath = t3lib_div::getFileAbsFileName($overlay['layoutRootPath']);
+				$layoutRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($overlay['layoutRootPath']);
 			}
 			$paths[$overlaySubpackageKey] = array(
 				'templateRootPath' => $templateRootPath,

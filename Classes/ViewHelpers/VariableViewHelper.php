@@ -40,7 +40,7 @@ class Tx_Flux_ViewHelpers_VariableViewHelper extends Tx_Flux_ViewHelpers_Abstrac
 			return $this->templateVariableContainer->get($name);
 		} else {
 			$parts = explode('.', $name);
-			return Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($this->templateVariableContainer->get(array_shift($parts)), implode('.', $parts));
+			return \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($this->templateVariableContainer->get(array_shift($parts)), implode('.', $parts));
 		}
 	}
 

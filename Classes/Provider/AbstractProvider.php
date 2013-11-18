@@ -123,12 +123,12 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	protected $grid = NULL;
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
@@ -138,18 +138,18 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	protected $configurationService;
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
@@ -173,7 +173,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			$form = Tx_Flux_Form::create($settings['form']);
 			if (TRUE === isset($settings['extensionKey'])) {
 				$extensionKey = $settings['extensionKey'];
-				$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+				$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
 				$form->setExtensionName($extensionName);
 			}
 			$settings['form'] = $form;
@@ -231,7 +231,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$formName = 'form';
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
@@ -252,7 +252,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$gridName = 'grid';
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
@@ -320,7 +320,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	public function getTemplatePathAndFilename(array $row) {
 		unset($row);
 		if (0 === strpos($this->templatePathAndFilename, 'EXT:') || 0 !== strpos($this->templatePathAndFilename, '/')) {
-			return t3lib_div::getFileAbsFileName($this->templatePathAndFilename);
+			return \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
 		}
 		return $this->templatePathAndFilename;
 	}
@@ -380,7 +380,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$paths = $this->templatePaths;
 		if (FALSE === is_array($paths)) {
 			$extensionKey = $this->getExtensionKey($row);
-			if (FALSE === empty($extensionKey) && TRUE === t3lib_extMgm::isLoaded($extensionKey)) {
+			if (FALSE === empty($extensionKey) && TRUE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey)) {
 				$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 			}
 		}
@@ -390,17 +390,17 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		}
 
 		if (NULL !== $paths && FALSE === is_array($paths)) {
-			$this->configurationService->message('Translated paths may not be mixed.', t3lib_div::SYSLOG_SEVERITY_WARNING);
+			$this->configurationService->message('Translated paths may not be mixed.', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
 			$paths = NULL;
 		}
 
 		if (NULL === $paths) {
 			$extensionKey = $this->getExtensionKey($row);
-			if (FALSE === empty($extensionKey) && TRUE === t3lib_extMgm::isLoaded($extensionKey)) {
+			if (FALSE === empty($extensionKey) && TRUE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey)) {
 				$paths = array(
-					t3lib_extMgm::extPath($extensionKey, 'Resources/Private/Templates/'),
-					t3lib_extMgm::extPath($extensionKey, 'Resources/Private/Partials/'),
-					t3lib_extMgm::extPath($extensionKey, 'Resources/Private/Layouts/')
+					\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Templates/'),
+					\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Partials/'),
+					\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Layouts/')
 				);
 			} else {
 				$paths = array();
@@ -450,10 +450,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 *
 	 * @param array $row The record data, by reference. Changing fields' values changes the record's values before display
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
-	 * @param t3lib_TCEmain $reference A reference to the t3lib_TCEmain object that is currently displaying the record
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the t3lib_TCEmain object that is currently displaying the record
 	 * @return void
 	 */
-	public function preProcessRecord(array &$row, $id, t3lib_TCEmain $reference) {
+	public function preProcessRecord(array &$row, $id, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
 		$fieldName = $this->getFieldName($row);
 		$tableName = $this->getTableName($row);
 		if (TRUE === is_array($row[$fieldName]['data']) && TRUE === is_array($row[$fieldName]['data']['options']['lDEF'])) {
@@ -475,10 +475,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @param string $operation TYPO3 operation identifier, i.e. "update", "new" etc.
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
 	 * @param array $row the record data, by reference. Changing fields' values changes the record's values just before saving
-	 * @param t3lib_TCEmain $reference A reference to the t3lib_TCEmain object that is currently saving the record
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the t3lib_TCEmain object that is currently saving the record
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
+	public function postProcessRecord($operation, $id, array &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
 		if ('update' === $operation) {
 			$fieldName = $this->getFieldName((array) $reference->datamap[$this->tableName][$id]);
 			if (NULL === $fieldName) {
@@ -527,10 +527,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @param string $status TYPO3 operation identifier, i.e. "new" etc.
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
 	 * @param array $row The record's data, by reference. Changing fields' values changes the record's values just before saving after operation
-	 * @param t3lib_TCEmain $reference A reference to the t3lib_TCEmain object that is currently performing the database operation
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the t3lib_TCEmain object that is currently performing the database operation
 	 * @return void
 	 */
-	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference) {
+	public function postProcessDatabaseOperation($status, $id, &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
 		unset($status, $id, $row, $reference);
 	}
 
@@ -542,10 +542,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @param integer $id
 	 * @param array $row
 	 * @param integer $relativeTo
-	 * @param t3lib_TCEmain $reference
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
 	 * @return void
 	 */
-	public function preProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
+	public function preProcessCommand($command, $id, array &$row, &$relativeTo, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
 		unset($command, $id, $row, $relativeTo, $reference);
 	}
 
@@ -557,10 +557,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @param integer $id
 	 * @param array $row
 	 * @param integer $relativeTo
-	 * @param t3lib_TCEmain $reference
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
 	 * @return void
 	 */
-	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
+	public function postProcessCommand($command, $id, array &$row, &$relativeTo, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
 		unset($command, $id, $row, $relativeTo, $reference);
 	}
 
@@ -649,7 +649,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$paths = $this->getTemplatePaths($row);
 		$form = $this->getForm($row);
 		$formLabel = $form->getLabel();
-		$label = Tx_Extbase_Utility_Localization::translate($formLabel, $extensionKey);
+		$label = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($formLabel, $extensionKey);
 		if ($label === NULL) {
 			$label = $formLabel;
 		}
@@ -699,11 +699,11 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$inheritedConfiguration = $this->getMergedConfiguration($tree);
 		if (FALSE === strpos($propertyPath, '.')) {
 			if (TRUE === isset($inheritedConfiguration[$propertyPath])) {
-				return Tx_Extbase_Reflection_ObjectAccess::getProperty($inheritedConfiguration, $propertyPath);
+				return \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($inheritedConfiguration, $propertyPath);
 			}
 			return NULL;
 		}
-		return Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($inheritedConfiguration, $propertyPath);
+		return \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($inheritedConfiguration, $propertyPath);
 	}
 
 	/**

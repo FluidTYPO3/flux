@@ -23,11 +23,11 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-if (TRUE === file_exists(t3lib_extMgm::extPath('cms', 'layout/class.tx_cms_layout.php'))) {
-	require_once t3lib_extMgm::extPath('cms', 'layout/class.tx_cms_layout.php');
+if (TRUE === file_exists(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cms', 'layout/class.tx_cms_layout.php'))) {
+	require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cms', 'layout/class.tx_cms_layout.php');
 }
-if (TRUE === file_exists(t3lib_extMgm::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php'))) {
-	require_once t3lib_extMgm::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php');
+if (TRUE === file_exists(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php'))) {
+	require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cms', 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php');
 }
 
 /**
@@ -36,10 +36,10 @@ if (TRUE === file_exists(t3lib_extMgm::extPath('cms', 'layout/interfaces/interfa
  * @package Flux
  * @subpackage Backend
  */
-abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_content_drawItemHook {
+abstract class Tx_Flux_Backend_AbstractPreview implements \TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
@@ -52,7 +52,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
 	}
 
@@ -69,7 +69,7 @@ abstract class Tx_Flux_Backend_AbstractPreview implements tx_cms_layout_tt_conte
 		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
 			$targetRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('p.title, t.pid', 'tt_content t, pages p', "t.uid = '" . $row['records'] . "' AND p.uid = t.pid");
 			$targetRecord = array_pop($targetRecords);
-			$title = Tx_Extbase_Utility_Localization::translate('reference', 'Flux', array(
+			$title = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('reference', 'Flux', array(
 				$targetRecord['title']
 			));
 			$targetLink = '?id=' . $targetRecord['pid'] . '#c' . $row['records'];

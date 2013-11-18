@@ -110,11 +110,11 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	}
 
 	/**
-	 * @return t3lib_TCEmain
+	 * @return \TYPO3\CMS\Core\DataHandling\DataHandler
 	 */
 	protected function getTceMainFixture() {
 		/** @var $tceMain t3lib_TCEmain */
-		$tceMain = $this->objectManager->get('t3lib_TCEmain');
+		$tceMain = $this->objectManager->get('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		return $tceMain;
 	}
 

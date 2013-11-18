@@ -42,7 +42,7 @@ class Tx_Flux_Backend_PreviewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canExecuteOldRenderer() {
-		$caller = $this->objectManager->get('tx_cms_layout');
+		$caller = $this->objectManager->get('TYPO3\\CMS\\Backend\\View\\PageLayoutView');
 		$function = 'EXT:flux/Classes/Backend/Preview.php:Tx_Flux_Backend_Preview';
 		$this->callUserFunction($function, $caller);
 	}

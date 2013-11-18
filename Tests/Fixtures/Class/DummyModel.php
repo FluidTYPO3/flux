@@ -32,7 +32,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Domain_Model_Dummy extends Tx_Extbase_DomainObject_AbstractEntity {
+class Tx_Flux_Domain_Model_Dummy extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @Flux\Form\Field dateTime

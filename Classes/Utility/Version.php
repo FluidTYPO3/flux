@@ -56,10 +56,10 @@ class Tx_Flux_Utility_Version {
 	 * @return boolean
 	 */
 	public static function assertExtensionVersionIsAtLeastVersion($extensionKey, $majorVersion, $minorVersion = 0, $bugfixVersion = 0) {
-		if (FALSE === t3lib_extMgm::isLoaded($extensionKey)) {
+		if (FALSE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey)) {
 			return FALSE;
 		}
-		$extensionVersion = t3lib_extMgm::getExtensionVersion($extensionKey);
+		$extensionVersion = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion($extensionKey);
 		list ($major, $minor, $bugfix) = explode('.', $extensionVersion);
 		return ($majorVersion <= $major && $minorVersion <= $minor && $bugfixVersion <= $bugfix);
 	}

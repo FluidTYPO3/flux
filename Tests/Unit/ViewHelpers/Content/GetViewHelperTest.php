@@ -49,7 +49,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new Tx_Fluid_Core_Parser_SyntaxTree_TextNode('Hello loopy world!');
+		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}
@@ -69,7 +69,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new Tx_Fluid_Core_Parser_SyntaxTree_TextNode('Hello loopy world!');
+		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}
@@ -87,7 +87,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 			'nameTaken' => 'taken',
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new Tx_Fluid_Core_Parser_SyntaxTree_TextNode('Hello loopy world!');
+		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
 		$content = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertIsString($content);
 	}
@@ -104,7 +104,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new Tx_Fluid_Core_Parser_SyntaxTree_TextNode('Hello loopy world!');
+		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}
@@ -145,7 +145,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 	 * @test
 	 */
 	public function canProcessRecords() {
-		$GLOBALS['TSFE']->sys_page = $this->getAccessibleMock('t3lib_pageSelect');
+		$GLOBALS['TSFE']->sys_page = $this->getAccessibleMock('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
 		$instance = $this->createInstance();
 		$records = array(
 			array('uid' => 0),

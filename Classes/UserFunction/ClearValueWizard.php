@@ -40,7 +40,7 @@ class Tx_Flux_UserFunction_ClearValueWizard {
 		$nameSegments[6] .= '_clear';
 		$fieldName = implode('][', $nameSegments);
 		$html = '<label style="opacity: 0.65; padding-left: 2em"><input type="checkbox" name="' . $fieldName . '_clear" ';
-		$html .= ' value="1" /> ' . Tx_Extbase_Utility_Localization::translate('flux.clearValue', 'Flux') . '</label>';
+		$html .= ' value="1" /> ' . \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('flux.clearValue', 'Flux') . '</label>';
 		return $html;
 	}
 }

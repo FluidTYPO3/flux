@@ -59,7 +59,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 		$configuration['eval'] = $this->getValidate();
 		$defaultExtras = $this->getDefaultExtras();
 		if (TRUE === $this->getEnableRichText() && TRUE === empty($defaultExtras)) {
-			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$typoScript = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$configuration['defaultExtras'] = $typoScript['plugin.']['tx_flux.']['settings.']['flexform.']['rteDefaults'];
 		} else {
 			$configuration['defaultExtras'] = $defaultExtras;

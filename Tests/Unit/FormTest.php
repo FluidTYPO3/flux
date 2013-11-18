@@ -111,7 +111,7 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$form = $this->getDummyFormFromTemplate();
 		$icon = 'EXT:flux/ext_icon.gif';
 		$form->setIcon($icon);
-		$this->assertSame(t3lib_div::getFileAbsFileName($icon), $form->getIcon());
+		$this->assertSame(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($icon), $form->getIcon());
 	}
 
 	/**

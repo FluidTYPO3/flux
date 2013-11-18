@@ -154,10 +154,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	}
 
 	/**
-	 * @param Tx_Extbase_MVC_Web_Request $request
+	 * @param \TYPO3\CMS\Extbase\Mvc\Web\Request $request
 	 * @return string
 	 */
-	protected function getFullExtensionNameFromRequest(Tx_Extbase_MVC_Web_Request $request) {
+	protected function getFullExtensionNameFromRequest(\TYPO3\CMS\Extbase\Mvc\Web\Request $request) {
 		$vendorName = NULL;
 		if (TRUE === method_exists($request, 'getControllerVendorName')) {
 			$vendorName = $request->getControllerVendorName();

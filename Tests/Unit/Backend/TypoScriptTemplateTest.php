@@ -39,7 +39,7 @@ class Tx_Flux_Backend_TypoScriptTemplateTest extends Tx_Flux_Tests_AbstractFunct
 		$parameters = array(
 			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$sysTemplateRoot
 		);
-		t3lib_div::callUserFunction($function, $parameters, $template);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($function, $parameters, $template);
 		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);
 	}
 
@@ -54,7 +54,7 @@ class Tx_Flux_Backend_TypoScriptTemplateTest extends Tx_Flux_Tests_AbstractFunct
 			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$sysTemplateRoot
 		);
 		$parameters['row']['root'] = 0;
-		t3lib_div::callUserFunction($function, $parameters, $template);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($function, $parameters, $template);
 		$this->assertNotContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);
 		$this->assertSame(Tx_Flux_Tests_Fixtures_Data_Records::$sysTemplateRoot['include_static_file'], $parameters['row']['include_static_file']);
 	}

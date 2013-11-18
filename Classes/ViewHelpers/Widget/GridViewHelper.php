@@ -23,7 +23,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-require_once t3lib_extMgm::extPath('fluid', 'Classes/Core/Widget/AbstractWidgetViewHelper.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fluid', 'Classes/Core/Widget/AbstractWidgetViewHelper.php');
 
 /**
  * Grid Widget for rendering a grid in previews of BE elements
@@ -31,7 +31,7 @@ require_once t3lib_extMgm::extPath('fluid', 'Classes/Core/Widget/AbstractWidgetV
  * @package Flux
  * @subpackage ViewHelpers/Widget
  */
-class Tx_Flux_ViewHelpers_Widget_GridViewHelper extends Tx_Fluid_Core_Widget_AbstractWidgetViewHelper {
+class Tx_Flux_ViewHelpers_Widget_GridViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper {
 
 	/**
 	 * @var Tx_Flux_ViewHelpers_Widget_Controller_GridController
