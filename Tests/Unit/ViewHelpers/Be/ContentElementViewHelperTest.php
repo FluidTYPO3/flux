@@ -47,7 +47,7 @@ class Tx_Flux_ViewHelpers_Be_ContentElementViewHelperTest extends Tx_Flux_ViewHe
 		$arguments = array(
 			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
 			'area' => 'test',
-			'dblist' => t3lib_div::makeInstance('tx_cms_layout')
+			'dblist' => \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\View\\PageLayoutView')
 		);
 		$this->executeViewHelper($arguments);
 	}

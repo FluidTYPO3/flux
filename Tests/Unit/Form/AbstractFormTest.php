@@ -63,7 +63,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	 */
 	public function canAutoWriteLabel() {
 		$languageFile = 'LLL:typo3temp/test.xml';
-		$absoluteLanguageFile = t3lib_div::getFileAbsFileName(substr($languageFile, 4));
+		$absoluteLanguageFile = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(substr($languageFile, 4));
 		$className = $this->getObjectClassName();
 		$instance = $this->objectManager->get($className);
 		$instance->setName('thisIsASpecialFieldName');
@@ -141,7 +141,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 		}
 		$instance = $this->createInstance();
 		foreach ($chainPropertiesAndValues as $propertyName => $propertValue) {
-			$setterMethodName = Tx_Extbase_Reflection_ObjectAccess::buildSetterMethodName($propertyName);
+			$setterMethodName = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::buildSetterMethodName($propertyName);
 			$chained = call_user_func_array(array($instance, $setterMethodName), array($propertValue));
 			$this->assertSame($instance, $chained, 'The setter ' . $setterMethodName . ' on ' . $this->getObjectClassName() . ' does not support chaining.');
 			if ($chained === $instance) {
@@ -189,7 +189,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	public function canCallAllGetterCounterpartsForChainableSetters() {
 		$instance = $this->createInstance();
 		foreach ($this->chainProperties as $propertyName => $propertValue) {
-			Tx_Extbase_Reflection_ObjectAccess::getProperty($instance, $propertyName);
+			\TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($instance, $propertyName);
 		}
 		$this->performTestBuild($instance);
 	}

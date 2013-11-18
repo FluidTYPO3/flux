@@ -49,7 +49,7 @@ class Tx_Flux_ViewHelpers_Content_RenderViewHelperTest extends Tx_Flux_ViewHelpe
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new Tx_Fluid_Core_Parser_SyntaxTree_TextNode('Hello loopy world!');
+		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}
@@ -85,7 +85,7 @@ class Tx_Flux_ViewHelpers_Content_RenderViewHelperTest extends Tx_Flux_ViewHelpe
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new Tx_Fluid_Core_Parser_SyntaxTree_TextNode('Hello loopy world!');
+		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}
@@ -103,7 +103,7 @@ class Tx_Flux_ViewHelpers_Content_RenderViewHelperTest extends Tx_Flux_ViewHelpe
 			'nameTaken' => 'taken',
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new Tx_Fluid_Core_Parser_SyntaxTree_TextNode('Hello loopy world!');
+		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}
@@ -120,7 +120,7 @@ class Tx_Flux_ViewHelpers_Content_RenderViewHelperTest extends Tx_Flux_ViewHelpe
 		$variables = array(
 			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new Tx_Fluid_Core_Parser_SyntaxTree_TextNode('Hello loopy world!');
+		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}

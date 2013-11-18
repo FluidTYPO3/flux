@@ -32,7 +32,7 @@
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables_PostProcessingHook {
+class Tx_Flux_Backend_TableConfigurationPostProcessor implements \TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface {
 
 	/**
 	 * @var array
@@ -53,12 +53,12 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 	 * @return void
 	 */
 	public function processData() {
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var Tx_Flux_Service_FluxService $fluxService */
 		$fluxService = $objectManager->get('Tx_Flux_Service_FluxService');
 		$fluxService->initializeObject();
 		/** @var Tx_Extbase_Persistence_Mapper_DataMapFactory $dataMapFactory */
-		$dataMapFactory = $objectManager->get('Tx_Extbase_Persistence_Mapper_DataMapFactory');
+		$dataMapFactory = $objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Mapper\\DataMapFactory');
 		$forms = Tx_Flux_Core::getRegisteredFormsForTables();
 		$models = Tx_Flux_Core::getRegisteredFormsForModelObjectClasses();
 		foreach ($forms as $fullTableName => $form) {
@@ -84,7 +84,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 	protected function processFormForTable($table, Tx_Flux_Form $form) {
 		$extensionName = $form->getExtensionName();
 		$extensionNameWithoutVendor = FALSE === strpos($extensionName, '.') ? $extensionName : array_pop(explode('.', $extensionName));
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionNameWithoutVendor);
+		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionNameWithoutVendor);
 		$tableConfiguration = self::$tableTemplate;
 		$fields = array();
 		$labelFields = $form->getOption('labels');
@@ -106,7 +106,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		if (TRUE === $form->getOption('frontendUserGroup')) {
 			$enableColumns['fe_group'] = 'fe_group';
 		}
-		$tableConfiguration['iconfile'] = t3lib_extMgm::extRelPath($extensionKey) . $form->getIcon();
+		$tableConfiguration['iconfile'] = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($extensionKey) . $form->getIcon();
 		$tableConfiguration['enablecolumns'] = $enableColumns;
 		$showRecordsFieldList = $this->buildShowItemList($form);
 		$GLOBALS['TCA'][$table] = array(
@@ -174,7 +174,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 				$settings = $values[$propertyName];
 				$field = $sheets[$sheetName]->createField($settings['type'], $propertyName);
 				foreach ($settings['config'] as $parameter => $value) {
-					Tx_Extbase_Reflection_ObjectAccess::setProperty($field, $parameter, $value);
+					\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($field, $parameter, $value);
 				}
 			}
 		}

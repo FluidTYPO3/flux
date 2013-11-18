@@ -68,8 +68,8 @@ class Tx_Flux_Backend_DynamicFlexFormTest extends Tx_Flux_Tests_AbstractFunction
 	 * @return \Tx_Flux_Backend_DynamicFlexForm
 	 */
 	protected function getInstance() {
-		/** @var Tx_Extbase_Object_ObjectManager $objectManager */
-		$objectManager = \t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var Tx_Flux_Backend_DynamicFlexForm $instance */
 		$instance = $objectManager->get('Tx_Flux_Backend_DynamicFlexForm');
 		return $instance;

@@ -35,7 +35,7 @@
  * @subpackage Controller
  * @route off
  */
-abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_Controller_ActionController {
+abstract class Tx_Flux_Controller_AbstractFluxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	/**
 	 * @var string
@@ -92,9 +92,9 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	protected function initializeSettings() {
 		$row = $this->getRecord();
 		$extensionKey = $this->provider->getExtensionKey($row);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
 		$pluginName = $this->request->getPluginName();
-		$this->settings = (array) $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName, $pluginName);
+		$this->settings = (array) $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName, $pluginName);
 		$this->data = $this->provider->getFlexFormValues($row);
 		$this->setup = $this->provider->getTemplatePaths($row);
 	}
@@ -155,7 +155,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 		$row = $this->getRecord();
 		$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
 		$extensionName = $this->provider->getExtensionKey($row);
-		$extensionKey = t3lib_div::underscoredToUpperCamelCase(FALSE === strpos($extensionName, '.') ? $extensionName : array_pop(explode('.', $extensionName)));
+		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase(FALSE === strpos($extensionName, '.') ? $extensionName : array_pop(explode('.', $extensionName)));
 		$controller = $this->request->getControllerName();
 		$this->view = $this->configurationService->getPreparedExposedTemplateView($extensionName, $controller, $this->setup, $this->data);
 		$this->request->setControllerExtensionName($extensionKey);
@@ -166,12 +166,12 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	}
 
 	/**
-	 * @param Tx_Extbase_MVC_View_ViewInterface $view
+	 * @param \TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
 	 *
 	 * @throws Exception
 	 * @return void
 	 */
-	public function initializeView(Tx_Extbase_MVC_View_ViewInterface $view) {
+	public function initializeView(\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view) {
 		$this->initializeProvider();
 		$this->initializeSettings();
 		$this->initializeOverriddenSettings();
@@ -188,7 +188,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 		$extensionKey = $this->provider->getExtensionKey($row);
 		$pluginSignature = 'tx_' . str_replace('_', '', $extensionKey) . '_' . str_replace('_', '', strtolower($this->request->getPluginName()));
 		$controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
-		$controllerExtensionName = t3lib_div::underscoredToUpperCamelCase($controllerExtensionKey);
+		$controllerExtensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($controllerExtensionKey);
 		$requestParameterActionName = Tx_Flux_Utility_Resolve::resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature);
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
 		$overriddenControllerActionName = NULL !== $requestParameterActionName ? $requestParameterActionName : $controllerActionName;
@@ -206,7 +206,7 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature) {
 		$shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
 		if (TRUE === $shouldRelay) {
-			$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+			$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
 			$foreignControllerClass = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
 			return $this->callSubControllerAction($extensionName, $foreignControllerClass, $actionName, $pluginSignature);
 		}
@@ -236,8 +236,8 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	 */
 	protected function callSubControllerAction($extensionName, $controllerClassName, $controllerActionName, $pluginSignature) {
 		/** @var $response Tx_Extbase_MVC_Web_Response */
-		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
-		$arguments = (array) (TRUE === is_array(t3lib_div::_POST($pluginSignature)) ? t3lib_div::_POST($pluginSignature) : t3lib_div::_GET($pluginSignature));
+		$response = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Response');
+		$arguments = (array) (TRUE === is_array(\TYPO3\CMS\Core\Utility\GeneralUtility::_POST($pluginSignature)) ? \TYPO3\CMS\Core\Utility\GeneralUtility::_POST($pluginSignature) : \TYPO3\CMS\Core\Utility\GeneralUtility::_GET($pluginSignature));
 		$potentialControllerInstance = $this->objectManager->get($controllerClassName);
 		$this->request->setControllerExtensionName($extensionName);
 		$this->request->setControllerActionName($controllerActionName);

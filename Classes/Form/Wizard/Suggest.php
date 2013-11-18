@@ -271,7 +271,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 	 */
 	public function setStoragePageUids($storagePageUids) {
 		if (FALSE === is_array($storagePageUids)) {
-			$this->storagePageUids = t3lib_div::trimExplode(',', $storagePageUids);
+			$this->storagePageUids = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $storagePageUids);
 		} else {
 			$this->storagePageUids = $storagePageUids;
 		}

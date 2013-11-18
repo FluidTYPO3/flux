@@ -30,7 +30,7 @@
 class Tx_Flux_Backend_TceMain {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
@@ -48,7 +48,7 @@ class Tx_Flux_Backend_TceMain {
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
 	}
 
@@ -57,7 +57,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $relativeTo Filled if command is relative to another element
-	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference) {
@@ -71,7 +71,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $relativeTo Filled if command is relative to another element
-	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference) {
@@ -84,7 +84,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param array $incomingFieldArray The original field names and their values before they are processed
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
-	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, &$reference) {
@@ -97,7 +97,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $fieldArray The field names and their values to be processed
-	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$reference) {
@@ -110,7 +110,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table	The table we're dealing with
 	 * @param mixed $id Either the record UID or a string if a new record has been created
 	 * @param array $fieldArray The record row how it has been inserted into the database
-	 * @param t3lib_TCEmain $reference A reference to the TCEmain instance
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the TCEmain instance
 	 * @return void
 	 */
 	public function processDatamap_afterDatabaseOperations($status, $table, $id, &$fieldArray, &$reference) {
@@ -126,7 +126,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param mixed $id
 	 * @param array $record
 	 * @param array $arguments
-	 * @param t3lib_TCEmain $reference
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
 	 * @throws Exception
 	 * @return void
 	 */
@@ -178,7 +178,7 @@ class Tx_Flux_Backend_TceMain {
 		if (TRUE === self::$cachesCleared) {
 			return;
 		}
-		$manifestCacheFiles = glob(t3lib_div::getFileAbsFileName('typo3temp/*-manifest.cache'));
+		$manifestCacheFiles = glob(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/*-manifest.cache'));
 		if (FALSE !== $manifestCacheFiles) {
 			foreach ($manifestCacheFiles as $manifestCacheFile) {
 				unlink($manifestCacheFile);

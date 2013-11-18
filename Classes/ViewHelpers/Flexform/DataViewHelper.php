@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @var array
@@ -57,7 +57,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 	 * @param string $table
 	 * @param string $field
 	 * @param string $as
-	 * @throws Tx_Fluid_Core_ViewHelper_Exception
+	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
 	 * @return array
 	 */
 	public function render($uid, $table, $field, $as = NULL) {
@@ -66,7 +66,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends Tx_Fluid_Core_ViewHelp
 		} else {
 			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,' . $field, $table, sprintf('uid=%d', $uid));
 			if (FALSE === $rows || 0 === count($rows)) {
-				throw new Tx_Fluid_Core_ViewHelper_Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);
+				throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);
 			}
 			$row = array_pop($rows);
 			$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $row);

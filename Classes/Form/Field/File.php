@@ -78,7 +78,7 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 	public function setDefault($default) {
 		if (NULL !== $default) {
 			$files = array();
-			$filePaths = t3lib_div::trimExplode(',', $default);
+			$filePaths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $default);
 			foreach ($filePaths as $path) {
 				if (FALSE === strpos($path, '|')) {
 					$files[] = $path . '|' . rawurlencode($path);

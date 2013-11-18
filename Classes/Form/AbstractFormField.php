@@ -102,8 +102,8 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * @throws Exception
 	 */
 	public static function create(array $settings = array()) {
-		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager */
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		if ('Section' === $settings['type']) {
 			return Tx_Flux_Form_Container_Section::create($settings);
 		} else {
@@ -127,9 +127,9 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 		/** @var Tx_Flux_FormInterface $object */
 		$object = $objectManager->get($className);
 		foreach ($settings as $settingName => $settingValue) {
-			$setterMethodName = Tx_Extbase_Reflection_ObjectAccess::buildSetterMethodName($settingName);
+			$setterMethodName = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::buildSetterMethodName($settingName);
 			if (TRUE === method_exists($object, $setterMethodName)) {
-				Tx_Extbase_Reflection_ObjectAccess::setProperty($object, $settingName, $settingValue);
+				\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($object, $settingName, $settingValue);
 			}
 		}
 		return $object;

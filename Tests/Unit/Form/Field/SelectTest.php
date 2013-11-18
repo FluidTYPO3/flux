@@ -87,8 +87,8 @@ class Tx_Flux_Form_Field_SelectTest extends Tx_Flux_Tests_Functional_Form_Field_
 	public function canConsumeQueryObjectItems() {
 		/** @var Tx_Flux_Form_Field_Select $instance */
 		$instance = $this->createInstance();
-		/** @var Tx_Extbase_Persistence_Query $query */
-		$query = $this->objectManager->get('Tx_Extbase_Domain_Repository_FrontendUserRepository')->createQuery();
+		/** @var \TYPO3\CMS\Extbase\Persistence\Generic\Query $query */
+		$query = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserRepository')->createQuery();
 		$query->getQuerySettings()->setRespectStoragePage(FALSE);
 		$instance->setItems($query);
 		$this->assertIsArray($instance->getItems());

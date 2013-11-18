@@ -36,7 +36,7 @@ class Tx_Flux_Form_Wizard_SuggestTest extends Tx_Flux_Tests_Functional_Form_Fiel
 		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
 		$wizard = $this->createInstance();
 		$storagePageUidsCommaSeparated = '1,2,3';
-		$storagePageUidsArray = t3lib_div::trimExplode(',', $storagePageUidsCommaSeparated);
+		$storagePageUidsArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $storagePageUidsCommaSeparated);
 		$wizard->setStoragePageUids($storagePageUidsCommaSeparated);
 		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
 		$this->performTestBuild($wizard);
@@ -49,7 +49,7 @@ class Tx_Flux_Form_Wizard_SuggestTest extends Tx_Flux_Tests_Functional_Form_Fiel
 		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
 		$wizard = $this->createInstance();
 		$storagePageUidsCommaSeparated = '1,2,3';
-		$storagePageUidsArray = t3lib_div::trimExplode(',', $storagePageUidsCommaSeparated);
+		$storagePageUidsArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $storagePageUidsCommaSeparated);
 		$wizard->setStoragePageUids($storagePageUidsArray);
 		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
 		$this->performTestBuild($wizard);

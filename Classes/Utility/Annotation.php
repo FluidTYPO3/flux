@@ -65,7 +65,7 @@ class Tx_Flux_Utility_Annotation {
 					$annotations = $reflection->getTagValues($annotationName);
 				}
 			} else {
-				$properties = Tx_Extbase_Reflection_ObjectAccess::getGettablePropertyNames($sample);
+				$properties = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getGettablePropertyNames($sample);
 				foreach ($properties as $reflectedPropertyName) {
 					if (FALSE === property_exists($className, $reflectedPropertyName)) {
 						continue;
@@ -90,7 +90,7 @@ class Tx_Flux_Utility_Annotation {
 	 * @return string
 	 */
 	protected static function parseAnnotationArguments($argumentsAsString) {
-		$pattern = Tx_Fluid_Core_Parser_TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_ARRAY_PARTS;
+		$pattern = \TYPO3\CMS\Fluid\Core\Parser\TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_ARRAY_PARTS;
 		$matches = array();
 		preg_match_all($pattern, $argumentsAsString, $matches, PREG_SET_ORDER);
 		$arguments = array();
@@ -124,7 +124,7 @@ class Tx_Flux_Utility_Annotation {
 			}
 			return array_map(array(self, 'parseAnnotation'), $annotation);
 		}
-		$pattern = Tx_Fluid_Core_Parser_TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
+		$pattern = \TYPO3\CMS\Fluid\Core\Parser\TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
 		$annotation = trim($annotation);
 		if (FALSE === strpos($annotation, '(') && FALSE === strpos($annotation, ')')) {
 			$annotation .= '()';

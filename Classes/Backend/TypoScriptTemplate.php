@@ -38,7 +38,7 @@ class Tx_Flux_Backend_TypoScriptTemplate {
 	 */
 	public function preprocessIncludeStaticTypoScriptSources(array &$params, $pObj) {
 		if (TRUE === isset($params['row']['root']) && TRUE === (boolean) $params['row']['root']) {
-			$existingTemplates = t3lib_div::trimExplode(',', $params['row']['include_static_file']);
+			$existingTemplates = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $params['row']['include_static_file']);
 			$globalStaticTemplates = Tx_Flux_Core::getStaticTypoScriptLocations();
 			$staticTemplates = array_merge($globalStaticTemplates, $existingTemplates);
 			$params['row']['include_static_file'] = implode(',', array_unique($staticTemplates));

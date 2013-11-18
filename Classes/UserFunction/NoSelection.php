@@ -38,7 +38,7 @@ class Tx_Flux_UserFunction_NoSelection {
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj);
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-			return Tx_Extbase_Utility_Localization::translate('user.no_selection', 'Flux');
+			return \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('user.no_selection', 'Flux');
 		}
 		unset($parameters);
 		return NULL;
