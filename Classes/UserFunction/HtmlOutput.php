@@ -32,7 +32,7 @@ class Tx_Flux_UserFunction_HtmlOutput {
 
 	/**
 	 * @param array $parameters
-	 * @param t3lib_TCEforms $pObj
+	 * @param \TYPO3\CMS\Backend\Form\FormEngine $pObj
 	 * @return mixed
 	 */
 	public function renderField(array &$parameters, t3lib_TCEforms &$pObj) {

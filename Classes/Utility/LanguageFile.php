@@ -87,7 +87,7 @@ XML;
 			return;
 		}
 		$file = substr($file, 4);
-		$filePathAndFilename = t3lib_div::getFileAbsFileName($file);
+		$filePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($file);
 		$extension = pathinfo($filePathAndFilename, PATHINFO_EXTENSION);
 		if (FALSE === in_array($extension, self::$validExtensions)) {
 			return;
@@ -102,7 +102,7 @@ XML;
 				self::message('Wrote "LLL:' . $file . ':' . $identifier . '" - or label already exists');
 				return;
 			} elseif (FALSE === $source) {
-				self::message('Skipping LLL file saving due to an error while generating the XML.', t3lib_div::SYSLOG_SEVERITY_FATAL);
+				self::message('Skipping LLL file saving due to an error while generating the XML.', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_FATAL);
 			} else {
 				self::message('Wrote "LLL:' . $file . ':' . $identifier . '"');
 				file_put_contents($filePathAndFilename, $source);
@@ -149,7 +149,7 @@ XML;
 	public static function kickstartXmlFile($filePathAndFilename, $languages = array('default')) {
 		$filePathAndFilename = self::sanitizeFilePathAndFilename($filePathAndFilename, 'xml');
 		if (FALSE === file_exists($filePathAndFilename)) {
-			t3lib_div::writeFile($filePathAndFilename, self::TEMPLATE_XML);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($filePathAndFilename, self::TEMPLATE_XML);
 		}
 		$dom = self::prepareDomDocument($filePathAndFilename);
 		$dom->getElementsByTagName('description')->item(0)->nodeValue = 'Labels for languages: ' . implode(', ', $languages);
@@ -217,8 +217,8 @@ XML;
 				self::createXlfLanguageNode($dom, $body, $identifier);
 			}
 			$xml = $dom->saveXML();
-			if (FALSE == t3lib_div::writeFile($translationPathAndFilename, $xml)) {
-				self::message('Unable to write to file "' . $translationPathAndFilename . '" - permission issue?', t3lib_div::SYSLOG_SEVERITY_FATAL);
+			if (FALSE == \TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($translationPathAndFilename, $xml)) {
+				self::message('Unable to write to file "' . $translationPathAndFilename . '" - permission issue?', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_FATAL);
 			}
 			self::$documents[$translationPathAndFilename] = $dom;
 		}
@@ -261,7 +261,7 @@ XML;
 		$filePathAndFilename = self::sanitizeFilePathAndFilename($filePathAndFilename, 'xlf');
 		$filePathAndFilename = self::localizeXlfFilePathAndFilename($filePathAndFilename, $languageOrLanguages);
 		if (FALSE === file_exists($filePathAndFilename)) {
-			t3lib_div::writeFile($filePathAndFilename, self::TEMPLATE_XLF);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($filePathAndFilename, self::TEMPLATE_XLF);
 		}
 		if (TRUE === isset(self::$documents[$filePathAndFilename])) {
 			return self::$documents[$filePathAndFilename];
@@ -325,7 +325,7 @@ XML;
 	protected static function getLanguageKeys() {
 		$cObj = new tslib_cObj();
 		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 0, 0);
-		$GLOBALS['TSFE']->sys_page = new t3lib_pageSelect();
+		$GLOBALS['TSFE']->sys_page = new \TYPO3\CMS\Frontend\Page\PageRepository();
 		$select = 'flag';
 		$from = 'sys_language';
 		$where = '1=1' . $cObj->enableFields('sys_language');
@@ -342,7 +342,7 @@ XML;
 	 */
 	protected static function getServiceInstance() {
 		if (NULL === self::$service) {
-			$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+			$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 			self::$service = $objectManager->get('Tx_Flux_Service_FluxService');
 		}
 		return self::$service;
@@ -353,7 +353,7 @@ XML;
 	 * @param integer $severity
 	 * @return void
 	 */
-	protected static function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_INFO) {
+	protected static function message($message, $severity = \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_INFO) {
 		if (FALSE === isset($GLOBALS['BE_USER'])) {
 			return;
 		}

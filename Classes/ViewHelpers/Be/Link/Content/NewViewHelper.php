@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers\Be\Uri\Content
  */
-class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Initialize

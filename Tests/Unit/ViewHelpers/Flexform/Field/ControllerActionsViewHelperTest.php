@@ -112,7 +112,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelperTest extends
 			'separator' => ' :: '
 		);
 		$instance = $this->buildViewHelperInstance($arguments);
-		$request = new Tx_Extbase_MVC_Web_Request();
+		$request = new \TYPO3\CMS\Extbase\Mvc\Web\Request();
 		$request->setControllerExtensionName('Flux');
 		$request->setControllerVendorName('FluidTYPO3');
 		$expected = 'FluidTYPO3.Flux';

@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage Core/ViewHelper
  */
-abstract class Tx_Flux_ViewHelpers_AbstractFlexformViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+abstract class Tx_Flux_ViewHelpers_AbstractFlexformViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @var Tx_Flux_Service_FluxService
@@ -37,7 +37,7 @@ abstract class Tx_Flux_ViewHelpers_AbstractFlexformViewHelper extends Tx_Fluid_C
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
 	 */
 	protected $objectManager;
 
@@ -50,10 +50,10 @@ abstract class Tx_Flux_ViewHelpers_AbstractFlexformViewHelper extends Tx_Fluid_C
 	}
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 

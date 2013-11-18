@@ -85,7 +85,7 @@ class Tx_Flux_Utility_ClipBoard {
 			return '';
 		}
 		$reference = (boolean) $reference;
-		$clipBoard = new t3lib_clipboard();
+		$clipBoard = new \TYPO3\CMS\Backend\Clipboard\Clipboard();
 		if (TRUE === $reference) {
 			$label = 'Paste as reference in this position';
 			$icon = 'actions-insert-reference';

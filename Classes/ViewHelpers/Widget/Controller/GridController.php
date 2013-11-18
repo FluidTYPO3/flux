@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Widget
  */
-class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core_Widget_AbstractWidgetController {
+class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController {
 
 	/**
 	 * @var array

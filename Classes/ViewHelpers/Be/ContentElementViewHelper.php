@@ -27,7 +27,7 @@
  * @package Flux
  * @subpackage ViewHelpers\Be
  */
-class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Initialize

@@ -38,7 +38,7 @@ class Tx_Flux_UserFunction_NoTemplate {
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj);
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-			$message = Tx_Extbase_Utility_Localization::translate('user.no_template', 'Flux');
+			$message = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('user.no_template', 'Flux');
 			$parameterKeys = var_export(array_keys($parameters), TRUE);
 			return $message . '<pre>' . $parameterKeys . '</pre>';
 		}

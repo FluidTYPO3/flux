@@ -64,7 +64,7 @@ class Tx_Flux_UserFunction_ErrorReporterTest extends Tx_Flux_UserFunction_Abstra
 		$userFunctionReference = $this->getClassName() . '->' . $this->methodName;
 		$parameters = $this->getParameters();
 		$parameters['fieldConf']['config']['parameters'][0]['exception'] = new Exception(self::FAKE_MESSAGE, self::FAKE_CODE);
-		$output = t3lib_div::callUserFunction($userFunctionReference, $parameters, $this->getCallerInstance());
+		$output = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($userFunctionReference, $parameters, $this->getCallerInstance());
 		$this->assertOutputContainsExpectedMessageAndCode($output);
 	}
 

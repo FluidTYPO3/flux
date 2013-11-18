@@ -77,7 +77,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 	}
 
 	/**
-	 * @return Tx_Fluid_Core_ViewHelper_TemplateVariableContainer
+	 * @return \TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer
 	 */
 	public function getTemplateVariableContainer() {
 		return $this->templateVariableContainer;

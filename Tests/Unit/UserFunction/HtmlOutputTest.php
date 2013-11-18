@@ -40,7 +40,7 @@ class Tx_Flux_UserFunction_HtmlOutputTest extends Tx_Flux_UserFunction_AbstractU
 	 * @return t3lib_TCEforms
 	 */
 	protected function getCallerInstance() {
-		return $this->objectManager->get('t3lib_TCEforms');
+		return $this->objectManager->get('TYPO3\\CMS\\Backend\\Form\\FormEngine');
 	}
 
 	/**

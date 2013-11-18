@@ -36,7 +36,7 @@ class Tx_Flux_Provider_ContentProviderTest extends Tx_Flux_Provider_AbstractProv
 		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$row['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::EXPECTING_FLUX_PRUNING;
 		$provider = $this->getConfigurationProviderInstance();
-		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$tceMain = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		$provider->postProcessRecord('update', $row['uid'], $row, $tceMain);
 		$this->assertNotContains('<field index=""></field>', $row['pi_flexform']);
 	}
@@ -47,7 +47,7 @@ class Tx_Flux_Provider_ContentProviderTest extends Tx_Flux_Provider_AbstractProv
 	public function triggersContentManipulatorOnDatabaseOperationNew() {
 		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
-		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$tceMain = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		$provider->postProcessDatabaseOperation('new', $row['uid'], $row, $tceMain);
 	}
 
@@ -58,7 +58,7 @@ class Tx_Flux_Provider_ContentProviderTest extends Tx_Flux_Provider_AbstractProv
 		$_GET['CB'] = array('paste' => 'tt_content|0');
 		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
-		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$tceMain = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		$relativeUid = 0;
 		$provider->postProcessCommand('move', 0, $row, $relativeUid, $tceMain);
 	}

@@ -77,7 +77,7 @@ class Tx_Flux_Utility_ContentManipulatorTest extends Tx_Flux_Tests_AbstractFunct
 			'returnUrl' => 'some.php?arg=1#hascutoffpointbutnovalues'
 		);
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
-		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$tceMain = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		$result = Tx_Flux_Utility_ContentManipulator::affectRecordByRequestParameters($record, $parameters, $tceMain);
 		$this->assertFalse($result);
 	}
@@ -90,7 +90,7 @@ class Tx_Flux_Utility_ContentManipulatorTest extends Tx_Flux_Tests_AbstractFunct
 			'returnUrl' => 'some.php?arg=1#areaname:999999'
 		);
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
-		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$tceMain = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		$result = Tx_Flux_Utility_ContentManipulator::affectRecordByRequestParameters($record, $parameters, $tceMain);
 		$this->assertTrue($result);
 		$this->assertSame('areaname', $record['tx_flux_column']);
@@ -106,7 +106,7 @@ class Tx_Flux_Utility_ContentManipulatorTest extends Tx_Flux_Tests_AbstractFunct
 		);
 		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
 		$oldSorting = $record['sorting'];
-		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$tceMain = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		$result = Tx_Flux_Utility_ContentManipulator::affectRecordByRequestParameters($record, $parameters, $tceMain);
 		$this->assertTrue($result);
 		$this->assertSame('areaname', $record['tx_flux_column']);

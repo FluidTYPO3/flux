@@ -34,7 +34,7 @@
 class Tx_Flux_Backend_DynamicFlexForm {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
 	 */
 	protected $objectManager;
 
@@ -47,8 +47,8 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
+		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$this->configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
 		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
 	}
 

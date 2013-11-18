@@ -35,10 +35,10 @@ class Tx_Flux_Utility_ContentManipulator {
 	/**
 	 * @param array $row
 	 * @param array $parameters
-	 * @param t3lib_TCEmain $tceMain
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
 	 * @return boolean
 	 */
-	public static function affectRecordByRequestParameters(array &$row, $parameters, t3lib_TCEmain $tceMain) {
+	public static function affectRecordByRequestParameters(array &$row, $parameters, \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
 		$url = TRUE === isset($parameters['returnUrl']) ? $parameters['returnUrl'] : NULL;
 		$urlHashCutoffPoint = strrpos($url, '#');
 		$area = NULL;
@@ -70,10 +70,10 @@ class Tx_Flux_Utility_ContentManipulator {
 	 * @param string $command The command which caused pasting - "copy" is targeted in order to determine "reference" pasting.
 	 * @param array $row The record to be pasted, by reference. Changes original $row
 	 * @param array $parameters List of parameters defining the paste operation target
-	 * @param t3lib_TCEmain $tceMain
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
 	 * @return boolean
 	 */
-	public static function pasteAfter($command, array &$row, $parameters, t3lib_TCEmain $tceMain) {
+	public static function pasteAfter($command, array &$row, $parameters, \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
 		$id = $row['uid'];
 		if (1 < substr_count($parameters[1], '-')) {
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
@@ -138,7 +138,7 @@ class Tx_Flux_Utility_ContentManipulator {
 		} elseif ($row['pid'] < 0) {
 			// inserting a new element after another element. Check column position of that element.
 			$relativeTo = abs($row['pid']);
-			$relativeToRecord = t3lib_BEfunc::getRecord('tt_content', $relativeTo);
+			$relativeToRecord = TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('tt_content', $relativeTo);
 			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
 			$row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
 		} elseif (FALSE !== strpos($relativeTo, 'FLUX')) {
@@ -169,10 +169,10 @@ class Tx_Flux_Utility_ContentManipulator {
 
 	/**
 	 * @param array $row
-	 * @param t3lib_TCEmain $tceMain
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
 	 * @return boolean
 	 */
-	public static function initializeRecord(array $row, t3lib_TCEmain $tceMain) {
+	public static function initializeRecord(array $row, \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
 		$id = $row['uid'];
 		$newUid = $tceMain->substNEWwithIDs[$id];
 		$oldUid = $row['t3_origuid'];

@@ -23,16 +23,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
-require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Records.php');
-require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/BasicFluxController.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Records.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Class/BasicFluxController.php');
 
 
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
+abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 
 	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
 	const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/WithoutForm.html';
@@ -160,7 +160,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	 * @return void
 	 */
 	public function truncateFluidCodeCache() {
-		$files = glob(t3lib_div::getFileAbsFileName('typo3temp/Cache/Code/fluid_template/*.php'));
+		$files = glob(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/Cache/Code/fluid_template/*.php'));
 		if (TRUE === is_array($files)) {
 			foreach ($files as $file) {
 				unlink($file);
@@ -180,7 +180,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends Tx_Extbase_Tests_Uni
 	 * @return string
 	 */
 	protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath) {
-		return t3lib_div::getFileAbsFileName($shorthandTemplatePath);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($shorthandTemplatePath);
 	}
 
 	/**
