@@ -135,7 +135,10 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	public function createField($type, $name, $label = NULL) {
 		/** @var Tx_Flux_Form_FieldInterface $component */
-		$component = $this->objectManager->get(TRUE === class_exists('Tx_Flux_Form_Field_' . $type) ? 'Tx_Flux_Form_Field_' . $type : $type);
+		$className = str_replace('/', '\\', $type);
+		// Until Namespaces replace to _
+		$className = str_replace('\\', '_', $className);
+		$component = $this->objectManager->get(TRUE === class_exists('Tx_Flux_Form_Field_' . $className) ? 'Tx_Flux_Form_Field_' . $className : $className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());

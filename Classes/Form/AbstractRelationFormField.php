@@ -178,6 +178,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 		$configuration['foreign_table_where'] = $this->getCondition();
 		$configuration['foreign_table_field'] = $this->getForeignTableField();
 		$configuration['foreign_unique'] = $this->getForeignUnique();
+		$configuration['foreign_label'] = $this->getForeignLabel();
 		$configuration['foreign_selector'] = $this->getForeignSelector();
 		$configuration['foreign_sortby'] = $this->getForeignSortby();
 		$configuration['foreign_default_sortby'] = $this->getForeignDefaultSortby();
