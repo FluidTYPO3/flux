@@ -20,36 +20,22 @@ You have heard all this before, but just in case:
 In short: We want to trust that your report is valid and contains helpful information. This
 allows us to be most efficient when assisting or fixing the problem; everything runs smoother.
 
-## Contributing Code
-
-In order to ensure that your contribution passes through with flying colors (we have automated
-tests for all of these factors) there are a few things you can do.
-
-* Follow the coding guidelines - viewing any class will give you a clear picture of our
-  standards which we always enforce. Each extension has perfect or near-perfect guidelines
-  compliance and contributed code should not lower compliance. If you spot a violation in the
-  code, we of course also appreciate contributions which do nothing but fix cosmetics!
-* Use a valid commit message subject. When you write your commit messages (note: the ones you
-  write in Git itself, not the same as the Pull Request cover message!) always start your
-  message with one of [DOC], [BUGFIX], [TASK] or [FEATURE] to describe the nature of your
-  commit's changes.
-* Make one commit per change and one change per commit only. Example: if you are going to create
-  a particular feature and this feature requires a few changes to existing code to prepare for
-  the feature, first make individual commits with the required changes and then create your
-  "real" work on top of this.
-* Recommendation: plan a few steps ahead, try to group your work into logical "chunks" of code
-  which are easier to manage, then commit each "chunk" of work as you finish it. There is one
-  time management strategy worth mentioning in this context: the [Pomodoro][pomodoro] technique.
-
 ## Making Pull requests
 
 Please make sure, you read the entire [Contribution Guide][contributionGuide] in advance.
 
-So, you have prepared a nice bufix to the latest version of flux and want that to be available
+We need to stress how important it actually is to contribute in feature-branches. This allows
+you to keep your copy of flux in the master branch clean and to be the same as in our repository.
+Start of by issueing ``git checkout -b myCoolFeature``.
+
+Make one commit per change and one change per commit only. Example: if you are going to create
+a particular feature and this feature requires a few changes to existing code to prepare for
+the feature, first make individual commits with the required changes and then create your
+"real" work on top of this.
+
+So, you have prepared a nice bugfix to the latest version of flux and want that to be available
 to anybody? Great! As we assume, you consumed the [Contribution Guide][contributionGuide]
 to make your contribution follow best practices, everything should be fine.
-
-Really?
 
 In reality, we tend to be very picky concerning commit messages and our CGL. - Sir Travis
 is also. He checks every commit message and wants to make sure, you applied the CGL to your
@@ -97,6 +83,27 @@ git push --force $GITHUBREMOTE $FEATUREBRANCHNAME
 # this will overwrite the remote's history entirely and the force is absolutely neccessary there
 # The changes will shop up here immediately and Travis will try to build again
 ```
+
+### Example: Refreshing your GitHub fork
+
+As time goes by, you will certainly need to refresh your repo by pulling in remote changes.
+
+For the sake of simplicity, we call the original FluidTYPO3 repositories our ``upstream`` remote.
+
+To be able to actually refresh your fork, you could either delete it, or pull changes directly via
+git. We recommend to do the following:
+
+```
+# Add the upstream repo as git remote
+git remote add upstream https://github.com/FluidTYPO3/flux.git
+# Go to your master branch
+git checkout master
+# Now, pull in changes from upstream. Rebase prevents merge commits and conflicts
+git pull --rebase upstream master
+# Up to date, yeah-unicorns everywhere!
+```
+
+We recommend to do this everytime you are about to start a new feature branch.
 
 The full guide is available at http://fedext.net/overview/contributing/contribution-guide.html
 
