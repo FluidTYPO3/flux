@@ -41,8 +41,66 @@ tests for all of these factors) there are a few things you can do.
   which are easier to manage, then commit each "chunk" of work as you finish it. There is one
   time management strategy worth mentioning in this context: the [Pomodoro][pomodoro] technique.
 
+## Making Pull requests
+
+Please make sure, you read the entire [Contribution Guide][contributionGuide] in advance.
+
+So, you have prepared a nice bufix to the latest version of flux and want that to be available
+to anybody? Great! As we assume, you consumed the [Contribution Guide][contributionGuide]
+to make your contribution follow best practices, everything should be fine.
+
+Really?
+
+In reality, we tend to be very picky concerning commit messages and our CGL. - Sir Travis
+is also. He checks every commit message and wants to make sure, you applied the CGL to your
+code. So what if he-or we-complain about findings in your code? Let us try to explain by
+example:
+
+### Example: The wrong commit message
+
+So you hit the "wrong commit message" issue and we "force" you to change your commit 
+message(s). What now? GIT is magic but not that easy to learn. Lets say you have 2 commits.
+This is what it would look like in the Pull-Request:
+
+```
+Author - Message (commit hash)
+------------------------------
+Cedric Ziel - a lead-haxor addition to flUx! (aaaaa)
+Cedric Ziel - Fixing a docs-issue (bbbbb)
+```
+
+What's wrong? You know it-because you read the [guide][contributionGuide]! The commit
+(I reference them by hash) aaaaa is lacking a prefix and an uppercase letter at the
+beginning.
+
+The optimal structure would be:
+
+```
+Author - Message (commit hash)
+------------------------------
+Cedric Ziel - [FEATURE] New property x added
+Cedric Ziel - [DOC] Documenting feature y
+```
+
+So you need to ``reword`` (git slang) your last two commits.
+
+To do this, you need to issue a ``rebase``:
+```
+git rebase -i HEAD~2 # this will issue an interactive rebase of the last 2 commits off from HEAD
+# an editor will come up, showing your last 2 commits, change the first words from pick to reword
+# save & exit
+# another editor will come up for both commits, make the topic changes there, save & exit
+# A message should be shown the rebase is complete
+git push --force $GITHUBREMOTE $FEATUREBRANCHNAME 
+# $GITHUBREMOTE is most likely "origin" in your case if you didnt change anything
+# $FEATUREBRANCHNAME is the name of your branch you made the changes on
+# this will overwrite the remote's history entirely and the force is absolutely neccessary there
+# The changes will shop up here immediately and Travis will try to build again
+```
+
 The full guide is available at http://fedext.net/overview/contributing/contribution-guide.html
 
 Last words: welcome to the growing list of contributors! :)
 
+[contributionGuide]: https://github.com/FluidTYPO3/flux.git "FluidTYPO3 contribution guide"
 [pomodoro]: http://www.pomodorotechnique.com/ "The Pomodory Technique"
