@@ -67,6 +67,11 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Inline_FalViewHelper extends Tx_Flux_Vi
 		$disallowedExtensions = $this->arguments['disallowedExtensions'];
 
 		$component = $this->getPreparedComponent('Inline/Fal');
+		if (FALSE === is_array($this->arguments['foreignMatchFields'])) {
+			$component->setForeignMatchFields(array(
+				'fieldname' => $this->arguments['name']
+			));
+		}
 		$component->setForeignSelectorFieldTcaOverride(array(
 			'config' => array(
 				'appearance' => array(

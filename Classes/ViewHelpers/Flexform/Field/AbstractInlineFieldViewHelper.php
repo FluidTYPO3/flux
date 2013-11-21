@@ -49,6 +49,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractInlineFieldViewHelper 
 		$this->registerArgument('showSynchronizationLink', 'boolean', "Defines whether to show a 'synchronize' link to update to a 1:1 translation with the original language.", FALSE, FALSE);
 		$this->registerArgument('enabledControls', 'array', "Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. Set either one to TRUE or FALSE to show or hide it.", FALSE, FALSE);
 		$this->registerArgument('headerThumbnail', 'array', 'Associative array with header thumbnail.', FALSE, FALSE);
+		$this->registerArgument('foreignMatchFields', 'array', 'The fields and values of the child record which have to match. For FAL the field/key is "fieldname" and the value has to be defined.', FALSE, FALSE);
 		$this->registerArgument('levelLinksPosition', 'string', 'Level links position.', FALSE, NULL);
 	}
 
@@ -83,6 +84,9 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractInlineFieldViewHelper 
 		}
 		if (TRUE === is_array($this->arguments['headerThumbnail'])) {
 			$component->setHeaderThumbnail($this->arguments['headerThumbnail']);
+		}
+		if (TRUE === is_array($this->arguments['foreignMatchFields'])) {
+			$component->setForeignMatchFields($this->arguments['foreignMatchFields']);
 		}
 		$component->setLevelLinksPosition($this->arguments['levelLinksPosition']);
 		return $component;
