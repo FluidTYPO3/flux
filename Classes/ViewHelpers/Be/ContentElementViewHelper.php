@@ -45,7 +45,7 @@ class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends Tx_Fluid_Core_View
 	public function render($dblist) {
 		$record = $this->arguments['row'];
 		$rendered = $dblist->tt_content_drawHeader($record);
-		$rendered .= $dblist->tt_content_drawItem($record);
+		$rendered .= '<div class="t3-page-ce-body-inner">' . $dblist->tt_content_drawItem($record) . '</div>';
 		$rendered .= '</div>';
 		return $rendered;
 	}
