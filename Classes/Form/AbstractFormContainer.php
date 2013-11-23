@@ -188,7 +188,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 
 	/**
 	 * @param string $transform
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return Tx_Flux_Form_ContainerInterface
 	 */
 	public function setTransform($transform) {
 		$this->transform = $transform;
@@ -201,4 +201,5 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	public function getTransform() {
 		return $this->transform;
 	}
+
 }

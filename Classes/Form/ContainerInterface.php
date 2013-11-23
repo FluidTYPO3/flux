@@ -55,4 +55,15 @@ interface Tx_Flux_Form_ContainerInterface extends Tx_Flux_Form_FormInterface {
 	 */
 	public function remove($childName);
 
+	/**
+	 * @param string $transform
+	 * @return Tx_Flux_Form_ContainerInterface
+	 */
+	public function setTransform($transform);
+
+	/**
+	 * @return string
+	 */
+	public function getTransform();
+
 }
