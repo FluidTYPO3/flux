@@ -42,7 +42,7 @@ class Tx_Flux_Backend_TceMain {
 	/**
 	 * @var boolean
 	 */
-	private $cachesCleared = FALSE;
+	static private $cachesCleared = FALSE;
 
 	/**
 	 * CONSTRUCTOR
@@ -175,7 +175,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @return void
 	 */
 	public function clearCacheCommand($command) {
-		if (TRUE === $this->cachesCleared) {
+		if (TRUE === self::$cachesCleared) {
 			return;
 		}
 		$manifestCacheFiles = glob(t3lib_div::getFileAbsFileName('typo3temp/*-manifest.cache'));
@@ -192,7 +192,7 @@ class Tx_Flux_Backend_TceMain {
 				$provider->clearCacheCommand($command);
 			}
 		}
-		$this->cachesCleared = TRUE;
+		self::$cachesCleared = TRUE;
 	}
 
 }
