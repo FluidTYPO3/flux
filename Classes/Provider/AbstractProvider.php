@@ -184,11 +184,12 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		foreach ($settings as $name => $value) {
 			$this->$name = $value;
 		}
+		$fieldName = $this->getFieldName(array());
 		if (TRUE === isset($settings['listType'])) {
 			$listType = $settings['listType'];
-			$GLOBALS['TCA'][$this->tableName]['types']['list']['subtypes_addlist'][$listType] = $this->fieldName;
+			$GLOBALS['TCA'][$this->tableName]['types']['list']['subtypes_addlist'][$listType] = $fieldName;
 		}
-		$GLOBALS['TCA'][$this->tableName]['columns'][$this->fieldName]['config']['type'] = 'flex';
+		$GLOBALS['TCA'][$this->tableName]['columns'][$fieldName]['config']['type'] = 'flex';
 	}
 
 	/**
@@ -199,7 +200,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @return boolean
 	 */
 	public function trigger(array $row, $table, $field, $extensionKey = NULL) {
-		$providerFieldName = $this->fieldName;
+		$providerFieldName = $this->getFieldName($row);
 		$providerTableName = $this->tableName;
 		$providerExtensionKey = $this->extensionKey;
 		$contentObjectType = $this->contentObjectType;
