@@ -79,48 +79,4 @@ class Tx_Flux_Utility_RecursiveArray {
 		return $array1;
 	}
 
-	/**
-	 * Parses a flexForm node recursively and takes care of sections etc
-	 *
-	 * @param array $nodeArray The flexForm node to parse
-	 * @param string $valuePointer The valuePointer to use for value retrieval
-	 * @return array
-	 */
-	public static function walkFlexFormNode($nodeArray, $valuePointer = 'vDEF') {
-		if (FALSE === is_array($nodeArray)) {
-			return $nodeArray;
-		}
-		$return = array();
-		foreach ($nodeArray as $nodeKey => $nodeValue) {
-			if ($nodeKey === $valuePointer) {
-				return $nodeValue;
-			}
-			if (in_array($nodeKey, array('el', '_arrayContainer'))) {
-				return self::walkFlexFormNode($nodeValue, $valuePointer);
-			}
-			if (substr($nodeKey, 0, 1) === '_') {
-				continue;
-			}
-			if (strpos($nodeKey, '.')) {
-				$nodeKeyParts = explode('.', $nodeKey);
-				$currentNode = &$return;
-				$total = (count($nodeKeyParts) - 1);
-				for ($i = 0; $i < $total; $i++) {
-					$currentNode = &$currentNode[$nodeKeyParts[$i]];
-				}
-				$newNode = array(next($nodeKeyParts) => $nodeValue);
-				$currentNode = self::walkFlexFormNode($newNode, $valuePointer);
-			} else if (is_array($nodeValue)) {
-				if (array_key_exists($valuePointer, $nodeValue)) {
-					$return[$nodeKey] = $nodeValue[$valuePointer];
-				} else {
-					$return[$nodeKey] = self::walkFlexFormNode($nodeValue, $valuePointer);
-				}
-			} else {
-				$return[$nodeKey] = $nodeValue;
-			}
-		}
-		return $return;
-	}
-
 }

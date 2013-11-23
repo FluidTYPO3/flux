@@ -29,20 +29,90 @@
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_Preview extends Tx_Flux_Backend_AbstractPreview {
+class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 
 	/**
 	 *
-	 * @param tx_cms_layout $parentObject
+	 * @param \TYPO3\CMS\Backend\View\PageLayoutView $parentObject
 	 * @param boolean $drawItem
 	 * @param string $headerContent
 	 * @param string $itemContent
 	 * @param array $row
 	 * @return void
 	 */
-	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
+	public function preProcess(\TYPO3\CMS\Backend\View\PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
 		$this->renderPreview($headerContent, $itemContent, $row, $drawItem);
 		unset($parentObject);
+	}
+
+	/**
+	 * @var Tx_Extbase_Object_ObjectManager
+	 */
+	protected $objectManager;
+
+	/**
+	 * @var Tx_Flux_Service_FluxService
+	 */
+	protected $configurationService;
+
+	/**
+	 * CONSTRUCTOR
+	 */
+	public function __construct() {
+		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+	}
+
+	/**
+	 * @param string $headerContent
+	 * @param string $itemContent
+	 * @param array $row
+	 * @param boolean $drawItem
+	 * @return void
+	 * @throws Exception
+	 */
+	public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem) {
+		$fieldName = 'pi_flexform';
+		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
+			$itemContent = $this->createShortcutIcon($row);
+		}
+		$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
+		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
+		foreach ($providers as $provider) {
+			/** @var Tx_Flux_Provider_ProviderInterface $provider */
+			list ($previewHeader, $previewContent) = $provider->getPreview($row);
+			if (FALSE === empty($previewHeader)) {
+				$drawItem = FALSE;
+				$headerContent .= '<div><strong>' . $previewHeader . '</strong> <i>' . $row['header'] . '</i></div>';
+			}
+			if (FALSE === empty($previewContent)) {
+				$drawItem = FALSE;
+				$itemContent .= $previewContent;
+			}
+		}
+	}
+
+	/**
+	 * @param array $row
+	 * @return string
+	 */
+	protected function createShortcutIcon($row) {
+		$targetRecord = $this->getPageTitleAndPidFromContentUid(intval($row['records']));
+		$title = Tx_Extbase_Utility_Localization::translate('reference', 'Flux', array(
+			$targetRecord['title']
+		));
+		$targetLink = '?id=' . $targetRecord['pid'] . '#c' . $row['records'];
+		$iconClass = 't3-icon t3-icon-actions-insert t3-icon-insert-reference t3-icon-actions t3-icon-actions-insert-reference';
+		$icon = '<a title="' . $title . '" href="' . $targetLink . '"><span class="' . $iconClass . '"></span></a>';
+		return $icon;
+	}
+
+	/**
+	 * @param integer $contentUid
+	 * @return array
+	 */
+	protected function getPageTitleAndPidFromContentUid($contentUid) {
+		return reset($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('p.title, t.pid', 'tt_content t, pages p', "t.uid = '" . $contentUid . "' AND p.uid = t.pid"));
 	}
 
 }
