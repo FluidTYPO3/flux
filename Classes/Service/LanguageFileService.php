@@ -163,11 +163,11 @@ XML;
 			$dom = new DOMDocument();
 			$dom->loadXML(self::TEMPLATE_XML);
 		}
-		$dom->getElementsByTagName('description')->item(0)->nodeValue = 'Labels for languages: ' . implode(', ', $languages);
 		$dataNode = $dom->getElementsByTagName('data')->item(0);
 		if (NULL === $dataNode) {
 			return FALSE;
 		}
+		$dom->getElementsByTagName('description')->item(0)->nodeValue = 'Labels for languages: ' . implode(', ', $languages);
 		$missingLanguages = $languages;
 		if (0 < $dataNode->childNodes->length) {
 			$missingLanguages = $languages;

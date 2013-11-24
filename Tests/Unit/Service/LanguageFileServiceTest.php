@@ -68,7 +68,9 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		$node = $domDocument->createElement('file');
 		$domDocument->appendChild($node);
 		$node->appendChild($body);
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('buildSourceForXlfFile', 'prepareDomDocument'));
+		$languageKeys = array('default');
+		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('buildSourceForXlfFile', 'prepareDomDocument', 'getLanguageKeys'));
+		$instance->expects($this->atLeastOnce())->method('getLanguageKeys')->will($this->returnValue($languageKeys));
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->any())->method('buildSourceForXlfFile')->with($fileName, 'test')->will($this->returnValue($domDocument->saveXML()));
@@ -101,7 +103,9 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		$node = $domDocument->createElement('file');
 		$domDocument->appendChild($node);
 		$node->appendChild($body);
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('prepareDomDocument', 'createXlfLanguageNode'));
+		$languageKeys = array('default');
+		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('prepareDomDocument', 'createXlfLanguageNode', 'getLanguageKeys'));
+		$instance->expects($this->atLeastOnce())->method('getLanguageKeys')->will($this->returnValue($languageKeys));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->once())->method('createXlfLanguageNode');
 		$configurationService = $this->createFluxServiceInstance();
@@ -146,13 +150,17 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 			unlink($fileName);
 		}
 		$domDocument = new DOMDocument();
+		$meta = $domDocument->createElement('meta');
+		$description = $domDocument->createElement('description');
 		$node = $domDocument->createElement('data');
 		$languageKey = $domDocument->createElement('languageKey');
 		$label = $domDocument->createElement('label');
 		$label->setAttribute('id', 'void');
 		$languageKey->appendChild($label);
 		$node->appendChild($languageKey);
+		$meta->appendChild($description);
 		$domDocument->appendChild($node);
+		$domDocument->appendChild($meta);
 		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('buildSourceForXmlFile', 'prepareDomDocument'));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->any())->method('buildSourceForXmlFile')->with($fileName, 'test')->will($this->returnValue($domDocument->saveXML()));
