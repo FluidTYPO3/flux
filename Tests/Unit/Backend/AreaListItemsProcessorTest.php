@@ -81,4 +81,17 @@ class Tx_Flux_Backend_AreaListItemsProcessorTest extends Tx_Flux_Tests_AbstractF
 		$this->assertEquals(1, count($parameters['items']));
 	}
 
+	/**
+	 * @test
+	 */
+	public function getContentAreasDefinedInElementReturnsEmptyArrayWhenNoProviderIsFound() {
+		$class = substr(get_class($this), 0, -4);
+		$instance = $this->getMock($class, array('getContentRecordByUid'));
+		$instance->expects($this->once())->method('getContentRecordByUid')->with(1)->will($this->returnValue(array()));
+		$service = $this->getMock('Tx_Flux_Service_FluxService', array('resolvePrimaryConfigurationProvider'));
+		$service->expects($this->once())->method('resolvePrimaryConfigurationProvider')->will($this->returnValue(NULL));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'fluxService', $service, TRUE);
+		$instance->getContentAreasDefinedInContentElement(1);
+	}
+
 }

@@ -204,13 +204,27 @@ abstract class Tx_Flux_Controller_AbstractFluxController extends Tx_Extbase_MVC_
 	 * @return string
 	 */
 	protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature) {
+		$shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
+		if (TRUE === $shouldRelay) {
+			$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+			$foreignControllerClass = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
+			return $this->callSubControllerAction($extensionName, $foreignControllerClass, $actionName, $pluginSignature);
+		}
+		return $this->view->render();
+	}
+
+	/**
+	 * @param string $extensionName
+	 * @param string $controllerName
+	 * @param string $actionName
+	 * @return boolean
+	 */
+	protected function hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName) {
 		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
 		$potentialControllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
-		$foreignControllerClass = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
 		$isForeign = $extensionName !== $this->extensionName;
 		$isValidController = class_exists($potentialControllerClassName);
-		$shouldRelay = TRUE === $isForeign && TRUE === $isValidController;
-		return TRUE === $shouldRelay ? $this->callSubControllerAction($extensionName, $foreignControllerClass, $actionName, $pluginSignature) : $this->view->render();
+		return (TRUE === $isForeign && TRUE === $isValidController);
 	}
 
 	/**

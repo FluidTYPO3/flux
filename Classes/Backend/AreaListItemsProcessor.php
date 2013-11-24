@@ -86,7 +86,10 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 		$record = $this->getContentRecordByUid($uid);
 		/** @var $provider Tx_Flux_Provider_ProviderInterface */
 		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
-		return NULL === $provider ? array() : $this->getGridFromConfigurationProviderAndRecord($provider, $record);
+		if (NULL === $provider) {
+			return array();
+		}
+		return $this->getGridFromConfigurationProviderAndRecord($provider, $record);
 	}
 
 	/**
@@ -117,6 +120,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * @return array|FALSE
 	 */
 	protected function loadContentRecordFromDatabase($uid) {
+		$uid = intval($uid);
 		$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', "uid = '" . $uid . "'");
 		return $record;
 	}

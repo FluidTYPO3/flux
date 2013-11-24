@@ -136,10 +136,10 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_
 	 */
 	public function canCreateFromDefinition() {
 		$properties = array($this->chainProperties);
-		if (TRUE === $this instanceof Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest) {
-			$properties['type'] = substr(array_pop(explode('_', get_class($this))), 0, -4);
-		}
-		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+		$class = $this->getObjectClassName();
+		$type = implode('/', array_slice(explode('_', substr($class, 13)), 1));
+		$properties['type'] = $type;
+		$instance = call_user_func_array(array($class, 'create'), array($properties));
 		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
 	}
 

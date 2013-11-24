@@ -23,6 +23,9 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/DummyModel.php');
+require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/DummyRepository.php');
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
@@ -359,6 +362,17 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$this->assertInstanceOf('Tx_Flux_Form', $form);
 		$this->assertInstanceOf('Tx_Flux_Form_Field_UserFunction', reset($form->getFields()));
 		$this->assertEquals('Tx_Flux_UserFunction_ErrorReporter->renderField', reset($form->getFields())->getFunction());
+	}
+
+	/**
+	 * @test
+	 */
+	public function loadObjectsFromRepositorySupportsFindByIdentifiersMethod() {
+		$class = substr(get_class($this), 0, -4);
+		$instance = $this->getMock($class);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'objectManager', $this->objectManager, TRUE);
+		$result = $this->callInaccessibleMethod($instance, 'transformValueToType', '1', 'Tx_Extbase_Persistence_ObjectStorage<Tx_Flux_Domain_Model_Dummy>');
+		$this->assertEquals($result, array(1));
 	}
 
 }

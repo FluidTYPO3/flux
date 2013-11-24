@@ -461,7 +461,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $dataType
 	 * @return mixed
 	 */
-	private function transformValueToType($value, $dataType) {
+	protected function transformValueToType($value, $dataType) {
 		if ('int' === $dataType || 'integer' === $dataType) {
 			return intval($value);
 		} elseif ('float' === $dataType) {
@@ -500,21 +500,30 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		// slower decisions with support for type-hinted collection objects
 		if ($container && $object) {
 			if (TRUE === $isModel && TRUE === class_exists($repositoryClassName) && 0 < count($identifiers)) {
-				/** @var $repository Tx_Extbase_Persistence_Repository */
+				/** @var $repository Tx_Extbase_Persistence_RepositoryInterface */
 				$repository = $this->objectManager->get($repositoryClassName);
-				if (TRUE === method_exists($repository, 'findByIdentifiers')) {
-					return $repository->findByIdentifiers($identifiers);
-				} else {
-					$query = $repository->createQuery();
-					$query->matching($query->in('uid', $identifiers));
-					return $query->execute();
-				}
+				return $this->loadObjectsFromRepository($repository, $identifiers);
 			} else {
 				$container = $this->objectManager->get($container);
 				return $container;
 			}
 		}
 		return $uids;
+	}
+
+	/**
+	 * @param Tx_Extbase_Persistence_RepositoryInterface $repository
+	 * @param array $identifiers
+	 * @return mixed
+	 */
+	private function loadObjectsFromRepository(Tx_Extbase_Persistence_RepositoryInterface $repository, $identifiers) {
+		if (TRUE === method_exists($repository, 'findByIdentifiers')) {
+			return $repository->findByIdentifiers($identifiers);
+		} else {
+			$query = $repository->createQuery();
+			$query->matching($query->in('uid', $identifiers));
+			return $query->execute();
+		}
 	}
 
 	/**

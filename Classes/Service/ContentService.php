@@ -33,6 +33,8 @@
  */
 class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 
+	const COLPOS_FLUXCONTENT = -42;
+
 	/**
 	 * @param array $row
 	 * @param array $parameters
@@ -57,7 +59,7 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 			$row['tx_flux_parent'] = $parentUidFromUrl;
 		}
 		if ($row['tx_flux_parent'] > 0) {
-			$row['colPos'] = -42;
+			$row['colPos'] = self::COLPOS_FLUXCONTENT;
 			if (0 > $afterElementUid) {
 				$row['sorting'] = $tceMain->resorting('tt_content', $row['pid'], 'sorting', abs($afterElementUid));
 			}
@@ -96,7 +98,7 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 		if (FALSE === empty($possibleArea)) {
 			$record['tx_flux_parent'] = $parentUid;
 			$record['tx_flux_column'] = $possibleArea;
-			$record['colPos'] = -42;
+			$record['colPos'] = self::COLPOS_FLUXCONTENT;
 		} elseif (0 > $relativeUid) {
 			$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid));
 			$record['sorting'] = $relativeRecord['sorting'] + 128;
@@ -148,7 +150,7 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 			// and this colPos may contain nothing but positive integers. Bring the severe hacking.
 			$backtrace = debug_backtrace();
 			$this->affectRecordByBacktrace($row, $backtrace);
-		} elseif (0 > $relativeTo || 0 > $row['pid']) {
+		} elseif (0 > intval($relativeTo) || 0 > $row['pid']) {
 			// inserting a new element after another element. Check column position of that element.
 			$relativeTo = abs($relativeTo !== $row['pid'] ? $relativeTo : $row['pid']);
 			$relativeToRecord = $this->loadRecordFromDatabase($relativeTo);
@@ -157,7 +159,7 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 			$row['colPos'] = $relativeToRecord['colPos'];
 		}
 		if (0 < $row['tx_flux_parent']) {
-			$row['colPos'] = -42;
+			$row['colPos'] = self::COLPOS_FLUXCONTENT;
 		}
 		return TRUE;
 	}
@@ -184,7 +186,7 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 			}
 			$clause = "(tx_flux_column LIKE '%:" . $oldUid . "' || tx_flux_parent = '" . $oldUid . "') AND deleted = 0 AND hidden = 0";
 			$children = $this->loadRecordsFromDatabase($clause);
-			if (count($children) < 1) {
+			if (1 > count($children)) {
 				return NULL;
 			}
 			// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
@@ -221,7 +223,7 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 				if ($slice[0] === 'top') {
 					$row['tx_flux_parent'] = $slice[1];
 					$row['tx_flux_column'] = $slice[2];
-					$row['colPos'] = -42;
+					$row['colPos'] = self::COLPOS_FLUXCONTENT;
 				} elseif ($slice[0] === 'after') {
 					$row['pid'] = 0 - $slice[1];
 					$row['tx_flux_column'] = $slice[2];

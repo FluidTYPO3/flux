@@ -27,6 +27,14 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Container_ObjectTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
+class Tx_Flux_Domain_Repository_DummyRepository extends Tx_Extbase_Persistence_Repository {
+
+	/**
+	 * @param array $identifiers
+	 * @return array
+	 */
+	public function findByIdentifiers($identifiers) {
+		return $identifiers;
+	}
 
 }

@@ -150,11 +150,27 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @disabledtest
 	 */
 	public function canPerformSubRenderingWithMatchingExtensionName() {
-		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
+		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController'));
+		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(FALSE));
 		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('Flux', 'Content');
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'view', $view, TRUE);
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
 		$this->setExpectedException('Tx_Fluid_View_Exception_InvalidTemplateResourceException', NULL, 1257246929);
+		$this->callInaccessibleMethod($instance, 'performSubRendering', 'Flux', 'Content', 'render', 'tx_flux_content');
+	}
+
+	/**
+	 * @test
+	 */
+	public function canPerformSubRenderingWithNotMatchingExtensionName() {
+		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController', 'callSubControllerAction'));
+		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(TRUE));
+		$instance->expects($this->once())->method('callSubControllerAction');
+		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('Flux', 'Content');
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'view', $view, TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
 		$this->callInaccessibleMethod($instance, 'performSubRendering', 'Flux', 'Content', 'render', 'tx_flux_content');
 	}
 

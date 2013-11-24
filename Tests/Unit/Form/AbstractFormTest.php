@@ -126,10 +126,8 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	 */
 	protected function getObjectClassName() {
 		$class = get_class($this);
-		$segments = explode('_', $class);
-		$objectName = substr(array_pop($segments), 0, -4);
-		$scope = array_pop($segments);
-		return 'Tx_Flux_Form_' . $scope . '_' . $objectName;
+		$class = substr($class, 0, -4);
+		return $class;
 	}
 
 	/**
@@ -219,10 +217,10 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	 */
 	public function canCreateFromDefinition() {
 		$properties = array($this->chainProperties);
-		if (TRUE === $this instanceof Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest) {
-			$properties['type'] = substr(array_pop(explode('_', get_class($this))), 0, -4);
-		}
-		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+		$class = $this->getObjectClassName();
+		$type = implode('/', array_slice(explode('_', substr($class, 13)), 1));
+		$properties['type'] = $type;
+		$instance = call_user_func_array(array($class, 'create'), array($properties));
 		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
 	}
 

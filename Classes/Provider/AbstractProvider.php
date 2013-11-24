@@ -889,6 +889,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @return array|FALSE
 	 */
 	protected function loadRecordFromDatabase($uid) {
+		$uid = intval($uid);
 		$tableName = $this->tableName;
 		$resource = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $tableName, "uid = '" . $uid . "'");
 		$record = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resource);
