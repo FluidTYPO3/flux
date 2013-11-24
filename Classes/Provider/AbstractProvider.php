@@ -709,18 +709,22 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 
 	/**
 	 * @param array $tree
+	 * @param string $cacheKey Overrides the cache key
+	 * @param boolean $mergeToCache Merges the configuration of $tree to the current $cacheKey
 	 * @return array
 	 */
-	protected function getMergedConfiguration(array $tree) {
-		$key = 'merged_' . md5(json_encode($tree));
-		if (TRUE === isset(self::$cache[$key])) {
-			return self::$cache[$key];
+	protected function getMergedConfiguration(array $tree, $cacheKey = NULL, $mergeToCache = FALSE) {
+		if (NULL === $cacheKey) {
+			$cacheKey = $this->getCacheKeyForMergedConfiguration($tree);
+		}
+		if (FALSE === $mergeToCache && TRUE === $this->hasCacheForMergedConfiguration($cacheKey)) {
+			return self::$cache[$cacheKey];
 		}
 		$data = array();
 		foreach ($tree as $branch) {
 			$form = $this->getForm($branch);
 			if (NULL === $form) {
-				self::$cache[$key] = $data;
+				self::$cache[$cacheKey] = $data;
 				return $data;
 			}
 			$fields = $form->getFields();
@@ -741,8 +745,27 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			}
 			$data = Tx_Flux_Utility_RecursiveArray::merge($data, $values);
 		}
-		self::$cache[$key] = $data;
+		if (TRUE === $mergeToCache && TRUE === $this->hasCacheForMergedConfiguration($cacheKey)) {
+			$data = Tx_Flux_Utility_RecursiveArray::merge(self::$cache[$cacheKey], $data);
+		}
+		self::$cache[$cacheKey] = $data;
 		return $data;
+	}
+
+	/**
+	 * @param array $tree
+	 * @return string
+	 */
+	protected function getCacheKeyForMergedConfiguration(array $tree) {
+		return 'merged_' . md5(json_encode($tree));
+	}
+
+	/**
+	 * @param string $cacheKey
+	 * @return boolean
+	 */
+	protected function hasCacheForMergedConfiguration($cacheKey) {
+		return TRUE === isset(self::$cache[$cacheKey]);
 	}
 
 	/**
