@@ -23,6 +23,9 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/DummyModel.php');
+require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/DummyRepository.php');
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
@@ -35,6 +38,14 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canInstantiateFluxService() {
 		$service = $this->createFluxServiceInstance();
 		$this->assertInstanceOf('Tx_Flux_Service_FluxService', $service);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canFlushCache() {
+		$service = $this->createFluxServiceInstance();
+		$service->flushCache();
 	}
 
 	/**
@@ -298,6 +309,70 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$service->debug($string);
 		$service->debug($string);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
+	}
+
+	/**
+	 * @test
+	 */
+	public function loadTypoScriptProvidersReturnsEmptyArrayEarlyIfSetupNotFound() {
+		$instance = $this->createFluxServiceInstance();
+		$configurationManager = $this->getMock('Tx_Extbase_Configuration_ConfigurationManager', array('getConfiguration'));
+		$configurationManager->expects($this->once())->method('getConfiguration')->will($this->returnValue(array()));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationManager', $configurationManager, TRUE);
+		$instance->flushCache();
+		$providers = $this->callInaccessibleMethod($instance, 'loadTypoScriptConfigurationProviderInstances');
+		$this->assertIsArray($providers);
+		$this->assertEmpty($providers);
+	}
+
+	/**
+	 * @test
+	 */
+	public function loadTypoScriptProvidersSupportsCustomClassName() {
+		$instance = $this->createFluxServiceInstance();
+		$configurationManager = $this->getMock('Tx_Extbase_Configuration_ConfigurationManager', array('getConfiguration'));
+		$mockedTypoScript = array(
+			'plugin.' => array(
+				'tx_flux.' => array(
+					'providers.' => array(
+						'dummy.' => array(
+							'className' => 'Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider'
+						)
+					)
+				)
+			)
+		);
+		$configurationManager->expects($this->once())->method('getConfiguration')->will($this->returnValue($mockedTypoScript));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationManager', $configurationManager, TRUE);
+		$instance->flushCache();
+		$providers = $this->callInaccessibleMethod($instance, 'loadTypoScriptConfigurationProviderInstances');
+		$this->assertIsArray($providers);
+		$this->assertNotEmpty($providers);
+		$this->assertInstanceOf('Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider', reset($providers));
+	}
+
+	/**
+	 * @test
+	 */
+	public function templateWithErrorReturnsFormWithErrorReporter() {
+		$badSource = '<f:layout invalid="TRUE" />';
+		$temp = t3lib_div::tempnam('badtemplate') . '.html';
+		t3lib_div::writeFileToTypo3tempDir($temp, $badSource);
+		$form = $this->createFluxServiceInstance()->getFormFromTemplateFile($temp);
+		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertInstanceOf('Tx_Flux_Form_Field_UserFunction', reset($form->getFields()));
+		$this->assertEquals('Tx_Flux_UserFunction_ErrorReporter->renderField', reset($form->getFields())->getFunction());
+	}
+
+	/**
+	 * @test
+	 */
+	public function loadObjectsFromRepositorySupportsFindByIdentifiersMethod() {
+		$class = substr(get_class($this), 0, -4);
+		$instance = $this->getMock($class);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'objectManager', $this->objectManager, TRUE);
+		$result = $this->callInaccessibleMethod($instance, 'transformValueToType', '1', 'Tx_Extbase_Persistence_ObjectStorage<Tx_Flux_Domain_Model_Dummy>');
+		$this->assertEquals($result, array(1));
 	}
 
 }

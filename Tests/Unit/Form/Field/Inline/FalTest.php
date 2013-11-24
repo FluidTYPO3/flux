@@ -27,30 +27,31 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Utility_LanguageFileTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class Tx_Flux_Form_Field_Inline_FalTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
 
 	/**
-	 * @test
+	 * @var array
 	 */
-	public function canDispatchMessage() {
-		$instance = new Tx_Flux_Utility_LanguageFile();
-		$this->callInaccessibleMethod($instance, 'message', 'Test');
-	}
-
-	/**
-	 * @test
-	 */
-	public function performsEarlyReturnOnUnsupportedFileExtension() {
-		$return = Tx_Flux_Utility_LanguageFile::writeLanguageLabel('/dev/null', 'void', 'void');
-		$this->assertEmpty($return);
-	}
-
-	/**
-	 * @test
-	 */
-	public function performsEarlyReturnOnInvalidId() {
-		$return = Tx_Flux_Utility_LanguageFile::writeLanguageLabel('/dev/null', 'void', 'this-is-an-invalid-id');
-		$this->assertEmpty($return);
-	}
+	protected $chainProperties = array(
+		'collapseAll' => FALSE,
+		'expandSingle' => FALSE,
+		'newRecordLinkAddTitle' => FALSE,
+		'newRecordLinkPosition' => Tx_Flux_Form::POSITION_TOP,
+		'useCombination' => FALSE,
+		'useSortable' => FALSE,
+		'showPossibleLocalizationRecords' => FALSE,
+		'showRemovedLocalizationRecords' => FALSE,
+		'showAllLocalizationLink' => FALSE,
+		'showSynchronizationLink' => FALSE,
+		'enabledControls' => array(
+			Tx_Flux_Form::CONTROL_INFO => FALSE,
+			Tx_Flux_Form::CONTROL_NEW => TRUE,
+			Tx_Flux_Form::CONTROL_DRAGDROP => TRUE,
+			Tx_Flux_Form::CONTROL_SORT => TRUE,
+			Tx_Flux_Form::CONTROL_HIDE => TRUE,
+			Tx_Flux_Form::CONTROL_DELETE => FALSE,
+			Tx_Flux_Form::CONTROL_LOCALISE => FALSE,
+		)
+	);
 
 }

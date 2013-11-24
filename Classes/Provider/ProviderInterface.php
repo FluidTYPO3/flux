@@ -76,7 +76,7 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 * field and sheets configuration. EXT:myext... syntax allowed
 	 *
 	 * @param array $row The record which triggered the processing
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function getTemplatePathAndFilename(array $row);
 

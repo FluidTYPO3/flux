@@ -107,7 +107,16 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 		if ('Section' === $settings['type']) {
 			return Tx_Flux_Form_Container_Section::create($settings);
 		} else {
-			$className = 'Tx_Flux_Form_Field_' . $settings['type'];
+			$prefix = 'Tx_Flux_Form_Field_';
+			$type = $settings['type'];
+			if (FALSE === strpos($type, '/')) {
+				$className = $type;
+			} else {
+				$className = str_replace('/', '\\', $type);
+				// Until Namespaces replace to _
+				$className = str_replace('\\', '_', $className);
+			}
+			$className = TRUE === class_exists($prefix . $className) ? $prefix . $className : $className;
 		}
 		if (FALSE === class_exists($className)) {
 			$className = $settings['type'];

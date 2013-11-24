@@ -182,11 +182,12 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	 */
 	public function getSheets($includeEmpty = FALSE) {
 		$sheets = array();
-		foreach ($this->children as $index => $sheet) {
+		foreach ($this->children as $sheet) {
 			if (FALSE === $sheet->hasChildren() && FALSE === $includeEmpty) {
 				continue;
 			}
-			$sheets[$index] = $sheet;
+			$name = $sheet->getName();
+			$sheets[$name] = $sheet;
 		}
 		return $sheets;
 	}

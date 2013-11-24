@@ -36,7 +36,10 @@ class Tx_Flux_Form_Field_RelationTest extends Tx_Flux_Tests_Functional_Form_Fiel
 		'name' => 'test',
 		'label' => 'Test field',
 		'table' => 'pages',
-		'foreignLabel' => 'uid'
+		'foreignLabel' => 'uid',
+		'filter' => array(
+			'test' => 'test'
+		)
 	);
 
 }

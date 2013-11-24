@@ -129,16 +129,31 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 
 	/**
 	 * @param string $type
+	 * @param string $prefix
+	 * @return string
+	 */
+	protected function createComponentClassName($type, $prefix) {
+		if (FALSE === strpos($type, '/')) {
+			$className = $type;
+		} else {
+			$className = str_replace('/', '\\', $type);
+			// Until Namespaces replace to _
+			$className = str_replace('\\', '_', $className);
+		}
+		$className = TRUE === class_exists($prefix . $className) ? $prefix . $className : $className;
+		return $className;
+	}
+
+	/**
+	 * @param string $type
 	 * @param string $name
 	 * @param string $label
 	 * @return Tx_Flux_Form_FieldInterface
 	 */
 	public function createField($type, $name, $label = NULL) {
 		/** @var Tx_Flux_Form_FieldInterface $component */
-		$className = str_replace('/', '\\', $type);
-		// Until Namespaces replace to _
-		$className = str_replace('\\', '_', $className);
-		$component = $this->objectManager->get(TRUE === class_exists('Tx_Flux_Form_Field_' . $className) ? 'Tx_Flux_Form_Field_' . $className : $className);
+		$className = $this->createComponentClassName($type, 'Tx_Flux_Form_Field_');
+		$component = $this->objectManager->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -154,7 +169,8 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	public function createContainer($type, $name, $label = NULL) {
 		/** @var Tx_Flux_Form_ContainerInterface $component */
-		$component = $this->objectManager->get(TRUE === class_exists('Tx_Flux_Form_Container_' . $type) ? 'Tx_Flux_Form_Container_' . $type : $type);
+		$className = $this->createComponentClassName($type, 'Tx_Flux_Form_Container_');
+		$component = $this->objectManager->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -170,7 +186,8 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	public function createWizard($type, $name, $label = NULL) {
 		/** @var Tx_Flux_Form_WizardInterface $component */
-		$component = $this->objectManager->get(TRUE === class_exists('Tx_Flux_Form_Wizard_' . $type) ? 'Tx_Flux_Form_Wizard_' . $type : $type);
+		$className = $this->createComponentClassName($type, 'Tx_Flux_Form_Wizard_');
+		$component = $this->objectManager->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -267,7 +284,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	protected function writeLanguageLabel($filePrefix, $labelIdentifier, $id) {
 		if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles']) {
-			Tx_Flux_Utility_LanguageFile::writeLanguageLabel($filePrefix, $labelIdentifier, $id);
+			$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
 		}
 	}
 

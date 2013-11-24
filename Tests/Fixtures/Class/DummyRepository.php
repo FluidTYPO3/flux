@@ -27,40 +27,14 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Field_InputTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class Tx_Flux_Domain_Repository_DummyRepository extends Tx_Extbase_Persistence_Repository {
 
 	/**
-	 * @var array
+	 * @param array $identifiers
+	 * @return array
 	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'enable' => TRUE,
-		'maxCharacters' => 30,
-		'maximum' => 10,
-		'minimum' => 0,
-		'validate' => 'trim,int',
-		'default' => 'test',
-		'requestUpdate' => TRUE,
-	);
-
-	/**
-	 * @test
-	 */
-	public function canUseRequiredProperty() {
-		$instance = $this->canChainAllChainableSetters();
-		$instance->setRequired(TRUE);
-		$this->assertEquals('trim,int,required', $instance->getValidate());
-	}
-
-	/**
-	 * @test
-	 */
-	public function canUseRequiredPropertyThroughValidateProperty() {
-		$instance = $this->canChainAllChainableSetters();
-		$instance->setValidate(NULL);
-		$instance->setRequired(TRUE);
-		$this->assertEquals('required', $instance->getValidate());
+	public function findByIdentifiers($identifiers) {
+		return $identifiers;
 	}
 
 }

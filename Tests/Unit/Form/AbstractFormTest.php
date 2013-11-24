@@ -81,10 +81,10 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 		$label = $instance->getLabel();
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = 1;
-		Tx_Flux_Utility_LanguageFile::reset();
+		$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->reset();
 		// note: double call is not an error - designed to trigger caches and assumes no errors happens during that phase
 		$this->callInaccessibleMethod($instance, 'writeLanguageLabel', $languageFile, array_pop(explode(':', $label)), $id);
-		Tx_Flux_Utility_LanguageFile::reset();
+		$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->reset();
 		$this->callInaccessibleMethod($instance, 'writeLanguageLabel', $languageFile, array_pop(explode(':', $label)), $id);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = $backup;
 		$this->assertNotEmpty($label);
@@ -126,10 +126,8 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	 */
 	protected function getObjectClassName() {
 		$class = get_class($this);
-		$segments = explode('_', $class);
-		$objectName = substr(array_pop($segments), 0, -4);
-		$scope = array_pop($segments);
-		return 'Tx_Flux_Form_' . $scope . '_' . $objectName;
+		$class = substr($class, 0, -4);
+		return $class;
 	}
 
 	/**
@@ -219,11 +217,25 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	 */
 	public function canCreateFromDefinition() {
 		$properties = array($this->chainProperties);
-		if (TRUE === $this instanceof Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest) {
-			$properties['type'] = substr(array_pop(explode('_', get_class($this))), 0, -4);
-		}
-		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+		$class = $this->getObjectClassName();
+		$type = implode('/', array_slice(explode('_', substr($class, 13)), 1));
+		$properties['type'] = $type;
+		$instance = call_user_func_array(array($class, 'create'), array($properties));
 		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseShorthandLanguageLabel() {
+		$className = $this->getObjectClassName();
+		$instance = $this->getMock($className, array('getExtensionKey', 'getName', 'getRoot'));
+		$instance->expects($this->never())->method('getExtensioKey');
+		$instance->expects($this->once())->method('getRoot')->will($this->returnValue(NULL));
+		$instance->expects($this->once())->method('getName')->will($this->returnValue('form'));
+		$instance->setLabel('LLL:tt_content.tx_flux_container');
+		$result = $instance->getLabel();
+		$this->assertSame(Tx_Extbase_Utility_Localization::translate('tt_content.tx_flux_container', 'Flux'), $result);
 	}
 
 }

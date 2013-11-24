@@ -39,14 +39,4 @@ class Tx_Flux_Form_Container_ColumnTest extends Tx_Flux_Tests_Functional_Form_Co
 		$this->assertEmpty($instance->getAreas());
 	}
 
-	/**
-	 * Override: this Component does not support LLL rewriting
-	 * and must skip this test which it otherwise inherits
-	 *
-	 * @disabledtest
-	 */
-	public function canAutoWriteLabel() {
-
-	}
-
 }

@@ -66,7 +66,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
 		parent::postProcessRecord($operation, $id, $row, $reference);
 		$parameters = t3lib_div::_GET();
-		Tx_Flux_Utility_ContentManipulator::affectRecordByRequestParameters($row, $parameters, $reference);
+		$this->contentService->affectRecordByRequestParameters($row, $parameters, $reference);
 		// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
 		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
 			$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
@@ -83,7 +83,7 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference) {
 		parent::postProcessDatabaseOperation($status, $id, $row, $reference);
 		if ($status === 'new') {
-			Tx_Flux_Utility_ContentManipulator::initializeRecord($row, $reference);
+			$this->contentService->initializeRecord($row, $reference);
 		}
 	}
 
@@ -106,9 +106,9 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 			if (TRUE === isset($callback['paste'])) {
 				$pasteCommand = $callback['paste'];
 				$parameters = explode('|', $pasteCommand);
-				Tx_Flux_Utility_ContentManipulator::pasteAfter($command, $row, $parameters, $reference);
+				$this->contentService->pasteAfter($command, $row, $parameters, $reference);
 			} else {
-				Tx_Flux_Utility_ContentManipulator::moveRecord($row, $relativeTo, $reference);
+				$this->contentService->moveRecord($row, $relativeTo, $reference);
 			}
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
 		}

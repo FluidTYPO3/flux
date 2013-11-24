@@ -32,7 +32,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest ext
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array('name' => 'test', 'label' => 'Test field');
+	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string	');
 
 	/**
 	 * @return Tx_Flux_Form_ContainerInterface

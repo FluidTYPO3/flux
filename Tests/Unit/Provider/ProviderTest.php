@@ -145,4 +145,36 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 		$this->assertInstanceOf('Tx_Flux_Form_Container_Grid', $grid);
 	}
 
+	/**
+	 * @test
+	 */
+	public function dispatchesMessageOnInvalidPathsReturnedFromConfigurationService() {
+		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$className = substr(get_class($this), 0, -4);
+		$instance = $this->getMock($className, array('getExtensionKey'));
+		$instance->expects($this->atLeastOnce())->method('getExtensionKey')->will($this->returnValue('flux'));
+		$configurationService = $this->getMock('Tx_Flux_Service_FluxService', array('message', 'getViewConfigurationForExtensionName'));
+		$configurationService->expects($this->once())->method('message');
+		$configurationService->expects($this->once())->method('getViewConfigurationForExtensionName')->will($this->returnValue('invalidstring'));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		$instance->getTemplatePaths($row);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getParentFieldValueLoadsRecordFromDatabaseIfRecordLacksParentFieldValue() {
+		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row['uid'] = 2;
+		$rowWithPid = $row;
+		$rowWithPid['pid'] = 1;
+		$className = substr(get_class($this), 0, -4);
+		$instance = $this->getMock($className, array('getParentFieldName', 'getTableName', 'loadRecordFromDatabase'));
+		$instance->expects($this->once())->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($rowWithPid));
+		$instance->expects($this->once())->method('getParentFieldName')->with($row)->will($this->returnValue('pid'));
+		$instance->expects($this->once())->method('getTableName')->with($row)->will($this->returnValue('pages'));
+		$result = $this->callInaccessibleMethod($instance, 'getParentFieldValue', $row);
+		$this->assertEquals($rowWithPid['pid'], $result);
+	}
+
 }

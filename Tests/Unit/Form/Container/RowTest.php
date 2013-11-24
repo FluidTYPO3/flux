@@ -49,4 +49,14 @@ class Tx_Flux_Form_Container_RowTest extends Tx_Flux_Tests_Functional_Form_Conta
 
 	}
 
+	/**
+	 * Override: this Component does not support LLL rewriting
+	 * and must skip this test which it otherwise inherits
+	 *
+	 * @disabledtest
+	 */
+	public function canUseShorthandLanguageLabel() {
+
+	}
+
 }

@@ -159,9 +159,6 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements t3lib_extTables
 		$form->setOption('start', $hasStartTimeToggle);
 		$form->setOption('end', $hasEndTimeToggle);
 		$form->setOption('frontendUserGroup', $hasFrontendGroupToggle);
-		if (FALSE === is_array($sheets) || 0 === count($sheets)) {
-			$sheets = array_combine(array_keys($values), array_fill(0, count($values), array('type' => $form->last()->getName())));
-		}
 		$fields = array();
 		foreach ($sheets as $propertyName => $sheetAnnotation) {
 			$sheetName = $sheetAnnotation['type'];

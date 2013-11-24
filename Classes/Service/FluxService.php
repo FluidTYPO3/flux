@@ -36,12 +36,12 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	/**
 	 * @var array
 	 */
-	private static $sentDebugMessages = array();
+	protected static $sentDebugMessages = array();
 
 	/**
 	 * @var array
 	 */
-	private static $friendlySeverities = array(
+	protected static $friendlySeverities = array(
 		t3lib_div::SYSLOG_SEVERITY_INFO,
 		t3lib_div::SYSLOG_SEVERITY_NOTICE
 	);
@@ -49,7 +49,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	/**
 	 * @var array
 	 */
-	private static $cache = array();
+	protected static $cache = array();
 
 	/**
 	 * @var string
@@ -179,15 +179,14 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		try {
 			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
 			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
-			$form = $exposedView->getForm($section, $formName);
+			self::$cache[$cacheKey] = $exposedView->getForm($section, $formName);
 		} catch (Exception $error) {
 			$this->debug($error);
 			/** @var Tx_Flux_Form $form */
-			$form = $this->objectManager->get('Tx_Flux_Form');
-			$form->add($form->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->renderField'));
-			self::$cache[$cacheKey] = $form;
+			self::$cache[$cacheKey] = $this->objectManager->get('Tx_Flux_Form');
+			self::$cache[$cacheKey]->add(self::$cache[$cacheKey]->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->renderField'));
 		}
-		return $form;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -377,7 +376,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			return array();
 		}
 		$providerConfigurations = t3lib_div::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
-		$providers = array();
+		self::$cache[$cacheKey] = array();
 		foreach ($providerConfigurations as $name => $providerSettings) {
 			if (TRUE === isset($providerSettings['className']) && TRUE === class_exists($providerSettings['className'])) {
 				$className = $providerSettings['className'];
@@ -388,10 +387,9 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			$provider = $this->objectManager->get($className);
 			$provider->setName($name);
 			$provider->loadSettings($providerSettings);
-			$providers[$name] = $provider;
+			self::$cache[$cacheKey][$name] = $provider;
 		}
-		self::$cache[$cacheKey] = $providers;
-		return $providers;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -463,7 +461,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $dataType
 	 * @return mixed
 	 */
-	private function transformValueToType($value, $dataType) {
+	protected function transformValueToType($value, $dataType) {
 		if ('int' === $dataType || 'integer' === $dataType) {
 			return intval($value);
 		} elseif ('float' === $dataType) {
@@ -484,9 +482,12 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 */
 	private function getObjectOfType($dataType, $uids) {
 		$identifiers = TRUE === is_array($uids) ? $uids : t3lib_div::trimExplode(',', trim($uids, ','), TRUE);
+		$identifiers = array_map('intval', $identifiers);
+		$isModel = (FALSE !== strpos($dataType, '_Domain_Model_') || FALSE !== strpos($dataType, '\\Domain\\Model\\'));
+		list ($container, $object) = FALSE !== strpos($dataType, '<') ? explode('<', trim($dataType, '>')) : array(NULL, $dataType);
+		$repositoryClassName = str_replace('_Domain_Model_', '_Domain_Repository_', str_replace('\\Domain\\Model\\', '\\Domain\\Repository\\', $object)) . 'Repository';
 		// Fast decisions
-		if (FALSE !== strpos($dataType, '_Domain_Model_') && FALSE === strpos($dataType, '<')) {
-			$repositoryClassName = str_replace('_Model_', '_Repository_', $dataType) . 'Repository';
+		if (TRUE === $isModel && NULL === $container) {
 			if (TRUE === class_exists($repositoryClassName)) {
 				$repository = $this->objectManager->get($repositoryClassName);
 				$uid = array_pop($identifiers);
@@ -497,21 +498,32 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			return $this->objectManager->get($dataType, $uids);
 		}
 		// slower decisions with support for type-hinted collection objects
-		list ($container, $object) = explode('<', trim($dataType, '>'));
 		if ($container && $object) {
-			if (FALSE !== strpos($object, '_Domain_Model_') && 0 < count($identifiers)) {
-				$repositoryClassName = str_replace('_Model_', '_Repository_', $object) . 'Repository';
-				/** @var $repository Tx_Extbase_Persistence_Repository */
+			if (TRUE === $isModel && TRUE === class_exists($repositoryClassName) && 0 < count($identifiers)) {
+				/** @var $repository Tx_Extbase_Persistence_RepositoryInterface */
 				$repository = $this->objectManager->get($repositoryClassName);
-				$query = $repository->createQuery();
-				$query->matching($query->in('uid', $identifiers));
-				return $query->execute();
+				return $this->loadObjectsFromRepository($repository, $identifiers);
 			} else {
 				$container = $this->objectManager->get($container);
 				return $container;
 			}
 		}
 		return $uids;
+	}
+
+	/**
+	 * @param Tx_Extbase_Persistence_RepositoryInterface $repository
+	 * @param array $identifiers
+	 * @return mixed
+	 */
+	private function loadObjectsFromRepository(Tx_Extbase_Persistence_RepositoryInterface $repository, $identifiers) {
+		if (TRUE === method_exists($repository, 'findByIdentifiers')) {
+			return $repository->findByIdentifiers($identifiers);
+		} else {
+			$query = $repository->createQuery();
+			$query->matching($query->in('uid', $identifiers));
+			return $query->execute();
+		}
 	}
 
 	/**
@@ -600,6 +612,13 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		t3lib_FlashMessageQueue::addMessage($flashMessage);
 		self::$sentDebugMessages[$hash] = TRUE;
 		return NULL;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function flushCache() {
+		self::$cache = array();
 	}
 
 }

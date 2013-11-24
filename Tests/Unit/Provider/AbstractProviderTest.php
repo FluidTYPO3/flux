@@ -64,9 +64,30 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 * @test
 	 */
 	public function canExecuteClearCacheCommand() {
-		touch(t3lib_div::getFileAbsFileName('typo3temp/flux-test.manifest'));
+		touch(t3lib_div::getFileAbsFileName('typo3temp/flux-manifest.cache'));
 		$provider = $this->getConfigurationProviderInstance();
 		$return = $provider->clearCacheCommand(array('all'));
+		$this->assertEmpty($return);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getInheritanceTreeReturnsEmptyArrayIfFieldNameIsNull() {
+		$className = substr(get_class($this), 0, -4);
+		$instance = $this->getMock($className, array('getFieldName'));
+		$instance->expects($this->once())->method('getFieldName')->will($this->returnValue(NULL));
+		$returned = $instance->getInheritanceTree(array('uid' => rand(999999, 99999999)));
+		$this->assertIsArray($returned);
+		$this->assertEmpty($returned);
+	}
+
+	/**
+	 * @test
+	 */
+	public function clearCacheCommandReturnsEarlyWhenGivenUid() {
+		$provider = $this->getConfigurationProviderInstance();
+		$return = $provider->clearCacheCommand(array('uid' => 1));
 		$this->assertEmpty($return);
 	}
 
@@ -524,6 +545,31 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$this->assertEmpty($byPathDoesNotExist);
 		$this->assertEmpty($byPathExists);
 		$this->assertEmpty($byDottedPathExists);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canLoadRecordFromDatabase() {
+		$provider = $this->getConfigurationProviderInstance();
+		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
+		$this->assertNotNull($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function setsDefaultValueInFieldsBasedOnInheritedValue() {
+		$row = array();
+		$className = substr(get_class($this), 0, -4);
+		$service = $this->getMock($className, array('getInheritedPropertyValueByDottedPath'));
+		$service->expects($this->once())->method('getInheritedPropertyValueByDottedPath')->with($row, 'input')->will($this->returnValue('default'));
+		$form = Tx_Flux_Form::create();
+		$field = $form->createField('Input', 'input');
+		$returnedForm = $this->callInaccessibleMethod($service, 'setDefaultValuesInFieldsWithInheritedValues', $form, $row);
+		$this->assertSame($form, $returnedForm);
+		$this->assertEquals('default', $field->getDefault());
 	}
 
 }
