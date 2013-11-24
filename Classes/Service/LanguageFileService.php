@@ -89,6 +89,7 @@ XML;
 	 * @param string $file
 	 * @param string $identifier
 	 * @param string $id
+	 * @return NULL
 	 */
 	public function writeLanguageLabel($file, $identifier, $id) {
 		$pattern = '/[^a-z0-9_]+/i';
@@ -96,28 +97,24 @@ XML;
 		if (preg_match($pattern, $id) || preg_match($patternIdentifier, $identifier)) {
 			$this->message('Cowardly refusing to create an invalid LLL reference called "' . $identifier . '" ' .
 				' in a Flux form called "' . $id . '" - one or both contains invalid characters.');
-			return;
+			return NULL;
 		}
 		$file = 0 === strpos($file, 'LLL:') ? substr($file, 4) : $file;
 		$filePathAndFilename = t3lib_div::getFileAbsFileName($file);
 		$extension = pathinfo($filePathAndFilename, PATHINFO_EXTENSION);
 		if (FALSE === in_array($extension, self::$validExtensions)) {
-			return;
+			return NULL;
 		}
 		$buildMethodName = 'buildSourceFor' . ucfirst($extension) . 'File';
 		$kickstartMethodName = 'kickstart' . ucfirst($extension) . 'File';
 		$languages = $this->getLanguageKeys();
-		$exists = call_user_func_array(array(self, $kickstartMethodName), array($filePathAndFilename, $languages));
-		if (TRUE === $exists) {
-			$source = call_user_func_array(array(self, $buildMethodName), array($filePathAndFilename, $identifier));
-			if (TRUE === $source) {
-				$this->message('Wrote "LLL:' . $file . ':' . $identifier . '" - or label already exists');
-			} elseif (TRUE === is_string($source)) {
-				if (TRUE === $this->writeFile($filePathAndFilename, $source)) {
-					$this->message('Wrote "LLL:' . $file . ':' . $identifier . '"');
-				} else {
-					$this->message('Unable to write LLL:' . $file . ':' . $identifier . '" - permission problem?', t3lib_div::SYSLOG_SEVERITY_FATAL);
-				}
+		call_user_func_array(array(self, $kickstartMethodName), array($filePathAndFilename, $languages));
+		$source = call_user_func_array(array(self, $buildMethodName), array($filePathAndFilename, $identifier));
+		if (TRUE === $source) {
+			$this->message('Wrote "LLL:' . $file . ':' . $identifier . '" - or label already exists');
+		} elseif (TRUE === is_string($source)) {
+			if (TRUE === $this->writeFile($filePathAndFilename, $source)) {
+				$this->message('Wrote "LLL:' . $file . ':' . $identifier . '"');
 			}
 		}
 	}
@@ -160,10 +157,12 @@ XML;
 	 */
 	public function kickstartXmlFile($filePathAndFilename, $languages = array('default')) {
 		$filePathAndFilename = $this->sanitizeFilePathAndFilename($filePathAndFilename, 'xml');
-		if (FALSE === file_exists($filePathAndFilename)) {
-			$this->writeFile($filePathAndFilename, self::TEMPLATE_XML);
+		if (TRUE === file_exists($filePathAndFilename)) {
+			$dom = $this->prepareDomDocument($filePathAndFilename);
+		} else {
+			$dom = new DOMDocument();
+			$dom->loadXML(self::TEMPLATE_XML);
 		}
-		$dom = $this->prepareDomDocument($filePathAndFilename);
 		$dom->getElementsByTagName('description')->item(0)->nodeValue = 'Labels for languages: ' . implode(', ', $languages);
 		$dataNode = $dom->getElementsByTagName('data')->item(0);
 		if (NULL === $dataNode) {
@@ -183,6 +182,7 @@ XML;
 			$this->createXmlLanguageNode($dom, $dataNode, $missingLanguageKey);
 		}
 		self::$documents[$filePathAndFilename] = $dom;
+		$this->writeFile($filePathAndFilename, $dom->saveXML());
 		return file_exists($filePathAndFilename);
 	}
 
@@ -212,7 +212,6 @@ XML;
 		$filePathAndFilename = $this->sanitizeFilePathAndFilename($filePathAndFilename, 'xlf');
 		$languages = $this->getLanguageKeys();
 		foreach ($languages as $language) {
-			$hasIdentifier = FALSE;
 			$translationPathAndFilename = $this->localizeXlfFilePathAndFilename($filePathAndFilename, $language);
 			$dom = $this->prepareDomDocument($translationPathAndFilename);
 			$dateNode = $dom->createAttribute('date');
@@ -224,14 +223,8 @@ XML;
 					return TRUE;
 				}
 			}
-			if (FALSE === $hasIdentifier) {
-				$this->createXlfLanguageNode($dom, $body, $identifier);
-			}
+			$this->createXlfLanguageNode($dom, $body, $identifier);
 			$xml = $dom->saveXML();
-			if (FALSE === $this->writeFile($translationPathAndFilename, $xml)) {
-				$this->message('Unable to write to file "' . $translationPathAndFilename . '" - permission issue?', t3lib_div::SYSLOG_SEVERITY_FATAL);
-				return FALSE;
-			}
 			self::$documents[$translationPathAndFilename] = $dom;
 		}
 		return $xml;
@@ -317,7 +310,7 @@ XML;
 
 	/**
 	 * @param $filePathAndFilename
-	 * @return DomDocument
+	 * @return DomDocument|FALSE
 	 */
 	protected function prepareDomDocument($filePathAndFilename) {
 		if (TRUE === isset(self::$documents[$filePathAndFilename])) {

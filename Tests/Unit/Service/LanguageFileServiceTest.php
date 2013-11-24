@@ -62,10 +62,14 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		if (TRUE === file_exists($fileName)) {
 			unlink($fileName);
 		}
+		$configurationService = $this->createFluxServiceInstance();
 		$domDocument = new DOMDocument();
+		$body = $domDocument->createElement('body');
 		$node = $domDocument->createElement('file');
 		$domDocument->appendChild($node);
+		$node->appendChild($body);
 		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('buildSourceForXlfFile', 'prepareDomDocument'));
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->any())->method('buildSourceForXlfFile')->with($fileName, 'test')->will($this->returnValue($domDocument->saveXML()));
 		$instance->writeLanguageLabel($dummyFile, 'test', 'test');
@@ -95,8 +99,8 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		$domDocument = new DOMDocument();
 		$body = $domDocument->createElement('body');
 		$node = $domDocument->createElement('file');
-		$domDocument->appendChild($body);
-		$body->appendChild($node);
+		$domDocument->appendChild($node);
+		$node->appendChild($body);
 		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('prepareDomDocument', 'createXlfLanguageNode'));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->once())->method('createXlfLanguageNode');
@@ -118,11 +122,11 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		$domDocument = new DOMDocument();
 		$body = $domDocument->createElement('body');
 		$node = $domDocument->createElement('file');
-		$domDocument->appendChild($body);
-		$body->appendChild($node);
+		$domDocument->appendChild($node);
+		$node->appendChild($body);
 		$transUnit = $domDocument->createElement('trans-unit', 'test');
 		$transUnit->setAttribute('id', 'test');
-		$node->appendChild($transUnit);
+		$body->appendChild($transUnit);
 		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('prepareDomDocument', 'createXlfLanguageNode'));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->never())->method('createXlfLanguageNode');
@@ -130,31 +134,6 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$result = $instance->buildSourceForXlfFile($fileName, 'test');
 		$this->assertTrue($result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function buildXlfFileSourceSendsDebugMessageIfFileCouldNotBeWritten() {
-		$dummyFile = 'typo3temp/lang.xlf';
-		$fileName = t3lib_div::getFileAbsFileName($dummyFile);
-		if (TRUE === file_exists($fileName)) {
-			unlink($fileName);
-		}
-		$domDocument = new DOMDocument();
-		$body = $domDocument->createElement('body');
-		$node = $domDocument->createElement('file');
-		$domDocument->appendChild($body);
-		$body->appendChild($node);
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('prepareDomDocument', 'createXlfLanguageNode', 'writeFile'));
-		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
-		$instance->expects($this->once())->method('createXlfLanguageNode');
-		$instance->expects($this->once())->method('writeFile')->will($this->returnValue(FALSE));
-		$configurationService = $this->getMock('Tx_Flux_Service_FluxService', array('message'));
-		$configurationService->expects($this->atLeastOnce())->method('message');
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
-		$result = $instance->buildSourceForXlfFile($fileName, 'test');
-		$this->assertFalse($result);
 	}
 
 	/**
@@ -181,6 +160,9 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$instance->writeLanguageLabel($dummyFile, 'test', 'test');
 		$instance->writeLanguageLabel($dummyFile, 'test', 'test');
+		if (TRUE === file_exists($fileName)) {
+			unlink($fileName);
+		}
 	}
 
 	/**
@@ -193,6 +175,7 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 			unlink($fileName);
 		}
 		$domDocument = new DOMDocument();
+		t3lib_div::writeFile($fileName, $domDocument->saveXML());
 		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('buildSourceForXmlFile', 'prepareDomDocument'));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->any())->method('buildSourceForXmlFile')->with($fileName, 'test')->will($this->returnValue($domDocument->saveXML()));
@@ -200,31 +183,6 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$result = $this->callInaccessibleMethod($instance, 'kickstartXmlFile', $fileName);
 		$this->assertFalse($result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function buildXmlFileSourceSendsDebugMessageIfFileCouldNotBeWritten() {
-		$dummyFile = 'typo3temp/lang.xml';
-		$fileName = t3lib_div::getFileAbsFileName($dummyFile);
-		$domDocument = new DOMDocument();
-		$node = $domDocument->createElement('data');
-		$languageKey = $domDocument->createElement('languageKey');
-		$label = $domDocument->createElement('label');
-		$label->setAttribute('id', 'void');
-		$languageKey->appendChild($label);
-		$node->appendChild($languageKey);
-		$domDocument->appendChild($node);
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('buildSourceForXmlFile', 'kickstartXmlFile', 'prepareDomDocument', 'writeFile'));
-		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
-		$instance->expects($this->any())->method('buildSourceForXmlFile')->with($fileName, 'test')->will($this->returnValue($domDocument->saveXML()));
-		$instance->expects($this->once())->method('kickstartXmlFile')->with($fileName)->will($this->returnValue(TRUE));
-		$instance->expects($this->atLeastOnce())->method('writeFile')->will($this->returnValue(FALSE));
-		$configurationService = $this->getMock('Tx_Flux_Service_FluxService', array('message'));
-		$configurationService->expects($this->atLeastOnce())->method('message');
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
-		$instance->writeLanguageLabel($dummyFile, 'test', 'test');
 		if (TRUE === file_exists($fileName)) {
 			unlink($fileName);
 		}
@@ -254,6 +212,9 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$result = $instance->buildSourceForXmlFile($fileName, 'test');
 		$this->assertEquals($domDocument->saveXML(), $result);
+		if (TRUE === file_exists($fileName)) {
+			unlink($fileName);
+		}
 	}
 
 	/**
@@ -279,6 +240,9 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$result = $instance->buildSourceForXmlFile($fileName, 'test');
 		$this->assertTrue($result);
+		if (TRUE === file_exists($fileName)) {
+			unlink($fileName);
+		}
 	}
 
 	/**

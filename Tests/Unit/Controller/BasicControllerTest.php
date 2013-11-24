@@ -213,9 +213,11 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 		$configurationService->expects($this->once())->method('getPreparedExposedTemplateView')->will($this->returnValue($view));
 		$request = $this->getMock('Tx_Extbase_MVC_Web_Request', array('getControllerName'));
 		$request->expects($this->once())->method('getControllerName')->will($this->returnValue('Test'));
+		$controllerContext = $this->getMock('Tx_Extbase_Mvc_Controller_ControllerContext');
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'request', $request, TRUE);
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
 		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, TRUE);
 		$this->callInaccessibleMethod($instance, 'initializeViewObject');
 	}
 
