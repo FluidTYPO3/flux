@@ -444,10 +444,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 			if (TRUE === is_array($value)) {
 				$value = $this->transformAccordingToConfiguration($value, $form, ltrim($prefix . '.' . $index . '.', '.'));
 			} else {
-				/** @var Tx_Flux_Form_FieldInterface $field */
-				$field = $form->get($prefix . $index, TRUE, 'Tx_Flux_Form_FieldInterface');
-				if (FALSE !== $field) {
-					$transformType = $field->getTransform();
+				/** @var Tx_Flux_Form_FieldInterface|Tx_Flux_Form_ContainerInterface $object */
+				$object = $form->get($prefix . $index, TRUE);
+				if (FALSE !== $object) {
+					$transformType = $object->getTransform();
 					$value = $this->transformValueToType($value, $transformType);
 				}
 			}
