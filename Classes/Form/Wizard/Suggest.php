@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractWizard;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @package Flux
  * @subpackage Form\Wizard
  */
-class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
+class Suggest extends AbstractWizard {
 
 	/**
 	 * @var string
@@ -139,7 +143,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $cssClass
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function setCssClass($cssClass) {
 		$this->cssClass = $cssClass;
@@ -155,7 +159,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $maxPathTitleLength
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function setMaxPathTitleLength($maxPathTitleLength) {
 		$this->maxPathTitleLength = $maxPathTitleLength;
@@ -171,7 +175,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $minimumCharacters
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function setMinimumCharacters($minimumCharacters) {
 		$this->minimumCharacters = $minimumCharacters;
@@ -187,7 +191,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $receiverClass
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function setReceiverClass($receiverClass) {
 		$this->receiverClass = $receiverClass;
@@ -203,7 +207,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $renderFunction
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function setRenderFunction($renderFunction) {
 		$this->renderFunction = $renderFunction;
@@ -219,7 +223,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $searchCondition
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function setSearchCondition($searchCondition) {
 		$this->searchCondition = $searchCondition;
@@ -235,7 +239,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param boolean $searchWholePhrase
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function setSearchWholePhrase($searchWholePhrase) {
 		$this->searchWholePhrase = $searchWholePhrase;
@@ -250,7 +254,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 * @param integer $storagePageRecursiveDepth
 	 */
 	public function setStoragePageRecursiveDepth($storagePageRecursiveDepth) {
@@ -267,11 +271,11 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param array $storagePageUids
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function setStoragePageUids($storagePageUids) {
 		if (FALSE === is_array($storagePageUids)) {
-			$this->storagePageUids = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $storagePageUids);
+			$this->storagePageUids = GeneralUtility::trimExplode(',', $storagePageUids);
 		} else {
 			$this->storagePageUids = $storagePageUids;
 		}
@@ -287,7 +291,7 @@ class Tx_Flux_Form_Wizard_Suggest extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $table
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function setTable($table) {
 		$this->table = $table;

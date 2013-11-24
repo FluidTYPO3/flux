@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractWizard;
+
 /**
  * @package Flux
  * @subpackage Form\Wizard
  */
-class Tx_Flux_Form_Wizard_Edit extends Tx_Flux_Form_AbstractWizard {
+class Edit extends AbstractWizard {
 
 	/**
 	 * @var string
@@ -81,7 +84,7 @@ class Tx_Flux_Form_Wizard_Edit extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param boolean $openOnlyIfSelected
-	 * @return Tx_Flux_Form_Wizard_Edit
+	 * @return Edit
 	 */
 	public function setOpenOnlyIfSelected($openOnlyIfSelected) {
 		$this->openOnlyIfSelected = $openOnlyIfSelected;
@@ -97,7 +100,7 @@ class Tx_Flux_Form_Wizard_Edit extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $height
-	 * @return Tx_Flux_Form_Wizard_Edit
+	 * @return Edit
 	 */
 	public function setHeight($height) {
 		$this->height = $height;
@@ -113,7 +116,7 @@ class Tx_Flux_Form_Wizard_Edit extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $width
-	 * @return Tx_Flux_Form_Wizard_Edit
+	 * @return Edit
 	 */
 	public function setWidth($width) {
 		$this->width = $width;

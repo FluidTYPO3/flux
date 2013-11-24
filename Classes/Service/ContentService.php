@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,10 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\SingletonInterface;
+
 /**
  * Flux FlexForm integration Service
  *
@@ -31,17 +36,17 @@
  * @package Flux
  * @subpackage Service
  */
-class Tx_Flux_Service_ContentService implements t3lib_Singleton {
+class ContentService implements SingletonInterface {
 
 	const COLPOS_FLUXCONTENT = -42;
 
 	/**
 	 * @param array $row
 	 * @param array $parameters
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
+	 * @param DataHandler $tceMain
 	 * @return boolean
 	 */
-	public function affectRecordByRequestParameters(array &$row, $parameters, \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
+	public function affectRecordByRequestParameters(array &$row, $parameters, DataHandler $tceMain) {
 		$url = TRUE === isset($parameters['returnUrl']) ? $parameters['returnUrl'] : NULL;
 		$urlHashCutoffPoint = strrpos($url, '#');
 		$area = NULL;
@@ -73,10 +78,10 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 	 * @param string $command The command which caused pasting - "copy" is targeted in order to determine "reference" pasting.
 	 * @param array $row The record to be pasted, by reference. Changes original $row
 	 * @param array $parameters List of parameters defining the paste operation target
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
+	 * @param DataHandler $tceMain
 	 * @return boolean
 	 */
-	public function pasteAfter($command, array &$row, $parameters, \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
+	public function pasteAfter($command, array &$row, $parameters, DataHandler $tceMain) {
 		$id = $row['uid'];
 		if (1 < substr_count($parameters[1], '-')) {
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
@@ -166,10 +171,10 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 
 	/**
 	 * @param array $row
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
+	 * @param DataHandler $tceMain
 	 * @return NULL
 	 */
-	public function initializeRecord(array $row, \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
+	public function initializeRecord(array $row, DataHandler $tceMain) {
 		$id = $row['uid'];
 		$newUid = $tceMain->substNEWwithIDs[$id];
 		$oldUid = $row['t3_origuid'];
@@ -262,7 +267,7 @@ class Tx_Flux_Service_ContentService implements t3lib_Singleton {
 	 */
 	protected function loadRecordFromDatabase($uidOrClause) {
 		if (0 < intval($uidOrClause) && TRUE === is_integer($uidOrClause)) {
-			return t3lib_BEfunc::getRecord('tt_content', $uidOrClause);
+			return BackendUtility::getRecord('tt_content', $uidOrClause);
 		} else {
 			return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', $uidOrClause);
 		}

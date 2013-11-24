@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractMultiValueFieldViewHelper {
+class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -41,7 +42,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper extends Tx_Flux_ViewHe
 	}
 
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Field_Select $component */
+		/** @var Select $component */
 		$component = $this->getPreparedComponent('Select');
 		$component->setItems($this->arguments['items']);
 		return $component;

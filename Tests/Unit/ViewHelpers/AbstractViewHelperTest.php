@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,30 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Extbase\Mvc\Web\Response;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\NodeInterface;
+use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\ChildNodeAccessInterface;
+use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
+use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper;
+use TYPO3\CMS\Fluid\Core\Widget\WidgetContext;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+abstract class AbstractViewHelperTest extends AbstractTestCase {
 
 	/**
 	 * @test
@@ -43,7 +63,7 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 	public function canPrepareArguments() {
 		$instance = $this->createInstance();
 		$arguments = $instance->prepareArguments();
-		$this->assertThat($arguments, new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY));
+		$this->assertThat($arguments, new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY));
 	}
 
 	/**
@@ -57,30 +77,30 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 	/**
 	 * @param string $type
 	 * @param mixed $value
-	 * @return Tx_Fluid_Core_Parser_SyntaxTree_NodeInterface
+	 * @return NodeInterface
 	 */
 	protected function createNode($type, $value) {
 		if ('Boolean' === $type) {
 			$value = $this->createNode('Text', strval($value));
 		}
-		/** @var Tx_Fluid_Core_Parser_SyntaxTree_NodeInterface $node */
-		$className = 'Tx_Fluid_Core_Parser_SyntaxTree_' . $type . 'Node';
+		/** @var NodeInterface $node */
+		$className = 'TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\\' . $type . 'Node';
 		$node = new $className($value);
 		return $node;
 	}
 
 	/**
-	 * @return \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+	 * @return AbstractViewHelper
 	 */
 	protected function createInstance() {
 		$className = $this->getViewHelperClassName();
-		/** @var \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper $instance */
+		/** @var AbstractViewHelper $instance */
 		$instance = $this->objectManager->get($className);
 		if (TRUE === method_exists($instance, 'injectConfigurationManager')) {
-			$cObject = new tslib_cObj();
-			$cObject->start(Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren, 'tt_content');
-			/** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager */
-			$configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
+			$cObject = new ContentObjectRenderer();
+			$cObject->start(Records::$contentRecordWithoutParentAndWithoutChildren, 'tt_content');
+			/** @var ConfigurationManagerInterface $configurationManager */
+			$configurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
 			$configurationManager->setContentObject($cObject);
 			$instance->injectConfigurationManager($configurationManager);
 		}
@@ -91,53 +111,53 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 	/**
 	 * @param array $arguments
 	 * @param array $variables
-	 * @param Tx_Fluid_Core_Parser_SyntaxTree_NodeInterface $childNode
+	 * @param NodeInterface $childNode
 	 * @param string $extensionName
 	 * @param string $pluginName
-	 * @return \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+	 * @return AbstractViewHelper
 	 */
 	protected function buildViewHelperInstance($arguments = array(), $variables = array(), $childNode = NULL, $extensionName = NULL, $pluginName = NULL) {
 		$instance = $this->createInstance();
-		/** @var \TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer $container */
-		$container = $this->objectManager->get('TYPO3\\CMS\\Fluid\\Core\\ViewHelper\\TemplateVariableContainer');
-		/** @var \TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer $viewHelperContainer */
-		$viewHelperContainer = $this->objectManager->get('TYPO3\\CMS\\Fluid\\Core\\ViewHelper\\ViewHelperVariableContainer');
+		/** @var TemplateVariableContainer $container */
+		$container = $this->objectManager->get('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer');
+		/** @var ViewHelperVariableContainer $viewHelperContainer */
+		$viewHelperContainer = $this->objectManager->get('TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer');
 		if (0 < count($variables)) {
-			Tx_Extbase_Reflection_ObjectAccess::setProperty($container, 'variables', $variables, TRUE);
+			ObjectAccess::setProperty($container, 'variables', $variables, TRUE);
 		}
-		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode($instance, $arguments);
-		/** @var Tx_Extbase_MVC_Web_Routing_UriBuilder $uriBuilder */
-		$uriBuilder = $this->objectManager->get('Tx_Extbase_MVC_Web_Routing_UriBuilder');
-		/** @var Tx_Extbase_Mvc_Web_Request $request */
-		$request = $this->objectManager->get('Tx_Extbase_Mvc_Web_Request');
+		$node = new ViewHelperNode($instance, $arguments);
+		/** @var UriBuilder $uriBuilder */
+		$uriBuilder = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');
+		/** @var Request $request */
+		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
 		if (NULL !== $extensionName) {
 			$request->setControllerExtensionName($extensionName);
 		}
 		if (NULL !== $pluginName) {
 			$request->setPluginName($pluginName);
 		}
-		/** @var Tx_Extbase_Mvc_Web_Response $response */
-		$response = $this->objectManager->get('Tx_Extbase_Mvc_Web_Response');
-		/** @var \TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext $controllerContext */
-		$controllerContext = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerContext');
+		/** @var Response $response */
+		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
+		/** @var ControllerContext $controllerContext */
+		$controllerContext = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
 		$controllerContext->setRequest($request);
 		$controllerContext->setResponse($response);
 		$controllerContext->setUriBuilder($uriBuilder);
-		/** @var \TYPO3\CMS\Fluid\Core\Rendering\RenderingContext $renderingContext */
-		$renderingContext = $this->objectManager->get('TYPO3\\CMS\\Fluid\\Core\\Rendering\\RenderingContext');
+		/** @var RenderingContext $renderingContext */
+		$renderingContext = $this->objectManager->get('TYPO3\CMS\Fluid\Core\Rendering\RenderingContext');
 		$renderingContext->setControllerContext($controllerContext);
 		$renderingContext->injectViewHelperVariableContainer($viewHelperContainer);
 		$renderingContext->injectTemplateVariableContainer($container);
 		$instance->setArguments($arguments);
 		$instance->setRenderingContext($renderingContext);
-		if (TRUE === $instance instanceof Tx_Fluidwidget_Core_Widget_AbstractWidgetViewHelper) {
-			/** @var \TYPO3\CMS\Fluid\Core\Widget\WidgetContext $widgetContext */
-			$widgetContext = $this->objectManager->get('TYPO3\\CMS\\Fluid\\Core\\Widget\\WidgetContext');
-			\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'widgetContext', $widgetContext, TRUE);
+		if (TRUE === $instance instanceof AbstractWidgetViewHelper) {
+			/** @var WidgetContext $widgetContext */
+			$widgetContext = $this->objectManager->get('TYPO3\CMS\Fluid\Core\Widget\WidgetContext');
+			ObjectAccess::setProperty($instance, 'widgetContext', $widgetContext, TRUE);
 		}
 		if (NULL !== $childNode) {
 			$node->addChildNode($childNode);
-			if ($instance instanceof \TYPO3\CMS\Fluid\Core\ViewHelper\Facets\ChildNodeAccessInterface) {
+			if ($instance instanceof ChildNodeAccessInterface) {
 				$instance->setChildNodes(array($childNode));
 			}
 		}
@@ -148,10 +168,10 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 	/**
 	 * @param array $arguments
 	 * @param array $variables
-	 * @param Tx_Fluid_Core_Parser_SyntaxTree_NodeInterface $childNode
+	 * @param NodeInterface $childNode
 	 * @param string $extensionName
 	 * @param string $pluginName
-	 * @return mixed|\TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+	 * @return mixed|AbstractViewHelper
 	 */
 	protected function executeViewHelper($arguments = array(), $variables = array(), $childNode = NULL, $extensionName = NULL, $pluginName = NULL) {
 		$instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
@@ -166,7 +186,7 @@ abstract class Tx_Flux_ViewHelpers_AbstractViewHelperTest extends Tx_Flux_Tests_
 	 * @param array $variables
 	 * @param string $extensionName
 	 * @param string $pluginName
-	 * @return mixed|Tx_Fluid_Core_ViewHelper_AbstractViewHelper
+	 * @return mixed|AbstractViewHelper
 	 */
 	protected function executeViewHelperUsingTagContent($nodeType, $nodeValue, $arguments = array(), $variables = array(), $extensionName = NULL, $pluginName = NULL) {
 		$childNode = $this->createNode($nodeType, $nodeValue);

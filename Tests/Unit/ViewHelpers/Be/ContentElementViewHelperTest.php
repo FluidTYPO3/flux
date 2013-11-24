@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Be;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,21 +24,29 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Backend\Controller\BackendController;
+use TYPO3\CMS\Backend\Template\DocumentTemplate;
+use TYPO3\CMS\Backend\Template\MediumDocumentTemplate;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Be_ContentElementViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
+class ContentElementViewHelperTest extends AbstractViewHelperTest {
 
 	/**
 	 * Setup
 	 */
 	protected function setUp() {
 		parent::setUp();
-		$GLOBALS['TBE_TEMPLATE'] = new template();
-		$GLOBALS['SOBE'] = new TYPO3backend();
-		$GLOBALS['SOBE']->doc = new mediumDoc();
-		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$GLOBALS['TBE_TEMPLATE'] = new DocumentTemplate();
+		$GLOBALS['SOBE'] = new BackendController();
+		$GLOBALS['SOBE']->doc = new MediumDocumentTemplate();
+		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
 	}
 
 	/**
@@ -45,9 +54,9 @@ class Tx_Flux_ViewHelpers_Be_ContentElementViewHelperTest extends Tx_Flux_ViewHe
 	 */
 	public function canRender() {
 		$arguments = array(
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
+			'row' => Records::$contentRecordWithoutParentAndWithoutChildren,
 			'area' => 'test',
-			'dblist' => \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\View\\PageLayoutView')
+			'dblist' => GeneralUtility::makeInstance('TYPO3\CMS\Backend\View\PageLayoutView')
 		);
 		$this->executeViewHelper($arguments);
 	}

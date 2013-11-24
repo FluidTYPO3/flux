@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,6 +23,8 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
+
+use TYPO3\CMS\Extbase\Mvc\Request;
 
 /**
  * ControllerActions ViewHelper
@@ -86,7 +89,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_SelectViewHelper {
+class ControllerActionsViewHelper extends SelectViewHelper {
 
 	/**
 	 * Initialize
@@ -109,8 +112,8 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Field_ControllerActions
-	 * @throws RuntimeException
+	 * @return ControllerActions
+	 * @throws \RuntimeException
 	 */
 	public function getComponent() {
 		$extensionName = $this->arguments['extensionName'];
@@ -119,7 +122,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 		$controllerName = $this->arguments['controllerName'];
 		$separator = $this->arguments['separator'];
 		$controllerContext = $this->renderingContext->getControllerContext();
-		if (TRUE === $actions instanceof Traversable) {
+		if (TRUE === $actions instanceof \Traversable) {
 			$actions = iterator_to_array($actions);
 		}
 		if (NULL !== $controllerContext) {
@@ -132,10 +135,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 			}
 		}
 		if (TRUE === empty($extensionName) && TRUE === empty($pluginName) && 1 > count($actions)) {
-			throw new RuntimeException('Either "actions", or both "extensionName" and "pluginName" must be used on ' .
+			throw new \RuntimeException('Either "actions", or both "extensionName" and "pluginName" must be used on ' .
 				'flux:flexform.field.controllerActions. None were found and none were detected from the ControllerContext Request.', 1346514748);
 		}
-		/** @var Tx_Flux_Form_Field_ControllerActions $component */
+		/** @var ControllerActions $component */
 		$component = $this->getPreparedComponent('ControllerActions');
 		$component->setItems($this->arguments['items']);
 		$component->setExtensionName($extensionName);
@@ -154,10 +157,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelper extends Tx_
 	}
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Mvc\Web\Request $request
+	 * @param Request $request
 	 * @return string
 	 */
-	protected function getFullExtensionNameFromRequest(\TYPO3\CMS\Extbase\Mvc\Web\Request $request) {
+	protected function getFullExtensionNameFromRequest(Request $request) {
 		$vendorName = NULL;
 		if (TRUE === method_exists($request, 'getControllerVendorName')) {
 			$vendorName = $request->getControllerVendorName();

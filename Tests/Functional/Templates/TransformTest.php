@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Tests\Functional\Templates;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,18 +24,21 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Templates_TransformTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class TransformTest extends AbstractTestCase {
 
 	/**
 	 * @return array
 	 */
 	protected function getTransformedData() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_TRANSFORMATIONS);
-		$xml = Tx_Flux_Tests_Fixtures_Data_Xml::EXPECTING_FLUX_TRANSFORMATIONS;
+		$xml = Xml::EXPECTING_FLUX_TRANSFORMATIONS;
 		$service = $this->createFluxServiceInstance();
 		$stored = $this->performBasicTemplateReadTest($templatePathAndFilename);
 		$data = $service->convertFlexFormContentToArray($xml, $stored);

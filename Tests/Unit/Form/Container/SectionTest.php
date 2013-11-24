@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Container_SectionTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
+class SectionTest extends AbstractContainerTest {
 
 	/**
 	 * @test
@@ -48,8 +49,8 @@ class Tx_Flux_Form_Container_SectionTest extends Tx_Flux_Tests_Functional_Form_C
 				)
 			)
 		);
-		$section = Tx_Flux_Form_Container_Section::create($definition);
-		$this->assertInstanceOf('Tx_Flux_Form_Container_Section', $section);
+		$section = Section::create($definition);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Section', $section);
 	}
 
 }

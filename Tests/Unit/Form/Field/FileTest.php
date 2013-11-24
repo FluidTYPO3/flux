@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class FileTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -47,7 +50,7 @@ class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_Ab
 	 * @test
 	 */
 	public function canSetDefaultValueFromSimpleString() {
-		$instance = Tx_Flux_Form::create(array())->createField('File', 'file');
+		$instance = Form::create(array())->createField('File', 'file');
 		$defaultValue = 'testfile.jpg';
 		$instance->setDefault($defaultValue);
 		$this->assertSame($defaultValue . '|' . $defaultValue, $instance->getDefault());
@@ -57,7 +60,7 @@ class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_Ab
 	 * @test
 	 */
 	public function canSetDefaultValueFromAlreadyCorrectString() {
-		$instance = Tx_Flux_Form::create(array())->createField('File', 'file');
+		$instance = Form::create(array())->createField('File', 'file');
 		$defaultValue = 'testfile.jpg|testfile.jpg';
 		$instance->setDefault($defaultValue);
 		$this->assertSame($defaultValue, $instance->getDefault());
@@ -67,7 +70,7 @@ class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_Ab
 	 * @test
 	 */
 	public function canSetDefaultValueFromCsvOfSimpleStrings() {
-		$instance = Tx_Flux_Form::create(array())->createField('File', 'file');
+		$instance = Form::create(array())->createField('File', 'file');
 		$defaultValue = 'testfile1.jpg,testfile2.jpg';
 		$expected = 'testfile1.jpg|testfile1.jpg,testfile2.jpg|testfile2.jpg';
 		$instance->setDefault($defaultValue);
@@ -78,7 +81,7 @@ class Tx_Flux_Form_Field_FileTest extends Tx_Flux_Tests_Functional_Form_Field_Ab
 	 * @test
 	 */
 	public function canSetDefaultValueFromCsvfAlreadyCorrectStrings() {
-		$instance = Tx_Flux_Form::create(array())->createField('File', 'file');
+		$instance = Form::create(array())->createField('File', 'file');
 		$defaultValue = 'testfile1.jpg|testfile1.jpg,testfile2.jpg|testfile2.jpg';
 		$instance->setDefault($defaultValue);
 		$this->assertSame($defaultValue, $instance->getDefault());

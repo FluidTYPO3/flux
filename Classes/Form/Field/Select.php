@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,17 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\Generic\Query;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField {
+class Select extends AbstractMultiValueFormField {
 
 	/**
 	 * Mixed - string (CSV), Traversable or array of items. Format of key/value
@@ -60,7 +67,7 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 
 	/**
 	 * @param array $items
-	 * @return Tx_Flux_Form_Field_Select
+	 * @return Select
 	 */
 	public function setItems($items) {
 		$this->items = $items;
@@ -73,7 +80,7 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 	public function getItems() {
 		$items = array();
 		if (TRUE === is_string($this->items)) {
-			$itemNames = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->items);
+			$itemNames = GeneralUtility::trimExplode(',', $this->items);
 			foreach ($itemNames as $itemName) {
 				array_push($items, array($itemName, $itemName));
 			}
@@ -85,12 +92,12 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 					array_push($items, array($itemValue, $itemIndex));
 				}
 			}
-		} elseif (TRUE === $this->items instanceof \TYPO3\CMS\Extbase\Persistence\Generic\Query) {
-			/** @var \TYPO3\CMS\Extbase\Persistence\Generic\Query $query */
+		} elseif (TRUE === $this->items instanceof Query) {
+			/** @var Query $query */
 			$query = $this->items;
 			$results = $query->execute();
 			$type = $query->getType();
-			$typoScript = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$table = strtolower(str_replace('\\', '_', $type));
 			if (TRUE === isset($typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'])) {
 				$mapping = $typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'];
@@ -99,10 +106,10 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 				}
 			}
 			$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
-			$propertyName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToLowerCamelCase($labelField);
+			$propertyName = GeneralUtility::underscoredToLowerCamelCase($labelField);
 			foreach ($results as $result) {
 				$uid = $result->getUid();
-				array_push($items, array(\TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($result, $propertyName), $uid));
+				array_push($items, array(ObjectAccess::getProperty($result, $propertyName), $uid));
 			}
 		}
 		$emptyOption = $this->getEmptyOption();
@@ -114,7 +121,7 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 
 	/**
 	 * @param boolean|string $emptyOption
-	 * @return Tx_Flux_Form_Field_Select
+	 * @return Select
 	 */
 	public function setEmptyOption($emptyOption) {
 		$this->emptyOption = $emptyOption;

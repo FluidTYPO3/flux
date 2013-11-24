@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\FieldInterface;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flux_Form_FieldInterface {
+class Text extends Input implements FieldInterface {
 
 	/**
 	 * @var integer
@@ -59,7 +63,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 		$configuration['eval'] = $this->getValidate();
 		$defaultExtras = $this->getDefaultExtras();
 		if (TRUE === $this->getEnableRichText() && TRUE === empty($defaultExtras)) {
-			$typoScript = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$configuration['defaultExtras'] = $typoScript['plugin.']['tx_flux.']['settings.']['flexform.']['rteDefaults'];
 		} else {
 			$configuration['defaultExtras'] = $defaultExtras;
@@ -69,7 +73,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 
 	/**
 	 * @param integer $columns
-	 * @return Tx_Flux_Form_Field_Text
+	 * @return \FluidTYPO3\Flux\Form\Field\Text
 	 */
 	public function setColumns($columns) {
 		$this->columns = $columns;
@@ -85,7 +89,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 
 	/**
 	 * @param string $defaultExtras
-	 * @return Tx_Flux_Form_Field_Text
+	 * @return Text
 	 */
 	public function setDefaultExtras($defaultExtras) {
 		$this->defaultExtras = $defaultExtras;
@@ -101,7 +105,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 
 	/**
 	 * @param boolean $enableRichText
-	 * @return Tx_Flux_Form_Field_Text
+	 * @return Text
 	 */
 	public function setEnableRichText($enableRichText) {
 		$this->enableRichText = (boolean) $enableRichText;
@@ -117,7 +121,7 @@ class Tx_Flux_Form_Field_Text extends Tx_Flux_Form_Field_Input implements Tx_Flu
 
 	/**
 	 * @param integer $rows
-	 * @return Tx_Flux_Form_Field_Text
+	 * @return Text
 	 */
 	public function setRows($rows) {
 		$this->rows = $rows;

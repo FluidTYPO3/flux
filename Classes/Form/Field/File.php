@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
+class File extends AbstractMultiValueFormField {
 
 	/**
 	 * @var string
@@ -73,12 +77,12 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 	 * default values for files
 	 *
 	 * @param mixed $default
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return \FluidTYPO3\Flux\Form\FieldInterface
 	 */
 	public function setDefault($default) {
 		if (NULL !== $default) {
 			$files = array();
-			$filePaths = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $default);
+			$filePaths = GeneralUtility::trimExplode(',', $default);
 			foreach ($filePaths as $path) {
 				if (FALSE === strpos($path, '|')) {
 					$files[] = $path . '|' . rawurlencode($path);
@@ -94,7 +98,7 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 
 	/**
 	 * @param string $allowed
-	 * @return Tx_Flux_Form_Field_File
+	 * @return File
 	 */
 	public function setAllowed($allowed) {
 		$this->allowed = $allowed;
@@ -110,7 +114,7 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 
 	/**
 	 * @param string $disallowed
-	 * @return Tx_Flux_Form_Field_File
+	 * @return File
 	 */
 	public function setDisallowed($disallowed) {
 		$this->disallowed = $disallowed;
@@ -126,7 +130,7 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 
 	/**
 	 * @param integer $maxSize
-	 * @return Tx_Flux_Form_Field_File
+	 * @return File
 	 */
 	public function setMaxSize($maxSize) {
 		$this->maxSize = $maxSize;
@@ -142,7 +146,7 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 
 	/**
 	 * @param string $uploadFolder
-	 * @return Tx_Flux_Form_Field_File
+	 * @return File
 	 */
 	public function setUploadFolder($uploadFolder) {
 		$this->uploadFolder = $uploadFolder;
@@ -158,7 +162,7 @@ class Tx_Flux_Form_Field_File extends Tx_Flux_Form_AbstractMultiValueFormField {
 
 	/**
 	 * @param boolean $showThumbnails
-	 * @return Tx_Flux_Form_Field_File
+	 * @return File
 	 */
 	public function setShowThumbnails($showThumbnails) {
 		$this->showThumbnails = (boolean) $showThumbnails;

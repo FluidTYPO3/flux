@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Provider;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTest {
+class ProviderTest extends AbstractProviderTest {
 
 	/**
 	 * @var array
@@ -100,10 +104,10 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	 * @test
 	 */
 	public function canReturnExtensionKey() {
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$service = $this->createFluxServiceInstance();
 		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
-		$this->assertInstanceOf('Tx_Flux_Provider_ProviderInterface', $provider);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Provider\ProviderInterface', $provider);
 		$extensionKey = $provider->getExtensionKey($record);
 		$this->assertNotEmpty($extensionKey);
 		$this->assertRegExp('/[a-z_]+/', $extensionKey);
@@ -113,10 +117,10 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	 * @test
 	 */
 	public function canReturnPathSetByRecordWithoutParentAndWithoutChildren() {
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$service = $this->createFluxServiceInstance();
 		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);
-		$this->assertInstanceOf('Tx_Flux_Provider_ProviderInterface', $provider);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Provider\ProviderInterface', $provider);
 		$paths = $provider->getTemplatePaths($row);
 		$this->assertIsArray($paths);
 	}
@@ -125,38 +129,38 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	 * @test
 	 */
 	public function canCreateFormFromDefinitionWithAllSupportedNodes() {
-		/** @var Tx_Flux_Provider_ProviderInterface $instance */
+		/** @var ProviderInterface $instance */
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$provider->loadSettings($this->definition);
 		$form = $provider->getForm($record);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 	}
 
 	/**
 	 * @test
 	 */
 	public function canCreateGridFromDefinitionWithAllSupportedNodes() {
-		/** @var Tx_Flux_Provider_ProviderInterface $instance */
+		/** @var ProviderInterface $instance */
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$provider->loadSettings($this->definition);
 		$grid = $provider->getGrid($record);
-		$this->assertInstanceOf('Tx_Flux_Form_Container_Grid', $grid);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $grid);
 	}
 
 	/**
 	 * @test
 	 */
 	public function dispatchesMessageOnInvalidPathsReturnedFromConfigurationService() {
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$className = substr(get_class($this), 0, -4);
 		$instance = $this->getMock($className, array('getExtensionKey'));
 		$instance->expects($this->atLeastOnce())->method('getExtensionKey')->will($this->returnValue('flux'));
-		$configurationService = $this->getMock('Tx_Flux_Service_FluxService', array('message', 'getViewConfigurationForExtensionName'));
+		$configurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('message', 'getViewConfigurationForExtensionName'));
 		$configurationService->expects($this->once())->method('message');
 		$configurationService->expects($this->once())->method('getViewConfigurationForExtensionName')->will($this->returnValue('invalidstring'));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$instance->getTemplatePaths($row);
 	}
 
@@ -164,7 +168,7 @@ class Tx_Flux_Provider_ProviderTest extends Tx_Flux_Provider_AbstractProviderTes
 	 * @test
 	 */
 	public function getParentFieldValueLoadsRecordFromDatabaseIfRecordLacksParentFieldValue() {
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$row['uid'] = 2;
 		$rowWithPid = $row;
 		$rowWithPid['pid'] = 1;

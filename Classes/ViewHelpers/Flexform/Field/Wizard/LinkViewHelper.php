@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -22,6 +23,7 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
+use FluidTYPO3\Flux\Form\Wizard\Link;
 
 /**
  * Field Wizard: Link
@@ -29,7 +31,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+class LinkViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * @var string
@@ -51,10 +53,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_LinkViewHelper extends Tx_Flux_V
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Wizard_Link
+	 * @return Link
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Wizard_Link $component */
+		/** @var Link $component */
 		$component = $this->getPreparedComponent('Link');
 		$component->setActiveTab($this->arguments['activeTab']);
 		$component->setWidth($this->arguments['width']);

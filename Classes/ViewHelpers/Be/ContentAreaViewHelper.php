@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Be;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,18 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Utility\Version;
+use TYPO3\CMS\Backend\View\PageLayoutView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+
 /**
  * ContentAreaViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers\Be
  */
-class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class ContentAreaViewHelper extends AbstractViewHelper {
 
 	/**
 	 * Initialize
@@ -53,8 +59,8 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends \TYPO3\CMS\Fluid\Core
 		$pageRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages', "uid = '" . $row['pid'] . "'");
 		$pageRecord = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pageRes);
 		$GLOBALS['TYPO3_DB']->sql_free_result($pageRes);
-		/** @var $dblist \TYPO3\CMS\Backend\View\PageLayoutView */
-		$dblist = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\View\\PageLayoutView');
+		/** @var $dblist PageLayoutView */
+		$dblist = $this->objectManager->get('TYPO3\CMS\Backend\View\PageLayoutView');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
 		$dblist->script = 'db_layout.php';
 		$dblist->showIcon = 1;
@@ -92,7 +98,7 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends \TYPO3\CMS\Fluid\Core
 		$this->templateVariableContainer->remove('dblist');
 		$this->templateVariableContainer->remove('fluxColumnId');
 
-		if (FALSE === Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
+		if (FALSE === Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
 			$content = '<div id="column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX">' . $content . '</div>';
 		}
 

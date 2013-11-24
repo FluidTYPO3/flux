@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractWizard;
+
 /**
  * @package Flux
  * @subpackage Form\Wizard
  */
-class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
+class Link extends AbstractWizard {
 
 	/**
 	 * @var string
@@ -97,7 +100,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $activeTab
-	 * @return Tx_Flux_Form_Wizard_Link
+	 * @return Link
 	 */
 	public function setActiveTab($activeTab) {
 		$this->activeTab = $activeTab;
@@ -113,7 +116,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $height
-	 * @return Tx_Flux_Form_Wizard_Link
+	 * @return Link
 	 */
 	public function setHeight($height) {
 		$this->height = $height;
@@ -129,7 +132,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $width
-	 * @return Tx_Flux_Form_Wizard_Link
+	 * @return Link
 	 */
 	public function setWidth($width) {
 		$this->width = $width;
@@ -145,7 +148,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param mixed $blindLinkOptions
-	 * @return Tx_Flux_Form_Wizard_Link
+	 * @return Link
 	 */
 	public function setBlindLinkOptions($blindLinkOptions) {
 		$this->blindLinkOptions = $blindLinkOptions;
@@ -164,7 +167,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param mixed $blindLinkFields
-	 * @return Tx_Flux_Form_Wizard_Link
+	 * @return Link
 	 */
 	public function setBlindLinkFields($blindLinkFields) {
 		$this->blindLinkFields = $blindLinkFields;
@@ -183,7 +186,7 @@ class Tx_Flux_Form_Wizard_Link extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param mixed $allowedExtensions
-	 * @return Tx_Flux_Form_Wizard_Link
+	 * @return Link
 	 */
 	public function setAllowedExtensions($allowedExtensions) {
 		$this->allowedExtensions = $allowedExtensions;

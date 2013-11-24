@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Utility\Miscellaneous;
+
 /**
  * ClipBoard Utility
  *
@@ -30,7 +33,7 @@
  * @package Flux
  * @subpackage Utility
  */
-class Tx_Flux_Utility_ClipBoard {
+class ClipBoard {
 
 	/**
 	 * @var array
@@ -93,11 +96,11 @@ class Tx_Flux_Utility_ClipBoard {
 			$label = 'Paste in this position';
 			$icon = 'actions-document-paste-after';
 		}
-		$icon = Tx_Flux_Utility_Miscellaneous::getIcon($icon, $label);
+		$icon = Miscellaneous::getIcon($icon, $label);
 		$uri = "javascript:top.content.list_frame.location.href=top.TS.PATH_typo3+'";
 		$uri .= $clipBoard->pasteUrl('tt_content', $relativeTo);
 		$uri .= "';";
-		return Tx_Flux_Utility_Miscellaneous::wrapLink($icon, $uri);
+		return Miscellaneous::wrapLink($icon, $uri);
 	}
 
 }

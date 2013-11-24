@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Provider;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,9 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * ConfigurationProvider for records in tt_content
  *
@@ -34,7 +38,7 @@
  * @package Flux
  * @subpackage Provider
  */
-class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInterface {
+class ContentProvider extends AbstractProvider implements ProviderInterface {
 
 	/**
 	 * @var string
@@ -60,12 +64,12 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
+	 * @param DataHandler $reference
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
+	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference) {
 		parent::postProcessRecord($operation, $id, $row, $reference);
-		$parameters = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET();
+		$parameters = GeneralUtility::_GET();
 		$this->contentService->affectRecordByRequestParameters($row, $parameters, $reference);
 		// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
 		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
@@ -77,10 +81,10 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @param string $status
 	 * @param integer $id
 	 * @param array $row
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
+	 * @param DataHandler $reference
 	 * @return void
 	 */
-	public function postProcessDatabaseOperation($status, $id, &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
+	public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference) {
 		parent::postProcessDatabaseOperation($status, $id, $row, $reference);
 		if ($status === 'new') {
 			$this->contentService->initializeRecord($row, $reference);
@@ -95,14 +99,14 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @param integer $id
 	 * @param array $row
 	 * @param integer $relativeTo
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
+	 * @param DataHandler $reference
 	 * @return void
 	 */
-	public function postProcessCommand($command, $id, array &$row, &$relativeTo, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
+	public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference) {
 		parent::postProcessCommand($command, $id, $row, $relativeTo, $reference);
 		$pasteCommands = array('copy', 'move');
 		if (TRUE === in_array($command, $pasteCommands)) {
-			$callback = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('CB');
+			$callback = GeneralUtility::_GET('CB');
 			if (TRUE === isset($callback['paste'])) {
 				$pasteCommand = $callback['paste'];
 				$parameters = explode('|', $pasteCommand);

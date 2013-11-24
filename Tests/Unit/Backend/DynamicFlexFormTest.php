@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Backend\DynamicFlexForm;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Backend_DynamicFlexFormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class DynamicFlexFormTest extends AbstractTestCase {
 
 	/**
 	 * @test
@@ -59,19 +65,20 @@ class Tx_Flux_Backend_DynamicFlexFormTest extends Tx_Flux_Tests_AbstractFunction
 		$instance = $this->getInstance();
 		$dataStructure = array();
 		$config = array();
+		$row = array();
 		$instance->getFlexFormDS_postProcessDS($dataStructure, $config, $row, $table, $fieldName);
-		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
+		$isArrayConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
 		$this->assertThat($dataStructure, $isArrayConstraint);
 	}
 
 	/**
-	 * @return \Tx_Flux_Backend_DynamicFlexForm
+	 * @return DynamicFlexForm
 	 */
 	protected function getInstance() {
-		/** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		/** @var Tx_Flux_Backend_DynamicFlexForm $instance */
-		$instance = $objectManager->get('Tx_Flux_Backend_DynamicFlexForm');
+		/** @var ObjectManagerInterface $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var DynamicFlexForm $instance */
+		$instance = $objectManager->get('FluidTYPO3\Flux\Backend\DynamicFlexForm');
 		return $instance;
 	}
 

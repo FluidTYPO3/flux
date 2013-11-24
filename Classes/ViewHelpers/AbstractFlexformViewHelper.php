@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,37 +24,49 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+
 /**
  * Base class for all FlexForm related ViewHelpers
  *
  * @package Flux
- * @subpackage Core/ViewHelper
+ * @subpackage ViewHelpers
  */
-abstract class Tx_Flux_ViewHelpers_AbstractFlexformViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+abstract class AbstractFlexformViewHelper extends AbstractViewHelper {
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @var string
+	 */
+	protected static $scope = 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper';
+
+	/**
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
+	 * @param ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
@@ -70,47 +83,47 @@ abstract class Tx_Flux_ViewHelpers_AbstractFlexformViewHelper extends \TYPO3\CMS
 	}
 
 	/**
-	 * @return Tx_Flux_Form
+	 * @return Form
 	 */
 	protected function getForm() {
-		if (TRUE === $this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form')) {
-			$form = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form');
+		if (TRUE === $this->viewHelperVariableContainer->exists(self::$scope, 'form')) {
+			$form = $this->viewHelperVariableContainer->get(self::$scope, 'form');
 		} else {
-			$form = $this->objectManager->get('Tx_Flux_Form');
-			$this->viewHelperVariableContainer->add('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form', $form);
+			$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+			$this->viewHelperVariableContainer->add(self::$scope, 'form', $form);
 		}
 		return $form;
 	}
 
 	/**
 	 * @param string $gridName
-	 * @return Tx_Flux_Form
+	 * @return Form
 	 */
 	protected function getGrid($gridName = 'grid') {
 		$form = $this->getForm();
-		if (FALSE === $this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids')) {
+		if (FALSE === $this->viewHelperVariableContainer->exists(self::$scope, 'grids')) {
 			$grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
 			$grids = array($gridName => $grid);
-			$this->viewHelperVariableContainer->add('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $grids);
+			$this->viewHelperVariableContainer->add(self::$scope, 'grids', $grids);
 		} else {
-			$grids = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids');
+			$grids = $this->viewHelperVariableContainer->get(self::$scope, 'grids');
 			if (TRUE === isset($grids[$gridName])) {
 				$grid = $grids[$gridName];
 			} else {
 				$grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
 				$grids[$gridName] = $grid;
-				$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $grids);
+				$this->viewHelperVariableContainer->addOrUpdate(self::$scope, 'grids', $grids);
 			}
 		}
 		return $grid;
 	}
 
 	/**
-	 * @return Tx_Flux_Form_ContainerInterface
+	 * @return ContainerInterface
 	 */
 	protected function getContainer() {
-		if (TRUE === $this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container')) {
-			$container = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container');
+		if (TRUE === $this->viewHelperVariableContainer->exists(self::$scope, 'container')) {
+			$container = $this->viewHelperVariableContainer->get(self::$scope, 'container');
 		} else {
 			$form = $this->getForm();
 			$container = $form->last();
@@ -120,11 +133,11 @@ abstract class Tx_Flux_ViewHelpers_AbstractFlexformViewHelper extends \TYPO3\CMS
 	}
 
 	/**
-	 * @param Tx_Flux_Form_FormInterface
+	 * @param FormInterface $container
 	 * @return void
 	 */
-	protected function setContainer(Tx_Flux_Form_FormInterface $container) {
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container', $container);
+	protected function setContainer(FormInterface $container) {
+		$this->viewHelperVariableContainer->addOrUpdate(self::$scope, 'container', $container);
 	}
 
 }

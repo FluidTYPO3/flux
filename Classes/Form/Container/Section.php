@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,25 +24,32 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormContainer;
+use FluidTYPO3\Flux\Form\Container\Object;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 /**
  * @package Flux
  * @subpackage Form\Container
  */
-class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_ContainerInterface {
+class Section extends AbstractFormContainer implements ContainerInterface {
 
 	/**
 	 * @param array $settings
-	 * @return Tx_Flux_Form_Container_Section
+	 * @return FluidTYPO3\Flux\Form\Container\Section
 	 */
 	public static function create(array $settings) {
-		/** @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager */
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		/** @var Tx_Flux_Form_Container_Section */
-		$section = $objectManager->get('Tx_Flux_Form_Container_Section');
+		/** @var ObjectManagerInterface $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var Section */
+		$section = $objectManager->get('FluidTYPO3\Flux\Form\Container\Section');
 		foreach ($settings as $settingName => $settingValue) {
-			$setterMethodName = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::buildSetterMethodName($settingName);
+			$setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
 			if (TRUE === method_exists($section, $setterMethodName)) {
-				\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($section, $settingName, $settingValue);
+				ObjectAccess::setProperty($section, $settingName, $settingValue);
 			}
 		}
 		if (TRUE === isset($settings['objects'])) {
@@ -49,7 +57,7 @@ class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_AbstractFormContainer 
 				if (FALSE === isset($objectSettings['name'])) {
 					$objectSettings['name'] = $fieldName;
 				}
-				$object = Tx_Flux_Form_Container_Object::create($objectSettings);
+				$object = Object::create($objectSettings);
 				$section->add($object);
 			}
 		}

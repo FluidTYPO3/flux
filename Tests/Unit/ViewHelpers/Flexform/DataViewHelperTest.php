@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Flexform_DataViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
+class DataViewHelperTest extends AbstractViewHelperTest {
 
 	/**
 	 * @param string $table

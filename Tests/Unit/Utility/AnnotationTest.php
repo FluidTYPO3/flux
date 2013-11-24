@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,20 +24,21 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Class/DummyModel.php');
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class AnnotationTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canParseAnnotationsFromModelClassNameWithoutPropertyName() {
-		$class = 'Tx_Flux_Domain_Model_Dummy';
-		$annotation = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\Hide');
+		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
+		$annotation = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
 		$this->assertTrue($annotation);
 	}
 
@@ -44,9 +46,9 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 	 * @test
 	 */
 	public function canParseAnnotationsFromModelClassNameWithPropertyNameAndTriggerCache() {
-		$class = 'Tx_Flux_Domain_Model_Dummy';
-		Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Form\\Field', 'crdate');
-		$annotation = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Form\\Field', 'crdate');
+		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
+		Annotation::getAnnotationValueFromClass($class, 'Flux\Form\Field', 'crdate');
+		$annotation = Annotation::getAnnotationValueFromClass($class, 'Flux\Form\Field', 'crdate');
 		$this->assertIsArray($annotation);
 	}
 
@@ -59,7 +61,7 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 			'type' => 'input',
 			'config' => array()
 		);
-		$result = Tx_Flux_Utility_Annotation::parseAnnotation($annotation);
+		$result = Annotation::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -74,7 +76,7 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 				'size' => 10
 			)
 		);
-		$result = Tx_Flux_Utility_Annotation::parseAnnotation($annotation);
+		$result = Annotation::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -90,7 +92,7 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 				'float' => 0.5
 			)
 		);
-		$result = Tx_Flux_Utility_Annotation::parseAnnotation($annotation);
+		$result = Annotation::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -105,7 +107,7 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 				'dummy' => array('foo' => 1, 'bar' => 2)
 			)
 		);
-		$result = Tx_Flux_Utility_Annotation::parseAnnotation($annotation);
+		$result = Annotation::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -115,7 +117,7 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 	public function returnsTrueForEmptyAnnotations() {
 		$annotation = '';
 		$expected = TRUE;
-		$result = Tx_Flux_Utility_Annotation::parseAnnotation($annotation);
+		$result = Annotation::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -131,7 +133,7 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 			'foo' => TRUE,
 			'bar' => TRUE
 		);
-		$result = Tx_Flux_Utility_Annotation::parseAnnotation($annotations);
+		$result = Annotation::parseAnnotation($annotations);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -141,7 +143,7 @@ class Tx_Flux_Utility_AnnotationTest extends Tx_Flux_Tests_AbstractFunctionalTes
 	public function canHandleSingleItemArraysOfAnnotations() {
 		$annotations = array('');
 		$expected = TRUE;
-		$result = Tx_Flux_Utility_Annotation::parseAnnotation($annotations);
+		$result = Annotation::parseAnnotation($annotations);
 		$this->assertEquals($expected, $result);
 	}
 

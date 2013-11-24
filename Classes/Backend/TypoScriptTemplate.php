@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,23 +24,26 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use TYPO3\CMS\Core\TypoScript\TemplateService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_TypoScriptTemplate {
+class TypoScriptTemplate {
 
 	/**
 	 * Includes static template from extensions
 	 *
 	 * @param array $params
-	 * @param t3lib_TStemplate $pObj
+	 * @param TemplateService $pObj
 	 * @return void
 	 */
-	public function preprocessIncludeStaticTypoScriptSources(array &$params, $pObj) {
+	public function preprocessIncludeStaticTypoScriptSources(array &$params, TemplateService $pObj) {
 		if (TRUE === isset($params['row']['root']) && TRUE === (boolean) $params['row']['root']) {
-			$existingTemplates = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $params['row']['include_static_file']);
-			$globalStaticTemplates = Tx_Flux_Core::getStaticTypoScriptLocations();
+			$existingTemplates = GeneralUtility::trimExplode(',', $params['row']['include_static_file']);
+			$globalStaticTemplates = \FluidTYPO3\Flux\Core::getStaticTypoScriptLocations();
 			$staticTemplates = array_merge($globalStaticTemplates, $existingTemplates);
 			$params['row']['include_static_file'] = implode(',', array_unique($staticTemplates));
 		}

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @package Flux
  * @subpackage Form
  */
-interface Tx_Flux_Form_FormInterface {
+interface FormInterface {
 
 	/**
 	 * @return array
@@ -56,7 +57,7 @@ interface Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param string $localLanguageFileRelativePath
-	 * @return Tx_Flux_FormInterface
+	 * @return FormInterface
 	 */
 	public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath);
 
@@ -68,7 +69,7 @@ interface Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param boolean $disableLocalLanguageLabels
-	 * @return Tx_Flux_FormInterface
+	 * @return FormInterface
 	 */
 	public function setDisableLocalLanguageLabels($disableLocalLanguageLabels);
 
@@ -78,18 +79,18 @@ interface Tx_Flux_Form_FormInterface {
 	public function getDisableLocalLanguageLabels();
 
 	/**
-	 * @param Tx_Flux_Form_ContainerInterface $parent
-	 * @return Tx_Flux_Form_FormInterface
+	 * @param ContainerInterface $parent
+	 * @return FormInterface
 	 */
 	public function setParent($parent);
 
 	/**
-	 * @return Tx_Flux_Form_FormContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function getParent();
 
 	/**
-	 * @return Tx_Flux_Form_FormContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function getRoot();
 
@@ -108,7 +109,7 @@ interface Tx_Flux_Form_FormInterface {
 	 * @param string $type
 	 * @param string $name
 	 * @param string $label
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function createField($type, $name, $label = NULL);
 
@@ -116,7 +117,7 @@ interface Tx_Flux_Form_FormInterface {
 	 * @param string $type
 	 * @param string $name
 	 * @param string $label
-	 * @return Tx_Flux_Form_ContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function createContainer($type, $name, $label = NULL);
 
@@ -124,7 +125,7 @@ interface Tx_Flux_Form_FormInterface {
 	 * @param string $type
 	 * @param string $name
 	 * @param string $label
-	 * @return Tx_Flux_Form_WizardInterface
+	 * @return WizardInterface
 	 */
 	public function createWizard($type, $name, $label = NULL);
 

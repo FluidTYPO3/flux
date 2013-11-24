@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormField;
+use FluidTYPO3\Flux\Form\FieldInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements Tx_Flux_Form_FieldInterface {
+class Input extends AbstractFormField implements FieldInterface {
 
 	/**
 	 * @var string
@@ -71,7 +77,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 		$configuration['size'] = $this->getSize();
 		$configuration['max'] = $this->getMaxCharacters();
 		$configuration['eval'] = $validate;
-		if ($minimum >= 0 || $maximum >= 0 && in_array('int', \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $validate))) {
+		if ($minimum >= 0 || $maximum >= 0 && in_array('int', GeneralUtility::trimExplode(',', $validate))) {
 			$configuration['range'] = array(
 				'lower' => $minimum,
 				'upper' => $maximum,
@@ -82,7 +88,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param integer $maxCharacters
-	 * @return Tx_Flux_Form_Field_Input
+	 * @return Input
 	 */
 	public function setMaxCharacters($maxCharacters) {
 		$this->maxCharacters = $maxCharacters;
@@ -98,7 +104,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param integer $maximum
-	 * @return Tx_Flux_Form_Field_Input
+	 * @return Input
 	 */
 	public function setMaximum($maximum) {
 		$this->maximum = $maximum;
@@ -114,7 +120,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param integer $minimum
-	 * @return Tx_Flux_Form_Field_Input
+	 * @return Input
 	 */
 	public function setMinimum($minimum) {
 		$this->minimum = $minimum;
@@ -130,7 +136,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param string $placeholder
-	 * @return Tx_Flux_Form_Field_Input
+	 * @return Input
 	 */
 	public function setPlaceholder($placeholder) {
 		$this->placeholder = $placeholder;
@@ -146,7 +152,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param integer $size
-	 * @return Tx_Flux_Form_Field_Input
+	 * @return Input
 	 */
 	public function setSize($size) {
 		$this->size = $size;
@@ -162,7 +168,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 
 	/**
 	 * @param string $validate
-	 * @return Tx_Flux_Form_Field_Input
+	 * @return Input
 	 */
 	public function setValidate($validate) {
 		$this->validate = $validate;
@@ -179,7 +185,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 			if (TRUE === empty($this->validate)) {
 				$validate = 'required';
 			} else {
-				$validators = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->validate);
+				$validators = GeneralUtility::trimExplode(',', $this->validate);
 				array_push($validators, 'required');
 				$validate = implode(',', $validators);
 			}

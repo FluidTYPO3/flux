@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\View;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
+use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3\CMS\Fluid\Core\Parser\ParsedTemplateInterface;
+use TYPO3\CMS\Fluid\View\AbstractTemplateView;
+use TYPO3\CMS\Fluid\View\TemplateView;
+
 /**
  * ExposedTemplateView. Allows access to registered template and viewhelper
  * variables from a Fluid template.
@@ -30,41 +41,41 @@
  * @package Flux
  * @subpackage MVC/View
  */
-class Tx_Flux_View_ExposedTemplateView extends \TYPO3\CMS\Fluid\View\TemplateView implements \TYPO3\CMS\Extbase\Mvc\View\ViewInterface {
+class ExposedTemplateView extends TemplateView implements ViewInterface {
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectDebugService(Tx_Flux_Service_FluxService $configurationService) {
+	public function injectDebugService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
 	/**
 	 * @param string $sectionName
 	 * @param string $formName
-	 * @return Tx_Flux_Form_Form|NULL
+	 * @return Form|NULL
 	 */
 	public function getForm($sectionName = 'Configuration', $formName = 'form') {
-		/** @var Tx_Flux_Form $form */
-		$form = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $formName, $sectionName);
+		/** @var Form $form */
+		$form = $this->getStoredVariable('FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', $formName, $sectionName);
 		return $form;
 	}
 
 	/**
 	 * @param string $sectionName
 	 * @param string $gridName
-	 * @return Tx_Flux_Form_Container_Grid
+	 * @return Grid
 	 */
 	public function getGrid($sectionName = 'Configuration', $gridName = 'grid') {
-		/** @var Tx_Flux_Form_Container_Grid[] $grids */
-		/** @var Tx_Flux_Form_Container_Grid $grid */
-		$grids = $this->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'grids', $sectionName);
+		/** @var Grid[] $grids */
+		/** @var Grid $grid */
+		$grids = $this->getStoredVariable('FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'grids', $sectionName);
 		$grid = NULL;
 		if (TRUE === isset($grids[$gridName])) {
 			$grid = $grids[$gridName];
@@ -78,16 +89,16 @@ class Tx_Flux_View_ExposedTemplateView extends \TYPO3\CMS\Fluid\View\TemplateVie
 	 * @param string $name Name of the variable which the ViewHelper stored
 	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
 	 * @return mixed
-	 * @throws Exception
+	 * @throws \RuntimeException
 	 */
 	protected function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL) {
-		if ($this->controllerContext instanceof \TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext === FALSE) {
-			throw new RuntimeException('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
+		if (FALSE === $this->controllerContext instanceof ControllerContext) {
+			throw new \RuntimeException('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
 		}
 		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->templateParser->setConfiguration($this->buildParserConfiguration());
 		$parsedTemplate = $this->getParsedTemplate();
-		$this->startRendering(\TYPO3\CMS\Fluid\View\AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
+		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
 		if (FALSE === empty($sectionName)) {
 			$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
 		} else {
@@ -99,12 +110,12 @@ class Tx_Flux_View_ExposedTemplateView extends \TYPO3\CMS\Fluid\View\TemplateVie
 		}
 		$stored = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
 		$this->configurationService->message('Flux View ' . get_class($this) . ' is able to read stored configuration from file ' .
-			$this->getTemplatePathAndFilename(), \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_INFO);
+			$this->getTemplatePathAndFilename(), GeneralUtility::SYSLOG_SEVERITY_INFO);
 		return $stored;
 	}
 
 	/**
-	 * @return \TYPO3\CMS\Fluid\Core\Parser\ParsedTemplateInterface
+	 * @return ParsedTemplateInterface
 	 */
 	public function getParsedTemplate() {
 		$templateIdentifier = $this->getTemplateIdentifier();
@@ -130,7 +141,7 @@ class Tx_Flux_View_ExposedTemplateView extends \TYPO3\CMS\Fluid\View\TemplateVie
 	public function renderStandaloneSection($sectionName, $variables, $optional = TRUE) {
 		$content = NULL;
 		$this->baseRenderingContext->setControllerContext($this->controllerContext);
-		$this->startRendering(\TYPO3\CMS\Fluid\View\AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
+		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
 		$content = $this->renderSection($sectionName, $variables, $optional);
 		$this->stopRendering();
 		return $content;
@@ -204,13 +215,13 @@ class Tx_Flux_View_ExposedTemplateView extends \TYPO3\CMS\Fluid\View\TemplateVie
 		}
 		foreach ($overlays as $overlaySubpackageKey => $overlay) {
 			if (TRUE === isset($overlay['templateRootPath'])) {
-				$templateRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($overlay['templateRootPath']);
+				$templateRootPath = GeneralUtility::getFileAbsFileName($overlay['templateRootPath']);
 			}
 			if (TRUE === isset($overlay['partialRootPath'])) {
-				$partialRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($overlay['partialRootPath']);
+				$partialRootPath = GeneralUtility::getFileAbsFileName($overlay['partialRootPath']);
 			}
 			if (TRUE === isset($overlay['layoutRootPath'])) {
-				$layoutRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($overlay['layoutRootPath']);
+				$layoutRootPath = GeneralUtility::getFileAbsFileName($overlay['layoutRootPath']);
 			}
 			$paths[$overlaySubpackageKey] = array(
 				'templateRootPath' => $templateRootPath,

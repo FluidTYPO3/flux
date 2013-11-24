@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,13 +23,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+
 /**
  * Renders nothing in case no fields are defined, label is used for feedback
  *
  * @package	Flux
  * @subpackage UserFunction
  */
-class Tx_Flux_UserFunction_NoFields {
+class NoFields {
 
 	/**
 	 * @param array $parameters Not used
@@ -37,6 +40,6 @@ class Tx_Flux_UserFunction_NoFields {
 	 */
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj, $parameters);
-		return \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('user.no_fields', 'Flux');
+		return LocalizationUtility::translate('user.no_fields', 'Flux');
 	}
 }

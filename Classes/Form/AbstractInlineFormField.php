@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Field\Inline;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_AbstractRelationFormField {
+abstract class AbstractInlineFormField extends AbstractRelationFormField {
 
 	/**
 	 * If true, all child records are shown as collapsed.
@@ -52,13 +56,13 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 	protected $newRecordLinkAddTitle = FALSE;
 
 	/**
-	 * Record link position - can be either Tx_Flux_Form::POSITION_TOP,
-	 * Tx_Flux_Form::POSITION_BOTTOM, Tx_Flux_Form::POSITION_BOTH or
-	 * Tx_Flux_Form::POSITION_NONE.
+	 * Record link position - can be either \FluidTYPO3\Flux\Form::POSITION_TOP,
+	 * \FluidTYPO3\Flux\Form::POSITION_BOTTOM, \FluidTYPO3\Flux\Form::POSITION_BOTH or
+	 * \FluidTYPO3\Flux\Form::POSITION_NONE.
 	 *
 	 * @var string
 	 */
-	protected $newRecordLinkPosition = Tx_Flux_Form::POSITION_TOP;
+	protected $newRecordLinkPosition = Form::POSITION_TOP;
 
 	/**
 	 * For use on bidirectional relations using an intermediary table.
@@ -113,13 +117,13 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 	 * @var array
 	 */
 	protected $enabledControls = array(
-		Tx_Flux_Form::CONTROL_INFO => FALSE,
-		Tx_Flux_Form::CONTROL_NEW => TRUE,
-		Tx_Flux_Form::CONTROL_DRAGDROP => TRUE,
-		Tx_Flux_Form::CONTROL_SORT => TRUE,
-		Tx_Flux_Form::CONTROL_HIDE => TRUE,
-		Tx_Flux_Form::CONTROL_DELETE => FALSE,
-		Tx_Flux_Form::CONTROL_LOCALISE => FALSE,
+		Form::CONTROL_INFO => FALSE,
+		Form::CONTROL_NEW => TRUE,
+		Form::CONTROL_DRAGDROP => TRUE,
+		Form::CONTROL_SORT => TRUE,
+		Form::CONTROL_HIDE => TRUE,
+		Form::CONTROL_DELETE => FALSE,
+		Form::CONTROL_LOCALISE => FALSE,
 	);
 
 	/**
@@ -184,7 +188,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param boolean $collapseAll
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setCollapseAll($collapseAll) {
 		$this->collapseAll = $collapseAll;
@@ -200,7 +204,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param array $enabledControls
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setEnabledControls(array $enabledControls) {
 		$this->enabledControls = $enabledControls;
@@ -216,7 +220,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param boolean $expandSingle
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setExpandSingle($expandSingle) {
 		$this->expandSingle = $expandSingle;
@@ -232,7 +236,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param boolean $newRecordLinkAddTitle
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setNewRecordLinkAddTitle($newRecordLinkAddTitle) {
 		$this->newRecordLinkAddTitle = $newRecordLinkAddTitle;
@@ -248,7 +252,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param string $newRecordLinkPosition
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setNewRecordLinkPosition($newRecordLinkPosition) {
 		$this->newRecordLinkPosition = $newRecordLinkPosition;
@@ -264,7 +268,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param boolean $showAllLocalizationLink
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setShowAllLocalizationLink($showAllLocalizationLink) {
 		$this->showAllLocalizationLink = $showAllLocalizationLink;
@@ -280,7 +284,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param boolean $showPossibleLocalizationRecords
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setShowPossibleLocalizationRecords($showPossibleLocalizationRecords) {
 		$this->showPossibleLocalizationRecords = $showPossibleLocalizationRecords;
@@ -296,7 +300,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param boolean $showRemovedLocalizationRecords
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setShowRemovedLocalizationRecords($showRemovedLocalizationRecords) {
 		$this->showRemovedLocalizationRecords = $showRemovedLocalizationRecords;
@@ -312,7 +316,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param boolean $showSynchronizationLink
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setShowSynchronizationLink($showSynchronizationLink) {
 		$this->showSynchronizationLink = $showSynchronizationLink;
@@ -328,7 +332,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param boolean $useCombination
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setUseCombination($useCombination) {
 		$this->useCombination = $useCombination;
@@ -344,7 +348,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param boolean $useSortable
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setUseSortable($useSortable) {
 		$this->useSortable = $useSortable;
@@ -360,7 +364,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param array $foreignMatchFields
-	 * @return Tx_Flux_Form_Field_Inline
+	 * @return Inline
 	 */
 	public function setForeignMatchFields(array $foreignMatchFields) {
 		$this->foreignMatchFields = $foreignMatchFields;
@@ -376,7 +380,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param array $headerThumbnail
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setHeaderThumbnail(array $headerThumbnail) {
 		$this->headerThumbnail = $headerThumbnail;
@@ -392,7 +396,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param string $levelLinksPosition
-	 * @return Tx_Flux_Form_AbstractInlineFormField
+	 * @return AbstractInlineFormField
 	 */
 	public function setLevelLinksPosition($levelLinksPosition) {
 		$this->levelLinksPosition = $levelLinksPosition;
@@ -408,7 +412,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param string $foreignSelectorFieldTcaOverride
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignSelectorFieldTcaOverride($foreignSelectorFieldTcaOverride) {
 		$this->foreignSelectorFieldTcaOverride = $foreignSelectorFieldTcaOverride;
@@ -424,7 +428,7 @@ abstract class Tx_Flux_Form_AbstractInlineFormField extends Tx_Flux_Form_Abstrac
 
 	/**
 	 * @param string $foreignTypes
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignTypes($foreignTypes) {
 		$this->foreignTypes = $foreignTypes;

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\RelationFieldInterface;
+
 /**
  * Inline-style FlexForm field ViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractInlineFieldViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractRelationFieldViewHelper {
+abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -55,7 +58,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractInlineFieldViewHelper 
 
 	/**
 	 * @param string $type
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function getComponent($type = 'Inline') {
 		$component = $this->getPreparedComponent($type);
@@ -64,10 +67,10 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractInlineFieldViewHelper 
 
 	/**
 	 * @param string $type
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	protected function getPreparedComponent($type) {
-		/** @var Tx_Flux_Form_RelationFieldInterface $component */
+		/** @var RelationFieldInterface $component */
 		$component = parent::getPreparedComponent($type);
 		$component->setCollapseAll($this->arguments['collapseAll']);
 		$component->setExpandSingle($this->arguments['expandSingle']);

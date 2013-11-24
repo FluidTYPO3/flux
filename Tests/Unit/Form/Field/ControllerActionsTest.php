@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class ControllerActionsTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -89,8 +92,7 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 	 * @test
 	 */
 	public function acceptsNamespacedClasses() {
-		$expectedClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
-		class_alias('Tx_Flux_Controller_ContentController', $expectedClassName);
+		$expectedClassName = 'FluidTYPO3\Flux\Controller\ContentController';
 		$component = $this->createInstance();
 		$component->setExtensionName('FluidTYPO3.Flux');
 		$className = $this->callInaccessibleMethod($component, 'buildExpectedAndExistingControllerClassName', 'Content');
@@ -115,7 +117,7 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 		$component = $this->createInstance();
 		$vendor = 'Void';
 		$name = 'Nameless';
-		$key = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($name);
+		$key = GeneralUtility::camelCaseToLowerCaseUnderscored($name);
 		list ($vendorName, $extensionKey) = $this->callInaccessibleMethod($component, 'getVendorNameAndExtensionKeyFromExtensionName', $vendor . '.' . $name);
 		$this->assertSame($vendorName, $vendor);
 		$this->assertSame($key, $extensionKey);
@@ -126,13 +128,13 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 	 * @test
 	 */
 	public function canGenerateLabelFromLanguageFile() {
-		$extensionName = 'Flux';
+		$extensionKey = 'flux';
 		$pluginName = 'Test';
 		$controllerName = 'Content';
 		$actionName = 'fake';
 		$localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xml';
 		$labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
-		$expectedLabel = 'LLL:EXT:' . \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName) . $localLanguageFileRelativePath . ':' . $labelPath;
+		$expectedLabel = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
 		$label = $this->buildLabelForControllerAndAction($controllerName, $actionName, $localLanguageFileRelativePath);
 		$this->assertSame($expectedLabel, $label);
 	}
@@ -174,7 +176,7 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 	 * @test
 	 */
 	public function prefixesLabelForActionsWithRequiredArgumentsWhenLanguageLabelsDisabled() {
-		$extensionName = 'Flux';
+		$extensionName = 'FluidTYPO3.Flux';
 		$pluginName = 'Test';
 		$controllerName = 'Content';
 		$actionName = 'fakeWithRequiredArgument';
@@ -199,11 +201,11 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 		$excludedActions = array(
 			'Content' => 'fake',
 		);
-		/** @var Tx_Flux_Form_Field_ControllerActions $component */
+		/** @var ControllerActions $component */
 		$component = $this->createInstance();
 		$component->setExcludeActions($excludedActions);
 		$component->setActions($actions);
-		$component->setExtensionName('Flux');
+		$component->setExtensionName('FluidTYPO3.Flux');
 		$items = $this->buildActions($component, FALSE);
 		foreach ($items as $item) {
 			$this->assertArrayNotHasKey('Content->fake', $item);
@@ -218,12 +220,12 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 			'Content' => 'fake',
 			'Other' => 'fake'
 		);
-		class_alias('Tx_Flux_Controller_ContentController', 'Tx_Flux_Controller_OtherController');
-		/** @var Tx_Flux_Form_Field_ControllerActions $component */
+		class_alias('FluidTYPO3\Flux\Controller\ContentController', 'FluidTYPO3\Flux\Controller\OtherController');
+		/** @var ControllerActions $component */
 		$component = $this->createInstance();
 		$component->setActions($actions);
 		$component->setControllerName('Content');
-		$component->setExtensionName('Flux');
+		$component->setExtensionName('FluidTYPO3.Flux');
 		$items = $this->buildActions($component, FALSE);
 		foreach ($items as $item) {
 			$this->assertArrayNotHasKey('Other->fake', $item);
@@ -237,11 +239,11 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 		$actions = array(
 			'Content' => 'fake,doesNotExist'
 		);
-		/** @var Tx_Flux_Form_Field_ControllerActions $component */
+		/** @var ControllerActions $component */
 		$component = $this->createInstance();
 		$component->setActions($actions);
 		$component->setControllerName('Content');
-		$component->setExtensionName('Flux');
+		$component->setExtensionName('FluidTYPO3.Flux');
 		$items = $this->buildActions($component, FALSE);
 		foreach ($items as $item) {
 			$this->assertArrayNotHasKey('Other->doesNotExist', $item);
@@ -263,25 +265,25 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 		$expected = array(
 			array('LLL:EXT:flux/Resources/Private/Language/locallang.xml:.content.fake', 'Content->fake;Content->render')
 		);
-		/** @var Tx_Flux_Form_Field_ControllerActions $component */
+		/** @var ControllerActions $component */
 		$component = $this->createInstance();
 		$component->setActions($actions);
 		$component->setSubActions($subActions);
-		$component->setExtensionName('Flux');
+		$component->setExtensionName('FluidTYPO3.Flux');
 		$component->setControllerName('Content');
 		$items = $this->buildActions($component, FALSE);
 		$this->assertSame($expected, $items);
 	}
 
 	/**
-	 * @param Tx_Flux_Form_Field_ControllerActions $component
+	 * @param ControllerActions $component
 	 * @param boolean $useDefaults
 	 * @return array
 	 */
-	protected function buildActions(Tx_Flux_Form_Field_ControllerActions $component, $useDefaults = TRUE) {
+	protected function buildActions(ControllerActions $component, $useDefaults = TRUE) {
 		$actions = $component->getActions();
 		if (TRUE === $useDefaults) {
-			$component->setExtensionName('Flux');
+			$component->setExtensionName('FluidTYPO3.Flux');
 			$component->setPluginName('Test');
 			$component->setControllerName('Content');
 			$component->setLocalLanguageFileRelativePath('/Resources/Private/Language/locallang.xml');
@@ -300,7 +302,7 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 	protected function buildLabelForControllerAndAction($controllerName, $actionName, $languageFileRelativeLocation = NULL) {
 		$component = $this->createInstance();
 		$component->setControllerName($controllerName);
-		$component->setExtensionName('Flux');
+		$component->setExtensionName('FluidTYPO3.Flux');
 		$component->setPluginName('Test');
 		if (NULL !== $languageFileRelativeLocation) {
 			$component->setLocalLanguageFileRelativePath($languageFileRelativeLocation);

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,14 +24,19 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
+use FluidTYPO3\Flux\Form\WizardInterface;
+
 /**
  * @package Flux
  * @subpackage Form
  */
-abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractFormComponent implements Tx_Flux_Form_ContainerInterface {
+abstract class AbstractFormContainer extends AbstractFormComponent implements ContainerInterface {
 
 	/**
-	 * @var SplObjectStorage
+	 * @var \SplObjectStorage
 	 */
 	protected $children;
 
@@ -43,14 +49,14 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->children = new SplObjectStorage();
+		$this->children = new \SplObjectStorage();
 	}
 
 	/**
 	 * @param string $type
 	 * @param string $name
 	 * @param null $label
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function createField($type, $name, $label = NULL) {
 		$field = parent::createField($type, $name, $label);
@@ -62,7 +68,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 * @param string $type
 	 * @param string $name
 	 * @param null $label
-	 * @return Tx_Flux_Form_ContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function createContainer($type, $name, $label = NULL) {
 		$container = parent::createContainer($type, $name, $label);
@@ -74,7 +80,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 * @param string $type
 	 * @param string $name
 	 * @param null $label
-	 * @return Tx_Flux_Form_WizardInterface
+	 * @return WizardInterface
 	 */
 	public function createWizard($type, $name, $label = NULL) {
 		$wizard = parent::createWizard($type, $name, $label);
@@ -83,10 +89,10 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	}
 
 	/**
-	 * @param Tx_Flux_Form_FormInterface $child
-	 * @return Tx_Flux_Form_FormInterface
+	 * @param FormInterface $child
+	 * @return FormInterface
 	 */
-	public function add(Tx_Flux_Form_FormInterface $child) {
+	public function add(FormInterface $child) {
 		if (FALSE === $this->children->contains($child)) {
 			$this->children->attach($child);
 			$child->setParent($this);
@@ -96,7 +102,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 
 	/**
 	 * @param array|Traversable $children
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return FormInterface
 	 */
 	public function addAll($children) {
 		foreach ($children as $child) {
@@ -107,11 +113,11 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 
 	/**
 	 * @param string $childName
-	 * @return Tx_Flux_Form_FormInterface|FALSE
+	 * @return FormInterface|FALSE
 	 */
 	public function remove($childName) {
 		foreach ($this->children as $child) {
-			$isMatchingInstance = (TRUE === $childName instanceof Tx_Flux_Form_FormInterface && $childName->getName() === $child->getName());
+			$isMatchingInstance = (TRUE === $childName instanceof FormInterface && $childName->getName() === $child->getName());
 			$isMatchingName = ($childName === $child->getName());
 			if (TRUE === $isMatchingName || TRUE === $isMatchingInstance) {
 				$this->children->detach($child);
@@ -128,7 +134,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 * @return boolean
 	 */
 	public function has($childOrChildName) {
-		if (TRUE === $childOrChildName instanceof Tx_Flux_Form_FormInterface) {
+		if (TRUE === $childOrChildName instanceof FormInterface) {
 			$name = $childOrChildName->getName();
 		} else {
 			$name = $childOrChildName;
@@ -140,14 +146,14 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 * @param string $childName
 	 * @param boolean $recursive
 	 * @param string $requiredClass
-	 * @return Tx_Flux_Form_FormInterface|FALSE
+	 * @return FormInterface|FALSE
 	 */
 	public function get($childName, $recursive = FALSE, $requiredClass = NULL) {
 		foreach ($this->children as $existingChild) {
 			if ($childName === $existingChild->getName() && ($requiredClass === NULL || TRUE === $existingChild instanceof $requiredClass)) {
 				return $existingChild;
 			}
-			if (TRUE === $recursive && TRUE === $existingChild instanceof Tx_Flux_Form_ContainerInterface) {
+			if (TRUE === $recursive && TRUE === $existingChild instanceof ContainerInterface) {
 				$candidate = $existingChild->get($childName, $recursive);
 				if (FALSE !== $candidate) {
 					return $candidate;
@@ -158,7 +164,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	}
 
 	/**
-	 * @return Tx_Flux_Form_FormInterface|FALSE
+	 * @return FormInterface|FALSE
 	 */
 	public function last() {
 		$result = array_pop(iterator_to_array($this->children));
@@ -170,7 +176,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 	 */
 	protected function buildChildren() {
 		$structure = array();
-		/** @var Tx_Flux_Form_FormInterface[] $children */
+		/** @var FormInterface[] $children */
 		$children = $this->children;
 		foreach ($children as $child) {
 			$name = $child->getName();
@@ -188,7 +194,7 @@ abstract class Tx_Flux_Form_AbstractFormContainer extends Tx_Flux_Form_AbstractF
 
 	/**
 	 * @param string $transform
-	 * @return Tx_Flux_Form_ContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function setTransform($transform) {
 		$this->transform = $transform;

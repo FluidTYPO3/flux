@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,15 +24,17 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
+
 /**
  * Custom FlexForm field ViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_UserFuncViewHelper {
+class CustomViewHelper extends UserFuncViewHelper {
 
-	const DEFAULT_USERFUNCTION = 'EXT:flux/Classes/UserFunction/HtmlOutput.php:Tx_Flux_UserFunction_HtmlOutput->renderField';
+	const DEFAULT_USERFUNCTION = 'EXT:flux/Classes/UserFunction/HtmlOutput.php:\FluidTYPO3\Flux\UserFunction\HtmlOutput->renderField';
 
 	/**
 	 * Initialize
@@ -43,10 +46,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Field_Custom
+	 * @return Custom
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Field_Custom $component */
+		/** @var Custom $component */
 		$component = parent::getComponent('Custom');
 		$closure = $this->buildClosure();
 		$component->setClosure($closure);
@@ -77,7 +80,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 	}
 
 	/**
-	 * @return \TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer
+	 * @return TemplateVariableContainer
 	 */
 	public function getTemplateVariableContainer() {
 		return $this->templateVariableContainer;

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,21 +28,21 @@
  * @package Flux
  * @subpackage Form
  */
-interface Tx_Flux_Form_ContainerInterface extends Tx_Flux_Form_FormInterface {
+interface ContainerInterface extends FormInterface {
 
 	/**
 	 * @param string $childName
 	 * @param boolean $recursive
 	 * @param string $requiredClass
-	 * @return Tx_Flux_Form_FormInterface|FALSE
+	 * @return FormInterface|FALSE
 	 */
 	public function get($childName, $recursive = FALSE, $requiredClass = NULL);
 
 	/**
-	 * @param Tx_Flux_Form_FormInterface $child
-	 * @return Tx_Flux_Form_FormInterface
+	 * @param FormInterface $child
+	 * @return FormInterface
 	 */
-	public function add(Tx_Flux_Form_FormInterface $child);
+	public function add(FormInterface $child);
 
 	/**
 	 * @param mixed $childOrChildName
@@ -51,13 +52,13 @@ interface Tx_Flux_Form_ContainerInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param string $childName
-	 * @return Tx_Flux_Form_FormInterface|FALSE
+	 * @return FormInterface|FALSE
 	 */
 	public function remove($childName);
 
 	/**
 	 * @param string $transform
-	 * @return Tx_Flux_Form_ContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function setTransform($transform);
 

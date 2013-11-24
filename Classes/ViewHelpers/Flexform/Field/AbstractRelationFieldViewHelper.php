@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\RelationFieldInterface;
+
 /**
  * Base class for all FlexForm fields.
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractRelationFieldViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractMultiValueFieldViewHelper {
+abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -60,7 +63,7 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractRelationFieldViewHelpe
 
 	/**
 	 * @param string $type
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function getComponent($type = 'Relation') {
 		$component = $this->getPreparedComponent($type);
@@ -69,10 +72,10 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractRelationFieldViewHelpe
 
 	/**
 	 * @param string $type
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	protected function getPreparedComponent($type) {
-		/** @var Tx_Flux_Form_RelationFieldInterface $component */
+		/** @var RelationFieldInterface $component */
 		$component = parent::getPreparedComponent($type);
 		$component->setTable($this->arguments['table']);
 		$component->setCondition($this->arguments['condition']);

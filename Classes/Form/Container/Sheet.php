@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormContainer;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
+
 /**
  * @package Flux
  * @subpackage Form\Container
  */
-class Tx_Flux_Form_Container_Sheet extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_ContainerInterface, Tx_Flux_Form_FieldContainerInterface {
+class Sheet extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface {
 
 	/**
 	 * @return array
@@ -50,7 +56,7 @@ class Tx_Flux_Form_Container_Sheet extends Tx_Flux_Form_AbstractFormContainer im
 	 */
 	protected function buildChildren() {
 		$structure = array();
-		/** @var Tx_Flux_Form_FormInterface[] $children */
+		/** @var \FluidTYPO3\Flux\Form\FormInterface[] $children */
 		$children = $this->getFields();
 		foreach ($children as $child) {
 			$name = $child->getName();
@@ -60,13 +66,13 @@ class Tx_Flux_Form_Container_Sheet extends Tx_Flux_Form_AbstractFormContainer im
 	}
 
 	/**
-	 * @return Tx_Flux_Form_FieldInterface[]
+	 * @return \FluidTYPO3\Flux\Form\FieldInterface[]
 	 */
 	public function getFields() {
 		$fields = array();
 		foreach ($this->children as $child) {
-			$isContainerWithChildren = (TRUE === $child instanceof Tx_Flux_Form_ContainerInterface && TRUE === $child->hasChildren());
-			$isFieldNotInsideObject = (TRUE === $child instanceof Tx_Flux_Form_FieldInterface && FALSE === $child->getParent() instanceof Tx_Flux_Form_Container_Object);
+			$isContainerWithChildren = (TRUE === $child instanceof ContainerInterface && TRUE === $child->hasChildren());
+			$isFieldNotInsideObject = (TRUE === $child instanceof FieldInterface && FALSE === $child->getParent() instanceof Object);
 			if (TRUE === $isContainerWithChildren || TRUE === $isFieldNotInsideObject) {
 				$name = $child->getName();
 				$fields[$name] = $child;

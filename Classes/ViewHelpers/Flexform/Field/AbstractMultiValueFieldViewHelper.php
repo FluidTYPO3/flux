@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\MultiValueFieldInterface;
+
 /**
  * Base class for all FlexForm fields.
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractMultiValueFieldViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
+abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -48,10 +51,10 @@ abstract class Tx_Flux_ViewHelpers_Flexform_Field_AbstractMultiValueFieldViewHel
 
 	/**
 	 * @param string $type
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	protected function getPreparedComponent($type) {
-		/** @var Tx_Flux_Form_MultiValueFieldInterface $component */
+		/** @var MultiValueFieldInterface $component */
 		$component = parent::getPreparedComponent($type);
 		$component->setMinItems($this->arguments['minItems']);
 		$component->setMaxItems($this->arguments['maxItems']);

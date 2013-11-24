@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_TceMain {
+class TceMain {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -35,7 +38,7 @@ class Tx_Flux_Backend_TceMain {
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var \FluidTYPO3\Flux\Service\FluxService
 	 */
 	protected $configurationService;
 
@@ -48,8 +51,8 @@ class Tx_Flux_Backend_TceMain {
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+		$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 	}
 
 	/**
@@ -127,7 +130,6 @@ class Tx_Flux_Backend_TceMain {
 	 * @param array $record
 	 * @param array $arguments
 	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
-	 * @throws Exception
 	 * @return void
 	 */
 	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, &$reference) {
@@ -163,7 +165,7 @@ class Tx_Flux_Backend_TceMain {
 			foreach ($detectedProviders as $provider) {
 				call_user_func_array(array($provider, $methodName), $arguments);
 			}
-		} catch (Exception $error) {
+		} catch (\Exception $error) {
 			$this->configurationService->debug($error);
 		}
 	}
@@ -178,7 +180,7 @@ class Tx_Flux_Backend_TceMain {
 		if (TRUE === self::$cachesCleared) {
 			return;
 		}
-		$manifestCacheFiles = glob(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/*-manifest.cache'));
+		$manifestCacheFiles = glob(GeneralUtility::getFileAbsFileName('typo3temp/*-manifest.cache'));
 		if (FALSE !== $manifestCacheFiles) {
 			foreach ($manifestCacheFiles as $manifestCacheFile) {
 				unlink($manifestCacheFile);
@@ -188,7 +190,7 @@ class Tx_Flux_Backend_TceMain {
 		foreach ($tables as $table) {
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL);
 			foreach ($providers as $provider) {
-				/** @var $provider Tx_Flux_Provider_ProviderInterface */
+				/** @var $provider \FluidTYPO3\Flux\Provider\ProviderInterface */
 				$provider->clearCacheCommand($command);
 			}
 		}

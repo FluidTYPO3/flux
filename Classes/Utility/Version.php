@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 /**
  * Version utilities
  *
@@ -30,7 +33,7 @@
  * @package Flux
  * @subpackage Utility
  */
-class Tx_Flux_Utility_Version {
+class Version {
 
 	/**
 	 * @return boolean
@@ -56,10 +59,10 @@ class Tx_Flux_Utility_Version {
 	 * @return boolean
 	 */
 	public static function assertExtensionVersionIsAtLeastVersion($extensionKey, $majorVersion, $minorVersion = 0, $bugfixVersion = 0) {
-		if (FALSE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey)) {
+		if (FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
 			return FALSE;
 		}
-		$extensionVersion = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion($extensionKey);
+		$extensionVersion = ExtensionManagementUtility::getExtensionVersion($extensionKey);
 		list ($major, $minor, $bugfix) = explode('.', $extensionVersion);
 		return ($majorVersion <= $major && $minorVersion <= $minor && $bugfixVersion <= $bugfix);
 	}

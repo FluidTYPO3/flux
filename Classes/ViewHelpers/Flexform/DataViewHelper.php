@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,18 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\RecursiveArray;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Exception;
+
 /**
  * Converts raw flexform xml into an associative array
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class DataViewHelper extends AbstractViewHelper {
 
 	/**
 	 * @var array
@@ -37,17 +43,17 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends \TYPO3\CMS\Fluid\Core\
 	private static $dataCache = array();
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
 
 	/**
 	 * Inject Flux service
-	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
@@ -57,8 +63,8 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends \TYPO3\CMS\Fluid\Core\
 	 * @param string $table
 	 * @param string $field
 	 * @param string $as
-	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
 	 * @return array
+	 * @throws Exception
 	 */
 	public function render($uid, $table, $field, $as = NULL) {
 		if (TRUE === isset(self::$dataCache[$uid.$table.$field])) {
@@ -66,7 +72,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends \TYPO3\CMS\Fluid\Core\
 		} else {
 			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,' . $field, $table, sprintf('uid=%d', $uid));
 			if (FALSE === $rows || 0 === count($rows)) {
-				throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);
+				throw new Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);
 			}
 			$row = array_pop($rows);
 			$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $row);
@@ -76,7 +82,7 @@ class Tx_Flux_ViewHelpers_Flexform_DataViewHelper extends \TYPO3\CMS\Fluid\Core\
 				$dataArray = array();
 				foreach ($providers as $provider) {
 					$data = (array) $provider->getFlexFormValues($row);
-					$dataArray = Tx_Flux_Utility_RecursiveArray::merge($dataArray, $data);
+					$dataArray = RecursiveArray::merge($dataArray, $data);
 				}
 			}
 			self::$dataCache[$uid.$table.$field] = $dataArray;

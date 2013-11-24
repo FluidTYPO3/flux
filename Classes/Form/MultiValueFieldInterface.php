@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,11 +28,11 @@
  * @package Flux
  * @subpackage Form
  */
-interface Tx_Flux_Form_MultiValueFieldInterface extends Tx_Flux_Form_FieldInterface {
+interface MultiValueFieldInterface extends FieldInterface {
 
 	/**
 	 * @param integer $size
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setSize($size);
 
@@ -52,7 +53,7 @@ interface Tx_Flux_Form_MultiValueFieldInterface extends Tx_Flux_Form_FieldInterf
 
 	/**
 	 * @param integer $maxItems
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setMaxItems($maxItems);
 
@@ -63,7 +64,7 @@ interface Tx_Flux_Form_MultiValueFieldInterface extends Tx_Flux_Form_FieldInterf
 
 	/**
 	 * @param integer $minItems
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setMinItems($minItems);
 
@@ -74,7 +75,7 @@ interface Tx_Flux_Form_MultiValueFieldInterface extends Tx_Flux_Form_FieldInterf
 
 	/**
 	 * @param string $itemListStyle
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setItemListStyle($itemListStyle);
 
@@ -85,7 +86,7 @@ interface Tx_Flux_Form_MultiValueFieldInterface extends Tx_Flux_Form_FieldInterf
 
 	/**
 	 * @param string $selectedListStyle
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setSelectedListStyle($selectedListStyle);
 

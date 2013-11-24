@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form;
+
 /**
  * FlexForm configuration container ViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers
  */
-class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
+class FlexformViewHelper extends AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -54,8 +57,8 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_ViewHelpers_Abstrac
 	 * @return void
 	 */
 	public function render() {
-		/** @var Tx_Flux_Form $form */
-		$form = $this->objectManager->get('Tx_Flux_Form');
+		/** @var Form $form */
+		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 		$container = $form->last();
 		$form->setId($this->arguments['id']);
 		$form->setName($this->arguments['id']);
@@ -66,11 +69,11 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_ViewHelpers_Abstrac
 		$form->setCompact($this->arguments['compact']);
 		$form->setGroup($this->arguments['wizardTab']);
 		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'form', $form);
+		$this->viewHelperVariableContainer->addOrUpdate(self::$scope, 'form', $form);
 		$this->templateVariableContainer->add('form', $form);
 		$this->setContainer($container);
 		$this->renderChildren();
-		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'container');
+		$this->viewHelperVariableContainer->remove(self::$scope, 'container');
 	}
 
 }

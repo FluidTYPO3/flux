@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Inline;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Inline_FalViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
+class FalViewHelperTest extends AbstractViewHelperTest {
 
 	/**
 	 * @test
@@ -38,7 +41,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Inline_FalViewHelperTest extends Tx_Flu
 		);
 		$instance = $this->buildViewHelperInstance($arguments, array());
 		$component = $instance->getComponent();
-		$this->assertInstanceOf('Tx_Flux_Form_Field_Inline_Fal', $component);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Field\Inline\Fal', $component);
 	}
 
 	/**

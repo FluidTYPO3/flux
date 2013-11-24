@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Widget\Controller;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,18 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\Resolve;
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController;
+
 /**
  * Grid Widget Controller
  *
  * @package Flux
  * @subpackage ViewHelpers/Widget
  */
-class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController {
+class GridController extends AbstractWidgetController {
 
 	/**
 	 * @var array
@@ -42,23 +48,23 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends \TYPO3\CMS\Fl
 	protected $row = array();
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
 	/**
-	 * @param Tx_Flux_Form_Container_Grid $grid
+	 * @param Grid $grid
 	 * @return void
 	 */
-	public function setGrid(Tx_Flux_Form_Container_Grid $grid) {
+	public function setGrid(Grid $grid) {
 		$this->grid = $grid;
 	}
 
@@ -81,7 +87,7 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends \TYPO3\CMS\Fl
 		$this->view->assign('row', $this->row);
 		$paths = $this->configurationService->getViewConfigurationForExtensionName('flux');
 		$templateRootPath = TRUE === isset($paths['templateRootPath']) ? $paths['templateRootPath'] : NULL;
-		$templatePathAndFilename = Tx_Flux_Utility_Resolve::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath);
+		$templatePathAndFilename = Resolve::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath);
 		$this->view->setTemplatePathAndFilename($templatePathAndFilename);
 	}
 }

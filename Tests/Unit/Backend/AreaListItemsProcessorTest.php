@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,17 +24,21 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use \FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Backend_AreaListItemsProcessorTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class AreaListItemsProcessorTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canGetContentAreasDefinedInUid() {
-		$instance = new Tx_Flux_Backend_AreaListItemsProcessor();
+		$instance = new AreaListItemsProcessor();
 		$columns = $instance->getContentAreasDefinedInContentElement(0);
 		$this->assertIsArray($columns);
 	}
@@ -42,9 +47,9 @@ class Tx_Flux_Backend_AreaListItemsProcessorTest extends Tx_Flux_Tests_AbstractF
 	 * @test
 	 */
 	public function canProcessListItems() {
-		$instance = new Tx_Flux_Backend_AreaListItemsProcessor();
+		$instance = new AreaListItemsProcessor();
 		$parameters = array(
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
+			'row' => \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$contentRecordWithoutParentAndWithoutChildren
 		);
 		$instance->itemsProcFunc($parameters);
 	}
@@ -53,10 +58,10 @@ class Tx_Flux_Backend_AreaListItemsProcessorTest extends Tx_Flux_Tests_AbstractF
 	 * @test
 	 */
 	public function canGetGridFromProviderAndRecord() {
-		$instance = new Tx_Flux_Backend_AreaListItemsProcessor();
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		/** @var Tx_Flux_Provider_ProviderInterface $provider */
-		$provider = $this->objectManager->get('Tx_Flux_Provider_Provider');
+		$instance = new AreaListItemsProcessor();
+		$record = \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$contentRecordWithoutParentAndWithoutChildren;
+		/** @var ProviderInterface $provider */
+		$provider = $this->objectManager->get('FluidTYPO3\Flux\Provider\Provider');
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID));
 		$grid = $this->callInaccessibleMethod($instance, 'getGridFromConfigurationProviderAndRecord', $provider, $record);
 		$this->assertIsArray($grid);
@@ -88,9 +93,9 @@ class Tx_Flux_Backend_AreaListItemsProcessorTest extends Tx_Flux_Tests_AbstractF
 		$class = substr(get_class($this), 0, -4);
 		$instance = $this->getMock($class, array('getContentRecordByUid'));
 		$instance->expects($this->once())->method('getContentRecordByUid')->with(1)->will($this->returnValue(array()));
-		$service = $this->getMock('Tx_Flux_Service_FluxService', array('resolvePrimaryConfigurationProvider'));
+		$service = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolvePrimaryConfigurationProvider'));
 		$service->expects($this->once())->method('resolvePrimaryConfigurationProvider')->will($this->returnValue(NULL));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'fluxService', $service, TRUE);
+		ObjectAccess::setProperty($instance, 'fluxService', $service, TRUE);
 		$instance->getContentAreasDefinedInContentElement(1);
 	}
 

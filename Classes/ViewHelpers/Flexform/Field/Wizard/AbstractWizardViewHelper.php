@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\WizardInterface;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+
 /**
  * Base class for Field Wizard style ViewHelpers
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
+abstract class AbstractWizardViewHelper extends AbstractFlexformViewHelper {
 
 	/**
 	 * @var string
@@ -56,11 +60,11 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper extends
 
 	/**
 	 * @param string $type
-	 * @return Tx_Flux_Form_WizardInterface
+	 * @return WizardInterface
 	 */
 	protected function getPreparedComponent($type) {
-		/** @var Tx_Flux_Form_WizardInterface $component */
-		$component = $this->objectManager->get('Tx_Flux_Form_Wizard_' . $type);
+		/** @var WizardInterface $component */
+		$component = $this->objectManager->get('FluidTYPO3\Flux\Form\Wizard\\' . $type);
 		$component->setHideParent($this->arguments['hideParent']);
 		$component->setLabel($this->arguments['label']);
 		return $component;

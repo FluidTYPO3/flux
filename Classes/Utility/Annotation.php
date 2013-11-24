@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,10 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Extbase\Reflection\ClassReflection;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Fluid\Core\Parser\TemplateParser;
+
 /**
  * Annotation Utility
  *
@@ -30,7 +35,7 @@
  * @package Flux
  * @subpackage Utility
  */
-class Tx_Flux_Utility_Annotation {
+class Annotation {
 
 	/**
 	 * @var array
@@ -50,7 +55,7 @@ class Tx_Flux_Utility_Annotation {
 		if (TRUE === isset(self::$cache['reflections'][$className])) {
 			$reflection = self::$cache['reflections'][$className];
 		} else {
-			$reflection = self::$cache['reflections'][$className] = new Tx_Extbase_Reflection_ClassReflection($className);
+			$reflection = self::$cache['reflections'][$className] = new ClassReflection($className);
 		}
 		if (FALSE === isset(self::$cache['annotations'][$className])) {
 			self::$cache['annotations'][$className] = array();
@@ -65,7 +70,7 @@ class Tx_Flux_Utility_Annotation {
 					$annotations = $reflection->getTagValues($annotationName);
 				}
 			} else {
-				$properties = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getGettablePropertyNames($sample);
+				$properties = ObjectAccess::getGettablePropertyNames($sample);
 				foreach ($properties as $reflectedPropertyName) {
 					if (FALSE === property_exists($className, $reflectedPropertyName)) {
 						continue;
@@ -90,7 +95,7 @@ class Tx_Flux_Utility_Annotation {
 	 * @return string
 	 */
 	protected static function parseAnnotationArguments($argumentsAsString) {
-		$pattern = \TYPO3\CMS\Fluid\Core\Parser\TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_ARRAY_PARTS;
+		$pattern = TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_ARRAY_PARTS;
 		$matches = array();
 		preg_match_all($pattern, $argumentsAsString, $matches, PREG_SET_ORDER);
 		$arguments = array();
@@ -124,7 +129,7 @@ class Tx_Flux_Utility_Annotation {
 			}
 			return array_map(array(self, 'parseAnnotation'), $annotation);
 		}
-		$pattern = \TYPO3\CMS\Fluid\Core\Parser\TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
+		$pattern = TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
 		$annotation = trim($annotation);
 		if (FALSE === strpos($annotation, '(') && FALSE === strpos($annotation, ')')) {
 			$annotation .= '()';

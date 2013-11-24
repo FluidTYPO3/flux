@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_UserFunction_AbstractUserFunctionTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+abstract class AbstractUserFunctionTest extends AbstractTestCase {
 
 	/**
 	 * @var array
@@ -55,7 +59,7 @@ abstract class Tx_Flux_UserFunction_AbstractUserFunctionTest extends Tx_Flux_Tes
 	 * @return string
 	 */
 	protected function getClassName() {
-		$className = 'Tx_Flux_UserFunction_' . substr(array_pop(explode('_', get_class($this))), 0, -4);
+		$className = substr(get_class($this), 0, -4);
 		return $className;
 	}
 
@@ -88,7 +92,7 @@ abstract class Tx_Flux_UserFunction_AbstractUserFunctionTest extends Tx_Flux_Tes
 	 */
 	public function canCallMethodAndReceiveOutput() {
 		$userFunctionReference = $this->getClassName() . '->' . $this->methodName;
-		$output = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($userFunctionReference, $this->getParameters(), $this->getCallerInstance());
+		$output = GeneralUtility::callUserFunction($userFunctionReference, $this->getParameters(), $this->getCallerInstance());
 		if (TRUE === $this->expectsNull) {
 			$this->assertNull($output);
 		} else {

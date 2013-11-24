@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,11 +28,11 @@
  * @package Flux
  * @subpackage Form
  */
-interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFieldInterface {
+interface RelationFieldInterface extends MultiValueFieldInterface {
 
 	/**
 	 * @param string $condition
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setCondition($condition);
 
@@ -42,7 +43,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $foreignField
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignField($foreignField);
 
@@ -53,7 +54,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param NULL|string $manyToMany
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setManyToMany($manyToMany);
 
@@ -64,7 +65,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $table
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setTable($table);
 
@@ -75,7 +76,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param boolean $disableMovingChildrenWithParent
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setDisableMovingChildrenWithParent($disableMovingChildrenWithParent);
 
@@ -86,7 +87,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $foreignDefaultSortby
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignDefaultSortby($foreignDefaultSortby);
 
@@ -97,7 +98,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $foreignLabel
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignLabel($foreignLabel);
 
@@ -108,7 +109,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $foreignSelector
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignSelector($foreignSelector);
 
@@ -119,7 +120,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $foreignSortby
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignSortby($foreignSortby);
 
@@ -130,7 +131,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $foreignTableField
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignTableField($foreignTableField);
 
@@ -141,7 +142,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $foreignUnique
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignUnique($foreignUnique);
 
@@ -152,7 +153,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $itemListStyle
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setItemListStyle($itemListStyle);
 
@@ -163,7 +164,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $localizationMode
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setLocalizationMode($localizationMode);
 
@@ -174,7 +175,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param boolean $localizeChildrenAtParentLocalization
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setLocalizeChildrenAtParentLocalization($localizeChildrenAtParentLocalization);
 
@@ -185,7 +186,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $selectedListStyle
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setSelectedListStyle($selectedListStyle);
 
@@ -196,7 +197,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $symmetricField
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setSymmetricField($symmetricField);
 
@@ -207,7 +208,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $symmetricLabel
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setSymmetricLabel($symmetricLabel);
 
@@ -218,7 +219,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param string $symmetricSortby
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setSymmetricSortby($symmetricSortby);
 
@@ -229,7 +230,7 @@ interface Tx_Flux_Form_RelationFieldInterface extends Tx_Flux_Form_MultiValueFie
 
 	/**
 	 * @param boolean $showThumbnails
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setShowThumbnails($showThumbnails);
 

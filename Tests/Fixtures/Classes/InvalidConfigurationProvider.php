@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,26 +28,6 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider extends Tx_Flux_Provider_AbstractProvider {
-
-	/**
-	 * @var string
-	 */
-	protected $tableName = 'test';
-
-	/**
-	 * @var string
-	 */
-	protected $extensionKey = 'test';
-
-	/**
-	 * @var string
-	 */
-	protected $fieldName = 'test';
-
-	/**
-	 * @var string
-	 */
-	protected $templatePathAndFilename = 'EXT:flux/Tests/Fixtures/Templates/DummyConfigurationProvider.html';
+class InvalidConfigurationProvider {
 
 }

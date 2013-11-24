@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,17 +24,19 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Utility_VersionTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class VersionTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canGetExtensionVersionNumbers() {
-		$version = Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('flux', 6, 0, 0);
+		$version = Version::assertExtensionVersionIsAtLeastVersion('flux', 6, 0, 0);
 		$this->assertIsBoolean($version);
 	}
 
@@ -41,7 +44,7 @@ class Tx_Flux_Utility_VersionTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canAssertIfCoreIsLegacyVersion() {
-		$isLegacy = Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero();
+		$isLegacy = Version::assertCoreVersionIsBelowSixPointZero();
 		$this->assertIsBoolean($isLegacy);
 	}
 
@@ -49,7 +52,7 @@ class Tx_Flux_Utility_VersionTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canAssertIfCoreIsRecentVersion() {
-		$isLegacy = Tx_Flux_Utility_Version::assertCoreVersionIsAtLeastSixPointZero();
+		$isLegacy = Version::assertCoreVersionIsAtLeastSixPointZero();
 		$this->assertIsBoolean($isLegacy);
 	}
 
@@ -57,7 +60,7 @@ class Tx_Flux_Utility_VersionTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function returnsFalseIfExtensionKeyIsNotLoaded() {
-		$isFalseResponse = Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('void', 1, 0, 0);
+		$isFalseResponse = Version::assertExtensionVersionIsAtLeastVersion('void', 1, 0, 0);
 		$this->assertFalse($isFalseResponse);
 	}
 

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Wizard\ColorPicker;
+
 /**
  * Field Wizard: Color Picker
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ColorPickerViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+class ColorPickerViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * @var string
@@ -49,10 +52,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ColorPickerViewHelper extends Tx
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Wizard_ColorPicker
+	 * @return ColorPicker
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Wizard_ColorPicker $component */
+		/** @var ColorPicker $component */
 		$component = $this->getPreparedComponent('ColorPicker');
 		$component->setIcon($this->arguments['exampleImg']);
 		$component->setDimensions($this->arguments['dim']);

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
+class InputViewHelper extends AbstractFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -46,10 +47,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_InputViewHelper extends Tx_Flux_ViewHel
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Field_Input
+	 * @return Input
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Field_Input $input */
+		/** @var Input $input */
 		$input = $this->getPreparedComponent('Input');
 		$input->setValidate($this->arguments['eval']);
 		$input->setMaxCharacters($this->arguments['maxCharacters']);

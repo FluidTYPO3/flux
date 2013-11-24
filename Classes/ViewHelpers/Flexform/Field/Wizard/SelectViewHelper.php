@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Wizard\Select;
+
 /**
  * Field Wizard: Edit
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SelectViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+class SelectViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -42,10 +45,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SelectViewHelper extends Tx_Flux
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Wizard_Select
+	 * @return Select
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Wizard_Select $component */
+		/** @var Select $component */
 		$component = $this->getPreparedComponent('Select');
 		$component->setMode($this->arguments['mode']);
 		$component->setItems($this->arguments['items']);
