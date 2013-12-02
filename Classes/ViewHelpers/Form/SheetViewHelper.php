@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
+namespace FluidTYPO3\Flux\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,7 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Form\Container\Sheet;
-use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
  * FlexForm sheet ViewHelper
@@ -33,9 +33,9 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
  * Groups FlexForm fields into sheets.
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform
+ * @subpackage ViewHelpers/Form
  */
-class SheetViewHelper extends AbstractFlexformViewHelper {
+class SheetViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * Initialize arguments

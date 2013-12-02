@@ -1,9 +1,9 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Grid;
+namespace FluidTYPO3\Flux\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
  *
  *  All rights reserved
  *
@@ -24,35 +24,43 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Grid;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+use FluidTYPO3\Flux\Form\Container\Section;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
- * Flexform Grid Row ViewHelper
+ * FlexForm field section object ViewHelper
+ *
+ * Use this inside flux:flexform.section to name and divide the fields
+ * into individual objects that can be inserted into the section.
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Grid
+ * @subpackage ViewHelpers/Form
  */
-class RowViewHelper extends AbstractFlexformViewHelper {
+class ObjectViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * Initialize
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Optional name of this row - defaults to "row"', FALSE, 'row');
-		$this->registerArgument('label', 'string', 'Optional label for this row - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
+		$this->registerArgument('name', 'string', 'Name of the section object, FlexForm XML-valid tag name string', TRUE);
+		$this->registerArgument('label', 'string', 'Label for section object, can be LLL: value. Optional - if not specified, ' .
+			'Flux tries to detect an LLL label named "flux.fluxFormId.objects.foobar" based on object name, in scope of ' .
+			'extension rendering the Flux form.', FALSE, NULL);
 	}
 
 	/**
 	 * Render method
-	 * @return string
+	 * @return void
 	 */
 	public function render() {
-		$name = ('row' === $this->arguments['name'] ? uniqid('row') : $this->arguments['name']);
-		$row = $this->getForm()->createContainer('Row', $name, $this->arguments['label']);
+		/** @var Section $object */
+		$object = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Object');
+		$object->setName($this->arguments['name']);
+		$object->setLabel($this->arguments['label']);
 		$container = $this->getContainer();
-		$container->add($row);
-		$this->setContainer($row);
+		$container->add($object);
+		$this->setContainer($object);
 		$this->renderChildren();
 		$this->setContainer($container);
 	}

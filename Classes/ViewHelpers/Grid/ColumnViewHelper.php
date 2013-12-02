@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Grid;
+namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,7 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Grid;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Form\Container\Column;
-use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
  * Flexform Grid Column ViewHelper
@@ -33,7 +33,7 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Grid
  */
-class ColumnViewHelper extends AbstractFlexformViewHelper {
+class ColumnViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * Initialize

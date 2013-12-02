@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
+namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,25 +24,23 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
- * Adds a content area to a source using Flux FlexForms
+ * Flexform Grid Row ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform
+ * @subpackage ViewHelpers/Flexform/Grid
  */
-class ContentViewHelper extends AbstractFlexformViewHelper {
+class RowViewHelper extends AbstractFormViewHelper {
 
 	/**
-	 * Initialize arguments
+	 * Initialize
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Name of the content area, FlexForm XML-valid tag name string', TRUE);
-		$this->registerArgument('label', 'string', 'Label for content area, can be LLL: value. Optional - if not specified, ' .
-			'Flux tries to detect an LLL label named "flux.fluxFormId.areas.foobar" based on area name, in scope of ' .
-			'extension rendering the Flux form.', FALSE, NULL);
+		$this->registerArgument('name', 'string', 'Optional name of this row - defaults to "row"', FALSE, 'row');
+		$this->registerArgument('label', 'string', 'Optional label for this row - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
 	}
 
 	/**
@@ -50,9 +48,13 @@ class ContentViewHelper extends AbstractFlexformViewHelper {
 	 * @return string
 	 */
 	public function render() {
-		/** @var FluidTYPO3\Flux\Form\Container\Content $content */
-		$content = $this->getForm()->createContainer('Content', $this->arguments['name'], $this->arguments['label']);
-		$this->getContainer()->add($content);
+		$name = ('row' === $this->arguments['name'] ? uniqid('row') : $this->arguments['name']);
+		$row = $this->getForm()->createContainer('Row', $name, $this->arguments['label']);
+		$container = $this->getContainer();
+		$container->add($row);
+		$this->setContainer($row);
+		$this->renderChildren();
+		$this->setContainer($container);
 	}
 
 }

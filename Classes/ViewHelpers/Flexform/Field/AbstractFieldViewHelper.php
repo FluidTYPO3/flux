@@ -25,7 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Form\FieldInterface;
-use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
  * Base class for all FlexForm fields.
@@ -33,7 +33,7 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-abstract class AbstractFieldViewHelper extends AbstractFlexformViewHelper {
+abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * Initialize arguments

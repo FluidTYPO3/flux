@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
+namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -24,20 +24,20 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\Wizard\ColorPicker;
+use FluidTYPO3\Flux\Form\Wizard\Add;
 
 /**
- * Field Wizard: Color Picker
+ * Field Wizard: Add
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field/Wizard
+ * @subpackage ViewHelpers/Wizard
  */
-class ColorPickerViewHelper extends AbstractWizardViewHelper {
+class AddViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * @var string
 	 */
-	protected $label = 'Choose color';
+	protected $label = 'Add new record';
 
 	/**
 	 * Initialize arguments
@@ -45,22 +45,20 @@ class ColorPickerViewHelper extends AbstractWizardViewHelper {
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		$this->registerArgument('dim', 'string', 'Dimensions (WxH, e.g. 20x20) of color picker', FALSE, '20x20');
-		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 450);
-		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 720);
-		$this->registerArgument('exampleImg', 'string', 'Example image from which to pick colors', FALSE, 'EXT:flux/Resources/Public/Icons/ColorWheel.png');
+		$this->registerArgument('table', 'string', 'Table name that records are added to', TRUE);
+		$this->registerArgument('pid', 'mixed', 'Storage page UID or (as is default) ###CURRENT_PID###', FALSE, '###CURRENT_PID###');
+		$this->registerArgument('setValue', 'string', 'How to treat the record once created', FALSE, 'prepend');
 	}
 
 	/**
-	 * @return ColorPicker
+	 * @return Add
 	 */
 	public function getComponent() {
-		/** @var ColorPicker $component */
-		$component = $this->getPreparedComponent('ColorPicker');
-		$component->setIcon($this->arguments['exampleImg']);
-		$component->setDimensions($this->arguments['dim']);
-		$component->setWidth($this->arguments['width']);
-		$component->setHeight($this->arguments['height']);
+		/** @var Add $component */
+		$component = $this->getPreparedComponent('Add');
+		$component->setTable($this->arguments['table']);
+		$component->setStoragePageUid($this->arguments['pid']);
+		$component->setSetValue($this->arguments['setValue']);
 		return $component;
 	}
 

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
+namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -30,7 +30,7 @@ use FluidTYPO3\Flux\Form\Wizard\Suggest;
  * Field Wizard: Suggest
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field/Wizard
+ * @subpackage ViewHelpers/Wizard
  */
 class SuggestViewHelper extends AbstractWizardViewHelper {
 

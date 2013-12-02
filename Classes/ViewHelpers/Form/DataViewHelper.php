@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
+namespace FluidTYPO3\Flux\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -33,7 +33,7 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Exception;
  * Converts raw flexform xml into an associative array
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform
+ * @subpackage ViewHelpers/Form
  */
 class DataViewHelper extends AbstractViewHelper {
 

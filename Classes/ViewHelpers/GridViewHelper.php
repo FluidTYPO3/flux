@@ -1,9 +1,9 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
+namespace FluidTYPO3\Flux\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
  *
  *  All rights reserved
  *
@@ -24,43 +24,35 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\Container\Section;
-use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
- * FlexForm field section object ViewHelper
- *
- * Use this inside flux:flexform.section to name and divide the fields
- * into individual objects that can be inserted into the section.
+ * Grid container ViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class ObjectViewHelper extends AbstractFlexformViewHelper {
+class GridViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * Initialize
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Name of the section object, FlexForm XML-valid tag name string', TRUE);
-		$this->registerArgument('label', 'string', 'Label for section object, can be LLL: value. Optional - if not specified, ' .
-			'Flux tries to detect an LLL label named "flux.fluxFormId.objects.foobar" based on object name, in scope of ' .
-			'extension rendering the Flux form.', FALSE, NULL);
+		$this->registerArgument('name', 'string', 'Optional name of this grid - defaults to "grid"', FALSE, 'grid');
+		$this->registerArgument('label', 'string', 'Optional label for this grid - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
 	}
 
 	/**
 	 * Render method
-	 * @return void
+	 * @return string
 	 */
 	public function render() {
-		/** @var Section $object */
-		$object = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Object');
-		$object->setName($this->arguments['name']);
-		$object->setLabel($this->arguments['label']);
+		$grid = $this->getGrid($this->arguments['name']);
+		$grid->setParent($this->getForm());
+		$grid->setLabel($this->arguments['label']);
 		$container = $this->getContainer();
-		$container->add($object);
-		$this->setContainer($object);
+		$this->setContainer($grid);
 		$this->renderChildren();
 		$this->setContainer($container);
 	}

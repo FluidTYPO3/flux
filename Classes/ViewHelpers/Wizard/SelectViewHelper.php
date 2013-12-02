@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
+namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -24,20 +24,15 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\Wizard\Slider;
+use FluidTYPO3\Flux\Form\Wizard\Select;
 
 /**
- * Field Wizard: Slider
+ * Field Wizard: Edit
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field/Wizard
+ * @subpackage ViewHelpers/Wizard
  */
-class SliderViewHelper extends AbstractWizardViewHelper {
-
-	/**
-	 * @var string
-	 */
-	protected $label = 'Slider';
+class SelectViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -45,18 +40,18 @@ class SliderViewHelper extends AbstractWizardViewHelper {
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		$this->registerArgument('step', 'integer', 'Increment slider values by this much for each step', FALSE, 1);
-		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 32);
+		$this->registerArgument('mode', 'string', 'Selection mode - substitution, append or prepend', FALSE, 'substitution');
+		$this->registerArgument('items', 'mixed', 'Comma-separated, comma-and-semicolon-separated or array list of possible values', TRUE);
 	}
 
 	/**
-	 * @return Slider
+	 * @return Select
 	 */
 	public function getComponent() {
-		/** @var Slider $component */
-		$component = $this->getPreparedComponent('Slider');
-		$component->setWidth($this->arguments['width']);
-		$component->setStep($this->arguments['step']);
+		/** @var Select $component */
+		$component = $this->getPreparedComponent('Select');
+		$component->setMode($this->arguments['mode']);
+		$component->setItems($this->arguments['items']);
 		return $component;
 	}
 

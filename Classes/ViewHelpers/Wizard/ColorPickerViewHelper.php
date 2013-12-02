@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
+namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,20 +23,21 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
-use FluidTYPO3\Flux\Form\Wizard\Link;
+
+use FluidTYPO3\Flux\Form\Wizard\ColorPicker;
 
 /**
- * Field Wizard: Link
+ * Field Wizard: Color Picker
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field/Wizard
+ * @subpackage ViewHelpers/Wizard
  */
-class LinkViewHelper extends AbstractWizardViewHelper {
+class ColorPickerViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * @var string
 	 */
-	protected $label = 'Select link';
+	protected $label = 'Choose color';
 
 	/**
 	 * Initialize arguments
@@ -44,26 +45,22 @@ class LinkViewHelper extends AbstractWizardViewHelper {
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		$this->registerArgument('activeTab', 'string', 'Active tab of the link popup', FALSE, 'file');
-		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 500);
-		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 500);
-		$this->registerArgument('allowedExtensions', 'string', 'Comma-separated list of extensions that are allowed to be selected. Default is all types.', FALSE, FALSE);
-		$this->registerArgument('blindLinkOptions', 'string', 'Blind link options', FALSE, '');
-		$this->registerArgument('blindLinkFields', 'string', 'Blind link fields', FALSE, '');
+		$this->registerArgument('dim', 'string', 'Dimensions (WxH, e.g. 20x20) of color picker', FALSE, '20x20');
+		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 450);
+		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 720);
+		$this->registerArgument('exampleImg', 'string', 'Example image from which to pick colors', FALSE, 'EXT:flux/Resources/Public/Icons/ColorWheel.png');
 	}
 
 	/**
-	 * @return Link
+	 * @return ColorPicker
 	 */
 	public function getComponent() {
-		/** @var Link $component */
-		$component = $this->getPreparedComponent('Link');
-		$component->setActiveTab($this->arguments['activeTab']);
+		/** @var ColorPicker $component */
+		$component = $this->getPreparedComponent('ColorPicker');
+		$component->setIcon($this->arguments['exampleImg']);
+		$component->setDimensions($this->arguments['dim']);
 		$component->setWidth($this->arguments['width']);
 		$component->setHeight($this->arguments['height']);
-		$component->setAllowedExtensions($this->arguments['allowedExtensions']);
-		$component->setBlindLinkOptions($this->arguments['blindLinkOptions']);
-		$component->setBlindLinkFields($this->arguments['blindLinkFields']);
 		return $component;
 	}
 

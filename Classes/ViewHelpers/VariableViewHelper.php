@@ -32,7 +32,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  * @package Flux
  * @subpackage ViewHelpers
  */
-class VariableViewHelper extends AbstractFlexformViewHelper {
+class VariableViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * @param string $name

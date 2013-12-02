@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
+namespace FluidTYPO3\Flux\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,23 +24,25 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
- * Grid container ViewHelper
+ * Adds a content area to a source using Flux FlexForms
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform
+ * @subpackage ViewHelpers/Form
  */
-class GridViewHelper extends AbstractFlexformViewHelper {
+class ContentViewHelper extends AbstractFormViewHelper {
 
 	/**
-	 * Initialize
+	 * Initialize arguments
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Optional name of this grid - defaults to "grid"', FALSE, 'grid');
-		$this->registerArgument('label', 'string', 'Optional label for this grid - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
+		$this->registerArgument('name', 'string', 'Name of the content area, FlexForm XML-valid tag name string', TRUE);
+		$this->registerArgument('label', 'string', 'Label for content area, can be LLL: value. Optional - if not specified, ' .
+			'Flux tries to detect an LLL label named "flux.fluxFormId.areas.foobar" based on area name, in scope of ' .
+			'extension rendering the Flux form.', FALSE, NULL);
 	}
 
 	/**
@@ -48,13 +50,9 @@ class GridViewHelper extends AbstractFlexformViewHelper {
 	 * @return string
 	 */
 	public function render() {
-		$grid = $this->getGrid($this->arguments['name']);
-		$grid->setParent($this->getForm());
-		$grid->setLabel($this->arguments['label']);
-		$container = $this->getContainer();
-		$this->setContainer($grid);
-		$this->renderChildren();
-		$this->setContainer($container);
+		/** @var FluidTYPO3\Flux\Form\Container\Content $content */
+		$content = $this->getForm()->createContainer('Content', $this->arguments['name'], $this->arguments['label']);
+		$this->getContainer()->add($content);
 	}
 
 }

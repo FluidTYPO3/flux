@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
+namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -24,49 +24,38 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\WizardInterface;
-use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+use FluidTYPO3\Flux\Form\Wizard\ListWizard;
 
 /**
- * Base class for Field Wizard style ViewHelpers
+ * Field Wizard: List
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field/Wizard
+ * @subpackage ViewHelpers/Flexform/Wizard
  */
-abstract class AbstractWizardViewHelper extends AbstractFlexformViewHelper {
+class ListViewHelper extends AbstractWizardViewHelper {
 
 	/**
-	 * @var string
-	 */
-	protected $label = NULL;
-
-	/**
-	 * Initialize
+	 * Initialize arguments
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('label', 'string', 'Optional title of this Wizard', FALSE, $this->label);
-		$this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the parent field', FALSE, FALSE);
+		parent::initializeArguments();
+		$this->registerArgument('table', 'string', 'Table name that records are added to', TRUE);
+		$this->registerArgument('pid', 'mixed', 'Storage page UID or (as is default) ###CURRENT_PID###', FALSE, '###CURRENT_PID###');
+		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 500);
+		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 500);
 	}
 
 	/**
-	 * @return void
+	 * @return ListWizard
 	 */
-	public function render() {
-		$component = $this->getComponent();
-		$field = $this->getContainer();
-		$field->add($component);
-	}
-
-	/**
-	 * @param string $type
-	 * @return WizardInterface
-	 */
-	protected function getPreparedComponent($type) {
-		/** @var WizardInterface $component */
-		$component = $this->objectManager->get('FluidTYPO3\Flux\Form\Wizard\\' . $type);
-		$component->setHideParent($this->arguments['hideParent']);
-		$component->setLabel($this->arguments['label']);
+	public function getComponent() {
+		/** @var ListWizard $component */
+		$component = $this->getPreparedComponent('List');
+		$component->setTable($this->arguments['table']);
+		$component->setStoragePageUid($this->arguments['pid']);
+		$component->setWidth($this->arguments['width']);
+		$component->setHeight($this->arguments['height']);
 		return $component;
 	}
 

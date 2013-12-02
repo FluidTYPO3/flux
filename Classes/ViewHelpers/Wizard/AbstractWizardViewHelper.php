@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
+namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -24,41 +24,49 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\Wizard\Add;
+use FluidTYPO3\Flux\Form\WizardInterface;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
- * Field Wizard: Add
+ * Base class for Field Wizard style ViewHelpers
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field/Wizard
+ * @subpackage ViewHelpers/Wizard
  */
-class AddViewHelper extends AbstractWizardViewHelper {
+abstract class AbstractWizardViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * @var string
 	 */
-	protected $label = 'Add new record';
+	protected $label = NULL;
 
 	/**
-	 * Initialize arguments
+	 * Initialize
 	 * @return void
 	 */
 	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('table', 'string', 'Table name that records are added to', TRUE);
-		$this->registerArgument('pid', 'mixed', 'Storage page UID or (as is default) ###CURRENT_PID###', FALSE, '###CURRENT_PID###');
-		$this->registerArgument('setValue', 'string', 'How to treat the record once created', FALSE, 'prepend');
+		$this->registerArgument('label', 'string', 'Optional title of this Wizard', FALSE, $this->label);
+		$this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the parent field', FALSE, FALSE);
 	}
 
 	/**
-	 * @return Add
+	 * @return void
 	 */
-	public function getComponent() {
-		/** @var Add $component */
-		$component = $this->getPreparedComponent('Add');
-		$component->setTable($this->arguments['table']);
-		$component->setStoragePageUid($this->arguments['pid']);
-		$component->setSetValue($this->arguments['setValue']);
+	public function render() {
+		$component = $this->getComponent();
+		$field = $this->getContainer();
+		$field->add($component);
+	}
+
+	/**
+	 * @param string $type
+	 * @return WizardInterface
+	 */
+	protected function getPreparedComponent($type) {
+		/** @var WizardInterface $component */
+		$component = $this->objectManager->get('FluidTYPO3\Flux\Form\Wizard\\' . $type);
+		$component->setHideParent($this->arguments['hideParent']);
+		$component->setLabel($this->arguments['label']);
 		return $component;
 	}
 

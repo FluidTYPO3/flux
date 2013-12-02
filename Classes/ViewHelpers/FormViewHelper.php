@@ -32,7 +32,7 @@ use FluidTYPO3\Flux\Form;
  * @package Flux
  * @subpackage ViewHelpers
  */
-class FlexformViewHelper extends AbstractFlexformViewHelper {
+class FormViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -69,11 +69,11 @@ class FlexformViewHelper extends AbstractFlexformViewHelper {
 		$form->setCompact($this->arguments['compact']);
 		$form->setGroup($this->arguments['wizardTab']);
 		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
-		$this->viewHelperVariableContainer->addOrUpdate(self::$scope, 'form', $form);
+		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, 'form', $form);
 		$this->templateVariableContainer->add('form', $form);
 		$this->setContainer($container);
 		$this->renderChildren();
-		$this->viewHelperVariableContainer->remove(self::$scope, 'container');
+		$this->viewHelperVariableContainer->remove(self::SCOPE, 'container');
 	}
 
 }

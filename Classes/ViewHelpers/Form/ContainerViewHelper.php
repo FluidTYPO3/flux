@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
+namespace FluidTYPO3\Flux\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -39,7 +39,7 @@ use FluidTYPO3\Flux\ViewHelpers\Flexform\Field\AbstractFieldViewHelper;
  * this element is a simpler version of the Section and Object logic.
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform
+ * @subpackage ViewHelpers/Form
  */
 class ContainerViewHelper extends AbstractFieldViewHelper {
 

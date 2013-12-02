@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
+namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -24,15 +24,20 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\Wizard\ListWizard;
+use FluidTYPO3\Flux\Form\Wizard\Slider;
 
 /**
- * Field Wizard: List
+ * Field Wizard: Slider
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field/Wizard
+ * @subpackage ViewHelpers/Wizard
  */
-class ListViewHelper extends AbstractWizardViewHelper {
+class SliderViewHelper extends AbstractWizardViewHelper {
+
+	/**
+	 * @var string
+	 */
+	protected $label = 'Slider';
 
 	/**
 	 * Initialize arguments
@@ -40,22 +45,18 @@ class ListViewHelper extends AbstractWizardViewHelper {
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		$this->registerArgument('table', 'string', 'Table name that records are added to', TRUE);
-		$this->registerArgument('pid', 'mixed', 'Storage page UID or (as is default) ###CURRENT_PID###', FALSE, '###CURRENT_PID###');
-		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 500);
-		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 500);
+		$this->registerArgument('step', 'integer', 'Increment slider values by this much for each step', FALSE, 1);
+		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 32);
 	}
 
 	/**
-	 * @return ListWizard
+	 * @return Slider
 	 */
 	public function getComponent() {
-		/** @var ListWizard $component */
-		$component = $this->getPreparedComponent('List');
-		$component->setTable($this->arguments['table']);
-		$component->setStoragePageUid($this->arguments['pid']);
+		/** @var Slider $component */
+		$component = $this->getPreparedComponent('Slider');
 		$component->setWidth($this->arguments['width']);
-		$component->setHeight($this->arguments['height']);
+		$component->setStep($this->arguments['step']);
 		return $component;
 	}
 
