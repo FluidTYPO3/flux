@@ -26,12 +26,12 @@ namespace FluidTYPO3\Flux\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Resolve utility
+ * ResolveUtility utility
  *
  * @package Flux
  * @subpackage Utility
  */
-class Resolve {
+class ResolveUtility {
 
 	/**
 	 * @var boolean
@@ -53,8 +53,8 @@ class Resolve {
 	 */
 	private static function initialize() {
 		if (FALSE === self::$initialized) {
-			self::$hasGridElementsVersionTwo = Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
-			self::$isLegacyCoreVersion = Version::assertCoreVersionIsBelowSixPointZero();
+			self::$hasGridElementsVersionTwo = VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
+			self::$isLegacyCoreVersion = VersionUtility::assertCoreVersionIsBelowSixPointZero();
 		}
 		self::$initialized = TRUE;
 	}

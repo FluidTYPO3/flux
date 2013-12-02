@@ -31,14 +31,14 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class AnnotationTest extends AbstractTestCase {
+class AnnotationUtilityTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canParseAnnotationsFromModelClassNameWithoutPropertyName() {
 		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
-		$annotation = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
+		$annotation = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
 		$this->assertTrue($annotation);
 	}
 
@@ -47,8 +47,8 @@ class AnnotationTest extends AbstractTestCase {
 	 */
 	public function canParseAnnotationsFromModelClassNameWithPropertyNameAndTriggerCache() {
 		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
-		Annotation::getAnnotationValueFromClass($class, 'Flux\Form\Field', 'crdate');
-		$annotation = Annotation::getAnnotationValueFromClass($class, 'Flux\Form\Field', 'crdate');
+		AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Field', 'crdate');
+		$annotation = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Field', 'crdate');
 		$this->assertIsArray($annotation);
 	}
 
@@ -61,7 +61,7 @@ class AnnotationTest extends AbstractTestCase {
 			'type' => 'input',
 			'config' => array()
 		);
-		$result = Annotation::parseAnnotation($annotation);
+		$result = AnnotationUtility::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -76,7 +76,7 @@ class AnnotationTest extends AbstractTestCase {
 				'size' => 10
 			)
 		);
-		$result = Annotation::parseAnnotation($annotation);
+		$result = AnnotationUtility::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -92,7 +92,7 @@ class AnnotationTest extends AbstractTestCase {
 				'float' => 0.5
 			)
 		);
-		$result = Annotation::parseAnnotation($annotation);
+		$result = AnnotationUtility::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -107,7 +107,7 @@ class AnnotationTest extends AbstractTestCase {
 				'dummy' => array('foo' => 1, 'bar' => 2)
 			)
 		);
-		$result = Annotation::parseAnnotation($annotation);
+		$result = AnnotationUtility::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -117,7 +117,7 @@ class AnnotationTest extends AbstractTestCase {
 	public function returnsTrueForEmptyAnnotations() {
 		$annotation = '';
 		$expected = TRUE;
-		$result = Annotation::parseAnnotation($annotation);
+		$result = AnnotationUtility::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -133,7 +133,7 @@ class AnnotationTest extends AbstractTestCase {
 			'foo' => TRUE,
 			'bar' => TRUE
 		);
-		$result = Annotation::parseAnnotation($annotations);
+		$result = AnnotationUtility::parseAnnotation($annotations);
 		$this->assertEquals($expected, $result);
 	}
 
@@ -143,7 +143,7 @@ class AnnotationTest extends AbstractTestCase {
 	public function canHandleSingleItemArraysOfAnnotations() {
 		$annotations = array('');
 		$expected = TRUE;
-		$result = Annotation::parseAnnotation($annotations);
+		$result = AnnotationUtility::parseAnnotation($annotations);
 		$this->assertEquals($expected, $result);
 	}
 

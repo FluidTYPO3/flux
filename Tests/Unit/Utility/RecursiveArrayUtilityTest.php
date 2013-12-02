@@ -30,7 +30,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class RecursiveArrayTest extends AbstractTestCase {
+class RecursiveArrayUtilityTest extends AbstractTestCase {
 
 	/**
 	 * @test
@@ -52,7 +52,7 @@ class RecursiveArrayTest extends AbstractTestCase {
 				'foo' => TRUE
 			)
 		);
-		$product = RecursiveArray::merge($array1, $array2);
+		$product = RecursiveArrayUtility::merge($array1, $array2);
 		$this->assertSame($expected, $product);
 	}
 
@@ -89,7 +89,7 @@ class RecursiveArrayTest extends AbstractTestCase {
 			),
 			'new' => TRUE,
 		);
-		$product = RecursiveArray::diff($array1, $array2);
+		$product = RecursiveArrayUtility::diff($array1, $array2);
 		$this->assertSame($expected, $product);
 	}
 

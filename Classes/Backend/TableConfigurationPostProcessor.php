@@ -28,7 +28,7 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Utility\Annotation;
+use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -152,16 +152,16 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 * @return Form
 	 */
 	public function generateFormInstanceFromClassName($class, $table) {
-		$labelFields = Annotation::getAnnotationValueFromClass($class, 'Flux\Label', NULL);
+		$labelFields = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Label', NULL);
 		$extensionName = $this->getExtensionNameFromModelClassName($class);
-		$values = Annotation::getAnnotationValueFromClass($class, 'Flux\Form\Field', NULL);
-		$sheets = Annotation::getAnnotationValueFromClass($class, 'Flux\Form\Sheet', NULL);
+		$values = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Field', NULL);
+		$sheets = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Sheet', NULL);
 		$labels = TRUE === is_array($labelFields) ? array_keys($labelFields) : array(key($values));
-		$hasVisibilityToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
-		$hasDeleteToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\Delete');
-		$hasStartTimeToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\StartTime');
-		$hasEndTimeToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\EndTime');
-		$hasFrontendGroupToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\FrontendUserGroup');
+		$hasVisibilityToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
+		$hasDeleteToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Delete');
+		$hasStartTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\StartTime');
+		$hasEndTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\EndTime');
+		$hasFrontendGroupToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\FrontendUserGroup');
 		$form = Form::create();
 		$form->setName($table);
 		$form->setExtensionName($extensionName);

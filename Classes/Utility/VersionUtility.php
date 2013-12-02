@@ -24,36 +24,47 @@ namespace FluidTYPO3\Flux\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
+ * VersionUtility utilities
  *
+ * @author Claus Due, Wildside A/S
  * @package Flux
  * @subpackage Utility
  */
-class Path {
+class VersionUtility {
 
 	/**
-	 * @var array
+	 * @return boolean
 	 */
-	private static $knownPathNames = array('templateRootPath', 'layoutRootPath', 'partialRootPath');
-
-	/**
-	 * Translates an array of paths or single path into absolute paths/path
-	 *
-	 * @param mixed $path
-	 * @return mixed
-	 */
-	public static function translatePath($path) {
-		if (is_array($path) == FALSE) {
-			return GeneralUtility::getFileAbsFileName($path);
-		} else {
-			foreach ($path as $key => $subPath) {
-				if (TRUE === in_array($key, self::$knownPathNames)) {
-					$path[$key] = self::translatePath($subPath);
-				}
-			}
-		}
-		return $path;
+	public static function assertCoreVersionIsBelowSixPointZero() {
+		$version = explode('.', TYPO3_version);
+		return ($version[0] < 6);
 	}
+
+	/**
+	 * @return boolean
+	 */
+	public static function assertCoreVersionIsAtLeastSixPointZero() {
+		$version = explode('.', TYPO3_version);
+		return ($version[0] >= 6);
+	}
+
+	/**
+	 * @param string $extensionKey
+	 * @param integer $majorVersion
+	 * @param integer $minorVersion
+	 * @param integer $bugfixVersion
+	 * @return boolean
+	 */
+	public static function assertExtensionVersionIsAtLeastVersion($extensionKey, $majorVersion, $minorVersion = 0, $bugfixVersion = 0) {
+		if (FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
+			return FALSE;
+		}
+		$extensionVersion = ExtensionManagementUtility::getExtensionVersion($extensionKey);
+		list ($major, $minor, $bugfix) = explode('.', $extensionVersion);
+		return ($majorVersion <= $major && $minorVersion <= $minor && $bugfixVersion <= $bugfix);
+	}
+
 }

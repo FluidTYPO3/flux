@@ -26,7 +26,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget\Controller;
 
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Utility\Resolve;
+use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController;
 
 /**
@@ -87,7 +87,7 @@ class GridController extends AbstractWidgetController {
 		$this->view->assign('row', $this->row);
 		$paths = $this->configurationService->getViewConfigurationForExtensionName('flux');
 		$templateRootPath = TRUE === isset($paths['templateRootPath']) ? $paths['templateRootPath'] : NULL;
-		$templatePathAndFilename = Resolve::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath);
+		$templatePathAndFilename = ResolveUtility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath);
 		$this->view->setTemplatePathAndFilename($templatePathAndFilename);
 	}
 }

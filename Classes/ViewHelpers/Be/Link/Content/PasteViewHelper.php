@@ -24,7 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use FluidTYPO3\Flux\Utility\ClipBoard;
+use FluidTYPO3\Flux\Utility\ClipBoardUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -54,7 +54,7 @@ class PasteViewHelper extends AbstractViewHelper {
 	public function render() {
 		$reference = (boolean) $this->arguments['reference'];
 		$relativeTo = $this->getRelativeToValue();
-		return ClipBoard::createIconWithUrl($relativeTo, $reference);
+		return ClipBoardUtility::createIconWithUrl($relativeTo, $reference);
 	}
 
 	/**

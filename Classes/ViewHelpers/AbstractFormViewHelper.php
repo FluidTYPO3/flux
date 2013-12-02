@@ -37,7 +37,9 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  * @package Flux
  * @subpackage ViewHelpers
  */
-abstract class AbstractFlexformViewHelper extends AbstractViewHelper {
+abstract class AbstractFormViewHelper extends AbstractViewHelper {
+
+	const SCOPE = 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper';
 
 	/**
 	 * @var FluxService
@@ -48,11 +50,6 @@ abstract class AbstractFlexformViewHelper extends AbstractViewHelper {
 	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
-
-	/**
-	 * @var string
-	 */
-	protected static $scope = 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper';
 
 	/**
 	 * @param FluxService $configurationService
@@ -86,11 +83,11 @@ abstract class AbstractFlexformViewHelper extends AbstractViewHelper {
 	 * @return Form
 	 */
 	protected function getForm() {
-		if (TRUE === $this->viewHelperVariableContainer->exists(self::$scope, 'form')) {
-			$form = $this->viewHelperVariableContainer->get(self::$scope, 'form');
+		if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, 'form')) {
+			$form = $this->viewHelperVariableContainer->get(self::SCOPE, 'form');
 		} else {
 			$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
-			$this->viewHelperVariableContainer->add(self::$scope, 'form', $form);
+			$this->viewHelperVariableContainer->add(self::SCOPE, 'form', $form);
 		}
 		return $form;
 	}
@@ -101,18 +98,18 @@ abstract class AbstractFlexformViewHelper extends AbstractViewHelper {
 	 */
 	protected function getGrid($gridName = 'grid') {
 		$form = $this->getForm();
-		if (FALSE === $this->viewHelperVariableContainer->exists(self::$scope, 'grids')) {
+		if (FALSE === $this->viewHelperVariableContainer->exists(self::SCOPE, 'grids')) {
 			$grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
 			$grids = array($gridName => $grid);
-			$this->viewHelperVariableContainer->add(self::$scope, 'grids', $grids);
+			$this->viewHelperVariableContainer->add(self::SCOPE, 'grids', $grids);
 		} else {
-			$grids = $this->viewHelperVariableContainer->get(self::$scope, 'grids');
+			$grids = $this->viewHelperVariableContainer->get(self::SCOPE, 'grids');
 			if (TRUE === isset($grids[$gridName])) {
 				$grid = $grids[$gridName];
 			} else {
 				$grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
 				$grids[$gridName] = $grid;
-				$this->viewHelperVariableContainer->addOrUpdate(self::$scope, 'grids', $grids);
+				$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, 'grids', $grids);
 			}
 		}
 		return $grid;
@@ -122,8 +119,8 @@ abstract class AbstractFlexformViewHelper extends AbstractViewHelper {
 	 * @return ContainerInterface
 	 */
 	protected function getContainer() {
-		if (TRUE === $this->viewHelperVariableContainer->exists(self::$scope, 'container')) {
-			$container = $this->viewHelperVariableContainer->get(self::$scope, 'container');
+		if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, 'container')) {
+			$container = $this->viewHelperVariableContainer->get(self::SCOPE, 'container');
 		} else {
 			$form = $this->getForm();
 			$container = $form->last();
@@ -137,7 +134,7 @@ abstract class AbstractFlexformViewHelper extends AbstractViewHelper {
 	 * @return void
 	 */
 	protected function setContainer(FormInterface $container) {
-		$this->viewHelperVariableContainer->addOrUpdate(self::$scope, 'container', $container);
+		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, 'container', $container);
 	}
 
 }

@@ -61,14 +61,6 @@ return array(
 	'Tx_Flux_Service_ContentService' => 'FluidTYPO3\Flux\Service\ContentService',
 	'Tx_Flux_Service_FluxService' => 'FluidTYPO3\Flux\Service\FluxService',
 	'Tx_Flux_Service_LanguageFileService' => 'FluidTYPO3\Flux\Service\LanguageFileService',
-	'Tx_Flux_Utility_Autoload' => 'FluidTYPO3\Flux\Utility\Autoload',
-	'Tx_Flux_Utility_Annotation' => 'FluidTYPO3\Flux\Utility\Annotation',
-	'Tx_Flux_Utility_ClipBoard' => 'FluidTYPO3\Flux\Utility\ClipBoard',
-	'Tx_Flux_Utility_Miscellaneous' => 'FluidTYPO3\Flux\Utility\Miscellaneous',
-	'Tx_Flux_Utility_Path' => 'FluidTYPO3\Flux\Utility\Path',
-	'Tx_Flux_Utility_RecursiveArray' => 'FluidTYPO3\Flux\Utility\RecursiveArray',
-	'Tx_Flux_Utility_Resolve' => 'FluidTYPO3\Flux\Utility\Resolve',
-	'Tx_Flux_Utility_Version' => 'FluidTYPO3\Flux\Utility\Version',
 	'Tx_Flux_View_ExposedTemplateView' => 'FluidTYPO3\Flux\View\ExposedTemplateView',
 	'Tx_Flux_ViewHelpers_AbstractFlexformViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper',
 	'Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\Be\ContentAreaViewHelper',
@@ -132,6 +124,22 @@ return array(
 
 	// consistency alias for invalid resolved name of class "List" in Form\Wizard scope to be used as "list" rather than "listWizard"
 	'FluidTYPO3\Flux\Form\Wizard\List' => 'FluidTYPO3\Flux\Form\Wizard\ListWizard',
+
+	// class renames post-namespace change, Utility classes
+	'FluidTYPO3\Flux\Utility\Annotation' => 'FluidTYPO3\Flux\Utility\AnnotationUtility',
+	'Tx_Flux_Utility_Annotation' => 'FluidTYPO3\Flux\Utility\AnnotationUtility',
+	'FluidTYPO3\Flux\Utility\ClipBoard' => 'FluidTYPO3\Flux\Utility\ClipBoardUtility',
+	'Tx_Flux_Utility_ClipBoard' => 'FluidTYPO3\Flux\Utility\ClipBoardUtility',
+	'FluidTYPO3\Flux\Utility\Miscellaneous' => 'FluidTYPO3\Flux\Utility\MiscellaneousUtility',
+	'Tx_Flux_Utility_Miscellaneous' => 'FluidTYPO3\Flux\Utility\MiscellaneousUtility',
+	'FluidTYPO3\Flux\Utility\Path' => 'FluidTYPO3\Flux\Utility\PathUtility',
+	'Tx_Flux_Utility_Path' => 'FluidTYPO3\Flux\Utility\PathUtility',
+	'FluidTYPO3\Flux\Utility\RecursiveArray' => 'FluidTYPO3\Flux\Utility\RecursiveArrayUtility',
+	'Tx_Flux_Utility_RecursiveArray' => 'FluidTYPO3\Flux\Utility\RecursiveArrayUtility',
+	'FluidTYPO3\Flux\Utility\Resolve' => 'FluidTYPO3\Flux\Utility\ResolveUtility',
+	'Tx_Flux_Utility_Resolve' => 'FluidTYPO3\Flux\Utility\ResolveUtility',
+	'FluidTYPO3\Flux\Utility\Version' => 'FluidTYPO3\Flux\Utility\VersionUtility',
+	'Tx_Flux_Utility_Version' => 'FluidTYPO3\Flux\Utility\VersionUtility',
 
 	// class renames post-namespace change, ViewHelper API simplification
 	/*

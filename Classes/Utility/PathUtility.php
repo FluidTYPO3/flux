@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
  *
  *  All rights reserved
  *
@@ -24,34 +24,36 @@ namespace FluidTYPO3\Flux\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Backend\Utility\IconUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Miscellaneous Utility
  *
- * @author Claus Due, Wildside A/S
  * @package Flux
  * @subpackage Utility
  */
-class Miscellaneous {
+class PathUtility {
 
 	/**
-	* @param string $icon
-	* @param string $title
-	* @return string
-	*/
-	public static function getIcon($icon, $title = NULL) {
-		$configuration = array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new');
-		return IconUtility::getSpriteIcon($icon, $configuration);
-	}
+	 * @var array
+	 */
+	private static $knownPathNames = array('templateRootPath', 'layoutRootPath', 'partialRootPath');
 
 	/**
-	* @param string $inner
-	* @param string $uri
-	* @return string
-	*/
-	public static function wrapLink($inner, $uri) {
-		return '<a href="' . $uri . '">' . $inner . '</a>' . LF;
+	 * Translates an array of paths or single path into absolute paths/path
+	 *
+	 * @param mixed $path
+	 * @return mixed
+	 */
+	public static function translatePath($path) {
+		if (is_array($path) == FALSE) {
+			return GeneralUtility::getFileAbsFileName($path);
+		} else {
+			foreach ($path as $key => $subPath) {
+				if (TRUE === in_array($key, self::$knownPathNames)) {
+					$path[$key] = self::translatePath($subPath);
+				}
+			}
+		}
+		return $path;
 	}
-
 }

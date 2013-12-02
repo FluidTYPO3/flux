@@ -39,7 +39,7 @@ class ResolveTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function returnsClassIfClassExists() {
-		$className = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$className = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->objectManager->get($className);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Controller\AbstractFluxController', $instance);
 	}
@@ -48,7 +48,7 @@ class ResolveTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function returnsNullIfControllerClassNameDoesNotExist() {
-		$result = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void');
+		$result = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void');
 		$this->assertNull($result);
 	}
 
@@ -56,7 +56,7 @@ class ResolveTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function returnsNullIfControllerActionDoesNotExist() {
-		$result = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content');
+		$result = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content');
 		$this->assertNull($result);
 	}
 
@@ -65,7 +65,7 @@ class ResolveTest extends AbstractTestCase {
 	 */
 	public function throwsExceptionForClassIfSetToHardFail() {
 		$this->setExpectedException('RuntimeException', NULL, 1364498093);
-		Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void', TRUE);
+		ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void', TRUE);
 	}
 
 	/**
@@ -73,7 +73,7 @@ class ResolveTest extends AbstractTestCase {
 	 */
 	public function throwsExceptionForActionIfSetToHardFail() {
 		$this->setExpectedException('RuntimeException', NULL, 1364498223);
-		Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content', FALSE, TRUE);
+		ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content', FALSE, TRUE);
 	}
 
 	/**
@@ -81,7 +81,7 @@ class ResolveTest extends AbstractTestCase {
 	 */
 	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassExists() {
 		class_alias('FluidTYPO3\Flux\Controller\AbstractFluxController', 'Void\NoName\Controller\FakeController');
-		$result = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Fake');
+		$result = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Fake');
 		$this->assertSame('Void\NoName\Controller\FakeController', $result);
 	}
 
@@ -89,7 +89,7 @@ class ResolveTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassDoesNotExist() {
-		$result = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Void');
+		$result = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Void');
 		$this->assertNull($result);
 	}
 
@@ -97,7 +97,7 @@ class ResolveTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canDetectRequestArgumentsBasedOnPluginSignature() {
-		$result = Resolve::resolveOverriddenFluxControllerActionNameFromRequestParameters('tx_void_fake');
+		$result = ResolveUtility::resolveOverriddenFluxControllerActionNameFromRequestParameters('tx_void_fake');
 		$this->assertNull($result);
 	}
 
@@ -109,7 +109,7 @@ class ResolveTest extends AbstractTestCase {
 		$expectedDefault = $templateRootPath . 'ViewHelpers/Widget/Grid/Index.html';
 		$expectedLegacy = $templateRootPath . 'ViewHelpers/Widget/Grid/Legacy.html';
 		$expectedWithGridelementsVersionTwo = $templateRootPath . 'ViewHelpers/Widget/Grid/GridElements.html';
-		$utility = new Resolve();
+		$utility = new ResolveUtility();
 		ObjectAccess::setProperty($utility, 'initialized', TRUE, TRUE);
 		ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', FALSE, TRUE);
 		$this->assertSame($expectedDefault, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
@@ -125,12 +125,12 @@ class ResolveTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canDetectCurrentPageRecord() {
-		$result = Resolve::resolveCurrentPageRecord();
+		$result = ResolveUtility::resolveCurrentPageRecord();
 		$this->assertNull($result);
 		$expected = array('uid' => 99999999);
 		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
 		$GLOBALS['TSFE']->page = $expected;
-		$result = Resolve::resolveCurrentPageRecord();
+		$result = ResolveUtility::resolveCurrentPageRecord();
 		$this->assertSame($result, $expected);
 	}
 

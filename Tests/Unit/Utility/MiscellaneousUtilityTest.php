@@ -58,10 +58,10 @@ class MiscellaneousTest extends AbstractTestCase {
 	 */
 	public function canCreateIconWithUrl() {
 		$clipBoardData = $this->getClipBoardDataFixture();
-		ClipBoard::setClipBoardData($clipBoardData);
-		$iconWithUrl = ClipBoard::createIconWithUrl('1-2-3');
+		ClipBoardUtility::setClipBoardData($clipBoardData);
+		$iconWithUrl = ClipBoardUtility::createIconWithUrl('1-2-3');
 		$this->assertNotEmpty($iconWithUrl);
-		ClipBoard::clearClipBoardData();
+		ClipBoardUtility::clearClipBoardData();
 	}
 
 	/**
@@ -70,10 +70,10 @@ class MiscellaneousTest extends AbstractTestCase {
 	public function canCreateIconWithUrlAsReference() {
 		$clipBoardData = $this->getClipBoardDataFixture();
 		$clipBoardData['normal']['mode'] = 'reference';
-		ClipBoard::setClipBoardData($clipBoardData);
-		$iconWithUrl = ClipBoard::createIconWithUrl('1-2-3', TRUE);
+		ClipBoardUtility::setClipBoardData($clipBoardData);
+		$iconWithUrl = ClipBoardUtility::createIconWithUrl('1-2-3', TRUE);
 		$this->assertNotEmpty($iconWithUrl);
-		ClipBoard::clearClipBoardData();
+		ClipBoardUtility::clearClipBoardData();
 	}
 
 	/**
@@ -81,11 +81,11 @@ class MiscellaneousTest extends AbstractTestCase {
 	 */
 	public function canCreateIconWithUrlAsReferenceReturnsEmptyStringIfModeIsCut() {
 		$clipBoardData = $this->getClipBoardDataFixture();
-		ClipBoard::setClipBoardData($clipBoardData);
-		$iconWithUrl = ClipBoard::createIconWithUrl('1-2-3', TRUE);
+		ClipBoardUtility::setClipBoardData($clipBoardData);
+		$iconWithUrl = ClipBoardUtility::createIconWithUrl('1-2-3', TRUE);
 		$this->assertIsString($iconWithUrl);
 		$this->assertEmpty($iconWithUrl);
-		ClipBoard::clearClipBoardData();
+		ClipBoardUtility::clearClipBoardData();
 	}
 
 }

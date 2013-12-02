@@ -36,7 +36,7 @@ class VersionTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetExtensionVersionNumbers() {
-		$version = Version::assertExtensionVersionIsAtLeastVersion('flux', 6, 0, 0);
+		$version = VersionUtility::assertExtensionVersionIsAtLeastVersion('flux', 6, 0, 0);
 		$this->assertIsBoolean($version);
 	}
 
@@ -44,7 +44,7 @@ class VersionTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canAssertIfCoreIsLegacyVersion() {
-		$isLegacy = Version::assertCoreVersionIsBelowSixPointZero();
+		$isLegacy = VersionUtility::assertCoreVersionIsBelowSixPointZero();
 		$this->assertIsBoolean($isLegacy);
 	}
 
@@ -52,7 +52,7 @@ class VersionTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canAssertIfCoreIsRecentVersion() {
-		$isLegacy = Version::assertCoreVersionIsAtLeastSixPointZero();
+		$isLegacy = VersionUtility::assertCoreVersionIsAtLeastSixPointZero();
 		$this->assertIsBoolean($isLegacy);
 	}
 
@@ -60,7 +60,7 @@ class VersionTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function returnsFalseIfExtensionKeyIsNotLoaded() {
-		$isFalseResponse = Version::assertExtensionVersionIsAtLeastVersion('void', 1, 0, 0);
+		$isFalseResponse = VersionUtility::assertExtensionVersionIsAtLeastVersion('void', 1, 0, 0);
 		$this->assertFalse($isFalseResponse);
 	}
 

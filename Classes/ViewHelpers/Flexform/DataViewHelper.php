@@ -25,7 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Utility\RecursiveArray;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception;
 
@@ -82,7 +82,7 @@ class DataViewHelper extends AbstractViewHelper {
 				$dataArray = array();
 				foreach ($providers as $provider) {
 					$data = (array) $provider->getFlexFormValues($row);
-					$dataArray = RecursiveArray::merge($dataArray, $data);
+					$dataArray = RecursiveArrayUtility::merge($dataArray, $data);
 				}
 			}
 			self::$dataCache[$uid.$table.$field] = $dataArray;

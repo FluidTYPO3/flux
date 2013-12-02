@@ -31,7 +31,7 @@ namespace FluidTYPO3\Flux\Utility;
  * @package Flux
  * @subpackage Utility
  */
-class RecursiveArray {
+class RecursiveArrayUtility {
 
 	/**
 	 * @param array $array1

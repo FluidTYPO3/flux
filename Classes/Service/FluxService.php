@@ -30,7 +30,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Utility\Path;
+use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
@@ -301,13 +301,13 @@ class FluxService implements SingletonInterface {
 		if (FALSE === is_array($config)) {
 			$config = array();
 		}
-		$config = Path::translatePath($config);
+		$config = PathUtility::translatePath($config);
 		self::$cache[$cacheKey] = $config;
 		return $config;
 	}
 
 	/**
-	 * Resolve the top-priority ConfigurationPrivider which can provide
+	 * ResolveUtility the top-priority ConfigurationPrivider which can provide
 	 * a working FlexForm configuration baed on the given parameters.
 	 *
 	 * @param string $table

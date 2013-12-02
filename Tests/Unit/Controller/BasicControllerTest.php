@@ -29,7 +29,7 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\Resolve;
+use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
@@ -64,7 +64,7 @@ class BasicControllerTest extends AbstractTestCase {
 		$frontend->cObj = new ContentObjectRenderer();
 		$frontend->cObj->start($record);
 		$this->performDummyRegistration();
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		/** @var AbstractFluxController $instance */
 		$instance = $this->objectManager->get($controllerClassName);
 		ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
@@ -82,7 +82,7 @@ class BasicControllerTest extends AbstractTestCase {
 		$request->setControllerExtensionName('Flux');
 		$request->setControllerActionName('render');
 		$request->setControllerName($controllerName);
-		$request->setControllerObjectName(Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', $controllerName));
+		$request->setControllerObjectName(ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', $controllerName));
 		$request->setFormat('html');
 		/** @var Response $response */
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
@@ -101,7 +101,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 */
 	public function canDetectPresenceOfRegisteredCustomControllerForContent() {
 		$this->performDummyRegistration();
-		$hasController = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$hasController = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$this->assertTrue(class_exists($hasController));
 	}
 
@@ -164,7 +164,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 * @disabledtest
 	 */
 	public function canPerformSubRenderingWithMatchingExtensionName() {
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController'));
 		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(FALSE));
 		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('FluidTYPO3.Flux', 'Content');
@@ -178,7 +178,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canPerformSubRenderingWithNotMatchingExtensionName() {
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController', 'callSubControllerAction'));
 		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(TRUE));
 		$instance->expects($this->once())->method('callSubControllerAction');
@@ -192,7 +192,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canInitializeView() {
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array(), array(), '', FALSE);
 		$this->inject($view, 'objectManager', $this->objectManager);
 		$instance = $this->getMock($controllerClassName, array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewObject', 'initializeViewVariables'));
@@ -209,7 +209,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 */
 	public function canInitializeSettings() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('getRecord'));
 		$instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
 		$provider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('getExtensionKey', 'getFlexFormValues', 'getTemplatePaths'));
@@ -231,7 +231,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 */
 	public function canInitializeViewObject() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('getRecord'));
 		$instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
 		$provider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('getExtensionKey', 'getTemplatePathAndFilename'));
@@ -256,7 +256,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 */
 	public function callingRenderActionExecutesExpectedMethodsOnNestedObjects() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('getRecord', 'performSubRendering'));
 		$instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
 		$instance->expects($this->once())->method('performSubRendering')->with('Flux', 'Void', NULL, 'tx_flux_void')->will($this->returnValue('test'));
@@ -276,7 +276,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function performSubRenderingCallsViewRenderOnNativeTarget() {
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('callSubControllerAction'));
 		$instance->expects($this->never())->method('callSubControllerAction');
 		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('render'));
@@ -291,7 +291,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function callingSubControllerActionExecutesExpectedMethodsOnNestedObjects() {
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('processRequest'));
 		$objectManager = $this->getMock(get_class($this->objectManager), array('get'));
 		$responseClassName = 'TYPO3\CMS\Extbase\Mvc\Web\Response';
@@ -312,7 +312,7 @@ class BasicControllerTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canInitializeViewVariables() {
-		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$data = array('test' => 'test');
 		$variables = array('foo' => 'bar');
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;

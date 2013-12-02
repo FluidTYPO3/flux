@@ -24,7 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use FluidTYPO3\Flux\Utility\Miscellaneous;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -62,7 +62,7 @@ class NewViewHelper extends AbstractViewHelper {
 				$returnUri .= '%3A-' . $after;
 			}
 		}
-		$icon = Miscellaneous::getIcon('actions-document-new', 'Insert new content element in this position');
+		$icon = MiscellaneousUtility::getIcon('actions-document-new', 'Insert new content element in this position');
 		$uri = 'db_new_content_el.php?id=' . $pid .
 			'&uid_pid=' . $pid .
 			'&colPos=-42' .
@@ -70,7 +70,7 @@ class NewViewHelper extends AbstractViewHelper {
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
 			'&defVals[tt_content][tx_flux_column]=' . $area .
 			'&returnUrl=' . $returnUri;
-		return Miscellaneous::wrapLink($icon, htmlspecialchars($uri));
+		return MiscellaneousUtility::wrapLink($icon, htmlspecialchars($uri));
 	}
 
 }

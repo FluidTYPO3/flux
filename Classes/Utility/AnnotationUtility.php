@@ -35,7 +35,7 @@ use TYPO3\CMS\Fluid\Core\Parser\TemplateParser;
  * @package Flux
  * @subpackage Utility
  */
-class Annotation {
+class AnnotationUtility {
 
 	/**
 	 * @var array
