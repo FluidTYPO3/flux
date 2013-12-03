@@ -66,7 +66,7 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Fluid_Core_Vi
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
 			'&defVals[tt_content][tx_flux_column]=' . $area .
 			'&returnUrl=' . $returnUri;
-		return Tx_Flux_Utility_Miscellaneous::wrapLink($icon, $uri);
+		return Tx_Flux_Utility_Miscellaneous::wrapLink($icon, htmlspecialchars($uri));
 	}
 
 }
