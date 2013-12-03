@@ -23,6 +23,8 @@ namespace FluidTYPO3\Flux\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -132,11 +134,11 @@ class ResolveUtility {
 	 * @return boolean|string
 	 */
 	private static function buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerName) {
-		if (FALSE !== strpos($extensionKey, '.')) {
-			list ($vendorName, $extensionName) = explode('.', $extensionKey);
+		if (TRUE === ExtensionNamingUtility::hasVendorName($extensionKey)) {
+			list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionKey);
 			$potentialClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
 		} else {
-			$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+			$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 			$potentialClassName = $extensionName . '\\Controller\\' . $controllerName . 'Controller';
 			if (FALSE === class_exists($potentialClassName)) {
 				$potentialClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';

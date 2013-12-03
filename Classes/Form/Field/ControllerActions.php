@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FormInterface;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -314,38 +315,13 @@ class ControllerActions extends Select {
 	 */
 	protected function getActionsForExtensionNameAndPluginName() {
 		$extensionName = $this->getExtensionName();
-		$extensionName = $this->removeVendorPrefixFromExtensionName($extensionName);
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$pluginName = $this->getPluginName();
-		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers'];
+		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionKey]['plugins'][$pluginName]['controllers'];
 		foreach ($actions as $controllerName => $definitions) {
 			$actions[$controllerName] = $definitions['actions'];
 		}
 		return $actions;
-	}
-
-	/**
-	 * @param string $extensionName
-	 * @return array
-	 */
-	protected function getVendorNameAndExtensionKeyFromExtensionName($extensionName) {
-		if (FALSE !== strpos($extensionName, '.')) {
-			list ($vendorName, $extensionName) = GeneralUtility::trimExplode('.', $extensionName);
-		} else {
-			$vendorName = NULL;
-		}
-		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
-		return array($vendorName, $extensionKey);
-	}
-
-	/**
-	 * @param string $extensionName
-	 * @return string
-	 */
-	protected function removeVendorPrefixFromExtensionName($extensionName) {
-		if (FALSE !== strpos($extensionName, '.')) {
-			list (, $extensionName) = GeneralUtility::trimExplode('.', $extensionName);
-		}
-		return $extensionName;
 	}
 
 	/**
@@ -354,8 +330,7 @@ class ControllerActions extends Select {
 	 */
 	protected function buildExpectedAndExistingControllerClassName($controllerName) {
 		$extensionName = $this->getExtensionName();
-		list ($vendorName, $extensionKey) = $this->getVendorNameAndExtensionKeyFromExtensionName($extensionName);
-		$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+		list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
 		if (NULL !== $vendorName) {
 			$controllerClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
 		} else {
@@ -378,17 +353,16 @@ class ControllerActions extends Select {
 	protected function getLabelForControllerAction($controllerName, $actionName) {
 		$localLanguageFileRelativePath = $this->getLocalLanguageFileRelativePath();
 		$extensionName = $this->getExtensionName();
-		$extensionName = $this->removeVendorPrefixFromExtensionName($extensionName);
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$pluginName = $this->getPluginName();
 		$separator = $this->getSeparator();
-		list (, $extensionKey) = $this->getVendorNameAndExtensionKeyFromExtensionName($extensionName);
 		$controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
 		$disableLocalLanguageLabels = $this->getDisableLocalLanguageLabels();
 		$labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
 		$hasLocalLanguageFile = file_exists(ExtensionManagementUtility::extPath($extensionKey, $localLanguageFileRelativePath));
 		$label = $actionName . $separator . $controllerName;
 		if (FALSE === $disableLocalLanguageLabels && TRUE === $hasLocalLanguageFile) {
-			$label = 'LLL:EXT:' . GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName) . $localLanguageFileRelativePath . ':' . $labelPath;
+			$label = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
 		} elseif (TRUE === method_exists($controllerClassName, $actionName . 'Action') && TRUE === $disableLocalLanguageLabels) {
 			$methodReflection = $this->reflectAction($controllerName, $actionName);
 			$line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
