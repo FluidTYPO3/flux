@@ -74,6 +74,9 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends \TYPO3\CMS\Fl
 	 * @return string
 	 */
 	public function indexAction() {
+		$doc = t3lib_div::makeInstance('mediumDoc');
+		$doc->getPageRenderer()->addCssFile(t3lib_extMgm::extRelPath('flux') . 'Resources/Public/css/grid.css');
+
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $this->row);
 		$paths = $this->configurationService->getViewConfigurationForExtensionName('flux');

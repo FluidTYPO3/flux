@@ -1,0 +1,11 @@
+.fce-header { margin-top: 8px; background-color: transparent !important; }
+td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
+.toggle-content { cursor: pointer; float: right; margin-top: -15px; }
+.content-blind, .content-blind * { display: none; !important }
+.flux-grid { width: 100%; }
+.t3-page-ce .toggle-content { visibility: hidden; }
+.t3-page-ce.active .toggle-content { visibility: visible; }
+.t3-page-ce-dragitem:hover .t3-page-ce-wrapper-new-ce { cursor: move; }
+.t3-page-ce.active .t3-page-ce .t3-row-header { background-color: #CACACA; }
+.t3-page-ce.active .t3-page-ce .t3-page-ce-body { border-color: #FFFFFF; }
+.t3-page-ce.active .t3-page-ce .t3-row-header .ce-icons, .t3-page-ce.active .t3-page-ce .t3-row-header .ce-icons-left { visibility: hidden; }
