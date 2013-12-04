@@ -1,8 +1,5 @@
 {
-    "name": "ft3/flux",
+    "name": "fluidtypo3/flux",
     "description": "The flux package from FluidTYPO3",
-    "require": {
-        "composer/installers": "*"
-    },
     "type": "typo3-cms-extension"
 }
