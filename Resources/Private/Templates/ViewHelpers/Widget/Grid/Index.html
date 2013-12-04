@@ -1,19 +1,5 @@
 {namespace flux=Tx_Flux_ViewHelpers}
-<div xmlns="http://www.w3.org/1999/xhtml" lang="en"
-     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers"
-	 id="container-record-{row.uid}"
-	 class="grid-visibility-toggle">
-<style type="text/css">
-<f:format.raw>
-.fce-header { margin-top: 8px; background-color: transparent !important; }
-td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
-.toggle-content { cursor: pointer; float: right; margin-top: -15px; }
-.content-blind, .content-blind * { display: none; !important }
-.flux-grid { width: 100%; }
-.t3-page-ce .toggle-content { display: none; }
-.t3-page-ce:hover .toggle-content { display: block; }
-</f:format.raw>
-</style>
+<div id="container-record-{row.uid}" class="grid-visibility-toggle">
 <div id="content-blind-{row.uid}" class="content-blind"></div>
 <div id="toggle-content-{row.uid}" class="toggle-content">
 	<span id="toggle-{row.uid}" class="t3-icon t3-icon-actions t3-icon-view-table-{f:if(condition: record.hidden, then: 'expand', else: 'collapse')}"></span>
@@ -97,3 +83,4 @@ td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
 		</tbody>
 	</table>
 </f:section>
+
