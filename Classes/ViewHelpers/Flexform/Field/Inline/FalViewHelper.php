@@ -96,6 +96,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Inline_FalViewHelper extends Tx_Flux_Vi
 				'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
 			),
 		));
+		
+		$component->setForeignMatchFields(array(
+			'fieldname' => $this->arguments['name']
+		));
 
 		return $component;
 	}
