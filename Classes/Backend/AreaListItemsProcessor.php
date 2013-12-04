@@ -31,7 +31,7 @@
 class Tx_Flux_Backend_AreaListItemsProcessor {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
@@ -44,7 +44,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		$this->fluxService = $this->objectManager->get('Tx_Flux_Service_FluxService');
 	}
 

@@ -71,7 +71,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 		$configuration['size'] = $this->getSize();
 		$configuration['max'] = $this->getMaxCharacters();
 		$configuration['eval'] = $validate;
-		if ($minimum >= 0 || $maximum >= 0 && in_array('int', t3lib_div::trimExplode(',', $validate))) {
+		if ($minimum >= 0 || $maximum >= 0 && in_array('int', \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $validate))) {
 			$configuration['range'] = array(
 				'lower' => $minimum,
 				'upper' => $maximum,
@@ -179,7 +179,7 @@ class Tx_Flux_Form_Field_Input extends Tx_Flux_Form_AbstractFormField implements
 			if (TRUE === empty($this->validate)) {
 				$validate = 'required';
 			} else {
-				$validators = t3lib_div::trimExplode(',', $this->validate);
+				$validators = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->validate);
 				array_push($validators, 'required');
 				$validate = implode(',', $validators);
 			}

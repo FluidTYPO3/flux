@@ -118,7 +118,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 		/** @var Tx_Flux_Form_Container_Sheet $defaultSheet */
 		$defaultSheet = $this->objectManager->get('Tx_Flux_Form_Container_Sheet');
 		$defaultSheet->setName('options');
-		$defaultSheet->setLabel(Tx_Extbase_Utility_Localization::translate('tt_content.tx_flux_options', 'Flux'));
+		$defaultSheet->setLabel(\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('tt_content.tx_flux_options', 'Flux'));
 		$this->add($defaultSheet);
 	}
 
@@ -283,7 +283,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	public function getIcon() {
 		$icon = $this->icon;
 		if (0 === strpos($icon, 'EXT:')) {
-			$icon = t3lib_div::getFileAbsFileName($icon);
+			$icon = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($icon);
 		}
 		return $icon;
 	}
@@ -298,7 +298,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 		if (preg_match($pattern, $id)) {
 			$this->configurationService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
 				are: "' . $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent
-				you from utilising some features, fx automatic LLL reference building, but is not fatal', t3lib_div::SYSLOG_SEVERITY_NOTICE);
+				you from utilising some features, fx automatic LLL reference building, but is not fatal', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_NOTICE);
 		}
 		$this->id = $id;
 		if (TRUE === empty($this->name)) {
@@ -329,7 +329,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	public function getDescription() {
 		$description = $this->description;
 		if (TRUE === empty($description)) {
-			$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($this->extensionName);
+			$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
 			$description = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $this->id . '.description';
 		}
 		return $description;

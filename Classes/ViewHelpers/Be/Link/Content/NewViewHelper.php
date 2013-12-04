@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers\Be\Uri\Content
  */
-class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Initialize
@@ -66,7 +66,7 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Fluid_Core_Vi
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
 			'&defVals[tt_content][tx_flux_column]=' . $area .
 			'&returnUrl=' . $returnUri;
-		return Tx_Flux_Utility_Miscellaneous::wrapLink($icon, $uri);
+		return Tx_Flux_Utility_Miscellaneous::wrapLink($icon, htmlspecialchars($uri));
 	}
 
 }

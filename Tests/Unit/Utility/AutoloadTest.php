@@ -43,7 +43,7 @@ class Tx_Flux_Utility_AutoloadTest extends Tx_Flux_Tests_AbstractFunctionalTest 
 	 */
 	public function canGetCachedAutoloadRegistry() {
 		Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
-		$this->assertFileExists(t3lib_div::getFileAbsFileName('typo3temp/flux-manifest.cache'));
+		$this->assertFileExists(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/flux-manifest.cache'));
 		$registry = Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
 		$this->assertIsArray($registry);
 		$this->assertGreaterThan(0, count($registry));

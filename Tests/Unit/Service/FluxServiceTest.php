@@ -144,7 +144,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	 * @test
 	 */
 	public function canGetFormWithPathsAndTriggerCache() {
-		$templatePathAndFilename = t3lib_div::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
+		$templatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
 		$paths = array(
 			'templateRootPath' => 'EXT:flux/Resources/Private/Templates',

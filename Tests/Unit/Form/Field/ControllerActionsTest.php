@@ -115,7 +115,7 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 		$component = $this->createInstance();
 		$vendor = 'Void';
 		$name = 'Nameless';
-		$key = t3lib_div::camelCaseToLowerCaseUnderscored($name);
+		$key = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($name);
 		list ($vendorName, $extensionKey) = $this->callInaccessibleMethod($component, 'getVendorNameAndExtensionKeyFromExtensionName', $vendor . '.' . $name);
 		$this->assertSame($vendorName, $vendor);
 		$this->assertSame($key, $extensionKey);
@@ -132,7 +132,7 @@ class Tx_Flux_Form_Field_ControllerActionsTest extends Tx_Flux_Tests_Functional_
 		$actionName = 'fake';
 		$localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xml';
 		$labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
-		$expectedLabel = 'LLL:EXT:' . t3lib_div::camelCaseToLowerCaseUnderscored($extensionName) . $localLanguageFileRelativePath . ':' . $labelPath;
+		$expectedLabel = 'LLL:EXT:' . \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName) . $localLanguageFileRelativePath . ':' . $labelPath;
 		$label = $this->buildLabelForControllerAndAction($controllerName, $actionName, $localLanguageFileRelativePath);
 		$this->assertSame($expectedLabel, $label);
 	}

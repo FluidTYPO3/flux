@@ -44,7 +44,7 @@ class Tx_Flux_Utility_Path {
 	 */
 	public static function translatePath($path) {
 		if (is_array($path) == FALSE) {
-			return t3lib_div::getFileAbsFileName($path);
+			return \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($path);
 		} else {
 			foreach ($path as $key => $subPath) {
 				if (TRUE === in_array($key, self::$knownPathNames)) {

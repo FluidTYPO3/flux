@@ -60,14 +60,14 @@ class Tx_Flux_Utility_Autoload {
 	 * @return array
 	 */
 	public static function getAutoloadRegistryForExtension($extensionName) {
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
 		$manifestPathAndFilename = PATH_site . 'typo3temp/' . $extensionName . '-manifest.cache';
 		if (file_exists($manifestPathAndFilename) === TRUE) {
 			return unserialize(file_get_contents($manifestPathAndFilename));
 		}
 		$classPrefix = 'Tx_' . $extensionName . '_';
-		$classPath = t3lib_extMgm::extPath($extensionKey, 'Classes/');
-		$files = t3lib_div::getAllFilesAndFoldersInPath(array(), $classPath);
+		$classPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey, 'Classes/');
+		$files = \TYPO3\CMS\Core\Utility\GeneralUtility::getAllFilesAndFoldersInPath(array(), $classPath);
 		$autoloadRegistry = array();
 		foreach ($files as $filename) {
 			$relativeName = substr($filename, strlen($classPath));
@@ -77,7 +77,7 @@ class Tx_Flux_Utility_Autoload {
 			$autoloadRegistry[$key] = $filename;
 		}
 		$encoded = serialize($autoloadRegistry);
-		t3lib_div::writeFile($manifestPathAndFilename, $encoded);
+		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($manifestPathAndFilename, $encoded);
 		return $autoloadRegistry;
 	}
 

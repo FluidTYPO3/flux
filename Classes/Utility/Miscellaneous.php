@@ -39,7 +39,7 @@ class Tx_Flux_Utility_Miscellaneous {
 	*/
 	public static function getIcon($icon, $title = NULL) {
 		$configuration = array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new');
-		return t3lib_iconWorks::getSpriteIcon($icon, $configuration);
+		return \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon($icon, $configuration);
 	}
 
 	/**

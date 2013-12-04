@@ -99,7 +99,7 @@ class Tx_Flux_Core {
 			$form->setName($table);
 		}
 		if (NULL === $form->getExtensionName() && TRUE === isset($GLOBALS['_EXTKEY'])) {
-			$form->setExtensionName(t3lib_div::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
+			$form->setExtensionName(\TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
 		}
 		self::$forms['tables'][$table] = $form;
 	}
@@ -123,7 +123,7 @@ class Tx_Flux_Core {
 	 */
 	public static function registerFormForModelObjectClassName($className, Tx_Flux_Form $form = NULL) {
 		if (NULL !== $form && TRUE === isset($GLOBALS['_EXTKEY']) && NULL === $form->getExtensionName()) {
-			$form->setExtensionName(t3lib_div::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
+			$form->setExtensionName(\TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
 		}
 		self::$forms['models'][$className] = $form;
 	}
@@ -199,8 +199,8 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function registerFluidFlexFormPlugin($extensionKey, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL, $fieldName='pi_flexform') {
-		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager */
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var $provider Tx_Flux_Provider_ProviderInterface */
 		$provider = $objectManager->get('Tx_Flux_Provider_ContentProvider');
 		$provider->setTableName('tt_content');
@@ -229,8 +229,8 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL, $fieldName='pi_flexform') {
-		/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var $objectManager \TYPO3\CMS\Extbase\Object\ObjectManagerInterface */
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var $provider Tx_Flux_Provider_ProviderInterface */
 		$provider = $objectManager->get('Tx_Flux_Provider_ContentProvider');
 		$provider->setTableName('tt_content');
@@ -258,8 +258,8 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function registerFluidFlexFormTable($table, $fieldName, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
-		/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var $objectManager \TYPO3\CMS\Extbase\Object\ObjectManagerInterface */
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var $provider Tx_Flux_Provider_ProviderInterface */
 		$provider = $objectManager->get('Tx_Flux_Provider_Provider');
 		$provider->setTableName($table);

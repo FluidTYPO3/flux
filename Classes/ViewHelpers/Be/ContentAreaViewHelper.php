@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers\Be
  */
-class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Initialize
@@ -53,8 +53,8 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Fluid_Core_ViewHel
 		$pageRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages', "uid = '" . $row['pid'] . "'");
 		$pageRecord = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pageRes);
 		$GLOBALS['TYPO3_DB']->sql_free_result($pageRes);
-		/** @var $dblist tx_cms_layout */
-		$dblist = t3lib_div::makeInstance('tx_cms_layout');
+		/** @var $dblist \TYPO3\CMS\Backend\View\PageLayoutView */
+		$dblist = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\View\\PageLayoutView');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
 		$dblist->script = 'db_layout.php';
 		$dblist->showIcon = 1;

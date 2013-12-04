@@ -73,7 +73,7 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 	public function getItems() {
 		$items = array();
 		if (TRUE === is_string($this->items)) {
-			$itemNames = t3lib_div::trimExplode(',', $this->items);
+			$itemNames = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->items);
 			foreach ($itemNames as $itemName) {
 				array_push($items, array($itemName, $itemName));
 			}
@@ -85,12 +85,12 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 					array_push($items, array($itemValue, $itemIndex));
 				}
 			}
-		} elseif (TRUE === $this->items instanceof Tx_Extbase_Persistence_Query) {
-			/** @var Tx_Extbase_Persistence_Query $query */
+		} elseif (TRUE === $this->items instanceof \TYPO3\CMS\Extbase\Persistence\Generic\Query) {
+			/** @var \TYPO3\CMS\Extbase\Persistence\Generic\Query $query */
 			$query = $this->items;
 			$results = $query->execute();
 			$type = $query->getType();
-			$typoScript = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$typoScript = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$table = strtolower(str_replace('\\', '_', $type));
 			if (TRUE === isset($typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'])) {
 				$mapping = $typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'];
@@ -99,10 +99,10 @@ class Tx_Flux_Form_Field_Select extends Tx_Flux_Form_AbstractMultiValueFormField
 				}
 			}
 			$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
-			$propertyName = t3lib_div::underscoredToLowerCamelCase($labelField);
+			$propertyName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToLowerCamelCase($labelField);
 			foreach ($results as $result) {
 				$uid = $result->getUid();
-				array_push($items, array(Tx_Extbase_Reflection_ObjectAccess::getProperty($result, $propertyName), $uid));
+				array_push($items, array(\TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($result, $propertyName), $uid));
 			}
 		}
 		$emptyOption = $this->getEmptyOption();

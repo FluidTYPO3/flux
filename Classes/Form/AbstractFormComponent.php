@@ -30,7 +30,7 @@
 abstract class Tx_Flux_Form_AbstractFormComponent {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
 	 */
 	protected $objectManager;
 
@@ -40,7 +40,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
@@ -76,10 +76,10 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	protected $parent;
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
@@ -92,10 +92,10 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	}
 
 	/**
-	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
@@ -104,15 +104,15 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 * @return Tx_Flux_Form_FormInterface
 	 */
 	public static function create(array $settings = array()) {
-		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager */
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		$className = get_called_class();
 		/** @var Tx_Flux_FormInterface $object */
 		$object = $objectManager->get($className);
 		foreach ($settings as $settingName => $settingValue) {
-			$setterMethodName = Tx_Extbase_Reflection_ObjectAccess::buildSetterMethodName($settingName);
+			$setterMethodName = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::buildSetterMethodName($settingName);
 			if (TRUE === method_exists($object, $setterMethodName)) {
-				Tx_Extbase_Reflection_ObjectAccess::setProperty($object, $settingName, $settingValue);
+				\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($object, $settingName, $settingValue);
 			}
 		}
 		if (TRUE === $object instanceof Tx_Flux_Form_FieldContainerInterface && TRUE === isset($settings['fields'])) {
@@ -237,7 +237,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 			$id = $root->getName();
 			$extensionName = $root->getExtensionName();
 		}
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
 		if (FALSE === empty($label)) {
 			if (0 === strpos($label, 'LLL:') && 0 !== strpos($label, 'LLL:EXT:')) {
 				return Tx_Extbase_Utility_Localization::translate(substr($label, 4), $extensionKey);
@@ -245,7 +245,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 				return $label;
 			}
 		}
-		if ((TRUE === empty($extensionKey) || FALSE === t3lib_extMgm::isLoaded($extensionKey))) {
+		if ((TRUE === empty($extensionKey) || FALSE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey))) {
 			return $name;
 		}
 		$prefix = '';

@@ -37,6 +37,6 @@ class Tx_Flux_UserFunction_NoFields {
 	 */
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj, $parameters);
-		return Tx_Extbase_Utility_Localization::translate('user.no_fields', 'Flux');
+		return \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('user.no_fields', 'Flux');
 	}
 }

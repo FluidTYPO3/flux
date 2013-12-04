@@ -23,8 +23,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
-require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Data/Records.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Records.php');
 
 /**
  * @author Claus Due <claus@wildside.dk>
@@ -64,7 +64,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 * @test
 	 */
 	public function canExecuteClearCacheCommand() {
-		touch(t3lib_div::getFileAbsFileName('typo3temp/flux-manifest.cache'));
+		touch(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/flux-test.manifest'));
 		$provider = $this->getConfigurationProviderInstance();
 		$return = $provider->clearCacheCommand(array('all'));
 		$this->assertEmpty($return);
@@ -144,7 +144,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	public function canGetGrid() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$provider = $this->getConfigurationProviderInstance();
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($provider, 'templatePathAndFilename', $templatePathAndFilename, TRUE);
+		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($provider, 'templatePathAndFilename', $templatePathAndFilename, TRUE);
 		$record = $this->getBasicRecord();
 		$form = $provider->getGrid($record);
 		$this->assertInstanceOf('Tx_Flux_Form_Container_Grid', $form);
@@ -318,7 +318,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	public function canPostProcessRecord() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$parentInstance = t3lib_div::makeInstance('t3lib_TCEmain');
+		$parentInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		$record['test'] = 'test';
 		$id = $record['uid'];
 		$tableName = $provider->getTableName($record);
@@ -358,7 +358,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	public function canPostProcessRecordWithNullFieldName() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$parentInstance = t3lib_div::makeInstance('t3lib_TCEmain');
+		$parentInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		$record['test'] = 'test';
 		$id = $record['uid'];
 		$tableName = $provider->getTableName($record);
@@ -378,7 +378,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	public function canPreProcessRecordAndTransferDataToRecordValues() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$parentInstance = t3lib_div::makeInstance('t3lib_TCEmain');
+		$parentInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		$tableName = $provider->getTableName($record);
 		if (TRUE === empty($tableName)) {
 			$tableName = 'tt_content';
@@ -493,7 +493,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$record = $this->getBasicRecord();
 		$template = 'test.html';
 		$provider->setTemplatePathAndFilename($template);
-		$this->assertSame(t3lib_div::getFileAbsFileName($template), $provider->getTemplatePathAndFilename($record));
+		$this->assertSame(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($template), $provider->getTemplatePathAndFilename($record));
 	}
 
 	/**

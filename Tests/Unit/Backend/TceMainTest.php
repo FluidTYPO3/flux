@@ -39,7 +39,7 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$expectedExecutions = count($GLOBALS['TCA']);
 		$mockedProvider->expects($this->exactly($expectedExecutions))->method('clearCacheCommand')->with('all');
 		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array($mockedProvider)));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
+		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
 		$instance->clearCacheCommand('all');
 	}
 
@@ -50,7 +50,7 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$instance = $this->getInstance();
 		$mockedFluxService = $this->getMock('Tx_Flux_Service_FluxService', array('resolveConfigurationProviders'));
 		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array()));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
+		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
 		$instance->clearCacheCommand('all');
 		$instance->clearCacheCommand('all');
 	}
@@ -62,8 +62,8 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$instance = $this->getInstance();
 		$mockedFluxService = $this->getMock('Tx_Flux_Service_FluxService', array('resolveConfigurationProviders'));
 		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array()));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
-		$fakeManifestFile = \t3lib_div::getFileAbsFileName('typo3temp/fake-manifest.cache');
+		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
+		$fakeManifestFile = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/fake-manifest.cache');
 		touch($fakeManifestFile);
 		$instance->clearCacheCommand('all');
 		$this->assertFileNotExists($fakeManifestFile);
@@ -178,8 +178,8 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @return \t3lib_TCEmain
 	 */
 	protected function getCallerInstance() {
-		/** @var t3lib_TCEmain $tceMainParent */
-		$tceMainParent = \t3lib_div::makeInstance('t3lib_TCEmain');
+		/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $tceMainParent */
+		$tceMainParent = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 		return $tceMainParent;
 	}
 
@@ -187,11 +187,11 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @return \Tx_Flux_Backend_TceMain
 	 */
 	protected function getInstance() {
-		/** @var Tx_Extbase_Object_ObjectManager $objectManager */
-		$objectManager = \t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var Tx_Flux_Backend_TceMain $tceMainInstance */
 		$tceMainInstance = $objectManager->get('Tx_Flux_Backend_TceMain');
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($tceMainInstance, 'cachesCleared', FALSE, TRUE);
+		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($tceMainInstance, 'cachesCleared', FALSE, TRUE);
 		return $tceMainInstance;
 	}
 

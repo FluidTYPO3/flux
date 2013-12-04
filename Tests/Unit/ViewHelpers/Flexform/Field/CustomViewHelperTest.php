@@ -49,24 +49,24 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelperTest extends Tx_Flux_Vi
 
 	/**
 	 * @param array $templateVariableContainerArguments
-	 * @return Tx_Fluid_Core_ViewHelper_TemplateVariableContainer
+	 * @return \TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer
 	 */
 	protected function executeViewHelperClosure($templateVariableContainerArguments = array()) {
 		$instance = $this->objectManager->get('Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper');
-		$container = $this->objectManager->get('Tx_Fluid_Core_ViewHelper_TemplateVariableContainer');
+		$container = $this->objectManager->get('TYPO3\\CMS\\Fluid\\Core\\ViewHelper\\TemplateVariableContainer');
 		$arguments = array(
 			'name' => 'custom'
 		);
 		foreach ($templateVariableContainerArguments as $name => $value) {
 			$container->add($name, $value);
 		}
-		$node = new Tx_Fluid_Core_Parser_SyntaxTree_ViewHelperNode($instance, $arguments);
-		$childNode = new Tx_Fluid_Core_Parser_SyntaxTree_TextNode('Hello world!');
-		$renderingContext = $this->getAccessibleMock('Tx_Fluid_Core_Rendering_RenderingContext');
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($renderingContext, 'templateVariableContainer', $container);
+		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode($instance, $arguments);
+		$childNode = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello world!');
+		$renderingContext = $this->getAccessibleMock('TYPO3\\CMS\\Fluid\\Core\\Rendering\\RenderingContext');
+		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($renderingContext, 'templateVariableContainer', $container);
 		$node->addChildNode($childNode);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'templateVariableContainer', $container, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'renderingContext', $renderingContext, TRUE);
+		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'templateVariableContainer', $container, TRUE);
+		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'renderingContext', $renderingContext, TRUE);
 		$instance->setViewHelperNode($node);
 		/** @var Closure $closure */
 		$closure = $this->callInaccessibleMethod($instance, 'buildClosure');

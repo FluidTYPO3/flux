@@ -322,11 +322,11 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 */
 	protected function getVendorNameAndExtensionKeyFromExtensionName($extensionName) {
 		if (FALSE !== strpos($extensionName, '.')) {
-			list ($vendorName, $extensionName) = t3lib_div::trimExplode('.', $extensionName);
+			list ($vendorName, $extensionName) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $extensionName);
 		} else {
 			$vendorName = NULL;
 		}
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
 		return array($vendorName, $extensionKey);
 	}
 
@@ -336,7 +336,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 */
 	protected function removeVendorPrefixFromExtensionName($extensionName) {
 		if (FALSE !== strpos($extensionName, '.')) {
-			list (, $extensionName) = t3lib_div::trimExplode('.', $extensionName);
+			list (, $extensionName) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $extensionName);
 		}
 		return $extensionName;
 	}
@@ -348,7 +348,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	protected function buildExpectedAndExistingControllerClassName($controllerName) {
 		$extensionName = $this->getExtensionName();
 		list ($vendorName, $extensionKey) = $this->getVendorNameAndExtensionKeyFromExtensionName($extensionName);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
 		if (NULL !== $vendorName) {
 			$controllerClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
 		} else {
@@ -378,10 +378,10 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 		$controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
 		$disableLocalLanguageLabels = $this->getDisableLocalLanguageLabels();
 		$labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
-		$hasLocalLanguageFile = file_exists(t3lib_extMgm::extPath($extensionKey, $localLanguageFileRelativePath));
+		$hasLocalLanguageFile = file_exists(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey, $localLanguageFileRelativePath));
 		$label = $actionName . $separator . $controllerName;
 		if (FALSE === $disableLocalLanguageLabels && TRUE === $hasLocalLanguageFile) {
-			$label = 'LLL:EXT:' . t3lib_div::camelCaseToLowerCaseUnderscored($extensionName) . $localLanguageFileRelativePath . ':' . $labelPath;
+			$label = 'LLL:EXT:' . \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName) . $localLanguageFileRelativePath . ':' . $labelPath;
 		} elseif (TRUE === method_exists($controllerClassName, $actionName . 'Action') && TRUE === $disableLocalLanguageLabels) {
 			$methodReflection = $this->reflectAction($controllerName, $actionName);
 			$line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
@@ -434,7 +434,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 */
 	protected function convertActionListToArray($actionList) {
 		if (FALSE === is_array($actionList)) {
-			return t3lib_div::trimExplode(',', $actionList, TRUE);
+			return \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $actionList, TRUE);
 		}
 		return $actionList;
 	}

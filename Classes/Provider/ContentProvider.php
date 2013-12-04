@@ -60,12 +60,12 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row
-	 * @param t3lib_TCEmain $reference
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, t3lib_TCEmain $reference) {
+	public function postProcessRecord($operation, $id, array &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
 		parent::postProcessRecord($operation, $id, $row, $reference);
-		$parameters = t3lib_div::_GET();
+		$parameters = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET();
 		$this->contentService->affectRecordByRequestParameters($row, $parameters, $reference);
 		// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
 		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
@@ -77,10 +77,10 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @param string $status
 	 * @param integer $id
 	 * @param array $row
-	 * @param t3lib_TCEmain $reference
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
 	 * @return void
 	 */
-	public function postProcessDatabaseOperation($status, $id, &$row, t3lib_TCEmain $reference) {
+	public function postProcessDatabaseOperation($status, $id, &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
 		parent::postProcessDatabaseOperation($status, $id, $row, $reference);
 		if ($status === 'new') {
 			$this->contentService->initializeRecord($row, $reference);
@@ -95,14 +95,14 @@ class Tx_Flux_Provider_ContentProvider extends Tx_Flux_Provider_AbstractProvider
 	 * @param integer $id
 	 * @param array $row
 	 * @param integer $relativeTo
-	 * @param t3lib_TCEmain $reference
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
 	 * @return void
 	 */
-	public function postProcessCommand($command, $id, array &$row, &$relativeTo, t3lib_TCEmain $reference) {
+	public function postProcessCommand($command, $id, array &$row, &$relativeTo, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
 		parent::postProcessCommand($command, $id, $row, $relativeTo, $reference);
 		$pasteCommands = array('copy', 'move');
 		if (TRUE === in_array($command, $pasteCommands)) {
-			$callback = t3lib_div::_GET('CB');
+			$callback = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('CB');
 			if (TRUE === isset($callback['paste'])) {
 				$pasteCommand = $callback['paste'];
 				$parameters = explode('|', $pasteCommand);

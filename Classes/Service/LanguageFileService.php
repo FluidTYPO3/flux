@@ -100,7 +100,7 @@ XML;
 			return NULL;
 		}
 		$file = 0 === strpos($file, 'LLL:') ? substr($file, 4) : $file;
-		$filePathAndFilename = t3lib_div::getFileAbsFileName($file);
+		$filePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($file);
 		$extension = pathinfo($filePathAndFilename, PATHINFO_EXTENSION);
 		if (FALSE === in_array($extension, self::$validExtensions)) {
 			return NULL;
@@ -356,7 +356,7 @@ XML;
 	 * @param integer $severity
 	 * @return void
 	 */
-	protected function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_INFO) {
+	protected function message($message, $severity = \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_INFO) {
 		if (TRUE === isset($GLOBALS['BE_USER'])) {
 			$this->configurationService->message($message, $severity, 'Flux Language File Utility');
 		}
@@ -368,7 +368,7 @@ XML;
 	 * @return boolean
 	 */
 	protected function writeFile($filePathAndFilename, $content) {
-		return t3lib_div::writeFile($filePathAndFilename, $content);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($filePathAndFilename, $content);
 	}
 
 	/**

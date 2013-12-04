@@ -31,7 +31,7 @@
  * @package Flux
  * @subpackage Service
  */
-class Tx_Flux_Service_FluxService implements t3lib_Singleton {
+class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var array
@@ -41,9 +41,9 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	/**
 	 * @var array
 	 */
-	protected static $friendlySeverities = array(
-		t3lib_div::SYSLOG_SEVERITY_INFO,
-		t3lib_div::SYSLOG_SEVERITY_NOTICE
+	private static $friendlySeverities = array(
+		\TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_INFO,
+		\TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_NOTICE
 	);
 
 	/**
@@ -63,41 +63,41 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 
 	/**
 	 *
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Extbase_Reflection_Service
+	 * @var \TYPO3\CMS\Extbase\Reflection\ReflectionService
 	 */
 	protected $reflectionService;
 
 	/**
-	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @param Tx_Extbase_Reflection_Service $reflectionService
+	 * @param \TYPO3\CMS\Extbase\Reflection\ReflectionService $reflectionService
 	 * @return void
 	 */
-	public function injectReflectionService(Tx_Extbase_Reflection_Service $reflectionService) {
+	public function injectReflectionService(\TYPO3\CMS\Extbase\Reflection\ReflectionService $reflectionService) {
 		$this->reflectionService = $reflectionService;
 	}
 
@@ -116,25 +116,25 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return Tx_Flux_View_ExposedTemplateView
 	 */
 	public function getPreparedExposedTemplateView($extensionKey = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionKey);
-		if (NULL === $extensionKey || FALSE === t3lib_extMgm::isLoaded($extensionKey)) {
+		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
+		if (NULL === $extensionKey || FALSE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
 			$extensionKey = 'Flux';
 		}
 		if (NULL === $controllerName) {
 			$controllerName = 'Flux';
 		}
-		/** @var $context Tx_Extbase_MVC_Controller_ControllerContext */
-		$context = $this->objectManager->get('Tx_Extbase_MVC_Controller_ControllerContext');
-		/** @var $request Tx_Extbase_MVC_Web_Request */
-		$request = $this->objectManager->get('Tx_Extbase_MVC_Web_Request');
+		/** @var $context \TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext */
+		$context = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerContext');
+		/** @var $request \TYPO3\CMS\Extbase\Mvc\Web\Request */
+		$request = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Request');
 		/** @var $response Tx_Extbase_MVC_Web_Response */
-		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
+		$response = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Response');
 		$request->setControllerExtensionName($extensionKey);
 		$request->setControllerName($controllerName);
 		$request->setDispatched(TRUE);
-		/** @var $uriBuilder Tx_Extbase_Mvc_Web_Routing_UriBuilder */
-		$uriBuilder = $this->objectManager->get('Tx_Extbase_Mvc_Web_Routing_UriBuilder');
+		/** @var $uriBuilder \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder */
+		$uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Routing\\UriBuilder');
 		$uriBuilder->setRequest($request);
 		$context->setUriBuilder($uriBuilder);
 		$context->setRequest($request);
@@ -267,12 +267,12 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$config = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		$config = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		if (FALSE === isset($config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'])) {
 			return NULL;
 		}
 		$config = $config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
-		$config = t3lib_div::removeDotsFromTS($config);
+		$config = \TYPO3\CMS\Core\Utility\GeneralUtility::removeDotsFromTS($config);
 		if ($extensionName) {
 			$config = $config[$extensionName];
 		}
@@ -371,11 +371,11 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$typoScriptSettings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		$typoScriptSettings = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		if (FALSE === isset($typoScriptSettings['plugin.']['tx_flux.']['providers.'])) {
 			return array();
 		}
-		$providerConfigurations = t3lib_div::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
+		$providerConfigurations = \TYPO3\CMS\Core\Utility\GeneralUtility::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
 		self::$cache[$cacheKey] = array();
 		foreach ($providerConfigurations as $name => $providerSettings) {
 			if (TRUE === isset($providerSettings['className']) && TRUE === class_exists($providerSettings['className'])) {
@@ -481,7 +481,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return mixed
 	 */
 	private function getObjectOfType($dataType, $uids) {
-		$identifiers = TRUE === is_array($uids) ? $uids : t3lib_div::trimExplode(',', trim($uids, ','), TRUE);
+		$identifiers = TRUE === is_array($uids) ? $uids : \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', trim($uids, ','), TRUE);
 		$identifiers = array_map('intval', $identifiers);
 		$isModel = (FALSE !== strpos($dataType, '_Domain_Model_') || FALSE !== strpos($dataType, '\\Domain\\Model\\'));
 		list ($container, $object) = FALSE !== strpos($dataType, '<') ? explode('<', trim($dataType, '>')) : array(NULL, $dataType);
@@ -533,7 +533,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	public function debug($instance) {
 		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
 			if (TRUE === $instance instanceof Exception) {
-				t3lib_div::sysLog('Flux Debug: Suppressed Exception - "' . $instance->getMessage() . '" (' . $instance->getCode() . ')', 'flux');
+				\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('Flux Debug: Suppressed Exception - "' . $instance->getMessage() . '" (' . $instance->getCode() . ')', 'flux');
 			}
 			return;
 		}
@@ -562,7 +562,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function debugMixed($variable) {
-		Tx_Extbase_Utility_Debugger::var_dump($variable);
+		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($variable);
 	}
 
 	/**
@@ -570,7 +570,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function debugException(Exception $error) {
-		$this->message($error->getMessage() . ' (' . $error->getCode() . ')', t3lib_div::SYSLOG_SEVERITY_FATAL);
+		$this->message($error->getMessage() . ' (' . $error->getCode() . ')', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_FATAL);
 	}
 
 	/**
@@ -578,7 +578,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function debugView(Tx_Flux_View_ExposedTemplateView $view) {
-		Tx_Extbase_Utility_Debugger::var_dump($view);
+		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($view);
 	}
 
 	/**
@@ -586,7 +586,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function debugProvider(Tx_Flux_Provider_ProviderInterface $provider) {
-		Tx_Extbase_Utility_Debugger::var_dump($provider);
+		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($provider);
 	}
 
 	/**
@@ -595,7 +595,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $title
 	 * @return NULL
 	 */
-	public function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
+	public function message($message, $severity = \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
 		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
 			return NULL;
 		}
@@ -606,10 +606,10 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] && TRUE === in_array($severity, self::$friendlySeverities)) {
 			return NULL;
 		}
-		$isAjaxCall = (boolean) 0 < t3lib_div::_GET('ajaxCall');
-		$flashMessage = new t3lib_FlashMessage($message, $title, $severity);
+		$isAjaxCall = (boolean) 0 < \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('ajaxCall');
+		$flashMessage = new \TYPO3\CMS\Core\Messaging\FlashMessage($message, $title, $severity);
 		$flashMessage->setStoreInSession($isAjaxCall);
-		t3lib_FlashMessageQueue::addMessage($flashMessage);
+		\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($flashMessage);
 		self::$sentDebugMessages[$hash] = TRUE;
 		return NULL;
 	}
