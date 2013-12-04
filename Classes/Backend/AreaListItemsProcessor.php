@@ -55,8 +55,8 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * @return void
 	 */
 	public function itemsProcFunc(&$params) {
-		$urlRequestedArea = $_GET['defVals']['tt_content']['tx_flux_column'];
-		$urlRequestedParent = $urlRequestedValue = $_GET['defVals']['tt_content']['tx_flux_parent'];
+		$urlRequestedArea = $this->getUrlRequestedArea();
+		$urlRequestedParent = $urlRequestedValue = $this->getUrlRequestedParent();
 		if ($urlRequestedParent) {
 			$parentUid = $urlRequestedParent;
 		} else {
@@ -83,20 +83,60 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * @return array
 	 */
 	public function getContentAreasDefinedInContentElement($uid) {
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		/** @var $provider Tx_Flux_Provider_ConfigurationProviderInterface */
+		$record = $this->getContentRecordByUid($uid);
+		/** @var $provider Tx_Flux_Provider_ProviderInterface */
 		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
-		$extensionKey = $provider->getExtensionKey($record);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$values = $provider->getTemplateVariables($record);
-		$templatePathAndFilename = $provider->getTemplatePathAndFilename($record);
-		$grid = $this->fluxService->getGridFromTemplateFile($templatePathAndFilename, $values, 'Configuration', $extensionName);
-		$columns = array();
-		foreach ($grid as $row) {
-			foreach ($row as $column) {
-				foreach ($column['areas'] as $area) {
-					array_push($columns, array($area['label'], $area['name']));
+		if (NULL === $provider) {
+			return array();
+		}
+		return $this->getGridFromConfigurationProviderAndRecord($provider, $record);
+	}
 
+	/**
+	 * @return string
+	 */
+	protected function getUrlRequestedArea() {
+		return $_GET['defVals']['tt_content']['tx_flux_column'];
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getUrlRequestedParent() {
+		return $_GET['defVals']['tt_content']['tx_flux_parent'];
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return array
+	 */
+	protected function getContentRecordByUid($uid) {
+		$record = $this->loadContentRecordFromDatabase($uid);
+		return (array) $record;
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return array|FALSE
+	 */
+	protected function loadContentRecordFromDatabase($uid) {
+		$uid = intval($uid);
+		$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', "uid = '" . $uid . "'");
+		return $record;
+	}
+
+	/**
+	 * @param Tx_Flux_Provider_ProviderInterface $provider
+	 * @param array $record
+	 * @return mixed
+	 */
+	protected function getGridFromConfigurationProviderAndRecord(Tx_Flux_Provider_ProviderInterface $provider, array $record) {
+		$columns = array();
+		$grid = $provider->getGrid($record);
+		foreach ($grid->getRows() as $row) {
+			foreach ($row->getColumns() as $column) {
+				foreach ($column->getAreas() as $area) {
+					array_push($columns, array($area->getLabel(), $area->getName()));
 				}
 			}
 		}

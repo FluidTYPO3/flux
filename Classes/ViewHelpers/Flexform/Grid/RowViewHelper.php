@@ -29,15 +29,15 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Grid
  */
-class Tx_Flux_ViewHelpers_Flexform_Grid_RowViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Grid_RowViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('repeat', 'integer', 'number of times to repeat this colum while appending $iteration to name', FALSE, 1);
-		$this->registerArgument('iteration', 'string', 'name of the variable to store iteration information (index, cycle, isFirst, isLast, isEven, isOdd)');
+		$this->registerArgument('name', 'string', 'Optional name of this row - defaults to "row"', FALSE, 'row');
+		$this->registerArgument('label', 'string', 'Optional label for this row - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
 	}
 
 	/**
@@ -45,29 +45,13 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_RowViewHelper extends Tx_Flux_Core_ViewH
 	 * @return string
 	 */
 	public function render() {
-		$iterationData = array(
-			'index' => 0,
-			'cycle' => 1,
-			'total' => $this->arguments['repeat']
-		);
-
-		for ($i=0; $i<$this->arguments['repeat']; $i++) {
-			if ($this->arguments['iteration'] !== NULL) {
-				$iterationData['isFirst'] = $iterationData['cycle'] === 1;
-				$iterationData['isLast'] = $iterationData['cycle'] === $iterationData['total'];
-				$iterationData['isEven'] = $iterationData['cycle'] % 2 === 0;
-				$iterationData['isOdd'] = !$iterationData['isEven'];
-				$this->templateVariableContainer->add($this->arguments['iteration'], $iterationData);
-				$iterationData['index'] ++;
-				$iterationData['cycle'] ++;
-			}
-			$this->addGridRow();
-			$this->renderChildren();
-			if ($this->arguments['iteration'] !== NULL) {
-				$this->templateVariableContainer->remove($this->arguments['iteration']);
-			}
-		}
-		return '';
+		$name = ('row' === $this->arguments['name'] ? uniqid('row') : $this->arguments['name']);
+		$row = $this->getForm()->createContainer('Row', $name, $this->arguments['label']);
+		$container = $this->getContainer();
+		$container->add($row);
+		$this->setContainer($row);
+		$this->renderChildren();
+		$this->setContainer($container);
 	}
 
 }

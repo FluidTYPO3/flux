@@ -29,33 +29,32 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SliderViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper implements Tx_Flux_ViewHelpers_Flexform_Field_Wizard_WizardViewHelperInterface {
+class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SliderViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+
+	/**
+	 * @var string
+	 */
+	protected $label = 'Slider';
 
 	/**
 	 * Initialize arguments
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Name of this slider', FALSE, 'default');
+		parent::initializeArguments();
 		$this->registerArgument('step', 'integer', 'Increment slider values by this much for each step', FALSE, 1);
 		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 32);
-		$this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the "real" field as a hidden input field and renders the wizard', FALSE, FALSE);
 	}
 
 	/**
-	 * Build the configuration array
-	 *
-	 * @return array
+	 * @return Tx_Flux_Form_Wizard_Slider
 	 */
-	public function build() {
-		return array(
-			'slider' => array(
-				'type' => 'slider',
-				'hideParent' => (bool) $this->arguments['hideParent'] === TRUE ? 1 : 0,
-				'width' => $this->arguments['width'],
-				'step' => $this->arguments['step'],
-			)
-		);
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Wizard_Slider $component */
+		$component = $this->getPreparedComponent('Slider');
+		$component->setWidth($this->arguments['width']);
+		$component->setStep($this->arguments['step']);
+		return $component;
 	}
 
 }

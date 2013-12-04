@@ -36,7 +36,7 @@ class Tx_Flux_Backend_TypoScriptTemplate {
 	 * @param t3lib_TStemplate $pObj
 	 * @return void
 	 */
-	public function preprocessIncludeStaticTypoScriptSources(array $params, $pObj) {
+	public function preprocessIncludeStaticTypoScriptSources(array &$params, $pObj) {
 		if (TRUE === isset($params['row']['root']) && TRUE === (boolean) $params['row']['root']) {
 			$existingTemplates = t3lib_div::trimExplode(',', $params['row']['include_static_file']);
 			$globalStaticTemplates = Tx_Flux_Core::getStaticTypoScriptLocations();

@@ -29,7 +29,16 @@
  * @package Flux
  * @subpackage ViewHelpers\Be\Uri\Content
  */
-class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper {
+class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+
+	/**
+	 * Initialize
+	 * @return void
+	 */
+	public function initializeArguments() {
+		$this->registerArgument('row', 'array', 'Record row', TRUE);
+		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
+	}
 
 	/**
 	 * Render uri
@@ -42,14 +51,14 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_Vie
 		$uid = $this->arguments['row']['uid'];
 		$area = $this->arguments['area'];
 		$sysLang = $this->arguments['row']['sys_language_uid'];
-		$returnUri = $this->getReturnUri($pid);
+		$returnUri = urlencode($_SERVER['REQUEST_URI']);
 		if ($area) {
 			$returnUri .= '%23' . $area . '%3A' . $uid;
 			if (0 < $after) {
 				$returnUri .= '%3A-' . $after;
 			}
 		}
-		$icon = $this->getIcon('actions-document-new', 'Insert new content element in this position');
+		$icon = Tx_Flux_Utility_Miscellaneous::getIcon('actions-document-new', 'Insert new content element in this position');
 		$uri = 'db_new_content_el.php?id=' . $pid .
 			'&uid_pid=' . $pid .
 			'&colPos=-42' .
@@ -57,6 +66,7 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_Vie
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
 			'&defVals[tt_content][tx_flux_column]=' . $area .
 			'&returnUrl=' . $returnUri;
-		return $this->wrapLink($icon, $uri);
+		return Tx_Flux_Utility_Miscellaneous::wrapLink($icon, $uri);
 	}
+
 }

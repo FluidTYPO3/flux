@@ -29,7 +29,9 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_UserFuncViewHelper {
+
+	const DEFAULT_USERFUNCTION = 'EXT:flux/Classes/UserFunction/HtmlOutput.php:Tx_Flux_UserFunction_HtmlOutput->renderField';
 
 	/**
 	 * Initialize
@@ -37,6 +39,41 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
+		$this->overrideArgument('userFunc', 'string', 'User function to render the Closure built by this ViewHelper', FALSE, self::DEFAULT_USERFUNCTION);
+	}
+
+	/**
+	 * @return Tx_Flux_Form_Field_Custom
+	 */
+	public function getComponent() {
+		/** @var Tx_Flux_Form_Field_Custom $component */
+		$component = parent::getComponent('Custom');
+		$closure = $this->buildClosure();
+		$component->setClosure($closure);
+		return $component;
+	}
+
+	/**
+	 * @return Closure
+	 */
+	protected function buildClosure() {
+		$self = $this;
+		$closure = function($parameters) use ($self) {
+			$backupParameters = NULL;
+			$backupParameters = NULL;
+			if ($self->getTemplateVariableContainer()->exists('parameters') === TRUE) {
+				$backupParameters = $self->getTemplateVariableContainer()->get('parameters');
+				$self->getTemplateVariableContainer()->remove('parameters');
+			}
+			$self->getTemplateVariableContainer()->add('parameters', $parameters);
+			$content = $self->renderChildren();
+			$self->getTemplateVariableContainer()->remove('parameters');
+			if (NULL !== $backupParameters) {
+				$self->getTemplateVariableContainer()->add('parameters', $backupParameters);
+			}
+			return $content;
+		};
+		return $closure;
 	}
 
 	/**
@@ -46,41 +83,4 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper extends Tx_Flux_ViewHe
 		return $this->templateVariableContainer;
 	}
 
-	/**
-	 * Render method
-	 * @return void
-	 */
-	public function render() {
-		$this->configuration = $this->renderConfiguration();
-		$this->structure = $this->createStructure();
-		$this->addField($this->configuration);
-	}
-
-	/**
-	 * Render method
-	 * @return array
-	 */
-	public function renderConfiguration() {
-		$self = $this;
-		$config = parent::getBaseConfig();
-		$config['type'] = 'user';
-		$config['userFunc'] = 'EXT:flux/Classes/UserFunction/HtmlOutput.php:Tx_Flux_UserFunction_HtmlOutput->renderField';
-		$config['parameters'] = $this->arguments; // will be passed to the UserFunction as argument
-		$config['parameters']['closure'] = function($parameters) use ($self) {
-			$backupParameters = NULL;
-			if ($self->getTemplateVariableContainer()->exists('parameters') === TRUE) {
-				$backupParameters = $self->getTemplateVariableContainer()->get('parameters');
-				$self->getTemplateVariableContainer()->remove('parameters');
-			}
-			$self->getTemplateVariableContainer()->add('parameters', $parameters);
-			$content = $self->renderChildren();
-			$self->getTemplateVariableContainer()->remove('parameters');
-			if ($backupParameters !== NULL) {
-				$self->getTemplateVariableContainer()->add('parameters', $backupParameters);
-			}
-			return $content;
-		};
-		$config['arguments'] = $this->arguments;
-		return $config;
-	}
 }

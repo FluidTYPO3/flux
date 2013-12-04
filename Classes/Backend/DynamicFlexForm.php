@@ -64,12 +64,9 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * @throws Exception
 	 */
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName) {
-		if (Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing() === FALSE) {
-			$fieldName = NULL;
-		}
 		if (empty($fieldName) === TRUE) {
-				// forcibly assert type NULL if an empty field name was passed. There are
-				// no empty fields in a database, it's a plain mystery why TYPO3 may pass ''
+			// Cast NULL if an empty but not-NULL field name was passed. This has significance to the Flux internals in
+			// respect to which ConfigurationProvider(s) are returned.
 			$fieldName = NULL;
 		}
 		$provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $fieldName, $row);

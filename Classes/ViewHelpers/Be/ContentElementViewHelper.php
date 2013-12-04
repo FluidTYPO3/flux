@@ -27,7 +27,16 @@
  * @package Flux
  * @subpackage ViewHelpers\Be
  */
-class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper {
+class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+
+	/**
+	 * Initialize
+	 * @return void
+	 */
+	public function initializeArguments() {
+		$this->registerArgument('row', 'array', 'Record row', TRUE);
+		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
+	}
 
 	/**
 	 * @param mixed $dblist
@@ -36,7 +45,7 @@ class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends Tx_Flux_Core_ViewH
 	public function render($dblist) {
 		$record = $this->arguments['row'];
 		$rendered = $dblist->tt_content_drawHeader($record);
-		$rendered .= $dblist->tt_content_drawItem($record);
+		$rendered .= '<div class="t3-page-ce-body-inner">' . $dblist->tt_content_drawItem($record) . '</div>';
 		$rendered .= '</div>';
 		return $rendered;
 	}

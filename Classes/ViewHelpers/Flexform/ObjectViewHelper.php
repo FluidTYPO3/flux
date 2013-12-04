@@ -32,7 +32,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize
@@ -48,27 +48,17 @@ class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_Core_ViewHel
 	/**
 	 * Render method
 	 * @return void
-	 * @throws Exception
 	 */
 	public function render() {
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'section') === FALSE) {
-			throw new Exception('ViewHelper flux:flexform.object can only be used inside flux:flexform.section', 1331664840);
-		}
-		$name = $this->arguments['name'];
-		$label = $this->getLabel();
-		$labels = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels');
-		$labels[$name] = $label;
-
-		if ($this->viewHelperVariableContainer->exists('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName') === TRUE) {
-			$parentSectionObjectName = $this->viewHelperVariableContainer->get('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName');
-		} else {
-			$parentSectionObjectName = NULL;
-		}
-
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName', $name);
+		/** @var Tx_Flux_Form_Container_Section $object */
+		$object = $this->objectManager->get('Tx_Flux_Form_Container_Object');
+		$object->setName($this->arguments['name']);
+		$object->setLabel($this->arguments['label']);
+		$container = $this->getContainer();
+		$container->add($object);
+		$this->setContainer($object);
 		$this->renderChildren();
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionObjectName', $parentSectionObjectName);
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sectionLabels', $labels);
+		$this->setContainer($container);
 	}
 
 }

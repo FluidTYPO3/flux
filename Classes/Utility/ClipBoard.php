@@ -1,0 +1,103 @@
+<?php
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
+
+/**
+ * ClipBoard Utility
+ *
+ * @author Claus Due, Wildside A/S
+ * @package Flux
+ * @subpackage Utility
+ */
+class Tx_Flux_Utility_ClipBoard {
+
+	/**
+	 * @var array
+	 */
+	private static $cache = NULL;
+
+	/**
+	 * @param array $data
+	 * @return void
+	 */
+	public static function setClipBoardData($data) {
+		self::$cache = $data;
+	}
+
+	/**
+	 * @return void
+	 */
+	public static function clearClipBoardData() {
+		self::$cache = NULL;
+	}
+
+	/**
+	 * @param boolean $reference
+	 * @return array|NULL
+	 */
+	public static function getClipBoardData($reference = FALSE) {
+		$reference = (boolean) $reference;
+		if (TRUE === is_array(self::$cache)) {
+			$clipData = self::$cache;
+		} else {
+			$clipData = $GLOBALS['BE_USER']->getModuleData('clipboard', $GLOBALS['BE_USER']->getTSConfigVal('options.saveClipboard') ? '' : 'ses');
+		}
+		$mode = TRUE === isset($clipData['current']) ? $clipData['current'] : 'normal';
+		$hasClip = TRUE === isset($clipData[$mode]['el']) && 0 < count($clipData[$mode]['el']);
+		if (FALSE === $hasClip) {
+			return NULL;
+		}
+		if (FALSE === isset($clipData[$mode]['mode']) && TRUE === $reference) {
+			return NULL;
+		}
+		return $clipData;
+	}
+
+	/**
+	 * @param string $relativeTo
+	 * @param boolean $reference
+	 * @return string
+	 */
+	public static function createIconWithUrl($relativeTo, $reference = FALSE) {
+		$data = self::getClipBoardData($reference);
+		if (NULL === $data) {
+			return '';
+		}
+		$reference = (boolean) $reference;
+		$clipBoard = new t3lib_clipboard();
+		if (TRUE === $reference) {
+			$label = 'Paste as reference in this position';
+			$icon = 'actions-insert-reference';
+		} else {
+			$label = 'Paste in this position';
+			$icon = 'actions-document-paste-after';
+		}
+		$icon = Tx_Flux_Utility_Miscellaneous::getIcon($icon, $label);
+		$uri = "javascript:top.content.list_frame.location.href=top.TS.PATH_typo3+'";
+		$uri .= $clipBoard->pasteUrl('tt_content', $relativeTo);
+		$uri .= "';";
+		return Tx_Flux_Utility_Miscellaneous::wrapLink($icon, $uri);
+	}
+
+}

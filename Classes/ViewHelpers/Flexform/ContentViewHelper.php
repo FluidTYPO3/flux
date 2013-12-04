@@ -29,7 +29,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -47,13 +47,9 @@ class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_Core_ViewHe
 	 * @return string
 	 */
 	public function render() {
-		$area = array(
-			'name' => $this->arguments['name'],
-			'label' => $this->getLabel()
-		);
-		$this->addContentArea($area);
-		$this->renderChildren();
-		return '';
+		/** @var Tx_Flux_Form_Container_Content $content */
+		$content = $this->getForm()->createContainer('Content', $this->arguments['name'], $this->arguments['label']);
+		$this->getContainer()->add($content);
 	}
 
 }

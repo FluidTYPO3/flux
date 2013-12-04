@@ -29,18 +29,29 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_GridViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_GridViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
+
+	/**
+	 * Initialize
+	 * @return void
+	 */
+	public function initializeArguments() {
+		$this->registerArgument('name', 'string', 'Optional name of this grid - defaults to "grid"', FALSE, 'grid');
+		$this->registerArgument('label', 'string', 'Optional label for this grid - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
+	}
 
 	/**
 	 * Render method
 	 * @return string
 	 */
 	public function render() {
-		$storage = $this->getStorage();
-		$storage['grid'] = array();
-		$this->setStorage($storage);
+		$grid = $this->getGrid($this->arguments['name']);
+		$grid->setParent($this->getForm());
+		$grid->setLabel($this->arguments['label']);
+		$container = $this->getContainer();
+		$this->setContainer($grid);
 		$this->renderChildren();
-		return '';
+		$this->setContainer($container);
 	}
 
 }

@@ -31,7 +31,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -49,13 +49,19 @@ class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_Core_ViewHelp
 	 * @return void
 	 */
 	public function render() {
-		$sheet = array(
-			'name' => $this->arguments['name'],
-			'label' => $this->getLabel()
-		);
-		$this->viewHelperVariableContainer->addOrUpdate('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet', $sheet);
+		$form = $this->getForm();
+		if (TRUE === $form->has($this->arguments['name'])) {
+			$sheet = $form->get($this->arguments['name']);
+			$this->setContainer($sheet);
+		} else {
+			/** @var Tx_Flux_Form_Container_Sheet $sheet */
+			$sheet = $this->objectManager->get('Tx_Flux_Form_Container_Sheet');
+			$sheet->setName($this->arguments['name']);
+			$sheet->setLabel($this->arguments['label']);
+			$this->getForm()->add($sheet);
+			$this->setContainer($sheet);
+		}
 		$this->renderChildren();
-		$this->viewHelperVariableContainer->remove('Tx_Flux_ViewHelpers_FlexformViewHelper', 'sheet');
 	}
 
 }
