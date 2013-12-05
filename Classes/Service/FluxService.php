@@ -440,7 +440,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	public function transformAccordingToConfiguration($values, Tx_Flux_Form $form, $prefix = '') {
 		foreach ((array) $values as $index => $value) {
 			if (TRUE === is_array($value)) {
-				$value = $this->transformAccordingToConfiguration($value, $form, ltrim($prefix . '.' . $index . '.', '.'));
+				$value = $this->transformAccordingToConfiguration($value, $form, $prefix . $index . '.');
 			} else {
 				/** @var Tx_Flux_Form_FieldInterface|Tx_Flux_Form_ContainerInterface $object */
 				$object = $form->get($prefix . $index, TRUE);
