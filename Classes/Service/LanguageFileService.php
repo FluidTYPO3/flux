@@ -374,6 +374,13 @@ XML;
 	 * @return boolean
 	 */
 	protected function writeFile($filePathAndFilename, $content) {
+		if (FALSE === file_exists($filePathAndFilename)) {
+			$directory = pathinfo($filePathAndFilename, PATHINFO_DIRNAME);
+			if (FALSE === file_exists($directory)) {
+				GeneralUtility::mkdir_deep($directory);
+			}
+			touch($filePathAndFilename);
+		}
 		return GeneralUtility::writeFile($filePathAndFilename, $content);
 	}
 
