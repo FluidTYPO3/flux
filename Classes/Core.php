@@ -43,6 +43,16 @@ class Core {
 	private static $providers = array();
 
 	/**
+	 * @var array
+	 */
+	protected static $pipes = array();
+
+	/**
+	 * @var array
+	 */
+	protected static $outlets = array();
+
+	/**
 	 * Contains all Forms for tables registered with Flux
 	 * @var array
 	 */
@@ -288,6 +298,27 @@ class Core {
 		}
 	}
 
+
+	/**
+	 * @param string $typeOrClassName
+	 * @param string $insteadOfNativeType
+	 * @return void
+	 */
+	public static function registerPipe($typeOrClassName, $insteadOfNativeType = NULL) {
+		$key = NULL === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
+		self::$pipes[$key] = $typeOrClassName;
+	}
+
+	/**
+	 * @param string $typeOrClassName
+	 * @param string $insteadOfNativeType
+	 * @return void
+	 */
+	public static function registerOutlet($typeOrClassName, $insteadOfNativeType = NULL) {
+		$key = NULL === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
+		self::$outlets[$key] = $typeOrClassName;
+	}
+
 	/**
 	 * Gets the defined FlexForms configuration providers based on parameters
 	 * @return array
@@ -331,6 +362,20 @@ class Core {
 			return self::$forms['models'][$class];
 		}
 		return NULL;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getPipes() {
+		return array_values(self::$pipes);
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getOutlets() {
+		return array_values(self::$outlets);
 	}
 
 }

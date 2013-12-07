@@ -26,6 +26,7 @@ namespace FluidTYPO3\Flux;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use FluidTYPO3\Flux\Outlet\OutletInterface;
 
 /**
  * @package Flux
@@ -98,6 +99,11 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	protected $options = array();
 
 	/**
+	 * @var OutletInterface
+	 */
+	protected $outlet;
+
+	/**
 	 * @param array $settings
 	 * @return Form
 	 */
@@ -124,6 +130,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$defaultSheet->setName('options');
 		$defaultSheet->setLabel(LocalizationUtility::translate('tt_content.tx_flux_options', 'Flux'));
 		$this->add($defaultSheet);
+		$this->outlet = $this->objectManager->get('FluidTYPO3\Flux\Outlet\StandardOutlet');
 	}
 
 	/**
@@ -341,10 +348,11 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 
 	/**
 	 * @param array $options
-	 * @return void
+	 * @return Form\FormInterface
 	 */
 	public function setOptions(array $options) {
 		$this->options = $options;
+		return $this;
 	}
 
 	/**
@@ -357,9 +365,11 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	/**
 	 * @param string $name
 	 * @param mixed $value
+	 * @return Form\FormInterface
 	 */
 	public function setOption($name, $value) {
 		$this->options[$name] = $value;
+		return $this;
 	}
 
 	/**
@@ -380,6 +390,22 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 			}
 		}
 		return FALSE;
+	}
+
+	/**
+	 * @param OutletInterface $outlet
+	 * @return Form\FormInterface
+	 */
+	public function setOutlet(OutletInterface $outlet) {
+		$this->outlet = $outlet;
+		return $this;
+	}
+
+	/**
+	 * @return OutletInterface
+	 */
+	public function getOutlet() {
+		return $this->outlet;
 	}
 
 }
