@@ -282,7 +282,9 @@ abstract class AbstractFormComponent {
 				$prefix = 'fields';
 			}
 		}
-		$filePrefix = 'LLL:EXT:' . $extensionKey . $this->localLanguageFileRelativePath;
+		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
+		$relativeFilePath = ltrim($relativeFilePath, '/');
+		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
 		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.' . $name);
 		$this->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
 		return $filePrefix . ':' . $labelIdentifier;
