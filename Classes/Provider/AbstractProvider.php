@@ -661,7 +661,7 @@ class AbstractProvider implements ProviderInterface {
 	public function getPreview(array $row) {
 		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 		if (FALSE === file_exists($templatePathAndFilename)) {
-			return array(NULL, NULL);
+			return array(NULL, NULL, TRUE);
 		}
 		$extensionKey = $this->getExtensionKey($row);
 		$flexformVariables = $this->getFlexFormValues($row);
@@ -688,7 +688,7 @@ class AbstractProvider implements ProviderInterface {
 		if (FALSE === empty($label) || FALSE === empty($row['header'])) {
 			$headerContent = '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
 		}
-		return array($headerContent, $previewContent);
+		return array($headerContent, $previewContent, TRUE);
 	}
 
 	/**
