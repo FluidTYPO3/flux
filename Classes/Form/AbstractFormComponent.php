@@ -32,7 +32,7 @@ use FluidTYPO3\Flux\Form\Container\Object;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\FormInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -45,7 +45,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * @package Flux
  * @subpackage Form
  */
-abstract class AbstractFormComponent {
+abstract class AbstractFormComponent implements FormInterface {
 
 	/**
 	 * @var ObjectManagerInterface
@@ -87,6 +87,11 @@ abstract class AbstractFormComponent {
 	 * @var string
 	 */
 	protected $localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xml';
+
+	/**
+	 * @var string
+	 */
+	protected $extensionName = 'FluidTYPO3.Flux';
 
 	/**
 	 * @var FormContainerInterface
@@ -224,6 +229,22 @@ abstract class AbstractFormComponent {
 	}
 
 	/**
+	 * @param string $extensionName
+	 * @return FormInterface
+	 */
+	public function setExtensionName($extensionName) {
+		$this->extensionName = $extensionName;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getExtensionName() {
+		return $this->extensionName;
+	}
+
+	/**
 	 * @param string $label
 	 * @return FormInterface
 	 */
@@ -244,12 +265,13 @@ abstract class AbstractFormComponent {
 		$root = $this->getRoot();
 		if (FALSE === $root instanceof Form) {
 			$id = 'form';
-			$extensionName = 'Flux';
+			$extensionName = $this->extensionName;
 		} else {
 			$id = $root->getName();
 			$extensionName = $root->getExtensionName();
 		}
-		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
+		$extensionKey = FALSE === strpos($extensionName, '.') ? $extensionName : substr($extensionName, strpos($extensionName, '.') + 1);
+		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
 		if (FALSE === empty($label)) {
 			if (0 === strpos($label, 'LLL:') && 0 !== strpos($label, 'LLL:EXT:')) {
 				return LocalizationUtility::translate(substr($label, 4), $extensionKey);
