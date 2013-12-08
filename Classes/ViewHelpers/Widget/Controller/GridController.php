@@ -80,8 +80,8 @@ class GridController extends AbstractWidgetController {
 	 * @return string
 	 */
 	public function indexAction() {
-		$doc = t3lib_div::makeInstance('mediumDoc');
-		$doc->getPageRenderer()->addCssFile(t3lib_extMgm::extRelPath('flux') . 'Resources/Public/css/grid.css');
+		$doc = \t3lib_div::makeInstance('mediumDoc');
+		$doc->getPageRenderer()->addCssFile(\t3lib_extMgm::extRelPath('flux') . 'Resources/Public/css/grid.css');
 
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $this->row);
