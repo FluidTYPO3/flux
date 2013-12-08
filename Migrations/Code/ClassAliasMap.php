@@ -121,7 +121,7 @@ return array(
 	'Tx_Flux_ViewHelpers_Flexform_ContainerViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\Form\ContainerViewHelper',
 	'FluidTYPO3\Flux\ViewHelpers\Flexform\DataViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\Form\DataViewHelper',
 	'Tx_Flux_ViewHelpers_Flexform_DataViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\Form\DataViewHelper',
-	'FluidTYPO3\Flux\ViewHelpers\Flexform\ObjectViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\Flexform\ObjectViewHelper',
+	'FluidTYPO3\Flux\ViewHelpers\Flexform\ObjectViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\Form\ObjectViewHelper',
 	'Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\Form\ObjectViewHelper',
 	'FluidTYPO3\Flux\ViewHelpers\Flexform\SectionViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\Form\SectionViewHelper',
 	'Tx_Flux_ViewHelpers_Flexform_SectionViewHelper' => 'FluidTYPO3\Flux\ViewHelpers\Form\SectionViewHelper',
