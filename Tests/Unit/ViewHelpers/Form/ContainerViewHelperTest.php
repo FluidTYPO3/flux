@@ -1,9 +1,9 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers;
+namespace FluidTYPO3\Flux\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2013 Claus Due <claus@wildside.dk>
  *
  *  All rights reserved
  *
@@ -22,29 +22,25 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * ************************************************************* */
 
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
 
 /**
- * Fetches a single variable from the template variables
- *
+ * @author Claus Due <claus@wildside.dk>
  * @package Flux
- * @subpackage ViewHelpers
  */
-class VariableViewHelper extends AbstractFormViewHelper {
+class ContainerViewHelperTest extends AbstractViewHelperTest {
 
 	/**
-	 * @param string $name
-	 * @return string
+	 * @test
 	 */
-	public function render($name) {
-		if (strpos($name, '.') === FALSE) {
-			return $this->templateVariableContainer->get($name);
-		} else {
-			$parts = explode('.', $name);
-			return ObjectAccess::getPropertyPath($this->templateVariableContainer->get(array_shift($parts)), implode('.', $parts));
-		}
+	public function canExecuteViewHelper() {
+		$arguments = array(
+			'name' => 'test',
+			'label' => 'Test container'
+		);
+		$this->executeViewHelper($arguments);
 	}
 
 }

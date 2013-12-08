@@ -24,7 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use FluidTYPO3\Flux\Utility\Version;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -98,7 +98,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$this->templateVariableContainer->remove('dblist');
 		$this->templateVariableContainer->remove('fluxColumnId');
 
-		if (FALSE === Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
+		if (FALSE === VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
 			$content = '<div id="column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX">' . $content . '</div>';
 		}
 

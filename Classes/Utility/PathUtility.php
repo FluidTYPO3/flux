@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers;
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,29 +22,38 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ ***************************************************************/
 
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Fetches a single variable from the template variables
  *
  * @package Flux
- * @subpackage ViewHelpers
+ * @subpackage Utility
  */
-class VariableViewHelper extends AbstractFormViewHelper {
+class PathUtility {
 
 	/**
-	 * @param string $name
-	 * @return string
+	 * @var array
 	 */
-	public function render($name) {
-		if (strpos($name, '.') === FALSE) {
-			return $this->templateVariableContainer->get($name);
-		} else {
-			$parts = explode('.', $name);
-			return ObjectAccess::getPropertyPath($this->templateVariableContainer->get(array_shift($parts)), implode('.', $parts));
-		}
-	}
+	private static $knownPathNames = array('templateRootPath', 'layoutRootPath', 'partialRootPath');
 
+	/**
+	 * Translates an array of paths or single path into absolute paths/path
+	 *
+	 * @param mixed $path
+	 * @return mixed
+	 */
+	public static function translatePath($path) {
+		if (is_array($path) == FALSE) {
+			return GeneralUtility::getFileAbsFileName($path);
+		} else {
+			foreach ($path as $key => $subPath) {
+				if (TRUE === in_array($key, self::$knownPathNames)) {
+					$path[$key] = self::translatePath($subPath);
+				}
+			}
+		}
+		return $path;
+	}
 }

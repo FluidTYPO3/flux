@@ -27,7 +27,7 @@ namespace FluidTYPO3\Flux;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\Path;
+use FluidTYPO3\Flux\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -155,7 +155,7 @@ class CoreTest extends AbstractTestCase {
 		$this->assertInstanceOf($providerClassName, $detectedProvider);
 		$this->assertSame($extensionKey, $detectedProvider->getExtensionKey($record));
 		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
-		$this->assertSame(Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
+		$this->assertSame(PathUtility::translatePath($paths), $detectedProvider->getTemplatePaths($record));
 	}
 
 	/**
@@ -180,7 +180,7 @@ class CoreTest extends AbstractTestCase {
 		$this->assertInstanceOf($providerClassName, $detectedProvider);
 		$this->assertSame($extensionKey, $detectedProvider->getExtensionKey($record));
 		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
-		$this->assertSame(Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
+		$this->assertSame(PathUtility::translatePath($paths), $detectedProvider->getTemplatePaths($record));
 	}
 
 	/**
@@ -202,7 +202,7 @@ class CoreTest extends AbstractTestCase {
 		$detectedProvider = $service->resolvePrimaryConfigurationProvider($table, $fieldName, $record);
 		$this->assertInstanceOf($providerClassName, $detectedProvider);
 		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
-		$this->assertSame(Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
+		$this->assertSame(PathUtility::translatePath($paths), $detectedProvider->getTemplatePaths($record));
 	}
 
 	/**

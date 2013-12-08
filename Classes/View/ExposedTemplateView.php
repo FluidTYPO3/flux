@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\View;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
@@ -63,7 +64,7 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	 */
 	public function getForm($sectionName = 'Configuration', $formName = 'form') {
 		/** @var Form $form */
-		$form = $this->getStoredVariable('FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', $formName, $sectionName);
+		$form = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, $formName, $sectionName);
 		return $form;
 	}
 
@@ -75,7 +76,7 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	public function getGrid($sectionName = 'Configuration', $gridName = 'grid') {
 		/** @var Grid[] $grids */
 		/** @var Grid $grid */
-		$grids = $this->getStoredVariable('FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'grids', $sectionName);
+		$grids = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, 'grids', $sectionName);
 		$grid = NULL;
 		if (TRUE === isset($grids[$gridName])) {
 			$grid = $grids[$gridName];

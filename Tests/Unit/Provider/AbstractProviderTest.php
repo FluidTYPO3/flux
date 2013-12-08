@@ -30,7 +30,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\Path;
+use FluidTYPO3\Flux\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -526,7 +526,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 			'templateRootPath' => 'EXT:flux/Resources/Private/Templates'
 		);
 		$provider->setTemplatePaths($templatePaths);
-		$this->assertSame(Path::translatePath($templatePaths), $provider->getTemplatePaths($record));
+		$this->assertSame(PathUtility::translatePath($templatePaths), $provider->getTemplatePaths($record));
 	}
 
 	/**

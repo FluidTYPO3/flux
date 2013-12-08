@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
  *
  *  All rights reserved
  *
@@ -24,27 +24,37 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
- * Fetches a single variable from the template variables
+ * Grid container ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers
+ * @subpackage ViewHelpers/Flexform
  */
-class VariableViewHelper extends AbstractFormViewHelper {
+class GridViewHelper extends AbstractFormViewHelper {
 
 	/**
-	 * @param string $name
+	 * Initialize
+	 * @return void
+	 */
+	public function initializeArguments() {
+		$this->registerArgument('name', 'string', 'Optional name of this grid - defaults to "grid"', FALSE, 'grid');
+		$this->registerArgument('label', 'string', 'Optional label for this grid - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
+	}
+
+	/**
+	 * Render method
 	 * @return string
 	 */
-	public function render($name) {
-		if (strpos($name, '.') === FALSE) {
-			return $this->templateVariableContainer->get($name);
-		} else {
-			$parts = explode('.', $name);
-			return ObjectAccess::getPropertyPath($this->templateVariableContainer->get(array_shift($parts)), implode('.', $parts));
-		}
+	public function render() {
+		$grid = $this->getGrid($this->arguments['name']);
+		$grid->setParent($this->getForm());
+		$grid->setLabel($this->arguments['label']);
+		$container = $this->getContainer();
+		$this->setContainer($grid);
+		$this->renderChildren();
+		$this->setContainer($container);
 	}
 
 }

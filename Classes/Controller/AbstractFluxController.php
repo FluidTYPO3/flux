@@ -24,10 +24,14 @@ namespace FluidTYPO3\Flux\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3\CMS\Extbase\Mvc\Web\Response;
 
 /**
  * Abstract Flux-enabled controller
@@ -54,7 +58,7 @@ abstract class AbstractFluxController extends ActionController {
 	protected $fallbackExtensionKey = 'flux';
 
 	/**
-	 * @var \FluidTYPO3\Flux\Service\FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
@@ -84,10 +88,10 @@ abstract class AbstractFluxController extends ActionController {
 	protected $data = array();
 
 	/**
-	 * @param \FluidTYPO3\Flux\Service\FluxService $configurationService
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(\FluidTYPO3\Flux\Service\FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
@@ -114,7 +118,7 @@ abstract class AbstractFluxController extends ActionController {
 		if (TRUE === isset($this->data['settings']) && TRUE === is_array($this->data['settings'])) {
 			// a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
 			// as well as the internal $this->settings array as per expected Extbase behavior.
-			$this->settings = \FluidTYPO3\Flux\Utility\RecursiveArray::merge($this->settings, $this->data['settings']);
+			$this->settings = RecursiveArrayUtility::merge($this->settings, $this->data['settings']);
 		}
 		if (TRUE === isset($this->settings['useTypoScript']) && TRUE === (boolean) $this->settings['useTypoScript']) {
 			// an override shared by all Flux enabled controllers: setting plugin.tx_EXTKEY.settings.useTypoScript = 1
@@ -194,7 +198,7 @@ abstract class AbstractFluxController extends ActionController {
 		$pluginSignature = 'tx_' . str_replace('_', '', $extensionKey) . '_' . str_replace('_', '', strtolower($this->request->getPluginName()));
 		$controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
 		$controllerExtensionName = GeneralUtility::underscoredToUpperCamelCase($controllerExtensionKey);
-		$requestParameterActionName = \FluidTYPO3\Flux\Utility\Resolve::resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature);
+		$requestParameterActionName = ResolveUtility::resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature);
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
 		$overriddenControllerActionName = NULL !== $requestParameterActionName ? $requestParameterActionName : $controllerActionName;
 		$controllerName = $this->request->getControllerName();
@@ -212,7 +216,7 @@ abstract class AbstractFluxController extends ActionController {
 		$shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
 		if (TRUE === $shouldRelay) {
 			$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
-			$foreignControllerClass = \FluidTYPO3\Flux\Utility\Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
+			$foreignControllerClass = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
 			return $this->callSubControllerAction($extensionName, $foreignControllerClass, $actionName, $pluginSignature);
 		}
 		return $this->view->render();
@@ -226,7 +230,7 @@ abstract class AbstractFluxController extends ActionController {
 	 */
 	protected function hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName) {
 		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
-		$potentialControllerClassName = \FluidTYPO3\Flux\Utility\Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
+		$potentialControllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
 		$isForeign = $extensionName !== $this->extensionName;
 		$isValidController = class_exists($potentialControllerClassName);
 		return (TRUE === $isForeign && TRUE === $isValidController);
@@ -240,7 +244,7 @@ abstract class AbstractFluxController extends ActionController {
 	 * @return string
 	 */
 	protected function callSubControllerAction($extensionName, $controllerClassName, $controllerActionName, $pluginSignature) {
-		/** @var TYPO3\CMS\Extbase\Mvc\Web\Response $response */
+		/** @var Response $response */
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
 		$arguments = (array) (TRUE === is_array(GeneralUtility::_POST($pluginSignature)) ? GeneralUtility::_POST($pluginSignature) : GeneralUtility::_GET($pluginSignature));
 		$potentialControllerInstance = $this->objectManager->get($controllerClassName);

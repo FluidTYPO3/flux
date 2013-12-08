@@ -29,8 +29,8 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Utility\Path;
-use FluidTYPO3\Flux\Utility\RecursiveArray;
+use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -382,7 +382,7 @@ class AbstractProvider implements ProviderInterface {
 			self::$cache[$cacheKey] = $inheritedConfiguration;
 			return (array) $inheritedConfiguration;
 		}
-		$merged = RecursiveArray::merge($inheritedConfiguration, $immediateConfiguration);
+		$merged = RecursiveArrayUtility::merge($inheritedConfiguration, $immediateConfiguration);
 		self::$cache[$cacheKey] = $merged;
 		return $merged;
 	}
@@ -439,7 +439,7 @@ class AbstractProvider implements ProviderInterface {
 		}
 
 		if (TRUE === is_array($paths)) {
-			$paths = Path::translatePath($paths);
+			$paths = PathUtility::translatePath($paths);
 		}
 
 		return $paths;
@@ -666,7 +666,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionKey = $this->getExtensionKey($row);
 		$flexformVariables = $this->getFlexFormValues($row);
 		$templateVariables = $this->getTemplateVariables($row);
-		$variables = RecursiveArray::merge($templateVariables, $flexformVariables);
+		$variables = RecursiveArrayUtility::merge($templateVariables, $flexformVariables);
 		$paths = $this->getTemplatePaths($row);
 		$form = $this->getForm($row);
 		$formLabel = $form->getLabel();
@@ -757,10 +757,10 @@ class AbstractProvider implements ProviderInterface {
 					unset($values[$name]);
 				}
 			}
-			$data = RecursiveArray::merge($data, $values);
+			$data = RecursiveArrayUtility::merge($data, $values);
 		}
 		if (TRUE === $mergeToCache && TRUE === $this->hasCacheForMergedConfiguration($cacheKey)) {
-			$data = RecursiveArray::merge(self::$cache[$cacheKey], $data);
+			$data = RecursiveArrayUtility::merge(self::$cache[$cacheKey], $data);
 		}
 		self::$cache[$cacheKey] = $data;
 		return $data;
