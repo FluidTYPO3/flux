@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form\AbstractFormTest;
+use FluidTYPO3\Flux\Form\WizardInterface;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest extends Tx_Flux_Tests_Functional_Form_AbstractFormTest {
+abstract class AbstractWizardTest extends AbstractFormTest {
 
 	/**
 	 * @var array
@@ -52,7 +56,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest extends Tx
 	 * @test
 	 */
 	public function hasChildrenAlwaysReturnsFalse() {
-		/** @var Tx_Flux_Form_WizardInterface $instance */
+		/** @var WizardInterface $instance */
 		$instance = $this->createInstance();
 		$this->assertFalse($instance->hasChildren());
 	}
@@ -61,7 +65,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest extends Tx
 	 * @test
 	 */
 	public function canRenderWithParentfield() {
-		/** @var Tx_Flux_Form_WizardInterface $instance */
+		/** @var WizardInterface $instance */
 		$instance = $this->createInstance();
 		$field = $instance->createField('Input', 'test');
 		$field->add($instance);
@@ -72,7 +76,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest extends Tx
 	 * @test
 	 */
 	public function canRenderWithoutParentfield() {
-		/** @var Tx_Flux_Form_WizardInterface $instance */
+		/** @var WizardInterface $instance */
 		$instance = $this->createInstance();
 		$this->performTestBuild($instance);
 	}
@@ -81,7 +85,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest extends Tx
 	 * @test
 	 */
 	public function canAttachToFields() {
-		/** @var Tx_Flux_Form_WizardInterface $instance */
+		/** @var WizardInterface $instance */
 		$instance = $this->canChainAllChainableSetters();
 		$field = $instance->createField('Input', 'test');
 		$added = $field->add($instance);

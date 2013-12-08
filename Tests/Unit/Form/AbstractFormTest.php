@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,21 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\WizardInterface;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+abstract class AbstractFormTest extends AbstractTestCase {
 
 	/**
 	 * @var array
@@ -35,7 +46,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	protected $chainProperties = array('name' => 'test', 'label' => 'Test field');
 
 	/**
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return \FluidTYPO3\Flux\Form\FormInterface
 	 */
 	protected function createInstance() {
 		$className = $this->getObjectClassName();
@@ -50,47 +61,12 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 		$className = $this->getObjectClassName();
 		$instance = $this->objectManager->get($className);
 		$instance->setName('test');
-		if (TRUE === $instance instanceof Tx_Flux_Form_FieldInterface || TRUE === $instance instanceof Tx_Flux_Form_ContainerInterface) {
-			$form = Tx_Flux_Form::create(array('extensionKey' => 'flux'));
+		if (TRUE === $instance instanceof FieldInterface || TRUE === $instance instanceof ContainerInterface) {
+			$form = Form::create(array('extensionKey' => 'flux'));
 			$form->add($instance);
 		}
 		$label = $instance->getLabel();
 		$this->assertNotEmpty($label);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canAutoWriteLabel() {
-		$languageFile = 'LLL:typo3temp/test.xml';
-		$absoluteLanguageFile = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(substr($languageFile, 4));
-		$className = $this->getObjectClassName();
-		$instance = $this->objectManager->get($className);
-		$instance->setName('thisIsASpecialFieldName');
-		$id = 'somename';
-		$form = Tx_Flux_Form::create();
-		$form->setId($id);
-		$form->setExtensionName('Flux');
-		if (FALSE === $instance instanceof Tx_Flux_Form_WizardInterface) {
-			$form->add($instance);
-		} else {
-			$field = $form->createField('Input', 'dummy');
-			$field->add($instance);
-		}
-		$probe = $instance->getName();
-		$label = $instance->getLabel();
-		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'];
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = 1;
-		$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->reset();
-		// note: double call is not an error - designed to trigger caches and assumes no errors happens during that phase
-		$this->callInaccessibleMethod($instance, 'writeLanguageLabel', $languageFile, array_pop(explode(':', $label)), $id);
-		$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->reset();
-		$this->callInaccessibleMethod($instance, 'writeLanguageLabel', $languageFile, array_pop(explode(':', $label)), $id);
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = $backup;
-		$this->assertNotEmpty($label);
-		$this->assertFileExists($absoluteLanguageFile);
-		$this->assertContains($probe, file_get_contents($absoluteLanguageFile));
-		unlink($absoluteLanguageFile);
 	}
 
 	/**
@@ -109,16 +85,21 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	public function canGenerateLocalisableLabel() {
 		$instance = $this->createInstance();
 		$instance->setLabel(NULL);
-		if (FALSE === $instance instanceof Tx_Flux_Form) {
-			/** @var Tx_Flux_Form $form */
-			$form = $this->objectManager->get('Tx_Flux_Form');
-			$form->setId('testFormId');
-			$form->setExtensionName('Flux');
+		if (FALSE === $instance instanceof Form) {
+			/** @var Form $form */
+			$instance->setName('test');
+			$form = Form::create(array(
+				'name' => 'testFormId',
+				'extensionName' => 'flux'
+			));
 			$form->add($instance);
-			$label = $instance->getLabel();
-			$this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xml:flux', $label);
-			$this->assertContains('testFormId', $label);
+		} else {
+			$instance->setName('testFormId');
+			$instance->setExtensionKey('flux');
 		}
+		$label = $instance->getLabel();
+		$this->assertContains('testFormId', $label);
+		$this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xml:flux', $label);
 	}
 
 	/**
@@ -133,7 +114,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	/**
 	 * @test
 	 * @param array $chainPropertiesAndValues
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function canChainAllChainableSetters($chainPropertiesAndValues = NULL) {
 		if (NULL === $chainPropertiesAndValues) {
@@ -141,7 +122,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 		}
 		$instance = $this->createInstance();
 		foreach ($chainPropertiesAndValues as $propertyName => $propertValue) {
-			$setterMethodName = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::buildSetterMethodName($propertyName);
+			$setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
 			$chained = call_user_func_array(array($instance, $setterMethodName), array($propertValue));
 			$this->assertSame($instance, $chained, 'The setter ' . $setterMethodName . ' on ' . $this->getObjectClassName() . ' does not support chaining.');
 			if ($chained === $instance) {
@@ -157,7 +138,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	 */
 	public function ifObjectIsFieldContainerItSupportsFetchingFields() {
 		$instance = $this->createInstance();
-		if (TRUE === $instance instanceof Tx_Flux_Form_FieldContainerInterface) {
+		if (TRUE === $instance instanceof FieldContainerInterface) {
 			$field = $instance->createField('Input', 'test');
 			$instance->add($field);
 			$fields = $instance->getFields();
@@ -171,9 +152,9 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	 */
 	public function returnsNameInsteadOfEmptyLabelWhenFormsExtensionKeyAndLabelAreBothEmpty() {
 		$instance = $this->createInstance();
-		if (FALSE === $instance instanceof Tx_Flux_Form && TRUE === $instance instanceof Tx_Flux_Form_FieldInterface) {
-			/** @var Tx_Flux_Form $form */
-			$form = $this->objectManager->get('Tx_Flux_Form');
+		if (FALSE === $instance instanceof Form && TRUE === $instance instanceof FieldInterface) {
+			/** @var Form $form */
+			$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 			$form->setExtensionName(NULL);
 			$form->add($instance);
 		}
@@ -189,13 +170,13 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 	public function canCallAllGetterCounterpartsForChainableSetters() {
 		$instance = $this->createInstance();
 		foreach ($this->chainProperties as $propertyName => $propertValue) {
-			\TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($instance, $propertyName);
+			ObjectAccess::getProperty($instance, $propertyName);
 		}
 		$this->performTestBuild($instance);
 	}
 
 	/**
-	 * @param Tx_Flux_Form_FieldInterface
+	 * @param \FluidTYPO3\Flux\Form\FieldInterface
 	 * @return array
 	 */
 	protected function performTestBuild($instance) {
@@ -221,7 +202,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 		$type = implode('/', array_slice(explode('_', substr($class, 13)), 1));
 		$properties['type'] = $type;
 		$instance = call_user_func_array(array($class, 'create'), array($properties));
-		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}
 
 	/**
@@ -235,7 +216,7 @@ abstract class Tx_Flux_Tests_Functional_Form_AbstractFormTest extends Tx_Flux_Te
 		$instance->expects($this->once())->method('getName')->will($this->returnValue('form'));
 		$instance->setLabel('LLL:tt_content.tx_flux_container');
 		$result = $instance->getLabel();
-		$this->assertSame(Tx_Extbase_Utility_Localization::translate('tt_content.tx_flux_container', 'Flux'), $result);
+		$this->assertSame(LocalizationUtility::translate('tt_content.tx_flux_container', 'Flux'), $result);
 	}
 
 }

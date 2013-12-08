@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Wizard\Edit;
+
 /**
  * Field Wizard: Edit
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_EditViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+class EditViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -43,7 +46,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_EditViewHelper extends Tx_Flux_V
 	}
 
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Wizard_Edit $component */
+		/** @var Edit $component */
 		$component = $this->getPreparedComponent('Edit');
 		$component->setOpenOnlyIfSelected($this->arguments['openOnlyIfSelected']);
 		$component->setHeight($this->arguments['height']);

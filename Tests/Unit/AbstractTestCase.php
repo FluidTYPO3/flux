@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Tests\Unit;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,16 +24,28 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Records.php');
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Class/BasicFluxController.php');
+use FluidTYPO3\Flux\Form\Field\Custom;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase;
+
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Records.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/ContentController.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/DummyConfigurationProvider.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/DummyModel.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/DummyRepository.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/InvalidConfigurationProvider.php');
 
 
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
+abstract class AbstractTestCase extends BaseTestCase {
 
 	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
 	const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/WithoutForm.html';
@@ -77,7 +90,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\T
 	 * @return void
 	 */
 	protected function assertIsArray($value) {
-		$isArrayConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
+		$isArrayConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
 		$this->assertThat($value, $isArrayConstraint);
 	}
 
@@ -86,7 +99,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\T
 	 * @return void
 	 */
 	protected function assertIsString($value) {
-		$isStringConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_STRING);
+		$isStringConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_STRING);
 		$this->assertThat($value, $isStringConstraint);
 	}
 
@@ -95,7 +108,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\T
 	 * @return void
 	 */
 	protected function assertIsInteger($value) {
-		$isIntegerConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_INT);
+		$isIntegerConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_INT);
 		$this->assertThat($value, $isIntegerConstraint);
 	}
 
@@ -104,7 +117,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\T
 	 * @return void
 	 */
 	protected function assertIsBoolean($value) {
-		$isBooleanConstraint = new PHPUnit_Framework_Constraint_IsType(PHPUnit_Framework_Constraint_IsType::TYPE_BOOL);
+		$isBooleanConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_BOOL);
 		$this->assertThat($value, $isBooleanConstraint);
 	}
 
@@ -112,15 +125,15 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\T
 	 * @param mixed $value
 	 */
 	protected function assertIsValidAndWorkingFormObject($value) {
-		$this->assertInstanceOf('Tx_Flux_Form', $value);
-		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $value);
-		$this->assertInstanceOf('Tx_Flux_Form_ContainerInterface', $value);
-		/** @var Tx_Flux_Form $value */
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $value);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $value);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\ContainerInterface', $value);
+		/** @var Form $value */
 		$structure = $value->build();
 		$this->assertIsArray($structure);
 		// scan for and attempt building of closures in structure
 		foreach ($value->getFields() as $field) {
-			if (TRUE === $field instanceof Tx_Flux_Form_Field_Custom) {
+			if (TRUE === $field instanceof Custom) {
 				$closure = $field->getClosure();
 				$output = $closure($field->getArguments());
 				$this->assertNotEmpty($output);
@@ -132,9 +145,9 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\T
 	 * @param mixed $value
 	 */
 	protected function assertIsValidAndWorkingGridObject($value) {
-		$this->assertInstanceOf('Tx_Flux_Form_Container_Grid', $value);
-		$this->assertInstanceOf('Tx_Flux_Form_ContainerInterface', $value);
-		/** @var Tx_Flux_Form $value */
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $value);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\ContainerInterface', $value);
+		/** @var Form $value */
 		$structure = $value->build();
 		$this->assertIsArray($structure);
 	}
@@ -145,13 +158,13 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\T
 	 */
 	protected function assertFluxTemplateLoadsWithoutErrors($templateName, $variables = array()) {
 		if (0 === count($variables)) {
-			$variables = array('row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren);
+			$variables = array('row' => Records::$contentRecordWithoutParentAndWithoutChildren);
 		}
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($templateName);
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', array(), 'Flux', $variables);
 		if (NULL !== $form) {
-			$this->assertInstanceOf('Tx_Flux_Form', $form);
+			$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 			$this->assertIsArray($form->build());
 		}
 	}
@@ -160,7 +173,7 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\T
 	 * @return void
 	 */
 	public function truncateFluidCodeCache() {
-		$files = glob(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/Cache/Code/fluid_template/*.php'));
+		$files = glob(GeneralUtility::getFileAbsFileName('typo3temp/Cache/Code/fluid_template/*.php'));
 		if (TRUE === is_array($files)) {
 			foreach ($files as $file) {
 				unlink($file);
@@ -180,15 +193,15 @@ abstract class Tx_Flux_Tests_AbstractFunctionalTest extends \TYPO3\CMS\Extbase\T
 	 * @return string
 	 */
 	protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath) {
-		return \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($shorthandTemplatePath);
+		return GeneralUtility::getFileAbsFileName($shorthandTemplatePath);
 	}
 
 	/**
-	 * @return Tx_Flux_Service_FluxService
+	 * @return FluxService
 	 */
 	protected function createFluxServiceInstance() {
-		/** @var $fluxService Tx_Flux_Service_FluxService */
-		$fluxService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+		/** @var FluxService $fluxService */
+		$fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 		return $fluxService;
 	}
 

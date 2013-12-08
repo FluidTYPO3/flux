@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,13 +28,13 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Container_GridTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
+class GridTest extends AbstractContainerTest {
 
 	/**
 	 * @test
 	 */
 	public function canUseGetRowsMethod() {
-		/** @var Tx_Flux_Form_Container_Grid $instance */
+		/** @var Grid $instance */
 		$instance = $this->createInstance();
 		$this->performTestBuild($instance);
 		$this->assertEmpty($instance->getRows());

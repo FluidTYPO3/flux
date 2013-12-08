@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,24 +24,41 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Container\Column;
+use FluidTYPO3\Flux\Form\Container\Container;
+use FluidTYPO3\Flux\Form\Container\Content;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form\Container\Object;
+use FluidTYPO3\Flux\Form\Container\Section;
+use FluidTYPO3\Flux\Form\Container\Sheet;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\FormInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+
 /**
  * @package Flux
  * @subpackage Form
  */
-abstract class Tx_Flux_Form_AbstractFormComponent {
+abstract class AbstractFormComponent {
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+	 * @var ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
@@ -71,56 +89,56 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	protected $localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xml';
 
 	/**
-	 * @var Tx_Flux_Form_FormContainerInterface
+	 * @var FormContainerInterface
 	 */
 	protected $parent;
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
+	 * @param ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
+	 * @param ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
 	/**
 	 * @param array $settings
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return FormInterface
 	 */
 	public static function create(array $settings = array()) {
-		/** @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager */
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		/** @var ObjectManagerInterface $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$className = get_called_class();
-		/** @var Tx_Flux_FormInterface $object */
+		/** @var FormInterface $object */
 		$object = $objectManager->get($className);
 		foreach ($settings as $settingName => $settingValue) {
-			$setterMethodName = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::buildSetterMethodName($settingName);
+			$setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
 			if (TRUE === method_exists($object, $setterMethodName)) {
-				\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($object, $settingName, $settingValue);
+				ObjectAccess::setProperty($object, $settingName, $settingValue);
 			}
 		}
-		if (TRUE === $object instanceof Tx_Flux_Form_FieldContainerInterface && TRUE === isset($settings['fields'])) {
+		if (TRUE === $object instanceof FieldContainerInterface && TRUE === isset($settings['fields'])) {
 			foreach ($settings['fields'] as $fieldName => $fieldSettings) {
 				if (FALSE === isset($fieldSettings['name'])) {
 					$fieldSettings['name'] = $fieldName;
 				}
-				$field = Tx_Flux_Form_AbstractFormField::create($fieldSettings);
+				$field = AbstractFormField::create($fieldSettings);
 				$object->add($field);
 			}
 		}
@@ -133,14 +151,8 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 * @return string
 	 */
 	protected function createComponentClassName($type, $prefix) {
-		if (FALSE === strpos($type, '/')) {
-			$className = $type;
-		} else {
-			$className = str_replace('/', '\\', $type);
-			// Until Namespaces replace to _
-			$className = str_replace('\\', '_', $className);
-		}
-		$className = TRUE === class_exists($prefix . $className) ? $prefix . $className : $className;
+		$className = str_replace('/', '\\', $type);
+		$className = TRUE === class_exists($prefix . '\\' . $className) ? $prefix . '\\' . $className : $className;
 		return $className;
 	}
 
@@ -148,11 +160,11 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 * @param string $type
 	 * @param string $name
 	 * @param string $label
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function createField($type, $name, $label = NULL) {
-		/** @var Tx_Flux_Form_FieldInterface $component */
-		$className = $this->createComponentClassName($type, 'Tx_Flux_Form_Field_');
+		/** @var FieldInterface $component */
+		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Field');
 		$component = $this->objectManager->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
@@ -165,11 +177,11 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 * @param string $type
 	 * @param string $name
 	 * @param string $label
-	 * @return Tx_Flux_Form_ContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function createContainer($type, $name, $label = NULL) {
-		/** @var Tx_Flux_Form_ContainerInterface $component */
-		$className = $this->createComponentClassName($type, 'Tx_Flux_Form_Container_');
+		/** @var ContainerInterface $component */
+		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Container');
 		$component = $this->objectManager->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
@@ -182,11 +194,11 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 * @param string $type
 	 * @param string $name
 	 * @param string $label
-	 * @return Tx_Flux_Form_WizardInterface
+	 * @return WizardInterface
 	 */
 	public function createWizard($type, $name, $label = NULL) {
-		/** @var Tx_Flux_Form_WizardInterface $component */
-		$className = $this->createComponentClassName($type, 'Tx_Flux_Form_Wizard_');
+		/** @var WizardInterface $component */
+		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Wizard');
 		$component = $this->objectManager->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
@@ -197,7 +209,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 
 	/**
 	 * @param string $name
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return FormInterface
 	 */
 	public function setName($name) {
 		$this->name = $name;
@@ -213,7 +225,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 
 	/**
 	 * @param string $label
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return FormInterface
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
@@ -230,40 +242,40 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 		}
 		$name = $this->getName();
 		$root = $this->getRoot();
-		if (FALSE === $root instanceof Tx_Flux_Form) {
+		if (FALSE === $root instanceof Form) {
 			$id = 'form';
 			$extensionName = 'Flux';
 		} else {
 			$id = $root->getName();
 			$extensionName = $root->getExtensionName();
 		}
-		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
+		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
 		if (FALSE === empty($label)) {
 			if (0 === strpos($label, 'LLL:') && 0 !== strpos($label, 'LLL:EXT:')) {
-				return Tx_Extbase_Utility_Localization::translate(substr($label, 4), $extensionKey);
+				return LocalizationUtility::translate(substr($label, 4), $extensionKey);
 			} else {
 				return $label;
 			}
 		}
-		if ((TRUE === empty($extensionKey) || FALSE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey))) {
+		if ((TRUE === empty($extensionKey) || FALSE === ExtensionManagementUtility::isLoaded($extensionKey))) {
 			return $name;
 		}
 		$prefix = '';
-		if (TRUE === $this instanceof Tx_Flux_Form_Container_Sheet) {
+		if (TRUE === $this instanceof Sheet) {
 			$prefix = 'sheets';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Section) {
+		} elseif (TRUE === $this instanceof Section) {
 			$prefix = 'sections';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Grid) {
+		} elseif (TRUE === $this instanceof Grid) {
 			$prefix = 'grids';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Column) {
+		} elseif (TRUE === $this instanceof Column) {
 			$prefix = 'columns';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Object) {
+		} elseif (TRUE === $this instanceof Object) {
 			$prefix = 'objects';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Content) {
+		} elseif (TRUE === $this instanceof Content) {
 			$prefix = 'areas';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_Container_Container) {
+		} elseif (TRUE === $this instanceof Container) {
 			$prefix = 'containers';
-		} elseif (TRUE === $this instanceof Tx_Flux_Form_FieldInterface) {
+		} elseif (TRUE === $this instanceof FieldInterface) {
 			if (TRUE === $this->isChildOfType('Object')) {
 				$prefix = 'objects.' . $this->getParent()->getName();
 			} else {
@@ -284,13 +296,13 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 */
 	protected function writeLanguageLabel($filePrefix, $labelIdentifier, $id) {
 		if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles']) {
-			$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
+			$this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService')->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
 		}
 	}
 
 	/**
 	 * @param string $localLanguageFileRelativePath
-	 * @return Tx_Flux_FormInterface
+	 * @return FormInterface
 	 */
 	public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath) {
 		$this->localLanguageFileRelativePath = $localLanguageFileRelativePath;
@@ -307,7 +319,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 
 	/**
 	 * @param boolean $disableLocalLanguageLabels
-	 * @return Tx_Flux_FormInterface
+	 * @return FormInterface
 	 */
 	public function setDisableLocalLanguageLabels($disableLocalLanguageLabels) {
 		$this->disableLocalLanguageLabels = (boolean) $disableLocalLanguageLabels;
@@ -322,8 +334,8 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	}
 
 	/**
-	 * @param Tx_Flux_Form_ContainerInterface $parent
-	 * @return Tx_Flux_Form_FormInterface
+	 * @param ContainerInterface $parent
+	 * @return FormInterface
 	 */
 	public function setParent($parent) {
 		$this->parent = $parent;
@@ -331,14 +343,14 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	}
 
 	/**
-	 * @return Tx_Flux_Form_FormContainerInterface
+	 * @return FormContainerInterface
 	 */
 	public function getParent() {
 		return $this->parent;
 	}
 
 	/**
-	 * @return Tx_Flux_Form_FormContainerInterface
+	 * @return FormContainerInterface
 	 */
 	public function getRoot() {
 		if (NULL === $this->getParent()) {
@@ -352,7 +364,7 @@ abstract class Tx_Flux_Form_AbstractFormComponent {
 	 * @return boolean
 	 */
 	public function isChildOfType($type) {
-		return ('Tx_Flux_Form_Container_' . $type === get_class($this->getParent()));
+		return ('FluidTYPO3\Flux\Form\Container' . $type === get_class($this->getParent()));
 	}
 
 }

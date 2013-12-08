@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractWizard;
+
 /**
  * @package Flux
  * @subpackage Form\Wizard
  */
-class Tx_Flux_Form_Wizard_ColorPicker extends Tx_Flux_Form_AbstractWizard {
+class ColorPicker extends AbstractWizard {
 
 	/**
 	 * @var string
@@ -82,7 +85,7 @@ class Tx_Flux_Form_Wizard_ColorPicker extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $dimensions
-	 * @return Tx_Flux_Form_Wizard_ColorPicker
+	 * @return ColorPicker
 	 */
 	public function setDimensions($dimensions) {
 		$this->dimensions = $dimensions;
@@ -98,7 +101,7 @@ class Tx_Flux_Form_Wizard_ColorPicker extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $height
-	 * @return Tx_Flux_Form_Wizard_ColorPicker
+	 * @return ColorPicker
 	 */
 	public function setHeight($height) {
 		$this->height = $height;
@@ -114,7 +117,7 @@ class Tx_Flux_Form_Wizard_ColorPicker extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $icon
-	 * @return Tx_Flux_Form_Wizard_ColorPicker
+	 * @return ColorPicker
 	 */
 	public function setIcon($icon) {
 		$this->icon = $icon;
@@ -130,7 +133,7 @@ class Tx_Flux_Form_Wizard_ColorPicker extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $width
-	 * @return Tx_Flux_Form_Wizard_ColorPicker
+	 * @return ColorPicker
 	 */
 	public function setWidth($width) {
 		$this->width = $width;

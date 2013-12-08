@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Content;
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +32,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Content_RenderViewHelper extends Tx_Flux_ViewHelpers_Content_GetViewHelper {
+class RenderViewHelper extends GetViewHelper {
 
 	/**
 	 * Render

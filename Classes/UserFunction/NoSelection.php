@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,13 +23,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+
 /**
  * Renders nothing in case no template is selected
  *
  * @package Flux
  * @subpackage UserFunction
  */
-class Tx_Flux_UserFunction_NoSelection {
+class NoSelection {
 
 	/**
 	 * @param array $parameters Not used
@@ -38,7 +41,7 @@ class Tx_Flux_UserFunction_NoSelection {
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj);
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-			return \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('user.no_selection', 'Flux');
+			return LocalizationUtility::translate('user.no_selection', 'Flux');
 		}
 		unset($parameters);
 		return NULL;

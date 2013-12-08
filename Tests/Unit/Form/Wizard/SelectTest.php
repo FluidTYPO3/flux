@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form\WizardInterface;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Wizard_SelectTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
+class SelectTest extends AbstractWizardTest {
 
 	/**
 	 * @var array
@@ -44,7 +47,7 @@ class Tx_Flux_Form_Wizard_SelectTest extends Tx_Flux_Tests_Functional_Form_Field
 	 * @test
 	 */
 	public function addsParentNameToOwnNameWhenParentExists() {
-		/** @var Tx_Flux_Form_WizardInterface $instance */
+		/** @var WizardInterface $instance */
 		$instance = $this->createInstance();
 		$instance->setName('suffix');
 		$this->assertNotContains('prefix', $instance->getName());
@@ -57,7 +60,7 @@ class Tx_Flux_Form_Wizard_SelectTest extends Tx_Flux_Tests_Functional_Form_Field
 	 * @test
 	 */
 	public function canUseTraversableAsItemsList() {
-		$items = new ArrayIterator($this->chainProperties['items']);
+		$items = new \ArrayIterator($this->chainProperties['items']);
 		$instance = $this->createInstance();
 		$fetched = $instance->setItems($items)->getItems();
 		$this->assertIsString('ArrayIterator', $fetched);

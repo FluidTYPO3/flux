@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Provider;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,8 +28,8 @@
  * Base implementation of Provider concept.
  *
  * @package Flux
- * @subpackage Provider/Configuration/Fallback
+ * @subpackage Provider
  */
-class Tx_Flux_Provider_Provider extends Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInterface {
+class Provider extends AbstractProvider implements ProviderInterface {
 
 }

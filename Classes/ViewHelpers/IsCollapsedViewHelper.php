@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
+
 /**
  * ### Condition: Are content areas of this content reord collapsed?
  *
@@ -32,7 +35,7 @@
  * @package Flux
  * @subpackage ViewHelpers
  */
-class Tx_Flux_ViewHelpers_IsCollapsedViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper {
+class IsCollapsedViewHelper extends AbstractConditionViewHelper {
 
 	/**
 	 * Render method

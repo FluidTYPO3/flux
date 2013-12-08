@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Tests\Fixtures\Data;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Fixtures_Data_Records {
+class Records {
 
 	const DEFAULT_CONTENTAREA = 'content';
 	const UID_CONTENT_NOPARENTNOCHILDREN = 90000001;

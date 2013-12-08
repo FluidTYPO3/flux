@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractWizard;
+
 /**
  * @package Flux
  * @subpackage Form\Wizard
  */
-class Tx_Flux_Form_Wizard_Select extends Tx_Flux_Form_AbstractWizard {
+class Select extends AbstractWizard {
 
 	/**
 	 * @var string
@@ -114,7 +117,7 @@ class Tx_Flux_Form_Wizard_Select extends Tx_Flux_Form_AbstractWizard {
 	 */
 	public function getFormattedItems() {
 		$items = $this->getItems();
-		if (TRUE === $items instanceof Traversable) {
+		if (TRUE === $items instanceof \Traversable) {
 			$items = iterator_to_array($items);
 		}
 		if (TRUE === is_array($items)) {
@@ -125,7 +128,7 @@ class Tx_Flux_Form_Wizard_Select extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param mixed $items
-	 * @return Tx_Flux_Form_Wizard_Select
+	 * @return Select
 	 */
 	public function setItems($items) {
 		$this->items = $items;
@@ -141,7 +144,7 @@ class Tx_Flux_Form_Wizard_Select extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $mode
-	 * @return Tx_Flux_Form_Wizard_Select
+	 * @return Select
 	 */
 	public function setMode($mode) {
 		$this->mode = $mode;

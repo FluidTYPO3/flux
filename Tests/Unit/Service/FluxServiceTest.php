@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,21 +24,25 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/DummyModel.php');
-require_once t3lib_extMgm::extPath('flux', 'Tests/Fixtures/Class/DummyRepository.php');
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class FluxServiceTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canInstantiateFluxService() {
 		$service = $this->createFluxServiceInstance();
-		$this->assertInstanceOf('Tx_Flux_Service_FluxService', $service);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Service\FluxService', $service);
 	}
 
 	/**
@@ -54,7 +59,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canCreateExposedViewWithoutExtensionNameAndControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView();
-		$this->assertInstanceOf('Tx_Flux_View_ExposedTemplateView', $view);
+		$this->assertInstanceOf('FluidTYPO3\Flux\View\ExposedTemplateView', $view);
 	}
 
 	/**
@@ -63,7 +68,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canCreateExposedViewWithExtensionNameWithoutControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView('Flux');
-		$this->assertInstanceOf('Tx_Flux_View_ExposedTemplateView', $view);
+		$this->assertInstanceOf('FluidTYPO3\Flux\View\ExposedTemplateView', $view);
 	}
 
 	/**
@@ -72,7 +77,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canCreateExposedViewWithExtensionNameAndControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView('Flux', 'API');
-		$this->assertInstanceOf('Tx_Flux_View_ExposedTemplateView', $view);
+		$this->assertInstanceOf('FluidTYPO3\Flux\View\ExposedTemplateView', $view);
 	}
 
 	/**
@@ -81,7 +86,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canCreateExposedViewWithoutExtensionNameWithControllerName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView(NULL, 'API');
-		$this->assertInstanceOf('Tx_Flux_View_ExposedTemplateView', $view);
+		$this->assertInstanceOf('FluidTYPO3\Flux\View\ExposedTemplateView', $view);
 	}
 
 	/**
@@ -126,8 +131,8 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		);
 		$form1 = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
 		$form2 = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
-		$this->assertInstanceOf('Tx_Flux_Form', $form1);
-		$this->assertInstanceOf('Tx_Flux_Form', $form2);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form1);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form2);
 	}
 
 	/**
@@ -144,7 +149,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	 * @test
 	 */
 	public function canGetFormWithPathsAndTriggerCache() {
-		$templatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
+		$templatePathAndFilename = GeneralUtility::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
 		$paths = array(
 			'templateRootPath' => 'EXT:flux/Resources/Private/Templates',
@@ -152,9 +157,9 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
 		);
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 		$readAgain = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
-		$this->assertInstanceOf('Tx_Flux_Form', $readAgain);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $readAgain);
 	}
 
 	/**
@@ -163,7 +168,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function canReadGridFromTemplateWithoutConvertingToDataStructure() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$form = $this->performBasicTemplateReadTest($templatePathAndFilename);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 	}
 
 	/**
@@ -175,7 +180,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_COMPACTED);
 		$service = $this->createFluxServiceInstance();
 		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 		$stored = $form->build();
 		$this->assertIsArray($stored);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'] = $backup;
@@ -248,12 +253,12 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
 		$service = $this->createFluxServiceInstance();
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', NULL, $record, 'flux');
-		$service->debugProvider($provider);
-		$service->debugProvider($provider);
-		$service->debug($provider);
-		$service->debug($provider);
+		$service->debugProvider($provider, TRUE);
+		$service->debugProvider($provider, TRUE);
+		$service->debug($provider, TRUE);
+		$service->debug($provider, TRUE);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
 	}
 
@@ -265,10 +270,10 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView('flux', 'Content');
-		$service->debugView($view);
-		$service->debugView($view);
-		$service->debug($view);
-		$service->debug($view);
+		$service->debugView($view, TRUE);
+		$service->debugView($view, TRUE);
+		$service->debug($view, TRUE);
+		$service->debug($view, TRUE);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
 	}
 
@@ -279,9 +284,9 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
 		$service = $this->createFluxServiceInstance();
-		$object = Tx_Flux_Form::create(array('name' => 'test'));
-		$service->debug($object);
-		$service->debug($object);
+		$object = Form::create(array('name' => 'test'));
+		$service->debug($object, TRUE);
+		$service->debug($object, TRUE);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
 	}
 
@@ -292,9 +297,9 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
 		$service = $this->createFluxServiceInstance();
-		$exception = new RuntimeException('Hello world', 1);
-		$service->debug($exception);
-		$service->debug($exception);
+		$exception = new \RuntimeException('Hello world', 1);
+		$service->debug($exception, TRUE);
+		$service->debug($exception, TRUE);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
 	}
 
@@ -306,8 +311,8 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = 1;
 		$service = $this->createFluxServiceInstance();
 		$string = 'Hello world';
-		$service->debug($string);
-		$service->debug($string);
+		$service->debug($string, TRUE);
+		$service->debug($string, TRUE);
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] = $backup;
 	}
 
@@ -318,7 +323,7 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 		$instance = $this->createFluxServiceInstance();
 		$configurationManager = $this->getMock('Tx_Extbase_Configuration_ConfigurationManager', array('getConfiguration'));
 		$configurationManager->expects($this->once())->method('getConfiguration')->will($this->returnValue(array()));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationManager', $configurationManager, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationManager', $configurationManager, TRUE);
 		$instance->flushCache();
 		$providers = $this->callInaccessibleMethod($instance, 'loadTypoScriptConfigurationProviderInstances');
 		$this->assertIsArray($providers);
@@ -336,19 +341,19 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 				'tx_flux.' => array(
 					'providers.' => array(
 						'dummy.' => array(
-							'className' => 'Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider'
+							'className' => 'FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider'
 						)
 					)
 				)
 			)
 		);
 		$configurationManager->expects($this->once())->method('getConfiguration')->will($this->returnValue($mockedTypoScript));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationManager', $configurationManager, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationManager', $configurationManager, TRUE);
 		$instance->flushCache();
 		$providers = $this->callInaccessibleMethod($instance, 'loadTypoScriptConfigurationProviderInstances');
 		$this->assertIsArray($providers);
 		$this->assertNotEmpty($providers);
-		$this->assertInstanceOf('Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider', reset($providers));
+		$this->assertInstanceOf('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider', reset($providers));
 	}
 
 	/**
@@ -356,12 +361,12 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	 */
 	public function templateWithErrorReturnsFormWithErrorReporter() {
 		$badSource = '<f:layout invalid="TRUE" />';
-		$temp = t3lib_div::tempnam('badtemplate') . '.html';
-		t3lib_div::writeFileToTypo3tempDir($temp, $badSource);
+		$temp = GeneralUtility::tempnam('badtemplate') . '.html';
+		GeneralUtility::writeFileToTypo3tempDir($temp, $badSource);
 		$form = $this->createFluxServiceInstance()->getFormFromTemplateFile($temp);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
-		$this->assertInstanceOf('Tx_Flux_Form_Field_UserFunction', reset($form->getFields()));
-		$this->assertEquals('Tx_Flux_UserFunction_ErrorReporter->renderField', reset($form->getFields())->getFunction());
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Field\UserFunction', reset($form->getFields()));
+		$this->assertEquals('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField', reset($form->getFields())->getFunction());
 	}
 
 	/**
@@ -370,8 +375,8 @@ class Tx_Flux_Service_FluxServiceTest extends Tx_Flux_Tests_AbstractFunctionalTe
 	public function loadObjectsFromRepositorySupportsFindByIdentifiersMethod() {
 		$class = substr(get_class($this), 0, -4);
 		$instance = $this->getMock($class);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'objectManager', $this->objectManager, TRUE);
-		$result = $this->callInaccessibleMethod($instance, 'transformValueToType', '1', 'Tx_Extbase_Persistence_ObjectStorage<Tx_Flux_Domain_Model_Dummy>');
+		ObjectAccess::setProperty($instance, 'objectManager', $this->objectManager, TRUE);
+		$result = $this->callInaccessibleMethod($instance, 'transformValueToType', '1', 'TYPO3\CMS\Extbase\Persistence\ObjectStorage<FluidTYPO3\Flux\Domain\Model\Dummy>');
 		$this->assertEquals($result, array(1));
 	}
 

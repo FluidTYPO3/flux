@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+
 /**
  * Adds a content area to a source using Flux FlexForms
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
+class ContentViewHelper extends AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -47,7 +50,7 @@ class Tx_Flux_ViewHelpers_Flexform_ContentViewHelper extends Tx_Flux_ViewHelpers
 	 * @return string
 	 */
 	public function render() {
-		/** @var Tx_Flux_Form_Container_Content $content */
+		/** @var FluidTYPO3\Flux\Form\Container\Content $content */
 		$content = $this->getForm()->createContainer('Content', $this->arguments['name'], $this->arguments['label']);
 		$this->getContainer()->add($content);
 	}

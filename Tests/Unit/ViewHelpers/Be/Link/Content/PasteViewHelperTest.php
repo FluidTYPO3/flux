@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
+class PasteViewHelperTest extends AbstractViewHelperTest {
 
 	/**
 	 * Setup
@@ -43,8 +47,8 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelperTest extends Tx_Flux_Vi
 	public function canCreateRelativeToValue() {
 		$arguments = array(
 			'area' => 'test',
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
-			'relativeTo' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren['uid']
+			'row' => Records::$contentRecordWithoutParentAndWithoutChildren,
+			'relativeTo' => Records::$contentRecordWithParentAndWithoutChildren['uid']
 		);
 		$instance = $this->buildViewHelperInstance($arguments);
 		$relativeToValue = $this->callInaccessibleMethod($instance, 'getRelativeToValue');
@@ -57,8 +61,8 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelperTest extends Tx_Flux_Vi
 	public function canCreateRelativeToValueWithoutAreaName() {
 		$arguments = array(
 			'area' => NULL,
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
-			'relativeTo' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren['uid']
+			'row' => Records::$contentRecordWithoutParentAndWithoutChildren,
+			'relativeTo' => Records::$contentRecordWithParentAndWithoutChildren['uid']
 		);
 		$instance = $this->buildViewHelperInstance($arguments);
 		$relativeToValue = $this->callInaccessibleMethod($instance, 'getRelativeToValue');
@@ -71,8 +75,8 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelperTest extends Tx_Flux_Vi
 	public function canCreateRelativeToValueAsReference() {
 		$arguments = array(
 			'area' => 'test',
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
-			'relativeTo' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren['uid'],
+			'row' => Records::$contentRecordWithoutParentAndWithoutChildren,
+			'relativeTo' => Records::$contentRecordWithParentAndWithoutChildren['uid'],
 			'reference' => TRUE
 		);
 		$instance = $this->buildViewHelperInstance($arguments);

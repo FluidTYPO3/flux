@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormField;
+use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_UserFunction extends Tx_Flux_Form_AbstractFormField implements Tx_Flux_Form_FieldInterface {
+class UserFunction extends AbstractFormField implements FieldInterface {
 
 	/**
 	 * @var array
@@ -51,7 +56,7 @@ class Tx_Flux_Form_Field_UserFunction extends Tx_Flux_Form_AbstractFormField imp
 
 	/**
 	 * @param string $function
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return UserFunction
 	 */
 	public function setFunction($function) {
 		$this->function = $function;
@@ -67,7 +72,7 @@ class Tx_Flux_Form_Field_UserFunction extends Tx_Flux_Form_AbstractFormField imp
 
 	/**
 	 * @param array $arguments
-	 * @return Tx_Flux_Form_Field_Custom
+	 * @return UserFunction
 	 */
 	public function setArguments($arguments) {
 		$this->arguments = $arguments;

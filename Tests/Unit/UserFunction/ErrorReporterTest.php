@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_UserFunction_ErrorReporterTest extends Tx_Flux_UserFunction_AbstractUserFunctionTest {
+class ErrorReporterTest extends AbstractUserFunctionTest {
 
 	const FAKE_MESSAGE = 'This is a demo Exception';
 	const FAKE_CODE = 1374506190;
@@ -63,8 +66,8 @@ class Tx_Flux_UserFunction_ErrorReporterTest extends Tx_Flux_UserFunction_Abstra
 	public function supportsExceptionAsParameter() {
 		$userFunctionReference = $this->getClassName() . '->' . $this->methodName;
 		$parameters = $this->getParameters();
-		$parameters['fieldConf']['config']['parameters'][0]['exception'] = new Exception(self::FAKE_MESSAGE, self::FAKE_CODE);
-		$output = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($userFunctionReference, $parameters, $this->getCallerInstance());
+		$parameters['fieldConf']['config']['parameters'][0]['exception'] = new \Exception(self::FAKE_MESSAGE, self::FAKE_CODE);
+		$output = GeneralUtility::callUserFunction($userFunctionReference, $parameters, $this->getCallerInstance());
 		$this->assertOutputContainsExpectedMessageAndCode($output);
 	}
 

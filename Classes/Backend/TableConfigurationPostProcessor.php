@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,17 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\AbstractFormField;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\Annotation;
+use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Mapper\DataMapFactory;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 /**
  * Table Configuration (TCA) post processor
  *
@@ -32,7 +44,7 @@
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_TableConfigurationPostProcessor implements \TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface {
+class TableConfigurationPostProcessor implements TableConfigurationPostProcessingHookInterface {
 
 	/**
 	 * @var array
@@ -53,14 +65,14 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements \TYPO3\CMS\Core
 	 * @return void
 	 */
 	public function processData() {
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		/** @var Tx_Flux_Service_FluxService $fluxService */
-		$fluxService = $objectManager->get('Tx_Flux_Service_FluxService');
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var FluxService $fluxService */
+		$fluxService = $objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 		$fluxService->initializeObject();
-		/** @var Tx_Extbase_Persistence_Mapper_DataMapFactory $dataMapFactory */
-		$dataMapFactory = $objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Mapper\\DataMapFactory');
-		$forms = Tx_Flux_Core::getRegisteredFormsForTables();
-		$models = Tx_Flux_Core::getRegisteredFormsForModelObjectClasses();
+		/** @var DataMapFactory $dataMapFactory */
+		$dataMapFactory = $objectManager->get('TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory');
+		$forms = Core::getRegisteredFormsForTables();
+		$models = Core::getRegisteredFormsForModelObjectClasses();
 		foreach ($forms as $fullTableName => $form) {
 			$this->processFormForTable($fullTableName, $form);
 		}
@@ -79,12 +91,12 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements \TYPO3\CMS\Core
 
 	/**
 	 * @param string $table
-	 * @param Tx_Flux_Form $form
+	 * @param Form $form
 	 */
-	protected function processFormForTable($table, Tx_Flux_Form $form) {
+	protected function processFormForTable($table, Form $form) {
 		$extensionName = $form->getExtensionName();
 		$extensionNameWithoutVendor = FALSE === strpos($extensionName, '.') ? $extensionName : array_pop(explode('.', $extensionName));
-		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionNameWithoutVendor);
+		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionNameWithoutVendor);
 		$tableConfiguration = self::$tableTemplate;
 		$fields = array();
 		$labelFields = $form->getOption('labels');
@@ -106,7 +118,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements \TYPO3\CMS\Core
 		if (TRUE === $form->getOption('frontendUserGroup')) {
 			$enableColumns['fe_group'] = 'fe_group';
 		}
-		$tableConfiguration['iconfile'] = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($extensionKey) . $form->getIcon();
+		$tableConfiguration['iconfile'] = ExtensionManagementUtility::extRelPath($extensionKey) . $form->getIcon();
 		$tableConfiguration['enablecolumns'] = $enableColumns;
 		$showRecordsFieldList = $this->buildShowItemList($form);
 		$GLOBALS['TCA'][$table] = array(
@@ -137,20 +149,20 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements \TYPO3\CMS\Core
 	/**
 	 * @param string $class
 	 * @param string $table
-	 * @return Tx_Flux_Form
+	 * @return Form
 	 */
-	protected function generateFormInstanceFromClassName($class, $table) {
-		$labelFields = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Label', NULL);
+	public function generateFormInstanceFromClassName($class, $table) {
+		$labelFields = Annotation::getAnnotationValueFromClass($class, 'Flux\Label', NULL);
 		$extensionName = $this->getExtensionNameFromModelClassName($class);
-		$values = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Form\\Field', NULL);
-		$sheets = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Form\\Sheet', NULL);
+		$values = Annotation::getAnnotationValueFromClass($class, 'Flux\Form\Field', NULL);
+		$sheets = Annotation::getAnnotationValueFromClass($class, 'Flux\Form\Sheet', NULL);
 		$labels = TRUE === is_array($labelFields) ? array_keys($labelFields) : array(key($values));
-		$hasVisibilityToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\Hide');
-		$hasDeleteToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\Delete');
-		$hasStartTimeToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\StartTime');
-		$hasEndTimeToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\EndTime');
-		$hasFrontendGroupToggle = Tx_Flux_Utility_Annotation::getAnnotationValueFromClass($class, 'Flux\\Control\\FrontendUserGroup');
-		$form = Tx_Flux_Form::create();
+		$hasVisibilityToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
+		$hasDeleteToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\Delete');
+		$hasStartTimeToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\StartTime');
+		$hasEndTimeToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\EndTime');
+		$hasFrontendGroupToggle = Annotation::getAnnotationValueFromClass($class, 'Flux\Control\FrontendUserGroup');
+		$form = Form::create();
 		$form->setName($table);
 		$form->setExtensionName($extensionName);
 		$form->setOption('labels', $labels);
@@ -172,9 +184,11 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements \TYPO3\CMS\Core
 			$sheets[$sheetName] = $form->createContainer('Sheet', $sheetName);
 			foreach ($propertyNames as $propertyName) {
 				$settings = $values[$propertyName];
-				$field = $sheets[$sheetName]->createField($settings['type'], $propertyName);
-				foreach ($settings['config'] as $parameter => $value) {
-					\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($field, $parameter, $value);
+				try {
+					$field = AbstractFormField::create($settings);
+					$sheets[$sheetName]->add($field);
+				} catch (\ReflectionException $error) {
+					continue;
 				}
 			}
 		}
@@ -193,7 +207,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements \TYPO3\CMS\Core
 			$parts = explode('\\', $class);
 			$candidate = array_slice($parts, 0, -3);
 			if (1 === count($candidate)) {
-				$extensionName = array_pop($candidate);
+				$extensionName = reset($candidate);
 			} else {
 				$extensionName = implode('.', $candidate);
 			}
@@ -202,10 +216,10 @@ class Tx_Flux_Backend_TableConfigurationPostProcessor implements \TYPO3\CMS\Core
 	}
 
 	/**
-	 * @param Tx_Flux_Form $form
+	 * @param Form $form
 	 * @return string
 	 */
-	protected function buildShowItemList(Tx_Flux_Form $form) {
+	protected function buildShowItemList(Form $form) {
 		$parts = array();
 		foreach ($form->getSheets(FALSE) as $sheet) {
 			array_push($parts, '--div--;' . $sheet->getLabel());

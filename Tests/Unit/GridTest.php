@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,16 +24,19 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_GridTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class GridTest extends AbstractTestCase {
 
 	/**
 	 * @param string $gridName
 	 * @param string $template
-	 * @return Tx_Flux_Form_Container_Grid
+	 * @return Grid
 	 */
 	protected function getDummyGridFromTemplate($gridName = 'grid', $template = self::FIXTURE_TEMPLATE_BASICGRID) {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($template);

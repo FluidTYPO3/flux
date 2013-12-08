@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Widget;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Widget_GridViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
+class GridViewHelperTest extends AbstractViewHelperTest {
 
 	/**
 	 * Setup
@@ -52,7 +56,7 @@ class Tx_Flux_ViewHelpers_Widget_GridViewHelperTest extends Tx_Flux_ViewHelpers_
 		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$variables = array(
 			'grid' => $service->getGridFromTemplateFile($template, 'Configuration', 'grid', array(), 'Flux'),
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
+			'row' => Records::$contentRecordWithoutParentAndWithoutChildren
 		);
 		$this->executeViewHelper(array(), $variables);
 	}

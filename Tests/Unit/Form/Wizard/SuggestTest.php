@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,20 +24,22 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Wizard_SuggestTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
+class SuggestTest extends AbstractWizardTest {
 
 	/**
 	 * @test
 	 */
 	public function canUseCommaSeparatedStoragePageUids() {
-		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
+		/** @var Suggest $wizard */
 		$wizard = $this->createInstance();
 		$storagePageUidsCommaSeparated = '1,2,3';
-		$storagePageUidsArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $storagePageUidsCommaSeparated);
+		$storagePageUidsArray = GeneralUtility::trimExplode(',', $storagePageUidsCommaSeparated);
 		$wizard->setStoragePageUids($storagePageUidsCommaSeparated);
 		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
 		$this->performTestBuild($wizard);
@@ -46,10 +49,10 @@ class Tx_Flux_Form_Wizard_SuggestTest extends Tx_Flux_Tests_Functional_Form_Fiel
 	 * @test
 	 */
 	public function canUseArrayStoragePageUids() {
-		/** @var Tx_Flux_Form_Wizard_Suggest $wizard */
+		/** @var Suggest $wizard */
 		$wizard = $this->createInstance();
 		$storagePageUidsCommaSeparated = '1,2,3';
-		$storagePageUidsArray = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $storagePageUidsCommaSeparated);
+		$storagePageUidsArray = GeneralUtility::trimExplode(',', $storagePageUidsCommaSeparated);
 		$wizard->setStoragePageUids($storagePageUidsArray);
 		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
 		$this->performTestBuild($wizard);

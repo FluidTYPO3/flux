@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,9 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Container\Section;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+
 /**
  * FlexForm field section object ViewHelper
  *
@@ -32,7 +36,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
+class ObjectViewHelper extends AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize
@@ -50,8 +54,8 @@ class Tx_Flux_ViewHelpers_Flexform_ObjectViewHelper extends Tx_Flux_ViewHelpers_
 	 * @return void
 	 */
 	public function render() {
-		/** @var Tx_Flux_Form_Container_Section $object */
-		$object = $this->objectManager->get('Tx_Flux_Form_Container_Object');
+		/** @var Section $object */
+		$object = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Object');
 		$object->setName($this->arguments['name']);
 		$object->setLabel($this->arguments['label']);
 		$container = $this->getContainer();

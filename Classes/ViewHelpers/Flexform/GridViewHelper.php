@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+
 /**
  * Grid container ViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_GridViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
+class GridViewHelper extends AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize

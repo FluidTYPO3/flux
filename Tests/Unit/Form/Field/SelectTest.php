@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,12 +23,14 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use FluidTYPO3\Flux\Form\Field\Select;
+use TYPO3\CMS\Extbase\Persistence\Generic\Query;
 
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Field_SelectTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class SelectTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -48,7 +51,7 @@ class Tx_Flux_Form_Field_SelectTest extends Tx_Flux_Tests_Functional_Form_Field_
 	 * @test
 	 */
 	public function canConsumeCommaSeparatedItems() {
-		/** @var Tx_Flux_Form_Field_Select $instance */
+		/** @var Select $instance */
 		$instance = $this->createInstance();
 		$instance->setItems('1,2');
 		$this->assertSame(2, count($instance->getItems()));
@@ -59,7 +62,7 @@ class Tx_Flux_Form_Field_SelectTest extends Tx_Flux_Tests_Functional_Form_Field_
 	 * @test
 	 */
 	public function canConsumeSingleDimensionalArrayItems() {
-		/** @var Tx_Flux_Form_Field_Select $instance */
+		/** @var Select $instance */
 		$instance = $this->createInstance();
 		$instance->setItems(array(1, 2));
 		$this->assertSame(2, count($instance->getItems()));
@@ -70,7 +73,7 @@ class Tx_Flux_Form_Field_SelectTest extends Tx_Flux_Tests_Functional_Form_Field_
 	 * @test
 	 */
 	public function canConsumeMultiDimensionalArrayItems() {
-		/** @var Tx_Flux_Form_Field_Select $instance */
+		/** @var Select $instance */
 		$instance = $this->createInstance();
 		$items = array(
 			array('foo' => 'bar'),
@@ -85,10 +88,10 @@ class Tx_Flux_Form_Field_SelectTest extends Tx_Flux_Tests_Functional_Form_Field_
 	 * @test
 	 */
 	public function canConsumeQueryObjectItems() {
-		/** @var Tx_Flux_Form_Field_Select $instance */
+		/** @var Select $instance */
 		$instance = $this->createInstance();
-		/** @var \TYPO3\CMS\Extbase\Persistence\Generic\Query $query */
-		$query = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserRepository')->createQuery();
+		/** @var Query $query */
+		$query = $this->objectManager->get('TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository')->createQuery();
 		$query->getQuerySettings()->setRespectStoragePage(FALSE);
 		$instance->setItems($query);
 		$this->assertIsArray($instance->getItems());

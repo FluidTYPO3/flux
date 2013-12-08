@@ -1,4 +1,6 @@
 <?php
+namespace FluidTYPO3\Flux\Tests\Functional\Hook;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +25,17 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Backend\TceMain;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class HookSubscriberTest extends AbstractTestCase {
 
 	/**
 	 * @test
@@ -82,7 +90,7 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	 * @param string $table
 	 */
 	protected function attemptCommandExecution($command, $record, $table = 'tt_content') {
-		$id = Tx_Flux_Tests_Fixtures_Data_Records::UID_CONTENT_NOPARENTNOCHILDREN;
+		$id = Records::UID_CONTENT_NOPARENTNOCHILDREN;
 		$reference = $this->getTceMainFixture();
 		$subscriber = $this->createTceMainHookSubscriberInstance();
 		$relativeTo = 0;
@@ -99,7 +107,7 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	 * @param string $table
 	 */
 	protected function attemptRecordManipulation($record, $status = NULL, $table = 'tt_content') {
-		$id = Tx_Flux_Tests_Fixtures_Data_Records::UID_CONTENT_NOPARENTNOCHILDREN;
+		$id = Records::UID_CONTENT_NOPARENTNOCHILDREN;
 		$reference = $this->getTceMainFixture();
 		$subscriber = $this->createTceMainHookSubscriberInstance();
 		$arguments = array('record' => $record, 'table' => $table, 'id' => $id);
@@ -110,11 +118,11 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	}
 
 	/**
-	 * @return \TYPO3\CMS\Core\DataHandling\DataHandler
+	 * @return DataHandler
 	 */
 	protected function getTceMainFixture() {
-		/** @var $tceMain t3lib_TCEmain */
-		$tceMain = $this->objectManager->get('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		/** @var DataHandler $tceMain */
+		$tceMain = $this->objectManager->get('TYPO3\CMS\Core\DataHandling\DataHandler');
 		return $tceMain;
 	}
 
@@ -122,7 +130,7 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	 * @return array
 	 */
 	protected function getSimpleRecordFixture() {
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		return $record;
 	}
 
@@ -130,17 +138,17 @@ class Tx_Flux_Tests_Functional_Hook_HookSubscriberTest extends Tx_Flux_Tests_Abs
 	 * @return array
 	 */
 	protected function getSimpleRecordFixtureWithSimpleFlexFormSource() {
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		return $record;
 	}
 
 	/**
-	 * @return Tx_Flux_Backend_TceMain
+	 * @return TceMain
 	 */
 	protected function createTceMainHookSubscriberInstance() {
-		/** @var $subscriber Tx_Flux_Backend_TceMain */
-		$subscriber = $this->getAccessibleMock('Tx_Flux_Backend_TceMain');
+		/** @var TceMain $subscriber */
+		$subscriber = $this->getAccessibleMock('FluidTYPO3\Flux\Backend\TceMain');
 		return $subscriber;
 	}
 

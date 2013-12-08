@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractRelationFieldViewHelper {
+class TreeViewHelper extends AbstractRelationFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -45,10 +46,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelp
 
 	/**
 	 * Render method
-	 * @return Tx_Flux_Form_Field_Tree
+	 * @return Tree
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Field_Tree $tree */
+		/** @var Tree $tree */
 		$tree = $this->getPreparedComponent('Tree');
 		$tree->setParentField($this->arguments['parentField']);
 		$tree->setExpandAll($this->arguments['expandAll']);

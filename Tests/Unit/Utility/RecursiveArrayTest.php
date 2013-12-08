@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Utility_RecursiveArrayTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class RecursiveArrayTest extends AbstractTestCase {
 
 	/**
 	 * @test
@@ -49,7 +52,7 @@ class Tx_Flux_Utility_RecursiveArrayTest extends Tx_Flux_Tests_AbstractFunctiona
 				'foo' => TRUE
 			)
 		);
-		$product = Tx_Flux_Utility_RecursiveArray::merge($array1, $array2);
+		$product = RecursiveArray::merge($array1, $array2);
 		$this->assertSame($expected, $product);
 	}
 
@@ -86,7 +89,7 @@ class Tx_Flux_Utility_RecursiveArrayTest extends Tx_Flux_Tests_AbstractFunctiona
 			),
 			'new' => TRUE,
 		);
-		$product = Tx_Flux_Utility_RecursiveArray::diff($array1, $array2);
+		$product = RecursiveArray::diff($array1, $array2);
 		$this->assertSame($expected, $product);
 	}
 

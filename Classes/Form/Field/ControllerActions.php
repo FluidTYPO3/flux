@@ -1,4 +1,6 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
+
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +25,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormField;
+use FluidTYPO3\Flux\Form\FormInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
+class ControllerActions extends Select {
 
 	/**
 	 * Name of the Extbase extension that contains the Controller
@@ -148,7 +155,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 * for this field.
 	 *
 	 * @param string $name
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return FormInterface
 	 */
 	public function setName($name) {
 		// intentional intermediate; avoids "unused argument"
@@ -159,7 +166,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 
 	/**
 	 * @param array $actions
-	 * @return Tx_Flux_Form_Field_ControllerActions
+	 * @return \FluidTYPO3\Flux\Form\Field\ControllerActions
 	 */
 	public function setActions($actions) {
 		$this->actions = $actions;
@@ -175,7 +182,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 
 	/**
 	 * @param string $controllerName
-	 * @return Tx_Flux_Form_Field_ControllerActions
+	 * @return ControllerActions
 	 */
 	public function setControllerName($controllerName) {
 		$this->controllerName = $controllerName;
@@ -190,7 +197,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	}
 	/**
 	 * @param array $excludeActions
-	 * @return Tx_Flux_Form_Field_ControllerActions
+	 * @return ControllerActions
 	 */
 	public function setExcludeActions($excludeActions) {
 		$this->excludeActions = (array) $excludeActions;
@@ -206,7 +213,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 
 	/**
 	 * @param string $extensionName
-	 * @return Tx_Flux_Form_Field_ControllerActions
+	 * @return ControllerActions
 	 */
 	public function setExtensionName($extensionName) {
 		$this->extensionName = $extensionName;
@@ -222,7 +229,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 
 	/**
 	 * @param string $pluginName
-	 * @return Tx_Flux_Form_Field_ControllerActions
+	 * @return ControllerActions
 	 */
 	public function setPluginName($pluginName) {
 		$this->pluginName = $pluginName;
@@ -238,7 +245,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 
 	/**
 	 * @param string $separator
-	 * @return Tx_Flux_Form_Field_ControllerActions
+	 * @return ControllerActions
 	 */
 	public function setSeparator($separator) {
 		$this->separator = $separator;
@@ -254,7 +261,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 
 	/**
 	 * @param string $prefixOnRequiredArguments
-	 * @return Tx_Flux_Form_Field_ControllerActions
+	 * @return ControllerActions
 	 */
 	public function setPrefixOnRequiredArguments($prefixOnRequiredArguments) {
 		$this->prefixOnRequiredArguments = $prefixOnRequiredArguments;
@@ -270,7 +277,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 
 	/**
 	 * @param array $subActions
-	 * @return Tx_Flux_Form_Field_ControllerActions
+	 * @return ControllerActions
 	 */
 	public function setSubActions($subActions) {
 		$this->subActions = $subActions;
@@ -322,11 +329,11 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 */
 	protected function getVendorNameAndExtensionKeyFromExtensionName($extensionName) {
 		if (FALSE !== strpos($extensionName, '.')) {
-			list ($vendorName, $extensionName) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $extensionName);
+			list ($vendorName, $extensionName) = GeneralUtility::trimExplode('.', $extensionName);
 		} else {
 			$vendorName = NULL;
 		}
-		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
+		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
 		return array($vendorName, $extensionKey);
 	}
 
@@ -336,7 +343,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 */
 	protected function removeVendorPrefixFromExtensionName($extensionName) {
 		if (FALSE !== strpos($extensionName, '.')) {
-			list (, $extensionName) = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('.', $extensionName);
+			list (, $extensionName) = GeneralUtility::trimExplode('.', $extensionName);
 		}
 		return $extensionName;
 	}
@@ -348,13 +355,13 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	protected function buildExpectedAndExistingControllerClassName($controllerName) {
 		$extensionName = $this->getExtensionName();
 		list ($vendorName, $extensionKey) = $this->getVendorNameAndExtensionKeyFromExtensionName($extensionName);
-		$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
 		if (NULL !== $vendorName) {
 			$controllerClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
 		} else {
-			$controllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
+			$controllerClassName = $extensionName . '\\Controller\\' . $controllerName . 'Controller';
 			if (FALSE === class_exists($controllerClassName)) {
-				$controllerClassName = $extensionName . '\\Controller\\' . $controllerName . 'Controller';
+				$controllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
 			}
 		}
 		if (FALSE === class_exists($controllerClassName)) {
@@ -378,10 +385,10 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 		$controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
 		$disableLocalLanguageLabels = $this->getDisableLocalLanguageLabels();
 		$labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
-		$hasLocalLanguageFile = file_exists(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey, $localLanguageFileRelativePath));
+		$hasLocalLanguageFile = file_exists(ExtensionManagementUtility::extPath($extensionKey, $localLanguageFileRelativePath));
 		$label = $actionName . $separator . $controllerName;
 		if (FALSE === $disableLocalLanguageLabels && TRUE === $hasLocalLanguageFile) {
-			$label = 'LLL:EXT:' . \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName) . $localLanguageFileRelativePath . ':' . $labelPath;
+			$label = 'LLL:EXT:' . GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName) . $localLanguageFileRelativePath . ':' . $labelPath;
 		} elseif (TRUE === method_exists($controllerClassName, $actionName . 'Action') && TRUE === $disableLocalLanguageLabels) {
 			$methodReflection = $this->reflectAction($controllerName, $actionName);
 			$line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
@@ -396,12 +403,12 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	/**
 	 * @param string $controllerName
 	 * @param string $actionName
-	 * @return ReflectionMethod
+	 * @return \ReflectionMethod
 	 */
 	protected function reflectAction($controllerName, $actionName) {
 		$controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
 		/** @var ReflectionMethod $methodReflection */
-		$controllerClassReflection = new ReflectionClass($controllerClassName);
+		$controllerClassReflection = new \ReflectionClass($controllerClassName);
 		$methodReflection = $controllerClassReflection->getMethod($actionName . 'Action');
 		return $methodReflection;
 	}
@@ -434,7 +441,7 @@ class Tx_Flux_Form_Field_ControllerActions extends Tx_Flux_Form_Field_Select {
 	 */
 	protected function convertActionListToArray($actionList) {
 		if (FALSE === is_array($actionList)) {
-			return \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $actionList, TRUE);
+			return GeneralUtility::trimExplode(',', $actionList, TRUE);
 		}
 		return $actionList;
 	}

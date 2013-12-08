@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,17 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
+use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
+use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
+class CustomViewHelperTest extends AbstractViewHelperTest {
 
 	/**
 	 * @test
@@ -49,26 +56,26 @@ class Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelperTest extends Tx_Flux_Vi
 
 	/**
 	 * @param array $templateVariableContainerArguments
-	 * @return \TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer
+	 * @return TemplateVariableContainer
 	 */
 	protected function executeViewHelperClosure($templateVariableContainerArguments = array()) {
-		$instance = $this->objectManager->get('Tx_Flux_ViewHelpers_Flexform_Field_CustomViewHelper');
-		$container = $this->objectManager->get('TYPO3\\CMS\\Fluid\\Core\\ViewHelper\\TemplateVariableContainer');
+		$instance = $this->objectManager->get('FluidTYPO3\Flux\ViewHelpers\Flexform\Field\CustomViewHelper');
+		$container = $this->objectManager->get('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer');
 		$arguments = array(
 			'name' => 'custom'
 		);
 		foreach ($templateVariableContainerArguments as $name => $value) {
 			$container->add($name, $value);
 		}
-		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode($instance, $arguments);
-		$childNode = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello world!');
-		$renderingContext = $this->getAccessibleMock('TYPO3\\CMS\\Fluid\\Core\\Rendering\\RenderingContext');
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($renderingContext, 'templateVariableContainer', $container);
+		$node = new ViewHelperNode($instance, $arguments);
+		$childNode = new TextNode('Hello world!');
+		$renderingContext = $this->getAccessibleMock('TYPO3\CMS\Fluid\Core\Rendering\RenderingContext');
+		ObjectAccess::setProperty($renderingContext, 'templateVariableContainer', $container);
 		$node->addChildNode($childNode);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'templateVariableContainer', $container, TRUE);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'renderingContext', $renderingContext, TRUE);
+		ObjectAccess::setProperty($instance, 'templateVariableContainer', $container, TRUE);
+		ObjectAccess::setProperty($instance, 'renderingContext', $renderingContext, TRUE);
 		$instance->setViewHelperNode($node);
-		/** @var Closure $closure */
+		/** @var \Closure $closure */
 		$closure = $this->callInaccessibleMethod($instance, 'buildClosure');
 		$parameters = array(
 			'itemFormElName' => 'test',

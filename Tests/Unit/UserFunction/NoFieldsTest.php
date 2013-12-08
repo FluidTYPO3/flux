@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,10 +24,12 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\UserFunction\AbstractUserFunctionTest;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_UserFunction_NoFieldsTest extends Tx_Flux_UserFunction_AbstractUserFunctionTest {
+class NoFieldsTest extends AbstractUserFunctionTest {
 
 }

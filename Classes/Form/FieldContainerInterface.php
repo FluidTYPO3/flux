@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,10 +28,10 @@
  * @package Flux
  * @subpackage Form
  */
-interface Tx_Flux_Form_FieldContainerInterface extends Tx_Flux_Form_FormInterface {
+interface FieldContainerInterface extends FormInterface {
 
 	/**
-	 * @return Tx_Flux_Form_FieldInterface[]
+	 * @return FieldInterface[]
 	 */
 	public function getFields();
 

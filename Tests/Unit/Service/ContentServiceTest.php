@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class ContentServiceTest extends AbstractTestCase {
 
 	/**
 	 * @var array
@@ -54,7 +60,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 	);
 
 	/**
-	 * @return Tx_Flux_Service_ContentService
+	 * @return ContentService
 	 */
 	protected function createInstance() {
 		$class = substr(get_class($this), 0, -4);
@@ -85,8 +91,8 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 		$parameters = array(
 			'returnUrl' => 'some.php?arg=1#hascutoffpointbutnovalues'
 		);
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
-		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$record = Records::$contentRecordIsParentAndHasChildren;
+		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$result = $this->createInstance()->affectRecordByRequestParameters($record, $parameters, $tceMain);
 		$this->assertFalse($result);
 	}
@@ -98,8 +104,8 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 		$parameters = array(
 			'returnUrl' => 'some.php?arg=1#areaname:999999'
 		);
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
-		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$record = Records::$contentRecordIsParentAndHasChildren;
+		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$result = $this->createInstance()->affectRecordByRequestParameters($record, $parameters, $tceMain);
 		$this->assertTrue($result);
 		$this->assertSame('areaname', $record['tx_flux_column']);
@@ -113,9 +119,9 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 		$parameters = array(
 			'returnUrl' => 'some.php?arg=1#areaname:999999:-999998'
 		);
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
+		$record = Records::$contentRecordIsParentAndHasChildren;
 		$oldSorting = $record['sorting'];
-		$tceMain = t3lib_div::makeInstance('t3lib_TCEmain');
+		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$result = $this->createInstance()->affectRecordByRequestParameters($record, $parameters, $tceMain);
 		$this->assertTrue($result);
 		$this->assertSame('areaname', $record['tx_flux_column']);
@@ -201,7 +207,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 		$methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDatabase');
 		$mock = $this->createMock($methods);
 		$row = array('uid' => -1);
-		$tceMain = $this->getMock('t3lib_TCEmain');
+		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tceMain->substNEWwithIDs = array();
 		$mock->initializeRecord($row, $tceMain);
 	}
@@ -217,7 +223,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 		);
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
 		$row = array('uid' => -1, 't3_origuid' => 999999999999, 'sys_language_uid' => 1);
-		$tceMain = $this->getMock('t3lib_TCEmain');
+		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tceMain->substNEWwithIDs = array();
 		$mock->initializeRecord($row, $tceMain);
 	}
@@ -233,7 +239,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 		);
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
 		$row = array('uid' => -1, 't3_origuid' => 999999999999);
-		$tceMain = $this->getMock('t3lib_TCEmain');
+		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tceMain->substNEWwithIDs = array();
 		$mock->initializeRecord($row, $tceMain);
 	}
@@ -246,7 +252,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 		$row = array('uid' => -1, 't3_origuid' => 99999999999999);
 		$mock = $this->createMock($methods);
 		$mock->expects($this->atLeastOnce())->method('loadRecordsFromDatabase');
-		$tceMain = $this->getMock('t3lib_TCEmain');
+		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tceMain->substNEWwithIDs = array();
 		$mock->initializeRecord($row, $tceMain);
 	}
@@ -264,7 +270,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 		$mock->expects($this->atLeastOnce())->method('loadRecordsFromDatabase')->will($this->returnValue($children));
 		$mock->expects($this->exactly(2))->method('updateRecordInDatabase');
 		$row = array('uid' => -1, 't3_origuid' => 99999999999999);
-		$tceMain = $this->getMock('t3lib_TCEmain', array('localize'));
+		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler', array('localize'));
 		$tceMain->substNEWwithIDs = array();
 		$mock->initializeRecord($row, $tceMain);
 	}
@@ -361,7 +367,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 			1,
 			-2
 		);
-		$tceMain = new t3lib_TCEmain();
+		$tceMain = new DataHandler();
 		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
 		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($copiedRow['uid'])->will($this->returnValue($copiedRow));
 		$mock->pasteAfter($command, $row, $parameters, $tceMain);
@@ -388,7 +394,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 			1,
 			'1-reference-2-2-0'
 		);
-		$tceMain = new t3lib_TCEmain();
+		$tceMain = new DataHandler();
 		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
 		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($copiedRow['uid'])->will($this->returnValue($copiedRow));
 		$mock->pasteAfter($command, $row, $parameters, $tceMain);
@@ -408,7 +414,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 			1,
 			1,
 		);
-		$tceMain = new t3lib_TCEmain();
+		$tceMain = new DataHandler();
 		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($row));
 		$mock->pasteAfter($command, $row, $parameters, $tceMain);
 	}
@@ -427,7 +433,7 @@ class Tx_Flux_Service_ContentServiceTest extends Tx_Flux_Tests_AbstractFunctiona
 			1,
 			'1-move-2-2-area-1',
 		);
-		$tceMain = new t3lib_TCEmain();
+		$tceMain = new DataHandler();
 		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($row));
 		$mock->pasteAfter($command, $row, $parameters, $tceMain);
 	}

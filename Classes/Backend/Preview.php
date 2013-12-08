@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,35 +24,43 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Backend\View\PageLayoutView;
+use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+
 /**
  * Fluid Template preview renderer
  *
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
+class Preview implements PageLayoutViewDrawItemHookInterface {
 
 	/**
 	 *
-	 * @param \TYPO3\CMS\Backend\View\PageLayoutView $parentObject
+	 * @param PageLayoutView $parentObject
 	 * @param boolean $drawItem
 	 * @param string $headerContent
 	 * @param string $itemContent
 	 * @param array $row
 	 * @return void
 	 */
-	public function preProcess(\TYPO3\CMS\Backend\View\PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
+	public function preProcess(PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
 		$this->renderPreview($headerContent, $itemContent, $row, $drawItem);
 		unset($parentObject);
 	}
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
@@ -59,8 +68,8 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 	}
 
 	/**
@@ -69,7 +78,6 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 * @param array $row
 	 * @param boolean $drawItem
 	 * @return void
-	 * @throws Exception
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem) {
 		$fieldName = 'pi_flexform';
@@ -79,7 +87,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 		$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
 		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
 		foreach ($providers as $provider) {
-			/** @var Tx_Flux_Provider_ProviderInterface $provider */
+			/** @var ProviderInterface $provider */
 			list ($previewHeader, $previewContent) = $provider->getPreview($row);
 			if (FALSE === empty($previewHeader)) {
 				$drawItem = FALSE;
@@ -98,7 +106,7 @@ class Tx_Flux_Backend_Preview implements tx_cms_layout_tt_content_drawItemHook {
 	 */
 	protected function createShortcutIcon($row) {
 		$targetRecord = $this->getPageTitleAndPidFromContentUid(intval($row['records']));
-		$title = Tx_Extbase_Utility_Localization::translate('reference', 'Flux', array(
+		$title = LocalizationUtility::translate('reference', 'Flux', array(
 			$targetRecord['title']
 		));
 		$targetLink = '?id=' . $targetRecord['pid'] . '#c' . $row['records'];

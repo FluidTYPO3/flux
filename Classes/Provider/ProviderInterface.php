@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Provider;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+
 /**
  * @package Flux
  * @subpackage Provider
  */
-interface Tx_Flux_Provider_ProviderInterface {
+interface ProviderInterface {
 
 	/**
 	 * @param array $settings
@@ -48,18 +53,18 @@ interface Tx_Flux_Provider_ProviderInterface {
 	public function trigger(array $row, $table, $field, $extensionKey = NULL);
 
 	/**
-	 * Returns an instance of Tx_Flux_Form as required by this record.
+	 * Returns an instance of \FluidTYPO3\Flux\Form as required by this record.
 	 *
 	 * @param array $row
-	 * @return Tx_Flux_Form|NULL
+	 * @return Form|NULL
 	 */
 	public function getForm(array $row);
 
 	/**
-	 * Returns a Tx_Flux_Form_Container_Grid as required by this record.
+	 * Returns a \FluidTYPO3\Flux\Form\Container\Grid as required by this record.
 	 *
 	 * @param array $row
-	 * @return Tx_Flux_Form_Container_Grid
+	 * @return Grid
 	 */
 	public function getGrid(array $row);
 
@@ -194,10 +199,10 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 * @abstract
 	 * @param array $row The record data, by reference. Changing fields' values changes the record's values before display
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the t3lib_TCEmain object that is currently displaying the record
+	 * @param DataHandler $reference A reference to the \TYPO3\CMS\Core\DataHandling\DataHandler object that is currently displaying the record
 	 * @return void
 	 */
-	public function preProcessRecord(array &$row, $id, \TYPO3\CMS\Core\DataHandling\DataHandler $reference);
+	public function preProcessRecord(array &$row, $id, DataHandler $reference);
 
 	/**
 	 * @abstract
@@ -223,10 +228,10 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 * @param string $operation TYPO3 operation identifier, i.e. "update", "new" etc.
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
 	 * @param array $row the record data, by reference. Changing fields' values changes the record's values just before saving
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the t3lib_TCEmain object that is currently saving the record
+	 * @param DataHandler $reference A reference to the \TYPO3\CMS\Core\DataHandling\DataHandler object that is currently saving the record
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference);
+	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference);
 
 	/**
 	 * Post-process database operation for the table that this ConfigurationProvider
@@ -236,10 +241,10 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 * @param string $status TYPO3 operation identifier, i.e. "new" etc.
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
 	 * @param array $row The record's data, by reference. Changing fields' values changes the record's values just before saving after operation
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the t3lib_TCEmain object that is currently performing the database operation
+	 * @param DataHandler $reference A reference to the \TYPO3\CMS\Core\DataHandling\DataHandler object that is currently performing the database operation
 	 * @return void
 	 */
-	public function postProcessDatabaseOperation($status, $id, &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference);
+	public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference);
 
 	/**
 	 * Pre-process a command executed on a record form the table this ConfigurationProvider
@@ -250,10 +255,10 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 * @param integer $id
 	 * @param array $row
 	 * @param integer $relativeTo
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
+	 * @param DataHandler $reference
 	 * @return void
 	 */
-	public function preProcessCommand($command, $id, array &$row, &$relativeTo, \TYPO3\CMS\Core\DataHandling\DataHandler $reference);
+	public function preProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference);
 
 	/**
 	 * Post-process a command executed on a record form the table this ConfigurationProvider
@@ -264,10 +269,10 @@ interface Tx_Flux_Provider_ProviderInterface {
 	 * @param integer $id
 	 * @param array $row
 	 * @param integer $relativeTo
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
+	 * @param DataHandler $reference
 	 * @return void
 	 */
-	public function postProcessCommand($command, $id, array &$row, &$relativeTo, \TYPO3\CMS\Core\DataHandling\DataHandler $reference);
+	public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference);
 
 	/**
 	 * Perform operations upon clearing cache(s)
@@ -315,13 +320,13 @@ interface Tx_Flux_Provider_ProviderInterface {
 	public function getControllerActionReferenceFromRecord(array $row);
 
 	/**
-	 * @param Tx_Flux_Form $form
+	 * @param Form $form
 	 */
-	public function setForm(Tx_Flux_Form $form);
+	public function setForm(Form $form);
 
 	/**
-	 * @param Tx_Flux_Form_Container_Grid $grid
+	 * @param Grid $grid
 	 */
-	public function setGrid(Tx_Flux_Form_Container_Grid $grid);
+	public function setGrid(Grid $grid);
 
 }

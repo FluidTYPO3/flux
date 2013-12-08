@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,11 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Frontend\Page\PageRepository;
+
 /**
  * Language File Service
  *
@@ -30,14 +36,14 @@
  * @package Flux
  * @subpackage Service
  */
-class Tx_Flux_Service_LanguageFileService {
+class LanguageFileService {
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected static $service = NULL;
 
@@ -71,10 +77,10 @@ XML;
 XML;
 
 	/**
-	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
@@ -100,7 +106,7 @@ XML;
 			return NULL;
 		}
 		$file = 0 === strpos($file, 'LLL:') ? substr($file, 4) : $file;
-		$filePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($file);
+		$filePathAndFilename = GeneralUtility::getFileAbsFileName($file);
 		$extension = pathinfo($filePathAndFilename, PATHINFO_EXTENSION);
 		if (FALSE === in_array($extension, self::$validExtensions)) {
 			return NULL;
@@ -160,7 +166,7 @@ XML;
 		if (TRUE === file_exists($filePathAndFilename)) {
 			$dom = $this->prepareDomDocument($filePathAndFilename);
 		} else {
-			$dom = new DOMDocument();
+			$dom = new \DOMDocument();
 			$dom->loadXML(self::TEMPLATE_XML);
 		}
 		$dataNode = $dom->getElementsByTagName('data')->item(0);
@@ -187,12 +193,12 @@ XML;
 	}
 
 	/**
-	 * @param DomDocument $dom
-	 * @param DomNode $parent
+	 * @param \DomDocument $dom
+	 * @param \DomNode $parent
 	 * @param string $languageKey
 	 * @return void
 	 */
-	protected function createXmlLanguageNode(DomDocument $dom, DomNode $parent, $languageKey) {
+	protected function createXmlLanguageNode(\DomDocument $dom, \DomNode $parent, $languageKey) {
 		$languageNode = $dom->createElement('languageKey');
 		$indexAttribute = $dom->createAttribute('index');
 		$indexAttribute->nodeValue = $languageKey;
@@ -231,12 +237,12 @@ XML;
 	}
 
 	/**
-	 * @param DomDocument $dom
-	 * @param DomNode $parent
+	 * @param \DomDocument $dom
+	 * @param \DomNode $parent
 	 * @param string $identifier
 	 * @return void
 	 */
-	protected function createXlfLanguageNode(DomDocument $dom, DomNode $parent, $identifier) {
+	protected function createXlfLanguageNode(\DomDocument $dom, \DomNode $parent, $identifier) {
 		$labelNode = $dom->createElement('trans-unit');
 		$idAttribute = $dom->createAttribute('id');
 		$idAttribute->nodeValue = $identifier;
@@ -310,14 +316,14 @@ XML;
 
 	/**
 	 * @param $filePathAndFilename
-	 * @return DomDocument|FALSE
+	 * @return \DomDocument|FALSE
 	 */
 	protected function prepareDomDocument($filePathAndFilename) {
 		if (TRUE === isset(self::$documents[$filePathAndFilename])) {
 			return self::$documents[$filePathAndFilename];
 		}
 		$contents = $this->readFile($filePathAndFilename);
-		$dom = new DOMDocument('1.0', 'utf-8');
+		$dom = new \DOMDocument('1.0', 'utf-8');
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->formatOutput = TRUE;
 		$dom->loadXML($contents);
@@ -341,9 +347,9 @@ XML;
 	 * @return array
 	 */
 	protected function loadLanguageRecordsFromDatabase() {
-		$cObj = new tslib_cObj();
-		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 0, 0);
-		$GLOBALS['TSFE']->sys_page = new t3lib_pageSelect();
+		$cObj = new ContentObjectRenderer();
+		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0);
+		$GLOBALS['TSFE']->sys_page = new PageRepository();
 		$select = 'flag';
 		$from = 'sys_language';
 		$where = '1=1' . $cObj->enableFields('sys_language');
@@ -356,7 +362,7 @@ XML;
 	 * @param integer $severity
 	 * @return void
 	 */
-	protected function message($message, $severity = \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_INFO) {
+	protected function message($message, $severity = GeneralUtility::SYSLOG_SEVERITY_INFO) {
 		if (TRUE === isset($GLOBALS['BE_USER'])) {
 			$this->configurationService->message($message, $severity, 'Flux Language File Utility');
 		}
@@ -368,7 +374,7 @@ XML;
 	 * @return boolean
 	 */
 	protected function writeFile($filePathAndFilename, $content) {
-		return \TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($filePathAndFilename, $content);
+		return GeneralUtility::writeFile($filePathAndFilename, $content);
 	}
 
 	/**

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field\Inline;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractInlineFormField;
+use FluidTYPO3\Flux\Form;
+
 /**
  * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
  * @author Johannes Pieper <pieper@dlrg.de> DLRG e.V.
  * @package Flux
  * @subpackage Form\Field\Inline
  */
-class Tx_Flux_Form_Field_Inline_Fal extends Tx_Flux_Form_AbstractInlineFormField {
+class Fal extends AbstractInlineFormField {
 
 	const DEFAULT_TABLE = 'sys_file_reference';
 	const DEFAULT_FOREIGN_FIELD = 'uid_foreign';
@@ -109,13 +113,13 @@ class Tx_Flux_Form_Field_Inline_Fal extends Tx_Flux_Form_AbstractInlineFormField
 	 * @var array
 	 */
 	protected $enabledControls = array(
-		Tx_Flux_Form::CONTROL_INFO => FALSE,
-		Tx_Flux_Form::CONTROL_NEW => FALSE,
-		Tx_Flux_Form::CONTROL_DRAGDROP => TRUE,
-		Tx_Flux_Form::CONTROL_SORT => TRUE,
-		Tx_Flux_Form::CONTROL_HIDE => TRUE,
-		Tx_Flux_Form::CONTROL_DELETE => TRUE,
-		Tx_Flux_Form::CONTROL_LOCALISE => TRUE,
+		Form::CONTROL_INFO => FALSE,
+		Form::CONTROL_NEW => FALSE,
+		Form::CONTROL_DRAGDROP => TRUE,
+		Form::CONTROL_SORT => TRUE,
+		Form::CONTROL_HIDE => TRUE,
+		Form::CONTROL_DELETE => TRUE,
+		Form::CONTROL_LOCALISE => TRUE,
 	);
 
 	/**

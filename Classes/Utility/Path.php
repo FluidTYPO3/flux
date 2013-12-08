@@ -1,5 +1,5 @@
 <?php
-
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,12 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  *
  * @package Flux
  * @subpackage Utility
  */
-class Tx_Flux_Utility_Path {
+class Path {
 
 	/**
 	 * @var array
@@ -44,7 +46,7 @@ class Tx_Flux_Utility_Path {
 	 */
 	public static function translatePath($path) {
 		if (is_array($path) == FALSE) {
-			return \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($path);
+			return GeneralUtility::getFileAbsFileName($path);
 		} else {
 			foreach ($path as $key => $subPath) {
 				if (TRUE === in_array($key, self::$knownPathNames)) {

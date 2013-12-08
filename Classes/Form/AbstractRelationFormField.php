@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @package Flux
  * @subpackage Form
  */
-abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_AbstractMultiValueFormField implements Tx_Flux_Form_RelationFieldInterface {
+abstract class AbstractRelationFormField extends AbstractMultiValueFormField implements RelationFieldInterface {
 
 	/**
 	 * @var string
@@ -196,7 +197,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $condition
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return \FluidTYPO3\Flux\Form\RelationFieldInterface
 	 */
 	public function setCondition($condition) {
 		$this->condition = $condition;
@@ -212,7 +213,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param array $filter
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setFilter(array $filter) {
 		$this->filter = $filter;
@@ -228,7 +229,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $foreignField
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignField($foreignField) {
 		$this->foreignField = $foreignField;
@@ -244,7 +245,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param NULL|string $manyToMany
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setManyToMany($manyToMany) {
 		$this->manyToMany = $manyToMany;
@@ -260,7 +261,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $table
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setTable($table) {
 		$this->table = $table;
@@ -276,7 +277,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param boolean $disableMovingChildrenWithParent
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setDisableMovingChildrenWithParent($disableMovingChildrenWithParent) {
 		$this->disableMovingChildrenWithParent = $disableMovingChildrenWithParent;
@@ -292,7 +293,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $foreignDefaultSortby
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignDefaultSortby($foreignDefaultSortby) {
 		$this->foreignDefaultSortby = $foreignDefaultSortby;
@@ -308,7 +309,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $foreignLabel
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignLabel($foreignLabel) {
 		$this->foreignLabel = $foreignLabel;
@@ -324,7 +325,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $foreignSelector
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignSelector($foreignSelector) {
 		$this->foreignSelector = $foreignSelector;
@@ -340,7 +341,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $foreignSortby
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignSortby($foreignSortby) {
 		$this->foreignSortby = $foreignSortby;
@@ -356,7 +357,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $foreignTableField
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignTableField($foreignTableField) {
 		$this->foreignTableField = $foreignTableField;
@@ -372,7 +373,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $foreignUnique
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setForeignUnique($foreignUnique) {
 		$this->foreignUnique = $foreignUnique;
@@ -388,7 +389,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $itemListStyle
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setItemListStyle($itemListStyle) {
 		$this->itemListStyle = $itemListStyle;
@@ -404,7 +405,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $localizationMode
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setLocalizationMode($localizationMode) {
 		$this->localizationMode = $localizationMode;
@@ -420,7 +421,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param boolean $localizeChildrenAtParentLocalization
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setLocalizeChildrenAtParentLocalization($localizeChildrenAtParentLocalization) {
 		$this->localizeChildrenAtParentLocalization = $localizeChildrenAtParentLocalization;
@@ -436,7 +437,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $selectedListStyle
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return  RelationFieldInterface
 	 */
 	public function setSelectedListStyle($selectedListStyle) {
 		$this->selectedListStyle = $selectedListStyle;
@@ -452,7 +453,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $symmetricField
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setSymmetricField($symmetricField) {
 		$this->symmetricField = $symmetricField;
@@ -468,7 +469,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $symmetricLabel
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setSymmetricLabel($symmetricLabel) {
 		$this->symmetricLabel = $symmetricLabel;
@@ -484,7 +485,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param string $symmetricSortby
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setSymmetricSortby($symmetricSortby) {
 		$this->symmetricSortby = $symmetricSortby;
@@ -500,7 +501,7 @@ abstract class Tx_Flux_Form_AbstractRelationFormField extends Tx_Flux_Form_Abstr
 
 	/**
 	 * @param boolean $showThumbnails
-	 * @return Tx_Flux_Form_RelationFieldInterface
+	 * @return RelationFieldInterface
 	 */
 	public function setShowThumbnails($showThumbnails) {
 		$this->showThumbnails = $showThumbnails;

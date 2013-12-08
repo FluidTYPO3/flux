@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form\AbstractFormTest;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest extends Tx_Flux_Tests_Functional_Form_AbstractFormTest {
+abstract class AbstractContainerTest extends AbstractFormTest {
 
 	/**
 	 * @var array
@@ -35,7 +39,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest ext
 	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string	');
 
 	/**
-	 * @return Tx_Flux_Form_ContainerInterface
+	 * @return ContainerInterface
 	 */
 	protected function createInstance() {
 		$className = $this->getObjectClassName();
@@ -79,7 +83,7 @@ abstract class Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest ext
 			),
 		);
 		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
-		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}
 
 }

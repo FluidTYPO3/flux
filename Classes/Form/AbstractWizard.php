@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Wizard\Add;
+
 /**
  * @package Flux
  * @subpackage Form
  */
-abstract class Tx_Flux_Form_AbstractWizard extends Tx_Flux_Form_AbstractFormComponent implements Tx_Flux_Form_WizardInterface {
+abstract class AbstractWizard extends AbstractFormComponent implements WizardInterface {
 
 	/**
 	 * @var boolean
@@ -72,7 +75,7 @@ abstract class Tx_Flux_Form_AbstractWizard extends Tx_Flux_Form_AbstractFormComp
 
 	/**
 	 * @param boolean $hideParent
-	 * @return Tx_Flux_Form_Wizard_Add
+	 * @return Add
 	 */
 	public function setHideParent($hideParent) {
 		$this->hideParent = $hideParent;

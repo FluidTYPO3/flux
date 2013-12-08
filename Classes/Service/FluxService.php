@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,29 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Utility\Path;
+use FluidTYPO3\Flux\View\ExposedTemplateView;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Extbase\Mvc\Web\Responsee;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
+use TYPO3\CMS\Extbase\Reflection\ReflectionService;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+
 /**
  * Flux FlexForm integration Service
  *
@@ -31,7 +55,7 @@
  * @package Flux
  * @subpackage Service
  */
-class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface {
+class FluxService implements SingletonInterface {
 
 	/**
 	 * @var array
@@ -42,8 +66,8 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * @var array
 	 */
 	private static $friendlySeverities = array(
-		\TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_INFO,
-		\TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_NOTICE
+		GeneralUtility::SYSLOG_SEVERITY_INFO,
+		GeneralUtility::SYSLOG_SEVERITY_NOTICE
 	);
 
 	/**
@@ -63,41 +87,41 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 
 	/**
 	 *
-	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+	 * @var ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Reflection\ReflectionService
+	 * @var ReflectionService
 	 */
 	protected $reflectionService;
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
+	 * @param ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
+	 * @param ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Reflection\ReflectionService $reflectionService
+	 * @param ReflectionService $reflectionService
 	 * @return void
 	 */
-	public function injectReflectionService(\TYPO3\CMS\Extbase\Reflection\ReflectionService $reflectionService) {
+	public function injectReflectionService(ReflectionService $reflectionService) {
 		$this->reflectionService = $reflectionService;
 	}
 
@@ -113,34 +137,34 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * @param string $controllerName
 	 * @param array $paths
 	 * @param array $variables
-	 * @return Tx_Flux_View_ExposedTemplateView
+	 * @return ExposedTemplateView
 	 */
 	public function getPreparedExposedTemplateView($extensionKey = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
-		$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
-		if (NULL === $extensionKey || FALSE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey)) {
+		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
+		if (NULL === $extensionKey || FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
 			$extensionKey = 'Flux';
 		}
 		if (NULL === $controllerName) {
 			$controllerName = 'Flux';
 		}
-		/** @var $context \TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext */
-		$context = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerContext');
-		/** @var $request \TYPO3\CMS\Extbase\Mvc\Web\Request */
-		$request = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Request');
-		/** @var $response Tx_Extbase_MVC_Web_Response */
-		$response = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Response');
+		/** @var $context ControllerContext */
+		$context = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
+		/** @var $request Request */
+		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
+		/** @var $response Responsee */
+		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
 		$request->setControllerExtensionName($extensionKey);
 		$request->setControllerName($controllerName);
 		$request->setDispatched(TRUE);
-		/** @var $uriBuilder \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder */
-		$uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Routing\\UriBuilder');
+		/** @var $uriBuilder UriBuilder */
+		$uriBuilder = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');
 		$uriBuilder->setRequest($request);
 		$context->setUriBuilder($uriBuilder);
 		$context->setRequest($request);
 		$context->setResponse($response);
-		/** @var $exposedView Tx_Flux_View_ExposedTemplateView */
-		$exposedView = $this->objectManager->get('Tx_Flux_View_ExposedTemplateView');
+		/** @var $exposedView ExposedTemplateView */
+		$exposedView = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
 		$exposedView->setControllerContext($context);
 		if (0 < count($variables)) {
 			$exposedView->assignMultiple($variables);
@@ -164,8 +188,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * @param array $paths
 	 * @param string $extensionName
 	 * @param array $variables
-	 * @return Tx_Flux_Form|NULL
-	 * @throws Exception
+	 * @return Form|NULL
 	 */
 	public function getFormFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $formName = 'form', $paths = array(), $extensionName = NULL, $variables = array()) {
 		if (FALSE === file_exists($templatePathAndFilename)) {
@@ -180,11 +203,11 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
 			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
 			self::$cache[$cacheKey] = $exposedView->getForm($section, $formName);
-		} catch (Exception $error) {
+		} catch (\Exception $error) {
 			$this->debug($error);
-			/** @var Tx_Flux_Form $form */
-			self::$cache[$cacheKey] = $this->objectManager->get('Tx_Flux_Form');
-			self::$cache[$cacheKey]->add(self::$cache[$cacheKey]->createField('UserFunction', 'func')->setFunction('Tx_Flux_UserFunction_ErrorReporter->renderField'));
+			/** @var Form $form */
+			self::$cache[$cacheKey] = $this->objectManager->get('FluidTYPO3\Flux\Form');
+			self::$cache[$cacheKey]->add(self::$cache[$cacheKey]->createField('UserFunction', 'func')->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField'));
 		}
 		return self::$cache[$cacheKey];
 	}
@@ -209,8 +232,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * @param array $paths
 	 * @param string $extensionName
 	 * @param array $variables
-	 * @return Tx_Flux_Form_Container_Grid|NULL
-	 * @throws Exception
+	 * @return Grid|NULL
 	 */
 	public function getGridFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $gridName = 'grid', array $paths = array(), $extensionName = NULL, array $variables = array()) {
 		$grid = NULL;
@@ -220,7 +242,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 			$grid = $exposedView->getGrid($section, $gridName);
 		}
 		if (NULL === $grid) {
-			$grid = Tx_Flux_Form_Container_Grid::create(array('name' => $gridName));
+			$grid = Grid::create(array('name' => $gridName));
 		}
 		return $grid;
 	}
@@ -267,19 +289,19 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$config = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		$config = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		if (FALSE === isset($config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'])) {
 			return NULL;
 		}
 		$config = $config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
-		$config = \TYPO3\CMS\Core\Utility\GeneralUtility::removeDotsFromTS($config);
+		$config = GeneralUtility::removeDotsFromTS($config);
 		if ($extensionName) {
 			$config = $config[$extensionName];
 		}
 		if (FALSE === is_array($config)) {
 			$config = array();
 		}
-		$config = Tx_Flux_Utility_Path::translatePath($config);
+		$config = Path::translatePath($config);
 		self::$cache[$cacheKey] = $config;
 		return $config;
 	}
@@ -292,7 +314,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * @param string $fieldName
 	 * @param array $row
 	 * @param string $extensionKey
-	 * @return Tx_Flux_Provider_ProviderInterface|NULL
+	 * @return ProviderInterface|NULL
 	 */
 	public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		if (is_array($row) === FALSE) {
@@ -323,7 +345,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * @param string $fieldName
 	 * @param array $row
 	 * @param string $extensionKey
-	 * @return Tx_Flux_Provider_ProviderInterface[]
+	 * @return ProviderInterface[]
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		if (is_array($row) === FALSE) {
@@ -334,7 +356,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
+		$providers = Core::getRegisteredFlexFormProviders();
 		$typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
 		$providers = array_merge($providers, $typoScriptConfigurationProviders);
 		$prioritizedProviders = array();
@@ -364,26 +386,26 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	}
 
 	/**
-	 * @return Tx_Flux_Provider_ProviderInterface[]
+	 * @return ProviderInterface[]
 	 */
 	protected function loadTypoScriptConfigurationProviderInstances() {
 		$cacheKey = 'typoscript_providers';
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$typoScriptSettings = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		$typoScriptSettings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		if (FALSE === isset($typoScriptSettings['plugin.']['tx_flux.']['providers.'])) {
 			return array();
 		}
-		$providerConfigurations = \TYPO3\CMS\Core\Utility\GeneralUtility::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
+		$providerConfigurations = GeneralUtility::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
 		self::$cache[$cacheKey] = array();
 		foreach ($providerConfigurations as $name => $providerSettings) {
 			if (TRUE === isset($providerSettings['className']) && TRUE === class_exists($providerSettings['className'])) {
 				$className = $providerSettings['className'];
 			} else {
-				$className = 'Tx_Flux_Provider_Provider';
+				$className = 'FluidTYPO3\Flux\Provider\Provider';
 			}
-			/** @var Tx_Flux_Provider_ProviderInterface $provider */
+			/** @var ProviderInterface $provider */
 			$provider = $this->objectManager->get($className);
 			$provider->setName($name);
 			$provider->loadSettings($providerSettings);
@@ -400,12 +422,12 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * Note: multi-language flexForms are not supported yet
 	 *
 	 * @param string $flexFormContent flexForm xml string
-	 * @param Tx_Flux_Form $form An instance of Tx_Flux_Form. If transformation instructions are contained in this configuration they are applied after conversion to array
+	 * @param Form $form An instance of \FluidTYPO3\Flux\Form. If transformation instructions are contained in this configuration they are applied after conversion to array
 	 * @param string $languagePointer language pointer used in the flexForm
 	 * @param string $valuePointer value pointer used in the flexForm
 	 * @return array the processed array
 	 */
-	public function convertFlexFormContentToArray($flexFormContent, Tx_Flux_Form $form = NULL, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
+	public function convertFlexFormContentToArray($flexFormContent, Form $form = NULL, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
 		if (TRUE === empty($flexFormContent)) {
 			return array();
 		}
@@ -416,11 +438,11 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 			$valuePointer = 'vDEF';
 		}
 		// preliminary decode. The method called caches the decoded results so we can do almost without performance impact.
-		$decoded = t3lib_div::xml2array($flexFormContent);
+		$decoded = GeneralUtility::xml2array($flexFormContent);
 		if (FALSE === isset($decoded['data']) || FALSE === is_array($decoded['data'])) {
 			return array();
 		}
-		$settings = $this->objectManager->get('Tx_Extbase_Service_FlexFormService')->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
+		$settings = $this->objectManager->get('TYPO3\CMS\Extbase\Service\FlexFormService')->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
 		if (NULL !== $form) {
 			$settings = $this->transformAccordingToConfiguration($settings, $form);
 		}
@@ -433,16 +455,16 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * attributes on fields to determine how to transform values.
 	 *
 	 * @param array $values
-	 * @param Tx_Flux_Form $form
+	 * @param Form $form
 	 * @param string $prefix
 	 * @return array
 	 */
-	public function transformAccordingToConfiguration($values, Tx_Flux_Form $form, $prefix = '') {
+	public function transformAccordingToConfiguration($values, Form $form, $prefix = '') {
 		foreach ((array) $values as $index => $value) {
 			if (TRUE === is_array($value)) {
 				$value = $this->transformAccordingToConfiguration($value, $form, $prefix . $index . '.');
 			} else {
-				/** @var Tx_Flux_Form_FieldInterface|Tx_Flux_Form_ContainerInterface $object */
+				/** @var FieldInterface|ContainerInterface $object */
 				$object = $form->get($prefix . $index, TRUE);
 				if (FALSE !== $object) {
 					$transformType = $object->getTransform();
@@ -481,7 +503,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * @return mixed
 	 */
 	private function getObjectOfType($dataType, $uids) {
-		$identifiers = TRUE === is_array($uids) ? $uids : \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', trim($uids, ','), TRUE);
+		$identifiers = TRUE === is_array($uids) ? $uids : GeneralUtility::trimExplode(',', trim($uids, ','), TRUE);
 		$identifiers = array_map('intval', $identifiers);
 		$isModel = (FALSE !== strpos($dataType, '_Domain_Model_') || FALSE !== strpos($dataType, '\\Domain\\Model\\'));
 		list ($container, $object) = FALSE !== strpos($dataType, '<') ? explode('<', trim($dataType, '>')) : array(NULL, $dataType);
@@ -500,7 +522,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 		// slower decisions with support for type-hinted collection objects
 		if ($container && $object) {
 			if (TRUE === $isModel && TRUE === class_exists($repositoryClassName) && 0 < count($identifiers)) {
-				/** @var $repository Tx_Extbase_Persistence_RepositoryInterface */
+				/** @var $repository RepositoryInterface */
 				$repository = $this->objectManager->get($repositoryClassName);
 				return $this->loadObjectsFromRepository($repository, $identifiers);
 			} else {
@@ -512,11 +534,11 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	}
 
 	/**
-	 * @param Tx_Extbase_Persistence_RepositoryInterface $repository
+	 * @param RepositoryInterface $repository
 	 * @param array $identifiers
 	 * @return mixed
 	 */
-	private function loadObjectsFromRepository(Tx_Extbase_Persistence_RepositoryInterface $repository, $identifiers) {
+	private function loadObjectsFromRepository(RepositoryInterface $repository, $identifiers) {
 		if (TRUE === method_exists($repository, 'findByIdentifiers')) {
 			return $repository->findByIdentifiers($identifiers);
 		} else {
@@ -528,12 +550,14 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 
 	/**
 	 * @param mixed $instance
+	 * @param boolean $plainText
+	 * @param integer $depth
 	 * @return void
 	 */
-	public function debug($instance) {
+	public function debug($instance, $plainText = FALSE, $depth = 2) {
 		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
-			if (TRUE === $instance instanceof Exception) {
-				\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('Flux Debug: Suppressed Exception - "' . $instance->getMessage() . '" (' . $instance->getCode() . ')', 'flux');
+			if (TRUE === $instance instanceof \Exception) {
+				GeneralUtility::sysLog('Flux Debug: Suppressed Exception - "' . $instance->getMessage() . '" (' . $instance->getCode() . ')', 'flux');
 			}
 			return;
 		}
@@ -545,48 +569,54 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 		if (TRUE === isset(self::$sentDebugMessages[$hash])) {
 			return;
 		}
-		if (TRUE === $instance instanceof Tx_Flux_View_ExposedTemplateView) {
-			$this->debugView($instance);
-		} elseif (TRUE === $instance instanceof Tx_Flux_Provider_ProviderInterface) {
-			$this->debugProvider($instance);
-		} elseif (TRUE === $instance instanceof Exception) {
-			$this->debugException($instance);
+		if (TRUE === $instance instanceof ExposedTemplateView) {
+			$this->debugView($instance, $plainText, $depth);
+		} elseif (TRUE === $instance instanceof ProviderInterface) {
+			$this->debugProvider($instance, $plainText, $depth);
+		} elseif (TRUE === $instance instanceof \Exception) {
+			$this->debugException($instance, $plainText, $depth);
 		} else {
-			$this->debugMixed($instance);
+			$this->debugMixed($instance, $plainText, $depth);
 		}
 		self::$sentDebugMessages[$hash] = TRUE;
 	}
 
 	/**
 	 * @param mixed $variable
+	 * @param boolean $plainText
+	 * @param integer $depth
 	 * @return void
 	 */
-	public function debugMixed($variable) {
-		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($variable);
+	public function debugMixed($variable, $plainText = FALSE, $depth = 2) {
+		DebuggerUtility::var_dump($variable, 'Flux variable debug', $depth, $plainText, FALSE);
 	}
 
 	/**
-	 * @param Exception $error
+	 * @param \Exception $error
 	 * @return void
 	 */
-	public function debugException(Exception $error) {
-		$this->message($error->getMessage() . ' (' . $error->getCode() . ')', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_FATAL);
+	public function debugException(\Exception $error) {
+		$this->message($error->getMessage() . ' (' . $error->getCode() . ')', GeneralUtility::SYSLOG_SEVERITY_FATAL);
 	}
 
 	/**
-	 * @param Tx_Flux_View_ExposedTemplateView $view
+	 * @param ExposedTemplateView $view
+	 * @param boolean $plainText
+	 * @param integer $depth
 	 * @return void
 	 */
-	public function debugView(Tx_Flux_View_ExposedTemplateView $view) {
-		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($view);
+	public function debugView(ExposedTemplateView $view, $plainText = FALSE, $depth = 2) {
+		DebuggerUtility::var_dump($view, 'Flux View debug', $depth, $plainText, FALSE);;
 	}
 
 	/**
-	 * @param Tx_Flux_Provider_ProviderInterface $provider
+	 * @param ProviderInterface $provider
+	 * @param boolean $plainText
+	 * @param integer $depth
 	 * @return void
 	 */
-	public function debugProvider(Tx_Flux_Provider_ProviderInterface $provider) {
-		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($provider);
+	public function debugProvider(ProviderInterface $provider, $plainText = FALSE, $depth = 2) {
+		DebuggerUtility::var_dump($provider, 'Flux Provider debug', $depth, $plainText, FALSE);
 	}
 
 	/**
@@ -595,7 +625,7 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 	 * @param string $title
 	 * @return NULL
 	 */
-	public function message($message, $severity = \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
+	public function message($message, $severity = GeneralUtility::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
 		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
 			return NULL;
 		}
@@ -606,10 +636,10 @@ class Tx_Flux_Service_FluxService implements \TYPO3\CMS\Core\SingletonInterface 
 		if (2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] && TRUE === in_array($severity, self::$friendlySeverities)) {
 			return NULL;
 		}
-		$isAjaxCall = (boolean) 0 < \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('ajaxCall');
-		$flashMessage = new \TYPO3\CMS\Core\Messaging\FlashMessage($message, $title, $severity);
+		$isAjaxCall = (boolean) 0 < GeneralUtility::_GET('ajaxCall');
+		$flashMessage = new FlashMessage($message, $title, $severity);
 		$flashMessage->setStoreInSession($isAjaxCall);
-		\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($flashMessage);
+		FlashMessageQueue::addMessage($flashMessage);
 		self::$sentDebugMessages[$hash] = TRUE;
 		return NULL;
 	}

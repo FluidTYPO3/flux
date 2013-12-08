@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Domain\Repository;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,10 +24,20 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Extbase\Persistence\Repository;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Fixtures_Class_InvalidConfigurationProvider {
+class DummyRepository extends Repository {
+
+	/**
+	 * @param array $identifiers
+	 * @return array
+	 */
+	public function findByIdentifiers($identifiers) {
+		return $identifiers;
+	}
 
 }

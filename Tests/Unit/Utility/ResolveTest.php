@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,26 +24,31 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class ResolveTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function returnsClassIfClassExists() {
-		$className = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$className = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->objectManager->get($className);
-		$this->assertInstanceOf('Tx_Flux_Controller_AbstractFluxController', $instance);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Controller\AbstractFluxController', $instance);
 	}
 
 	/**
 	 * @test
 	 */
 	public function returnsNullIfControllerClassNameDoesNotExist() {
-		$result = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Void');
+		$result = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void');
 		$this->assertNull($result);
 	}
 
@@ -50,7 +56,7 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function returnsNullIfControllerActionDoesNotExist() {
-		$result = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'void', 'Content');
+		$result = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content');
 		$this->assertNull($result);
 	}
 
@@ -59,7 +65,7 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function throwsExceptionForClassIfSetToHardFail() {
 		$this->setExpectedException('RuntimeException', NULL, 1364498093);
-		Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Void', TRUE);
+		Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void', TRUE);
 	}
 
 	/**
@@ -67,23 +73,23 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function throwsExceptionForActionIfSetToHardFail() {
 		$this->setExpectedException('RuntimeException', NULL, 1364498223);
-		Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'void', 'Content', FALSE, TRUE);
+		Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content', FALSE, TRUE);
 	}
 
 	/**
 	 * @test
 	 */
 	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassExists() {
-		class_alias('Tx_Flux_Controller_AbstractFluxController', 'Void\\NoName\\Controller\\FakeController');
-		$result = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Fake');
-		$this->assertSame('Void\\NoName\\Controller\\FakeController', $result);
+		class_alias('FluidTYPO3\Flux\Controller\AbstractFluxController', 'Void\NoName\Controller\FakeController');
+		$result = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Fake');
+		$this->assertSame('Void\NoName\Controller\FakeController', $result);
 	}
 
 	/**
 	 * @test
 	 */
 	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassDoesNotExist() {
-		$result = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Void');
+		$result = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Void');
 		$this->assertNull($result);
 	}
 
@@ -91,7 +97,7 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canDetectRequestArgumentsBasedOnPluginSignature() {
-		$result = Tx_Flux_Utility_Resolve::resolveOverriddenFluxControllerActionNameFromRequestParameters('tx_void_fake');
+		$result = Resolve::resolveOverriddenFluxControllerActionNameFromRequestParameters('tx_void_fake');
 		$this->assertNull($result);
 	}
 
@@ -99,32 +105,32 @@ class Tx_Flux_Utility_ResolveTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canDetectWidgetTemplatePathAndFilenameAndTrimsTrailingSlash() {
-		$templateRootPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/');
+		$templateRootPath = ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/');
 		$expectedDefault = $templateRootPath . 'ViewHelpers/Widget/Grid/Index.html';
 		$expectedLegacy = $templateRootPath . 'ViewHelpers/Widget/Grid/Legacy.html';
 		$expectedWithGridelementsVersionTwo = $templateRootPath . 'ViewHelpers/Widget/Grid/GridElements.html';
-		$utility = new Tx_Flux_Utility_Resolve();
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($utility, 'initialized', TRUE, TRUE);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', FALSE, TRUE);
+		$utility = new Resolve();
+		ObjectAccess::setProperty($utility, 'initialized', TRUE, TRUE);
+		ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', FALSE, TRUE);
 		$this->assertSame($expectedDefault, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', TRUE, TRUE);
+		ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', TRUE, TRUE);
 		$this->assertSame($expectedWithGridelementsVersionTwo, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', FALSE, TRUE);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', TRUE, TRUE);
+		ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', FALSE, TRUE);
+		ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', TRUE, TRUE);
 		$this->assertSame($expectedLegacy, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($utility, 'initialized', FALSE, TRUE);
+		ObjectAccess::setProperty($utility, 'initialized', FALSE, TRUE);
 	}
 
 	/**
 	 * @test
 	 */
 	public function canDetectCurrentPageRecord() {
-		$result = Tx_Flux_Utility_Resolve::resolveCurrentPageRecord();
+		$result = Resolve::resolveCurrentPageRecord();
 		$this->assertNull($result);
 		$expected = array('uid' => 99999999);
-		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
 		$GLOBALS['TSFE']->page = $expected;
-		$result = Tx_Flux_Utility_Resolve::resolveCurrentPageRecord();
+		$result = Resolve::resolveCurrentPageRecord();
 		$this->assertSame($result, $expected);
 	}
 

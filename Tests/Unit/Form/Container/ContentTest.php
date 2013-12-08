@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,6 +28,6 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Container_ContentTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
+class ContentTest extends AbstractContainerTest {
 
 }

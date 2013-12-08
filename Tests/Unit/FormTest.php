@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,24 +24,27 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class FormTest extends AbstractTestCase {
 
 	/**
-	 * @return Tx_Flux_Form
+	 * @return Form
 	 */
 	protected function getEmptyDummyForm() {
-		/** @var Tx_Flux_Form $form */
-		$form = $this->objectManager->get('Tx_Flux_Form');
+		/** @var Form $form */
+		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 		return $form;
 	}
 
 	/**
 	 * @param string $template
-	 * @return Tx_Flux_Form
+	 * @return Form
 	 */
 	protected function getDummyFormFromTemplate($template = self::FIXTURE_TEMPLATE_BASICGRID) {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($template);
@@ -167,7 +171,7 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$object->add($objectField);
 		$section->add($object);
 		$form->add($section);
-		$this->assertInstanceOf('Tx_Flux_Form', $object->getRoot());
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $object->getRoot());
 		$this->assertNotEmpty($form->get('options')->getLabel());
 		$this->assertNotEmpty($form->get('test', TRUE)->getLabel());
 		$this->assertNotEmpty($form->get('object', TRUE)->getLabel());
@@ -223,7 +227,7 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function canRemoveBadFieldByInstanceWithoutErrorAndReturnFalse() {
 		$form = $this->getEmptyDummyForm();
-		$field = Tx_Flux_Form_Field_Input::create(array('type' => 'Input', 'name' => 'badname'));
+		$field = \FluidTYPO3\Flux\Form\Field\Input::create(array('type' => 'Input', 'name' => 'badname'));
 		$child = $form->last()->remove($field);
 		$this->assertFalse($child);
 	}
@@ -284,8 +288,8 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 			'name' => 'test',
 			'label' => 'Test field'
 		);
-		$instance = Tx_Flux_Form::create($properties);
-		$this->assertInstanceOf('Tx_Flux_Form', $instance);
+		$instance = Form::create($properties);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $instance);
 	}
 
 	/**
@@ -304,15 +308,15 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 				),
 			)
 		);
-		$instance = Tx_Flux_Form::create($properties);
-		$this->assertInstanceOf('Tx_Flux_Form', $instance);
+		$instance = Form::create($properties);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $instance);
 	}
 
 	/**
 	 * @test
 	 */
 	public function canDetermineHasChildrenFalse() {
-		$instance = Tx_Flux_Form::create();
+		$instance = Form::create();
 		$this->assertFalse($instance->hasChildren());
 	}
 
@@ -320,7 +324,7 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canDetermineHasChildrenTrue() {
-		$instance = Tx_Flux_Form::create();
+		$instance = Form::create();
 		$instance->createField('Input', 'test');
 		$this->assertTrue($instance->hasChildren());
 	}
@@ -329,7 +333,7 @@ class Tx_Flux_FormTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canSetAndGetOptions() {
-		$instance = Tx_Flux_Form::create();
+		$instance = Form::create();
 		$instance->setOption('test', 'testing');
 		$this->assertSame('testing', $instance->getOption('test'));
 		$this->assertIsArray($instance->getOptions());

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -22,12 +23,16 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
+use FluidTYPO3\Flux\Form\Container\Section;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
  * @subpackage Form
  */
-abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormComponent implements Tx_Flux_Form_FieldInterface {
+abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface {
 
 	/**
 	 * @var boolean
@@ -93,53 +98,47 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->wizards = new SplObjectStorage();
+		$this->wizards = new \SplObjectStorage();
 	}
 
 	/**
 	 * @param array $settings
-	 * @return Tx_Flux_Form_FormFieldInterface
-	 * @throws Exception
+	 * @return FieldInterface
+	 * @throws \RuntimeException
 	 */
 	public static function create(array $settings = array()) {
-		/** @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager */
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		/** @var ObjectManagerInterface $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		if ('Section' === $settings['type']) {
-			return Tx_Flux_Form_Container_Section::create($settings);
+			return Section::create($settings);
 		} else {
-			$prefix = 'Tx_Flux_Form_Field_';
+			$prefix = 'FluidTYPO3\Flux\Form\Field\\';
 			$type = $settings['type'];
-			if (FALSE === strpos($type, '/')) {
-				$className = $type;
-			} else {
-				$className = str_replace('/', '\\', $type);
-				// Until Namespaces replace to _
-				$className = str_replace('\\', '_', $className);
-			}
+			$className = str_replace('/', '\\', $type);
 			$className = TRUE === class_exists($prefix . $className) ? $prefix . $className : $className;
 		}
 		if (FALSE === class_exists($className)) {
 			$className = $settings['type'];
 		}
 		if (FALSE === class_exists($className)) {
-			throw new RuntimeException('Invalid class- or type-name used in type of field "' . $settings['name'] . '"; "' . $className . '" is invalid', 1375373527);
+			throw new \RuntimeException('Invalid class- or type-name used in type of field "' . $settings['name'] . '"; "' . $className . '" is invalid', 1375373527);
 		}
-		/** @var Tx_Flux_FormInterface $object */
+		/** @var FormInterface $object */
 		$object = $objectManager->get($className);
 		foreach ($settings as $settingName => $settingValue) {
-			$setterMethodName = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::buildSetterMethodName($settingName);
+			$setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
 			if (TRUE === method_exists($object, $setterMethodName)) {
-				\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($object, $settingName, $settingValue);
+				ObjectAccess::setProperty($object, $settingName, $settingValue);
 			}
 		}
 		return $object;
 	}
 
 	/**
-	 * @param Tx_Flux_Form_WizardInterface $wizard
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @param WizardInterface $wizard
+	 * @return FieldInterface
 	 */
-	public function add(Tx_Flux_Form_WizardInterface $wizard) {
+	public function add(WizardInterface $wizard) {
 		if (FALSE === $this->wizards->contains($wizard)) {
 			$this->wizards->attach($wizard);
 			$wizard->setParent($this);
@@ -149,7 +148,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param string $wizardName
-	 * @return Tx_Flux_Form_WizardInterface|FALSE
+	 * @return WizardInterface|FALSE
 	 */
 	public function get($wizardName) {
 		foreach ($this->wizards as $wizard) {
@@ -162,7 +161,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param string $wizardName
-	 * @return Tx_Flux_Form_WizardInterface|FALSE
+	 * @return WizardInterface|FALSE
 	 */
 	public function remove($wizardName) {
 		foreach ($this->wizards as $wizard) {
@@ -206,7 +205,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 		if (TRUE === $this->getClearable()) {
 			array_push($wizards, array(
 				'type' => 'userFunc',
-				'userFunc' => 'Tx_Flux_UserFunction_ClearValueWizard->renderField',
+				'userFunc' => 'FluidTYPO3\Flux\UserFunction\ClearValueWizard->renderField',
 				'params' => array(
 					'itemName' => $this->getName(),
 				),
@@ -224,7 +223,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 	 */
 	protected function buildChildren() {
 		$structure = array();
-		/** @var Tx_Flux_Form_FormInterface[] $children */
+		/** @var FormInterface[] $children */
 		$children = $this->wizards;
 		foreach ($children as $child) {
 			$name = $child->getName();
@@ -248,7 +247,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param boolean $required
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setRequired($required) {
 		$this->required = (boolean) $required;
@@ -264,7 +263,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param mixed $default
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setDefault($default) {
 		$this->default = $default;
@@ -285,7 +284,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param string $transform
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setTransform($transform) {
 		$this->transform = $transform;
@@ -301,7 +300,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param string $displayCondition
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setDisplayCondition($displayCondition) {
 		$this->displayCondition = $displayCondition;
@@ -317,7 +316,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param boolean $requestUpdate
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setRequestUpdate($requestUpdate) {
 		$this->requestUpdate = (boolean) $requestUpdate;
@@ -333,7 +332,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param integer $inherit
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setInherit($inherit) {
 		$this->inherit = $inherit;
@@ -349,7 +348,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param boolean $inheritEmpty
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setInheritEmpty($inheritEmpty) {
 		$this->inheritEmpty = (boolean) $inheritEmpty;
@@ -365,7 +364,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param boolean $stopInheritance
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setStopInheritance($stopInheritance) {
 		$this->stopInheritance = (boolean) $stopInheritance;
@@ -381,7 +380,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param boolean $exclude
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setExclude($exclude) {
 		$this->exclude = (boolean) $exclude;
@@ -397,7 +396,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param boolean $enable
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setEnable($enable) {
 		$this->enable = (boolean) $enable;
@@ -413,7 +412,7 @@ abstract class Tx_Flux_Form_AbstractFormField extends Tx_Flux_Form_AbstractFormC
 
 	/**
 	 * @param boolean $clearable
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setClearable($clearable) {
 		$this->clearable = (boolean) $clearable;

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormContainer;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+
 /**
  * @package Flux
  * @subpackage Form\Container
  */
-class Tx_Flux_Form_Container_Content extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_ContainerInterface {
+class Content extends AbstractFormContainer implements ContainerInterface {
 
 	/**
 	 * @return array

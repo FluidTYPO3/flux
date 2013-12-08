@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,18 +24,23 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Backend_PreviewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class PreviewTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canExecuteRenderer() {
-		$caller = $this->objectManager->get('TYPO3\\CMS\\Backend\\View\\PageLayoutView');
-		$function = 'EXT:flux/Classes/Backend/PreviewSix.php:Tx_Flux_Backend_Preview';
+		$caller = $this->objectManager->get('TYPO3\CMS\Backend\View\PageLayoutView');
+		$function = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'];
 		$this->callUserFunction($function, $caller);
 	}
 
@@ -42,7 +48,7 @@ class Tx_Flux_Backend_PreviewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canGenerateShortcutIconAndLink() {
-		$className = 'Tx_Flux_Backend_Preview';
+		$className = 'FluidTYPO3\Flux\Backend\Preview';
 		$instance = $this->getMock($className, array('getPageTitleAndPidFromContentUid'));
 		$instance->expects($this->once())->method('getPageTitleAndPidFromContentUid')->with(1)->will($this->returnValue(array('pid' => 1, 'title' => 'test')));
 		$headerContent = $itemContent = '';
@@ -57,7 +63,7 @@ class Tx_Flux_Backend_PreviewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canGetPageTitleAndPidFromContentUid() {
-		$className = 'Tx_Flux_Backend_Preview';
+		$className = 'FluidTYPO3\Flux\Backend\Preview';
 		$instance = $this->getMock($className);
 		$this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
 	}
@@ -70,12 +76,12 @@ class Tx_Flux_Backend_PreviewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$drawItem = TRUE;
 		$headerContent = '';
 		$itemContent = '';
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$row['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
-		Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider');
-		$instance = $this->objectManager->get(array_pop(explode(':', $function)));
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		Core::registerConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
+		$instance = $this->objectManager->get($function);
 		$instance->preProcess($caller, $drawItem, $headerContent, $itemContent, $row);
-		Tx_Flux_Core::unregisterConfigurationProvider('Tx_Flux_Tests_Fixtures_Class_DummyConfigurationProvider');
+		Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
 	}
 
 }

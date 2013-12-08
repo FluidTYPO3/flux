@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Controller;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,38 +24,51 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Class/BasicFluxController.php');
+use FluidTYPO3\Flux\Controller\AbstractFluxController;
+use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\Resolve;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Mvc\Dispatcher;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Extbase\Mvc\Web\Response;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class BasicControllerTest extends AbstractTestCase {
 
 	/**
 	 * @return void
 	 */
 	protected function performDummyRegistration() {
-		Tx_Flux_Core::registerProviderExtensionKey('flux', 'Content');
-		$this->assertContains('flux', Tx_Flux_Core::getRegisteredProviderExtensionKeys('Content'));
+		Core::registerProviderExtensionKey('FluidTYPO3.Flux', 'Content');
+		$this->assertContains('FluidTYPO3.Flux', Core::getRegisteredProviderExtensionKeys('Content'));
 	}
 
 	/**
-	 * @return Tx_Flux_Controller_AbstractFluxController
+	 * @return AbstractFluxController
 	 */
 	protected function createAndTestDummyControllerInstance() {
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		$record['tx_fed_fcefile'] = 'Flux:Default.html';
-		$frontend = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
-		$frontend->cObj = new tslib_cObj();
+		$frontend = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$frontend->cObj = new ContentObjectRenderer();
 		$frontend->cObj->start($record);
 		$this->performDummyRegistration();
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
-		/** @var Tx_Flux_Controller_AbstractFluxController $instance */
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		/** @var AbstractFluxController $instance */
 		$instance = $this->objectManager->get($controllerClassName);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($instance, 'configurationManager', TRUE)->setContentObject($frontend->cObj);
+		ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
+		ObjectAccess::getProperty($instance, 'configurationManager', TRUE)->setContentObject($frontend->cObj);
 		return $instance;
 	}
 
@@ -63,15 +77,15 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @return array
 	 */
 	protected function createDummyRequestAndResponseForFluxController($controllerName = 'Content') {
-		/** @var \TYPO3\CMS\Extbase\Mvc\Web\Request $request */
-		$request = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Request');
+		/** @var Request $request */
+		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
 		$request->setControllerExtensionName('Flux');
 		$request->setControllerActionName('render');
 		$request->setControllerName($controllerName);
-		$request->setControllerObjectName(Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', $controllerName));
+		$request->setControllerObjectName(Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', $controllerName));
 		$request->setFormat('html');
-		/** @var Tx_Extbase_MVC_Web_Response $response */
-		$response = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Response');
+		/** @var Response $response */
+		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
 		return array($request, $response);
 	}
 
@@ -87,17 +101,17 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 */
 	public function canDetectPresenceOfRegisteredCustomControllerForContent() {
 		$this->performDummyRegistration();
-		$hasController = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$hasController = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$this->assertTrue(class_exists($hasController));
 	}
 
 	/**
 	 * @test
-	 * @return Tx_Flux_Controller_AbstractFluxController
+	 * @return AbstractFluxController
 	 */
 	public function canCreateInstanceOfCustomRegisteredControllerForContent() {
 		$instance = $this->createAndTestDummyControllerInstance();
-		$this->assertInstanceOf('Tx_Flux_Controller_AbstractFluxController', $instance);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Controller\AbstractFluxController', $instance);
 		return $instance;
 	}
 
@@ -150,13 +164,13 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @disabledtest
 	 */
 	public function canPerformSubRenderingWithMatchingExtensionName() {
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController'));
 		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(FALSE));
-		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('Flux', 'Content');
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'view', $view, TRUE);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
-		$this->setExpectedException('Tx_Fluid_View_Exception_InvalidTemplateResourceException', NULL, 1257246929);
+		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('FluidTYPO3.Flux', 'Content');
+		ObjectAccess::setProperty($instance, 'view', $view, TRUE);
+		ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
+		$this->setExpectedException('TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException', NULL, 1257246929);
 		$this->callInaccessibleMethod($instance, 'performSubRendering', 'Flux', 'Content', 'render', 'tx_flux_content');
 	}
 
@@ -164,22 +178,22 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @test
 	 */
 	public function canPerformSubRenderingWithNotMatchingExtensionName() {
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController', 'callSubControllerAction'));
 		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(TRUE));
 		$instance->expects($this->once())->method('callSubControllerAction');
-		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('Flux', 'Content');
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'view', $view, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
-		$this->callInaccessibleMethod($instance, 'performSubRendering', 'Flux', 'Content', 'render', 'tx_flux_content');
+		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('FluidTYPO3.Flux', 'Content');
+		ObjectAccess::setProperty($instance, 'view', $view, TRUE);
+		ObjectAccess::setProperty($instance, 'extensionName', 'FluidTYPO3.Flux', TRUE);
+		$this->callInaccessibleMethod($instance, 'performSubRendering', 'FluidTYPO3.Flux', 'Content', 'render', 'tx_flux_content');
 	}
 
 	/**
 	 * @test
 	 */
 	public function canInitializeView() {
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
-		$view = $this->getMock('Tx_Flux_View_ExposedTemplateView', array(), array(), '', FALSE);
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array(), array(), '', FALSE);
 		$this->inject($view, 'objectManager', $this->objectManager);
 		$instance = $this->getMock($controllerClassName, array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewObject', 'initializeViewVariables'));
 		$instance->expects($this->at(0))->method('intiializeProvider');
@@ -194,21 +208,21 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @test
 	 */
 	public function canInitializeSettings() {
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('getRecord'));
 		$instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
-		$provider = $this->getMock('Tx_Flux_Provider_Provider', array('getExtensionKey', 'getFlexFormValues', 'getTemplatePaths'));
+		$provider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('getExtensionKey', 'getFlexFormValues', 'getTemplatePaths'));
 		$provider->expects($this->once())->method('getExtensionKey')->with($row)->will($this->returnValue('flux'));
 		$provider->expects($this->once())->method('getFlexFormValues')->with($row)->will($this->returnValue(array()));
 		$provider->expects($this->once())->method('getTemplatePaths')->with($row)->will($this->returnValue(array()));
 		$configurationManager = $this->getMock('Tx_Extbase_Configuration_ConfigurationManager', array('getConfiguration'));
-		$configurationManager->expects($this->once())->method('getConfiguration')->with(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'Flux', 'void')->will($this->returnValue(array()));
-		$request = $this->getMock('Tx_Extbase_MVC_Web_Request', array('getPluginName'));
+		$configurationManager->expects($this->once())->method('getConfiguration')->with(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'Flux', 'void')->will($this->returnValue(array()));
+		$request = $this->getMock('TYPO3\CMS\Extbase\Mvc\Web\Request', array('getPluginName'));
 		$request->expects($this->once())->method('getPluginName')->will($this->returnValue('void'));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'request', $request, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationManager', $configurationManager, TRUE);
+		ObjectAccess::setProperty($instance, 'request', $request, TRUE);
+		ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationManager', $configurationManager, TRUE);
 		$this->callInaccessibleMethod($instance, 'initializeSettings');
 	}
 
@@ -216,24 +230,24 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @test
 	 */
 	public function canInitializeViewObject() {
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('getRecord'));
 		$instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
-		$provider = $this->getMock('Tx_Flux_Provider_Provider', array('getExtensionKey', 'getTemplatePathAndFilename'));
+		$provider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('getExtensionKey', 'getTemplatePathAndFilename'));
 		$provider->expects($this->once())->method('getExtensionKey')->with($row)->will($this->returnValue('flux'));
 		$provider->expects($this->once())->method('getTemplatePathAndFilename')->with($row)->will($this->returnValue('/dev/null'));
-		$view = $this->getMock('Tx_Flux_View_ExposedTemplateView', array('setTemplatePathAndFilename'));
+		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('setTemplatePathAndFilename'));
 		$view->expects($this->once())->method('setTemplatePathAndFilename')->with('/dev/null');
-		$configurationService = $this->getMock('Tx_Flux_Service_FluxService', array('getPreparedExposedTemplateView'));
+		$configurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('getPreparedExposedTemplateView'));
 		$configurationService->expects($this->once())->method('getPreparedExposedTemplateView')->will($this->returnValue($view));
-		$request = $this->getMock('Tx_Extbase_MVC_Web_Request', array('getControllerName'));
+		$request = $this->getMock('TYPO3\CMS\Extbase\Mvc\Web\Request', array('getControllerName'));
 		$request->expects($this->once())->method('getControllerName')->will($this->returnValue('Test'));
 		$controllerContext = $this->getMock('Tx_Extbase_Mvc_Controller_ControllerContext');
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'request', $request, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, TRUE);
+		ObjectAccess::setProperty($instance, 'request', $request, TRUE);
+		ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, TRUE);
 		$this->callInaccessibleMethod($instance, 'initializeViewObject');
 	}
 
@@ -241,19 +255,19 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @test
 	 */
 	public function callingRenderActionExecutesExpectedMethodsOnNestedObjects() {
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('getRecord', 'performSubRendering'));
 		$instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
 		$instance->expects($this->once())->method('performSubRendering')->with('Flux', 'Void', NULL, 'tx_flux_void')->will($this->returnValue('test'));
-		$provider = $this->getMock('Tx_Flux_Provider_Provider', array('getExtensionKey', 'getControllerExtensionKeyFromRecord'));
+		$provider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('getExtensionKey', 'getControllerExtensionKeyFromRecord'));
 		$provider->expects($this->once())->method('getExtensionKey')->with($row)->will($this->returnValue('flux'));
 		$provider->expects($this->once())->method('getControllerExtensionKeyFromRecord')->with($row)->will($this->returnValue('flux'));
-		$request = $this->getMock('Tx_Extbase_MVC_Web_Request', array('getPluginName', 'getControllerName'));
+		$request = $this->getMock('TYPO3\CMS\Extbase\Mvc\Web\Request', array('getPluginName', 'getControllerName'));
 		$request->expects($this->once())->method('getPluginName')->will($this->returnValue('void'));
 		$request->expects($this->once())->method('getControllerName')->will($this->returnValue('Void'));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'request', $request, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
+		ObjectAccess::setProperty($instance, 'request', $request, TRUE);
+		ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
 		$result = $instance->renderAction();
 		$this->assertEquals($result, 'test');
 	}
@@ -262,13 +276,13 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @test
 	 */
 	public function performSubRenderingCallsViewRenderOnNativeTarget() {
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('callSubControllerAction'));
 		$instance->expects($this->never())->method('callSubControllerAction');
-		$view = $this->getMock('Tx_Flux_View_ExposedTemplateView', array('render'));
+		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('render'));
 		$view->expects($this->once())->method('render')->will($this->returnValue('test'));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'view', $view, TRUE);
+		ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
+		ObjectAccess::setProperty($instance, 'view', $view, TRUE);
 		$result = $this->callInaccessibleMethod($instance, 'performSubRendering', 'Flux', 'Content', 'render', 'tx_flux_content');
 		$this->assertEquals('test', $result);
 	}
@@ -277,7 +291,7 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @test
 	 */
 	public function callingSubControllerActionExecutesExpectedMethodsOnNestedObjects() {
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('processRequest'));
 		$objectManager = $this->getMock(get_class($this->objectManager), array('get'));
 		$responseClassName = 'TYPO3\CMS\Extbase\Mvc\Web\Response';
@@ -287,8 +301,8 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 		$objectManager->expects($this->at(1))->method('get')->with($controllerClassName)->will($this->returnValue($instance));
 		$request = $this->getMock('TYPO3\CMS\Extbase\Mvc\Web\Request', array('setControllerActionName', 'setArguments'));
 		$request->expects($this->once())->method('setControllerActionName')->with('render');
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'objectManager', $objectManager, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'request', $request, TRUE);
+		ObjectAccess::setProperty($instance, 'objectManager', $objectManager, TRUE);
+		ObjectAccess::setProperty($instance, 'request', $request, TRUE);
 		$instance->expects($this->once())->method('processRequest')->with($request, $response);
 		$result = $this->callInaccessibleMethod($instance, 'callSubControllerAction', 'Flux', $controllerClassName, 'render', 'tx_flux_content');
 		$this->assertEquals('test', $result);
@@ -298,20 +312,20 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 * @test
 	 */
 	public function canInitializeViewVariables() {
-		$controllerClassName = Tx_Flux_Utility_Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('flux', 'render', 'Content');
+		$controllerClassName = Resolve::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$data = array('test' => 'test');
 		$variables = array('foo' => 'bar');
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$instance = $this->getMock($controllerClassName, array('getRecord'));
 		$instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
-		$view = $this->getMock('Tx_Flux_View_ExposedTemplateView', array('assign', 'assignMultiple'));
-		$provider = $this->getMock('Tx_Flux_Provider_Provider', array('getTemplatePaths', 'getTemplateVariables'));
+		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('assign', 'assignMultiple'));
+		$provider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('getTemplatePaths', 'getTemplateVariables'));
 		$provider->expects($this->once())->method('getTemplateVariables')->with($row)->will($this->returnValue($variables));
 		$view->expects($this->atLeastOnce())->method('assignMultiple');
 		$view->expects($this->atLeastOnce())->method('assign');
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'view', $view, TRUE);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'data', $data, TRUE);
+		ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
+		ObjectAccess::setProperty($instance, 'view', $view, TRUE);
+		ObjectAccess::setProperty($instance, 'data', $data, TRUE);
 		$this->callInaccessibleMethod($instance, 'initializeViewVariables');
 	}
 
@@ -320,13 +334,13 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 */
 	public function canPerformSubRenderingWithForeignExtensionNameWhichContainsAlternativeController() {
 		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
-		class_alias('Tx_Flux_Controller_ContentController', 'Tx_Other_Controller_ContentController');
-		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('Other', 'Content');
+		class_alias('FluidTYPO3\Flux\Controller\ContentController', 'FluidTYPO3\Other\Controller\ContentController');
+		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('FluidTYPO3.Other', 'Content');
 		list ($request, ) = $this->createDummyRequestAndResponseForFluxController();
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'view', $view, TRUE);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'request', $request, TRUE);
-		$this->setExpectedException('Tx_Fluid_View_Exception_InvalidTemplateResourceException', NULL, 1257246929);
+		ObjectAccess::setProperty($instance, 'view', $view, TRUE);
+		ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
+		ObjectAccess::setProperty($instance, 'request', $request, TRUE);
+		$this->setExpectedException('TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException', NULL, 1257246929);
 		$this->callInaccessibleMethod($instance, 'performSubRendering', 'Other', 'Content', 'render', 'tx_flux_content');
 	}
 
@@ -338,11 +352,11 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 		$settings = array(
 			'useTypoScript' => TRUE
 		);
-		$previousSettings = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($instance, 'settings', TRUE);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'settings', $settings, TRUE);
+		$previousSettings = ObjectAccess::getProperty($instance, 'settings', TRUE);
+		ObjectAccess::setProperty($instance, 'settings', $settings, TRUE);
 		$this->callInaccessibleMethod($instance, 'initializeProvider');
 		$this->callInaccessibleMethod($instance, 'initializeOverriddenSettings');
-		$overriddenSettings = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($instance, 'settings', TRUE);
+		$overriddenSettings = ObjectAccess::getProperty($instance, 'settings', TRUE);
 		$this->assertNotSame($previousSettings, $overriddenSettings);
 	}
 
@@ -356,10 +370,10 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 				'test' => 'test'
 			)
 		);
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'data', $settings, TRUE);
+		ObjectAccess::setProperty($instance, 'data', $settings, TRUE);
 		$this->callInaccessibleMethod($instance, 'initializeProvider');
 		$this->callInaccessibleMethod($instance, 'initializeOverriddenSettings');
-		$overriddenSettings = Tx_Extbase_Reflection_ObjectAccess::getProperty($instance, 'settings', TRUE);
+		$overriddenSettings = ObjectAccess::getProperty($instance, 'settings', TRUE);
 		$this->assertEquals($settings['settings']['test'], $overriddenSettings['test']);
 	}
 
@@ -370,7 +384,7 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 		list ($request, ) = $this->createDummyRequestAndResponseForFluxController();
 		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
 		$class = get_class($instance);
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'request', $request, TRUE);
+		ObjectAccess::setProperty($instance, 'request', $request, TRUE);
 		$this->callInaccessibleMethod($instance, 'callSubControllerAction', $class, 'error', 'tx_flux_api');
 	}
 
@@ -379,7 +393,7 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 */
 	public function throwsRuntimeExceptionWhenInitializingProviderAndNoneIsDetected() {
 		$instance = $this->canCreateInstanceOfCustomRegisteredControllerForContent();
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'fluxTableName', 'void', TRUE);
+		ObjectAccess::setProperty($instance, 'fluxTableName', 'void', TRUE);
 		$this->setExpectedException('RuntimeException', NULL, 1377458581);
 		$this->callInaccessibleMethod($instance, 'initializeProvider');
 	}
@@ -389,9 +403,9 @@ class Tx_Flux_Controller_BasicControllerTest extends Tx_Flux_Tests_AbstractFunct
 	 */
 	public function canExecuteBasicRequestUsingCustomController() {
 		list ($request, $response) = $this->createDummyRequestAndResponseForFluxController('Content');
-		/** @var \TYPO3\CMS\Extbase\Mvc\Dispatcher $dispatcher */
-		$dispatcher = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Dispatcher');
-		$this->setExpectedException('Tx_Fluid_View_Exception_InvalidTemplateResourceException', NULL, 1257246929);
+		/** @var Dispatcher $dispatcher */
+		$dispatcher = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Dispatcher');
+		$this->setExpectedException('TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException', NULL, 1257246929);
 		$dispatcher->dispatch($request, $response);
 	}
 

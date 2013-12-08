@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\View;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,18 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class ExposedTemplateViewTest extends AbstractTestCase {
 
 	/**
 	 * @test
@@ -59,8 +67,8 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 		$this->truncateFluidCodeCache();
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		$variables = array(
 			'row' => $record,
 			'grid' => $service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', 'grid', array(), 'flux', array('record' => $record))
@@ -82,7 +90,7 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 	 */
 	public function canRenderPreviewSectionWithCollapsedGrid() {
 		$this->truncateFluidCodeCache();
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$_COOKIE['fluxCollapseStates'] = urlencode(json_encode(array($record['uid'])));
 		$this->canRenderPreviewSectionWithGrid();
 	}
@@ -158,9 +166,9 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 	 */
 	public function throwsRuntimeExceptionIfImproperlyInitialized() {
 		$this->truncateFluidCodeCache();
-		$view = $this->objectManager->get('Tx_Flux_View_ExposedTemplateView');
+		$view = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
 		$this->setExpectedException('RuntimeException', NULL, 1343521593);
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage');
+		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'storage');
 	}
 
 	/**
@@ -171,11 +179,11 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 		$validTemplatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$validTemplateSource = file_get_contents($validTemplatePathAndFilename);
 		$invalidTemplateSource = $validTemplateSource . LF . LF . '</f:section>' . LF;
-		$temporaryFilePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/flux-temp-' . uniqid() . '.html');
-		\TYPO3\CMS\Core\Utility\GeneralUtility::writeFile($temporaryFilePathAndFilename, $invalidTemplateSource);
+		$temporaryFilePathAndFilename = GeneralUtility::getFileAbsFileName('typo3temp/flux-temp-' . uniqid() . '.html');
+		GeneralUtility::writeFile($temporaryFilePathAndFilename, $invalidTemplateSource);
 		$view = $this->getPreparedViewWithTemplateFile($temporaryFilePathAndFilename);
 		$this->setExpectedException('Tx_Fluid_Core_Parser_Exception');
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage');
+		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'storage');
 	}
 
 	/**
@@ -185,7 +193,7 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 		$this->truncateFluidCodeCache();
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage');
+		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'storage');
 	}
 
 	/**
@@ -195,7 +203,7 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 		$this->truncateFluidCodeCache();
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage');
+		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'storage');
 	}
 
 
@@ -214,14 +222,14 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 	 */
 	public function canBuildPathOverlayConfiguration() {
 		$overlayPaths = array(
-			'templateRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('extbase', 'Resources/Private/Templates'),
-			'partialRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('extbase', 'Resources/Private/Partials'),
-			'layoutRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('extbase', 'Resources/Private/Layouts'),
+			'templateRootPath' => ExtensionManagementUtility::extPath('extbase', 'Resources/Private/Templates'),
+			'partialRootPath' => ExtensionManagementUtility::extPath('extbase', 'Resources/Private/Partials'),
+			'layoutRootPath' => ExtensionManagementUtility::extPath('extbase', 'Resources/Private/Layouts'),
 		);
 		$templatePaths = array(
-			'templateRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates'),
-			'partialRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Resources/Private/Partials'),
-			'layoutRootPath' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts'),
+			'templateRootPath' => ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates'),
+			'partialRootPath' => ExtensionManagementUtility::extPath('flux', 'Resources/Private/Partials'),
+			'layoutRootPath' => ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts'),
 			'overlays' => array(
 				'test' => $overlayPaths
 			)
@@ -245,11 +253,11 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 	public function canGetTemplateByActionName() {
 		$service = $this->createFluxServiceInstance();
 		$view = $service->getPreparedExposedTemplateView('Flux', 'API');
-		$controllerContext = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($view, 'controllerContext', TRUE);
+		$controllerContext = ObjectAccess::getProperty($view, 'controllerContext', TRUE);
 		$controllerContext->getRequest()->setControllerActionName('index');
 		$controllerContext->getRequest()->setControllerName('Grid');
 		$view->setControllerContext($controllerContext);
-		$view->setTemplateRootPath(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/ViewHelpers/Widget/'));
+		$view->setTemplateRootPath(ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/ViewHelpers/Widget/'));
 		$output = $view->getTemplatePathAndFilename('index');
 		$this->assertNotEmpty($output);
 		$this->assertFileExists($output);
@@ -257,7 +265,7 @@ class Tx_Flux_View_ExposedTemplateViewTest extends Tx_Flux_Tests_AbstractFunctio
 
 	/**
 	 * @param $templatePathAndFilename
-	 * @return Tx_Flux_View_ExposedTemplateView
+	 * @return \FluidTYPO3\Flux\View\ExposedTemplateView
 	 */
 	protected function getPreparedViewWithTemplateFile($templatePathAndFilename) {
 		$this->assertFileExists($templatePathAndFilename);

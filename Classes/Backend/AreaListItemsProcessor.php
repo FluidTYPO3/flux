@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,13 +23,17 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Returns options for a "content area" selector box
  *
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_AreaListItemsProcessor {
+class AreaListItemsProcessor {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -36,7 +41,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $fluxService;
 
@@ -44,8 +49,8 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		$this->fluxService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$this->fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 	}
 
 	/**
@@ -84,7 +89,7 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 */
 	public function getContentAreasDefinedInContentElement($uid) {
 		$record = $this->getContentRecordByUid($uid);
-		/** @var $provider Tx_Flux_Provider_ProviderInterface */
+		/** @var $provider ProviderInterface */
 		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
 		if (NULL === $provider) {
 			return array();
@@ -126,11 +131,11 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	}
 
 	/**
-	 * @param Tx_Flux_Provider_ProviderInterface $provider
+	 * @param ProviderInterface $provider
 	 * @param array $record
 	 * @return mixed
 	 */
-	protected function getGridFromConfigurationProviderAndRecord(Tx_Flux_Provider_ProviderInterface $provider, array $record) {
+	protected function getGridFromConfigurationProviderAndRecord(ProviderInterface $provider, array $record) {
 		$columns = array();
 		$grid = $provider->getGrid($record);
 		foreach ($grid->getRows() as $row) {

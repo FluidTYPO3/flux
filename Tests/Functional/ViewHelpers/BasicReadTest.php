@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Tests\Functional\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_ViewHelpers_BasicReadTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class BasicReadTest extends AbstractTestCase {
 
 	/**
 	 * @test
@@ -174,7 +178,7 @@ class Tx_Flux_Tests_Functional_ViewHelpers_BasicReadTest extends Tx_Flux_Tests_A
 	 */
 	public function canReadTemplateWithMiscellaneousViewHelpers() {
 		$variables = array(
-			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren
+			'record' => Records::$contentRecordWithParentAndWithoutChildren
 		);
 		$this->assertFluxTemplateLoadsWithoutErrors(self::FIXTURE_TEMPLATE_MISCELLANEOUS, $variables);
 	}

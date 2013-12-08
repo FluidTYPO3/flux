@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormContainer;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+
 /**
  * @package Flux
  * @subpackage Form\Container
  */
-class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_ContainerInterface {
+class Column extends AbstractFormContainer implements ContainerInterface {
 
 	/**
 	 * @var integer
@@ -66,7 +70,7 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Container_Content[]
+	 * @return Content[]
 	 */
 	public function getAreas() {
 		return (array) iterator_to_array($this->children);
@@ -74,7 +78,7 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 
 	/**
 	 * @param integer $colspan
-	 * @return Tx_Flux_Form_Container_Column
+	 * @return Column
 	 */
 	public function setColspan($colspan) {
 		$this->colspan = $colspan;
@@ -90,7 +94,7 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 
 	/**
 	 * @param integer $columnPosition
-	 * @return Tx_Flux_Form_Container_Column
+	 * @return Column
 	 */
 	public function setColumnPosition($columnPosition) {
 		$this->columnPosition = $columnPosition;
@@ -106,7 +110,7 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 
 	/**
 	 * @param integer $rowspan
-	 * @return Tx_Flux_Form_Container_Column
+	 * @return Column
 	 */
 	public function setRowspan($rowspan) {
 		$this->rowspan = $rowspan;
@@ -122,7 +126,7 @@ class Tx_Flux_Form_Container_Column extends Tx_Flux_Form_AbstractFormContainer i
 
 	/**
 	 * @param string $style
-	 * @return Tx_Flux_Form_Container_Column
+	 * @return Column
 	 */
 	public function setStyle($style) {
 		$this->style = $style;
