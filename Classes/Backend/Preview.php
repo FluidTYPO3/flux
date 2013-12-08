@@ -88,13 +88,12 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
 		foreach ($providers as $provider) {
 			/** @var ProviderInterface $provider */
-			list ($previewHeader, $previewContent) = $provider->getPreview($row);
+			list ($previewHeader, $previewContent, $continueDrawing) = $provider->getPreview($row);
+			$drawItem = $continueDrawing;
 			if (FALSE === empty($previewHeader)) {
-				$drawItem = FALSE;
-				$headerContent .= '<div><strong>' . $previewHeader . '</strong> <i>' . $row['header'] . '</i></div>';
+				$headerContent .= $previewHeader;
 			}
 			if (FALSE === empty($previewContent)) {
-				$drawItem = FALSE;
 				$itemContent .= $previewContent;
 			}
 		}

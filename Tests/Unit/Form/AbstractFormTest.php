@@ -211,12 +211,12 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	public function canUseShorthandLanguageLabel() {
 		$className = $this->getObjectClassName();
 		$instance = $this->getMock($className, array('getExtensionKey', 'getName', 'getRoot'));
-		$instance->expects($this->never())->method('getExtensioKey');
+		$instance->expects($this->never())->method('getExtensionKey');
 		$instance->expects($this->once())->method('getRoot')->will($this->returnValue(NULL));
 		$instance->expects($this->once())->method('getName')->will($this->returnValue('form'));
 		$instance->setLabel('LLL:tt_content.tx_flux_container');
 		$result = $instance->getLabel();
-		$this->assertSame(LocalizationUtility::translate('tt_content.tx_flux_container', 'Flux'), $result);
+		$this->assertSame(LocalizationUtility::translate('tt_content.tx_flux_container', 'flux'), $result);
 	}
 
 }

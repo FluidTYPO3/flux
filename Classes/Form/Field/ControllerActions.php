@@ -43,7 +43,7 @@ class ControllerActions extends Select {
 	 *
 	 * @var string
 	 */
-	protected $extensionName;
+	protected $controllerExtensionName;
 
 	/**
 	 * Name of the Extbase plugin that contains Controller
@@ -216,7 +216,7 @@ class ControllerActions extends Select {
 	 * @return ControllerActions
 	 */
 	public function setExtensionName($extensionName) {
-		$this->extensionName = $extensionName;
+		$this->controllerExtensionName = $extensionName;
 		return $this;
 	}
 
@@ -224,7 +224,7 @@ class ControllerActions extends Select {
 	 * @return string
 	 */
 	public function getExtensionName() {
-		return $this->extensionName;
+		return $this->controllerExtensionName;
 	}
 
 	/**
@@ -301,7 +301,7 @@ class ControllerActions extends Select {
 		} else {
 			$actions = $this->getActions();
 			if (0 === count($actions)) {
-				$actions = $this->getActionsForExtensionNameAndPluginName($this->extensionName, $this->pluginName);
+				$actions = $this->getActionsForExtensionNameAndPluginName($this->controllerExtensionName, $this->pluginName);
 			}
 			return $this->buildItemsForActions($actions);
 		}

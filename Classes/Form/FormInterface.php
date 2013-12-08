@@ -95,6 +95,17 @@ interface FormInterface {
 	public function getRoot();
 
 	/**
+	 * @param string $extensionName
+	 * @return FormInterface
+	 */
+	public function setExtensionName($extensionName);
+
+	/**
+	 * @return mixed
+	 */
+	public function getExtensionName();
+
+	/**
 	 * @param string $type
 	 * @return boolean
 	 */
