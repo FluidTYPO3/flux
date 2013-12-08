@@ -146,8 +146,8 @@ abstract class AbstractViewHelperTest extends AbstractTestCase {
 		/** @var RenderingContext $renderingContext */
 		$renderingContext = $this->objectManager->get('TYPO3\CMS\Fluid\Core\Rendering\RenderingContext');
 		$renderingContext->setControllerContext($controllerContext);
-		$renderingContext->injectViewHelperVariableContainer($viewHelperContainer);
-		$renderingContext->injectTemplateVariableContainer($container);
+		ObjectAccess::setProperty($renderingContext, 'viewHelperVariableContainer', $viewHelperContainer, TRUE);
+		ObjectAccess::setProperty($renderingContext, 'templateVariableContainer', $container, TRUE);
 		$instance->setArguments($arguments);
 		$instance->setRenderingContext($renderingContext);
 		if (TRUE === $instance instanceof AbstractWidgetViewHelper) {
