@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractWizard;
+
 /**
  * @package Flux
  * @subpackage Form\Wizard
  */
-class Tx_Flux_Form_Wizard_Slider extends Tx_Flux_Form_AbstractWizard {
+class Slider extends AbstractWizard {
 
 	/**
 	 * @var string
@@ -72,7 +75,7 @@ class Tx_Flux_Form_Wizard_Slider extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $step
-	 * @return Tx_Flux_Form_Wizard_Slider
+	 * @return Slider
 	 */
 	public function setStep($step) {
 		$this->step = $step;
@@ -88,7 +91,7 @@ class Tx_Flux_Form_Wizard_Slider extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $width
-	 * @return Tx_Flux_Form_Wizard_Slider
+	 * @return Slider
 	 */
 	public function setWidth($width) {
 		$this->width = $width;

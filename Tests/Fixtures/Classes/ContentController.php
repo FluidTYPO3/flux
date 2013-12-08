@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\Controller;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2013 Claus Due <claus@wildside.dk>
  *
  *  All rights reserved
  *
@@ -21,14 +22,37 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * ************************************************************* */
+
+use FluidTYPO3\Flux\Controller\AbstractFluxController;
 
 /**
- * ViewHelper used to render the FlexForm definition for Fluid FCEs
- *
+ * @author Claus Due <claus@wildside.dk>
  * @package Flux
- * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_RenderContentViewHelper extends Tx_Flux_ViewHelpers_Content_RenderViewHelper {
+class ContentController extends AbstractFluxController {
+
+	/**
+	 * Fake Action
+	 *
+	 * @return void
+	 */
+	public function fakeAction() {
+	}
+
+	/**
+	 * @return void
+	 */
+	public function fakeWithoutDescriptionAction() {
+	}
+
+	/**
+	 * Fake Action
+	 *
+	 * @param string $required
+	 * @return void
+	 */
+	public function fakeWithRequiredArgumentAction($required) {
+	}
 
 }

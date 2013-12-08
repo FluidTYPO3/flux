@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,23 +24,32 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Provider\AbstractProvider;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Wizard_ListTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
+class DummyConfigurationProvider extends AbstractProvider {
 
 	/**
-	 * @var array
+	 * @var string
 	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'hideParent' => FALSE,
-		'table' => 'pages',
-		'height' => 600,
-		'width' => 600,
-		'storagePageUid' => 1
-	);
+	protected $tableName = 'test';
+
+	/**
+	 * @var string
+	 */
+	protected $extensionKey = 'test';
+
+	/**
+	 * @var string
+	 */
+	protected $fieldName = 'test';
+
+	/**
+	 * @var string
+	 */
+	protected $templatePathAndFilename = 'EXT:flux/Tests/Fixtures/Templates/DummyConfigurationProvider.html';
 
 }

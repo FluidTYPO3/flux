@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,23 +24,25 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Backend_TypoScriptTemplateTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class TypoScriptTemplateTest extends \FluidTYPO3\Flux\Tests\Unit\AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canPreProcessIncludeStaticTypoScriptResources() {
-		Tx_Flux_Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
+		\FluidTYPO3\Flux\Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
 		$function = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'];
 		$template = $this->objectManager->get('t3lib_TStemplate');
 		$parameters = array(
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$sysTemplateRoot
+			'row' => \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$sysTemplateRoot
 		);
-		\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($function, $parameters, $template);
+		GeneralUtility::callUserFunction($function, $parameters, $template);
 		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);
 	}
 
@@ -47,16 +50,16 @@ class Tx_Flux_Backend_TypoScriptTemplateTest extends Tx_Flux_Tests_AbstractFunct
 	 * @test
 	 */
 	public function leavesRecordsWhichAreNotRootsUntouched() {
-		Tx_Flux_Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
+		\FluidTYPO3\Flux\Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
 		$function = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'];
 		$template = $this->objectManager->get('t3lib_TStemplate');
 		$parameters = array(
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$sysTemplateRoot
+			'row' => \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$sysTemplateRoot
 		);
 		$parameters['row']['root'] = 0;
-		\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($function, $parameters, $template);
+		GeneralUtility::callUserFunction($function, $parameters, $template);
 		$this->assertNotContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);
-		$this->assertSame(Tx_Flux_Tests_Fixtures_Data_Records::$sysTemplateRoot['include_static_file'], $parameters['row']['include_static_file']);
+		$this->assertSame(\FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$sysTemplateRoot['include_static_file'], $parameters['row']['include_static_file']);
 	}
 
 }

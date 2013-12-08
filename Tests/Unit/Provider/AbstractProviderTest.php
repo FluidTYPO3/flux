@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Provider;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,26 +24,34 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Records.php');
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\Path;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+abstract class AbstractProviderTest extends AbstractTestCase {
 
 	/**
 	 * @var string
 	 */
-	protected $configurationProviderClassName = 'Tx_Flux_Provider_ContentProvider';
+	protected $configurationProviderClassName = 'FluidTYPO3\Flux\Provider\ContentProvider';
 
 	/**
-	 * @return Tx_Flux_Provider_ProviderInterface
+	 * @return ProviderInterface
 	 */
 	protected function getConfigurationProviderInstance() {
 		$potentialClassName = substr(get_class($this), 0, -4);
-		/** @var Tx_Flux_Provider_ProviderInterface $instance */
+		/** @var ProviderInterface $instance */
 		if (TRUE === class_exists($potentialClassName)) {
 			$instance = $this->objectManager->get($potentialClassName);
 		} else {
@@ -55,8 +64,8 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 * @return array
 	 */
 	protected function getBasicRecord() {
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$record['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		return $record;
 	}
 
@@ -64,7 +73,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 * @test
 	 */
 	public function canExecuteClearCacheCommand() {
-		touch(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/flux-test.manifest'));
+		touch(GeneralUtility::getFileAbsFileName('typo3temp/flux-test.manifest'));
 		$provider = $this->getConfigurationProviderInstance();
 		$return = $provider->clearCacheCommand(array('all'));
 		$this->assertEmpty($return);
@@ -95,8 +104,8 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 * @test
 	 */
 	public function canGetAndSetListType() {
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
-		/** @var Tx_Flux_Provider_ProviderInterface $instance */
+		$record = Records::$contentRecordIsParentAndHasChildren;
+		/** @var ProviderInterface $instance */
 		$instance = $this->getConfigurationProviderInstance();
 		$instance->setExtensionKey('flux');
 		$instance->setListType('test');
@@ -108,7 +117,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 */
 	public function canGetContentObjectType() {
 		$instance = $this->getConfigurationProviderInstance();
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
+		$record = Records::$contentRecordIsParentAndHasChildren;
 		$contentType = $instance->getContentObjectType($record);
 		$this->assertNull($contentType);
 	}
@@ -121,7 +130,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$record = $this->getBasicRecord();
 		$form = $provider->getForm($record);
 		if ($form) {
-			$this->assertInstanceOf('Tx_Flux_Form', $form);
+			$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 		}
 	}
 
@@ -134,7 +143,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$record = $this->getBasicRecord();
 		$provider->setTemplatePathAndFilename($templatePathAndFilename);
 		$form = $provider->getForm($record);
-		$this->assertInstanceOf('Tx_Flux_Form', $form);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 		$this->assertTrue($form->get('options')->has('settings.checkbox'));
 	}
 
@@ -144,10 +153,10 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	public function canGetGrid() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$provider = $this->getConfigurationProviderInstance();
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($provider, 'templatePathAndFilename', $templatePathAndFilename, TRUE);
+		ObjectAccess::setProperty($provider, 'templatePathAndFilename', $templatePathAndFilename, TRUE);
 		$record = $this->getBasicRecord();
 		$form = $provider->getGrid($record);
-		$this->assertInstanceOf('Tx_Flux_Form_Container_Grid', $form);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $form);
 	}
 
 	/**
@@ -301,7 +310,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 */
 	public function canPostProcessDataStructureWithManualFormInstance() {
 		$provider = $this->getConfigurationProviderInstance();
-		$form = Tx_Flux_Form::create();
+		$form = Form::create();
 		$record = $this->getBasicRecord();
 		$dataStructure = array();
 		$config = array();
@@ -318,7 +327,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	public function canPostProcessRecord() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$parentInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		$parentInstance = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$record['test'] = 'test';
 		$id = $record['uid'];
 		$tableName = $provider->getTableName($record);
@@ -346,7 +355,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 			)
 		);
 		$parentInstance->datamap[$tableName][$id] = $record;
-		$record[$fieldName] = Tx_Flux_Tests_Fixtures_Data_Xml::EXPECTING_FLUX_REMOVALS;
+		$record[$fieldName] = Xml::EXPECTING_FLUX_REMOVALS;
 		$provider->postProcessRecord('update', $id, $record, $parentInstance);
 		$this->assertIsString($record[$fieldName]);
 		$this->assertNotContains('settings.input', $record[$fieldName]);
@@ -358,7 +367,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	public function canPostProcessRecordWithNullFieldName() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$parentInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		$parentInstance = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$record['test'] = 'test';
 		$id = $record['uid'];
 		$tableName = $provider->getTableName($record);
@@ -378,7 +387,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	public function canPreProcessRecordAndTransferDataToRecordValues() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$parentInstance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		$parentInstance = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tableName = $provider->getTableName($record);
 		if (TRUE === empty($tableName)) {
 			$tableName = 'tt_content';
@@ -410,8 +419,8 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 * @test
 	 */
 	public function canSetForm() {
-		$form = Tx_Flux_Form::create(array('name' => 'test'));
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$form = Form::create(array('name' => 'test'));
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setForm($form);
 		$this->assertSame($form, $provider->getForm($record));
@@ -420,8 +429,8 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 * @test
 	 */
 	public function canSetGrid() {
-		$grid = Tx_Flux_Form_Container_Grid::create(array('name' => 'test'));
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$grid = Grid::create(array('name' => 'test'));
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setGrid($grid);
 		$this->assertSame($grid, $provider->getGrid($record));
@@ -469,7 +478,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 			)
 		);
 		$provider->loadSettings($settings);
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordIsParentAndHasChildren;
+		$record = Records::$contentRecordIsParentAndHasChildren;
 		$this->assertSame('my_ext', $provider->getExtensionKey($record));
 		$this->assertSame('MyExt', $provider->getForm($record)->getExtensionName());
 	}
@@ -493,7 +502,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$record = $this->getBasicRecord();
 		$template = 'test.html';
 		$provider->setTemplatePathAndFilename($template);
-		$this->assertSame(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($template), $provider->getTemplatePathAndFilename($record));
+		$this->assertSame(GeneralUtility::getFileAbsFileName($template), $provider->getTemplatePathAndFilename($record));
 	}
 
 	/**
@@ -517,7 +526,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 			'templateRootPath' => 'EXT:flux/Resources/Private/Templates'
 		);
 		$provider->setTemplatePaths($templatePaths);
-		$this->assertSame(Tx_Flux_Utility_Path::translatePath($templatePaths), $provider->getTemplatePaths($record));
+		$this->assertSame(Path::translatePath($templatePaths), $provider->getTemplatePaths($record));
 	}
 
 	/**
@@ -552,7 +561,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 	 */
 	public function canLoadRecordFromDatabase() {
 		$provider = $this->getConfigurationProviderInstance();
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
 		$this->assertNotNull($result);
 	}
@@ -565,7 +574,7 @@ abstract class Tx_Flux_Provider_AbstractProviderTest extends Tx_Flux_Tests_Abstr
 		$className = substr(get_class($this), 0, -4);
 		$service = $this->getMock($className, array('getInheritedPropertyValueByDottedPath'));
 		$service->expects($this->once())->method('getInheritedPropertyValueByDottedPath')->with($row, 'input')->will($this->returnValue('default'));
-		$form = Tx_Flux_Form::create();
+		$form = Form::create();
 		$field = $form->createField('Input', 'input');
 		$returnedForm = $this->callInaccessibleMethod($service, 'setDefaultValuesInFieldsWithInheritedValues', $form, $row);
 		$this->assertSame($form, $returnedForm);

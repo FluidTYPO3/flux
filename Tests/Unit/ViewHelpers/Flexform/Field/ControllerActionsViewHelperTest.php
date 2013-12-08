@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,18 +24,21 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
+class ControllerActionsViewHelperTest extends AbstractViewHelperTest {
 
 	/**
 	 * @test
 	 */
 	public function acceptsTraversableListOfActions() {
 		$array = array('foo', 'bar');
-		$traversable = new ArrayIterator($array);
+		$traversable = new \ArrayIterator($array);
 		$arguments = array(
 			'label' => 'Test field',
 			'extensionName' => 'Flux',
@@ -112,7 +116,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_ControllerActionsViewHelperTest extends
 			'separator' => ' :: '
 		);
 		$instance = $this->buildViewHelperInstance($arguments);
-		$request = new \TYPO3\CMS\Extbase\Mvc\Web\Request();
+		$request = new Request();
 		$request->setControllerExtensionName('Flux');
 		$request->setControllerVendorName('FluidTYPO3');
 		$expected = 'FluidTYPO3.Flux';

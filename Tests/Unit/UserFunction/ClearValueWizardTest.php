@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_UserFunction_ClearValueWizardTest extends Tx_Flux_UserFunction_AbstractUserFunctionTest {
+class ClearValueWizardTest extends AbstractUserFunctionTest {
 
 	/**
 	 * @var array

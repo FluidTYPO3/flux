@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @package Flux
  * @subpackage Form
  */
-interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
+interface FieldInterface extends FormInterface {
 
 	/**
 	 * @return array
@@ -36,7 +37,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param boolean $clearable
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setClearable($clearable);
 
@@ -47,7 +48,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param boolean $required
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setRequired($required);
 
@@ -58,7 +59,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param mixed $default
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setDefault($default);
 
@@ -69,7 +70,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param string $transform
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setTransform($transform);
 
@@ -80,7 +81,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param string $displayCondition
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setDisplayCondition($displayCondition);
 
@@ -91,7 +92,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param boolean $requestUpdate
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setRequestUpdate($requestUpdate);
 
@@ -102,7 +103,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param integer $inherit
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setInherit($inherit);
 
@@ -113,7 +114,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param boolean $inheritEmpty
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setInheritEmpty($inheritEmpty);
 
@@ -124,7 +125,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param boolean $stopInheritance
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setStopInheritance($stopInheritance);
 
@@ -135,7 +136,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param boolean $exclude
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setExclude($exclude);
 
@@ -146,7 +147,7 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param boolean $enable
-	 * @return Tx_Flux_Form_FieldInterface
+	 * @return FieldInterface
 	 */
 	public function setEnable($enable);
 
@@ -156,14 +157,14 @@ interface Tx_Flux_Form_FieldInterface extends Tx_Flux_Form_FormInterface {
 	public function getEnable();
 
 	/**
-	 * @param Tx_Flux_Form_WizardInterface $wizard
-	 * @return Tx_Flux_Form_FormInterface
+	 * @param WizardInterface $wizard
+	 * @return FormInterface
 	 */
-	public function add(Tx_Flux_Form_WizardInterface $wizard);
+	public function add(WizardInterface $wizard);
 
 	/**
 	 * @param string $wizardName
-	 * @return Tx_Flux_Form_WizardInterface|FALSE
+	 * @return WizardInterface|FALSE
 	 */
 	public function remove($wizardName);
 

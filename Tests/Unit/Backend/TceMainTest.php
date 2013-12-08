@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,23 +24,26 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class TceMainTest extends \FluidTYPO3\Flux\Tests\Unit\AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canExecuteClearAllCacheCommandAndPassToProvidersForEveryTcaTable() {
 		$instance = $this->getInstance();
-		$mockedFluxService = $this->getMock('Tx_Flux_Service_FluxService', array('resolveConfigurationProviders'));
-		$mockedProvider = $this->getMock('Tx_Flux_Provider_Provider', array('clearCacheCommand'));
+		$mockedFluxService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
+		$mockedProvider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('clearCacheCommand'));
 		$expectedExecutions = count($GLOBALS['TCA']);
 		$mockedProvider->expects($this->exactly($expectedExecutions))->method('clearCacheCommand')->with('all');
 		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array($mockedProvider)));
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
 		$instance->clearCacheCommand('all');
 	}
 
@@ -48,9 +52,9 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function canExecuteClearAllCacheCommandTwiceWithoutDoubleCalling() {
 		$instance = $this->getInstance();
-		$mockedFluxService = $this->getMock('Tx_Flux_Service_FluxService', array('resolveConfigurationProviders'));
+		$mockedFluxService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
 		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array()));
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
 		$instance->clearCacheCommand('all');
 		$instance->clearCacheCommand('all');
 	}
@@ -60,10 +64,10 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function canExecuteClearAllCacheCommandAndRemoveManifestFile() {
 		$instance = $this->getInstance();
-		$mockedFluxService = $this->getMock('Tx_Flux_Service_FluxService', array('resolveConfigurationProviders'));
+		$mockedFluxService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
 		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array()));
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
-		$fakeManifestFile = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/fake-manifest.cache');
+		ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
+		$fakeManifestFile = GeneralUtility::getFileAbsFileName('typo3temp/fake-manifest.cache');
 		touch($fakeManifestFile);
 		$instance->clearCacheCommand('all');
 		$this->assertFileNotExists($fakeManifestFile);
@@ -75,7 +79,7 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	public function canExecuteDataPreProcessHook() {
 		$instance = $this->getInstance();
 		$tceMainParent = $this->getCallerInstance();
-		$record = \Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$contentRecordWithoutParentAndWithoutChildren;
 		$instance->processDatamap_preProcessFieldArray($record, 'tt_content', $record['uid'], $tceMainParent);
 	}
 
@@ -95,7 +99,7 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	public function canExecuteDataPostProcessHook() {
 		$instance = $this->getInstance();
 		$tceMainParent = $this->getCallerInstance();
-		$record = \Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$contentRecordWithoutParentAndWithoutChildren;
 		$instance->processDatamap_postProcessFieldArray('update', 'tt_content', $record['uid'], $record, $tceMainParent);
 	}
 
@@ -115,7 +119,7 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	public function canExecuteAfterDatabaseOperationHook() {
 		$instance = $this->getInstance();
 		$tceMainParent = $this->getCallerInstance();
-		$record = \Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$contentRecordWithoutParentAndWithoutChildren;
 		$instance->processDatamap_afterDatabaseOperations('update', 'tt_content', $record['uid'], $record, $tceMainParent);
 	}
 
@@ -147,7 +151,7 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	public function canExecuteCommandPreProcessHook() {
 		$instance = $this->getInstance();
 		$tceMainParent = $this->getCallerInstance();
-		$record = \Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$contentRecordWithoutParentAndWithoutChildren;
 		$command = 'update';
 		$instance->processCmdmap_preProcess($command, 'tt_content', $record['uid'], $record, $tceMainParent);
 	}
@@ -169,29 +173,29 @@ class Tx_Flux_Backend_TceMainTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	public function canExecuteCommandPostProcessHook() {
 		$instance = $this->getInstance();
 		$tceMainParent = $this->getCallerInstance();
-		$record = \Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$contentRecordWithoutParentAndWithoutChildren;
 		$command = 'update';
 		$instance->processCmdmap_postProcess($command, 'tt_content', $record['uid'], $record, $tceMainParent);
 	}
 
 	/**
-	 * @return \t3lib_TCEmain
+	 * @return \\TYPO3\CMS\Core\DataHandling\DataHandler
 	 */
 	protected function getCallerInstance() {
 		/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $tceMainParent */
-		$tceMainParent = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		$tceMainParent = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		return $tceMainParent;
 	}
 
 	/**
-	 * @return \Tx_Flux_Backend_TceMain
+	 * @return \FluidTYPO3\Flux\Backend\TceMain
 	 */
 	protected function getInstance() {
 		/** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		/** @var Tx_Flux_Backend_TceMain $tceMainInstance */
-		$tceMainInstance = $objectManager->get('Tx_Flux_Backend_TceMain');
-		\TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty($tceMainInstance, 'cachesCleared', FALSE, TRUE);
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var \FluidTYPO3\Flux\Backend\TceMain $tceMainInstance */
+		$tceMainInstance = $objectManager->get('FluidTYPO3\Flux\Backend\TceMain');
+		ObjectAccess::setProperty($tceMainInstance, 'cachesCleared', FALSE, TRUE);
 		return $tceMainInstance;
 	}
 

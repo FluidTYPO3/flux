@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Widget;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,7 +24,9 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fluid', 'Classes/Core/Widget/AbstractWidgetViewHelper.php');
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\Widget\Controller\GridController;
 
 /**
  * Grid Widget for rendering a grid in previews of BE elements
@@ -31,18 +34,18 @@ require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fluid'
  * @package Flux
  * @subpackage ViewHelpers/Widget
  */
-class Tx_Flux_ViewHelpers_Widget_GridViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper {
+class GridViewHelper extends AbstractWidgetViewHelper {
 
 	/**
-	 * @var Tx_Flux_ViewHelpers_Widget_Controller_GridController
+	 * @var GridController
 	 */
 	protected $controller;
 
 	/**
-	 * @param Tx_Flux_ViewHelpers_Widget_Controller_GridController $controller
+	 * @param GridController $controller
 	 * @return void
 	 */
-	public function injectController(Tx_Flux_ViewHelpers_Widget_Controller_GridController $controller) {
+	public function injectController(GridController $controller) {
 		$this->controller = $controller;
 	}
 

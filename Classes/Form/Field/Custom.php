@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,14 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormField;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_Custom extends Tx_Flux_Form_Field_UserFunction {
+class Custom extends UserFunction {
 
 	/*
-	 * @var Closure
+	 * @var \Closure
 	 */
 	protected $closure = NULL;
 
@@ -39,7 +42,7 @@ class Tx_Flux_Form_Field_Custom extends Tx_Flux_Form_Field_UserFunction {
 	 */
 	public function buildConfiguration() {
 		$fieldConfiguration = $this->prepareConfiguration('user');
-		$fieldConfiguration['userFunc'] = 'Tx_Flux_UserFunction_HtmlOutput->renderField';
+		$fieldConfiguration['userFunc'] = 'FluidTYPO3\Flux\UserFunction\HtmlOutput->renderField';
 		$fieldConfiguration['parameters'] = array(
 			'closure' => $this->getClosure(),
 			'arguments' => $this->getArguments(),
@@ -48,16 +51,16 @@ class Tx_Flux_Form_Field_Custom extends Tx_Flux_Form_Field_UserFunction {
 	}
 
 	/**
-	 * @param Closure $closure
-	 * @return Tx_Flux_Form_Field_Custom
+	 * @param \Closure $closure
+	 * @return Custom
 	 */
-	public function setClosure(Closure $closure) {
+	public function setClosure(\Closure $closure) {
 		$this->closure = $closure;
 		return $this;
 	}
 
 	/**
-	 * @return Closure|NULL
+	 * @return \Closure|NULL
 	 */
 	public function getClosure() {
 		return $this->closure;

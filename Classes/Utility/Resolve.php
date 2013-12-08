@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,6 +23,7 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Resolve utility
@@ -29,7 +31,7 @@
  * @package Flux
  * @subpackage Utility
  */
-class Tx_Flux_Utility_Resolve {
+class Resolve {
 
 	/**
 	 * @var boolean
@@ -51,8 +53,8 @@ class Tx_Flux_Utility_Resolve {
 	 */
 	private static function initialize() {
 		if (FALSE === self::$initialized) {
-			self::$hasGridElementsVersionTwo = Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
-			self::$isLegacyCoreVersion = Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero();
+			self::$hasGridElementsVersionTwo = Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
+			self::$isLegacyCoreVersion = Version::assertCoreVersionIsBelowSixPointZero();
 		}
 		self::$initialized = TRUE;
 	}
@@ -63,21 +65,21 @@ class Tx_Flux_Utility_Resolve {
 	 * @param string $controllerObjectShortName
 	 * @param boolean $failHardClass
 	 * @param boolean $failHardAction
-	 * @throws Exception
+	 * @throws \RuntimeException
 	 * @return string|NULL
 	 */
 	public static function resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $action, $controllerObjectShortName, $failHardClass = FALSE, $failHardAction = FALSE) {
 		$potentialControllerClassName = self::buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerObjectShortName);
 		if (FALSE === class_exists($potentialControllerClassName)) {
 			if (TRUE === $failHardClass) {
-				throw new RuntimeException('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($extensionKey, TRUE) .
+				throw new \RuntimeException('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($extensionKey, TRUE) .
 				' but the resulting class name was not found.', 1364498093);
 			}
 			return NULL;
 		}
 		if (FALSE === method_exists($potentialControllerClassName, $action . 'Action')) {
 			if (TRUE === $failHardAction) {
-				throw new RuntimeException('Class ' . $potentialControllerClassName . ' does not contain a method named ' . $action . 'Action', 1364498223);
+				throw new \RuntimeException('Class ' . $potentialControllerClassName . ' does not contain a method named ' . $action . 'Action', 1364498223);
 			}
 			return NULL;
 		}
@@ -89,7 +91,7 @@ class Tx_Flux_Utility_Resolve {
 	 * @return string|NULL
 	 */
 	public static function resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature) {
-		$requestParameters = (array) \TYPO3\CMS\Core\Utility\GeneralUtility::_GET($pluginSignature);
+		$requestParameters = (array) GeneralUtility::_GET($pluginSignature);
 		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : NULL;
 		return $overriddenControllerActionName;
 	}
@@ -101,7 +103,7 @@ class Tx_Flux_Utility_Resolve {
 		if (TRUE === isset($GLOBALS['TSFE']->page)) {
 			$record = $GLOBALS['TSFE']->page;
 		} elseif ('BE' === TYPO3_MODE) {
-			$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', "uid = '" . \TYPO3\CMS\Core\Utility\GeneralUtility::_GET('id') . "'");
+			$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', "uid = '" . GeneralUtility::_GET('id') . "'");
 			$record = array_pop($records);
 		}
 		return $record;
@@ -120,7 +122,7 @@ class Tx_Flux_Utility_Resolve {
 		} elseif (TRUE === self::$isLegacyCoreVersion) {
 			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Legacy.html';
 		}
-		$templatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($templatePathAndFilename);
+		$templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
 		return $templatePathAndFilename;
 	}
 
@@ -134,8 +136,11 @@ class Tx_Flux_Utility_Resolve {
 			list ($vendorName, $extensionName) = explode('.', $extensionKey);
 			$potentialClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
 		} else {
-			$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
-			$potentialClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
+			$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+			$potentialClassName = $extensionName . '\\Controller\\' . $controllerName . 'Controller';
+			if (FALSE === class_exists($potentialClassName)) {
+				$potentialClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
+			}
 		}
 		return $potentialClassName;
 	}

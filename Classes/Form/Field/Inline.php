@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractInlineFormField;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_Inline extends Tx_Flux_Form_AbstractInlineFormField {
+class Inline extends AbstractInlineFormField {
 
 	/**
 	 * @return array

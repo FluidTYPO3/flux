@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Content;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,18 +24,23 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
+class GetViewHelperTest extends AbstractViewHelperTest {
 
 	/**
 	 * Setup
 	 */
 	protected function setUp() {
 		parent::setUp();
-		$GLOBALS['TSFE'] = new tslib_fe($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
 	}
 
 	/**
@@ -47,9 +53,9 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 			'order' => 'sorting'
 		);
 		$variables = array(
-			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
+			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
+		$node = new TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}
@@ -67,9 +73,9 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 			)
 		);
 		$variables = array(
-			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
+			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
+		$node = new TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}
@@ -85,9 +91,9 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 		);
 		$variables = array(
 			'nameTaken' => 'taken',
-			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
+			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
+		$node = new TextNode('Hello loopy world!');
 		$content = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertIsString($content);
 	}
@@ -102,9 +108,9 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 			'order' => 'sorting'
 		);
 		$variables = array(
-			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
+			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
 		);
-		$node = new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode('Hello loopy world!');
+		$node = new TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
 	}
@@ -119,7 +125,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 			'order' => 'sorting'
 		);
 		$variables = array(
-			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
+			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
 		);
 		$output = $this->executeViewHelper($arguments, $variables);
 		$this->assertIsArray($output);
@@ -135,7 +141,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelperTest extends Tx_Flux_ViewHelpers_
 			'order' => 'sorting'
 		);
 		$variables = array(
-			'record' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
+			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
 		);
 		$output = $this->executeViewHelper($arguments, $variables);
 		$this->assertIsArray($output);

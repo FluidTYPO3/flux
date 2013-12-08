@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
+class TextViewHelper extends AbstractFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -45,10 +46,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TextViewHelper extends Tx_Flux_ViewHelp
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Field_Text
+	 * @return \FluidTYPO3\Flux\Form\Field\Text
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Field_Text $text */
+		/** @var \FluidTYPO3\Flux\Form\Field\Text $text */
 		$text = $this->getPreparedComponent('Text', $this->arguments['name'], $this->arguments['label']);
 		$text->setValidate($this->arguments['validate']);
 		$text->setColumns($this->arguments['cols']);

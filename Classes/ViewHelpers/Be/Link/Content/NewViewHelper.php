@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Utility\Miscellaneous;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+
 /**
  * Content / NewViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers\Be\Uri\Content
  */
-class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class NewViewHelper extends AbstractViewHelper {
 
 	/**
 	 * Initialize
@@ -58,7 +62,7 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends \TYPO3\CMS\Fluid
 				$returnUri .= '%3A-' . $after;
 			}
 		}
-		$icon = Tx_Flux_Utility_Miscellaneous::getIcon('actions-document-new', 'Insert new content element in this position');
+		$icon = Miscellaneous::getIcon('actions-document-new', 'Insert new content element in this position');
 		$uri = 'db_new_content_el.php?id=' . $pid .
 			'&uid_pid=' . $pid .
 			'&colPos=-42' .
@@ -66,7 +70,7 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends \TYPO3\CMS\Fluid
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
 			'&defVals[tt_content][tx_flux_column]=' . $area .
 			'&returnUrl=' . $returnUri;
-		return Tx_Flux_Utility_Miscellaneous::wrapLink($icon, htmlspecialchars($uri));
+		return Miscellaneous::wrapLink($icon, htmlspecialchars($uri));
 	}
 
 }

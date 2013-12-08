@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,6 +23,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * FLUX CORE
  *
@@ -31,7 +34,7 @@
  * @package Flux
  * @subpackage Core
  */
-class Tx_Flux_Core {
+class Core {
 
 	/**
 	 * Contains all ConfigurationProviders registered with Flux
@@ -91,15 +94,15 @@ class Tx_Flux_Core {
 
 	/**
 	 * @param string $table
-	 * @param Tx_Flux_Form $form
+	 * @param Form $form
 	 * @return void
 	 */
-	public static function registerFormForTable($table, Tx_Flux_Form $form) {
+	public static function registerFormForTable($table, Form $form) {
 		if (NULL === $form->getName()) {
 			$form->setName($table);
 		}
 		if (NULL === $form->getExtensionName() && TRUE === isset($GLOBALS['_EXTKEY'])) {
-			$form->setExtensionName(\TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
+			$form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
 		}
 		self::$forms['tables'][$table] = $form;
 	}
@@ -118,12 +121,12 @@ class Tx_Flux_Core {
 	 * Registers a Form instance to use when TCA for a model object class/table is requested.
 	 *
 	 * @param string $className
-	 * @param Tx_Flux_Form $form
+	 * @param Form $form
 	 * @return void
 	 */
-	public static function registerFormForModelObjectClassName($className, Tx_Flux_Form $form = NULL) {
+	public static function registerFormForModelObjectClassName($className, Form $form = NULL) {
 		if (NULL !== $form && TRUE === isset($GLOBALS['_EXTKEY']) && NULL === $form->getExtensionName()) {
-			$form->setExtensionName(\TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
+			$form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
 		}
 		self::$forms['models'][$className] = $form;
 	}
@@ -161,18 +164,18 @@ class Tx_Flux_Core {
 	 *
 	 * @param string|object $classNameOrInstance
 	 * @return void
-	 * @throws Exception
+	 * @throws \RuntimeException
 	 */
 	public static function registerConfigurationProvider($classNameOrInstance) {
 		if (is_object($classNameOrInstance) === FALSE) {
 			if (class_exists($classNameOrInstance) === FALSE) {
-				throw new Exception('Provider class ' . $classNameOrInstance . ' does not exists', 1327173514);
+				throw new \RuntimeException('Provider class ' . $classNameOrInstance . ' does not exists', 1327173514);
 			}
 		}
-		if (in_array('Tx_Flux_Provider_ProviderInterface', class_implements($classNameOrInstance)) === FALSE) {
-			throw new Exception(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
+		if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($classNameOrInstance))) {
+			throw new \RuntimeException(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
 		}
-		if (in_array($classNameOrInstance, self::$unregisteredProviders) === FALSE && in_array($classNameOrInstance, self::$providers) === FALSE) {
+		if (FALSE === in_array($classNameOrInstance, self::$unregisteredProviders) && FALSE === in_array($classNameOrInstance, self::$providers)) {
 			array_push(self::$providers, $classNameOrInstance);
 		}
 	}
@@ -200,9 +203,9 @@ class Tx_Flux_Core {
 	 */
 	public static function registerFluidFlexFormPlugin($extensionKey, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL, $fieldName='pi_flexform') {
 		/** @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager */
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		/** @var $provider Tx_Flux_Provider_ProviderInterface */
-		$provider = $objectManager->get('Tx_Flux_Provider_ContentProvider');
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var $provider \FluidTYPO3\Flux\Provider\ProviderInterface */
+		$provider = $objectManager->get('FluidTYPO3\Flux\Provider\ContentProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName($fieldName);
 		$provider->setExtensionKey($extensionKey);
@@ -230,9 +233,9 @@ class Tx_Flux_Core {
 	 */
 	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL, $fieldName='pi_flexform') {
 		/** @var $objectManager \TYPO3\CMS\Extbase\Object\ObjectManagerInterface */
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		/** @var $provider Tx_Flux_Provider_ProviderInterface */
-		$provider = $objectManager->get('Tx_Flux_Provider_ContentProvider');
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var $provider \FluidTYPO3\Flux\Provider\ProviderInterface */
+		$provider = $objectManager->get('FluidTYPO3\Flux\Provider\ContentProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName($fieldName);
 		$provider->setExtensionKey($extensionKey);
@@ -259,9 +262,9 @@ class Tx_Flux_Core {
 	 */
 	public static function registerFluidFlexFormTable($table, $fieldName, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
 		/** @var $objectManager \TYPO3\CMS\Extbase\Object\ObjectManagerInterface */
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		/** @var $provider Tx_Flux_Provider_ProviderInterface */
-		$provider = $objectManager->get('Tx_Flux_Provider_Provider');
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var $provider \FluidTYPO3\Flux\Provider\ProviderInterface */
+		$provider = $objectManager->get('FluidTYPO3\Flux\Provider\Provider');
 		$provider->setTableName($table);
 		$provider->setFieldName($fieldName);
 		$provider->setTemplatePathAndFilename($templateFilename);
@@ -295,7 +298,7 @@ class Tx_Flux_Core {
 	}
 
 	/**
-	 * @return Tx_Flux_Form[]
+	 * @return \FluidTYPO3\Flux\Form[]
 	 */
 	public static function getRegisteredFormsForTables() {
 		return self::$forms['tables'];
@@ -303,7 +306,7 @@ class Tx_Flux_Core {
 
 	/**
 	 * @param string $table
-	 * @return Tx_Flux_Form|NULL
+	 * @return \FluidTYPO3\Flux\Form|NULL
 	 */
 	public static function getRegisteredFormForTable($table) {
 		if (TRUE === isset(self::$forms['tables'][$table])) {
@@ -313,7 +316,7 @@ class Tx_Flux_Core {
 	}
 
 	/**
-	 * @return Tx_Flux_Form[]
+	 * @return \FluidTYPO3\Flux\Form[]
 	 */
 	public static function getRegisteredFormsForModelObjectClasses() {
 		return self::$forms['models'];
@@ -321,7 +324,7 @@ class Tx_Flux_Core {
 
 	/**
 	 * @param string $class
-	 * @return Tx_Flux_Form|NULL
+	 * @return \FluidTYPO3\Flux\Form|NULL
 	 */
 	public static function getRegisteredFormForModelObjectClass($class) {
 		if (TRUE === isset(self::$forms['models'][$class])) {

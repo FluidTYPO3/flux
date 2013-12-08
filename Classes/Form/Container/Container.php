@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormContainer;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldContainerInterface;
+
 /**
  * @package Flux
  * @subpackage Form\Container
  */
-class Tx_Flux_Form_Container_Container extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_ContainerInterface, Tx_Flux_Form_FieldContainerInterface {
+class Container extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface {
 
 	/**
 	 * @return array
@@ -42,7 +47,7 @@ class Tx_Flux_Form_Container_Container extends Tx_Flux_Form_AbstractFormContaine
 	}
 
 	/**
-	 * @return Tx_Flux_Form_FieldInterface[]
+	 * @return FieldInterface[]
 	 */
 	public function getFields() {
 		return $this->children;

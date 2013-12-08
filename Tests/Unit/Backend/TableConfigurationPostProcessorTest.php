@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,17 +24,22 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class TableConfigurationPostProcessorTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canLoadFluxService() {
-		$object = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
+		$object = GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
 		$object->processData();
 	}
 
@@ -43,11 +49,11 @@ class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_
 	public function canCreateTcaFromFluxForm() {
 		$table = 'this_table_does_not_exist';
 		$field = 'input';
-		$form = Tx_Flux_Form::create();
+		$form = Form::create();
 		$form->createField('Input', $field);
 		$form->setOption('labels', array('title'));
-		Tx_Flux_Core::registerFormForTable($table, $form);
-		$object = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
+		Core::registerFormForTable($table, $form);
+		$object = GeneralUtility::getUserObj('FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor');
 		$object->processData();
 		$this->assertArrayHasKey($table, $GLOBALS['TCA']);
 		$this->assertArrayHasKey($field, $GLOBALS['TCA'][$table]['columns']);
@@ -61,9 +67,9 @@ class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_
 	 * @test
 	 */
 	public function canCreateFluxFormFromClassName() {
-		$class = 'Tx_Flux_Domain_Model_Dummy';
-		$object = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
-		$form = $this->callInaccessibleMethod($object, 'generateFormInstanceFromClassName', $class, 'void');
+		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
+		$object = GeneralUtility::getUserObj('FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor');
+		$form = $object->generateFormInstanceFromClassName($class, 'tt_content');
 		$this->assertIsValidAndWorkingFormObject($form);
 		$this->callInaccessibleMethod($object, 'processFormForTable', 'void', $form);
 		$this->assertIsArray($GLOBALS['TCA']['void']);
@@ -73,12 +79,12 @@ class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_
 	 * @test
 	 */
 	public function triggersDomainModelAnalysisWhenFormsAreRegistered() {
-		$class = 'Tx_Flux_Domain_Model_Dummy';
-		$form = Tx_Flux_Form::create();
-		Tx_Flux_Core::registerAutoFormForModelObjectClassName($class);
-		$object = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
+		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
+		$form = Form::create();
+		Core::registerAutoFormForModelObjectClassName($class);
+		$object = GeneralUtility::getUserObj('FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor');
 		$object->processData();
-		Tx_Flux_Core::registerFormForModelObjectClassName($class, $form);
+		Core::registerFormForModelObjectClassName($class, $form);
 		$object->processData();
 	}
 
@@ -87,7 +93,7 @@ class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_
 	 */
 	public function canExtensionNameFromLegacyModelClassName() {
 		$class = 'Tx_Flux_Domain_Model_Dummy';
-		$object = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
+		$object = GeneralUtility::getUserObj('FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor');
 		$extensionName = $this->callInaccessibleMethod($object, 'getExtensionNameFromModelClassName', $class);
 		$this->assertEquals('Flux', $extensionName);
 	}
@@ -96,8 +102,8 @@ class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_
 	 * @test
 	 */
 	public function canExtensionNameFromNameSpacedClassName() {
-		$class = 'Flux\\Domain\\Model\\Dummy';
-		$object = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
+		$class = 'Flux\Domain\Model\Dummy';
+		$object = GeneralUtility::getUserObj('FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor');
 		$extensionName = $this->callInaccessibleMethod($object, 'getExtensionNameFromModelClassName', $class, 'void');
 		$this->assertEquals('Flux', $extensionName);
 	}
@@ -106,8 +112,8 @@ class Tx_Flux_Backend_TableConfigurationPostProcessorTest extends Tx_Flux_Tests_
 	 * @test
 	 */
 	public function canExtensionNameFromNameSpacedClassNameWithVendor() {
-		$class = 'FluidTYPO3\\Flux\\Domain\\Model\\Dummy';
-		$object = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux']);
+		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
+		$object = GeneralUtility::getUserObj('FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor');
 		$extensionName = $this->callInaccessibleMethod($object, 'getExtensionNameFromModelClassName', $class, 'void');
 		$this->assertEquals('FluidTYPO3.Flux', $extensionName);
 	}

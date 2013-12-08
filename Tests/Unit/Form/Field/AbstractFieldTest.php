@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form\AbstractFormField;
+use FluidTYPO3\Flux\Form\AbstractFormTest;
+use FluidTYPO3\Flux\Form;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_Flux_Tests_Functional_Form_AbstractFormTest {
+abstract class AbstractFieldTest extends AbstractFormTest {
 
 	/**
 	 * @var array
@@ -90,8 +95,8 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_
 	 */
 	public function returnsEmptyLabelIfFormExtensionNameIsEmpty() {
 		$instance = $this->createInstance();
-		/** @var Tx_Flux_Form $form */
-		$form = $this->objectManager->get('Tx_Flux_Form');
+		/** @var Form $form */
+		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 		$form->add($instance);
 		$form->setExtensionName(NULL);
 		$this->performTestBuild($form);
@@ -102,8 +107,8 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_
 	 */
 	public function returnsEmptyLabelIfFormExtensionNameIsNotLoaded() {
 		$instance = $this->createInstance();
-		/** @var Tx_Flux_Form $form */
-		$form = $this->objectManager->get('Tx_Flux_Form');
+		/** @var Form $form */
+		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 		$form->add($instance);
 		$form->setExtensionName('void');
 		$this->performTestBuild($form);
@@ -135,19 +140,18 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_
 	 * @test
 	 */
 	public function canCreateFromDefinition() {
-		$properties = array($this->chainProperties);
+		$properties = $this->chainProperties;
 		$class = $this->getObjectClassName();
-		$type = implode('/', array_slice(explode('_', substr($class, 13)), 1));
-		$properties['type'] = $type;
+		$properties['type'] = implode('/', array_slice(explode('\\', $class), 4, 1));;
 		$instance = call_user_func_array(array($class, 'create'), array($properties));
-		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}
 
 	/**
 	 * @test
 	 */
 	public function throwsExceptionOnInvalidFieldTypeWhenCreatingFromDefinition() {
-		$properties = array($this->chainProperties);
+		$properties = $this->chainProperties;
 		$properties['type'] = 'InvalidType';
 		$this->setExpectedException('RuntimeException', NULL, 1375373527);
 		call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
@@ -158,11 +162,9 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_
 	 */
 	public function canCreateFromSettingsUsingFullClassName() {
 		$properties = $this->chainProperties;
-		if (TRUE === $this instanceof Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest) {
-			$properties['type'] = substr(get_class($this), 0, -4);
-		}
+		$properties['type'] = substr(get_class($this), 0, -4);
 		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
-		$this->assertInstanceOf('Tx_Flux_Form_FormInterface', $instance);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}
 
 	/**
@@ -174,8 +176,8 @@ abstract class Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest extends Tx_
 			'label' => 'Test section',
 			'type' => 'Section'
 		);
-		$section = Tx_Flux_Form_AbstractFormField::create($definition);
-		$this->assertInstanceOf('Tx_Flux_Form_Container_Section', $section);
+		$section = AbstractFormField::create($definition);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Section', $section);
 		$this->assertSame($definition['name'], $section->getName());
 	}
 

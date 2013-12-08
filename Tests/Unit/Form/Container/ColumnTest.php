@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,17 +24,20 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form\Container\AbstractContainerTest;
+use FluidTYPO3\Flux\Form\Container\Column;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Container_ColumnTest extends Tx_Flux_Tests_Functional_Form_Container_AbstractContainerTest {
+class ColumnTest extends AbstractContainerTest {
 
 	/**
 	 * @test
 	 */
 	public function canUseGetAreasMethod() {
-		/** @var Tx_Flux_Form_Container_Column $instance */
+		/** @var Column $instance */
 		$instance = $this->createInstance();
 		$this->performTestBuild($instance);
 		$this->assertEmpty($instance->getAreas());

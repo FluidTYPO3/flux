@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Field_InlineTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class InlineTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -36,7 +39,7 @@ class Tx_Flux_Form_Field_InlineTest extends Tx_Flux_Tests_Functional_Form_Field_
 		'collapseAll' => FALSE,
 		'expandSingle' => FALSE,
 		'newRecordLinkAddTitle' => FALSE,
-		'newRecordLinkPosition' => Tx_Flux_Form::POSITION_TOP,
+		'newRecordLinkPosition' => Form::POSITION_TOP,
 		'useCombination' => FALSE,
 		'useSortable' => FALSE,
 		'showPossibleLocalizationRecords' => FALSE,
@@ -44,13 +47,13 @@ class Tx_Flux_Form_Field_InlineTest extends Tx_Flux_Tests_Functional_Form_Field_
 		'showAllLocalizationLink' => FALSE,
 		'showSynchronizationLink' => FALSE,
 		'enabledControls' => array(
-			Tx_Flux_Form::CONTROL_INFO => FALSE,
-			Tx_Flux_Form::CONTROL_NEW => TRUE,
-			Tx_Flux_Form::CONTROL_DRAGDROP => TRUE,
-			Tx_Flux_Form::CONTROL_SORT => TRUE,
-			Tx_Flux_Form::CONTROL_HIDE => TRUE,
-			Tx_Flux_Form::CONTROL_DELETE => FALSE,
-			Tx_Flux_Form::CONTROL_LOCALISE => FALSE,
+			Form::CONTROL_INFO => FALSE,
+			Form::CONTROL_NEW => TRUE,
+			Form::CONTROL_DRAGDROP => TRUE,
+			Form::CONTROL_SORT => TRUE,
+			Form::CONTROL_HIDE => TRUE,
+			Form::CONTROL_DELETE => FALSE,
+			Form::CONTROL_LOCALISE => FALSE,
 		)
 	);
 

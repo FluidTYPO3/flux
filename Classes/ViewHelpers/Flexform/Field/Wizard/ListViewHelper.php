@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Wizard\ListWizard;
+
 /**
  * Field Wizard: List
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ListViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+class ListViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -44,10 +47,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_ListViewHelper extends Tx_Flux_V
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Wizard_List
+	 * @return ListWizard
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Wizard_List $component */
+		/** @var ListWizard $component */
 		$component = $this->getPreparedComponent('List');
 		$component->setTable($this->arguments['table']);
 		$component->setStoragePageUid($this->arguments['pid']);

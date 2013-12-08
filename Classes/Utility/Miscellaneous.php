@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Backend\Utility\IconUtility;
+
 /**
  * Miscellaneous Utility
  *
@@ -30,7 +33,7 @@
  * @package Flux
  * @subpackage Utility
  */
-class Tx_Flux_Utility_Miscellaneous {
+class Miscellaneous {
 
 	/**
 	* @param string $icon
@@ -39,7 +42,7 @@ class Tx_Flux_Utility_Miscellaneous {
 	*/
 	public static function getIcon($icon, $title = NULL) {
 		$configuration = array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new');
-		return \TYPO3\CMS\Backend\Utility\IconUtility::getSpriteIcon($icon, $configuration);
+		return IconUtility::getSpriteIcon($icon, $configuration);
 	}
 
 	/**

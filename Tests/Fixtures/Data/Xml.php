@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Tests\Fixtures\Data;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Fixtures_Data_Xml {
+class Xml {
 
 	const SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>

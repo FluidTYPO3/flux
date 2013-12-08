@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Field_InputTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractFieldTest {
+class InputTest extends AbstractFieldTest {
 
 	/**
 	 * @var array

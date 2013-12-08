@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @package Flux
  * @subpackage Form
  */
-abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_AbstractFormField implements Tx_Flux_Form_MultiValueFieldInterface {
+abstract class AbstractMultiValueFormField extends AbstractFormField implements MultiValueFieldInterface {
 
 	/**
 	 * @var integer
@@ -76,7 +77,7 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 
 	/**
 	 * @param integer $size
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setSize($size) {
 		$this->size = $size;
@@ -92,7 +93,7 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 
 	/**
 	 * @param boolean $multiple
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setMultiple($multiple) {
 		$this->multiple = $multiple;
@@ -108,7 +109,7 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 
 	/**
 	 * @param integer $maxItems
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setMaxItems($maxItems) {
 		$this->maxItems = $maxItems;
@@ -124,7 +125,7 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 
 	/**
 	 * @param integer $minItems
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setMinItems($minItems) {
 		$this->minItems = $minItems;
@@ -140,7 +141,7 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 
 	/**
 	 * @param string $itemListStyle
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setItemListStyle($itemListStyle) {
 		$this->itemListStyle = $itemListStyle;
@@ -156,7 +157,7 @@ abstract class Tx_Flux_Form_AbstractMultiValueFormField extends Tx_Flux_Form_Abs
 
 	/**
 	 * @param string $selectedListStyle
-	 * @return Tx_Flux_Form_MultiValueFieldInterface
+	 * @return MultiValueFieldInterface
 	 */
 	public function setSelectedListStyle($selectedListStyle) {
 		$this->selectedListStyle = $selectedListStyle;

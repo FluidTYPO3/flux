@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Provider;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,27 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Service\ContentService;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\Path;
+use FluidTYPO3\Flux\Utility\RecursiveArray;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+
 /**
  * @package Flux
  * @subpackage Provider
  */
-class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInterface {
+class AbstractProvider implements ProviderInterface {
 
 	/**
 	 * @var array
@@ -113,64 +130,64 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	protected $priority = 50;
 
 	/**
-	 * @var Tx_Flux_Form
+	 * @var Form
 	 */
 	protected $form = NULL;
 
 	/**
-	 * @var Tx_Flux_Grid
+	 * @var Grid
 	 */
 	protected $grid = NULL;
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+	 * @var ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Flux_Service_ContentService
+	 * @var ContentService
 	 */
 	protected $contentService;
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
+	 * @param ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
+	 * @param ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
 	/**
-	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
 	/**
-	 * @param Tx_Flux_Service_ContentService $contentService
+	 * @param ContentService $contentService
 	 * @return void
 	 */
-	public function injectContentService(Tx_Flux_Service_ContentService $contentService) {
+	public function injectContentService(ContentService $contentService) {
 		$this->contentService = $contentService;
 	}
 
@@ -183,16 +200,16 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			$this->setName($settings['name']);
 		}
 		if (TRUE === isset($settings['form'])) {
-			$form = Tx_Flux_Form::create($settings['form']);
+			$form = Form::create($settings['form']);
 			if (TRUE === isset($settings['extensionKey'])) {
 				$extensionKey = $settings['extensionKey'];
-				$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+				$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
 				$form->setExtensionName($extensionName);
 			}
 			$settings['form'] = $form;
 		}
 		if (TRUE === isset($settings['grid'])) {
-			$settings['grid'] = Tx_Flux_Form_Container_Grid::create($settings['grid']);
+			$settings['grid'] = Grid::create($settings['grid']);
 		}
 		foreach ($settings as $name => $value) {
 			$this->$name = $value;
@@ -231,7 +248,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 
 	/**
 	 * @param array $row
-	 * @return Tx_Flux_Form|NULL
+	 * @return Form|NULL
 	 */
 	public function getForm(array $row) {
 		if (NULL !== $this->form) {
@@ -245,7 +262,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$formName = 'form';
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
-		$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
@@ -255,7 +272,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 
 	/**
 	 * @param array $row
-	 * @return Tx_Flux_Form_Container_Grid
+	 * @return FluidTYPO3\Flux\Form\Container\Grid
 	 */
 	public function getGrid(array $row) {
 		if (NULL !== $this->grid) {
@@ -266,7 +283,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$gridName = 'grid';
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
-		$extensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
@@ -334,7 +351,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	public function getTemplatePathAndFilename(array $row) {
 		unset($row);
 		if (0 === strpos($this->templatePathAndFilename, 'EXT:') || 0 !== strpos($this->templatePathAndFilename, '/')) {
-			return \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
+			return GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
 		}
 		return $this->templatePathAndFilename;
 	}
@@ -365,7 +382,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			self::$cache[$cacheKey] = $inheritedConfiguration;
 			return (array) $inheritedConfiguration;
 		}
-		$merged = Tx_Flux_Utility_RecursiveArray::merge($inheritedConfiguration, $immediateConfiguration);
+		$merged = RecursiveArray::merge($inheritedConfiguration, $immediateConfiguration);
 		self::$cache[$cacheKey] = $merged;
 		return $merged;
 	}
@@ -398,23 +415,23 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		}
 		if (FALSE === is_array($paths)) {
 			$extensionKey = $this->getExtensionKey($row);
-			if (FALSE === empty($extensionKey) && TRUE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey)) {
+			if (FALSE === empty($extensionKey) && TRUE === ExtensionManagementUtility::isLoaded($extensionKey)) {
 				$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 			}
 		}
 
 		if (NULL !== $paths && FALSE === is_array($paths)) {
-			$this->configurationService->message('Template paths resolved for "' . $extensionKey . '" was not an array.', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_WARNING);
+			$this->configurationService->message('Template paths resolved for "' . $extensionKey . '" was not an array.', GeneralUtility::SYSLOG_SEVERITY_WARNING);
 			$paths = NULL;
 		}
 
 		if (NULL === $paths) {
 			$extensionKey = $this->getExtensionKey($row);
-			if (FALSE === empty($extensionKey) && TRUE === \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extensionKey)) {
+			if (FALSE === empty($extensionKey) && TRUE === ExtensionManagementUtility::isLoaded($extensionKey)) {
 				$paths = array(
-					\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Templates/'),
-					\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Partials/'),
-					\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Layouts/')
+					ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Templates/'),
+					ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Partials/'),
+					ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Layouts/')
 				);
 			} else {
 				$paths = array();
@@ -422,7 +439,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		}
 
 		if (TRUE === is_array($paths)) {
-			$paths = Tx_Flux_Utility_Path::translatePath($paths);
+			$paths = Path::translatePath($paths);
 		}
 
 		return $paths;
@@ -468,10 +485,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 *
 	 * @param array $row The record data, by reference. Changing fields' values changes the record's values before display
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the t3lib_TCEmain object that is currently displaying the record
+	 * @param DataHandler $reference A reference to the \TYPO3\CMS\Core\DataHandling\DataHandler object that is currently displaying the record
 	 * @return void
 	 */
-	public function preProcessRecord(array &$row, $id, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
+	public function preProcessRecord(array &$row, $id, DataHandler $reference) {
 		$fieldName = $this->getFieldName($row);
 		$tableName = $this->getTableName($row);
 		if (TRUE === is_array($row[$fieldName]['data']) && TRUE === is_array($row[$fieldName]['data']['options']['lDEF'])) {
@@ -493,10 +510,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @param string $operation TYPO3 operation identifier, i.e. "update", "new" etc.
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
 	 * @param array $row the record data, by reference. Changing fields' values changes the record's values just before saving
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the t3lib_TCEmain object that is currently saving the record
+	 * @param DataHandler $reference A reference to the \TYPO3\CMS\Core\DataHandling\DataHandler object that is currently saving the record
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
+	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference) {
 		if ('update' === $operation) {
 			$fieldName = $this->getFieldName((array) $reference->datamap[$this->tableName][$id]);
 			if (NULL === $fieldName) {
@@ -525,7 +542,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 					}
 				}
 			}
-			$dom = new DOMDocument();
+			$dom = new \DOMDocument();
 			$dom->loadXML($row[$fieldName]);
 			$dom->preserveWhiteSpace = FALSE;
 			$dom->formatOutput = TRUE;
@@ -545,10 +562,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @param string $status TYPO3 operation identifier, i.e. "new" etc.
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
 	 * @param array $row The record's data, by reference. Changing fields' values changes the record's values just before saving after operation
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the t3lib_TCEmain object that is currently performing the database operation
+	 * @param DataHandler $reference A reference to the \TYPO3\CMS\Core\DataHandling\DataHandler object that is currently performing the database operation
 	 * @return void
 	 */
-	public function postProcessDatabaseOperation($status, $id, &$row, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
+	public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference) {
 		unset($status, $id, $row, $reference);
 	}
 
@@ -560,10 +577,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @param integer $id
 	 * @param array $row
 	 * @param integer $relativeTo
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
+	 * @param DataHandler $reference
 	 * @return void
 	 */
-	public function preProcessCommand($command, $id, array &$row, &$relativeTo, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
+	public function preProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference) {
 		unset($command, $id, $row, $relativeTo, $reference);
 	}
 
@@ -575,10 +592,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	 * @param integer $id
 	 * @param array $row
 	 * @param integer $relativeTo
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
+	 * @param DataHandler $reference
 	 * @return void
 	 */
-	public function postProcessCommand($command, $id, array &$row, &$relativeTo, \TYPO3\CMS\Core\DataHandling\DataHandler $reference) {
+	public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference) {
 		unset($command, $id, $row, $relativeTo, $reference);
 	}
 
@@ -649,11 +666,11 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$extensionKey = $this->getExtensionKey($row);
 		$flexformVariables = $this->getFlexFormValues($row);
 		$templateVariables = $this->getTemplateVariables($row);
-		$variables = Tx_Flux_Utility_RecursiveArray::merge($templateVariables, $flexformVariables);
+		$variables = RecursiveArray::merge($templateVariables, $flexformVariables);
 		$paths = $this->getTemplatePaths($row);
 		$form = $this->getForm($row);
 		$formLabel = $form->getLabel();
-		$label = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($formLabel, $extensionKey);
+		$label = LocalizationUtility::translate($formLabel, $extensionKey);
 		$variables['label'] = $label;
 		$variables['row'] = $row;
 
@@ -661,7 +678,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$view->setTemplatePathAndFilename($templatePathAndFilename);
 
 		$existingContentObject = $this->configurationManager->getContentObject();
-		$contentObject = new tslib_cObj();
+		$contentObject = new ContentObjectRenderer();
 		$contentObject->start($row, $this->getTableName($row));
 		$this->configurationManager->setContentObject($contentObject);
 		$previewContent = $view->renderStandaloneSection('Preview', $variables);
@@ -675,15 +692,15 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	}
 
 	/**
-	 * @param Tx_Flux_Form $form
+	 * @param Form $form
 	 * @param array $row
-	 * @return Tx_Flux_Form
+	 * @return Form
 	 */
-	protected function setDefaultValuesInFieldsWithInheritedValues(Tx_Flux_Form $form, array $row) {
+	protected function setDefaultValuesInFieldsWithInheritedValues(Form $form, array $row) {
 		foreach ($form->getFields() as $field) {
 			$name = $field->getName();
 			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);
-			if (NULL !== $inheritedValue && TRUE === $field instanceof Tx_Flux_Form_FieldInterface) {
+			if (NULL !== $inheritedValue && TRUE === $field instanceof FieldInterface) {
 				$field->setDefault($inheritedValue);
 			}
 		}
@@ -699,9 +716,9 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 		$tree = $this->getInheritanceTree($row);
 		$inheritedConfiguration = $this->getMergedConfiguration($tree);
 		if (FALSE === strpos($propertyPath, '.')) {
-			return TRUE === isset($inheritedConfiguration[$propertyPath]) ? \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getProperty($inheritedConfiguration, $propertyPath) : NULL;
+			return TRUE === isset($inheritedConfiguration[$propertyPath]) ? ObjectAccess::getProperty($inheritedConfiguration, $propertyPath) : NULL;
 		}
-		return \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($inheritedConfiguration, $propertyPath);
+		return ObjectAccess::getPropertyPath($inheritedConfiguration, $propertyPath);
 	}
 
 	/**
@@ -728,7 +745,7 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 			$values = $this->getFlexFormValues($branch);
 			foreach ($fields as $field) {
 				$name = $field->getName();
-				if (FALSE === $field instanceof Tx_Flux_Form_FieldInterface) {
+				if (FALSE === $field instanceof FieldInterface) {
 					continue;
 				}
 				$stop = (TRUE === $field->getStopInheritance());
@@ -740,10 +757,10 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 					unset($values[$name]);
 				}
 			}
-			$data = Tx_Flux_Utility_RecursiveArray::merge($data, $values);
+			$data = RecursiveArray::merge($data, $values);
 		}
 		if (TRUE === $mergeToCache && TRUE === $this->hasCacheForMergedConfiguration($cacheKey)) {
-			$data = Tx_Flux_Utility_RecursiveArray::merge(self::$cache[$cacheKey], $data);
+			$data = RecursiveArray::merge(self::$cache[$cacheKey], $data);
 		}
 		self::$cache[$cacheKey] = $data;
 		return $data;
@@ -872,16 +889,16 @@ class Tx_Flux_Provider_AbstractProvider implements Tx_Flux_Provider_ProviderInte
 	}
 
 	/**
-	 * @param Tx_Flux_Form $form
+	 * @param Form $form
 	 */
-	public function setForm(Tx_Flux_Form $form) {
+	public function setForm(Form $form) {
 		$this->form = $form;
 	}
 
 	/**
-	 * @param Tx_Flux_Form_Container_Grid $grid
+	 * @param Grid $grid
 	 */
-	public function setGrid(Tx_Flux_Form_Container_Grid $grid) {
+	public function setGrid(Grid $grid) {
 		$this->grid = $grid;
 	}
 

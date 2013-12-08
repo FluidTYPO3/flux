@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,9 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Container\Container;
+use FluidTYPO3\Flux\ViewHelpers\Flexform\Field\AbstractFieldViewHelper;
+
 /**
  * ### FlexForm Field Container element
  *
@@ -37,7 +41,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_ContainerViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
+class ContainerViewHelper extends AbstractFieldViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -56,8 +60,8 @@ class Tx_Flux_ViewHelpers_Flexform_ContainerViewHelper extends Tx_Flux_ViewHelpe
 	 * @return void
 	 */
 	public function render() {
-		/** @var Tx_Flux_Form_Container_Container $container */
-		$container = $this->objectManager->get('Tx_Flux_Form_Container_Container');
+		/** @var Container $container */
+		$container = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Container');
 		$container->setName($this->arguments['name']);
 		$container->setLabel($this->arguments['label']);
 		$existingContainer = $this->getContainer();

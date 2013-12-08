@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Wizard\Suggest;
+
 /**
  * Field Wizard: Suggest
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SuggestViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+class SuggestViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -50,10 +53,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SuggestViewHelper extends Tx_Flu
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Wizard_Suggest
+	 * @return Suggest
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Wizard_Suggest $component */
+		/** @var Suggest $component */
 		$component = $this->getPreparedComponent('Suggest');
 		$component->setTable($this->arguments['table']);
 		$component->setStoragePageUids($this->arguments['pidList']);

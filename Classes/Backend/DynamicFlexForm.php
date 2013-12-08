@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Dynamic FlexForm insertion hook class
  *
@@ -31,7 +34,7 @@
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_DynamicFlexForm {
+class DynamicFlexForm {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
@@ -39,7 +42,7 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var \FluidTYPO3\Flux\Service\FluxService
 	 */
 	protected $configurationService;
 
@@ -47,9 +50,9 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		$this->configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
-		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$this->configurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
+		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 	}
 
 	/**
@@ -61,7 +64,6 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * @param string $table
 	 * @param string $fieldName
 	 * @return void
-	 * @throws Exception
 	 */
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName) {
 		if (empty($fieldName) === TRUE) {
@@ -73,11 +75,7 @@ class Tx_Flux_Backend_DynamicFlexForm {
 		if (NULL === $provider) {
 			return;
 		}
-		try {
-			$provider->postProcessDataStructure($row, $dataStructArray, $conf);
-		} catch (Exception $e) {
-			$this->configurationService->debug($e);
-		}
+		$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 	}
 
 }

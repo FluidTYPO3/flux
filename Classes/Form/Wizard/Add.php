@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractWizard;
+
 /**
  * @package Flux
  * @subpackage Form\Wizard
  */
-class Tx_Flux_Form_Wizard_Add extends Tx_Flux_Form_AbstractWizard {
+class Add extends AbstractWizard {
 
 	/**
 	 * @var string
@@ -78,7 +81,7 @@ class Tx_Flux_Form_Wizard_Add extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param boolean $setValue
-	 * @return Tx_Flux_Form_Wizard_Add
+	 * @return Add
 	 */
 	public function setSetValue($setValue) {
 		$this->setValue = $setValue;
@@ -94,7 +97,7 @@ class Tx_Flux_Form_Wizard_Add extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param integer $storagePageUid
-	 * @return Tx_Flux_Form_Wizard_Add
+	 * @return Add
 	 */
 	public function setStoragePageUid($storagePageUid) {
 		$this->storagePageUid = $storagePageUid;
@@ -110,7 +113,7 @@ class Tx_Flux_Form_Wizard_Add extends Tx_Flux_Form_AbstractWizard {
 
 	/**
 	 * @param string $table
-	 * @return Tx_Flux_Form_Wizard_Add
+	 * @return Add
 	 */
 	public function setTable($table) {
 		$this->table = $table;

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +31,7 @@
  * @package Flux
  * @subpackage Utility
  */
-class Tx_Flux_Utility_RecursiveArray {
+class RecursiveArray {
 
 	/**
 	 * @param array $array1

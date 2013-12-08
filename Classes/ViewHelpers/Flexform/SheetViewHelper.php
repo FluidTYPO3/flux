@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +24,9 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Container\Sheet;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+
 /**
  * FlexForm sheet ViewHelper
  *
@@ -31,7 +35,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
+class SheetViewHelper extends AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize arguments
@@ -54,8 +58,8 @@ class Tx_Flux_ViewHelpers_Flexform_SheetViewHelper extends Tx_Flux_ViewHelpers_A
 			$sheet = $form->get($this->arguments['name']);
 			$this->setContainer($sheet);
 		} else {
-			/** @var Tx_Flux_Form_Container_Sheet $sheet */
-			$sheet = $this->objectManager->get('Tx_Flux_Form_Container_Sheet');
+			/** @var Sheet $sheet */
+			$sheet = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Sheet');
 			$sheet->setName($this->arguments['name']);
 			$sheet->setLabel($this->arguments['label']);
 			$this->getForm()->add($sheet);

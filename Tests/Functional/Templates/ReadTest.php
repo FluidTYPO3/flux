@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Tests\Functional\Templates;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Tests_Functional_Templates_ReadTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class ReadTest extends AbstractTestCase {
 
 	/**
 	 * @test

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Field_TextTest extends Tx_Flux_Form_Field_InputTest {
+class TextTest extends InputTest {
 
 	/**
 	 * @var array
@@ -50,7 +51,7 @@ class Tx_Flux_Form_Field_TextTest extends Tx_Flux_Form_Field_InputTest {
 	 * @test
 	 */
 	public function canChainSetterForEnableRichText() {
-		/** @var Tx_Flux_Form_Field_Text $instance */
+		/** @var Text $instance */
 		$instance = $this->createInstance();
 		$chained = $instance->setEnableRichText(TRUE);
 		$this->assertSame($instance, $chained);
@@ -62,7 +63,7 @@ class Tx_Flux_Form_Field_TextTest extends Tx_Flux_Form_Field_InputTest {
 	 * @test
 	 */
 	public function canChainSetterForDefaultExtras() {
-		/** @var Tx_Flux_Form_Field_Text $instance */
+		/** @var Text $instance */
 		$instance = $this->createInstance();
 		$chained = $instance->setDefaultExtras('void');
 		$this->assertSame($instance, $chained);
@@ -74,7 +75,7 @@ class Tx_Flux_Form_Field_TextTest extends Tx_Flux_Form_Field_InputTest {
 	 * @test
 	 */
 	public function canBuildConfigurationWithEnableWithTextWithoutDefaultExtras() {
-		/** @var Tx_Flux_Form_Field_Text $instance */
+		/** @var Text $instance */
 		$instance = $this->createInstance();
 		$instance->setDefaultExtras(NULL)->setEnableRichText(TRUE);
 		$this->performTestBuild($instance);

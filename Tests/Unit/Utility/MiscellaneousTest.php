@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Utility;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Utility_MiscellaneousTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class MiscellaneousTest extends AbstractTestCase {
 
 	/**
 	 * Setup
@@ -44,7 +47,7 @@ class Tx_Flux_Utility_MiscellaneousTest extends Tx_Flux_Tests_AbstractFunctional
 		$clipBoardData = array(
 			'current' => 'normal',
 			'normal' => array(
-				'el' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren
+				'el' => \FluidTYPO3\Flux\Tests\Fixtures\Data\Records::$contentRecordWithoutParentAndWithoutChildren
 			)
 		);
 		return $clipBoardData;
@@ -55,10 +58,10 @@ class Tx_Flux_Utility_MiscellaneousTest extends Tx_Flux_Tests_AbstractFunctional
 	 */
 	public function canCreateIconWithUrl() {
 		$clipBoardData = $this->getClipBoardDataFixture();
-		Tx_Flux_Utility_ClipBoard::setClipBoardData($clipBoardData);
-		$iconWithUrl = Tx_Flux_Utility_ClipBoard::createIconWithUrl('1-2-3');
+		ClipBoard::setClipBoardData($clipBoardData);
+		$iconWithUrl = ClipBoard::createIconWithUrl('1-2-3');
 		$this->assertNotEmpty($iconWithUrl);
-		Tx_Flux_Utility_ClipBoard::clearClipBoardData();
+		ClipBoard::clearClipBoardData();
 	}
 
 	/**
@@ -67,10 +70,10 @@ class Tx_Flux_Utility_MiscellaneousTest extends Tx_Flux_Tests_AbstractFunctional
 	public function canCreateIconWithUrlAsReference() {
 		$clipBoardData = $this->getClipBoardDataFixture();
 		$clipBoardData['normal']['mode'] = 'reference';
-		Tx_Flux_Utility_ClipBoard::setClipBoardData($clipBoardData);
-		$iconWithUrl = Tx_Flux_Utility_ClipBoard::createIconWithUrl('1-2-3', TRUE);
+		ClipBoard::setClipBoardData($clipBoardData);
+		$iconWithUrl = ClipBoard::createIconWithUrl('1-2-3', TRUE);
 		$this->assertNotEmpty($iconWithUrl);
-		Tx_Flux_Utility_ClipBoard::clearClipBoardData();
+		ClipBoard::clearClipBoardData();
 	}
 
 	/**
@@ -78,11 +81,11 @@ class Tx_Flux_Utility_MiscellaneousTest extends Tx_Flux_Tests_AbstractFunctional
 	 */
 	public function canCreateIconWithUrlAsReferenceReturnsEmptyStringIfModeIsCut() {
 		$clipBoardData = $this->getClipBoardDataFixture();
-		Tx_Flux_Utility_ClipBoard::setClipBoardData($clipBoardData);
-		$iconWithUrl = Tx_Flux_Utility_ClipBoard::createIconWithUrl('1-2-3', TRUE);
+		ClipBoard::setClipBoardData($clipBoardData);
+		$iconWithUrl = ClipBoard::createIconWithUrl('1-2-3', TRUE);
 		$this->assertIsString($iconWithUrl);
 		$this->assertEmpty($iconWithUrl);
-		Tx_Flux_Utility_ClipBoard::clearClipBoardData();
+		ClipBoard::clearClipBoardData();
 	}
 
 }

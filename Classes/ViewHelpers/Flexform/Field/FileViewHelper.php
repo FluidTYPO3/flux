@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractMultiValueFieldViewHelper {
+class FileViewHelper extends AbstractMultiValueFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -45,10 +46,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_FileViewHelper extends Tx_Flux_ViewHelp
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Field_File
+	 * @return File
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Field_File $component */
+		/** @var File $component */
 		$component = $this->getPreparedComponent('File');
 		$component->setMaxSize($this->arguments['maxSize']);
 		$component->setDisallowed($this->arguments['disallowed']);

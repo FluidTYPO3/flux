@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\AbstractFormField;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_Flex extends Tx_Flux_Form_AbstractFormField implements Tx_Flux_Form_FieldInterface {
+class Flex extends AbstractFormField implements FieldInterface {
 
 	/**
 	 * @return array

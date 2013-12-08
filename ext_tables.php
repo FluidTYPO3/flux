@@ -15,7 +15,7 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF)
 			'config' => array (
 				'type' => 'select',
 				'default' => '',
-				'itemsProcFunc' => 'EXT:flux/Classes/Backend/AreaListItemsProcessor.php:Tx_Flux_Backend_AreaListItemsProcessor->itemsProcFunc'
+				'itemsProcFunc' => 'EXT:flux/Classes/Backend/AreaListItemsProcessor.php:FluidTYPO3\Flux\Backend\AreaListItemsProcessor->itemsProcFunc'
 			)
 		),
 		'tx_flux_parent' => array (
@@ -44,4 +44,4 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF)
 
 $TCA['tt_content']['columns']['colPos']['config']['items'][] = array('LLL:EXT:flux/locallang.xml:tt_content.tx_flux_container', '-42');
 
-Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Provider_ContentProvider');
+\FluidTYPO3\Flux\Core::registerConfigurationProvider('FluidTYPO3\Flux\Provider\ContentProvider');

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Provider;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,20 +24,24 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Provider_ContentProviderTest extends Tx_Flux_Provider_AbstractProviderTest {
+class ContentProviderTest extends AbstractProviderTest {
 
 	/**
 	 * @test
 	 */
 	public function prunesEmptyFieldNodesOnRecordSave() {
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$row['pi_flexform'] = Tx_Flux_Tests_Fixtures_Data_Xml::EXPECTING_FLUX_PRUNING;
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row['pi_flexform'] = Xml::EXPECTING_FLUX_PRUNING;
 		$provider = $this->getConfigurationProviderInstance();
-		$tceMain = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$provider->postProcessRecord('update', $row['uid'], $row, $tceMain);
 		$this->assertNotContains('<field index=""></field>', $row['pi_flexform']);
 	}
@@ -45,9 +50,9 @@ class Tx_Flux_Provider_ContentProviderTest extends Tx_Flux_Provider_AbstractProv
 	 * @test
 	 */
 	public function triggersContentManipulatorOnDatabaseOperationNew() {
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
-		$tceMain = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$provider->postProcessDatabaseOperation('new', $row['uid'], $row, $tceMain);
 	}
 
@@ -56,9 +61,9 @@ class Tx_Flux_Provider_ContentProviderTest extends Tx_Flux_Provider_AbstractProv
 	 */
 	public function triggersContentManipulatorOnPasteCommandWithCallbackInUrl() {
 		$_GET['CB'] = array('paste' => 'tt_content|0');
-		$row = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
-		$tceMain = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$relativeUid = 0;
 		$provider->postProcessCommand('move', 0, $row, $relativeUid, $tceMain);
 	}

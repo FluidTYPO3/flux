@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,10 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+
 /**
  * @package Flux
  */
-class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux_Form_FieldContainerInterface {
+class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface {
 
 	const POSITION_TOP = 'top';
 	const POSITION_BOTTOM = 'bottom';
@@ -95,7 +99,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 
 	/**
 	 * @param array $settings
-	 * @return Tx_Flux_Form
+	 * @return Form
 	 */
 	public static function create(array $settings = array()) {
 		$form = parent::create($settings);
@@ -104,7 +108,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 				if (FALSE === isset($sheetSettings['name'])) {
 					$sheetSettings['name'] = $sheetName;
 				}
-				$sheet = Tx_Flux_Form_Container_Sheet::create($sheetSettings);
+				$sheet = Form\Container\Sheet::create($sheetSettings);
 				$form->add($sheet);
 			}
 		}
@@ -115,19 +119,19 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	 * @return void
 	 */
 	public function initializeObject() {
-		/** @var Tx_Flux_Form_Container_Sheet $defaultSheet */
-		$defaultSheet = $this->objectManager->get('Tx_Flux_Form_Container_Sheet');
+		/** @var Form\Container\Sheet $defaultSheet */
+		$defaultSheet = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Sheet');
 		$defaultSheet->setName('options');
-		$defaultSheet->setLabel(\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('tt_content.tx_flux_options', 'Flux'));
+		$defaultSheet->setLabel(LocalizationUtility::translate('tt_content.tx_flux_options', 'Flux'));
 		$this->add($defaultSheet);
 	}
 
 	/**
-	 * @param Tx_Flux_Form_FormInterface $child
-	 * @return Tx_Flux_Form_FormInterface
+	 * @param Form\FormInterface $child
+	 * @return Form\FormInterface
 	 */
-	public function add(Tx_Flux_Form_FormInterface $child) {
-		if (FALSE === $child instanceof Tx_Flux_Form_Container_Sheet) {
+	public function add(Form\FormInterface $child) {
+		if (FALSE === $child instanceof Form\Container\Sheet) {
 			$this->last()->add($child);
 		} else {
 			$children = $this->children;
@@ -178,7 +182,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 
 	/**
 	 * @param boolean $includeEmpty
-	 * @return Tx_Flux_Form_Container_Sheet[]
+	 * @return Form\Container\Sheet[]
 	 */
 	public function getSheets($includeEmpty = FALSE) {
 		$sheets = array();
@@ -193,7 +197,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	}
 
 	/**
-	 * @return Tx_Flux_Form_FieldInterface[]
+	 * @return Form\FieldInterface[]
 	 */
 	public function getFields() {
 		$fields = array();
@@ -206,7 +210,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 
 	/**
 	 * @param boolean $compact
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return Form\FormInterface
 	 */
 	public function setCompact($compact) {
 		$this->compact = $compact;
@@ -222,7 +226,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 
 	/**
 	 * @param boolean $enabled
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return Form\FormInterface
 	 */
 	public function setEnabled($enabled) {
 		$this->enabled = $enabled;
@@ -238,7 +242,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 
 	/**
 	 * @param string $extensionName
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return Form\FormInterface
 	 */
 	public function setExtensionName($extensionName) {
 		$this->extensionName = $extensionName;
@@ -254,7 +258,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 
 	/**
 	 * @param string $group
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return Form\FormInterface
 	 */
 	public function setGroup($group) {
 		$this->group = $group;
@@ -270,7 +274,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 
 	/**
 	 * @param string $icon
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return Form\FormInterface
 	 */
 	public function setIcon($icon) {
 		$this->icon = $icon;
@@ -283,14 +287,14 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	public function getIcon() {
 		$icon = $this->icon;
 		if (0 === strpos($icon, 'EXT:')) {
-			$icon = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($icon);
+			$icon = GeneralUtility::getFileAbsFileName($icon);
 		}
 		return $icon;
 	}
 
 	/**
 	 * @param string $id
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return Form\FormInterface
 	 */
 	public function setId($id) {
 		$allowed = 'a-z0-9_';
@@ -298,7 +302,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 		if (preg_match($pattern, $id)) {
 			$this->configurationService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
 				are: "' . $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent
-				you from utilising some features, fx automatic LLL reference building, but is not fatal', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_NOTICE);
+				you from utilising some features, fx automatic LLL reference building, but is not fatal', GeneralUtility::SYSLOG_SEVERITY_NOTICE);
 		}
 		$this->id = $id;
 		if (TRUE === empty($this->name)) {
@@ -316,7 +320,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 
 	/**
 	 * @param string $description
-	 * @return Tx_Flux_Form_FormInterface
+	 * @return Form\FormInterface
 	 */
 	public function setDescription($description) {
 		$this->description = $description;
@@ -329,7 +333,7 @@ class Tx_Flux_Form extends Tx_Flux_Form_AbstractFormContainer implements Tx_Flux
 	public function getDescription() {
 		$description = $this->description;
 		if (TRUE === empty($description)) {
-			$extensionKey = \TYPO3\CMS\Core\Utility\GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
+			$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
 			$description = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xml:flux.' . $this->id . '.description';
 		}
 		return $description;

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Form_Wizard_AddTest extends Tx_Flux_Tests_Functional_Form_Field_AbstractWizardTest {
+class AddTest extends AbstractWizardTest {
 
 	/**
 	 * @var array

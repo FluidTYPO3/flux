@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Grid;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Container\Column;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFlexformViewHelper;
+
 /**
  * Flexform Grid Column ViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Grid
  */
-class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_ViewHelpers_AbstractFlexformViewHelper {
+class ColumnViewHelper extends AbstractFlexformViewHelper {
 
 	/**
 	 * Initialize
@@ -48,7 +52,7 @@ class Tx_Flux_ViewHelpers_Flexform_Grid_ColumnViewHelper extends Tx_Flux_ViewHel
 	 * @return string
 	 */
 	public function render() {
-		/** @var Tx_Flux_Form_Container_Column $column */
+		/** @var Column $column */
 		$column = $this->getForm()->createContainer('Column', $this->arguments['name'], $this->arguments['label']);
 		$column->setColspan($this->arguments['colspan']);
 		$column->setRowspan($this->arguments['rowspan']);

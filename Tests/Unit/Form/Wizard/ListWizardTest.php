@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Wizard;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,33 +28,19 @@
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Utility_AutoloadTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class ListWizardTest extends AbstractWizardTest {
 
 	/**
-	 * @test
+	 * @var array
 	 */
-	public function canCreateAutoloadRegistry() {
-		$registry = Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
-		$this->assertIsArray($registry);
-		$this->assertGreaterThan(0, count($registry));
-	}
-
-	/**
-	 * @test
-	 */
-	public function canGetCachedAutoloadRegistry() {
-		Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
-		$this->assertFileExists(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('typo3temp/flux-manifest.cache'));
-		$registry = Tx_Flux_Utility_Autoload::getAutoloadRegistryForExtension('flux');
-		$this->assertIsArray($registry);
-		$this->assertGreaterThan(0, count($registry));
-	}
-
-	/**
-	 * @test
-	 */
-	public function canResetAutoloadRegistry() {
-		Tx_Flux_Utility_Autoload::resetAutoloadingForExtension('flux');
-	}
+	protected $chainProperties = array(
+		'name' => 'test',
+		'label' => 'Test field',
+		'hideParent' => FALSE,
+		'table' => 'pages',
+		'height' => 600,
+		'width' => 600,
+		'storagePageUid' => 1
+	);
 
 }

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_UserFuncViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_AbstractFieldViewHelper {
+class UserFuncViewHelper extends AbstractFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -44,10 +45,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_UserFuncViewHelper extends Tx_Flux_View
 	/**
 	 * Render method
 	 * @param string $type
-	 * @return Tx_Flux_Form_Field_UserFunction
+	 * @return UserFunction
 	 */
 	public function getComponent($type = 'UserFunction') {
-		/** @var Tx_Flux_Form_Field_UserFunction $user */
+		/** @var UserFunction $user */
 		$user = $this->getPreparedComponent($type);
 		$user->setFunction($this->arguments['userFunc']);
 		$user->setArguments($this->arguments['arguments']);

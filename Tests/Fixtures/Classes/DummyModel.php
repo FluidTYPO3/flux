@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Domain\Model;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,33 +24,69 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+
 /**
+ * @Flux\Control\Hide
+ * @Flux\Control\Delete
+ * @Flux\Control\StartTime
+ * @Flux\Control\EndTime
+ * @Flux\Control\FrontendUserGroup
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Controller_ContentController extends Tx_Flux_Controller_AbstractFluxController {
+class Dummy extends AbstractEntity {
 
 	/**
-	 * Fake Action
-	 *
+	 * @Flux\Form\Field dateTime
+	 * @Flux\Form\Sheet options
+	 * @var DateTime
+	 */
+	protected $crdate;
+
+	/**
+	 * @Flux\Label
+	 * @Flux\Form\Sheet options
+	 * @Flux\Form\Field input(size: 40)
+	 * @var string
+	 */
+	protected $title;
+
+	/**
+	 * @param DateTime $crdate
 	 * @return void
 	 */
-	public function fakeAction() {
+	public function setCrdate($crdate) {
+		$this->crdate = $crdate;
 	}
 
 	/**
-	 * @return void
+	 * @return \DateTime
 	 */
-	public function fakeWithoutDescriptionAction() {
+	public function getCrdate() {
+		return $this->crdate;
 	}
 
 	/**
-	 * Fake Action
-	 *
-	 * @param string $required
+	 * @param string $title
 	 * @return void
 	 */
-	public function fakeWithRequiredArgumentAction($required) {
+	public function setTitle($title) {
+		$this->title = $title;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->title;
+	}
+
+	/**
+	 * @return NULL
+	 */
+	public function getThisMethodIsAnIgnoredGetter() {
+		return NULL;
 	}
 
 }

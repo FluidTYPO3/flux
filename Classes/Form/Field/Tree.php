@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractRelationFormField;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_Tree extends Tx_Flux_Form_AbstractRelationFormField {
+class Tree extends AbstractRelationFormField {
 
 	/**
 	 * @var string
@@ -80,7 +83,7 @@ class Tx_Flux_Form_Field_Tree extends Tx_Flux_Form_AbstractRelationFormField {
 
 	/**
 	 * @param string $parentField
-	 * @return Tx_Flux_Form_Field_Tree
+	 * @return Tree
 	 */
 	public function setParentField($parentField) {
 		$this->parentField = $parentField;
@@ -96,7 +99,7 @@ class Tx_Flux_Form_Field_Tree extends Tx_Flux_Form_AbstractRelationFormField {
 
 	/**
 	 * @param integer $width
-	 * @return Tx_Flux_Form_Field_Tree
+	 * @return Tree
 	 */
 	public function setWidth($width) {
 		$this->width = $width;
@@ -112,7 +115,7 @@ class Tx_Flux_Form_Field_Tree extends Tx_Flux_Form_AbstractRelationFormField {
 
 	/**
 	 * @param boolean $showHeader
-	 * @return Tx_Flux_Form_Field_Tree
+	 * @return Tree
 	 */
 	public function setShowHeader($showHeader) {
 		$this->showHeader = $showHeader;

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Wizard\Slider;
+
 /**
  * Field Wizard: Slider
  *
  * @package Flux
  * @subpackage ViewHelpers/Flexform/Field/Wizard
  */
-class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SliderViewHelper extends Tx_Flux_ViewHelpers_Flexform_Field_Wizard_AbstractWizardViewHelper {
+class SliderViewHelper extends AbstractWizardViewHelper {
 
 	/**
 	 * @var string
@@ -47,10 +50,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_Wizard_SliderViewHelper extends Tx_Flux
 	}
 
 	/**
-	 * @return Tx_Flux_Form_Wizard_Slider
+	 * @return Slider
 	 */
 	public function getComponent() {
-		/** @var Tx_Flux_Form_Wizard_Slider $component */
+		/** @var Slider $component */
 		$component = $this->getPreparedComponent('Slider');
 		$component->setWidth($this->arguments['width']);
 		$component->setStep($this->arguments['step']);

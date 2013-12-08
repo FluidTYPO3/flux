@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,17 +24,21 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class LanguageFileServiceTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function canDispatchMessage() {
-		$instance = $this->objectManager->get('Tx_Flux_Service_LanguageFileService');
+		$instance = $this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService');
 		$this->callInaccessibleMethod($instance, 'message', 'Test');
 	}
 
@@ -41,7 +46,7 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function performsEarlyReturnOnUnsupportedFileExtension() {
-		$return = $this->objectManager->get('Tx_Flux_Service_LanguageFileService')->writeLanguageLabel('/dev/null', 'void', 'void');
+		$return = $this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService')->writeLanguageLabel('/dev/null', 'void', 'void');
 		$this->assertEmpty($return);
 	}
 
@@ -49,7 +54,7 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function performsEarlyReturnOnInvalidId() {
-		$return = $this->objectManager->get('Tx_Flux_Service_LanguageFileService')->writeLanguageLabel('/dev/null', 'void', 'this-is-an-invalid-id');
+		$return = $this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService')->writeLanguageLabel('/dev/null', 'void', 'this-is-an-invalid-id');
 		$this->assertEmpty($return);
 	}
 
@@ -58,20 +63,20 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 */
 	public function kickstartsXlfFileIfDoesNotExist() {
 		$dummyFile = 'typo3temp/lang.xlf';
-		$fileName = t3lib_div::getFileAbsFileName($dummyFile);
+		$fileName = GeneralUtility::getFileAbsFileName($dummyFile);
 		if (TRUE === file_exists($fileName)) {
 			unlink($fileName);
 		}
 		$configurationService = $this->createFluxServiceInstance();
-		$domDocument = new DOMDocument();
+		$domDocument = new \DOMDocument();
 		$body = $domDocument->createElement('body');
 		$node = $domDocument->createElement('file');
 		$domDocument->appendChild($node);
 		$node->appendChild($body);
 		$languageKeys = array('default');
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('buildSourceForXlfFile', 'prepareDomDocument', 'getLanguageKeys'));
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService', array('buildSourceForXlfFile', 'prepareDomDocument', 'getLanguageKeys'));
 		$instance->expects($this->atLeastOnce())->method('getLanguageKeys')->will($this->returnValue($languageKeys));
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->any())->method('buildSourceForXlfFile')->with($fileName, 'test')->will($this->returnValue($domDocument->saveXML()));
 		$instance->writeLanguageLabel($dummyFile, 'test', 'test');
@@ -82,8 +87,8 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function canCreateXlfLanguageNode() {
-		$instance = $this->objectManager->get('Tx_Flux_Service_LanguageFileService');
-		$domDocument = new DOMDocument();
+		$instance = $this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService');
+		$domDocument = new \DOMDocument();
 		$parent = $domDocument->createElement('parent');
 		$this->callInaccessibleMethod($instance, 'createXmlLanguageNode', $domDocument, $parent, 'test');
 		$this->assertNotEmpty($parent->getElementsByTagName('languageKey')->item(0));
@@ -94,22 +99,22 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 */
 	public function canBuildXlfFileSource() {
 		$dummyFile = 'typo3temp/lang.xlf';
-		$fileName = t3lib_div::getFileAbsFileName($dummyFile);
+		$fileName = GeneralUtility::getFileAbsFileName($dummyFile);
 		if (TRUE === file_exists($fileName)) {
 			unlink($fileName);
 		}
-		$domDocument = new DOMDocument();
+		$domDocument = new \DOMDocument();
 		$body = $domDocument->createElement('body');
 		$node = $domDocument->createElement('file');
 		$domDocument->appendChild($node);
 		$node->appendChild($body);
 		$languageKeys = array('default');
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('prepareDomDocument', 'createXlfLanguageNode', 'getLanguageKeys'));
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService', array('prepareDomDocument', 'createXlfLanguageNode', 'getLanguageKeys'));
 		$instance->expects($this->atLeastOnce())->method('getLanguageKeys')->will($this->returnValue($languageKeys));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->once())->method('createXlfLanguageNode');
 		$configurationService = $this->createFluxServiceInstance();
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$result = $instance->buildSourceForXlfFile($fileName, 'test');
 		$this->assertEquals($domDocument->saveXML(), $result);
 	}
@@ -119,11 +124,11 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 */
 	public function canBuildXlfFileSourceButReturnsTrueIfFileAndNodeExists() {
 		$dummyFile = 'typo3temp/lang.xlf';
-		$fileName = t3lib_div::getFileAbsFileName($dummyFile);
+		$fileName = GeneralUtility::getFileAbsFileName($dummyFile);
 		if (TRUE === file_exists($fileName)) {
 			unlink($fileName);
 		}
-		$domDocument = new DOMDocument();
+		$domDocument = new \DOMDocument();
 		$body = $domDocument->createElement('body');
 		$node = $domDocument->createElement('file');
 		$domDocument->appendChild($node);
@@ -131,11 +136,11 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		$transUnit = $domDocument->createElement('trans-unit', 'test');
 		$transUnit->setAttribute('id', 'test');
 		$body->appendChild($transUnit);
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('prepareDomDocument', 'createXlfLanguageNode'));
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService', array('prepareDomDocument', 'createXlfLanguageNode'));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->never())->method('createXlfLanguageNode');
 		$configurationService = $this->createFluxServiceInstance();
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$result = $instance->buildSourceForXlfFile($fileName, 'test');
 		$this->assertTrue($result);
 	}
@@ -145,11 +150,11 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 */
 	public function kickstartsXmlFileIfDoesNotExist() {
 		$dummyFile = 'typo3temp/lang.xml';
-		$fileName = t3lib_div::getFileAbsFileName($dummyFile);
+		$fileName = GeneralUtility::getFileAbsFileName($dummyFile);
 		if (TRUE === file_exists($fileName)) {
 			unlink($fileName);
 		}
-		$domDocument = new DOMDocument();
+		$domDocument = new \DOMDocument();
 		$meta = $domDocument->createElement('meta');
 		$description = $domDocument->createElement('description');
 		$node = $domDocument->createElement('data');
@@ -161,11 +166,11 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		$meta->appendChild($description);
 		$domDocument->appendChild($node);
 		$domDocument->appendChild($meta);
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('buildSourceForXmlFile', 'prepareDomDocument'));
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService', array('buildSourceForXmlFile', 'prepareDomDocument'));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->any())->method('buildSourceForXmlFile')->with($fileName, 'test')->will($this->returnValue($domDocument->saveXML()));
 		$configurationService = $this->createFluxServiceInstance();
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$instance->writeLanguageLabel($dummyFile, 'test', 'test');
 		$instance->writeLanguageLabel($dummyFile, 'test', 'test');
 		if (TRUE === file_exists($fileName)) {
@@ -178,17 +183,17 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 */
 	public function kickstartXmlFileReturnsFalseIfExistingFileHasNoDataNode() {
 		$dummyFile = 'typo3temp/lang.xml';
-		$fileName = t3lib_div::getFileAbsFileName($dummyFile);
+		$fileName = GeneralUtility::getFileAbsFileName($dummyFile);
 		if (TRUE === file_exists($fileName)) {
 			unlink($fileName);
 		}
-		$domDocument = new DOMDocument();
-		t3lib_div::writeFile($fileName, $domDocument->saveXML());
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('buildSourceForXmlFile', 'prepareDomDocument'));
+		$domDocument = new \DOMDocument();
+		GeneralUtility::writeFile($fileName, $domDocument->saveXML());
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService', array('buildSourceForXmlFile', 'prepareDomDocument'));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->any())->method('buildSourceForXmlFile')->with($fileName, 'test')->will($this->returnValue($domDocument->saveXML()));
 		$configurationService = $this->createFluxServiceInstance();
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$result = $this->callInaccessibleMethod($instance, 'kickstartXmlFile', $fileName);
 		$this->assertFalse($result);
 		if (TRUE === file_exists($fileName)) {
@@ -201,11 +206,11 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 */
 	public function canBuildXmlFileSource() {
 		$dummyFile = 'typo3temp/lang.xml';
-		$fileName = t3lib_div::getFileAbsFileName($dummyFile);
+		$fileName = GeneralUtility::getFileAbsFileName($dummyFile);
 		if (TRUE === file_exists($fileName)) {
 			unlink($fileName);
 		}
-		$domDocument = new DOMDocument();
+		$domDocument = new \DOMDocument();
 		$node = $domDocument->createElement('data');
 		$languageKey = $domDocument->createElement('languageKey');
 		$label = $domDocument->createElement('label', 'test');
@@ -213,11 +218,11 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		$languageKey->appendChild($label);
 		$node->appendChild($languageKey);
 		$domDocument->appendChild($node);
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('prepareDomDocument', 'writeFile'));
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService', array('prepareDomDocument', 'writeFile'));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$instance->expects($this->any())->method('writeFile')->will($this->returnValue(TRUE));
 		$configurationService = $this->createFluxServiceInstance();
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$result = $instance->buildSourceForXmlFile($fileName, 'test');
 		$this->assertEquals($domDocument->saveXML(), $result);
 		if (TRUE === file_exists($fileName)) {
@@ -230,11 +235,11 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 */
 	public function canBuildXmlFileSourceButReturnsTrueIfFileAndNodeExists() {
 		$dummyFile = 'typo3temp/lang.xml';
-		$fileName = t3lib_div::getFileAbsFileName($dummyFile);
+		$fileName = GeneralUtility::getFileAbsFileName($dummyFile);
 		if (TRUE === file_exists($fileName)) {
 			unlink($fileName);
 		}
-		$domDocument = new DOMDocument();
+		$domDocument = new \DOMDocument();
 		$node = $domDocument->createElement('data');
 		$languageKey = $domDocument->createElement('languageKey');
 		$label = $domDocument->createElement('label', 'test');
@@ -242,10 +247,10 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		$languageKey->appendChild($label);
 		$node->appendChild($languageKey);
 		$domDocument->appendChild($node);
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('prepareDomDocument'));
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService', array('prepareDomDocument'));
 		$instance->expects($this->atLeastOnce())->method('prepareDomDocument')->with($fileName)->will($this->returnValue($domDocument));
 		$configurationService = $this->createFluxServiceInstance();
-		Tx_Extbase_Reflection_ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
 		$result = $instance->buildSourceForXmlFile($fileName, 'test');
 		$this->assertTrue($result);
 		if (TRUE === file_exists($fileName)) {
@@ -257,8 +262,8 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function canCreateXmlLanguageNode() {
-		$instance = $this->objectManager->get('Tx_Flux_Service_LanguageFileService');
-		$domDocument = new DOMDocument();
+		$instance = $this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService');
+		$domDocument = new \DOMDocument();
 		$parent = $domDocument->createElement('parent');
 		$this->callInaccessibleMethod($instance, 'createXlfLanguageNode', $domDocument, $parent, 'test');
 		$this->assertNotEmpty($parent->getElementsByTagName('trans-unit')->item(0));
@@ -268,15 +273,15 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function performReset() {
-		$this->objectManager->get('Tx_Flux_Service_LanguageFileService')->reset();
+		$this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService')->reset();
 	}
 
 	/**
 	 * @test
 	 */
 	public function canWriteFile() {
-		$tempFile = t3lib_div::tempnam('test');
-		$instance = $this->objectManager->get('Tx_Flux_Service_LanguageFileService');
+		$tempFile = GeneralUtility::tempnam('test');
+		$instance = $this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService');
 		$this->callInaccessibleMethod($instance, 'writeFile', $tempFile, 'test');
 		$this->assertFileExists($tempFile);
 	}
@@ -285,8 +290,8 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function canReadFile() {
-		$tempFile = t3lib_div::tempnam('test');
-		$instance = $this->objectManager->get('Tx_Flux_Service_LanguageFileService');
+		$tempFile = GeneralUtility::tempnam('test');
+		$instance = $this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService');
 		$this->callInaccessibleMethod($instance, 'writeFile', $tempFile, 'test');
 		$result = $this->callInaccessibleMethod($instance, 'readFile', $tempFile);
 		$this->assertEquals('test', $result);
@@ -297,7 +302,7 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function canLoadLanguageRecordsFromDatabase() {
-		$instance = $this->objectManager->get('Tx_Flux_Service_LanguageFileService');
+		$instance = $this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService');
 		$result = $this->callInaccessibleMethod($instance, 'loadLanguageRecordsFromDatabase');
 		$this->assertIsArray($result);
 	}
@@ -309,7 +314,7 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 		$languageRecords = array(
 			array('flag' => 'en')
 		);
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('loadLanguageRecordsFromDatabase'));
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService', array('loadLanguageRecordsFromDatabase'));
 		$instance->expects($this->once())->method('loadLanguageRecordsFromDatabase')->will($this->returnValue($languageRecords));
 		$result = $this->callInaccessibleMethod($instance, 'getLanguageKeys');
 		$this->assertIsArray($result);
@@ -320,10 +325,10 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function canPrepareDomDocument() {
-		$fileName = t3lib_div::tempnam('test');
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService', array('readFile'));
+		$fileName = GeneralUtility::tempnam('test');
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService', array('readFile'));
 		$source = '<test></test>';
-		$domDocument = new DOMDocument();
+		$domDocument = new \DOMDocument();
 		$domDocument->appendChild($domDocument->createElement('test'));
 		$instance->expects($this->once())->method('readFile')->with($fileName)->will($this->returnValue($source));
 		$this->callInaccessibleMethod($instance, 'prepareDomDocument', $fileName);
@@ -335,7 +340,7 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function sanitizeFilenameAddsValidExtensionIfCurrentExtensionIsInvalid() {
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService');
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService');
 		$filename = '/tmp/bad.json';
 		$expected = '/tmp/bad.json.xml';
 		$extension = 'xml';
@@ -347,7 +352,7 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function localizeXlfFilePathAndFilenameReturnsRootFileIfLanguageIsDefault() {
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService');
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService');
 		$filename = '/tmp/lang.xlf';
 		$expected = '/tmp/lang.xlf';
 		$language = 'default';
@@ -359,7 +364,7 @@ class Tx_Flux_Service_LanguageFileServiceTest extends Tx_Flux_Tests_AbstractFunc
 	 * @test
 	 */
 	public function localizeXlfFilePathAndFilenameAddsLanguageIfNotDefault() {
-		$instance = $this->getMock('Tx_Flux_Service_LanguageFileService');
+		$instance = $this->getMock('FluidTYPO3\Flux\Service\LanguageFileService');
 		$filename = '/tmp/lang.xlf';
 		$expected = '/tmp/da.lang.xlf';
 		$language = 'da';

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelperTest extends Tx_Flux_ViewHelpers_AbstractViewHelperTest {
+class NewViewHelperTest extends AbstractViewHelperTest {
 
 	/**
 	 * Setup
@@ -43,8 +47,8 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelperTest extends Tx_Flux_View
 	public function canRenderWithRowAndArea() {
 		$arguments = array(
 			'area' => 'test',
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
-			'after' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren['uid']
+			'row' => Records::$contentRecordWithoutParentAndWithoutChildren,
+			'after' => Records::$contentRecordWithParentAndWithoutChildren['uid']
 		);
 		$this->executeViewHelper($arguments);
 	}
@@ -55,8 +59,8 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelperTest extends Tx_Flux_View
 	public function canRenderWithRowAndAreaAndNegativeRelativeUid() {
 		$arguments = array(
 			'area' => 'test',
-			'row' => Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren,
-			'after' => 0 - intval(Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithParentAndWithoutChildren['uid'])
+			'row' => Records::$contentRecordWithoutParentAndWithoutChildren,
+			'after' => 0 - intval(Records::$contentRecordWithParentAndWithoutChildren['uid'])
 		);
 		$this->executeViewHelper($arguments);
 	}

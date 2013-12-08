@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +29,7 @@
  * @package	Flux
  * @subpackage UserFunction
  */
-class Tx_Flux_UserFunction_ErrorReporter {
+class ErrorReporter {
 
 	/**
 	 * @param array $parameters
@@ -38,7 +39,7 @@ class Tx_Flux_UserFunction_ErrorReporter {
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj);
 		$exception = $parameters['fieldConf']['config']['parameters'][0]['exception'];
-		if ($exception instanceof Exception) {
+		if ($exception instanceof \Exception) {
 			$code = $exception->getCode();
 			$message = $exception->getMessage();
 			$type = get_class($exception);

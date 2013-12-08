@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
@@ -23,11 +24,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\AbstractFormField;
+use FluidTYPO3\Flux\Form\FieldInterface;
+
 /**
  * @package Flux
  * @subpackage Form\Field
  */
-class Tx_Flux_Form_Field_DateTime extends Tx_Flux_Form_Field_Input implements Tx_Flux_Form_FieldInterface {
+class DateTime extends Input implements FieldInterface {
 
 	/**
 	 * @var string

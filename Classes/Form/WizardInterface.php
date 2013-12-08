@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
@@ -27,7 +28,7 @@
  * @package Flux
  * @subpackage Form
  */
-interface Tx_Flux_Form_WizardInterface extends Tx_Flux_Form_FormInterface {
+interface WizardInterface extends FormInterface {
 
 	/**
 	 * @return array
@@ -36,7 +37,7 @@ interface Tx_Flux_Form_WizardInterface extends Tx_Flux_Form_FormInterface {
 
 	/**
 	 * @param boolean $hideParent
-	 * @return Tx_Flux_Form_WizardInterface
+	 * @return WizardInterface
 	 */
 	public function setHideParent($hideParent);
 

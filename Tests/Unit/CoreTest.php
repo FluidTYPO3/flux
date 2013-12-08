@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,18 +24,24 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\Path;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
-class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
+class CoreTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function returnsEmptyArrayForUnknownExtensionKeysAndControllerObjects() {
 		$fakeControllerName = 'Flux';
-		$registered = Tx_Flux_Core::getRegisteredProviderExtensionKeys($fakeControllerName);
+		$registered = Core::getRegisteredProviderExtensionKeys($fakeControllerName);
 		$this->assertEmpty($registered);
 	}
 
@@ -43,9 +50,9 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function canRegisterFormInstanceForModelClassName() {
 		$class = 'Tx_Flux_Domain_Model_Fake';
-		$form = Tx_Flux_Form::create();
-		Tx_Flux_Core::registerFormForModelObjectClassName($class, $form);
-		$registered = Tx_Flux_Core::getRegisteredFormForModelObjectClass($class);
+		$form = Form::create();
+		Core::registerFormForModelObjectClassName($class, $form);
+		$registered = Core::getRegisteredFormForModelObjectClass($class);
 		$this->assertEquals($form, $registered);
 	}
 
@@ -54,8 +61,8 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function canRegisterAutoFormInstanceForModelClassName() {
 		$class = 'Tx_Flux_Domain_Model_Fake';
-		Tx_Flux_Core::registerAutoFormForModelObjectClassName($class);
-		$registered = Tx_Flux_Core::getRegisteredFormForModelObjectClass($class);
+		Core::registerAutoFormForModelObjectClassName($class);
+		$registered = Core::getRegisteredFormForModelObjectClass($class);
 		$this->assertEquals(NULL, $registered);
 	}
 
@@ -64,12 +71,12 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function canRegisterFormInstanceForTable() {
 		$table = 'this_table_does_not_exist';
-		$form = Tx_Flux_Form::create();
-		Tx_Flux_Core::registerFormForTable($table, $form);
-		$forms = Tx_Flux_Core::getRegisteredFormsForTables();
+		$form = Form::create();
+		Core::registerFormForTable($table, $form);
+		$forms = Core::getRegisteredFormsForTables();
 		$this->assertArrayHasKey($table, $forms);
-		$returnedForm = Tx_Flux_Core::getRegisteredFormForTable($table);
-		$incorrectReturnedForm = Tx_Flux_Core::getRegisteredFormForTable($table . 'badname');
+		$returnedForm = Core::getRegisteredFormForTable($table);
+		$incorrectReturnedForm = Core::getRegisteredFormForTable($table . 'badname');
 		$this->assertSame($form, $returnedForm);
 		$this->assertNull($incorrectReturnedForm);
 	}
@@ -80,8 +87,8 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	public function canRegisterProviderExtensionKey() {
 		$fakeExtensionKey = 'flux';
 		$fakeControllerName = 'Flux';
-		Tx_Flux_Core::registerProviderExtensionKey($fakeExtensionKey, $fakeControllerName);
-		$registered = Tx_Flux_Core::getRegisteredProviderExtensionKeys($fakeControllerName);
+		Core::registerProviderExtensionKey($fakeExtensionKey, $fakeControllerName);
+		$registered = Core::getRegisteredProviderExtensionKeys($fakeControllerName);
 		$this->assertContains($fakeExtensionKey, $registered);
 	}
 
@@ -89,10 +96,10 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canRegisterProviderInstance() {
-		/** @var Tx_Flux_Provider_ProviderInterface $provider */
-		$provider = $this->objectManager->get('Tx_Flux_Provider_Provider');
-		Tx_Flux_Core::registerConfigurationProvider($provider);
-		$registered = Tx_Flux_Core::getRegisteredFlexFormProviders();
+		/** @var \FluidTYPO3\Flux\Provider\ProviderInterface $provider */
+		$provider = $this->objectManager->get('FluidTYPO3\Flux\Provider\Provider');
+		Core::registerConfigurationProvider($provider);
+		$registered = Core::getRegisteredFlexFormProviders();
 		$this->assertContains($provider, $registered);
 	}
 
@@ -100,12 +107,12 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canRegisterAndUnregisterProviderClassName() {
-		$providerClassName = 'Tx_Flux_Provider_Provider';
-		Tx_Flux_Core::registerConfigurationProvider($providerClassName);
-		$registered = Tx_Flux_Core::getRegisteredFlexFormProviders();
+		$providerClassName = 'FluidTYPO3\Flux\Provider\Provider';
+		Core::registerConfigurationProvider($providerClassName);
+		$registered = Core::getRegisteredFlexFormProviders();
 		$this->assertContains($providerClassName, $registered);
-		Tx_Flux_Core::unregisterConfigurationProvider($providerClassName);
-		$registered = Tx_Flux_Core::getRegisteredFlexFormProviders();
+		Core::unregisterConfigurationProvider($providerClassName);
+		$registered = Core::getRegisteredFlexFormProviders();
 		$this->assertNotContains($providerClassName, $registered);
 	}
 
@@ -114,23 +121,17 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 */
 	public function throwsExceptionOnInvalidClassName() {
 		$providerClassName = 'Tx_Flux_Provider_DoesNotExistProvider';
-		try {
-			Tx_Flux_Core::registerConfigurationProvider($providerClassName);
-		} catch (Exception $error) {
-			$this->assertSame(1327173514, $error->getCode());
-		}
+		$this->setExpectedException('RuntimeException', NULL, 1327173514);
+		Core::registerConfigurationProvider($providerClassName);
 	}
 
 	/**
 	 * @test
 	 */
 	public function throwsExceptionOnInvalidImplementation() {
-		$providerClassName = 'Tx_Flux_Tests_Fixtures_Class_InvalidConfigurationProvider';
-		try {
-			Tx_Flux_Core::registerConfigurationProvider($providerClassName);
-		} catch (Exception $error) {
-			$this->assertSame(1327173536, $error->getCode());
-		}
+		$providerClassName = 'FluidTYPO3\Flux\Tests\Fixtures\Classes\InvalidConfigurationProvider';
+		$this->setExpectedException('RuntimeException', NULL, 1327173536);
+		Core::registerConfigurationProvider($providerClassName);
 	}
 
 	/**
@@ -142,19 +143,19 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$paths = array('templateRootPath' => 'EXT:flux/Resources/Private/Templates');
 		$extensionKey = 'fake';
 		$contentObjectType = 'void';
-		$providerClassName = 'Tx_Flux_Provider_ProviderInterface';
+		$providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['CType'] = $contentObjectType;
-		$absoluteTemplatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
+		$absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
 		$configurationSectionName = 'Configuration';
-		Tx_Flux_Core::registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $relativeTemplatePathAndFilename,
+		Core::registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
 		$detectedProvider = $service->resolvePrimaryConfigurationProvider('tt_content', NULL, $record, $extensionKey);
 		$this->assertInstanceOf($providerClassName, $detectedProvider);
 		$this->assertSame($extensionKey, $detectedProvider->getExtensionKey($record));
 		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
-		$this->assertSame(Tx_Flux_Utility_Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
+		$this->assertSame(Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
 	}
 
 	/**
@@ -167,19 +168,19 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$extensionKey = 'more_fake';
 		$pluginType = 'void';
 		$fieldName = NULL;
-		$providerClassName = 'Tx_Flux_Provider_ProviderInterface';
+		$providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['list_type'] = $pluginType;
-		$absoluteTemplatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
+		$absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
 		$configurationSectionName = 'Configuration';
-		Tx_Flux_Core::registerFluidFlexFormPlugin($extensionKey, $pluginType, $relativeTemplatePathAndFilename,
+		Core::registerFluidFlexFormPlugin($extensionKey, $pluginType, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
 		$detectedProvider = $service->resolvePrimaryConfigurationProvider('tt_content', $fieldName, $record, $extensionKey);
 		$this->assertInstanceOf($providerClassName, $detectedProvider);
 		$this->assertSame($extensionKey, $detectedProvider->getExtensionKey($record));
 		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
-		$this->assertSame(Tx_Flux_Utility_Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
+		$this->assertSame(Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
 	}
 
 	/**
@@ -191,25 +192,25 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 		$paths = array('templateRootPath' => 'EXT:flux/Resources/Private/Templates');
 		$table = 'fake';
 		$fieldName = NULL;
-		$providerClassName = 'Tx_Flux_Provider_ProviderInterface';
+		$providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
-		$record = Tx_Flux_Tests_Fixtures_Data_Records::$contentRecordWithoutParentAndWithoutChildren;
-		$absoluteTemplatePathAndFilename = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
 		$configurationSectionName = 'Configuration';
-		Tx_Flux_Core::registerFluidFlexFormTable($table, $fieldName, $relativeTemplatePathAndFilename,
+		Core::registerFluidFlexFormTable($table, $fieldName, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
 		$detectedProvider = $service->resolvePrimaryConfigurationProvider($table, $fieldName, $record);
 		$this->assertInstanceOf($providerClassName, $detectedProvider);
 		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
-		$this->assertSame(Tx_Flux_Utility_Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
+		$this->assertSame(Path::translatePath($paths), $detectedProvider->getTemplatePaths($record));
 	}
 
 	/**
 	 * @test
 	 */
 	public function canAddAndRetrieveGlobalTypoScript() {
-		Tx_Flux_Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
-		$registered = Tx_Flux_Core::getStaticTypoScriptLocations();
+		Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
+		$registered = Core::getStaticTypoScriptLocations();
 		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
 	}
 
@@ -217,8 +218,8 @@ class Tx_Flux_CoreTest extends Tx_Flux_Tests_AbstractFunctionalTest {
 	 * @test
 	 */
 	public function canAddAndRetrieveGlobalTypoScriptCollections() {
-		Tx_Flux_Core::addGlobalTypoScript(array(self::FIXTURE_TYPOSCRIPT_DIR));
-		$registered = Tx_Flux_Core::getStaticTypoScriptLocations();
+		Core::addGlobalTypoScript(array(self::FIXTURE_TYPOSCRIPT_DIR));
+		$registered = Core::getStaticTypoScriptLocations();
 		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
 	}
 
