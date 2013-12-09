@@ -135,6 +135,18 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	}
 
 	/**
+	 * @param string $type
+	 * @param string $name
+	 * @param string $label
+	 * @return WizardInterface
+	 */
+	public function createWizard($type, $name, $label = NULL) {
+		$wizard = parent::createWizard($type, $name, $label);
+		$this->add($wizard);
+		return $wizard;
+	}
+
+	/**
 	 * @param WizardInterface $wizard
 	 * @return FieldInterface
 	 */
