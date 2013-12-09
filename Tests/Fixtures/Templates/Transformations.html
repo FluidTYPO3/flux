@@ -1,7 +1,7 @@
 {namespace flux=FluidTYPO3\Flux\ViewHelpers}
 <f:layout name="Default" />
 <f:section name="Configuration">
-	<flux:flexform id="test">
+	<flux:form id="test">
 		<flux:flexform.field.input name="transform.unknown" transform="unknown" />
 		<flux:flexform.field.input name="transform.stringToArray" transform="array" />
 		<flux:flexform.field.input name="transform.stringToInteger" transform="integer" />
@@ -11,5 +11,5 @@
 		<flux:flexform.field.input name="transform.nullToDomainObjectCollection" transform="TYPO3\CMS\Extbase\Persistence\ObjectStorage<TYPO3\CMS\Extbase\Domain\Model\FrontendUser>" />
 		<flux:flexform.field.input name="transform.nullToGenericObject" transform="FluidTYPO3\Flux\Form\Field\Input" />
 		<flux:flexform.field.input name="transform.nullToGenericObjectCollection" transform="SplObjectStorage<DateTime>" />
-	</flux:flexform>
+	</flux:form>
 </f:section>

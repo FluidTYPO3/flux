@@ -1,18 +1,18 @@
 {namespace flux=FluidTYPO3\Flux\ViewHelpers}
 <f:layout name="Default" />
 <f:section name="Configuration">
-	<flux:flexform id="test">
-		<flux:flexform.grid name="grid">
-			<flux:flexform.grid.row>
-				<flux:flexform.grid.column name="test" />
-			</flux:flexform.grid.row>
-		</flux:flexform.grid>
-		<flux:flexform.grid name="grid2">
-			<flux:flexform.grid.row>
-				<flux:flexform.grid.column name="test2" />
-			</flux:flexform.grid.row>
-		</flux:flexform.grid>
-	</flux:flexform>
+	<flux:form id="test">
+		<flux:grid name="grid">
+			<flux:grid.row>
+				<flux:grid.column name="test" />
+			</flux:grid.row>
+		</flux:grid>
+		<flux:grid name="grid2">
+			<flux:grid.row>
+				<flux:grid.column name="test2" />
+			</flux:grid.row>
+		</flux:grid>
+	</flux:form>
 </f:section>
 <f:section name="Preview">
 	<flux:widget.grid />
