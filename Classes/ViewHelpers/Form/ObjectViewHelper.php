@@ -30,7 +30,7 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 /**
  * FlexForm field section object ViewHelper
  *
- * Use this inside flux:flexform.section to name and divide the fields
+ * Use this inside flux:form.section to name and divide the fields
  * into individual objects that can be inserted into the section.
  *
  * @package Flux

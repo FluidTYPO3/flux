@@ -213,7 +213,7 @@ class FluxService implements SingletonInterface {
 	}
 
 	/**
-	 * Reads a Grid constructed using flux:flexform.grid, returning an array of
+	 * Reads a Grid constructed using flux:grid, returning an array of
 	 * defined rows and columns along with any content areas.
 	 *
 	 * Note about specific implementations:
