@@ -70,6 +70,7 @@ class Section extends AbstractFormContainer implements ContainerInterface {
 	public function build() {
 		$structureArray = array(
 			'type' => 'array',
+			'title' => $this->getLabel(),
 			'section' => 1,
 			'el' => $this->buildChildren()
 		);
