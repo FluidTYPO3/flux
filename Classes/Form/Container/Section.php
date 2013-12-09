@@ -62,6 +62,7 @@ class Tx_Flux_Form_Container_Section extends Tx_Flux_Form_AbstractFormContainer 
 	public function build() {
 		$structureArray = array(
 			'type' => 'array',
+			'title' => $this->getLabel(),
 			'section' => 1,
 			'el' => $this->buildChildren()
 		);
