@@ -5,8 +5,6 @@ if (!defined('TYPO3_MODE')) {
 
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF);
 
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin($_EXTKEY, 'API', 'Flux API (do not use on pages)');
-
 \TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', array(
 		'tx_flux_column' => array (
