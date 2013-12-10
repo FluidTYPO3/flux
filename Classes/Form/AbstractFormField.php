@@ -27,6 +27,7 @@ use FluidTYPO3\Flux\Form\Container\Section;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extbase\Utility\TypeHandlingUtility;
 
 /**
  * @package Flux
@@ -126,9 +127,9 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 		/** @var FormInterface $object */
 		$object = $objectManager->get($className);
 		foreach ($settings as $settingName => $settingValue) {
-			$setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
+			$setterMethodName = 'set' . ucfirst($settingName);
 			if (TRUE === method_exists($object, $setterMethodName)) {
-				ObjectAccess::setProperty($object, $settingName, $settingValue);
+				call_user_func_array(array($object, $setterMethodName), array($settingValue));
 			}
 		}
 		return $object;
