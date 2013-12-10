@@ -2,7 +2,6 @@
 return array(
 	'Tx_Flux_Core' => 'FluidTYPO3\Flux\Core',
 	'Tx_Flux_Form' => 'FluidTYPO3\Flux\Form',
-	'Tx_Flux_Backend_AreaListItemsProcessor' => 'FluidTYPO3\Flux\Backend\AreaListItemsProcessor',
 	'Tx_Flux_Backend_DynamicFlexForm' => 'FluidTYPO3\Flux\Backend\DynamicFlexForm',
 	'Tx_Flux_Backend_Preview' => 'FluidTYPO3\Flux\Backend\Preview',
 	'Tx_Flux_Backend_TceMain' => 'FluidTYPO3\Flux\Backend\TceMain',
