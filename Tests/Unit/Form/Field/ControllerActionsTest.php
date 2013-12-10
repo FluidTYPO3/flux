@@ -38,7 +38,7 @@ class ControllerActionsTest extends AbstractFieldTest {
 	protected $chainProperties = array(
 		'label' => 'Test field',
 		'enable' => TRUE,
-		'extensionName' => 'Flux',
+		'extensionName' => 'FluidTYPO3.Flux',
 		'pluginName' => 'API',
 		'controllerName' => 'Flux',
 		'actions' => array(),

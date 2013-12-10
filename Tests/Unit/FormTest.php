@@ -345,4 +345,15 @@ class FormTest extends AbstractTestCase {
 		$this->assertArrayNotHasKey('test', $instance->getOptions());
 	}
 
+	/**
+	 * @test
+	 */
+	public function canSetAndGetOutlet() {
+		/** @var \FluidTYPO3\Flux\Outlet\StandardOutlet $outlet */
+		$outlet = $this->getMock('FluidTYPO3\Flux\Outlet\StandardOutlet');
+		$form = Form::create();
+		$form->setOutlet($outlet);
+		$this->assertSame($outlet, $form->getOutlet());
+	}
+
 }
