@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +30,7 @@ use FluidTYPO3\Flux\Form\RelationFieldInterface;
  * Inline-style FlexForm field ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Field
  */
 abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHelper {
 

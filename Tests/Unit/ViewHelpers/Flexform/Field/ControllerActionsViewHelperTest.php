@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,12 +25,12 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
  *****************************************************************/
 
 /**
- * Tree (select supertype) FlexForm field ViewHelper
+ * Flexform Userfunc field ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Field
  */
-class TreeViewHelper extends AbstractRelationFieldViewHelper {
+class UserFuncViewHelper extends AbstractFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -38,24 +38,21 @@ class TreeViewHelper extends AbstractRelationFieldViewHelper {
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		$this->registerArgument('parentField', 'string', 'Field containing UID of parent record', TRUE);
-		$this->registerArgument('expandAll', 'boolean', 'If TRUE, expands all branches', FALSE, FALSE);
-		$this->registerArgument('showHeader', 'boolean', 'If TRUE, displays tree header', FALSE, FALSE);
-		$this->registerArgument('width', 'integer', 'Width of TreeView component', FALSE, 400);
+		$this->registerArgument('userFunc', 'string', 'Classname->function notation of UserFunc to be called, example "Tx_Myext_Configuration_FlexForms_MyField->renderField" - Extbase classes need autoload registry for this', TRUE);
+		$this->registerArgument('arguments', 'array', 'Optional array of arguments to pass to the UserFunction building this field');
 	}
 
 	/**
 	 * Render method
-	 * @return Tree
+	 * @param string $type
+	 * @return UserFunction
 	 */
-	public function getComponent() {
-		/** @var Tree $tree */
-		$tree = $this->getPreparedComponent('Tree');
-		$tree->setParentField($this->arguments['parentField']);
-		$tree->setExpandAll($this->arguments['expandAll']);
-		$tree->setShowHeader($this->arguments['showHeader']);
-		$tree->setWidth($this->arguments['width']);
-		return $tree;
+	public function getComponent($type = 'UserFunction') {
+		/** @var UserFunction $user */
+		$user = $this->getPreparedComponent($type);
+		$user->setFunction($this->arguments['userFunc']);
+		$user->setArguments($this->arguments['arguments']);
+		return $user;
 	}
 
 }

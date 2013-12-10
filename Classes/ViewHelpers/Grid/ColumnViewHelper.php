@@ -31,7 +31,7 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
  * Flexform Grid Column ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Grid
+ * @subpackage ViewHelpers/Grid
  */
 class ColumnViewHelper extends AbstractFormViewHelper {
 

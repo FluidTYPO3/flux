@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -31,7 +31,7 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
  * Base class for all FlexForm fields.
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Field
  */
 abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 

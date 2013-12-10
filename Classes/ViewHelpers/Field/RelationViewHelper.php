@@ -1,9 +1,9 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Anders Gissel <anders@wildside.dk>
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -25,10 +25,11 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
  *****************************************************************/
 
 /**
- * Inline-style FlexForm field ViewHelper
+ * Select-type FlexForm field ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Field
  */
-class InlineViewHelper extends AbstractInlineFieldViewHelper {
+class RelationViewHelper extends AbstractRelationFieldViewHelper {
+
 }

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -87,7 +87,7 @@ use TYPO3\CMS\Extbase\Mvc\Request;
  * is not important; the order and the sheet location don't matter.
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Field
  */
 class ControllerActionsViewHelper extends SelectViewHelper {
 
@@ -136,7 +136,7 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 		}
 		if (TRUE === empty($extensionName) && TRUE === empty($pluginName) && 1 > count($actions)) {
 			throw new \RuntimeException('Either "actions", or both "extensionName" and "pluginName" must be used on ' .
-				'flux:flexform.field.controllerActions. None were found and none were detected from the ControllerContext Request.', 1346514748);
+				'flux:field.controllerActions. None were found and none were detected from the ControllerContext Request.', 1346514748);
 		}
 		/** @var ControllerActions $component */
 		$component = $this->getPreparedComponent('ControllerActions');

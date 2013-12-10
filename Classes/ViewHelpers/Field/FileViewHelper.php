@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,12 +25,12 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
  *****************************************************************/
 
 /**
- * Select-type FlexForm field ViewHelper
+ * Group (select supertype) FlexForm field ViewHelper, subtype "file"
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Field
  */
-class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
+class FileViewHelper extends AbstractMultiValueFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -38,13 +38,24 @@ class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		$this->registerArgument('items', 'mixed', 'Items for the selector; array / CSV / Traversable / Query supported', TRUE);
+		$this->registerArgument('maxSize', 'integer', 'Maximum file size allowed in KB');
+		$this->registerArgument('allowed', 'string', 'Defines a list of file types allowed in this field');
+		$this->registerArgument('disallowed', 'string', 'Defines a list of file types NOT allowed in this field');
+		$this->registerArgument('uploadFolder', 'string', 'Upload folder. DEPRECATED, will be moved to the File field ViewHelper');
+		$this->registerArgument('showThumbnails', 'boolean', 'If TRUE, displays thumbnails for selected values', FALSE, FALSE);
 	}
 
+	/**
+	 * @return File
+	 */
 	public function getComponent() {
-		/** @var Select $component */
-		$component = $this->getPreparedComponent('Select');
-		$component->setItems($this->arguments['items']);
+		/** @var File $component */
+		$component = $this->getPreparedComponent('File');
+		$component->setMaxSize($this->arguments['maxSize']);
+		$component->setDisallowed($this->arguments['disallowed']);
+		$component->setAllowed($this->arguments['allowed']);
+		$component->setUploadFolder($this->arguments['uploadFolder']);
+		$component->setShowThumbnails($this->arguments['showThumbnails']);
 		return $component;
 	}
 

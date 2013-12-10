@@ -30,7 +30,7 @@ use FluidTYPO3\Flux\Form\Wizard\ListWizard;
  * Field Wizard: List
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Wizard
+ * @subpackage ViewHelpers/Wizard
  */
 class ListViewHelper extends AbstractWizardViewHelper {
 
