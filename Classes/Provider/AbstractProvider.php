@@ -31,6 +31,7 @@ use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -203,7 +204,7 @@ class AbstractProvider implements ProviderInterface {
 			$form = Form::create($settings['form']);
 			if (TRUE === isset($settings['extensionKey'])) {
 				$extensionKey = $settings['extensionKey'];
-				$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+				$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 				$form->setExtensionName($extensionName);
 			}
 			$settings['form'] = $form;
@@ -262,7 +263,7 @@ class AbstractProvider implements ProviderInterface {
 		$formName = 'form';
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
-		$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
@@ -283,7 +284,7 @@ class AbstractProvider implements ProviderInterface {
 		$gridName = 'grid';
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
-		$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
@@ -410,9 +411,7 @@ class AbstractProvider implements ProviderInterface {
 	public function getTemplatePaths(array $row) {
 		$paths = $this->templatePaths;
 		$extensionKey = $this->getExtensionKey($row);
-		if (FALSE !== strpos($extensionKey, '.')) {
-			$extensionKey = strtolower(array_pop(explode('.', $extensionKey)));
-		}
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		if (FALSE === is_array($paths)) {
 			$extensionKey = $this->getExtensionKey($row);
 			if (FALSE === empty($extensionKey) && TRUE === ExtensionManagementUtility::isLoaded($extensionKey)) {

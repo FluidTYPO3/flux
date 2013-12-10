@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\Controller;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -102,7 +103,7 @@ abstract class AbstractFluxController extends ActionController {
 	protected function initializeSettings() {
 		$row = $this->getRecord();
 		$extensionKey = $this->provider->getExtensionKey($row);
-		$extensionName = GeneralUtility::underscoredToUpperCamelCase($extensionKey);
+		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$pluginName = $this->request->getPluginName();
 		$this->settings = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName, $pluginName);
 		$this->data = $this->provider->getFlexFormValues($row);
@@ -164,11 +165,11 @@ abstract class AbstractFluxController extends ActionController {
 	protected function initializeViewObject() {
 		$row = $this->getRecord();
 		$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
-		$extensionName = $this->provider->getExtensionKey($row);
-		$extensionKey = GeneralUtility::underscoredToUpperCamelCase(FALSE === strpos($extensionName, '.') ? $extensionName : array_pop(explode('.', $extensionName)));
+		$extensionKey = $this->provider->getExtensionKey($row);
+		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$controller = $this->request->getControllerName();
-		$this->view = $this->configurationService->getPreparedExposedTemplateView($extensionName, $controller, $this->setup, $this->data);
-		$this->request->setControllerExtensionName($extensionKey);
+		$this->view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, $controller, $this->setup, $this->data);
+		$this->request->setControllerExtensionName($extensionName);
 		$this->view->setControllerContext($this->controllerContext);
 		if (FALSE === empty($templatePathAndFilename)) {
 			$this->view->setTemplatePathAndFilename($templatePathAndFilename);
@@ -197,12 +198,11 @@ abstract class AbstractFluxController extends ActionController {
 		$extensionKey = $this->provider->getExtensionKey($row);
 		$pluginSignature = 'tx_' . str_replace('_', '', $extensionKey) . '_' . str_replace('_', '', strtolower($this->request->getPluginName()));
 		$controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
-		$controllerExtensionName = GeneralUtility::underscoredToUpperCamelCase($controllerExtensionKey);
 		$requestParameterActionName = ResolveUtility::resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature);
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
 		$overriddenControllerActionName = NULL !== $requestParameterActionName ? $requestParameterActionName : $controllerActionName;
 		$controllerName = $this->request->getControllerName();
-		return $this->performSubRendering($controllerExtensionName, $controllerName, $overriddenControllerActionName, $pluginSignature);
+		return $this->performSubRendering($controllerExtensionKey, $controllerName, $overriddenControllerActionName, $pluginSignature);
 	}
 
 	/**
@@ -215,8 +215,8 @@ abstract class AbstractFluxController extends ActionController {
 	protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature) {
 		$shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
 		if (TRUE === $shouldRelay) {
-			$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
-			$foreignControllerClass = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
+			$foreignControllerClass = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionName, $actionName, $controllerName);
+			$extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
 			return $this->callSubControllerAction($extensionName, $foreignControllerClass, $actionName, $pluginSignature);
 		}
 		return $this->view->render();
@@ -229,8 +229,7 @@ abstract class AbstractFluxController extends ActionController {
 	 * @return boolean
 	 */
 	protected function hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName) {
-		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionName);
-		$potentialControllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $actionName, $controllerName);
+		$potentialControllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction($extensionName, $actionName, $controllerName);
 		$isForeign = $extensionName !== $this->extensionName;
 		$isValidController = class_exists($potentialControllerClassName);
 		return (TRUE === $isForeign && TRUE === $isValidController);

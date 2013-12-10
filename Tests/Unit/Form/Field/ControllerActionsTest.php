@@ -52,22 +52,6 @@ class ControllerActionsTest extends AbstractFieldTest {
 	/**
 	 * @test
 	 */
-	public function canRemoveVendorPrefixFromExtensionName() {
-		$component = $this->createInstance();
-		$keys = array(
-			// actual => expected
-			'Void.Fake' => 'Fake',
-			'Void' => 'Void',
-			'void' => 'void'
-		);
-		foreach ($keys as $actual => $expected) {
-			$this->assertEquals($expected, $this->callInaccessibleMethod($component, 'removeVendorPrefixFromExtensionName', $actual));
-		}
-	}
-
-	/**
-	 * @test
-	 */
 	public function canUseRawItems() {
 		$component = $this->createInstance();
 		$items = array(
@@ -97,31 +81,6 @@ class ControllerActionsTest extends AbstractFieldTest {
 		$component->setExtensionName('FluidTYPO3.Flux');
 		$className = $this->callInaccessibleMethod($component, 'buildExpectedAndExistingControllerClassName', 'Content');
 		$this->assertSame($expectedClassName, $className);
-	}
-
-	/**
-	 * @test
-	 */
-	public function getVendorNameAndExtensionKeyFromExtensionNameReturnsNullVendorNameForOldExtensionKey() {
-		$component = $this->createInstance();
-		$key = 'oldschool_key';
-		list ($vendorName, $extensionKey) = $this->callInaccessibleMethod($component, 'getVendorNameAndExtensionKeyFromExtensionName', $key);
-		$this->assertSame($key, $extensionKey);
-		$this->assertNull($vendorName);
-	}
-
-	/**
-	 * @test
-	 */
-	public function getVendorNameAndExtensionKeyFromExtensionNameReturnsExpectedValuePair() {
-		$component = $this->createInstance();
-		$vendor = 'Void';
-		$name = 'Nameless';
-		$key = GeneralUtility::camelCaseToLowerCaseUnderscored($name);
-		list ($vendorName, $extensionKey) = $this->callInaccessibleMethod($component, 'getVendorNameAndExtensionKeyFromExtensionName', $vendor . '.' . $name);
-		$this->assertSame($vendorName, $vendor);
-		$this->assertSame($key, $extensionKey);
-		$this->assertNotSame($name, $extensionKey);
 	}
 
 	/**

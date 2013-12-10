@@ -31,6 +31,7 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
@@ -252,12 +253,13 @@ class FluxService implements SingletonInterface {
 	 * @return array|NULL
 	 */
 	public function getViewConfigurationForExtensionName($extensionName) {
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionName);
 		if (FALSE === is_array($configuration) || 0 === count($configuration) || TRUE === empty($configuration['templateRootPath'])) {
 			$configuration = array(
-				'templateRootPath' => 'EXT:' . $extensionName . '/Resources/Private/Templates',
-				'partialRootPath' => 'EXT:' . $extensionName . '/Resources/Private/Partials',
-				'layoutRootPath' => 'EXT:' . $extensionName . '/Resources/Private/Layouts',
+				'templateRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Templates',
+				'partialRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Partials',
+				'layoutRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Layouts',
 			);
 		}
 		return $configuration;

@@ -259,7 +259,7 @@ class BasicControllerTest extends AbstractTestCase {
 		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->getMock($controllerClassName, array('getRecord', 'performSubRendering'));
 		$instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
-		$instance->expects($this->once())->method('performSubRendering')->with('Flux', 'Void', NULL, 'tx_flux_void')->will($this->returnValue('test'));
+		$instance->expects($this->once())->method('performSubRendering')->with('flux', 'Void', NULL, 'tx_flux_void')->will($this->returnValue('test'));
 		$provider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('getExtensionKey', 'getControllerExtensionKeyFromRecord'));
 		$provider->expects($this->once())->method('getExtensionKey')->with($row)->will($this->returnValue('flux'));
 		$provider->expects($this->once())->method('getControllerExtensionKeyFromRecord')->with($row)->will($this->returnValue('flux'));

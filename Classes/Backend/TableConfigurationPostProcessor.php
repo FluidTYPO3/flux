@@ -29,6 +29,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -95,8 +96,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 */
 	protected function processFormForTable($table, Form $form) {
 		$extensionName = $form->getExtensionName();
-		$extensionNameWithoutVendor = FALSE === strpos($extensionName, '.') ? $extensionName : array_pop(explode('.', $extensionName));
-		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionNameWithoutVendor);
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$tableConfiguration = self::$tableTemplate;
 		$fields = array();
 		$labelFields = $form->getOption('labels');
