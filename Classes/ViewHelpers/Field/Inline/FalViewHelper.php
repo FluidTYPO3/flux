@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Inline;
+namespace FluidTYPO3\Flux\ViewHelpers\Field\Inline;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,7 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field\Inline;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Form\Field\Inline\Fal;
-use FluidTYPO3\Flux\ViewHelpers\Flexform\Field\AbstractInlineFieldViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\Field\AbstractInlineFieldViewHelper;
 use TYPO3\CMS\Core\Resource\File;
 
 /**
@@ -34,7 +34,7 @@ use TYPO3\CMS\Core\Resource\File;
  * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
  * @author Johannes Pieper <pieper@dlrg.de> DLRG e.V.
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field/Inline
+ * @subpackage ViewHelpers/Field/Inline
  */
 class FalViewHelper extends AbstractInlineFieldViewHelper {
 

@@ -1,9 +1,9 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2013 Anders Gissel <anders@wildside.dk>
  *
  *  All rights reserved
  *
@@ -25,20 +25,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
  *****************************************************************/
 
 /**
- * Checkbox FlexForm field ViewHelper
+ * Inline-style FlexForm field ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Field
  */
-class CheckboxViewHelper extends AbstractFieldViewHelper {
-
-	/**
-	 * @return Checkbox
-	 */
-	public function getComponent() {
-		/** @var Checkbox $checkbox */
-		$checkbox = $this->getPreparedComponent('Checkbox');
-		return $checkbox;
-	}
-
+class InlineViewHelper extends AbstractInlineFieldViewHelper {
 }

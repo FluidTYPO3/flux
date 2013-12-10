@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -58,7 +58,7 @@ class CustomViewHelperTest extends AbstractViewHelperTest {
 	 * @return TemplateVariableContainer
 	 */
 	protected function executeViewHelperClosure($templateVariableContainerArguments = array()) {
-		$instance = $this->objectManager->get('FluidTYPO3\Flux\ViewHelpers\Flexform\Field\CustomViewHelper');
+		$instance = $this->objectManager->get('FluidTYPO3\Flux\ViewHelpers\Field\CustomViewHelper');
 		$container = $this->objectManager->get('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer');
 		$arguments = array(
 			'name' => 'custom'

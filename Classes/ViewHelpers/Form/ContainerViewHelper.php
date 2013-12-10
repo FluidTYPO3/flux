@@ -25,7 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Form\Container\Container;
-use FluidTYPO3\Flux\ViewHelpers\Flexform\Field\AbstractFieldViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
 
 /**
  * ### FlexForm Field Container element

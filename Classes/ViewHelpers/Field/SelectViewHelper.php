@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,12 +25,12 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
  *****************************************************************/
 
 /**
- * Flexform Userfunc field ViewHelper
+ * Select-type FlexForm field ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Field
  */
-class UserFuncViewHelper extends AbstractFieldViewHelper {
+class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 
 	/**
 	 * Initialize
@@ -38,21 +38,14 @@ class UserFuncViewHelper extends AbstractFieldViewHelper {
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		$this->registerArgument('userFunc', 'string', 'Classname->function notation of UserFunc to be called, example "Tx_Myext_Configuration_FlexForms_MyField->renderField" - Extbase classes need autoload registry for this', TRUE);
-		$this->registerArgument('arguments', 'array', 'Optional array of arguments to pass to the UserFunction building this field');
+		$this->registerArgument('items', 'mixed', 'Items for the selector; array / CSV / Traversable / Query supported', TRUE);
 	}
 
-	/**
-	 * Render method
-	 * @param string $type
-	 * @return UserFunction
-	 */
-	public function getComponent($type = 'UserFunction') {
-		/** @var UserFunction $user */
-		$user = $this->getPreparedComponent($type);
-		$user->setFunction($this->arguments['userFunc']);
-		$user->setArguments($this->arguments['arguments']);
-		return $user;
+	public function getComponent() {
+		/** @var Select $component */
+		$component = $this->getPreparedComponent('Select');
+		$component->setItems($this->arguments['items']);
+		return $component;
 	}
 
 }

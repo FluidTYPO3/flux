@@ -167,7 +167,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 		$this->truncateFluidCodeCache();
 		$view = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
 		$this->setExpectedException('RuntimeException', NULL, 1343521593);
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'storage');
+		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper', 'storage');
 	}
 
 	/**
@@ -182,7 +182,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 		GeneralUtility::writeFile($temporaryFilePathAndFilename, $invalidTemplateSource);
 		$view = $this->getPreparedViewWithTemplateFile($temporaryFilePathAndFilename);
 		$this->setExpectedException('Tx_Fluid_Core_Parser_Exception');
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'storage');
+		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper', 'storage');
 	}
 
 	/**
@@ -192,7 +192,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 		$this->truncateFluidCodeCache();
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'storage');
+		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper', 'storage');
 	}
 
 	/**
@@ -202,7 +202,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 		$this->truncateFluidCodeCache();
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FlexformViewHelper', 'storage');
+		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper', 'storage');
 	}
 
 

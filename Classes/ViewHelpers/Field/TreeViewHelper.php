@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Form;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,42 +24,38 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\Container\Section;
-use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
-
 /**
- * FlexForm field section ViewHelper
+ * Tree (select supertype) FlexForm field ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Form
+ * @subpackage ViewHelpers/Field
  */
-class SectionViewHelper extends AbstractFieldViewHelper {
+class TreeViewHelper extends AbstractRelationFieldViewHelper {
 
 	/**
 	 * Initialize
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', TRUE);
-		$this->registerArgument('label', 'string', 'Label for section, can be LLL: value. Optional - if not specified, ' .
-			'Flux tries to detect an LLL label named "flux.fluxFormId.sections.foobar" based on section name, in scope of ' .
-			'extension rendering the Flux form.', FALSE, NULL);
+		parent::initializeArguments();
+		$this->registerArgument('parentField', 'string', 'Field containing UID of parent record', TRUE);
+		$this->registerArgument('expandAll', 'boolean', 'If TRUE, expands all branches', FALSE, FALSE);
+		$this->registerArgument('showHeader', 'boolean', 'If TRUE, displays tree header', FALSE, FALSE);
+		$this->registerArgument('width', 'integer', 'Width of TreeView component', FALSE, 400);
 	}
 
 	/**
 	 * Render method
-	 * @return void
+	 * @return Tree
 	 */
-	public function render() {
-		/** @var Section $section */
-		$section = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Section');
-		$section->setName($this->arguments['name']);
-		$section->setLabel($this->arguments['label']);
-		$container = $this->getContainer();
-		$container->add($section);
-		$this->setContainer($section);
-		$this->renderChildren();
-		$this->setContainer($container);
+	public function getComponent() {
+		/** @var Tree $tree */
+		$tree = $this->getPreparedComponent('Tree');
+		$tree->setParentField($this->arguments['parentField']);
+		$tree->setExpandAll($this->arguments['expandAll']);
+		$tree->setShowHeader($this->arguments['showHeader']);
+		$tree->setWidth($this->arguments['width']);
+		return $tree;
 	}
 
 }

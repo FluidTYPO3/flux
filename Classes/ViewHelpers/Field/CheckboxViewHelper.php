@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,11 +25,20 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
  *****************************************************************/
 
 /**
- * Select-type FlexForm field ViewHelper
+ * Checkbox FlexForm field ViewHelper
  *
  * @package Flux
- * @subpackage ViewHelpers/Flexform/Field
+ * @subpackage ViewHelpers/Field
  */
-class RelationViewHelper extends AbstractRelationFieldViewHelper {
+class CheckboxViewHelper extends AbstractFieldViewHelper {
+
+	/**
+	 * @return Checkbox
+	 */
+	public function getComponent() {
+		/** @var Checkbox $checkbox */
+		$checkbox = $this->getPreparedComponent('Checkbox');
+		return $checkbox;
+	}
 
 }
