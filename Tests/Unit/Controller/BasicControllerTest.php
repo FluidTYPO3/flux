@@ -40,7 +40,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
- * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
 class BasicControllerTest extends AbstractTestCase {

@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Domain\Repository;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -27,7 +27,6 @@ namespace FluidTYPO3\Flux\Domain\Repository;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
- * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
 class DummyRepository extends Repository {

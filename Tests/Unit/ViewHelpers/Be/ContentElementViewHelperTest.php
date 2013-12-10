@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -33,7 +33,6 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 
 /**
- * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
 class ContentElementViewHelperTest extends AbstractViewHelperTest {

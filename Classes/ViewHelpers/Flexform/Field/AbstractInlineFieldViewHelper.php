@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Flexform\Field;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Anders Gissel <anders@wildside.dk>, Wildside A/S
+ *  (c) 2013 Anders Gissel <anders@wildside.dk>
  *
  *  All rights reserved
  *

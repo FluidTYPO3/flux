@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -28,7 +28,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
 class TceMainTest extends \FluidTYPO3\Flux\Tests\Unit\AbstractTestCase {

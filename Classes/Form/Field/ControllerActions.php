@@ -4,7 +4,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2013 Claus Due <claus@wildside.dk>
  *
  *  All rights reserved
  *

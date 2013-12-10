@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -27,7 +27,6 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
 
 /**
- * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
 class VariableViewHelperTest extends AbstractViewHelperTest {

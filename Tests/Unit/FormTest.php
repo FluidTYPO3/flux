@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -28,7 +28,6 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 /**
- * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
 class FormTest extends AbstractTestCase {

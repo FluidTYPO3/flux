@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -35,7 +35,6 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
 abstract class AbstractFormTest extends AbstractTestCase {

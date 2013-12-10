@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -25,7 +25,7 @@ namespace FluidTYPO3\Flux\Form\Container;
  * ************************************************************* */
 
 /**
- * @author Claus Due <claus@wildside.dk>
+ * author Claus Due <claus@namelesscoder.net>
  * @package Flux
  */
 class SheetTest extends AbstractContainerTest {

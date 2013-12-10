@@ -4,7 +4,7 @@ namespace FluidTYPO3\Flux\Tests\Functional\Hook;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -32,7 +32,6 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 
 /**
- * @author Claus Due <claus@wildside.dk>
  * @package Flux
  */
 class HookSubscriberTest extends AbstractTestCase {

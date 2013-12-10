@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2013 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -32,7 +32,6 @@ use TYPO3\CMS\Frontend\Page\PageRepository;
 /**
  * Language File Service
  *
- * @author Claus Due, Wildside A/S
  * @package Flux
  * @subpackage Service
  */
