@@ -101,14 +101,14 @@ class AreaListItemsProcessor {
 	 * @return string
 	 */
 	protected function getUrlRequestedArea() {
-		return $_GET['defVals']['tt_content']['tx_flux_column'];
+		return Tx_Flux_Utility_Sanitize::get('defVals.tt_content.tx_flux_column', FILTER_UNSAFE_RAW);
 	}
 
 	/**
 	 * @return string
 	 */
 	protected function getUrlRequestedParent() {
-		return $_GET['defVals']['tt_content']['tx_flux_parent'];
+		return Tx_Flux_Utility_Sanitize::get('defVals.tt_content.tx_flux_parent', FILTER_SANITIZE_NUMBER_INT);
 	}
 
 	/**
