@@ -184,11 +184,9 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 			$sheets[$sheetName] = $form->createContainer('Sheet', $sheetName);
 			foreach ($propertyNames as $propertyName) {
 				$settings = $values[$propertyName];
-				try {
+				if (TRUE === isset($settings['type'])) {
 					$field = AbstractFormField::create($settings);
 					$sheets[$sheetName]->add($field);
-				} catch (\ReflectionException $error) {
-					continue;
 				}
 			}
 		}
