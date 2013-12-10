@@ -145,6 +145,16 @@ class Core {
 	}
 
 	/**
+	 * @param string $className
+	 * @return void
+	 */
+	public static function unregisterFormForModelObjectClassName($className) {
+		if (TRUE === isset(self::$forms['models'][$className])) {
+			unset(self::$forms['models'][$className]);
+		}
+	}
+
+	/**
 	 * @param string $extensionKey
 	 * @param string $providesControllerName
 	 * @return void
@@ -313,12 +323,32 @@ class Core {
 
 	/**
 	 * @param string $typeOrClassName
+	 */
+	public static function unregisterPipe($typeOrClassName) {
+		if (TRUE === in_array($typeOrClassName, self::$pipes)) {
+			$index = array_search($typeOrClassName, self::$pipes);
+			unset(self::$pipes[$index]);
+		}
+	}
+
+	/**
+	 * @param string $typeOrClassName
 	 * @param string $insteadOfNativeType
 	 * @return void
 	 */
 	public static function registerOutlet($typeOrClassName, $insteadOfNativeType = NULL) {
 		$key = NULL === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
 		self::$outlets[$key] = $typeOrClassName;
+	}
+
+	/**
+	 * @param string $typeOrClassName
+	 */
+	public static function unregisterOutlet($typeOrClassName) {
+		if (TRUE === in_array($typeOrClassName, self::$outlets)) {
+			$index = array_search($typeOrClassName, self::$outlets);
+			unset(self::$outlets[$index]);
+		}
 	}
 
 	/**

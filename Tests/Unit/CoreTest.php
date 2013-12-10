@@ -208,6 +208,18 @@ class CoreTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function canUnregisterFormForModelClassName() {
+		$fakeClass = 'MyFakeClass';
+		$form = Form::create();
+		Core::registerFormForModelObjectClassName($fakeClass, $form);
+		$this->assertSame($form, Core::getRegisteredFormForModelObjectClass($fakeClass));
+		Core::unregisterFormForModelObjectClassName($fakeClass);
+		$this->assertNull(Core::getRegisteredFormForModelObjectClass($fakeClass));
+	}
+
+	/**
+	 * @test
+	 */
 	public function canAddAndRetrieveGlobalTypoScript() {
 		Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
 		$registered = Core::getStaticTypoScriptLocations();
@@ -221,6 +233,41 @@ class CoreTest extends AbstractTestCase {
 		Core::addGlobalTypoScript(array(self::FIXTURE_TYPOSCRIPT_DIR));
 		$registered = Core::getStaticTypoScriptLocations();
 		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetRegisteredFormsForModelClassNames() {
+		$fakeClass = 'MyFakeClass';
+		$form = Form::create();
+		Core::registerFormForModelObjectClassName($fakeClass, $form);
+		$this->assertSame($form, Core::getRegisteredFormForModelObjectClass($fakeClass));
+		$this->assertContains($form, Core::getRegisteredFormsForModelObjectClasses());
+		Core::unregisterFormForModelObjectClassName($fakeClass);
+
+	}
+
+	/**
+	 * @test
+	 */
+	public function canAddAndRetrieveOutlets() {
+		$fakeClass = 'MyFakeClass';
+		Core::registerOutlet($fakeClass);
+		$this->assertContains($fakeClass, Core::getOutlets());
+		Core::unregisterOutlet($fakeClass);
+		$this->assertNotContains($fakeClass, Core::getOutlets());
+	}
+
+	/**
+	 * @test
+	 */
+	public function canAddAndRetrievePipes() {
+		$fakeClass = 'MyFakeClass';
+		Core::registerPipe($fakeClass);
+		$this->assertContains($fakeClass, Core::getPipes());
+		Core::unregisterPipe($fakeClass);
+		$this->assertNotContains($fakeClass, Core::getPipes());
 	}
 
 }
