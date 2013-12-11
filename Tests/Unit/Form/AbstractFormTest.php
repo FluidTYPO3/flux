@@ -107,7 +107,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		}
 		$label = $instance->getLabel();
 		$this->assertContains('testFormId', $label);
-		$this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xml:flux', $label);
+		$this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux', $label);
 	}
 
 	/**

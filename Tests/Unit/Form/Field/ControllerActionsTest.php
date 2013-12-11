@@ -43,7 +43,7 @@ class ControllerActionsTest extends AbstractFieldTest {
 		'actions' => array(),
 		'disableLocalLanguageLabels' => FALSE,
 		'excludeActions' => array(),
-		'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang.xml',
+		'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang.xlf',
 		'prefixOnRequiredArguments' => '*',
 		'subActions' => array()
 	);
@@ -90,7 +90,7 @@ class ControllerActionsTest extends AbstractFieldTest {
 		$pluginName = 'Test';
 		$controllerName = 'Content';
 		$actionName = 'fake';
-		$localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xml';
+		$localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xlf';
 		$labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
 		$expectedLabel = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
 		$label = $this->buildLabelForControllerAndAction($controllerName, $actionName, $localLanguageFileRelativePath);
@@ -221,7 +221,7 @@ class ControllerActionsTest extends AbstractFieldTest {
 			)
 		);
 		$expected = array(
-			array('LLL:EXT:flux/Resources/Private/Language/locallang.xml:.content.fake', 'Content->fake;Content->render')
+			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:.content.fake', 'Content->fake;Content->render')
 		);
 		/** @var ControllerActions $component */
 		$component = $this->createInstance();
@@ -244,7 +244,7 @@ class ControllerActionsTest extends AbstractFieldTest {
 			$component->setExtensionName('FluidTYPO3.Flux');
 			$component->setPluginName('Test');
 			$component->setControllerName('Content');
-			$component->setLocalLanguageFileRelativePath('/Resources/Private/Language/locallang.xml');
+			$component->setLocalLanguageFileRelativePath('/Resources/Private/Language/locallang.xlf');
 		}
 		$items = $this->callInaccessibleMethod($component, 'buildItemsForActions', $actions);
 		return $items;
