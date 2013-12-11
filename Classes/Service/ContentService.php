@@ -157,8 +157,7 @@ class ContentService implements SingletonInterface {
 			$this->affectRecordByBacktrace($row, $backtrace);
 		} elseif (0 > intval($relativeTo) || 0 > $row['pid']) {
 			// inserting a new element after another element. Check column position of that element.
-			$relativeTo = abs($relativeTo !== $row['pid'] ? $relativeTo : $row['pid']);
-			$relativeToRecord = $this->loadRecordFromDatabase($relativeTo);
+			$relativeToRecord = $this->loadRecordFromDatabase(abs($relativeTo));
 			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
 			$row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
 			$row['colPos'] = $relativeToRecord['colPos'];

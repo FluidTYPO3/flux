@@ -306,7 +306,7 @@ class ContentServiceTest extends AbstractTestCase {
 		$this->assertEquals($relativeRecord['tx_flux_column'], $row['tx_flux_column']);
 		$this->assertEquals($relativeRecord['tx_flux_parent'], $row['tx_flux_parent']);
 		$this->assertEquals($relativeRecord['colPos'], $row['colPos']);
-		$this->assertEquals(1, $relativeTo);
+		$this->assertEquals(-1, $relativeTo);
 	}
 
 	/**
