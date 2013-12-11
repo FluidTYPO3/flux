@@ -62,7 +62,7 @@ class SheetViewHelper extends AbstractFormViewHelper {
 			$sheet = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Sheet');
 			$sheet->setName($this->arguments['name']);
 			$sheet->setLabel($this->arguments['label']);
-			$this->getForm()->add($sheet);
+			$form->add($sheet);
 			$this->setContainer($sheet);
 		}
 		$this->renderChildren();
