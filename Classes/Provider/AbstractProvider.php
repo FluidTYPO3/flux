@@ -271,6 +271,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		$variables = GeneralUtility::array_merge_recursive_overrule($this->templateVariables, $variables);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
 		$form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
 		return $form;
