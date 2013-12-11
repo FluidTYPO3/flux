@@ -163,7 +163,10 @@ class TceMain {
 				}
 			}
 			foreach ($detectedProviders as $provider) {
-				call_user_func_array(array($provider, $methodName), $arguments);
+				if (TRUE === $provider->shouldCall($methodName, $record)) {
+					call_user_func_array(array($provider, $methodName), $arguments);
+					$provider->trackMethodCall($methodName, $record);
+				}
 			}
 		} catch (\Exception $error) {
 			$this->configurationService->debug($error);
