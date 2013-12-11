@@ -53,6 +53,11 @@ class AbstractProvider implements ProviderInterface {
 	private static $cache = array();
 
 	/**
+	 * @var array
+	 */
+	private static $trackedMethodCalls = array();
+
+	/**
 	 * @var string
 	 */
 	protected $name = NULL;
@@ -930,6 +935,39 @@ class AbstractProvider implements ProviderInterface {
 		}
 		$records = array_reverse($records);
 		return $records;
+	}
+
+	/**
+	 * @param string $methodName
+	 * @param array $row
+	 * @return string
+	 */
+	public static function cacheKeyForTrackedMethodCall($methodName, array $row) {
+		$cacheKey = $methodName;
+		if (TRUE === isset($row['uid'])) {
+			$cacheKey .= $uid;
+		}
+
+		return $cacheKey;
+	}
+
+	/**
+	 * @param string $methodName
+	 * @param array $row
+	 */
+	public function trackMethodCall($methodName, array $row) {
+		$cacheKey = self::cacheKeyForTrackedMethodCall($methodName, $row);
+		self::$trackedMethodCalls[$cacheKey] = TRUE;
+	}
+
+	/**
+	 * @param string $methodName
+	 * @param array $row
+	 * @return boolean
+	 */
+	public function shouldCall($methodName, array $row) {
+		$cacheKey = self::cacheKeyForTrackedMethodCall($methodName, $row);
+		return empty(self::$trackedMethodCalls[$cacheKey]);
 	}
 
 }
