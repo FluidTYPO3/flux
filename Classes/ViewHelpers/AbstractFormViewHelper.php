@@ -85,6 +85,8 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 	protected function getForm() {
 		if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, 'form')) {
 			$form = $this->viewHelperVariableContainer->get(self::SCOPE, 'form');
+		} elseif (TRUE === $this->templateVariableContainer->exists('form')) {
+			$form = $this->templateVariableContainer->get('form');
 		} else {
 			$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 			$this->viewHelperVariableContainer->add(self::SCOPE, 'form', $form);
@@ -121,6 +123,8 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 	protected function getContainer() {
 		if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, 'container')) {
 			$container = $this->viewHelperVariableContainer->get(self::SCOPE, 'container');
+		} elseif (TRUE === $this->templateVariableContainer->exists('container')) {
+			$container = $this->templateVariableContainer->get('container');
 		} else {
 			$form = $this->getForm();
 			$container = $form->last();
@@ -135,6 +139,10 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 	 */
 	protected function setContainer(FormInterface $container) {
 		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, 'container', $container);
+		if (TRUE === $this->templateVariableContainer->exists('container')) {
+			$this->templateVariableContainer->remove('container');
+		}
+		$this->templateVariableContainer->add('container', $container);
 	}
 
 }

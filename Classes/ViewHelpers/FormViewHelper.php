@@ -74,6 +74,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$this->setContainer($container);
 		$this->renderChildren();
 		$this->viewHelperVariableContainer->remove(self::SCOPE, 'container');
+		$this->templateVariableContainer->remove('container');
 	}
 
 }
