@@ -69,7 +69,7 @@ class DataViewHelper extends AbstractViewHelper {
 	public function render($uid, $table, $field, $as = NULL) {
 		if (TRUE === isset(self::$dataCache[$uid.$table.$field])) {
 		    $dataArray = self::$dataCache[$uid.$table.$field];
-		} else {
+		} elseif (TRUE === isset($GLOBALS['TCA'][$table])) {
 			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,' . $field, $table, sprintf('uid=%d', $uid));
 			if (FALSE === $rows || 0 === count($rows)) {
 				throw new Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);

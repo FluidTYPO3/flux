@@ -946,7 +946,7 @@ class AbstractProvider implements ProviderInterface {
 	public static function cacheKeyForTrackedMethodCall($methodName, array $row) {
 		$cacheKey = $methodName;
 		if (TRUE === isset($row['uid'])) {
-			$cacheKey .= $uid;
+			$cacheKey .= $row['uid'];
 		}
 
 		return $cacheKey;

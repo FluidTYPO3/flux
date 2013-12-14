@@ -114,7 +114,9 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 			} else {
 				$this->contentService->moveRecord($row, $relativeTo, $reference);
 			}
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
+			if (0 < count($row)) {
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
+			}
 		}
 	}
 

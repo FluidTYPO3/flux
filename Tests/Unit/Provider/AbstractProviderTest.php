@@ -560,8 +560,11 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canLoadRecordFromDatabase() {
 		$provider = $this->getConfigurationProviderInstance();
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
-		$this->assertNotNull($result);
+		$table = $provider->getTableName($row);
+		if (FALSE === empty($table)) {
+			$result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
+			$this->assertNotNull($result);
+		}
 	}
 
 	/**
