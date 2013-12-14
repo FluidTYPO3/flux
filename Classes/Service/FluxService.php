@@ -368,6 +368,9 @@ class FluxService implements SingletonInterface {
 			} else {
 				$provider = $this->objectManager->get($providerClassNameOrInstance);
 			}
+			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($providerClassNameOrInstance))) {
+				throw new \RuntimeException(is_object($providerClassNameOrInstance) ? get_class($providerClassNameOrInstance) : $providerClassNameOrInstance . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
+			}
 			if (TRUE === $provider->trigger($row, $table, $fieldName, $extensionKey)) {
 				$priority = $provider->getPriority($row);
 				if (FALSE === is_array($prioritizedProviders[$priority])) {

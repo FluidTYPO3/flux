@@ -54,7 +54,8 @@ class DataViewHelperTest extends AbstractViewHelperTest {
 			'uid' => $this->getTestingRecordUid('invalid')
 		);
 		$this->setUseOutputBuffering(TRUE);
-		$this->executeViewHelper($arguments);
+		$output = $this->executeViewHelper($arguments);
+		$this->assertEquals('Invalid table "' . $arguments['table'] . '" - does not exist in TYPO3 TCA.', $output);
 	}
 
 	/**

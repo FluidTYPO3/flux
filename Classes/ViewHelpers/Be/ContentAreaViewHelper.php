@@ -59,8 +59,9 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$pageRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages', "uid = '" . $row['pid'] . "'");
 		$pageRecord = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pageRes);
 		$GLOBALS['TYPO3_DB']->sql_free_result($pageRes);
+		// note: the following chained makeInstance is not an error; it is there to make the ViewHelper work on TYPO3 6.0
 		/** @var $dblist PageLayoutView */
-		$dblist = $this->objectManager->get('TYPO3\CMS\Backend\View\PageLayoutView');
+		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
 		$dblist->script = 'db_layout.php';
 		$dblist->showIcon = 1;

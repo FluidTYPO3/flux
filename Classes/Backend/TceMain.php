@@ -183,12 +183,6 @@ class TceMain {
 		if (TRUE === self::$cachesCleared) {
 			return;
 		}
-		$manifestCacheFiles = glob(GeneralUtility::getFileAbsFileName('typo3temp/*-manifest.cache'));
-		if (FALSE !== $manifestCacheFiles) {
-			foreach ($manifestCacheFiles as $manifestCacheFile) {
-				unlink($manifestCacheFile);
-			}
-		}
 		$tables = array_keys($GLOBALS['TCA']);
 		foreach ($tables as $table) {
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL);

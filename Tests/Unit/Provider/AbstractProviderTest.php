@@ -72,7 +72,6 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canExecuteClearCacheCommand() {
-		touch(GeneralUtility::getFileAbsFileName('typo3temp/flux-test.manifest'));
 		$provider = $this->getConfigurationProviderInstance();
 		$return = $provider->clearCacheCommand(array('all'));
 		$this->assertEmpty($return);
@@ -137,13 +136,13 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetFormWithFieldsFromTemplate() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_FIELD_CHECKBOX);
+		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW_EMPTY);
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$provider->setTemplatePathAndFilename($templatePathAndFilename);
 		$form = $provider->getForm($record);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
-		$this->assertTrue($form->get('options')->has('settings.checkbox'));
+		$this->assertTrue($form->get('options')->has('settings.input'));
 	}
 
 	/**
@@ -545,7 +544,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canUseInheritanceTree() {
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setFieldName('pi_flexform');
-		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_FIELD_INPUT));
+		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW_EMPTY));
 		$record = $this->getBasicRecord();
 		$byPathExists = $this->callInaccessibleMethod($provider, 'getInheritedPropertyValueByDottedPath', $record, 'settings');
 		$byDottedPathExists = $this->callInaccessibleMethod($provider, 'getInheritedPropertyValueByDottedPath', $record, 'settings.input');
@@ -561,8 +560,11 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canLoadRecordFromDatabase() {
 		$provider = $this->getConfigurationProviderInstance();
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
-		$this->assertNotNull($result);
+		$table = $provider->getTableName($row);
+		if (FALSE === empty($table)) {
+			$result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
+			$this->assertNotNull($result);
+		}
 	}
 
 	/**

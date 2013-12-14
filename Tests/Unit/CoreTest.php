@@ -118,24 +118,6 @@ class CoreTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function throwsExceptionOnInvalidClassName() {
-		$providerClassName = 'Tx_Flux_Provider_DoesNotExistProvider';
-		$this->setExpectedException('RuntimeException', NULL, 1327173514);
-		Core::registerConfigurationProvider($providerClassName);
-	}
-
-	/**
-	 * @test
-	 */
-	public function throwsExceptionOnInvalidImplementation() {
-		$providerClassName = 'FluidTYPO3\Flux\Tests\Fixtures\Classes\InvalidConfigurationProvider';
-		$this->setExpectedException('RuntimeException', NULL, 1327173536);
-		Core::registerConfigurationProvider($providerClassName);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canRegisterStandaloneTemplateForContentObject() {
 		$service = $this->createFluxServiceInstance();
 		$variables = array('test' => 'test');
