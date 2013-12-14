@@ -100,7 +100,7 @@ abstract class AbstractOutlet implements OutletInterface {
 	 * @return void
 	 */
 	public function setPipesOut(array $pipes) {
-		$this->pipesIn = array();
+		$this->pipesOut = array();
 		foreach ($pipes as $pipe) {
 			$this->addPipeOut($pipe);
 		}
@@ -111,7 +111,7 @@ abstract class AbstractOutlet implements OutletInterface {
 	 * @return PipeInterface[]
 	 */
 	public function getPipesOut() {
-		return $this->pipesIn;
+		return $this->pipesOut;
 	}
 
 	/**
