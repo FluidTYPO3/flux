@@ -27,14 +27,18 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clea
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'] = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux'] = 'FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = 'FluidTYPO3\Flux\Backend\Preview';
-\FluidTYPO3\Flux\Core::registerConfigurationProvider('FluidTYPO3\Flux\Provider\ContentProvider');
 
-// native Outlets, replaceable by short name in subsequent registerOutlet() calls by adding second argument (string, name of type)
-\FluidTYPO3\Flux\Core::registerOutlet('standard');
 
-// native Pipes, replaceable by short name in subsequent registerPipe() calls by adding second argument (string, name of type)
-\FluidTYPO3\Flux\Core::registerPipe('standard');
-\FluidTYPO3\Flux\Core::registerPipe('controller');
-\FluidTYPO3\Flux\Core::registerPipe('email');
-\FluidTYPO3\Flux\Core::registerPipe('flashMessage');
-\FluidTYPO3\Flux\Core::registerPipe('typeConverter');
+if (TRUE === class_exists('FluidTYPO3\Flux\Core')) {
+	\FluidTYPO3\Flux\Core::registerConfigurationProvider('FluidTYPO3\Flux\Provider\ContentProvider');
+
+	// native Outlets, replaceable by short name in subsequent registerOutlet() calls by adding second argument (string, name of type)
+	\FluidTYPO3\Flux\Core::registerOutlet('standard');
+
+	// native Pipes, replaceable by short name in subsequent registerPipe() calls by adding second argument (string, name of type)
+	\FluidTYPO3\Flux\Core::registerPipe('standard');
+	\FluidTYPO3\Flux\Core::registerPipe('controller');
+	\FluidTYPO3\Flux\Core::registerPipe('email');
+	\FluidTYPO3\Flux\Core::registerPipe('flashMessage');
+	\FluidTYPO3\Flux\Core::registerPipe('typeConverter');
+}
