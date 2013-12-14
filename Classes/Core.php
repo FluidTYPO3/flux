@@ -189,14 +189,6 @@ class Core {
 	 * @throws \RuntimeException
 	 */
 	public static function registerConfigurationProvider($classNameOrInstance) {
-		if (FALSE === is_object($classNameOrInstance)) {
-			if (class_exists($classNameOrInstance) === FALSE) {
-				throw new \RuntimeException('Provider class ' . $classNameOrInstance . ' does not exists', 1327173514);
-			}
-		}
-		if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($classNameOrInstance))) {
-			throw new \RuntimeException(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
-		}
 		if (FALSE === in_array($classNameOrInstance, self::$unregisteredProviders) && FALSE === in_array($classNameOrInstance, self::$providers)) {
 			array_push(self::$providers, $classNameOrInstance);
 		}
