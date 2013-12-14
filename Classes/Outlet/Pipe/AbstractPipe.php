@@ -35,7 +35,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * @package Flux
  * @subpackage Outlet\Pipe
  */
-class AbstractPipe implements PipeInterface {
+abstract class AbstractPipe implements PipeInterface {
 
 	/**
 	 * @param mixed $data
