@@ -61,20 +61,6 @@ class TceMainTest extends \FluidTYPO3\Flux\Tests\Unit\AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function canExecuteClearAllCacheCommandAndRemoveManifestFile() {
-		$instance = $this->getInstance();
-		$mockedFluxService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
-		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array()));
-		ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
-		$fakeManifestFile = GeneralUtility::getFileAbsFileName('typo3temp/fake-manifest.cache');
-		touch($fakeManifestFile);
-		$instance->clearCacheCommand('all');
-		$this->assertFileNotExists($fakeManifestFile);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canExecuteDataPreProcessHook() {
 		$instance = $this->getInstance();
 		$tceMainParent = $this->getCallerInstance();

@@ -72,7 +72,6 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canExecuteClearCacheCommand() {
-		touch(GeneralUtility::getFileAbsFileName('typo3temp/flux-test.manifest'));
 		$provider = $this->getConfigurationProviderInstance();
 		$return = $provider->clearCacheCommand(array('all'));
 		$this->assertEmpty($return);
