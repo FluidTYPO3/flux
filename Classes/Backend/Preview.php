@@ -90,11 +90,10 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 			/** @var ProviderInterface $provider */
 			list ($previewHeader, $previewContent, $continueDrawing) = $provider->getPreview($row);
 			$drawItem = $continueDrawing;
-			if (FALSE === empty($previewHeader)) {
-				$headerContent .= $previewHeader;
-			}
-			if (FALSE === empty($previewContent)) {
-				$itemContent .= $previewContent;
+			$headerContent .= $previewHeader;
+			$itemContent .= $previewContent;
+			if (FALSE === $continueDrawing) {
+				break;
 			}
 		}
 	}
