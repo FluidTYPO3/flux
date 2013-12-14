@@ -86,6 +86,8 @@ class DataViewHelper extends AbstractViewHelper {
 				}
 			}
 			self::$dataCache[$uid.$table.$field] = $dataArray;
+		} else {
+			throw new Exception('Invalid table "' . $table . '" - does not exist in TYPO3 TCA.', 1387049117);
 		}
 		if (NULL !== $as) {
 			if ($this->templateVariableContainer->exists($as)) {
