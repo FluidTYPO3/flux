@@ -193,7 +193,7 @@ class BasicControllerTest extends AbstractTestCase {
 	public function canInitializeView() {
 		$controllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array(), array(), '', FALSE);
-		$this->inject($view, 'objectManager', $this->objectManager);
+		ObjectAccess::setProperty($view, 'objectManager', $this->objectManager, TRUE);
 		$instance = $this->getMock($controllerClassName, array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewObject', 'initializeViewVariables'));
 		$instance->expects($this->at(0))->method('intiializeProvider');
 		$instance->expects($this->at(1))->method('initializeSettings');
