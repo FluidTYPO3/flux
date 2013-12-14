@@ -48,40 +48,14 @@ abstract class AbstractTestCase extends BaseTestCase {
 
 	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
 	const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/WithoutForm.html';
-	const FIXTURE_TEMPLATE_CONTAINSWARNINGTRIGGERS = 'EXT:flux/Tests/Fixtures/Templates/ContainsWarningTriggers.html';
-	const FIXTURE_TEMPLATE_ICONCONTAINSEXTENSIONKEY = 'EXT:flux/Tests/Fixtures/Templates/IconContainsExtensionKey.html';
 	const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Sheets.html';
 	const FIXTURE_TEMPLATE_COMPACTED = 'EXT:flux/Tests/Fixtures/Templates/CompactToggledOn.html';
-	const FIXTURE_TEMPLATE_CONTAINER = 'EXT:flux/Tests/Fixtures/Templates/Container.html';
 	const FIXTURE_TEMPLATE_USESPARTIAL = 'EXT:flux/Tests/Fixtures/Templates/UsesPartial.html';
-	const FIXTURE_TEMPLATE_TRANSFORMATIONS = 'EXT:flux/Tests/Fixtures/Templates/Transformations.html';
 	const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/CustomSection.html';
 	const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/EmptyPreview.html';
 	const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/BasicGrid.html';
 	const FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/DualGrid.html';
 	const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/CollidingGrid.html';
-	const FIXTURE_TEMPLATE_SECTIONOBJECT = 'EXT:flux/Tests/Fixtures/Templates/SectionObject.html';
-	const FIXTURE_TEMPLATE_FIELD_INPUT = 'EXT:flux/Tests/Fixtures/Templates/Fields/Input.html';
-	const FIXTURE_TEMPLATE_FIELD_TEXT = 'EXT:flux/Tests/Fixtures/Templates/Fields/Text.html';
-	const FIXTURE_TEMPLATE_FIELD_CHECKBOX = 'EXT:flux/Tests/Fixtures/Templates/Fields/Checkbox.html';
-	const FIXTURE_TEMPLATE_FIELD_CONTROLLERACTIONS = 'EXT:flux/Tests/Fixtures/Templates/Fields/ControllerActions.html';
-	const FIXTURE_TEMPLATE_FIELD_FILE = 'EXT:flux/Tests/Fixtures/Templates/Fields/File.html';
-	const FIXTURE_TEMPLATE_FIELD_GROUP = 'EXT:flux/Tests/Fixtures/Templates/Fields/Group.html';
-	const FIXTURE_TEMPLATE_FIELD_INLINE = 'EXT:flux/Tests/Fixtures/Templates/Fields/Inline.html';
-	const FIXTURE_TEMPLATE_FIELD_RELATION = 'EXT:flux/Tests/Fixtures/Templates/Fields/Relation.html';
-	const FIXTURE_TEMPLATE_FIELD_SELECT = 'EXT:flux/Tests/Fixtures/Templates/Fields/Select.html';
-	const FIXTURE_TEMPLATE_FIELD_TREE = 'EXT:flux/Tests/Fixtures/Templates/Fields/Tree.html';
-	const FIXTURE_TEMPLATE_FIELD_CUSTOM = 'EXT:flux/Tests/Fixtures/Templates/Fields/Custom.html';
-	const FIXTURE_TEMPLATE_FIELD_USERFUNC = 'EXT:flux/Tests/Fixtures/Templates/Fields/UserFunc.html';
-	const FIXTURE_TEMPLATE_WIZARDS_ADD = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Add.html';
-	const FIXTURE_TEMPLATE_WIZARDS_COLORPICKER = 'EXT:flux/Tests/Fixtures/Templates/Wizards/ColorPicker.html';
-	const FIXTURE_TEMPLATE_WIZARDS_EDIT = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Edit.html';
-	const FIXTURE_TEMPLATE_WIZARDS_LINK = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Link.html';
-	const FIXTURE_TEMPLATE_WIZARDS_LIST = 'EXT:flux/Tests/Fixtures/Templates/Wizards/List.html';
-	const FIXTURE_TEMPLATE_WIZARDS_SELECT = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Select.html';
-	const FIXTURE_TEMPLATE_WIZARDS_SLIDER = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Slider.html';
-	const FIXTURE_TEMPLATE_WIZARDS_SUGGEST = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Suggest.html';
-	const FIXTURE_TEMPLATE_MISCELLANEOUS = 'EXT:flux/Tests/Fixtures/Templates/Wizards/Miscellaneous.html';
 	const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
 	/**
