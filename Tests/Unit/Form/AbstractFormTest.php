@@ -56,6 +56,15 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function canGetAndSetExtensionName() {
+		$form = $this->createInstance();
+		$form->setExtensionName('Flux');
+		$this->assertEquals('Flux', $form->getExtensionName());
+	}
+
+	/**
+	 * @test
+	 */
 	public function canGetLabel() {
 		$className = $this->getObjectClassName();
 		$instance = $this->objectManager->get($className);

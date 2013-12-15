@@ -59,6 +59,26 @@ abstract class AbstractTestCase extends BaseTestCase {
 	const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
 	/**
+	 * @param string $propertyName
+	 * @param mixed $value
+	 * @param mixed $expectedValue
+	 * @param mixed $expectsChaining
+	 * @return void
+	 */
+	protected function assertGetterAndSetterWorks($propertyName, $value, $expectedValue = NULL, $expectsChaining = FALSE) {
+		$instance = $this->createInstance();
+		$setter = 'set' . ucfirst($propertyName);
+		$getter = 'get' . ucfirst($propertyName);
+		$chained = $instance->$setter($value);
+		if (TRUE === $expectsChaining) {
+			$this->assertSame($instance, $chained);
+		} else {
+			$this->assertNull($chained);
+		}
+		$this->assertSame($expectedValue, $instance->$getter());
+	}
+
+	/**
 	 * @param mixed $value
 	 * @return void
 	 */
@@ -176,6 +196,14 @@ abstract class AbstractTestCase extends BaseTestCase {
 		/** @var FluxService $fluxService */
 		$fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 		return $fluxService;
+	}
+
+	/**
+	 * @return object
+	 */
+	protected function createInstance() {
+		$instance = $this->objectManager->get(substr(get_class($this), 0, -4));
+		return $instance;
 	}
 
 	/**

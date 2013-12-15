@@ -64,10 +64,11 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface {
 	public function conduct($data) {
 		$flashMessage = new FlashMessage($this->getMessage(), $this->getTitle(), $this->getSeverity(), $this->getStoreInSession());
 		FlashMessageQueue::addMessage($flashMessage);
+		return $data;
 	}
 
 	/**
-	 * @param integer $severity
+	 * 	@param integer $severity
 	 * @return FlashMessagePipe
 	 */
 	public function setSeverity($severity) {

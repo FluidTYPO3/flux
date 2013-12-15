@@ -51,12 +51,12 @@ abstract class AbstractOutlet implements OutletInterface {
 	/**
 	 * @var PipeInterface[]
 	 */
-	protected $pipesIn;
+	protected $pipesIn = array();
 
 	/**
 	 * @var PipeInterface[]
 	 */
-	protected $pipesOut;
+	protected $pipesOut = array();
 
 	/**
 	 * @param boolean $enabled
