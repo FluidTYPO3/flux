@@ -30,7 +30,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * Thrown by Outlet Pipes on errors.
  *
  * @package Flux
- * @subpackage Outlet
+ * @subpackage Outlet\Pipe
  */
 class Exception extends \Exception {
 
