@@ -24,7 +24,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
@@ -33,7 +32,7 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 /**
  * @package Flux
  */
-class CustomViewHelperTest extends AbstractViewHelperTest {
+class CustomViewHelperTest extends AbstractFieldViewHelperTest {
 
 	/**
 	 * @test

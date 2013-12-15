@@ -24,13 +24,12 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 
 /**
  * @package Flux
  */
-class ControllerActionsViewHelperTest extends AbstractViewHelperTest {
+class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTest {
 
 	/**
 	 * @test
