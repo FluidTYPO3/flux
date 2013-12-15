@@ -100,7 +100,7 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface {
 
 	/**
 	 * @param string $title
-	 * @return FlashMessageOutlet
+	 * @return FlashMessagePipe
 	 */
 	public function setTitle($title) {
 		$this->title = $title;
