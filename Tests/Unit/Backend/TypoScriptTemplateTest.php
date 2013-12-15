@@ -35,7 +35,7 @@ class TypoScriptTemplateTest extends \FluidTYPO3\Flux\Tests\Unit\AbstractTestCas
 	 * @test
 	 */
 	public function canPreProcessIncludeStaticTypoScriptResources() {
-		\FluidTYPO3\Flux\Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
+		\FluidTYPO3\Flux\Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
 		$function = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'];
 		$template = $this->objectManager->get('t3lib_TStemplate');
 		$parameters = array(
@@ -49,7 +49,7 @@ class TypoScriptTemplateTest extends \FluidTYPO3\Flux\Tests\Unit\AbstractTestCas
 	 * @test
 	 */
 	public function leavesRecordsWhichAreNotRootsUntouched() {
-		\FluidTYPO3\Flux\Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
+		\FluidTYPO3\Flux\Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
 		$function = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'];
 		$template = $this->objectManager->get('t3lib_TStemplate');
 		$parameters = array(

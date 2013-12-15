@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Backend;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Core;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -43,7 +44,7 @@ class TypoScriptTemplate {
 	public function preprocessIncludeStaticTypoScriptSources(array &$params, TemplateService $pObj) {
 		if (TRUE === isset($params['row']['root']) && TRUE === (boolean) $params['row']['root']) {
 			$existingTemplates = GeneralUtility::trimExplode(',', $params['row']['include_static_file']);
-			$globalStaticTemplates = \FluidTYPO3\Flux\Core::getStaticTypoScriptLocations();
+			$globalStaticTemplates = Core::getStaticTypoScript();
 			$staticTemplates = array_merge($globalStaticTemplates, $existingTemplates);
 			$params['row']['include_static_file'] = implode(',', array_unique($staticTemplates));
 		}

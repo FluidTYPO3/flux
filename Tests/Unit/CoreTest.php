@@ -202,8 +202,8 @@ class CoreTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canAddAndRetrieveGlobalTypoScript() {
-		Core::addGlobalTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
-		$registered = Core::getStaticTypoScriptLocations();
+		Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
+		$registered = Core::getStaticTypoScript();
 		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
 	}
 
@@ -211,8 +211,8 @@ class CoreTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canAddAndRetrieveGlobalTypoScriptCollections() {
-		Core::addGlobalTypoScript(array(self::FIXTURE_TYPOSCRIPT_DIR));
-		$registered = Core::getStaticTypoScriptLocations();
+		Core::addStaticTypoScript(array(self::FIXTURE_TYPOSCRIPT_DIR));
+		$registered = Core::getStaticTypoScript();
 		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
 	}
 

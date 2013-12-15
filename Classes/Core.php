@@ -79,27 +79,27 @@ class Core {
 	 * Contains all programatically added TypoScript configuration files for auto-inclusion
 	 * @var array
 	 */
-	private static $staticTypoScriptFiles = array();
+	private static $staticTypoScript = array();
 
 	/**
 	 * @return array
 	 */
-	public static function getStaticTypoScriptLocations() {
-		return self::$staticTypoScriptFiles;
+	public static function getStaticTypoScript() {
+		return self::$staticTypoScript;
 	}
 
 	/**
 	 * @param mixed $locationOrLocations
 	 * @return void
 	 */
-	public static function addGlobalTypoScript($locationOrLocations) {
+	public static function addStaticTypoScript($locationOrLocations) {
 		if (TRUE === is_array($locationOrLocations) || TRUE === $locationOrLocations instanceof Traversable) {
 			foreach ($locationOrLocations as $location) {
-				self::addGlobalTypoScript($location);
+				self::addStaticTypoScript($location);
 			}
 		} else {
-			if (FALSE === in_array($locationOrLocations, self::$staticTypoScriptFiles)) {
-				array_push(self::$staticTypoScriptFiles, $locationOrLocations);
+			if (FALSE === in_array($locationOrLocations, self::$staticTypoScript)) {
+				array_push(self::$staticTypoScript, $locationOrLocations);
 			}
 		}
 	}

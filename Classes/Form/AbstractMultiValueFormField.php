@@ -61,6 +61,11 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
 	protected $selectedListStyle;
 
 	/**
+	 * @var string
+	 */
+	protected $renderMode = 'default';
+
+	/**
 	 * @param string $type
 	 * @return array
 	 */
@@ -70,6 +75,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
 		$configuration['maxitems'] = $this->getMaxItems();
 		$configuration['minitems'] = $this->getMinItems();
 		$configuration['multiple'] = $this->getMultiple();
+		$configuration['renderMode'] = $this->getRenderMode();
 		$configuration['itemListStyle'] = $this->getItemListStyle();
 		$configuration['selectedListStyle'] = $this->getSelectedListStyle();
 		return $configuration;
@@ -169,6 +175,22 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
 	 */
 	public function getSelectedListStyle() {
 		return $this->selectedListStyle;
+	}
+
+	/**
+	 * @param string $renderMode
+	 * @return MultiValueFieldInterface
+	 */
+	public function setRenderMode($renderMode) {
+		$this->renderMode = $renderMode;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRenderMode() {
+		return $this->renderMode;
 	}
 
 }
