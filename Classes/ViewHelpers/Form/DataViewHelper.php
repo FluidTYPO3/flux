@@ -59,35 +59,41 @@ class DataViewHelper extends AbstractViewHelper {
 
 	/**
 	 * Render method
-	 * @param integer $uid
 	 * @param string $table
 	 * @param string $field
+	 * @param integer $uid
+	 * @param array $record
 	 * @param string $as
 	 * @return array
 	 * @throws Exception
 	 */
-	public function render($uid, $table, $field, $as = NULL) {
+	public function render($table, $field, $uid = NULL, $record = NULL, $as = NULL) {
+		if (NULL === $uid && NULL !== $record && TRUE === isset($record['uid'])) {
+			$uid = $record['uid'];
+		}
 		if (TRUE === isset(self::$dataCache[$uid.$table.$field])) {
 		    $dataArray = self::$dataCache[$uid.$table.$field];
-		} elseif (TRUE === isset($GLOBALS['TCA'][$table])) {
-			$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,' . $field, $table, sprintf('uid=%d', $uid));
-			if (FALSE === $rows || 0 === count($rows)) {
-				throw new Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist.', $table, $field, $uid), 1358679983);
+		} elseif (TRUE === isset($GLOBALS['TCA'][$table]) && TRUE === isset($GLOBALS['TCA'][$table]['columns'][$field])) {
+			if (NULL === $record) {
+				$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,' . $field, $table, sprintf('uid=%d', $uid));
 			}
-			$row = array_pop($rows);
-			$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $row);
+			if (FALSE === $record) {
+				throw new Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .
+					'provide the "row" attribute.', $table, $field, $uid), 1358679983);
+			}
+			$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $record);
 			if (0 === count($providers)) {
-				$dataArray = $this->configurationService->convertFlexFormContentToArray($row[$field]);
+				$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field]);
 			} else {
 				$dataArray = array();
 				foreach ($providers as $provider) {
-					$data = (array) $provider->getFlexFormValues($row);
+					$data = (array) $provider->getFlexFormValues($record);
 					$dataArray = RecursiveArrayUtility::merge($dataArray, $data);
 				}
 			}
 			self::$dataCache[$uid.$table.$field] = $dataArray;
 		} else {
-			throw new Exception('Invalid table "' . $table . '" - does not exist in TYPO3 TCA.', 1387049117);
+			throw new Exception('Invalid table:field "' . $table . ':' . $field . '" - does not exist in TYPO3 TCA.', 1387049117);
 		}
 		if (NULL !== $as) {
 			if ($this->templateVariableContainer->exists($as)) {

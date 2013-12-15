@@ -55,7 +55,7 @@ class DataViewHelperTest extends AbstractViewHelperTest {
 		);
 		$this->setUseOutputBuffering(TRUE);
 		$output = $this->executeViewHelper($arguments);
-		$this->assertEquals('Invalid table "' . $arguments['table'] . '" - does not exist in TYPO3 TCA.', $output);
+		$this->assertEquals('Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.', $output);
 	}
 
 	/**
@@ -69,10 +69,7 @@ class DataViewHelperTest extends AbstractViewHelperTest {
 		);
 		$this->setUseOutputBuffering(TRUE);
 		$output = $this->executeViewHelper($arguments);
-		$this->assertContains('Either table', $output);
-		$this->assertContains('field', $output);
-		$this->assertContains('or record with uid', $output);
-		$this->assertContains('do not exist', $output);
+		$this->assertEquals('Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.', $output);
 	}
 
 	/**
@@ -93,7 +90,7 @@ class DataViewHelperTest extends AbstractViewHelperTest {
 	public function canExecuteViewHelperWithUnregisteredTableAndReturnEmptyArray() {
 		$arguments = array(
 			'table' => 'be_users',
-			'field' => 'uid',
+			'field' => 'username',
 			'uid' => $this->getTestingRecordUid('be_users')
 		);
 		$output = $this->executeViewHelper($arguments);
