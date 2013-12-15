@@ -24,12 +24,29 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 
 /**
  * @package Flux
  */
-class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTest {
+class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase {
+
+	/**
+	 * @var array
+	 */
+	protected $defaultArguments = array(
+		'label' => 'Test field',
+		'extensionName' => '',
+		'pluginName' => 'Flux',
+		'controllerName' => 'Content',
+		'actions' => array(),
+		'disableLocalLanguageLabels' => FALSE,
+		'excludeActions' => array(),
+		'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
+		'prefixOnRequiredArguments' => '*',
+		'subActions' => array()
+	);
 
 	/**
 	 * @test

@@ -24,13 +24,11 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest as BaseTestCase;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
 
 /**
  * @package Flux
  */
-abstract class AbstractViewHelperTest extends BaseTestCase {
-
-
+class SelectViewHelperTest extends AbstractFieldViewHelperTestCase {
 
 }

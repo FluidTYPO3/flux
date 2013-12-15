@@ -24,12 +24,12 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
  * @package Flux
  */
-class DataViewHelperTest extends AbstractViewHelperTest {
+class DataViewHelperTest extends AbstractViewHelperTestCase {
 
 	/**
 	 * @param string $table

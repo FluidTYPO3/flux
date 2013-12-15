@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Widget;
+namespace FluidTYPO3\Flux\ViewHelpers\Be;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,39 +25,34 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
+use TYPO3\CMS\Backend\Controller\BackendController;
+use TYPO3\CMS\Backend\Template\DocumentTemplate;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
  * @package Flux
  */
-class GridViewHelperTest extends AbstractViewHelperTestCase {
+class ContentElementViewHelperTest extends AbstractFormViewHelperTestCase {
 
 	/**
 	 * Setup
 	 */
-	protected function setUp() {
-		parent::setUp();
-		$GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
+	public function setUp() {
+		$this->defaultArguments['dblist'] = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
+		$this->defaultArguments['row'] = Records::$contentRecordIsParentAndHasChildren;
+		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0);
+		$GLOBALS['SOBE'] = new BackendController();
+		$GLOBALS['SOBE']->doc = new DocumentTemplate();
 	}
 
 	/**
-	 * @test
+	 * Teardown
 	 */
-	public function canRenderWithoutTriggers() {
-		$this->executeViewHelper();
+	protected function tearDown() {
+		unset($GLOBALS['TSFE'], $GLOBALS['SOBE']);
 	}
 
-	/**
-	 * @test
-	 */
-	public function canRenderWithGridAndRecordPresent() {
-		$service = $this->createFluxServiceInstance();
-		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
-		$variables = array(
-			'grid' => $service->getGridFromTemplateFile($template, 'Configuration', 'grid', array(), 'Flux'),
-			'row' => Records::$contentRecordWithoutParentAndWithoutChildren
-		);
-		$this->executeViewHelper(array(), $variables);
-	}
 
 }
