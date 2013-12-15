@@ -34,7 +34,7 @@ use TYPO3\CMS\Extbase\Validation\Error;
  * to perform pre-saving steps (validation, transformation etc).
  *
  * @package Flux
- * @subpackage Outlet
+ * @subpackage Outlet\Pipe
  */
 class TypeConverterPipe extends AbstractPipe implements PipeInterface {
 
