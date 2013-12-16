@@ -127,7 +127,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface {
 	 * @param mixed $data
 	 * @return mixed
 	 */
-	public function produce($data) {
+	public function conduct($data) {
 		$body = $this->getBody();
 		$sender = $this->getSender();
 		$recipient = $this->getRecipient();
