@@ -50,7 +50,7 @@ abstract class AbstractPipe implements PipeInterface {
 	 */
 	public function getLabel() {
 		$type = substr(lcfirst(array_pop(explode('\\', get_class($this)))), 0, -4);
-		return LocalizationUtility::translate('pipes.' . $type . '.label', 'flux');
+		return LocalizationUtility::translate('pipes.' . $type . '.label', 'flux') OR $type;
 	}
 
 }
