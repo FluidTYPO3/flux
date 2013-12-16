@@ -52,6 +52,11 @@ class LanguageFileService {
 	protected static $validExtensions = array('xml', 'xlf');
 
 	/**
+	 * @var string
+	 */
+	protected static $preferredExtension = 'xlf';
+
+	/**
 	 * @var array
 	 */
 	protected static $documents = array();
@@ -104,12 +109,25 @@ XML;
 				' in a Flux form called "' . $id . '" - one or both contains invalid characters.');
 			return NULL;
 		}
+
 		$file = 0 === strpos($file, 'LLL:') ? substr($file, 4) : $file;
 		$filePathAndFilename = GeneralUtility::getFileAbsFileName($file);
-		$extension = pathinfo($filePathAndFilename, PATHINFO_EXTENSION);
+		$pathParts = pathinfo($filePathAndFilename);
+		$extension = $pathParts['extension'];
 		if (FALSE === in_array($extension, self::$validExtensions)) {
 			return NULL;
 		}
+		if ($extension !== self::$preferredExtension) {
+			$position = strrpos($filePathAndFilename, $extension);
+			if (FALSE !== $position) {
+				$preferredFilePathAndFileName = substr_replace($filePathAndFilename, self::$preferredExtension, $position, strlen($extension));
+				if (TRUE === file_exists($preferredFilePathAndFileName)) {
+					$filePathAndFilename = $preferredFilePathAndFileName;
+					$extension = self::$preferredExtension;
+				}
+			}
+		}
+
 		$buildMethodName = 'buildSourceFor' . ucfirst($extension) . 'File';
 		$kickstartMethodName = 'kickstart' . ucfirst($extension) . 'File';
 		$languages = $this->getLanguageKeys();
@@ -120,6 +138,8 @@ XML;
 		} elseif (TRUE === is_string($source)) {
 			if (TRUE === $this->writeFile($filePathAndFilename, $source)) {
 				$this->message('Wrote "LLL:' . $file . ':' . $identifier . '"');
+			} else {
+				$this->message('Failed to write "LLL:' . $file . ':' . $identifier . '"', GeneralUtility::SYSLOG_SEVERITY_WARNING);
 			}
 		}
 	}

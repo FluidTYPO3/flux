@@ -86,7 +86,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 *
 	 * @var string
 	 */
-	protected $localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xml';
+	protected $localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xlf';
 
 	/**
 	 * @var string
