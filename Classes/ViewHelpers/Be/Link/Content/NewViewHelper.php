@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -65,7 +66,7 @@ class NewViewHelper extends AbstractViewHelper {
 		$icon = MiscellaneousUtility::getIcon('actions-document-new', 'Insert new content element in this position');
 		$uri = 'db_new_content_el.php?id=' . $pid .
 			'&uid_pid=' . $pid .
-			'&colPos=-42' .
+			'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
 			'&sys_language_uid=' . $sysLang .
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
 			'&defVals[tt_content][tx_flux_column]=' . $area .

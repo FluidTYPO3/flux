@@ -24,6 +24,8 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Data;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Service\ContentService;
+
 /**
  * @package Flux
  */
@@ -89,7 +91,7 @@ class Records {
 	public static $contentRecordWithParentAndWithoutChildren = array(
 		'uid' => self::UID_CONTENT_CHILD,
 		'header' => 'Has parent, is in default content area',
-		'colPos' => -42,
+		'colPos' => ContentService::COLPOS_FLUXCONTENT,
 		'tx_flux_parent' => self::UID_CONTENT_NOPARENTWITHCHILDREN,
 		'tx_flux_column' => self::DEFAULT_CONTENTAREA
 	);
@@ -100,7 +102,7 @@ class Records {
 	public static $contentRecordWithParentAndChildren = array(
 		'uid' => self::UID_CONTENT_NOPARENTWITHCHILDREN,
 		'header' => 'Has parent, is in default content area',
-		'colPos' => -42,
+		'colPos' => ContentService::COLPOS_FLUXCONTENT,
 		'tx_flux_parent' => 0,
 		'tx_flux_column' => '',
 		'tx_flux_children' => 1
