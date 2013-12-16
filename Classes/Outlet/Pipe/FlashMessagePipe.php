@@ -68,7 +68,7 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface {
 	}
 
 	/**
-	 * 	@param integer $severity
+	 * @param integer $severity
 	 * @return FlashMessagePipe
 	 */
 	public function setSeverity($severity) {
