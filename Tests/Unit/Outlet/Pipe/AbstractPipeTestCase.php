@@ -32,12 +32,16 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 abstract class AbstractPipeTestCase extends AbstractTestCase {
 
 	/**
+	 * @var array
+	 */
+	protected $defaultData = array('test' => 'test');
+
+	/**
 	 * @test
 	 */
 	public function canConductData() {
 		$instance = $this->createInstance();
-		$data = array('test');
-		$output = $instance->conduct($data);
+		$output = $instance->conduct($this->defaultData);
 		$this->assertNotEmpty($output);
 	}
 
