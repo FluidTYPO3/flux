@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Backend\TypoScriptTemplate;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 use TYPO3\CMS\Backend\Controller\BackendController;
@@ -43,6 +44,7 @@ class ContentElementViewHelperTest extends AbstractFormViewHelperTestCase {
 		$this->defaultArguments['dblist'] = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
 		$this->defaultArguments['row'] = Records::$contentRecordIsParentAndHasChildren;
 		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0);
+		$GLOBALS['TBE_TEMPLATE'] = new DocumentTemplate();
 		$GLOBALS['SOBE'] = new BackendController();
 		$GLOBALS['SOBE']->doc = new DocumentTemplate();
 	}
@@ -51,8 +53,7 @@ class ContentElementViewHelperTest extends AbstractFormViewHelperTestCase {
 	 * Teardown
 	 */
 	protected function tearDown() {
-		unset($GLOBALS['TSFE'], $GLOBALS['SOBE']);
+		unset($GLOBALS['TSFE'], $GLOBALS['SOBE'], $GLOBALS['TBE_TEMPLATE']);
 	}
-
 
 }
