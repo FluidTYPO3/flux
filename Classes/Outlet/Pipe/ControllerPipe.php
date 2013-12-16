@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
@@ -120,11 +121,18 @@ class ControllerPipe extends AbstractPipe implements PipeInterface {
 	 * @return mixed
 	 */
 	public function conduct($data) {
+ 		$extensionName = $this->getExtensionName();
 		/** @var $request Request */
 		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
 		$request->setControllerName($this->getController());
 		$request->setControllerActionName($this->getAction());
-		$request->setControllerExtensionName($this->getExtensionName());
+		if (FALSE === ExtensionNamingUtility::hasVendorName($extensionName)) {
+			$request->setControllerExtensionName($extensionName);
+		} else {
+			$request->setControllerVendorName(ExtensionNamingUtility::getVendorName($extensionName));
+			$request->setControllerExtensionName(ExtensionNamingUtility::getExtensionKey($extensionName));
+		}
+
 		$request->setArguments($data);
 		/** @var $response Response */
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
