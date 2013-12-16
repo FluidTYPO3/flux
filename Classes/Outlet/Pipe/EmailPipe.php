@@ -152,8 +152,16 @@ class EmailPipe extends AbstractPipe implements PipeInterface {
 		$message->setFrom($senderAddress, $senderName);
 		$message->setTo($recipientAddress, $recipientName);
 		$message->setBody($body);
-		$message->send();
+		$this->sendEmail($message);
 		return $data;
+	}
+
+	/**
+	 * @param MailMessage $message
+	 * @return void
+	 */
+	protected function sendEmail(MailMessage $message) {
+		$message->send();
 	}
 
 }
