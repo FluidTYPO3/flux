@@ -127,6 +127,7 @@ class ControllerPipe extends AbstractPipe implements PipeInterface {
 		$request->setControllerName($this->getController());
 		$request->setControllerActionName($this->getAction());
 		if (FALSE === ExtensionNamingUtility::hasVendorName($extensionName)) {
+			$extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
 			$request->setControllerExtensionName($extensionName);
 		} else {
 			$request->setControllerVendorName(ExtensionNamingUtility::getVendorName($extensionName));
