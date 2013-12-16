@@ -193,7 +193,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 	 */
 	public function canPerformSubRenderingWithMatchingExtensionName() {
 		$controllerName = $this->getControllerName();
-		$controllerClassName = $controllerClassName = substr(get_class($this), 0, -4);
+		$controllerClassName = substr(get_class($this), 0, -4);
 		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController'));
 		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(FALSE));
 		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView($this->extensionName, $controllerName);
