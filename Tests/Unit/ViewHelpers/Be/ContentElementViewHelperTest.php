@@ -26,7 +26,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
 
 use FluidTYPO3\Flux\Backend\TypoScriptTemplate;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Backend\Controller\BackendController;
 use TYPO3\CMS\Backend\Template\DocumentTemplate;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -35,7 +35,7 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 /**
  * @package Flux
  */
-class ContentElementViewHelperTest extends AbstractFormViewHelperTestCase {
+class ContentElementViewHelperTest extends AbstractViewHelperTestCase {
 
 	/**
 	 * Setup
@@ -47,6 +47,14 @@ class ContentElementViewHelperTest extends AbstractFormViewHelperTestCase {
 		$GLOBALS['TBE_TEMPLATE'] = new DocumentTemplate();
 		$GLOBALS['SOBE'] = new BackendController();
 		$GLOBALS['SOBE']->doc = new DocumentTemplate();
+	}
+
+	/**
+	 * @test
+	 */
+	public function canRender() {
+		$output = $this->executeViewHelper($this->defaultArguments);
+		$this->assertNotEmpty($output);
 	}
 
 	/**

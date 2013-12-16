@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
@@ -61,6 +62,19 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 	/**
 	 * @test
 	 */
+	public function failsWithMissingArguments() {
+		$arguments = array(
+			'table' => 'tt_content',
+			'field' => 'pi_flexform',
+		);
+		$this->setUseOutputBuffering(TRUE);
+		$output = $this->executeViewHelper($arguments);
+		$this->assertEquals('Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "row" attribute.', $output);
+	}
+
+	/**
+	 * @test
+	 */
 	public function failsWithInvalidField() {
 		$arguments = array(
 			'table' => 'tt_content',
@@ -80,6 +94,18 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
 			'uid' => $this->getTestingRecordUid('tt_content')
+		);
+		$this->executeViewHelper($arguments);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseRecordAsArgument() {
+		$arguments = array(
+			'table' => 'tt_content',
+			'field' => 'pi_flexform',
+			'record' => Records::$contentRecordIsParentAndHasChildren
 		);
 		$this->executeViewHelper($arguments);
 	}
