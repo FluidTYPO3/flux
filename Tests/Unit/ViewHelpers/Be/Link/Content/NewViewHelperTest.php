@@ -25,12 +25,12 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
  * @package Flux
  */
-class NewViewHelperTest extends AbstractViewHelperTest {
+class NewViewHelperTest extends AbstractViewHelperTestCase {
 
 	/**
 	 * Setup

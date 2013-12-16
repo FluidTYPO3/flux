@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Widget;
+namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,40 +24,11 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Wizard\AbstractWizardViewHelperTestCase;
 
 /**
  * @package Flux
  */
-class GridViewHelperTest extends AbstractViewHelperTestCase {
-
-	/**
-	 * Setup
-	 */
-	protected function setUp() {
-		parent::setUp();
-		$GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
-	}
-
-	/**
-	 * @test
-	 */
-	public function canRenderWithoutTriggers() {
-		$this->executeViewHelper();
-	}
-
-	/**
-	 * @test
-	 */
-	public function canRenderWithGridAndRecordPresent() {
-		$service = $this->createFluxServiceInstance();
-		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
-		$variables = array(
-			'grid' => $service->getGridFromTemplateFile($template, 'Configuration', 'grid', array(), 'Flux'),
-			'row' => Records::$contentRecordWithoutParentAndWithoutChildren
-		);
-		$this->executeViewHelper(array(), $variables);
-	}
+class SliderViewHelperTest extends AbstractWizardViewHelperTestCase {
 
 }

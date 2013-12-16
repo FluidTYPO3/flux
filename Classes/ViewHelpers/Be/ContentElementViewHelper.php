@@ -39,13 +39,14 @@ class ContentElementViewHelper extends AbstractViewHelper {
 	public function initializeArguments() {
 		$this->registerArgument('row', 'array', 'Record row', TRUE);
 		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
+		$this->registerArgument('dblist', 'TYPO3\CMS\Backend\View\PageLayoutView', 'Instance of PageLayoutView preconfigured to render each record', TRUE);
 	}
 
 	/**
-	 * @param mixed $dblist
 	 * @return string
 	 */
-	public function render($dblist) {
+	public function render() {
+		$dblist = $this->arguments['dblist'];
 		$record = $this->arguments['row'];
 		$rendered = $dblist->tt_content_drawHeader($record);
 		$rendered .= '<div class="t3-page-ce-body-inner">' . $dblist->tt_content_drawItem($record) . '</div>';

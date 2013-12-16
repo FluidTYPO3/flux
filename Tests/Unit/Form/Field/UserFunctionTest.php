@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Widget;
+namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,40 +24,19 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-
 /**
  * @package Flux
  */
-class GridViewHelperTest extends AbstractViewHelperTestCase {
+class userFunctionTest extends AbstractFieldTest {
 
 	/**
-	 * Setup
+	 * @var array
 	 */
-	protected function setUp() {
-		parent::setUp();
-		$GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
-	}
-
-	/**
-	 * @test
-	 */
-	public function canRenderWithoutTriggers() {
-		$this->executeViewHelper();
-	}
-
-	/**
-	 * @test
-	 */
-	public function canRenderWithGridAndRecordPresent() {
-		$service = $this->createFluxServiceInstance();
-		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
-		$variables = array(
-			'grid' => $service->getGridFromTemplateFile($template, 'Configuration', 'grid', array(), 'Flux'),
-			'row' => Records::$contentRecordWithoutParentAndWithoutChildren
-		);
-		$this->executeViewHelper(array(), $variables);
-	}
+	protected $chainProperties = array(
+		'name' => 'test',
+		'label' => 'Test field',
+		'function' => 'FluidTYPO3\Flux\UserFunction\NoFields->renderField',
+		'arguments' => array(1, 2),
+	);
 
 }

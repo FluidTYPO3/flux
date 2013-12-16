@@ -25,14 +25,14 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
  * @package Flux
  */
-class RenderViewHelperTest extends AbstractViewHelperTest {
+class RenderViewHelperTest extends AbstractViewHelperTestCase {
 
 	/**
 	 * Setup

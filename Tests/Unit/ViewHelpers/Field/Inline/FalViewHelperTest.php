@@ -24,12 +24,13 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field\Inline;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
  * @package Flux
  */
-class FalViewHelperTest extends AbstractViewHelperTest {
+class FalViewHelperTest extends AbstractFieldViewHelperTestCase {
 
 	/**
 	 * @test

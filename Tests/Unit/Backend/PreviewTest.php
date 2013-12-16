@@ -28,6 +28,7 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
@@ -65,6 +66,26 @@ class PreviewTest extends AbstractTestCase {
 		$className = 'FluidTYPO3\Flux\Backend\Preview';
 		$instance = $this->getMock($className);
 		$this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
+	}
+
+	/**
+	 * @test
+	 */
+	public function stopsRenderingWhenProviderSaysStop() {
+		$instance = $this->getMock('FluidTYPO3\Flux\Backend\Preview', array('createShortcutIcon'));
+		$instance->expects($this->never())->method('createShortcutIcon');
+		$configurationServiceMock = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
+		$providerOne = $this->getMock('FluidTYPO3\Flux\Provider\ContentProvider', array('getPreview'));
+		$providerOne->expects($this->once())->method('getPreview')->will($this->returnValue(array('test', 'test', FALSE)));
+		$providerTwo = $this->getMock('FluidTYPO3\Flux\Provider\ContentProvider', array('getPreview'));
+		$providerTwo->expects($this->never())->method('getPreview');
+		$configurationServiceMock->expects($this->once())->method('resolveConfigurationProviders')->will($this->returnValue(array($providerOne, $providerTwo)));
+		ObjectAccess::setProperty($instance, 'configurationService', $configurationServiceMock, TRUE);
+		$header = 'test';
+		$item = 'test';
+		$record = Records::$contentRecordIsParentAndHasChildren;
+		$draw = TRUE;
+		$instance->renderPreview($header, $item, $record, $draw);
 	}
 
 	/**

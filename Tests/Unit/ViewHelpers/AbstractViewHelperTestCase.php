@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers;
+namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
@@ -46,7 +46,14 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 /**
  * @package Flux
  */
-abstract class AbstractViewHelperTest extends AbstractTestCase {
+abstract class AbstractViewHelperTestCase extends AbstractTestCase {
+
+	/**
+	 * @var array
+	 */
+	protected $defaultArguments = array(
+		'name' => 'test'
+	);
 
 	/**
 	 * @test

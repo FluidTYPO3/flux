@@ -30,6 +30,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase;
 
 require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
@@ -57,6 +58,26 @@ abstract class AbstractTestCase extends BaseTestCase {
 	const FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/DualGrid.html';
 	const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/CollidingGrid.html';
 	const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
+
+	/**
+	 * @param string $propertyName
+	 * @param mixed $value
+	 * @param mixed $expectedValue
+	 * @param mixed $expectsChaining
+	 * @return void
+	 */
+	protected function assertGetterAndSetterWorks($propertyName, $value, $expectedValue = NULL, $expectsChaining = FALSE) {
+		$instance = $this->createInstance();
+		$setter = 'set' . ucfirst($propertyName);
+		$getter = 'get' . ucfirst($propertyName);
+		$chained = $instance->$setter($value);
+		if (TRUE === $expectsChaining) {
+			$this->assertSame($instance, $chained);
+		} else {
+			$this->assertNull($chained);
+		}
+		$this->assertSame($expectedValue, $instance->$getter());
+	}
 
 	/**
 	 * @param mixed $value
@@ -175,7 +196,16 @@ abstract class AbstractTestCase extends BaseTestCase {
 	protected function createFluxServiceInstance() {
 		/** @var FluxService $fluxService */
 		$fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+		ObjectAccess::setProperty($fluxService, 'silent', TRUE, TRUE);
 		return $fluxService;
+	}
+
+	/**
+	 * @return object
+	 */
+	protected function createInstance() {
+		$instance = $this->objectManager->get(substr(get_class($this), 0, -4));
+		return $instance;
 	}
 
 	/**

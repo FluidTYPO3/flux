@@ -24,12 +24,12 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelperTest;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
  * @package Flux
  */
-class VariableViewHelperTest extends AbstractViewHelperTest {
+class VariableViewHelperTest extends AbstractViewHelperTestCase {
 
 	/**
 	 * @test

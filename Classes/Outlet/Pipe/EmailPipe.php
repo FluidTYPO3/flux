@@ -126,8 +126,23 @@ class EmailPipe extends AbstractPipe implements PipeInterface {
 	/**
 	 * @param mixed $data
 	 * @return mixed
+	 * @throws Exception
 	 */
-	public function produce($data) {
+	public function conduct($data) {
+		try {
+			$message = $this->prepareEmail($data);
+			$this->sendEmail($message);
+		} catch (\Swift_RfcComplianceException $error) {
+			throw new Exception($error->getMessage(), $error->getCode());
+		}
+		return $data;
+	}
+
+	/**
+	 * @param string $data
+	 * @return MailMessage
+	 */
+	protected function prepareEmail($data) {
 		$body = $this->getBody();
 		$sender = $this->getSender();
 		$recipient = $this->getRecipient();
@@ -152,8 +167,15 @@ class EmailPipe extends AbstractPipe implements PipeInterface {
 		$message->setFrom($senderAddress, $senderName);
 		$message->setTo($recipientAddress, $recipientName);
 		$message->setBody($body);
+		return $message;
+	}
+
+	/**
+	 * @param MailMessage $message
+	 * @return void
+	 */
+	protected function sendEmail(MailMessage $message) {
 		$message->send();
-		return $data;
 	}
 
 }

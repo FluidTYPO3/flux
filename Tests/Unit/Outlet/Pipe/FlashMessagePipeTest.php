@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Widget;
+namespace FluidTYPO3\Flux\Outlet\Pipe;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,40 +24,39 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 
 /**
  * @package Flux
  */
-class GridViewHelperTest extends AbstractViewHelperTestCase {
+class FlashMessagePipeTest extends AbstractPipeTestCase {
 
 	/**
-	 * Setup
+	 * @test
 	 */
-	protected function setUp() {
-		parent::setUp();
-		$GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
+	public function canGetAndSetSeverity() {
+		$this->assertGetterAndSetterWorks('severity', 4, 4, TRUE);
 	}
 
 	/**
 	 * @test
 	 */
-	public function canRenderWithoutTriggers() {
-		$this->executeViewHelper();
+	public function canGetAndSetTitle() {
+		$this->assertGetterAndSetterWorks('title', 'test', 'test', TRUE);
 	}
 
 	/**
 	 * @test
 	 */
-	public function canRenderWithGridAndRecordPresent() {
-		$service = $this->createFluxServiceInstance();
-		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
-		$variables = array(
-			'grid' => $service->getGridFromTemplateFile($template, 'Configuration', 'grid', array(), 'Flux'),
-			'row' => Records::$contentRecordWithoutParentAndWithoutChildren
-		);
-		$this->executeViewHelper(array(), $variables);
+	public function canGetAndSetMessage() {
+		$this->assertGetterAndSetterWorks('message', 'test', 'test', TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetAndSetStoreInSession() {
+		$this->assertGetterAndSetterWorks('storeInSession', TRUE, TRUE, TRUE);
 	}
 
 }

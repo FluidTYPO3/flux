@@ -26,6 +26,7 @@ namespace FluidTYPO3\Flux;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
@@ -353,6 +354,17 @@ class FormTest extends AbstractTestCase {
 		$form = Form::create();
 		$form->setOutlet($outlet);
 		$this->assertSame($outlet, $form->getOutlet());
+	}
+
+	/**
+	 * @test
+	 */
+	public function dispatchesDebugMessageOnProblematicId() {
+		$service = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('message'));
+		$service->expects($this->once())->method('message');
+		$instance = $this->objectManager->get('FluidTYPO3\Flux\Form');
+		ObjectAccess::setProperty($instance, 'configurationService', $service, TRUE);
+		$instance->setId('I-am-not-valid');
 	}
 
 }
