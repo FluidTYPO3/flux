@@ -59,6 +59,11 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 class FluxService implements SingletonInterface {
 
 	/**
+	 * @var boolean
+	 */
+	protected $silent = FALSE;
+
+	/**
 	 * @var array
 	 */
 	protected static $sentDebugMessages = array();
@@ -593,7 +598,7 @@ class FluxService implements SingletonInterface {
 	 * @return void
 	 */
 	public function debugMixed($variable, $plainText = FALSE, $depth = 2) {
-		DebuggerUtility::var_dump($variable, 'Flux variable debug', $depth, $plainText, FALSE);
+		$this->passToDebugger($variable, 'Flux variable debug', $depth, $plainText, FALSE);
 	}
 
 	/**
@@ -611,7 +616,7 @@ class FluxService implements SingletonInterface {
 	 * @return void
 	 */
 	public function debugView(ExposedTemplateView $view, $plainText = FALSE, $depth = 2) {
-		DebuggerUtility::var_dump($view, 'Flux View debug', $depth, $plainText, FALSE);;
+		$this->passToDebugger($view, 'Flux View debug', $depth, $plainText, FALSE);;
 	}
 
 	/**
@@ -621,7 +626,16 @@ class FluxService implements SingletonInterface {
 	 * @return void
 	 */
 	public function debugProvider(ProviderInterface $provider, $plainText = FALSE, $depth = 2) {
-		DebuggerUtility::var_dump($provider, 'Flux Provider debug', $depth, $plainText, FALSE);
+		$this->passToDebugger($provider, 'Flux Provider debug', $depth, $plainText, FALSE);
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function passToDebugger() {
+		if (FALSE === $this->silent) {
+			call_user_func_array(array('TYPO3\CMS\Extbase\Utility\DebuggerUtility', 'var_dump'), array(func_get_args()));
+		}
 	}
 
 	/**
