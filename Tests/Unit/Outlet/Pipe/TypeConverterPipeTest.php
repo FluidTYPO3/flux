@@ -25,9 +25,11 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter;
 use TYPO3\CMS\Extbase\Property\TypeConverter\FloatConverter;
 use TYPO3\CMS\Extbase\Property\TypeConverter\IntegerConverter;
+use TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter;
 use TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter;
 
 /**
@@ -43,8 +45,8 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 		$converter = new StringConverter();
 		$instance->setTypeConverter($converter);
 		$instance->setTargetType('string');
-		$output = $instance->conduct($this->defaultData);
-		$this->assertEquals('Array', $output);
+		$output = $instance->conduct('test');
+		$this->assertEquals('test', $output);
 	}
 
 	/**
@@ -67,7 +69,9 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 		$converter = new FloatConverter();
 		$instance->setTypeConverter($converter);
 		$instance->setTargetType('float');
-		$this->setExpectedException('FluidTYPO3\Flux\Outlet\Pipe\Exception');
+		if ('6.0' !== substr(TYPO3_version, 0, 3)) {
+			$this->setExpectedException('FluidTYPO3\Flux\Outlet\Pipe\Exception');
+		}
 		$instance->conduct('test');
 	}
 
@@ -76,11 +80,11 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 	 */
 	public function conductingDataPassesThroughExceptionWhenTypeConverterFails() {
 		$instance = $this->createInstance();
-		$converter = new StringConverter();
+		$converter = new DateTimeConverter();
 		$instance->setTypeConverter($converter);
-		$instance->setTargetType('string');
-		$this->setExpectedException('TYPO3\CMS\Core\Error\Exception', NULL, 1);
-		$instance->conduct(new \DateTime('now'));
+		$instance->setTargetType('DateTime');
+		$this->setExpectedException('TYPO3\CMS\Extbase\Property\Exception\TypeConverterException', NULL, 1308003914);
+		$instance->conduct(array());
 	}
 
 	/**
