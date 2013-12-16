@@ -126,12 +126,10 @@ class ControllerPipe extends AbstractPipe implements PipeInterface {
 		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
 		$request->setControllerName($this->getController());
 		$request->setControllerActionName($this->getAction());
-		if (FALSE === ExtensionNamingUtility::hasVendorName($extensionName)) {
-			$extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
-			$request->setControllerExtensionName($extensionName);
-		} else {
-			$request->setControllerVendorName(ExtensionNamingUtility::getVendorName($extensionName));
-			$request->setControllerExtensionName(ExtensionNamingUtility::getExtensionKey($extensionName));
+		list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
+		$request->setControllerExtensionName($extensionName);
+		if (NULL !== $vendorName) {
+			$request->setControllerVendorName($vendorName);
 		}
 
 		$request->setArguments($data);
