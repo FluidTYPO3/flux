@@ -25,7 +25,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  *****************************************************************/
 
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
-use TYPO3\CMS\Extbase\Validation\Error;
+use TYPO3\CMS\Extbase\Error\Error;
 
 /**
  * Standard Input Pipe
