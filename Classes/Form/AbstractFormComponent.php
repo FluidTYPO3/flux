@@ -99,6 +99,11 @@ abstract class AbstractFormComponent implements FormInterface {
 	protected $parent;
 
 	/**
+	 * @var array
+	 */
+	protected $variables = array();
+
+	/**
 	 * @param ObjectManagerInterface $objectManager
 	 * @return void
 	 */
@@ -371,6 +376,22 @@ abstract class AbstractFormComponent implements FormInterface {
 	 */
 	public function getParent() {
 		return $this->parent;
+	}
+
+	/**
+	 * @param array $variables
+	 * @return FormInterface
+	 */
+	public function setVariables($variables) {
+		$this->variables = (array) $variables;
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getVariables() {
+		return $this->variables;
 	}
 
 	/**

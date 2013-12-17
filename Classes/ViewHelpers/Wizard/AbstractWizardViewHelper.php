@@ -47,6 +47,8 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper {
 	public function initializeArguments() {
 		$this->registerArgument('label', 'string', 'Optional title of this Wizard', FALSE, $this->label);
 		$this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the parent field', FALSE, FALSE);
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 	}
 
 	/**
@@ -67,6 +69,7 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper {
 		$component = $this->objectManager->get('FluidTYPO3\Flux\Form\Wizard\\' . $type);
 		$component->setHideParent($this->arguments['hideParent']);
 		$component->setLabel($this->arguments['label']);
+		$component->setVariables($this->arguments['variables']);
 		return $component;
 	}
 

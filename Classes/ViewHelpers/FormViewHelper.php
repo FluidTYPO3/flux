@@ -50,6 +50,8 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('wizardTab', 'string', 'Optional tab name (usually extension key) in which to place the content element in the new content element wizard', FALSE, 'FCE');
 		$this->registerArgument('compact', 'boolean', 'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES ' .
 			'AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 	}
 
 	/**
@@ -75,6 +77,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$this->renderChildren();
 		$this->viewHelperVariableContainer->remove(self::SCOPE, 'container');
 		$this->templateVariableContainer->remove('container');
+		$form->setVariables($this->arguments['variables']);
 	}
 
 }

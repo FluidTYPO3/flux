@@ -44,6 +44,8 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 		$this->registerArgument('label', 'string', 'Label for section, can be LLL: value. Optional - if not specified, ' .
 			'Flux tries to detect an LLL label named "flux.fluxFormId.sections.foobar" based on section name, in scope of ' .
 			'extension rendering the Flux form.', FALSE, NULL);
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 	}
 
 	/**
@@ -55,6 +57,7 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 		$section = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Section');
 		$section->setName($this->arguments['name']);
 		$section->setLabel($this->arguments['label']);
+		$section->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();
 		$container->add($section);
 		$this->setContainer($section);

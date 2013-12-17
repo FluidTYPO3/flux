@@ -90,6 +90,17 @@ interface FormInterface {
 	public function getParent();
 
 	/**
+	 * @param array $variables
+	 * @return FormInterface
+	 */
+	public function setVariables($variables);
+
+	/**
+	 * @return array
+	 */
+	public function getVariables();
+
+	/**
 	 * @return ContainerInterface
 	 */
 	public function getRoot();

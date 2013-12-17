@@ -47,6 +47,8 @@ class ObjectViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('label', 'string', 'Label for section object, can be LLL: value. Optional - if not specified, ' .
 			'Flux tries to detect an LLL label named "flux.fluxFormId.objects.foobar" based on object name, in scope of ' .
 			'extension rendering the Flux form.', FALSE, NULL);
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 	}
 
 	/**
@@ -58,6 +60,7 @@ class ObjectViewHelper extends AbstractFormViewHelper {
 		$object = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Object');
 		$object->setName($this->arguments['name']);
 		$object->setLabel($this->arguments['label']);
+		$object->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();
 		$container->add($object);
 		$this->setContainer($object);
