@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -142,7 +143,7 @@ class ContentServiceTest extends AbstractTestCase {
 		$row = $this->fireBacktraceDetection($backtrace);
 		$this->assertEquals($expectedColumn, $row['tx_flux_column']);
 		$this->assertEquals($expectedParent, $row['tx_flux_parent']);
-		$this->assertEquals(-42, $row['colPos']);
+		$this->assertEquals(ContentService::COLPOS_FLUXCONTENT, $row['colPos']);
 	}
 
 	/**
@@ -298,7 +299,7 @@ class ContentServiceTest extends AbstractTestCase {
 		$relativeRecord = array(
 			'tx_flux_column' => 2,
 			'tx_flux_parent' => 2,
-			'colPos' => -42
+			'colPos' => ContentService::COLPOS_FLUXCONTENT
 		);
 		$relativeTo = -1;
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(1)->will($this->returnValue($relativeRecord));
