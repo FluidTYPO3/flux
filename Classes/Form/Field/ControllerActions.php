@@ -315,9 +315,9 @@ class ControllerActions extends Select {
 	 */
 	protected function getActionsForExtensionNameAndPluginName() {
 		$extensionName = $this->getExtensionName();
-		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+		$extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
 		$pluginName = $this->getPluginName();
-		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionKey]['plugins'][$pluginName]['controllers'];
+		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers'];
 		foreach ($actions as $controllerName => $definitions) {
 			$actions[$controllerName] = $definitions['actions'];
 		}
