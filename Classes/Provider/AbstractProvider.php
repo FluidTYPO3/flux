@@ -789,7 +789,6 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	protected function getParentFieldValue(array $row) {
 		$parentFieldName = $this->getParentFieldName($row);
-		$tableName = $this->getTableName($row);
 		if (NULL !== $parentFieldName && FALSE === isset($row[$parentFieldName])) {
 			$row = $this->loadRecordFromDatabase($row['uid']);
 		}
