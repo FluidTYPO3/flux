@@ -77,3 +77,5 @@ Therefore the best advise is this:
 Other extensions which are closely related to this extension:
 
 * https://github.com/FluidTYPO3/vhs is a highly suggested companion for any type of Fluid templates, providing useful ViewHelpers.
+
+![Please forgive the tracking - your data is in good hands!](https://fedext.net/bigbrother.php?repository=flux)
