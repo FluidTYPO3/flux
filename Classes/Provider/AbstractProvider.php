@@ -971,4 +971,11 @@ class AbstractProvider implements ProviderInterface {
 		return empty(self::$trackedMethodCalls[$cacheKey]);
 	}
 
+	/**
+	 * @return void
+	 */
+	public function reset() {
+		self::$cache = array();
+	}
+
 }

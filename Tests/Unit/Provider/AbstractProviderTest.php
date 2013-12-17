@@ -46,6 +46,14 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	protected $configurationProviderClassName = 'FluidTYPO3\Flux\Provider\ContentProvider';
 
 	/**
+	 * @test
+	 */
+	public function canCallResetMethod() {
+		$provider = $this->createInstance();
+		$provider->reset();
+	}
+
+	/**
 	 * @return ProviderInterface
 	 */
 	protected function getConfigurationProviderInstance() {

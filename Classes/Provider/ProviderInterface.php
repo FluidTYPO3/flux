@@ -329,4 +329,9 @@ interface ProviderInterface {
 	 */
 	public function setGrid(Grid $grid);
 
+	/**
+	 * @return void
+	 */
+	public function reset();
+
 }
