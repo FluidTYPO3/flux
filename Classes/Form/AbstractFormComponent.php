@@ -409,7 +409,11 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return boolean
 	 */
 	public function isChildOfType($type) {
-		return ('FluidTYPO3\Flux\Form\Container' . $type === get_class($this->getParent()));
+		$parent = $this->getParent();
+		if ($parent === NULL) {
+			return FALSE;
+		}
+		return ('FluidTYPO3\Flux\Form\Container\\' . $type === get_class($parent) || TRUE === is_a($parent, $type));
 	}
 
 }
