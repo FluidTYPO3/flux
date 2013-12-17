@@ -538,10 +538,10 @@ class AbstractProvider implements ProviderInterface {
 						array_push($removals, $sheetFieldName);
 					} else {
 						$clearFieldName = $sheetFieldName . '_clear';
-						$clearFieldValue = TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) ? $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] : 0;
+						$clearFieldValue = (boolean) (TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) ? $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] : 0);
 						$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
 						$shouldClearField = (0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] || (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']));
-						if (TRUE === $shouldClearField) {
+						if (TRUE === $shouldClearField || TRUE === $clearFieldValue) {
 							array_push($removals, $sheetFieldName);
 						}
 					}
