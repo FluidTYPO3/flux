@@ -53,6 +53,8 @@ class ContainerViewHelper extends AbstractFieldViewHelper {
 			'tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension ' .
 			'rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where ' .
 			'"foobar" is the name of the field.', FALSE, NULL);
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 	}
 
 	/**
@@ -64,6 +66,7 @@ class ContainerViewHelper extends AbstractFieldViewHelper {
 		$container = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Container');
 		$container->setName($this->arguments['name']);
 		$container->setLabel($this->arguments['label']);
+		$container->setVariables($this->arguments['variables']);
 		$existingContainer = $this->getContainer();
 		$existingContainer->add($container);
 		$this->setContainer($container);

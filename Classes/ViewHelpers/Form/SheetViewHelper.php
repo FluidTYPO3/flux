@@ -46,6 +46,8 @@ class SheetViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('label', 'string', 'Label for the field group - used as tab name in FlexForm. Optional - if not ' .
 			'specified, Flux tries to detect an LLL label named "flux.sheets.fluxFormId.foobar" based on sheet name, in ' .
 			'scope of extension rendering the Flux form.', FALSE, NULL);
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 	}
 
 	/**
@@ -56,12 +58,16 @@ class SheetViewHelper extends AbstractFormViewHelper {
 		$form = $this->getForm();
 		if (TRUE === $form->has($this->arguments['name'])) {
 			$sheet = $form->get($this->arguments['name']);
+			// Note: this next line will -override- any variables set in any existing sheet of that name. This
+			// is expected behavior but it also affects previously added sheets.
+			$sheet->setVariables($this->arguments['variables']);
 			$this->setContainer($sheet);
 		} else {
 			/** @var Sheet $sheet */
 			$sheet = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Sheet');
 			$sheet->setName($this->arguments['name']);
 			$sheet->setLabel($this->arguments['label']);
+			$sheet->setVariables($this->arguments['variables']);
 			$form->add($sheet);
 			$this->setContainer($sheet);
 		}

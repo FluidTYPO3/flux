@@ -55,6 +55,8 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('inherit', 'integer', 'If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider', FALSE, 99);
 		$this->registerArgument('inheritEmpty', 'boolean', 'If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider', FALSE, TRUE);
 		$this->registerArgument('clear', 'boolean', 'If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value', FALSE, FALSE);
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 	}
 
 	/**
@@ -74,6 +76,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 		$component->setStopInheritance($this->arguments['stopInheritance']);
 		$component->setTransform($this->arguments['transform']);
 		$component->setClearable($this->arguments['clear']);
+		$component->setVariables($this->arguments['variables']);
 		return $component;
 	}
 
