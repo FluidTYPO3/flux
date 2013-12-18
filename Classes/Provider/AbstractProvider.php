@@ -749,9 +749,7 @@ class AbstractProvider implements ProviderInterface {
 				$stop = (TRUE === $field->getStopInheritance());
 				$inherit = (TRUE === $field->getInheritEmpty());
 				$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
-				if (TRUE === $stop) {
-					unset($values[$name]);
-				} elseif (FALSE === $inherit && TRUE === $empty) {
+				if (TRUE === $stop || (FALSE === $inherit && TRUE === $empty)) {
 					unset($values[$name]);
 				}
 			}
