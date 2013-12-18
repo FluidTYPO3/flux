@@ -71,7 +71,8 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 	public function getFields() {
 		$fields = array();
 		foreach ($this->children as $child) {
-			$isContainerWithChildren = (TRUE === $child instanceof FieldContainerInterface && TRUE === $child->hasChildren());
+			$isContainer = (TRUE === $child instanceof FieldContainerInterface || TRUE === $child instanceof Section || TRUE === $child instanceof Container);
+			$isContainerWithChildren = ($isContainer && TRUE === $child->hasChildren());
 			$isFieldNotInsideObject = (TRUE === $child instanceof FieldInterface && FALSE === $child->getParent() instanceof Object);
 			if (TRUE === $isContainerWithChildren || TRUE === $isFieldNotInsideObject) {
 				$name = $child->getName();
