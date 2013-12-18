@@ -746,9 +746,6 @@ class AbstractProvider implements ProviderInterface {
 			$values = $this->getFlexFormValues($branch);
 			foreach ($fields as $field) {
 				$name = $field->getName();
-				if (FALSE === $field instanceof FieldInterface) {
-					continue;
-				}
 				$stop = (TRUE === $field->getStopInheritance());
 				$inherit = (TRUE === $field->getInheritEmpty());
 				$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
