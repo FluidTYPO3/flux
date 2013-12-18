@@ -296,8 +296,7 @@ class Core {
 		if (TRUE === in_array($providerClassName, self::$providers)) {
 			$index = array_search($providerClassName, self::$providers);
 			unset(self::$providers[$index]);
-		}
-		if (FALSE === in_array($providerClassName, self::$unregisteredProviders)) {
+		} elseif (FALSE === in_array($providerClassName, self::$unregisteredProviders)) {
 			array_push(self::$unregisteredProviders, $providerClassName);
 		}
 	}
