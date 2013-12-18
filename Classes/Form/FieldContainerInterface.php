@@ -28,7 +28,7 @@ namespace FluidTYPO3\Flux\Form;
  * @package Flux
  * @subpackage Form
  */
-interface FieldContainerInterface extends FormInterface {
+interface FieldContainerInterface extends ContainerInterface {
 
 	/**
 	 * @return FieldInterface[]
