@@ -538,10 +538,10 @@ class AbstractProvider implements ProviderInterface {
 						array_push($removals, $sheetFieldName);
 					} else {
 						$clearFieldName = $sheetFieldName . '_clear';
-						$clearFieldValue = TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) ? $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] : 0;
+						$clearFieldValue = (boolean) (TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) ? $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] : 0);
 						$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
 						$shouldClearField = (0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] || (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']));
-						if (TRUE === $shouldClearField) {
+						if (TRUE === $shouldClearField || TRUE === $clearFieldValue) {
 							array_push($removals, $sheetFieldName);
 						}
 					}
@@ -630,12 +630,8 @@ class AbstractProvider implements ProviderInterface {
 		if (TRUE === isset($command['uid'])) {
 			return;
 		}
-		$files = glob(PATH_site . 'typo3temp/flux-*');
-		if (TRUE === is_array($files)) {
-			foreach ($files as $fileName) {
-				unlink($fileName);
-			}
-		}
+		$files = (array) glob(PATH_site . 'typo3temp/flux-*');
+		array_map('unlink', $files);
 	}
 
 	/**
@@ -750,15 +746,10 @@ class AbstractProvider implements ProviderInterface {
 			$values = $this->getFlexFormValues($branch);
 			foreach ($fields as $field) {
 				$name = $field->getName();
-				if (FALSE === $field instanceof FieldInterface) {
-					continue;
-				}
 				$stop = (TRUE === $field->getStopInheritance());
 				$inherit = (TRUE === $field->getInheritEmpty());
 				$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
-				if (TRUE === $stop) {
-					unset($values[$name]);
-				} elseif (FALSE === $inherit && TRUE === $empty) {
+				if (TRUE === $stop || (FALSE === $inherit && TRUE === $empty)) {
 					unset($values[$name]);
 				}
 			}
@@ -793,7 +784,6 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	protected function getParentFieldValue(array $row) {
 		$parentFieldName = $this->getParentFieldName($row);
-		$tableName = $this->getTableName($row);
 		if (NULL !== $parentFieldName && FALSE === isset($row[$parentFieldName])) {
 			$row = $this->loadRecordFromDatabase($row['uid']);
 		}
@@ -969,6 +959,13 @@ class AbstractProvider implements ProviderInterface {
 	public function shouldCall($methodName, array $row) {
 		$cacheKey = self::cacheKeyForTrackedMethodCall($methodName, $row);
 		return empty(self::$trackedMethodCalls[$cacheKey]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function reset() {
+		self::$cache = array();
 	}
 
 }
