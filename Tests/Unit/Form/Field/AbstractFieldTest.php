@@ -181,4 +181,17 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$this->assertSame($definition['name'], $section->getName());
 	}
 
+	/**
+	 * @test
+	 */
+	public function prefixesParentObjectNameToAutoLabelIfInsideObject() {
+		$instance = $this->createInstance();
+		$parent = Form\Container\Object::create();
+		$parent->setName('parent');
+		$instance->setName('child');
+		$parent->add($instance);
+		$output = $instance->getLabel();
+		$this->assertContains('parent.child', $output);
+	}
+
 }

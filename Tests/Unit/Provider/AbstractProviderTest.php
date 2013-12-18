@@ -31,6 +31,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\PathUtility;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -191,11 +192,57 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canGetFlexformValues() {
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
+		$provider->reset();
 		$record = $this->getBasicRecord();
 		$values1 = $provider->getFlexformValues($record);
 		$values2 = $provider->getFlexformValues($record);
 		$this->assertIsArray($values1);
 		$this->assertSame($values1, $values2);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetFlexformValuesUnderDirectConditions() {
+		$tree = array(
+			$this->getBasicRecord(),
+			$this->getBasicRecord()
+		);
+		$record = $this->getBasicRecord();
+		$provider = $this->getMock(substr(get_class($this), 0, -4), array('getForm', 'getInheritanceTree', 'getMergedConfiguration'));
+		$mockConfigurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('convertFlexFormContentToArray'));
+		$mockConfigurationService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(array('test' => 'test')));
+		$provider->expects($this->once())->method('getForm')->will($this->returnValue(Form::create()));
+		$provider->expects($this->once())->method('getInheritanceTree')->will($this->returnValue($tree));
+		$provider->expects($this->once())->method('getMergedConfiguration')->with($tree)->will($this->returnValue(array('test' => 'test')));
+		ObjectAccess::setProperty($provider, 'configurationService', $mockConfigurationService, TRUE);
+		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
+		$provider->reset();
+		$values = $provider->getFlexformValues($record);
+		$this->assertIsArray($values);
+		$this->assertEquals($values, array('test' => 'test'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetFlexformValuesUnderInheritanceConditions() {
+		$tree = array(
+			$this->getBasicRecord(),
+			$this->getBasicRecord()
+		);
+		$record = $this->getBasicRecord();
+		$provider = $this->getMock(substr(get_class($this), 0, -4), array('getForm', 'getInheritanceTree', 'getMergedConfiguration'));
+		$mockConfigurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('convertFlexFormContentToArray'));
+		$mockConfigurationService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(array()));
+		$provider->expects($this->once())->method('getForm')->will($this->returnValue(Form::create()));
+		$provider->expects($this->once())->method('getInheritanceTree')->will($this->returnValue($tree));
+		$provider->expects($this->once())->method('getMergedConfiguration')->with($tree)->will($this->returnValue(array()));
+		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
+		ObjectAccess::setProperty($provider, 'configurationService', $mockConfigurationService, TRUE);
+		$provider->reset();
+		$values = $provider->getFlexformValues($record);
+		$this->assertEquals($values, array());
 	}
 
 	/**
@@ -578,6 +625,20 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function canLoadRecordTreeFromDatabase() {
+		$record = $this->getBasicRecord();
+		$provider = $this->getMock(substr(get_class($this), 0, -4), array('loadRecordFromDatabase', 'getParentFieldName', 'getParentFieldValue'));
+		$provider->expects($this->exactly(2))->method('getParentFieldName')->will($this->returnValue('somefield'));
+		$provider->expects($this->exactly(1))->method('getParentFieldValue')->will($this->returnValue(1));
+		$provider->expects($this->exactly(1))->method('loadRecordFromDatabase')->will($this->returnValue($record));
+		$output = $this->callInaccessibleMethod($provider, 'loadRecordTreeFromDatabase', $record);
+		$expected = array($record);
+		$this->assertEquals($expected, $output);
+	}
+
+	/**
+	 * @test
+	 */
 	public function setsDefaultValueInFieldsBasedOnInheritedValue() {
 		$row = array();
 		$className = substr(get_class($this), 0, -4);
@@ -588,6 +649,90 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$returnedForm = $this->callInaccessibleMethod($service, 'setDefaultValuesInFieldsWithInheritedValues', $form, $row);
 		$this->assertSame($form, $returnedForm);
 		$this->assertEquals('default', $field->getDefault());
+	}
+
+	/**
+	 * @test
+	 */
+	public function canCallPreProcessCommand() {
+		$provider = $this->getConfigurationProviderInstance();
+		$command = 'dummy';
+		$id = 0;
+		$record = $this->getBasicRecord();
+		$relativeTo = 1;
+		$reference = new DataHandler();
+		$provider->preProcessCommand($command, $id, $record, $relativeTo, $reference);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetMergedConfiguration() {
+		$form = Form::create();
+		$form->createContainer('Grid', 'grid');
+		$form->createField('Input', 'test');
+		$form->createContainer('Object', 'testobject');
+		$record = $this->getBasicRecord();
+		$tree = array($record);
+		$instance = $this->getMock(substr(get_class($this), 0, -4), array('getForm', 'getFlexFormValues'));
+		$instance->reset();
+		$instance->expects($this->once())->method('getForm')->will($this->returnValue($form));
+		$output = $this->callInaccessibleMethod($instance, 'getMergedConfiguration', $tree);
+		$this->assertEquals(array(), $output);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetMergedConfigurationAndMergeToCache() {
+		$form = Form::create();
+		$form->createContainer('Grid', 'grid');
+		$form->createField('Input', 'test');
+		$form->createContainer('Object', 'testobject');
+		$record = $this->getBasicRecord();
+		$tree = array($record);
+		$instance = $this->getMock(substr(get_class($this), 0, -4), array('getForm', 'getFlexFormValues', 'hasCacheForMergedConfiguration'));
+		$instance->reset();
+		$instance->expects($this->once())->method('getForm')->will($this->returnValue($form));
+		$instance->expects($this->once())->method('hasCacheForMergedConfiguration')->will($this->returnValue(TRUE));
+		$this->callInaccessibleMethod($instance, 'getMergedConfiguration', $tree, 'testing', TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getMergedConfigurationReturnsEmptyArrayIfFormIsNull() {
+		$record = $this->getBasicRecord();
+		$tree = array($record);
+		$instance = $this->getMock(substr(get_class($this), 0, -4), array('getForm'));
+		$instance->reset();
+		$instance->expects($this->once())->method('getForm')->will($this->returnValue(NULL));
+		$output = $this->callInaccessibleMethod($instance, 'getMergedConfiguration', $tree);
+		$this->assertEquals(array(), $output);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canAssertHasCachedMergedConfiguration() {
+		$instance = $this->createInstance();
+		$instance->reset();
+		$this->assertFalse($this->callInaccessibleMethod($instance, 'hasCacheForMergedConfiguration', 'test'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetCacheKeyForMergedConfiguration() {
+		$instance = $this->createInstance();
+		$instance->reset();
+		$tree = array(
+			array(
+				'test' => 'test'
+			)
+		);
+		$expected = 'merged_' . md5(json_encode($tree));
+		$this->assertEquals($expected, $this->callInaccessibleMethod($instance, 'getCacheKeyForMergedConfiguration', $tree));
 	}
 
 }

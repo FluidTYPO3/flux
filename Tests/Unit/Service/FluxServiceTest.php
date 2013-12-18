@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -35,6 +36,29 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  * @package Flux
  */
 class FluxServiceTest extends AbstractTestCase {
+
+	/**
+	 * Teardown
+	 */
+	public function setup() {
+		$providers = Core::getRegisteredFlexFormProviders();
+		if (TRUE === in_array('FluidTYPO3\Flux\Service\FluxService', $providers)) {
+			Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
+		}
+	}
+
+	/**
+	 * @test
+	 */
+	public function throwsExceptionWhenResolvingInvalidConfigurationProviderInstances() {
+		$instance = $this->createInstance();
+		$record = array('test' => 'test');
+		Core::registerConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
+		$this->setExpectedException('RuntimeException', NULL, 1327173536);
+		$instance->flushCache();
+		$instance->resolveConfigurationProviders('tt_content', 'pi_flexform', $record);
+		Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
+	}
 
 	/**
 	 * @test

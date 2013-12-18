@@ -371,4 +371,19 @@ class LanguageFileServiceTest extends AbstractTestCase {
 		$this->assertEquals($expected, $result);
 	}
 
+	/**
+	 * @test
+	 */
+	public function writeFileCreatesDirectoryIfMissing() {
+		$instance = $this->createInstance();
+		$directory = GeneralUtility::getFileAbsFileName('typo3temp/' . rand(100000, 999999));
+		$filepath = $directory  . '/file.xlf';
+		$this->assertFileNotExists($directory);
+		$this->callInaccessibleMethod($instance, 'writeFile', $filepath, 'test');
+		$this->assertFileExists($directory);
+		$this->assertFileExists($filepath);
+		unlink($filepath);
+		rmdir($directory);
+	}
+
 }

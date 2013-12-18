@@ -251,4 +251,14 @@ class CoreTest extends AbstractTestCase {
 		$this->assertNotContains($fakeClass, Core::getPipes());
 	}
 
+	/**
+	 * @test
+	 */
+	public function canUnregisterNotCurrentlyRegisteredProviders() {
+		$fakeClass = 'MyFakeClass';
+		Core::unregisterConfigurationProvider($fakeClass);
+		core::registerConfigurationProvider($fakeClass);
+		$this->assertNotContains($fakeClass, Core::getRegisteredFlexFormProviders());
+	}
+
 }
