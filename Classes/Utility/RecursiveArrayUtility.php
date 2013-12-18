@@ -25,7 +25,7 @@ namespace FluidTYPO3\Flux\Utility;
  ***************************************************************/
 
 /**
- * ClipBoard Utility
+ * RecursiveArray Utility
  *
  * @package Flux
  * @subpackage Utility
@@ -38,6 +38,8 @@ class RecursiveArrayUtility {
 	 * @return array
 	 */
 	public static function merge($array1, $array2) {
+		$array1 = (array) $array1;
+		$array2 = (array) $array2;
 		foreach ($array2 as $key => $val) {
 			if (is_array($array1[$key])) {
 				if (is_array($array2[$key])) {
@@ -56,6 +58,8 @@ class RecursiveArrayUtility {
 	 * @return array
 	 */
 	public static function diff($array1, $array2) {
+		$array1 = (array) $array1;
+		$array2 = (array) $array2;
 		foreach ($array1 as $key => $value) {
 			if (TRUE === isset($array2[$key])) {
 				if (TRUE === is_array($value) && TRUE === is_array($array2[$key])) {
