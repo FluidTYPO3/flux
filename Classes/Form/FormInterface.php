@@ -106,6 +106,11 @@ interface FormInterface {
 	public function getRoot();
 
 	/**
+	 * @return string
+	 */
+	public function getPath();
+
+	/**
 	 * @param string $extensionName
 	 * @return FormInterface
 	 */

@@ -261,6 +261,35 @@ abstract class AbstractFormComponent implements FormInterface {
 	/**
 	 * @return string
 	 */
+	public function getPath() {
+		$prefix = '';
+		if (TRUE === $this instanceof Sheet) {
+			$prefix = 'sheets';
+		} elseif (TRUE === $this instanceof Section) {
+			$prefix = 'sections';
+		} elseif (TRUE === $this instanceof Grid) {
+			$prefix = 'grids';
+		} elseif (TRUE === $this instanceof Column) {
+			$prefix = 'columns';
+		} elseif (TRUE === $this instanceof Object) {
+			$prefix = 'objects';
+		} elseif (TRUE === $this instanceof Content) {
+			$prefix = 'areas';
+		} elseif (TRUE === $this instanceof Container) {
+			$prefix = 'containers';
+		} elseif (TRUE === $this instanceof FieldInterface) {
+			if (TRUE === $this->isChildOfType('Object')) {
+				$prefix = 'objects.' . $this->getParent()->getName();
+			} else {
+				$prefix = 'fields';
+			}
+		}
+		return $prefix . '.' . $this->getName();
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getLabel() {
 		$label = $this->label;
 		if (TRUE === $this->getDisableLocalLanguageLabels()) {
@@ -287,32 +316,11 @@ abstract class AbstractFormComponent implements FormInterface {
 		if ((TRUE === empty($extensionKey) || FALSE === ExtensionManagementUtility::isLoaded($extensionKey))) {
 			return $name;
 		}
-		$prefix = '';
-		if (TRUE === $this instanceof Sheet) {
-			$prefix = 'sheets';
-		} elseif (TRUE === $this instanceof Section) {
-			$prefix = 'sections';
-		} elseif (TRUE === $this instanceof Grid) {
-			$prefix = 'grids';
-		} elseif (TRUE === $this instanceof Column) {
-			$prefix = 'columns';
-		} elseif (TRUE === $this instanceof Object) {
-			$prefix = 'objects';
-		} elseif (TRUE === $this instanceof Content) {
-			$prefix = 'areas';
-		} elseif (TRUE === $this instanceof Container) {
-			$prefix = 'containers';
-		} elseif (TRUE === $this instanceof FieldInterface) {
-			if (TRUE === $this->isChildOfType('Object')) {
-				$prefix = 'objects.' . $this->getParent()->getName();
-			} else {
-				$prefix = 'fields';
-			}
-		}
+		$path = $this->getPath();
 		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 		$relativeFilePath = ltrim($relativeFilePath, '/');
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.' . $name);
+		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $path);
 		$this->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
 		return $filePrefix . ':' . $labelIdentifier;
 	}
