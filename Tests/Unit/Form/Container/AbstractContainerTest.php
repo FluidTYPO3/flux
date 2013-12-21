@@ -35,7 +35,7 @@ abstract class AbstractContainerTest extends AbstractFormTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string	');
+	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string');
 
 	/**
 	 * @return ContainerInterface
