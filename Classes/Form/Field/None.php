@@ -1,6 +1,6 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Field;
-/***************************************************************
+namespace FluidTYPO3\Flux\Form\Field;
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2013 Claus Due <claus@namelesscoder.net>
@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This script is part of the TYPO3 project. The TYPO3 project is
  *  free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
+ *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
  *  The GNU General Public License can be found at
@@ -24,23 +24,43 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\Field\Checkbox;
+use FluidTYPO3\Flux\Form\AbstractFormField;
+use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
- * Checkbox FlexForm field ViewHelper
- *
  * @package Flux
- * @subpackage ViewHelpers/Field
+ * @subpackage Form\Field
  */
-class CheckboxViewHelper extends AbstractFieldViewHelper {
+class None extends AbstractFormField implements FieldInterface {
 
 	/**
-	 * @return Checkbox
+	 * @var integer
 	 */
-	public function getComponent() {
-		/** @var Checkbox $checkbox */
-		$checkbox = $this->getPreparedComponent('Checkbox');
-		return $checkbox;
+	protected $size = 12;
+
+	/**
+	 * @return array
+	 */
+	public function buildConfiguration() {
+		$configuration = $this->prepareConfiguration('none');
+		$configuration['size'] = $this->getSize();
+		return $configuration;
+	}
+
+	/**
+	 * @param integer $size
+	 * @return None
+	 */
+	public function setSize($size) {
+		$this->size = $size;
+		return $this;
+	}
+
+	/**
+	 * @return integer
+	 */
+	public function getSize() {
+		return $this->size;
 	}
 
 }

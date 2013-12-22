@@ -46,6 +46,7 @@ class Xml {
     <data>
         <sheet index="options">
             <language index="lDEF">
+                <el index="section"></el>
                 <field index="settings.input">
                     <value index="vDEF">0</value>
                 </field>
@@ -62,6 +63,24 @@ class Xml {
                 <field index="settings.input">
                     <value index="vDEF">0</value>
                 </field>
+                <el index="section">
+                    <field index="nested">
+                        <value index="vDEF">test</value>
+                    </field>
+                    <field index=""></field>
+                </el>
+                <el>
+                    <field index="nested">
+                        <value index="vDEF">test</value>
+                    </field>
+                    <field index=""></field>
+                </el>
+                <el>
+					<field index="id">
+						<value index="vDEF">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</value>
+					</field>
+					<field index=""></field>
+				</el>
                 <field index=""></field>
             </language>
         </sheet>

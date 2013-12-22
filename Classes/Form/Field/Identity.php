@@ -1,6 +1,6 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Field;
-/***************************************************************
+namespace FluidTYPO3\Flux\Form\Field;
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2013 Claus Due <claus@namelesscoder.net>
@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This script is part of the TYPO3 project. The TYPO3 project is
  *  free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
+ *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
  *  The GNU General Public License can be found at
@@ -22,13 +22,29 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
+use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
+ * Identity field
+ *
+ * Can be used inside Objects or Containers to make a unique ID.
+ * You don't have to use this field - the ID will still be added
+ * if you don't - but using it allows you to read the ID in a
+ * form field.
+ *
  * @package Flux
+ * @subpackage Form\Field
  */
-class CheckboxViewHelperTest extends AbstractFieldViewHelperTestCase {
+class Identity extends None implements FieldInterface {
+
+	/**
+	 * @return array
+	 */
+	public function buildConfiguration() {
+		$configuration = $this->prepareConfiguration('none');
+		return $configuration;
+	}
 
 }

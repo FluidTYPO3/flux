@@ -29,6 +29,6 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase
 /**
  * @package Flux
  */
-class CheckboxViewHelperTest extends AbstractFieldViewHelperTestCase {
+class IdentityViewHelperTest extends AbstractFieldViewHelperTestCase {
 
 }

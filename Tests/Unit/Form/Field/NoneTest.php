@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Field;
+namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,11 +24,17 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
-
 /**
  * @package Flux
  */
-class CheckboxViewHelperTest extends AbstractFieldViewHelperTestCase {
+class NoneTest extends AbstractFieldTest {
+
+	/**
+	 * @var array
+	 */
+	protected $chainProperties = array(
+		'name' => 'none',
+		'size' => 10
+	);
 
 }

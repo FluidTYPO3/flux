@@ -22,13 +22,39 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
+use FluidTYPO3\Flux\Form\Field\Identity;
 
 /**
+ * Identity field ViewHelper
+ *
+ * Can be used inside Objects and Containers to generate an ID.
+ * Created component gets automatically filled with a unique value.
+ * You don't have to use this component - if you don't, the ID still
+ * gets generated - but using this component allows you to read the
+ * ID in a form field (read-only, will be empty until saved once).
+ *
  * @package Flux
+ * @subpackage ViewHelpers/Field
  */
-class CheckboxViewHelperTest extends AbstractFieldViewHelperTestCase {
+class IdentityViewHelper extends AbstractFieldViewHelper {
+
+	/**
+	 * Initialize arguments
+	 * @return void
+	 */
+	public function initializeArguments() {
+		// This ViewHelper has zero arguments - prevent parent's arguments from being registered.
+	}
+
+	/**
+	 * @return Identity
+	 */
+	public function getComponent() {
+		/** @var Identity $identity */
+		$identity = $this->getForm()->createField('Identity', 'id');
+		return $identity;
+	}
 
 }

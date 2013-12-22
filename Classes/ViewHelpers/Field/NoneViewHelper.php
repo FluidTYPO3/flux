@@ -22,13 +22,28 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ *****************************************************************/
 
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
+use FluidTYPO3\Flux\Form\Field\None;
 
 /**
+ * None field ViewHelper
+ *
+ * Makes a read-only component which supports a default value
+ * but which cannot be edited.
+ *
  * @package Flux
+ * @subpackage ViewHelpers/Field
  */
-class CheckboxViewHelperTest extends AbstractFieldViewHelperTestCase {
+class NoneViewHelper extends AbstractFieldViewHelper {
+
+	/**
+	 * @return Identity
+	 */
+	public function getComponent() {
+		/** @var None $none */
+		$none = $this->getPreparedComponent('None');
+		return $none;
+	}
 
 }
