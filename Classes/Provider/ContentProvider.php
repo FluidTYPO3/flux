@@ -61,6 +61,16 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	protected $fieldName = 'pi_flexform';
 
 	/**
+	 * @param string $methodName
+	 * @param array $row
+	 * @return boolean
+	 */
+	public function shouldCall($methodName, array $row) {
+		// override: this Provider must always be executed
+		return TRUE;
+	}
+
+	/**
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row
