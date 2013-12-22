@@ -320,7 +320,7 @@ abstract class AbstractFormComponent implements FormInterface {
 		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 		$relativeFilePath = ltrim($relativeFilePath, '/');
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $path);
+		$labelIdentifier = 'flux.' . $id . '.' . $path;
 		$this->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
 		return $filePrefix . ':' . $labelIdentifier;
 	}

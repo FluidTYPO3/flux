@@ -520,17 +520,15 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference) {
 		if ('update' === $operation) {
-			$fieldName = $this->getFieldName((array) $reference->datamap[$this->tableName][$id]);
+			$record = $reference->datamap[$this->tableName][$id];
+			$fieldName = $this->getFieldName((array) $record);
 			if (NULL === $fieldName) {
 				return;
 			}
-			if (FALSE === isset($row[$fieldName])) {
+			if (FALSE === isset($record[$fieldName]) || FALSE === isset($record[$fieldName]['data']) || FALSE === is_array($record[$fieldName]['data'])) {
 				return;
 			}
-			$data = $reference->datamap[$this->tableName][$id][$fieldName]['data'];
-			if (FALSE === is_array($data)) {
-				return;
-			}
+			$data = $record[$fieldName]['data'];
 			$removals = array();
 			foreach ($data as $sheetName => $sheetFields) {
 				foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
@@ -556,7 +554,39 @@ class AbstractProvider implements ProviderInterface {
 					$fieldNode->parentNode->removeChild($fieldNode);
 				}
 			}
-			$row[$fieldName] = $dom->saveXML();
+			// Assign a hidden ID to all container-type nodes, making the value available in templates etc.
+			foreach ($dom->getElementsByTagName('el') as $containerNode) {
+				$hasIdNode = FALSE;
+				if (0 < $containerNode->attributes->length) {
+					// skip <el> tags reserved for other purposes by attributes; only allow pure <el> tags.
+					continue;
+				}
+				foreach ($containerNode->childNodes as $fieldNodeInContainer) {
+					if (FALSE === $fieldNodeInContainer instanceof \DOMElement) {
+						continue;
+					}
+					$isFieldNode = ('field' === $fieldNodeInContainer->tagName);
+					$isIdField = ('id' === $fieldNodeInContainer->getAttribute('index'));
+					if ($isFieldNode && $isIdField) {
+						$hasIdNode = TRUE;
+						break;
+					}
+				}
+				if (FALSE === $hasIdNode) {
+					$idNode = $dom->createElement('field');
+					$idIndexAttribute = $dom->createAttribute('index');
+					$idIndexAttribute->nodeValue = 'id';
+					$idNode->appendChild($idIndexAttribute);
+					$valueNode = $dom->createElement('value');
+					$valueIndexAttribute = $dom->createAttribute('index');
+					$valueIndexAttribute->nodeValue = 'vDEF';
+					$valueNode->appendChild($valueIndexAttribute);
+					$valueNode->nodeValue = sha1(uniqid('container_', TRUE));
+					$idNode->appendChild($valueNode);
+					$containerNode->appendChild($idNode);
+				}
+			}
+			$row[$fieldName] = $reference->datamap[$this->tableName][$id][$fieldName] = $dom->saveXML();
 		}
 	}
 
