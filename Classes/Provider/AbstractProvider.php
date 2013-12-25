@@ -716,10 +716,10 @@ class AbstractProvider implements ProviderInterface {
 		$this->configurationManager->setContentObject($existingContentObject);
 		$previewContent = trim($previewContent);
 		$headerContent = '';
-		if (FALSE === empty($label) || FALSE === empty($row['header'])) {
-			$headerContent = '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
+		if (FALSE === empty($label)) {
+			$headerContent = '<strong>' . $label . '</strong>';
 		}
-		return array($headerContent, $previewContent, TRUE);
+		return array($headerContent, $previewContent, FALSE);
 	}
 
 	/**
