@@ -527,7 +527,7 @@ class AbstractProvider implements ProviderInterface {
 			if (NULL === $fieldName) {
 				return;
 			}
-			if (FALSE === isset($record[$fieldName]) || FALSE === isset($record[$fieldName]['data']) || FALSE === is_array($record[$fieldName]['data'])) {
+			if (FALSE === isset($row[$fieldName]) || FALSE === isset($record[$fieldName]['data']) || FALSE === is_array($record[$fieldName]['data'])) {
 				return;
 			}
 			$data = $record[$fieldName]['data'];
@@ -935,9 +935,7 @@ class AbstractProvider implements ProviderInterface {
 	protected function loadRecordFromDatabase($uid) {
 		$uid = intval($uid);
 		$tableName = $this->tableName;
-		$resource = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $tableName, "uid = '" . $uid . "'");
-		$record = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resource);
-		return $record;
+		return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $tableName, "uid = '" . $uid . "'");
 	}
 
 	/**
