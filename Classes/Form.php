@@ -342,6 +342,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		if (TRUE === empty($description)) {
 			$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
 			$description = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xlf:flux.' . $this->id . '.description';
+			$description = LocalizationUtility::translate($description, $extensionKey);
 		}
 		return $description;
 	}
