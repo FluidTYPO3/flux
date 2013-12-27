@@ -705,6 +705,7 @@ class AbstractProvider implements ProviderInterface {
 		$formLabel = $form->getLabel();
 		$label = LocalizationUtility::translate($formLabel, $extensionKey);
 		$variables['label'] = $label;
+		$variables['row'] = $row;
 
 		$view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, 'Content', $paths, $variables);
 		$view->setTemplatePathAndFilename($templatePathAndFilename);
