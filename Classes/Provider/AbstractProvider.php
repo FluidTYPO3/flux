@@ -271,6 +271,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		$variables['record'] = $row;
 		$variables = GeneralUtility::array_merge_recursive_overrule($this->templateVariables, $variables);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
 		$form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
@@ -293,6 +294,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		$variables['record'] = $this->loadRecordFromDatabase($row['uid']);
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
 		return $grid;
 	}
@@ -703,7 +705,6 @@ class AbstractProvider implements ProviderInterface {
 		$formLabel = $form->getLabel();
 		$label = LocalizationUtility::translate($formLabel, $extensionKey);
 		$variables['label'] = $label;
-		$variables['row'] = $row;
 
 		$view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, 'Content', $paths, $variables);
 		$view->setTemplatePathAndFilename($templatePathAndFilename);
