@@ -109,12 +109,17 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 		foreach ($providers as $provider) {
 			/** @var ProviderInterface $provider */
 			list ($previewHeader, $previewContent, $continueDrawing) = $provider->getPreview($row);
-			if (FALSE === $continueDrawing) {
-				$headerContent .= $previewHeader;
-				$itemContent .= $previewContent;
+			if (FALSE === empty($previewHeader)) {
+				$headerContent = $previewHeader . (FALSE === empty($headerContent) ? ': ' . $headerContent : '');
 				$drawItem = FALSE;
 				GeneralUtility::writeFile($cacheFilePathAndfilenameHeader, $headerContent);
+			}
+			if (FALSE === empty($previewContent)) {
+				$itemContent .= $previewContent;
+				$drawItem = FALSE;
 				GeneralUtility::writeFile($cacheFilePathAndfilenameContent, $itemContent);
+			}
+			if (FALSE === $continueDrawing) {
 				$this->attachStyle();
 				break;
 			}
