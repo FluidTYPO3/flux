@@ -263,7 +263,9 @@ abstract class AbstractFormComponent implements FormInterface {
 	 */
 	public function getPath() {
 		$prefix = '';
-		if (TRUE === $this instanceof Sheet) {
+		if (TRUE === $this instanceof Form) {
+			$prefix = '';
+		} elseif (TRUE === $this instanceof Sheet) {
 			$prefix = 'sheets';
 		} elseif (TRUE === $this instanceof Section) {
 			$prefix = 'sections';
@@ -284,7 +286,7 @@ abstract class AbstractFormComponent implements FormInterface {
 				$prefix = 'fields';
 			}
 		}
-		return $prefix . '.' . $this->getName();
+		return trim($prefix . '.' . $this->getName(), '.');
 	}
 
 	/**
@@ -316,11 +318,15 @@ abstract class AbstractFormComponent implements FormInterface {
 		if ((TRUE === empty($extensionKey) || FALSE === ExtensionManagementUtility::isLoaded($extensionKey))) {
 			return $name;
 		}
-		$path = $this->getPath();
+		if (FALSE === $this instanceof Form) {
+			$path = $this->getPath();
+		} else {
+			$path = '';
+		}
 		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 		$relativeFilePath = ltrim($relativeFilePath, '/');
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-		$labelIdentifier = 'flux.' . $id . '.' . $path;
+		$labelIdentifier = trim('flux.' . $id . '.' . $path, '.');
 		$this->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
 		return $filePrefix . ':' . $labelIdentifier;
 	}

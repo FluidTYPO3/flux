@@ -271,6 +271,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		$variables['record'] = $row;
 		$variables = GeneralUtility::array_merge_recursive_overrule($this->templateVariables, $variables);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
 		$form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
@@ -293,6 +294,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		$variables['record'] = $this->loadRecordFromDatabase($row['uid']);
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
 		return $grid;
 	}
@@ -525,7 +527,7 @@ class AbstractProvider implements ProviderInterface {
 			if (NULL === $fieldName) {
 				return;
 			}
-			if (FALSE === isset($record[$fieldName]) || FALSE === isset($record[$fieldName]['data']) || FALSE === is_array($record[$fieldName]['data'])) {
+			if (FALSE === isset($row[$fieldName]) || FALSE === isset($record[$fieldName]['data']) || FALSE === is_array($record[$fieldName]['data'])) {
 				return;
 			}
 			$data = $record[$fieldName]['data'];
@@ -716,10 +718,10 @@ class AbstractProvider implements ProviderInterface {
 		$this->configurationManager->setContentObject($existingContentObject);
 		$previewContent = trim($previewContent);
 		$headerContent = '';
-		if (FALSE === empty($label) || FALSE === empty($row['header'])) {
-			$headerContent = '<div><strong>' . $label . '</strong> <i>' . $row['header'] . '</i></div>';
+		if (FALSE === empty($label)) {
+			$headerContent = '<strong>' . $label . '</strong>';
 		}
-		return array($headerContent, $previewContent, TRUE);
+		return array($headerContent, $previewContent, FALSE);
 	}
 
 	/**
@@ -934,9 +936,7 @@ class AbstractProvider implements ProviderInterface {
 	protected function loadRecordFromDatabase($uid) {
 		$uid = intval($uid);
 		$tableName = $this->tableName;
-		$resource = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $tableName, "uid = '" . $uid . "'");
-		$record = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resource);
-		return $record;
+		return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $tableName, "uid = '" . $uid . "'");
 	}
 
 	/**
