@@ -71,11 +71,10 @@ class DynamicFlexForm {
 			// respect to which ConfigurationProvider(s) are returned.
 			$fieldName = NULL;
 		}
-		$provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $fieldName, $row);
-		if (NULL === $provider) {
-			return;
+		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
+		foreach ($providers as $provider) {
+			$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 		}
-		$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 	}
 
 }

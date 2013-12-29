@@ -99,7 +99,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 			$this->attachStyle();
 			return NULL;
 		}
-		$fieldName = 'pi_flexform';
+		$fieldName = NULL; // every provider for tt_content will be asked to get a preview
 		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
 			$itemContent = $this->createShortcutIcon($row) . $itemContent;
 		} else {
@@ -120,10 +120,10 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 				GeneralUtility::writeFile($cacheFilePathAndfilenameContent, $itemContent);
 			}
 			if (FALSE === $continueDrawing) {
-				$this->attachStyle();
 				break;
 			}
 		}
+		$this->attachStyle();
 		return NULL;
 	}
 
