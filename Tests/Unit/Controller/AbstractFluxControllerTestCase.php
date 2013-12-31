@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2014 Claus Due <claus@wildside.dk>
  *
  *  All rights reserved
  *

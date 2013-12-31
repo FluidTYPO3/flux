@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Anders Gissel <anders@wildside.dk>
+ *  (c) 2014 Anders Gissel <anders@wildside.dk>
  *
  *  All rights reserved
  *
