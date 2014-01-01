@@ -235,20 +235,4 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		$this->assertSame(LocalizationUtility::translate('tt_content.tx_flux_container', 'flux'), $result);
 	}
 
-	/**
-	 * @test
-	 */
-	public function writeLabelDelegatesToLanguageFileService() {
-		$instance = $this->createInstance();
-		$mockObjectManager = $this->getMock('TYPO3\CMS\Extbase\Object\ObjectManager', array('get'));
-		$mockLanguageFileService = $this->getMock('FluidTYPO3\Flux\Service\LangageFileService', array('writeLanguageLabel'));
-		$mockObjectManager->expects($this->once())->method('get')->with('FluidTYPO3\Flux\Service\LanguageFileService')->will($this->returnValue($mockLanguageFileService));
-		$mockLanguageFileService->expects($this->once())->method('writeLanguageLabel')->with('a', 'b', 'c');
-		ObjectAccess::setProperty($instance, 'objectManager', $mockObjectManager, TRUE);
-		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'];
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = TRUE;
-		$this->callInaccessibleMethod($instance, 'writeLanguageLabel', 'a', 'b', 'c');
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles'] = $backup;
-	}
-
 }

@@ -339,15 +339,15 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 */
 	public function getDescription() {
 		$description = $this->description;
+		$translated = NULL;
 		if (TRUE === empty($description)) {
 			$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
 			$description = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xlf:flux.' . $this->id . '.description';
-			$translated = LocalizationUtility::translate($description, $extensionKey);
-			if (NULL !== $translated) {
-				return $translated;
-			}
 		}
-		return $description;
+		if (0 === strpos($description, 'LLL:EXT:')) {
+			$translated = LocalizationUtility::translate($description, $extensionKey);
+		}
+		return $translated !== NULL ? $translated : $description;
 	}
 
 	/**
