@@ -663,10 +663,7 @@ class AbstractProvider implements ProviderInterface {
 			return;
 		}
 		$files = glob(PATH_site . 'typo3temp/flux-*');
-		if (FALSE === $files) {
-			return;
-		}
-		array_map('unlink', $files);
+		FALSE === $files ? : array_map('unlink', $files);
 	}
 
 	/**
