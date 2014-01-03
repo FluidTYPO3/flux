@@ -263,9 +263,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 */
 	public function getPath() {
 		$prefix = '';
-		if (TRUE === $this instanceof Form) {
-			$prefix = '';
-		} elseif (TRUE === $this instanceof Sheet) {
+		if (TRUE === $this instanceof Sheet) {
 			$prefix = 'sheets';
 		} elseif (TRUE === $this instanceof Section) {
 			$prefix = 'sections';
@@ -326,21 +324,9 @@ abstract class AbstractFormComponent implements FormInterface {
 		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 		$relativeFilePath = ltrim($relativeFilePath, '/');
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-		$labelIdentifier = trim('flux.' . $id . '.' . $path, '.');
-		$this->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
-		return $filePrefix . ':' . $labelIdentifier;
-	}
-
-	/**
-	 * @param string $filePrefix
-	 * @param string $labelIdentifier
-	 * @param string $id
-	 * @return void
-	 */
-	protected function writeLanguageLabel($filePrefix, $labelIdentifier, $id) {
-		if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles']) {
-			$this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService')->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
-		}
+		$labelIdentifier = $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
+		$translated = LocalizationUtility::translate($labelIdentifier, $extensionKey);
+		return (NULL !== $translated ? $translated : $labelIdentifier);
 	}
 
 	/**

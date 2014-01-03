@@ -663,10 +663,7 @@ class AbstractProvider implements ProviderInterface {
 			return;
 		}
 		$files = glob(PATH_site . 'typo3temp/flux-*');
-		if (FALSE === $files) {
-			return;
-		}
-		array_map('unlink', $files);
+		FALSE === $files ? : array_map('unlink', $files);
 	}
 
 	/**
@@ -689,7 +686,16 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * Get preview chunks - header and content - as array($header, $content)
+	 * Get preview chunks - header and content - as
+	 * array(string $headerContent, string $previewContent, boolean $continueRendering)
+	 *
+	 * Default implementation renders the Preview section from the template
+	 * file that the actual Provider returns for $row, using paths also
+	 * determined by $row. Example: fluidcontent's Provider returns files
+	 * and paths based on selected "Fluid Content type" and inherits and
+	 * uses this method to render a Preview from the template file in the
+	 * specific path. This default implementation expects the TYPO3 core
+	 * to render the default header, so it returns NULL as $headerContent.
 	 *
 	 * @param array $row The record data to be analysed for variables to use in a rendered preview
 	 * @return array
@@ -720,10 +726,7 @@ class AbstractProvider implements ProviderInterface {
 		$previewContent = $view->renderStandaloneSection('Preview', $variables);
 		$this->configurationManager->setContentObject($existingContentObject);
 		$previewContent = trim($previewContent);
-		$headerContent = '';
-		if (FALSE === empty($label)) {
-			$headerContent = '<strong>' . $label . '</strong>';
-		}
+		$headerContent = NULL;
 		return array($headerContent, $previewContent, FALSE);
 	}
 

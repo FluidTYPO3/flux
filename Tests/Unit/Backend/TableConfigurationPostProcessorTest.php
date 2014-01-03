@@ -49,6 +49,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 		$table = 'this_table_does_not_exist';
 		$field = 'input';
 		$form = Form::create();
+		$form->setExtensionName('FluidTYPO3.Flux');
 		$form->createField('Input', $field);
 		$form->setOption('labels', array('title'));
 		Core::registerFormForTable($table, $form);
@@ -59,7 +60,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 		$this->assertContains($field, $GLOBALS['TCA'][$table]['interface']['showRecordFieldList']);
 		$this->assertContains($field, $GLOBALS['TCA'][$table]['types'][0]['showitem']);
 		$this->assertEquals($GLOBALS['TCA'][$table]['ctrl']['label'], 'title');
-		$this->assertStringStartsWith('LLL:EXT', $GLOBALS['TCA'][$table]['title']);
+		$this->assertStringStartsWith('LLL:EXT:', $GLOBALS['TCA'][$table]['title']);
 	}
 
 	/**
