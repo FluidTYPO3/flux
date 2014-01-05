@@ -54,4 +54,21 @@ abstract class AbstractPipeTestCase extends AbstractTestCase {
 		$this->assertNotEmpty($label);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canGetFormFields() {
+		$fields = $this->createInstance()->getFormFields();
+		$this->assertIsArray($fields);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $fields['class']);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $fields['label']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canLoadSettings() {
+		$this->createInstance()->loadSettings($this->defaultData);
+	}
+
 }

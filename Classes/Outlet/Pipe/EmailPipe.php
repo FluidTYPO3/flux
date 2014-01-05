@@ -24,6 +24,8 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Form\Field\Text;
 use TYPO3\CMS\Core\Mail\MailMessage;
 
 /**
@@ -58,6 +60,22 @@ class EmailPipe extends AbstractPipe implements PipeInterface {
 	 * @var string|NULL
 	 */
 	protected $body = NULL;
+
+	/**
+	 * @return FieldInterface[]
+	 */
+	public function getFormFields() {
+		$fields = parent::getFormFields();
+		$fields['subject'] = Input::create(array('type' => 'Input'))
+			->setName('subject');
+		$fields['body'] = Text::create(array('type' => 'Text'))
+			->setName('body');
+		$fields['receipent'] = Input::create(array('type' => 'Input'))
+			->setName('recipient');
+		$fields['sender'] = Input::create(array('type' => 'Input'))
+			->setName('sender');
+		return $fields;
+	}
 
 	/**
 	 * @param string $recipient

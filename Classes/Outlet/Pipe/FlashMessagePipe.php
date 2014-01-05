@@ -24,6 +24,9 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Form\Field\Text;
+use FluidTYPO3\Flux\Form\Field\Select;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 
@@ -65,6 +68,28 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface {
 		$flashMessage = new FlashMessage($this->getMessage(), $this->getTitle(), $this->getSeverity(), $this->getStoreInSession());
 		FlashMessageQueue::addMessage($flashMessage);
 		return $data;
+	}
+
+	/**
+	 * @return FieldInterface[]
+	 */
+	public function getFormFields() {
+		$severities = array(
+			FlashMessage::OK => 'OK',
+			FlashMessage::ERROR => 'ERROR',
+			FlashMessage::NOTICE => 'NOTICE',
+			FlashMessage::WARNING => 'WARNING'
+		);
+		$fields = parent::getFormFields();
+		$fields['message'] = Text::create(array('type' => 'Text'))
+			->setName('message');
+		$fields['title'] = Input::create(array('type' => 'Input'))
+			->setName('title');
+		$fields['severity'] = Select::create(array('type' => 'Select'))
+			->setName('severity')
+			->setItems($severities)
+			->setDefault(FlashMessage::OK);
+		return $fields;
 	}
 
 	/**

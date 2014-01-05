@@ -102,4 +102,13 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 		$this->assertGetterAndSetterWorks('typeConverter', $converter, $converter, TRUE);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canGetAndSetTypeConverterAndCreatesInstanceIfClassName() {
+		$converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter';
+		$converter = new StringConverter();
+		$this->assertGetterAndSetterWorks('typeConverter', $converterClass, $converter, TRUE);
+	}
+
 }

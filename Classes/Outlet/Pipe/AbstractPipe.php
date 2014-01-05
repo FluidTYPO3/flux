@@ -25,6 +25,10 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Form\Field\None;
+use FluidTYPO3\Flux\Form\Field\Select;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -38,6 +42,18 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 abstract class AbstractPipe implements PipeInterface {
 
 	/**
+	 * @param array $settings
+	 * @return void
+	 */
+	public function loadSettings(array $settings) {
+		foreach ($settings as $name => $value) {
+			if (TRUE === property_exists($this, $name)) {
+				ObjectAccess::setProperty($this, $name, $value);
+			}
+		}
+	}
+
+	/**
 	 * @param mixed $data
 	 * @return mixed
 	 */
@@ -48,10 +64,28 @@ abstract class AbstractPipe implements PipeInterface {
 	/**
 	 * @return string
 	 */
+	public function getType() {
+		return substr(lcfirst(array_pop(explode('\\', get_class($this)))), 0, -4);
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getLabel() {
-		$type = substr(lcfirst(array_pop(explode('\\', get_class($this)))), 0, -4);
+		$type = $this->getType();
 		$translated = LocalizationUtility::translate('pipes.' . $type . '.label', 'flux');
 		return (NULL === $translated ? $type : $translated);
 	}
 
+	/**
+	 * @return FieldInterface[]
+	 */
+	public function getFormFields() {
+		$class = get_class($this);
+		$fields = array(
+			'label' => Input::create(array('type' => 'Input'))->setName('label')->setDefault($this->getLabel()),
+			'class' => Select::create(array('type' => 'Select'))->setName('class')->setItems(array($class => $class))
+		);
+		return $fields;
+	}
 }
