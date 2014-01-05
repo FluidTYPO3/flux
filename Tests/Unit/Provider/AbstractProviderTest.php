@@ -49,6 +49,21 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function prunesEmptyFieldNodesOnRecordSave() {
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row['pi_flexform'] = Xml::EXPECTING_FLUX_PRUNING;
+		$provider = $this->getConfigurationProviderInstance();
+		$provider->setFieldName('pi_flexform');
+		$provider->setTableName('tt_content');
+		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
+		$tceMain->datamap['tt_content'][$row['uid']]['pi_flexform']['data'] = array();
+		$provider->postProcessRecord('update', $row['uid'], $row, $tceMain);
+		$this->assertNotContains('<field index=""></field>', $row['pi_flexform']);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canCallResetMethod() {
 		$provider = $this->createInstance();
 		$provider->reset();

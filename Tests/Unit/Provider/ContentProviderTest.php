@@ -38,18 +38,6 @@ class ContentProviderTest extends AbstractProviderTest {
 	/**
 	 * @test
 	 */
-	public function prunesEmptyFieldNodesOnRecordSave() {
-		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$row['pi_flexform'] = Xml::EXPECTING_FLUX_PRUNING;
-		$provider = $this->getConfigurationProviderInstance();
-		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$provider->postProcessRecord('update', $row['uid'], $row, $tceMain);
-		$this->assertNotContains('<field index=""></field>', $row['pi_flexform']);
-	}
-
-	/**
-	 * @test
-	 */
 	public function triggersContentManipulatorOnDatabaseOperationNew() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();

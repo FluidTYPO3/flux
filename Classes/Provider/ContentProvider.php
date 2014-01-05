@@ -71,10 +71,6 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 		parent::postProcessRecord($operation, $id, $row, $reference);
 		$parameters = GeneralUtility::_GET();
 		$this->contentService->affectRecordByRequestParameters($row, $parameters, $reference);
-		// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
-		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
-			$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
-		}
 	}
 
 	/**
