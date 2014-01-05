@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
  * Pipe Interface
@@ -36,14 +37,34 @@ use FluidTYPO3\Flux\Form;
 interface PipeInterface {
 
 	/**
+	 * @param array $settings
+	 * @return void
+	 */
+	public function loadSettings(array $settings);
+
+	/**
+	 * Accept $data and do whatever the Pipe should do before
+	 * returning the same or a modified version of $data for
+	 * chaining with other potential Pipes.
+	 *
 	 * @param mixed $data
 	 * @return mixed
 	 */
 	public function conduct($data);
 
 	/**
+	 * Get a human-readable name of this Pipe.
+	 *
 	 * @return string
 	 */
 	public function getLabel();
+
+	/**
+	 * Return the FormComponent "Field" instances which represent
+	 * options this Pipe supports.
+	 *
+	 * @return FieldInterface[]
+	 */
+	public function getFormFields();
 
 }

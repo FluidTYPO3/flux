@@ -33,6 +33,11 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 class EmailPipeTest extends AbstractPipeTestCase {
 
 	/**
+	 * @var array
+	 */
+	protected $defaultData = array('subject' => 'Test subject');
+
+	/**
 	 * @return EmailPipe
 	 */
 	protected function createInstance() {

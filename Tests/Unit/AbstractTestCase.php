@@ -76,7 +76,7 @@ abstract class AbstractTestCase extends BaseTestCase {
 		} else {
 			$this->assertNull($chained);
 		}
-		$this->assertSame($expectedValue, $instance->$getter());
+		$this->assertEquals($expectedValue, $instance->$getter());
 	}
 
 	/**

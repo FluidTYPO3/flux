@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2013-12-16T22:13:37Z" product-name="flux">
-		<header />
+	<file source-language="en" datatype="plaintext" original="messages" product-name="flux" date="2014-01-05T14:38:32+01:00">
+		<header/>
 		<body>
 			<trans-unit id="tt_content.tx_flux_container">
 				<source>Content Container</source>
@@ -47,6 +47,12 @@
 				ConfigurationProvider - in the case of FED/FluidContent/FluidPages this can also be caused by not having selected a page template
 				or Fluid content element type, which can be considered a safe "error" that is only reported because debug mode is enabled in Flux.
 				The parameters which lead to this error were:</source>
+			</trans-unit>
+			<trans-unit id="flux.this_table_does_not_exist.fields.input" xml:space="preserve">
+				<source>flux.this_table_does_not_exist.fields.input</source>
+			</trans-unit>
+			<trans-unit id="flux.this_table_does_not_exist" xml:space="preserve">
+				<source>flux.this_table_does_not_exist</source>
 			</trans-unit>
 		</body>
 	</file>

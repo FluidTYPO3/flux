@@ -24,6 +24,8 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Form\Field\Select;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
@@ -66,6 +68,25 @@ class ControllerPipe extends AbstractPipe implements PipeInterface {
 	 */
 	public function injectObjectManager(ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
+	}
+
+	/**
+	 * @return FieldInterface[]
+	 */
+	public function getFormFields() {
+		$fields = parent::getFormFields();
+		$extensionNames = array_keys((array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']);
+		$extensionNames = array_combine($extensionNames, $extensionNames);
+		$fields['extensionName'] = Select::create(array('type' => 'Select'))
+			->setName('extensionName')
+			->setItems($extensionNames);
+		$fields['controller'] = Input::create(array('type' => 'Input'))
+			->setName('controller')
+			->setValidate('trim,required');
+		$fields['action'] = Input::create(array('type' => 'Input'))
+			->setName('action')
+			->setValidate('trim,required');
+		return $fields;
 	}
 
 	/**

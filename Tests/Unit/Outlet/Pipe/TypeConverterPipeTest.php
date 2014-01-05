@@ -42,7 +42,8 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 	 */
 	public function canConductData() {
 		$instance = $this->createInstance();
-		$converter = new StringConverter();
+		$converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter';
+		$converter = $this->objectManager->get($converterClass);
 		$instance->setTypeConverter($converter);
 		$instance->setTargetType('string');
 		$output = $instance->conduct('test');
@@ -54,7 +55,8 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 	 */
 	public function conductingDataThrowsExceptionWhenTypeConverterCannotConvertToTargetType() {
 		$instance = $this->createInstance();
-		$converter = new DateTimeConverter();
+		$converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter';
+		$converter = $this->objectManager->get($converterClass);
 		$instance->setTypeConverter($converter);
 		$instance->setTargetType('TYPO3\CMS\Domain\Model\FrontendUser');
 		$this->setExpectedException('FluidTYPO3\Flux\Outlet\Pipe\Exception', NULL, 1386292424);
@@ -66,7 +68,8 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 	 */
 	public function conductingDataThrowsPipeExceptionWhenTypeConverterReturnsError() {
 		$instance = $this->createInstance();
-		$converter = new FloatConverter();
+		$converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\FloatConverter';
+		$converter = $this->objectManager->get($converterClass);
 		$instance->setTypeConverter($converter);
 		$instance->setTargetType('float');
 		if ('6.0' !== substr(TYPO3_version, 0, 3)) {
@@ -80,7 +83,8 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 	 */
 	public function conductingDataPassesThroughExceptionWhenTypeConverterFails() {
 		$instance = $this->createInstance();
-		$converter = new DateTimeConverter();
+		$converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter';
+		$converter = $this->objectManager->get($converterClass);
 		$instance->setTypeConverter($converter);
 		$instance->setTargetType('DateTime');
 		$this->setExpectedException('TYPO3\CMS\Extbase\Property\Exception\TypeConverterException', NULL, 1308003914);
@@ -98,8 +102,18 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 	 * @test
 	 */
 	public function canGetAndSetTypeConverter() {
-		$converter = new StringConverter();
+		$converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter';
+		$converter = $this->objectManager->get($converterClass);
 		$this->assertGetterAndSetterWorks('typeConverter', $converter, $converter, TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetAndSetTypeConverterAndCreatesInstanceIfClassName() {
+		$converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter';
+		$converter = $this->objectManager->get($converterClass);
+		$this->assertGetterAndSetterWorks('typeConverter', $converterClass, $converter, TRUE);
 	}
 
 }
