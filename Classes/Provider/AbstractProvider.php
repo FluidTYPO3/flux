@@ -588,7 +588,10 @@ class AbstractProvider implements ProviderInterface {
 					$containerNode->appendChild($idNode);
 				}
 			}
-			$row[$fieldName] = $reference->datamap[$this->tableName][$id][$fieldName] = $dom->saveXML();
+			$row[$fieldName] = $dom->saveXML();
+			// hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
+			$row[$fieldName] = str_replace('<field index=""></field>', '', $row[$fieldName]);
+			$reference->datamap[$this->tableName][$id][$fieldName] = $row[$fieldName];
 		}
 	}
 
