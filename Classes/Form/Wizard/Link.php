@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\Form\Wizard;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Form\AbstractWizard;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * @package Flux
@@ -159,8 +160,8 @@ class Link extends AbstractWizard {
 	 * @return mixed
 	 */
 	public function getBlindLinkOptions() {
-		if (FALSE === is_array($this->blindLinkOptions) && FALSE === $this->blindLinkOptions instanceof Traversable) {
-			return \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->blindLinkOptions);
+		if (FALSE === is_array($this->blindLinkOptions) && FALSE === $this->blindLinkOptions instanceof \Traversable) {
+			return GeneralUtility::trimExplode(',', $this->blindLinkOptions);
 		}
 		return $this->blindLinkOptions;
 	}
@@ -178,8 +179,8 @@ class Link extends AbstractWizard {
 	 * @return mixed
 	 */
 	public function getBlindLinkFields() {
-		if (FALSE === is_array($this->blindLinkFields) && FALSE === $this->blindLinkFields instanceof Traversable) {
-			return \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->blindLinkFields);
+		if (FALSE === is_array($this->blindLinkFields) && FALSE === $this->blindLinkFields instanceof \Traversable) {
+			return GeneralUtility::trimExplode(',', $this->blindLinkFields);
 		}
 		return $this->blindLinkFields;
 	}
@@ -197,8 +198,8 @@ class Link extends AbstractWizard {
 	 * @return mixed
 	 */
 	public function getAllowedExtensions() {
-		if (FALSE === is_array($this->allowedExtensions) && FALSE === $this->allowedExtensions instanceof Traversable) {
-			return \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->allowedExtensions);
+		if (FALSE === is_array($this->allowedExtensions) && FALSE === $this->allowedExtensions instanceof \Traversable) {
+			return GeneralUtility::trimExplode(',', $this->allowedExtensions);
 		}
 		return $this->allowedExtensions;
 	}
