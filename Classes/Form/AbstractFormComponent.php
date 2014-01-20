@@ -32,7 +32,6 @@ use FluidTYPO3\Flux\Form\Container\Object;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -94,7 +93,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	protected $extensionName = 'FluidTYPO3.Flux';
 
 	/**
-	 * @var FormContainerInterface
+	 * @var ContainerInterface
 	 */
 	protected $parent;
 
@@ -372,7 +371,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	}
 
 	/**
-	 * @return FormContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function getParent() {
 		return $this->parent;
@@ -395,7 +394,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	}
 
 	/**
-	 * @return FormContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function getRoot() {
 		if (NULL === $this->getParent()) {

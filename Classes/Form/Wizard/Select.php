@@ -99,7 +99,6 @@ class Select extends AbstractWizard {
 		} else {
 			return array($itemsString => $itemsString);
 		}
-		return array();
 	}
 
 	/**
@@ -113,7 +112,7 @@ class Select extends AbstractWizard {
 	}
 
 	/**
-	 * @returm string
+	 * @return string
 	 */
 	public function getFormattedItems() {
 		$items = $this->getItems();
