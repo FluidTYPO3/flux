@@ -112,7 +112,7 @@ class Select extends AbstractWizard {
 	}
 
 	/**
-	 * @returm string
+	 * @return string
 	 */
 	public function getFormattedItems() {
 		$items = $this->getItems();
