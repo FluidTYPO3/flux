@@ -94,7 +94,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	protected $extensionName = 'FluidTYPO3.Flux';
 
 	/**
-	 * @var FormContainerInterface
+	 * @var ContainerInterface
 	 */
 	protected $parent;
 
@@ -372,7 +372,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	}
 
 	/**
-	 * @return FormContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function getParent() {
 		return $this->parent;
@@ -395,7 +395,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	}
 
 	/**
-	 * @return FormContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function getRoot() {
 		if (NULL === $this->getParent()) {
