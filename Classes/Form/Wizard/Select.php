@@ -99,7 +99,6 @@ class Select extends AbstractWizard {
 		} else {
 			return array($itemsString => $itemsString);
 		}
-		return array();
 	}
 
 	/**
