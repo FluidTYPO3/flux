@@ -59,6 +59,9 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 		/** @var \FluidTYPO3\Flux\Form\FormInterface[] $children */
 		$children = $this->getFields();
 		foreach ($children as $child) {
+			if (FALSE === $child->isPermitted()) {
+				continue;
+			}
 			$name = $child->getName();
 			$structure[$name] = $child->build();
 		}

@@ -24,6 +24,8 @@ namespace FluidTYPO3\Flux\Form;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Permission\PermissionInterface;
+
 /**
  * @package Flux
  * @subpackage Form
@@ -99,6 +101,29 @@ interface FormInterface {
 	 * @return array
 	 */
 	public function getVariables();
+
+
+	/**
+	 * @param PermissionInterface[] $permissions
+	 * @return FormInterface
+	 */
+	public function setPermissions(array $permissions);
+
+	/**
+	 * @return PermissionInterface[]
+	 */
+	public function getPermissions();
+
+	/**
+	 * @param PermissionInterface $permission
+	 * @return FormInterface
+	 */
+	public function requirePermission(PermissionInterface $permission);
+
+	/**
+	 * @return boolean
+	 */
+	public function isPermitted();
 
 	/**
 	 * @param string $name

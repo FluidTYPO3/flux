@@ -32,12 +32,14 @@ use FluidTYPO3\Flux\Form\Container\Object;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Permission\PermissionInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -101,6 +103,11 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @var array
 	 */
 	protected $variables = array();
+
+	/**
+	 * @var PermissionInterface[]
+	 */
+	protected $permissions = array();
 
 	/**
 	 * @param ObjectManagerInterface $objectManager
@@ -395,6 +402,14 @@ abstract class AbstractFormComponent implements FormInterface {
 
 	/**
 	 * @param string $name
+	 * @return mixed
+	 */
+	public function getVariable($name) {
+		return TRUE === isset($this->variables[$name]) ? $this->variables[$name] : NULL;
+	}
+
+	/**
+	 * @param string $name
 	 * @param mixed $value
 	 * @return FormInterface
 	 */
@@ -404,11 +419,43 @@ abstract class AbstractFormComponent implements FormInterface {
 	}
 
 	/**
-	 * @param string $name
-	 * @return mixed
+	 * @param PermissionInterface[] $permissions
+	 * @return FormInterface
 	 */
-	public function getVariable($name) {
-		return TRUE === isset($this->variables[$name]) ? $this->variables[$name] : NULL;
+	public function setPermissions(array $permissions) {
+		$this->permissions = $permissions;
+		return $this;
+	}
+
+	/**
+	 * @return PermissionInterface[]
+	 */
+	public function getPermissions() {
+		return $this->permissions;
+	}
+
+	/**
+	 * @param PermissionInterface $permission
+	 * @return FormInterface
+	 */
+	public function requirePermission(PermissionInterface $permission) {
+		$hash = spl_object_hash($permission);
+		$this->permissions[$hash] = $permission;
+		return $this;
+	}
+
+	/**
+	 * Default Permission handling strategy: allow if any Permission is granted.
+	 *
+	 * @return boolean
+	 */
+	public function isPermitted() {
+		foreach ($this->permissions as $permission) {
+			if (TRUE === $permission->granted()) {
+				return TRUE;
+			}
+		}
+		return (boolean) (0 === count($this->permissions));
 	}
 
 	/**

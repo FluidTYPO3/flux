@@ -28,6 +28,7 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Form\WizardInterface;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * @package Flux
@@ -179,6 +180,9 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 		/** @var FormInterface[] $children */
 		$children = $this->children;
 		foreach ($children as $child) {
+			if (FALSE === $child->isPermitted()) {
+				continue;
+			}
 			$name = $child->getName();
 			$structure[$name] = $child->build();
 		}
