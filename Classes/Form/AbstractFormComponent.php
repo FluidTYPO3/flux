@@ -394,6 +394,24 @@ abstract class AbstractFormComponent implements FormInterface {
 	}
 
 	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @return FormInterface
+	 */
+	public function setVariable($name, $value) {
+		$this->variables[$name] = $value;
+		return $this;
+	}
+
+	/**
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function getVariable($name) {
+		return TRUE === isset($this->variables[$name]) ? $this->variables[$name] : NULL;
+	}
+
+	/**
 	 * @return ContainerInterface
 	 */
 	public function getRoot() {

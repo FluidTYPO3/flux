@@ -27,22 +27,20 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
- * Adds a content area to a source using Flux FlexForms
+ * Sets an option in the Form instance
  *
  * @package Flux
  * @subpackage ViewHelpers/Form
  */
-class ContentViewHelper extends AbstractFormViewHelper {
+class VariableViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * Initialize arguments
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Name of the content area, FlexForm XML-valid tag name string', TRUE);
-		$this->registerArgument('label', 'string', 'Label for content area, can be LLL: value. Optional - if not specified, ' .
-			'Flux tries to detect an LLL label named "flux.fluxFormId.areas.foobar" based on area name, in scope of ' .
-			'extension rendering the Flux form.', FALSE, NULL);
+		$this->registerArgument('name', 'string', 'Name of the option - valid values and their behaviours depend entirely on the consumer that will handle the Form instance', TRUE);
+		$this->registerArgument('value', 'mixed', 'Value of the option', TRUE);
 	}
 
 	/**
@@ -50,13 +48,7 @@ class ContentViewHelper extends AbstractFormViewHelper {
 	 * @return string
 	 */
 	public function render() {
-		/** @var FluidTYPO3\Flux\Form\Container\Content $content */
-		$content = $this->getForm()->createContainer('Content', $this->arguments['name'], $this->arguments['label']);
-		$container = $this->getContainer();
-		$container->add($content);
-		$this->setContainer($content);
-		$this->renderChildren();
-		$this->setContainer($container);
+		$this->getContainer()->setVariable($this->arguments['name'], $this->arguments['value']);
 	}
 
 }
