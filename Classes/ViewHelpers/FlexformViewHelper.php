@@ -44,6 +44,7 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 		$this->registerArgument('mergeValues', 'boolean', 'If TRUE, enables overriding of record values with corresponding values from this FlexForm', FALSE, FALSE);
 		$this->registerArgument('enabled', 'boolean', 'If FALSE, makes the FCE inactive', FALSE, TRUE);
 		$this->registerArgument('wizardTab', 'string', 'Optional tab name (usually extension key) in which to place the content element in the new content element wizard', FALSE, 'FCE');
+		$this->registerArgument('disableWizard', 'boolean', 'Disable autoregistering the wizardTab for this FCE completely', FALSE, FALSE);
 		$this->registerArgument('compact', 'boolean', 'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
 	}
 
@@ -77,6 +78,7 @@ class Tx_Flux_ViewHelpers_FlexformViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 			'compact' => $this->arguments['compact'],
 			'enabled' => $this->arguments['enabled'],
 			'wizardTab' => $this->arguments['wizardTab'],
+			'disableWizard' => $this->arguments['disableWizard'],
 			'mergeValues' => $this->arguments['mergeValues'],
 			'id' => $id,
 			'fields' => array(),
