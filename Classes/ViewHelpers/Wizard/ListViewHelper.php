@@ -51,7 +51,7 @@ class ListViewHelper extends AbstractWizardViewHelper {
 	 */
 	public function getComponent() {
 		/** @var ListWizard $component */
-		$component = $this->getPreparedComponent('List');
+		$component = $this->getPreparedComponent('ListWizard');
 		$component->setTable($this->arguments['table']);
 		$component->setStoragePageUid($this->arguments['pid']);
 		$component->setWidth($this->arguments['width']);
