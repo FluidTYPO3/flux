@@ -12,6 +12,12 @@
 			<trans-unit id="tt_content.tx_flux_column">
 				<source>Content area of parent</source>
 			</trans-unit>
+			<trans-unit id="tt_content.tx_flux_children">
+				<source>Child content</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tabs.relation">
+				<source>Relations</source>
+			</trans-unit>
 			<trans-unit id="tt_content.tx_flux_options">
 				<source>Options</source>
 			</trans-unit>
