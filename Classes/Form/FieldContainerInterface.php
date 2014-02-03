@@ -35,9 +35,4 @@ interface FieldContainerInterface extends ContainerInterface {
 	 */
 	public function getFields();
 
-	/**
-	 * @return string
-	 */
-	public function getTransform();
-
 }
