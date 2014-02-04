@@ -101,6 +101,19 @@ interface FormInterface {
 	public function getVariables();
 
 	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @return FormInterface
+	 */
+	public function setVariable($name, $value);
+
+	/**
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function getVariable($name);
+
+	/**
 	 * @return ContainerInterface
 	 */
 	public function getRoot();
