@@ -148,6 +148,7 @@ class FluxService implements SingletonInterface {
 	public function getPreparedExposedTemplateView($qualifiedExtensionName = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
 		$qualifiedExtensionName = GeneralUtility::camelCaseToLowerCaseUnderscored($qualifiedExtensionName);
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($qualifiedExtensionName);
+		$vendorName = ExtensionNamingUtility::getVendorName($qualifiedExtensionName);
 		if (NULL === $qualifiedExtensionName || FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
 			$qualifiedExtensionName = 'Flux';
@@ -163,6 +164,7 @@ class FluxService implements SingletonInterface {
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
 		$request->setControllerExtensionName($qualifiedExtensionName);
 		$request->setControllerName($controllerName);
+		$request->setControllerVendorName($vendorName);
 		$request->setDispatched(TRUE);
 		/** @var $uriBuilder UriBuilder */
 		$uriBuilder = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');
