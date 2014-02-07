@@ -147,7 +147,8 @@ class FluxService implements SingletonInterface {
 	 */
 	public function getPreparedExposedTemplateView($qualifiedExtensionName = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
 		$qualifiedExtensionName = GeneralUtility::camelCaseToLowerCaseUnderscored($qualifiedExtensionName);
-		if (NULL === $qualifiedExtensionName || FALSE === ExtensionManagementUtility::isLoaded($qualifiedExtensionName)) {
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($qualifiedExtensionName);
+		if (NULL === $qualifiedExtensionName || FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
 			$qualifiedExtensionName = 'Flux';
 		}
