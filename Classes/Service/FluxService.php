@@ -139,17 +139,17 @@ class FluxService implements SingletonInterface {
 	}
 
 	/**
-	 * @param string $extensionKey
+	 * @param string $qualifiedExtensionName
 	 * @param string $controllerName
 	 * @param array $paths
 	 * @param array $variables
 	 * @return ExposedTemplateView
 	 */
-	public function getPreparedExposedTemplateView($extensionKey = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
-		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
-		if (NULL === $extensionKey || FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
+	public function getPreparedExposedTemplateView($qualifiedExtensionName = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
+		$qualifiedExtensionName = GeneralUtility::camelCaseToLowerCaseUnderscored($qualifiedExtensionName);
+		if (NULL === $qualifiedExtensionName || FALSE === ExtensionManagementUtility::isLoaded($qualifiedExtensionName)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
-			$extensionKey = 'Flux';
+			$qualifiedExtensionName = 'Flux';
 		}
 		if (NULL === $controllerName) {
 			$controllerName = 'Flux';
@@ -160,7 +160,7 @@ class FluxService implements SingletonInterface {
 		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
 		/** @var $response Responsee */
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
-		$request->setControllerExtensionName($extensionKey);
+		$request->setControllerExtensionName($qualifiedExtensionName);
 		$request->setControllerName($controllerName);
 		$request->setDispatched(TRUE);
 		/** @var $uriBuilder UriBuilder */
