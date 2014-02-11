@@ -147,7 +147,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	protected function getPageIdFromTypoScriptRecordIfOnlyOneRecordExists() {
 		$time = time();
 		$condition = 'root = 1 AND hidden = 0 AND deleted = 0 AND (starttime = 0 OR starttime < ' . $time . ') AND (endtime = 0 OR endtime > ' . $time . ')';
-		$numberOfTemplates = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('sys_template', $condition);
+		$numberOfTemplates = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('uid', 'sys_template', $condition);
 		if (1 > $numberOfTemplates) {
 			return 0;
 		}
