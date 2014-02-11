@@ -107,6 +107,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 *   first one is then sufficient.
 	 *
 	 * @return integer
+	 * @throws \UnexpectedValueException
 	 */
 	protected function getPageIdFromRecordIdentifiedInEditUrlArgument() {
 		$editArgument = GeneralUtility::_GET('edit');
@@ -119,7 +120,10 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 		if ('pages' === $table || 'new' === reset($argumentPair)) {
 			return (integer) $id;
 		}
-		$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('pid', $table, "uid = '" . $id . "'");
+		if (FALSE === isset($GLOBALS['TCA'][$table])) {
+			throw new \UnexpectedValueException('Submitted table "' . $table . '" is not registered in TCA', 1392143931);
+		}
+		$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('pid', $table, "uid = '" . (integer) $id . "'");
 		return (FALSE !== $record ? $this->getPageIdFromRecord($record) : 0);
 	}
 
