@@ -20,7 +20,7 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 			'config' => array (
 				'type' => 'select',
 				'default' => '',
-				'itemsProcFunc' => '\FluidTYPO3\Flux\Backend\AreaListItemsProcessor->itemsProcFunc'
+				'itemsProcFunc' => 'FluidTYPO3\Flux\Backend\AreaListItemsProcessor->itemsProcFunc'
 			)
 		),
 		'tx_flux_parent' => array (
