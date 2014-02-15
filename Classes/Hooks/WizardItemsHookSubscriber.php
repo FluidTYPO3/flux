@@ -32,7 +32,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * WizardItems Hook Subscriber
- * @package Fluidcontent
+ * @package Flux
  */
 class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface {
 
