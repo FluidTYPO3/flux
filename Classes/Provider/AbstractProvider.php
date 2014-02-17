@@ -270,7 +270,15 @@ class AbstractProvider implements ProviderInterface {
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
-		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+
+		// Special case: when saving a new record variable $row[$fieldName] is already an array
+		// and must not be processed by the configuration service.
+		if (FALSE === is_array($row[$fieldName])) {
+			$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+		} else {
+			$variables = array();
+		}
+
 		$variables['record'] = $row;
 		$variables = GeneralUtility::array_merge_recursive_overrule($this->templateVariables, $variables);
 		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
