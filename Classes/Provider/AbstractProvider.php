@@ -280,7 +280,7 @@ class AbstractProvider implements ProviderInterface {
 
 	/**
 	 * @param array $row
-	 * @return FluidTYPO3\Flux\Form\Container\Grid
+	 * @return Grid
 	 */
 	public function getGrid(array $row) {
 		if (NULL !== $this->grid) {
