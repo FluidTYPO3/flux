@@ -25,6 +25,9 @@ namespace FluidTYPO3\Flux\Service;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Domain\Model\Attribute;
+use FluidTYPO3\Flux\Domain\Model\Value;
+use FluidTYPO3\Flux\Domain\Repository\AttributeRepository;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
@@ -92,7 +95,11 @@ class FluxService implements SingletonInterface {
 	protected $contentObjectData;
 
 	/**
-	 *
+	 * @var AttributeRepository
+	 */
+	protected $attributeRepository;
+
+	/**
 	 * @var ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
@@ -106,6 +113,14 @@ class FluxService implements SingletonInterface {
 	 * @var ReflectionService
 	 */
 	protected $reflectionService;
+
+	/**
+	 * @param AttributeRepository $attributeRepository
+	 * @return void
+	 */
+	public function injectAttributeRepository(AttributeRepository $attributeRepository) {
+		$this->attributeRepository = $attributeRepository;
+	}
 
 	/**
 	 * @param ConfigurationManagerInterface $configurationManager
@@ -356,6 +371,7 @@ class FluxService implements SingletonInterface {
 	 * @param string $fieldName
 	 * @param array $row
 	 * @param string $extensionKey
+	 * @throws \RuntimeException
 	 * @return ProviderInterface[]
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
@@ -426,6 +442,128 @@ class FluxService implements SingletonInterface {
 			self::$cache[$cacheKey][$name] = $provider;
 		}
 		return self::$cache[$cacheKey];
+	}
+
+	/**
+	 * @param array $array
+	 * @param string $name
+	 * @param mixed $value
+	 * @return void
+	 */
+	protected function appendDottedPathValueToArray(&$array, $name, $value) {
+		if (FALSE === strpos($name, '.')) {
+			$array[$name] = $value;
+		} else {
+			$segments = explode('.', $name);
+			do {
+				$segment = array_shift($segments);
+				if (FALSE === isset($array[$segment])) {
+					$array[$segment] = array();
+				}
+				$array = &$array[$segment];
+			} while (1 < count($segments));
+			$array[array_shift($segments)] = $value;
+		}
+	}
+
+	/**
+	 * Gets all Attributes for:
+	 *
+	 * - a table + uid + (field)
+	 * - a table + record + (field)
+	 *
+	 * ...extracted into a deep array according to
+	 * the dotted names of attributes.
+	 *
+	 * @param string $table
+	 * @param integer $uid
+	 * @param string $field
+	 * @param array $record
+	 * @return Attribute[]
+	 */
+	public function getExtractedAttributesForRecord($table, $uid = NULL, $field = NULL, $record = NULL) {
+		$attributes = $this->getAttributesForRecord($table, $uid, $field, $record);
+		$extracted = array();
+		foreach ($attributes as $attribute) {
+			$this->appendDottedPathValueToArray($extracted, $attribute->getName(), $attribute->getValue());
+		}
+		return $extracted;
+	}
+
+	/**
+	 * Gets all Attributes for:
+	 *
+	 * - a table + uid + (field)
+	 * - a table + record + (field)
+	 *
+	 * ...as Attribute domain model records.
+	 *
+	 * @param string $table
+	 * @param integer $uid
+	 * @param string $field
+	 * @param array $record
+	 * @return Attribute[]
+	 * @throws \RuntimeException
+	 */
+	public function getAttributesForRecord($table, $uid = NULL, $field = NULL, $record = NULL) {
+		if (NULL === $uid && NULL === $record) {
+			throw new \RuntimeException('You must specify either a UID or the record itself', 1392570164);
+		}
+		if (NULL === $record) {
+			$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $table, "uid = '" . (integer) $uid . "'");
+		}
+		$attributes = $this->attributeRepository->findAllForRecordFromTableWithOptionalField($record, $table, $field);
+		return $attributes;
+	}
+
+	/**
+	 * Saves an attribute with value
+	 *
+	 * - a table + uid + (field)
+	 * - a table + record + (field)
+	 *
+	 * ...as Attribute domain model records.
+	 *
+	 * @param string $table
+	 * @param integer $uid
+	 * @param string $field
+	 * @param array $record
+	 * @param string $name
+	 * @param mixed $value
+	 * @return Attribute[]
+	 * @throws \RuntimeException
+	 */
+	public function saveOrUpdateAttributeForRecord($table, $uid = NULL, $field = NULL, $record = NULL, $name, $value) {
+		if (NULL === $uid && NULL === $record) {
+			throw new \RuntimeException('You must specify either a UID or the record itself', 1392570164);
+		}
+		if (NULL === $record) {
+			$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $table, "uid = '" . (integer) $uid . "'");
+			$uid = $record['uid'];
+		}
+		$attribute = $this->attributeRepository->findByNameForRecordFromTableWithOptionalField($name, $record, $table, $field);
+		if (FALSE === $attribute instanceof Attribute) {
+			$attribute = new Attribute();
+		}
+		$attribute->setForTable($table);
+		$attribute->setForField($field);
+		$attribute->setForIdentity($uid);
+		if (TRUE === $value instanceof \Traversable || TRUE === is_array($value)) {
+			foreach ($value as $index => $subValue) {
+				$value[$index] = new Value();
+				$value[$index]->setValue($subValue);
+			}
+			$attribute->setAttributeValues($value);
+		} else {
+			$valueObject = new Value();
+			$valueObject->setValue($value);
+			$attribute->setValue($valueObject);
+		}
+		if (0 < $attribute->getUid()) {
+			$this->attributeRepository->update($attribute);
+		} else {
+			$this->attributeRepository->add($attribute);
+		}
 	}
 
 	/**

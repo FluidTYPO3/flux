@@ -3,6 +3,9 @@
 	<file source-language="en" datatype="plaintext" original="messages" product-name="flux" date="2014-01-05T14:38:32+01:00">
 		<header/>
 		<body>
+			<trans-unit id="tt_content.attributes">
+				<source>Flux Attributes</source>
+			</trans-unit>
 			<trans-unit id="tt_content.tx_flux_container">
 				<source>Content Container</source>
 			</trans-unit>
@@ -59,6 +62,21 @@
 			</trans-unit>
 			<trans-unit id="flux.this_table_does_not_exist" xml:space="preserve">
 				<source>flux.this_table_does_not_exist</source>
+			</trans-unit>
+			<trans-unit id="tx_flux_domain_model_attribute.title" xml:space="preserve">
+				<source>Flux Attribute</source>
+			</trans-unit>
+			<trans-unit id="tx_flux_domain_model_attribute.name" xml:space="preserve">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_flux_domain_model_attribute.attribute_values" xml:space="preserve">
+				<source>Values</source>
+			</trans-unit>
+			<trans-unit id="tx_flux_domain_model_value.title" xml:space="preserve">
+				<source>Flux Value</source>
+			</trans-unit>
+			<trans-unit id="tx_flux_domain_model_value.value" xml:space="preserve">
+				<source>Value</source>
 			</trans-unit>
 		</body>
 	</file>

@@ -325,7 +325,7 @@ abstract class AbstractFormComponent implements FormInterface {
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
 		$labelIdentifier = $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
 		$translated = LocalizationUtility::translate($labelIdentifier, $extensionKey);
-		return (NULL !== $translated ? $translated : $labelIdentifier);
+		return (NULL !== $translated ? $translated : substr($labelIdentifier, 4));
 	}
 
 	/**

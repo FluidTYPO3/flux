@@ -140,12 +140,12 @@ class TceMain {
 			$clause = "uid = '" . $id . "'";
 			if (0 === count($record)) {
 				// patch: when a record is completely empty but a UID exists
-				$loadedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $table, $clause);
-				if (TRUE === is_array($loadedRecord)) {
-					$record = array_pop($loadedRecord);
-					$arguments['row'] = &$record;
+				$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $table, $clause);
+				if (FALSE === is_array($record)) {
+					return;
 				}
 			}
+			$arguments['row'] = &$record;
 			$arguments[] = &$reference;
 			// check for a registered generic ConfigurationProvider for $table
 			$detectedProviders = array();

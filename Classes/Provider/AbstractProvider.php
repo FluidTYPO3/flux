@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Provider;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Domain\Repository\AttributeRepository;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FieldInterface;
@@ -38,6 +39,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
@@ -387,8 +389,11 @@ class AbstractProvider implements ProviderInterface {
 			return self::$cache[$cacheKey];
 		}
 		$fieldName = $this->getFieldName($row);
+		//$tableName = $this->getTableName($row);
 		$form = $this->getForm($row);
 		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, NULL, NULL);
+		//$immediateConfiguration = $this->configurationService->getExtractedAttributesForRecord($tableName, NULL, $fieldName, $row);
+		//$immediateConfiguration = $this->configurationService->transformAccordingToConfiguration($immediateConfiguration, $form);
 		$tree = $this->getInheritanceTree($row);
 		if (0 === count($tree)) {
 			self::$cache[$cacheKey] = $immediateConfiguration;
@@ -560,8 +565,13 @@ class AbstractProvider implements ProviderInterface {
 			$dom->preserveWhiteSpace = FALSE;
 			$dom->formatOutput = TRUE;
 			foreach ($dom->getElementsByTagName('field') as $fieldNode) {
-				if (TRUE === in_array($fieldNode->getAttribute('index'), $removals)) {
+				$name = $fieldNode->getAttribute('index');
+				if (TRUE === in_array($name, $removals)) {
 					$fieldNode->parentNode->removeChild($fieldNode);
+				} else {
+					//var_dump($fieldNode->tagName);
+					//exit();
+					$this->configurationService->saveOrUpdateAttributeForRecord($this->getTableName($row), NULL, $fieldName, $row, $name, $value);
 				}
 			}
 			// Assign a hidden ID to all container-type nodes, making the value available in templates etc.
