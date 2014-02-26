@@ -152,17 +152,6 @@ interface RelationFieldInterface extends MultiValueFieldInterface {
 	public function getForeignUnique();
 
 	/**
-	 * @param string $itemListStyle
-	 * @return RelationFieldInterface
-	 */
-	public function setItemListStyle($itemListStyle);
-
-	/**
-	 * @return string
-	 */
-	public function getItemListStyle();
-
-	/**
 	 * @param string $localizationMode
 	 * @return RelationFieldInterface
 	 */
@@ -183,17 +172,6 @@ interface RelationFieldInterface extends MultiValueFieldInterface {
 	 * @return boolean
 	 */
 	public function getLocalizeChildrenAtParentLocalization();
-
-	/**
-	 * @param string $selectedListStyle
-	 * @return RelationFieldInterface
-	 */
-	public function setSelectedListStyle($selectedListStyle);
-
-	/**
-	 * @return string
-	 */
-	public function getSelectedListStyle();
 
 	/**
 	 * @param string $symmetricField
