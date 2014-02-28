@@ -84,7 +84,8 @@ class Tx_Flux_ViewHelpers_Flexform_ContainerViewHelper extends Tx_Flux_ViewHelpe
 		}
 		$structure = array(
 			'type' => 'array',
-			'el' => $elements
+			'el' => $elements,
+			'title' => $this->getLabel(),
 		);
 		return $structure;
 	}
