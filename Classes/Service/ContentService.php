@@ -38,7 +38,7 @@ use TYPO3\CMS\Core\SingletonInterface;
  */
 class ContentService implements SingletonInterface {
 
-	const COLPOS_FLUXCONTENT = -42;
+	const COLPOS_FLUXCONTENT = 18181;
 
 	/**
 	 * @param array $row
