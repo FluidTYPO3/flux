@@ -44,11 +44,10 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelp
 	}
 
 	/**
-	 * Render method
-	 * @return void
+	 * @return array
 	 */
-	public function render() {
-		$config = $this->getFieldConfig();
+	public function getFieldConfig() {
+		$config = parent::getFieldConfig();
 		$config['type'] = 'Select';
 		$config['renderMode'] = 'tree';
 		$config['treeConfig'] = array(
@@ -57,7 +56,7 @@ class Tx_Flux_ViewHelpers_Flexform_Field_TreeViewHelper extends Tx_Flux_ViewHelp
 			'showHeader' => $this->arguments['showHeader'],
 			'width' => $this->arguments['width']
 		);
-		$this->addField($config);
+		return $config;
 	}
 
 }

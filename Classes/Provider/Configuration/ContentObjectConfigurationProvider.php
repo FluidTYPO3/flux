@@ -94,7 +94,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 						if ($slice[0] === 'top') {
 							$row['tx_flux_parent'] = $slice[1];
 							$row['tx_flux_column'] = $slice[2];
-							$row['colPos'] = -42;
+							$row['colPos'] = 18181;
 						} elseif ($slice[0] === 'after') {
 							$row['pid'] = 0 - $slice[1];
 							$row['tx_flux_column'] = $slice[2];
@@ -145,7 +145,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			list ($row['tx_flux_column'], $row['tx_flux_parent']) = explode(':', $row['tx_flux_column']);
 		}
 		if ($row['tx_flux_parent'] > 0) {
-			$row['colPos'] = -42;
+			$row['colPos'] = 18181;
 			if (0 > $afterElementUid) {
 				$row['sorting'] = $reference->resorting($this->tableName, $row['pid'], 'sorting', abs($afterElementUid));
 			}
@@ -253,7 +253,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 				list ($row['tx_flux_column'], $row['tx_flux_parent']) = explode(':', $row['tx_flux_column']);
 			}
 			if ($row['tx_flux_parent'] > 0) {
-				$row['colPos'] = -42;
+				$row['colPos'] = 18181;
 			}
 		}
 		unset($id, $reference);
@@ -309,7 +309,7 @@ class Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider extends 
 			if (FALSE === empty($possibleArea)) {
 				$record['tx_flux_parent'] = $parentUid;
 				$record['tx_flux_column'] = $possibleArea;
-				$record['colPos'] = -42;
+				$record['colPos'] = 18181;
 			}
 			if (FALSE === empty($possibleColPos) || $possibleColPos === 0 || $possibleColPos === '0') {
 				$record['colPos'] = $possibleColPos;
