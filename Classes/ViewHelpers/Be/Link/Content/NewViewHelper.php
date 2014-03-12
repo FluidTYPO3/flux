@@ -52,7 +52,7 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_Vie
 		$icon = $this->getIcon('actions-document-new', 'Insert new content element in this position');
 		$uri = 'db_new_content_el.php?id=' . $pid .
 			'&uid_pid=' . $pid .
-			'&colPos=-42' .
+			'&colPos=18181' .
 			'&sys_language_uid=' . $sysLang .
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
 			'&defVals[tt_content][tx_flux_column]=' . $area .
