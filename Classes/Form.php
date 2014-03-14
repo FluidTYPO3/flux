@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux;
  *****************************************************************/
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
 
@@ -157,6 +158,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 * @return array
 	 */
 	public function build() {
+		if (FALSE === $this->isPermitted()) {
+			return array();
+		}
 		$dataStructArray = array(
 			'meta' => array(
 				'langDisable' => 1
@@ -171,7 +175,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$sheets = $copy->getSheets();
 		$compactExtensionToggleOn = 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'];
 		$compactConfigurationToggleOn = 0 < $copy->getCompact();
-		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets)) {
+		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets) && TRUE === $copy->last()->isPermitted()) {
 			$dataStructArray['ROOT'] = array(
 				'type' => 'array',
 				'el' => $copy->last()->build(),
