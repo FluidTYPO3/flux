@@ -87,7 +87,7 @@ class ContentService implements SingletonInterface {
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
 			$relativeUid = 0 - $relativeUid;
 		} else {
-			list ($pid, $relativeUid) = $parameters;
+			list ($tablename, $pid, $relativeUid) = $parameters;
 		}
 		if ($command !== 'copy') {
 			$record = $row;
@@ -120,7 +120,7 @@ class ContentService implements SingletonInterface {
 		if (FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos) {
 			$record['colPos'] = $possibleColPos;
 		}
-		if (TRUE === isset($pid)) {
+		if (TRUE === isset($pid) && isset($relativeRecord['pid']) === FALSE) {
 			$record['pid'] = $pid;
 		}
 		$this->updateRecordInDatabase($record, $id);
