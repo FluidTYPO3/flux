@@ -120,7 +120,7 @@ class ContentService implements SingletonInterface {
 		if (FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos) {
 			$record['colPos'] = $possibleColPos;
 		}
-		if (TRUE === isset($pid) && isset($relativeRecord['pid']) === FALSE) {
+		if (TRUE === isset($pid) && FALSE === isset($relativeRecord['pid'])) {
 			$record['pid'] = $pid;
 		}
 		$this->updateRecordInDatabase($record, $id);
