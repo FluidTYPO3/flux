@@ -153,6 +153,7 @@ class FluxService implements SingletonInterface {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
 			$qualifiedExtensionName = 'Flux';
 		}
+		$extensionName = ExtensionNamingUtility::getExtensionName($qualifiedExtensionName);
 		if (NULL === $controllerName) {
 			$controllerName = 'Flux';
 		}
@@ -162,7 +163,7 @@ class FluxService implements SingletonInterface {
 		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
 		/** @var $response Responsee */
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
-		$request->setControllerExtensionName($qualifiedExtensionName);
+		$request->setControllerExtensionName($extensionName);
 		$request->setControllerName($controllerName);
 		$request->setControllerVendorName($vendorName);
 		$request->setDispatched(TRUE);
