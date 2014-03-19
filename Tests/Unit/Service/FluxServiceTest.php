@@ -392,15 +392,4 @@ class FluxServiceTest extends AbstractTestCase {
 		$this->assertEquals('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField', reset($form->getFields())->getFunction());
 	}
 
-	/**
-	 * @test
-	 */
-	public function loadObjectsFromRepositorySupportsFindByIdentifiersMethod() {
-		$class = substr(get_class($this), 0, -4);
-		$instance = $this->getMock($class);
-		ObjectAccess::setProperty($instance, 'objectManager', $this->objectManager, TRUE);
-		$result = $this->callInaccessibleMethod($instance, 'transformValueToType', '1', 'TYPO3\CMS\Extbase\Persistence\ObjectStorage<FluidTYPO3\Flux\Domain\Model\Dummy>');
-		$this->assertEquals($result, array(1));
-	}
-
 }
