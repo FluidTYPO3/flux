@@ -382,11 +382,11 @@ class AbstractProvider implements ProviderInterface {
 	 * @return array
 	 */
 	public function getFlexFormValues(array $row) {
-		$cacheKey = 'values_' . md5(json_encode($row));
+		$fieldName = $this->getFieldName($row);
+		$cacheKey = 'values_' . md5(json_encode($row) . $fieldName);
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$fieldName = $this->getFieldName($row);
 		$form = $this->getForm($row);
 		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, NULL, NULL);
 		$tree = $this->getInheritanceTree($row);
