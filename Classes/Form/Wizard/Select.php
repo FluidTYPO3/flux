@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -99,7 +99,6 @@ class Select extends AbstractWizard {
 		} else {
 			return array($itemsString => $itemsString);
 		}
-		return array();
 	}
 
 	/**
@@ -113,7 +112,7 @@ class Select extends AbstractWizard {
 	}
 
 	/**
-	 * @returm string
+	 * @return string
 	 */
 	public function getFormattedItems() {
 		$items = $this->getItems();

@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -35,6 +36,29 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  * @package Flux
  */
 class FluxServiceTest extends AbstractTestCase {
+
+	/**
+	 * Teardown
+	 */
+	public function setup() {
+		$providers = Core::getRegisteredFlexFormProviders();
+		if (TRUE === in_array('FluidTYPO3\Flux\Service\FluxService', $providers)) {
+			Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
+		}
+	}
+
+	/**
+	 * @test
+	 */
+	public function throwsExceptionWhenResolvingInvalidConfigurationProviderInstances() {
+		$instance = $this->createInstance();
+		$record = array('test' => 'test');
+		Core::registerConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
+		$this->setExpectedException('RuntimeException', NULL, 1327173536);
+		$instance->flushCache();
+		$instance->resolveConfigurationProviders('tt_content', 'pi_flexform', $record);
+		Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
+	}
 
 	/**
 	 * @test
@@ -366,17 +390,6 @@ class FluxServiceTest extends AbstractTestCase {
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Field\UserFunction', reset($form->getFields()));
 		$this->assertEquals('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField', reset($form->getFields())->getFunction());
-	}
-
-	/**
-	 * @test
-	 */
-	public function loadObjectsFromRepositorySupportsFindByIdentifiersMethod() {
-		$class = substr(get_class($this), 0, -4);
-		$instance = $this->getMock($class);
-		ObjectAccess::setProperty($instance, 'objectManager', $this->objectManager, TRUE);
-		$result = $this->callInaccessibleMethod($instance, 'transformValueToType', '1', 'TYPO3\CMS\Extbase\Persistence\ObjectStorage<FluidTYPO3\Flux\Domain\Model\Dummy>');
-		$this->assertEquals($result, array(1));
 	}
 
 }

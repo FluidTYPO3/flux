@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -71,11 +71,10 @@ class DynamicFlexForm {
 			// respect to which ConfigurationProvider(s) are returned.
 			$fieldName = NULL;
 		}
-		$provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $fieldName, $row);
-		if (NULL === $provider) {
-			return;
+		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
+		foreach ($providers as $provider) {
+			$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 		}
-		$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 	}
 
 }

@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -31,6 +31,11 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  * @package Flux
  */
 class EmailPipeTest extends AbstractPipeTestCase {
+
+	/**
+	 * @var array
+	 */
+	protected $defaultData = array('subject' => 'Test subject');
 
 	/**
 	 * @return EmailPipe

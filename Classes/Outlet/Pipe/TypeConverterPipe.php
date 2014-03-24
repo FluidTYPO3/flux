@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -24,6 +24,9 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Form\Field\Select;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
 use TYPO3\CMS\Extbase\Error\Error;
 
@@ -39,6 +42,11 @@ use TYPO3\CMS\Extbase\Error\Error;
 class TypeConverterPipe extends AbstractPipe implements PipeInterface {
 
 	/**
+	 * @var ObjectManagerInterface
+	 */
+	protected $objectManager;
+
+	/**
 	 * @var TypeConverterInterface
 	 */
 	protected $typeConverter;
@@ -49,10 +57,37 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface {
 	protected $targetType;
 
 	/**
-	 * @param TypeConverterInterface $typeConverter
+	 * @param ObjectManagerInterface $objectManager
+	 * @return void
+	 */
+	public function injectObjectManager(ObjectManagerInterface $objectManager) {
+		$this->objectManager = $objectManager;
+	}
+
+	/**
+	 * @return FieldInterface[]
+	 */
+	public function getFormFields() {
+		$fields = parent::getFormFields();
+		$converters = array_values((array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['typeConverters']);
+		$converters = array_combine($converters, $converters);
+		$fields['typeConverter'] = Select::create(array('type' => 'Select'))
+			->setName('typeConverter')
+			->setItems($converters);
+		$fields['targetType'] = Input::create(array('type' => 'Input'))
+			->setName('targetType');
+		return $fields;
+	}
+
+
+	/**
+	 * @param TypeConverterInterface|string $typeConverter
 	 * @return TypeConverterPipe
 	 */
-	public function setTypeConverter(TypeConverterInterface $typeConverter) {
+	public function setTypeConverter($typeConverter) {
+		if (TRUE === is_string($typeConverter)) {
+			$typeConverter = $this->objectManager->get($typeConverter);
+		}
 		$this->typeConverter = $typeConverter;
 		return $this;
 	}

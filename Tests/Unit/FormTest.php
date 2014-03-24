@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * @package Flux
@@ -133,9 +134,8 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function canUseDescriptionPropertyAndReturnLanguageLabelWhenDescriptionEmpty() {
 		$form = $this->getDummyFormFromTemplate();
-		$description = NULL;
-		$form->setDescription($description);
-		$this->assertNotSame($description, $form->getDescription());
+		$form->setDescription(NULL);
+		$this->assertNotNull($form->getDescription());
 	}
 
 	/**

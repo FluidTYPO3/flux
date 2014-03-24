@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form\Container;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -71,9 +71,11 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 	public function getFields() {
 		$fields = array();
 		foreach ($this->children as $child) {
-			$isContainerWithChildren = (TRUE === $child instanceof ContainerInterface && TRUE === $child->hasChildren());
-			$isFieldNotInsideObject = (TRUE === $child instanceof FieldInterface && FALSE === $child->getParent() instanceof Object);
-			if (TRUE === $isContainerWithChildren || TRUE === $isFieldNotInsideObject) {
+			$isSectionOrContainer = (TRUE === $child instanceof Section || TRUE === $child instanceof Container);
+			$isFieldEmulatorAndHasChildren = ($isSectionOrContainer && TRUE === $child->hasChildren());
+			$isActualField = (TRUE === $child instanceof FieldInterface);
+			$isNotInsideObject = (FALSE === $child->isChildOfType('Object'));
+			if (TRUE === $isFieldEmulatorAndHasChildren || (TRUE === $isActualField && TRUE === $isNotInsideObject)) {
 				$name = $child->getName();
 				$fields[$name] = $child;
 			}

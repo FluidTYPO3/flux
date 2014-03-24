@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Provider;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -328,5 +328,10 @@ interface ProviderInterface {
 	 * @param Grid $grid
 	 */
 	public function setGrid(Grid $grid);
+
+	/**
+	 * @return void
+	 */
+	public function reset();
 
 }

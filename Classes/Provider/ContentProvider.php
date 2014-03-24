@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Provider;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -71,10 +71,6 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 		parent::postProcessRecord($operation, $id, $row, $reference);
 		$parameters = GeneralUtility::_GET();
 		$this->contentService->affectRecordByRequestParameters($row, $parameters, $reference);
-		// note; hack-like pruning of an empty node that is inserted. Language handling in FlexForms combined with section usage suspected as cause
-		if (empty($row['pi_flexform']) === FALSE && is_string($row['pi_flexform']) === TRUE) {
-			$row['pi_flexform'] = str_replace('<field index=""></field>', '', $row['pi_flexform']);
-		}
 	}
 
 	/**
@@ -106,7 +102,7 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 		parent::postProcessCommand($command, $id, $row, $relativeTo, $reference);
 		$pasteCommands = array('copy', 'move');
 		if (TRUE === in_array($command, $pasteCommands)) {
-			$callback = GeneralUtility::_GET('CB');
+			$callback = $this->getCallbackCommand();
 			if (TRUE === isset($callback['paste'])) {
 				$pasteCommand = $callback['paste'];
 				$parameters = explode('|', $pasteCommand);
@@ -115,9 +111,26 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 				$this->contentService->moveRecord($row, $relativeTo, $reference);
 			}
 			if (0 < count($row)) {
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $id . "'", $row);
+				$this->updateRecord($row, $id);
 			}
 		}
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getCallbackCommand() {
+		$command = GeneralUtility::_GET('CB');
+		return (array) $command;
+	}
+
+	/**
+	 * @param array $record
+	 * @param integer $uid
+	 * @return array
+	 */
+	protected function updateRecord($record, $uid) {
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $uid . "'", $record);
 	}
 
 }

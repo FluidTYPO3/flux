@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -32,7 +32,6 @@ use FluidTYPO3\Flux\Form\Container\Object;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -94,9 +93,14 @@ abstract class AbstractFormComponent implements FormInterface {
 	protected $extensionName = 'FluidTYPO3.Flux';
 
 	/**
-	 * @var FormContainerInterface
+	 * @var ContainerInterface
 	 */
 	protected $parent;
+
+	/**
+	 * @var array
+	 */
+	protected $variables = array();
 
 	/**
 	 * @param ObjectManagerInterface $objectManager
@@ -256,6 +260,35 @@ abstract class AbstractFormComponent implements FormInterface {
 	/**
 	 * @return string
 	 */
+	public function getPath() {
+		$prefix = '';
+		if (TRUE === $this instanceof Sheet) {
+			$prefix = 'sheets';
+		} elseif (TRUE === $this instanceof Section) {
+			$prefix = 'sections';
+		} elseif (TRUE === $this instanceof Grid) {
+			$prefix = 'grids';
+		} elseif (TRUE === $this instanceof Column) {
+			$prefix = 'columns';
+		} elseif (TRUE === $this instanceof Object) {
+			$prefix = 'objects';
+		} elseif (TRUE === $this instanceof Content) {
+			$prefix = 'areas';
+		} elseif (TRUE === $this instanceof Container) {
+			$prefix = 'containers';
+		} elseif (TRUE === $this instanceof FieldInterface) {
+			if (TRUE === $this->isChildOfType('Object')) {
+				$prefix = 'objects.' . $this->getParent()->getName();
+			} else {
+				$prefix = 'fields';
+			}
+		}
+		return trim($prefix . '.' . $this->getName(), '.');
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getLabel() {
 		$label = $this->label;
 		if (TRUE === $this->getDisableLocalLanguageLabels()) {
@@ -282,46 +315,17 @@ abstract class AbstractFormComponent implements FormInterface {
 		if ((TRUE === empty($extensionKey) || FALSE === ExtensionManagementUtility::isLoaded($extensionKey))) {
 			return $name;
 		}
-		$prefix = '';
-		if (TRUE === $this instanceof Sheet) {
-			$prefix = 'sheets';
-		} elseif (TRUE === $this instanceof Section) {
-			$prefix = 'sections';
-		} elseif (TRUE === $this instanceof Grid) {
-			$prefix = 'grids';
-		} elseif (TRUE === $this instanceof Column) {
-			$prefix = 'columns';
-		} elseif (TRUE === $this instanceof Object) {
-			$prefix = 'objects';
-		} elseif (TRUE === $this instanceof Content) {
-			$prefix = 'areas';
-		} elseif (TRUE === $this instanceof Container) {
-			$prefix = 'containers';
-		} elseif (TRUE === $this instanceof FieldInterface) {
-			if (TRUE === $this->isChildOfType('Object')) {
-				$prefix = 'objects.' . $this->getParent()->getName();
-			} else {
-				$prefix = 'fields';
-			}
+		if (FALSE === $this instanceof Form) {
+			$path = $this->getPath();
+		} else {
+			$path = '';
 		}
 		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 		$relativeFilePath = ltrim($relativeFilePath, '/');
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-		$labelIdentifier = 'flux.' . $id . (TRUE === empty($prefix) ? '' : '.' . $prefix . '.' . $name);
-		$this->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
-		return $filePrefix . ':' . $labelIdentifier;
-	}
-
-	/**
-	 * @param string $filePrefix
-	 * @param string $labelIdentifier
-	 * @param string $id
-	 * @return void
-	 */
-	protected function writeLanguageLabel($filePrefix, $labelIdentifier, $id) {
-		if (TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['rewriteLanguageFiles']) {
-			$this->objectManager->get('FluidTYPO3\Flux\Service\LanguageFileService')->writeLanguageLabel($filePrefix, $labelIdentifier, $id);
-		}
+		$labelIdentifier = $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
+		$translated = LocalizationUtility::translate($labelIdentifier, $extensionKey);
+		return (NULL !== $translated ? $translated : $labelIdentifier);
 	}
 
 	/**
@@ -367,14 +371,48 @@ abstract class AbstractFormComponent implements FormInterface {
 	}
 
 	/**
-	 * @return FormContainerInterface
+	 * @return ContainerInterface
 	 */
 	public function getParent() {
 		return $this->parent;
 	}
 
 	/**
-	 * @return FormContainerInterface
+	 * @param array $variables
+	 * @return FormInterface
+	 */
+	public function setVariables($variables) {
+		$this->variables = (array) $variables;
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getVariables() {
+		return $this->variables;
+	}
+
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @return FormInterface
+	 */
+	public function setVariable($name, $value) {
+		$this->variables[$name] = $value;
+		return $this;
+	}
+
+	/**
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function getVariable($name) {
+		return TRUE === isset($this->variables[$name]) ? $this->variables[$name] : NULL;
+	}
+
+	/**
+	 * @return ContainerInterface
 	 */
 	public function getRoot() {
 		if (NULL === $this->getParent()) {
@@ -388,7 +426,11 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return boolean
 	 */
 	public function isChildOfType($type) {
-		return ('FluidTYPO3\Flux\Form\Container' . $type === get_class($this->getParent()));
+		$parent = $this->getParent();
+		if ($parent === NULL) {
+			return FALSE;
+		}
+		return ('FluidTYPO3\Flux\Form\Container\\' . $type === get_class($parent) || TRUE === is_a($parent, $type));
 	}
 
 }

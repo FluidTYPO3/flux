@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form\Container;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
  * @package Flux

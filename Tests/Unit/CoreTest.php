@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -249,6 +249,16 @@ class CoreTest extends AbstractTestCase {
 		$this->assertContains($fakeClass, Core::getPipes());
 		Core::unregisterPipe($fakeClass);
 		$this->assertNotContains($fakeClass, Core::getPipes());
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUnregisterNotCurrentlyRegisteredProviders() {
+		$fakeClass = 'MyFakeClass';
+		Core::unregisterConfigurationProvider($fakeClass);
+		core::registerConfigurationProvider($fakeClass);
+		$this->assertNotContains($fakeClass, Core::getRegisteredFlexFormProviders());
 	}
 
 }

@@ -4,7 +4,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -315,9 +315,9 @@ class ControllerActions extends Select {
 	 */
 	protected function getActionsForExtensionNameAndPluginName() {
 		$extensionName = $this->getExtensionName();
-		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+		$extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
 		$pluginName = $this->getPluginName();
-		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionKey]['plugins'][$pluginName]['controllers'];
+		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers'];
 		foreach ($actions as $controllerName => $definitions) {
 			$actions[$controllerName] = $definitions['actions'];
 		}

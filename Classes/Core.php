@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -296,8 +296,7 @@ class Core {
 		if (TRUE === in_array($providerClassName, self::$providers)) {
 			$index = array_search($providerClassName, self::$providers);
 			unset(self::$providers[$index]);
-		}
-		if (FALSE === in_array($providerClassName, self::$unregisteredProviders)) {
+		} elseif (FALSE === in_array($providerClassName, self::$unregisteredProviders)) {
 			array_push(self::$unregisteredProviders, $providerClassName);
 		}
 	}

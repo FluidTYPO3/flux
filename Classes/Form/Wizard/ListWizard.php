@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form\Wizard;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -88,7 +88,7 @@ class ListWizard extends AbstractWizard {
 
 	/**
 	 * @param integer $height
-	 * @return List
+	 * @return ListWizard
 	 */
 	public function setHeight($height) {
 		$this->height = $height;
@@ -104,7 +104,7 @@ class ListWizard extends AbstractWizard {
 
 	/**
 	 * @param integer $width
-	 * @return List
+	 * @return ListWizard
 	 */
 	public function setWidth($width) {
 		$this->width = $width;
@@ -120,7 +120,7 @@ class ListWizard extends AbstractWizard {
 
 	/**
 	 * @param integer $storagePageUid
-	 * @return List
+	 * @return ListWizard
 	 */
 	public function setStoragePageUid($storagePageUid) {
 		$this->storagePageUid = $storagePageUid;
@@ -136,7 +136,7 @@ class ListWizard extends AbstractWizard {
 
 	/**
 	 * @param string $table
-	 * @return List
+	 * @return ListWizard
 	 */
 	public function setTable($table) {
 		$this->table = $table;

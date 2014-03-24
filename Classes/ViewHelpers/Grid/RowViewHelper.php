@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -41,6 +41,8 @@ class RowViewHelper extends AbstractFormViewHelper {
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Optional name of this row - defaults to "row"', FALSE, 'row');
 		$this->registerArgument('label', 'string', 'Optional label for this row - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 	}
 
 	/**
@@ -50,6 +52,7 @@ class RowViewHelper extends AbstractFormViewHelper {
 	public function render() {
 		$name = ('row' === $this->arguments['name'] ? uniqid('row') : $this->arguments['name']);
 		$row = $this->getForm()->createContainer('Row', $name, $this->arguments['label']);
+		$row->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();
 		$container->add($row);
 		$this->setContainer($row);

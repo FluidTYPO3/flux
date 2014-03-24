@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -28,12 +28,23 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
  */
 class PreviewTest extends AbstractTestCase {
+
+	/**
+	 * Setup
+	 */
+	public function setup() {
+		$tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
+		foreach ($tempFiles as $tempFile) {
+			unlink($tempFile);
+		}
+	}
 
 	/**
 	 * @test
@@ -54,6 +65,7 @@ class PreviewTest extends AbstractTestCase {
 		$headerContent = $itemContent = '';
 		$drawItem = TRUE;
 		$row = array('uid' => 1, 'CType' => 'shortcut', 'records' => 1);
+		$this->setup();
 		$instance->renderPreview($headerContent, $itemContent, $row, $drawItem);
 		$this->assertContains('href="?id=1#c1"', $itemContent);
 		$this->assertContains('<span class="t3-icon t3-icon-actions-insert t3-icon-insert-reference t3-icon-actions t3-icon-actions-insert-reference"></span>', $itemContent);
@@ -85,6 +97,7 @@ class PreviewTest extends AbstractTestCase {
 		$item = 'test';
 		$record = Records::$contentRecordIsParentAndHasChildren;
 		$draw = TRUE;
+		$this->setup();
 		$instance->renderPreview($header, $item, $record, $draw);
 	}
 

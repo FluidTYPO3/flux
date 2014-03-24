@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -24,7 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\Container\Section;
+use FluidTYPO3\Flux\Form\Container\Object;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
@@ -47,6 +47,8 @@ class ObjectViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('label', 'string', 'Label for section object, can be LLL: value. Optional - if not specified, ' .
 			'Flux tries to detect an LLL label named "flux.fluxFormId.objects.foobar" based on object name, in scope of ' .
 			'extension rendering the Flux form.', FALSE, NULL);
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 	}
 
 	/**
@@ -54,10 +56,11 @@ class ObjectViewHelper extends AbstractFormViewHelper {
 	 * @return void
 	 */
 	public function render() {
-		/** @var Section $object */
+		/** @var Object $object */
 		$object = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Object');
 		$object->setName($this->arguments['name']);
 		$object->setLabel($this->arguments['label']);
+		$object->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();
 		$container->add($object);
 		$this->setContainer($object);

@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -339,11 +339,15 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 */
 	public function getDescription() {
 		$description = $this->description;
+		$translated = NULL;
 		if (TRUE === empty($description)) {
 			$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
 			$description = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xlf:flux.' . $this->id . '.description';
 		}
-		return $description;
+		if (0 === strpos($description, 'LLL:EXT:')) {
+			$translated = LocalizationUtility::translate($description, $extensionKey);
+		}
+		return $translated !== NULL ? $translated : $description;
 	}
 
 	/**

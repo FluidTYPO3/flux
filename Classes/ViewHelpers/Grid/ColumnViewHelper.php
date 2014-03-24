@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -46,6 +46,9 @@ class ColumnViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('colspan', 'integer', 'Column span');
 		$this->registerArgument('rowspan', 'integer', 'Row span');
 		$this->registerArgument('style', 'string', 'Inline style to add when rendering the column');
+		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template. ' .
+			'Can also be set and/or overridden in tag content using <flux:form.variable />', FALSE, array());
 	}
 
 	/**
@@ -58,6 +61,7 @@ class ColumnViewHelper extends AbstractFormViewHelper {
 		$column->setRowspan($this->arguments['rowspan']);
 		$column->setStyle($this->arguments['style']);
 		$column->setColumnPosition($this->arguments['colPos']);
+		$column->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();
 		$container->add($column);
 		$this->setContainer($column);

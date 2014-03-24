@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -38,7 +38,7 @@ use TYPO3\CMS\Core\SingletonInterface;
  */
 class ContentService implements SingletonInterface {
 
-	const COLPOS_FLUXCONTENT = -42;
+	const COLPOS_FLUXCONTENT = 18181;
 
 	/**
 	 * @param array $row
@@ -87,9 +87,11 @@ class ContentService implements SingletonInterface {
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
 			$relativeUid = 0 - $relativeUid;
 		} else {
-			list ($pid, $relativeUid) = $parameters;
+			list ($tablename, $pid, $relativeUid) = $parameters;
 		}
-		if ($command === 'copy') {
+		if ($command !== 'copy') {
+			$record = $row;
+		} else {
 			$copiedUid = $tceMain->copyMappingArray['tt_content'][$id];
 			$record = $this->loadRecordFromDatabase($copiedUid);
 			if ('reference' === $subCommand) {
@@ -97,8 +99,6 @@ class ContentService implements SingletonInterface {
 				$record['records'] = $id;
 			}
 			$id = $copiedUid;
-		} else {
-			$record = $this->loadRecordFromDatabase($id);
 		}
 		if (FALSE === empty($possibleArea)) {
 			$record['tx_flux_parent'] = $parentUid;
@@ -106,7 +106,7 @@ class ContentService implements SingletonInterface {
 			$record['colPos'] = self::COLPOS_FLUXCONTENT;
 		} elseif (0 > $relativeUid) {
 			$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid));
-			$record['sorting'] = $relativeRecord['sorting'] + 128;
+			$record['sorting'] = $tceMain->resorting('tt_content', $row['pid'], 'sorting', abs($relativeUid));
 			$record['pid'] = $relativeRecord['pid'];
 			$record['colPos'] = $relativeRecord['colPos'];
 			$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
@@ -120,11 +120,11 @@ class ContentService implements SingletonInterface {
 		if (FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos) {
 			$record['colPos'] = $possibleColPos;
 		}
-		$row = $record;
-		if (TRUE === isset($pid)) {
+		if (TRUE === isset($pid) && FALSE === isset($relativeRecord['pid'])) {
 			$record['pid'] = $pid;
 		}
 		$this->updateRecordInDatabase($record, $id);
+		$row = $record;
 	}
 
 	/**

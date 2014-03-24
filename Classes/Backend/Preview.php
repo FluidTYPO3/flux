@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -26,8 +26,10 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Backend\Template\DocumentTemplate;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -41,18 +43,9 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class Preview implements PageLayoutViewDrawItemHookInterface {
 
 	/**
-	 *
-	 * @param PageLayoutView $parentObject
-	 * @param boolean $drawItem
-	 * @param string $headerContent
-	 * @param string $itemContent
-	 * @param array $row
-	 * @return void
+	 * @var boolean
 	 */
-	public function preProcess(PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
-		$this->renderPreview($headerContent, $itemContent, $row, $drawItem);
-		unset($parentObject);
-	}
+	protected static $stylesIncluded = FALSE;
 
 	/**
 	 * @var ObjectManagerInterface
@@ -73,29 +66,65 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	}
 
 	/**
+	 *
+	 * @param PageLayoutView $parentObject
+	 * @param boolean $drawItem
+	 * @param string $headerContent
+	 * @param string $itemContent
+	 * @param array $row
+	 * @return void
+	 */
+	public function preProcess(PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row) {
+		$this->renderPreview($headerContent, $itemContent, $row, $drawItem);
+		unset($parentObject);
+	}
+
+	/**
 	 * @param string $headerContent
 	 * @param string $itemContent
 	 * @param array $row
 	 * @param boolean $drawItem
-	 * @return void
+	 * @return NULL
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem) {
-		$fieldName = 'pi_flexform';
-		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
-			$itemContent = $this->createShortcutIcon($row);
+		$children = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,tx_flux_column', 'tt_content', "tx_flux_parent = '" . $row['uid'] . "'");
+		$checksum = sha1(json_encode($row)) . '-' . sha1(json_encode($children));
+		$cacheFilePathAndfilenameHeader = GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-' . $checksum . '-header.tmp');
+		$cacheFilePathAndfilenameContent = GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-' . $checksum . '-content.tmp');
+		$drawItem = TRUE;
+		if (TRUE === file_exists($cacheFilePathAndfilenameHeader) && TRUE === file_exists($cacheFilePathAndfilenameContent)) {
+			$itemContent = file_get_contents($cacheFilePathAndfilenameContent);
+			$headerContent = file_get_contents($cacheFilePathAndfilenameHeader);
+			$drawItem = FALSE;
+			$this->attachStyle();
+			return NULL;
 		}
-		$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
+		$fieldName = NULL; // every provider for tt_content will be asked to get a preview
+		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
+			$itemContent = $this->createShortcutIcon($row) . $itemContent;
+		} else {
+			$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
+		}
 		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
 		foreach ($providers as $provider) {
 			/** @var ProviderInterface $provider */
 			list ($previewHeader, $previewContent, $continueDrawing) = $provider->getPreview($row);
-			$drawItem = $continueDrawing;
-			$headerContent .= $previewHeader;
-			$itemContent .= $previewContent;
+			if (FALSE === empty($previewHeader)) {
+				$headerContent = $previewHeader . (FALSE === empty($headerContent) ? ': ' . $headerContent : '');
+				$drawItem = FALSE;
+				GeneralUtility::writeFile($cacheFilePathAndfilenameHeader, $headerContent);
+			}
+			if (FALSE === empty($previewContent)) {
+				$itemContent .= $previewContent;
+				$drawItem = FALSE;
+				GeneralUtility::writeFile($cacheFilePathAndfilenameContent, $itemContent);
+			}
 			if (FALSE === $continueDrawing) {
 				break;
 			}
 		}
+		$this->attachStyle();
+		return NULL;
 	}
 
 	/**
@@ -109,7 +138,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 		));
 		$targetLink = '?id=' . $targetRecord['pid'] . '#c' . $row['records'];
 		$iconClass = 't3-icon t3-icon-actions-insert t3-icon-insert-reference t3-icon-actions t3-icon-actions-insert-reference';
-		$icon = '<a title="' . $title . '" href="' . $targetLink . '"><span class="' . $iconClass . '"></span></a>';
+		$icon = '<a name="c' . $row['uid'] . '" title="' . $title . '" href="' . $targetLink . '"><span class="' . $iconClass . '"></span></a>';
 		return $icon;
 	}
 
@@ -119,6 +148,17 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	 */
 	protected function getPageTitleAndPidFromContentUid($contentUid) {
 		return reset($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('p.title, t.pid', 'tt_content t, pages p', "t.uid = '" . $contentUid . "' AND p.uid = t.pid"));
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function attachStyle() {
+		if (FALSE === self::$stylesIncluded) {
+			$doc = new DocumentTemplate();
+			$doc->getPageRenderer()->addCssFile(ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css');
+			self::$stylesIncluded = TRUE;
+		}
 	}
 
 }

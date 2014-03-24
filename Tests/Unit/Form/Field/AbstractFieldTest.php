@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -179,6 +179,19 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$section = AbstractFormField::create($definition);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Section', $section);
 		$this->assertSame($definition['name'], $section->getName());
+	}
+
+	/**
+	 * @test
+	 */
+	public function prefixesParentObjectNameToAutoLabelIfInsideObject() {
+		$instance = $this->createInstance();
+		$parent = Form\Container\Object::create();
+		$parent->setName('parent');
+		$instance->setName('child');
+		$parent->add($instance);
+		$output = $instance->getLabel();
+		$this->assertContains('parent.child', $output);
 	}
 
 }

@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form\Container;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -40,13 +40,11 @@ class Object extends AbstractFormContainer implements ContainerInterface, FieldC
 	public function build() {
 		$label = $this->getLabel();
 		$structureArray = array(
-			'title' => $label, // read only by >4.7 and required in order to prevent the tx_templavoila from generating a deprecation warning
-			'tx_templavoila' => array( // TODO: remove this when <4.7 no longer needs to be supported.
-				'title' => $label
-			),
+			'title' => $label,
 			'type' => 'array',
 			'el' => $this->buildChildren()
 		);
+		$structureArray['tx_templavoila'] = array('title' => $structureArray['title']); // patch: TYPO3 core legacy required for section objects.
 		return $structureArray;
 	}
 

@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>
+ *  (c) 2014 Claus Due <claus@wildside.dk>
  *
  *  All rights reserved
  *
@@ -139,18 +139,21 @@ class FluxService implements SingletonInterface {
 	}
 
 	/**
-	 * @param string $extensionKey
+	 * @param string $qualifiedExtensionName
 	 * @param string $controllerName
 	 * @param array $paths
 	 * @param array $variables
 	 * @return ExposedTemplateView
 	 */
-	public function getPreparedExposedTemplateView($extensionKey = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
-		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
-		if (NULL === $extensionKey || FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
+	public function getPreparedExposedTemplateView($qualifiedExtensionName = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
+		$qualifiedExtensionName = GeneralUtility::camelCaseToLowerCaseUnderscored($qualifiedExtensionName);
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($qualifiedExtensionName);
+		$vendorName = ExtensionNamingUtility::getVendorName($qualifiedExtensionName);
+		if (NULL === $qualifiedExtensionName || FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
-			$extensionKey = 'Flux';
+			$qualifiedExtensionName = 'Flux';
 		}
+		$extensionName = ExtensionNamingUtility::getExtensionName($qualifiedExtensionName);
 		if (NULL === $controllerName) {
 			$controllerName = 'Flux';
 		}
@@ -160,8 +163,9 @@ class FluxService implements SingletonInterface {
 		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
 		/** @var $response Responsee */
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
-		$request->setControllerExtensionName($extensionKey);
+		$request->setControllerExtensionName($extensionName);
 		$request->setControllerName($controllerName);
+		$request->setControllerVendorName($vendorName);
 		$request->setDispatched(TRUE);
 		/** @var $uriBuilder UriBuilder */
 		$uriBuilder = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');

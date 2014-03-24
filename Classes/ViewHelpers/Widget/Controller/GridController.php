@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget\Controller;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -27,8 +27,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget\Controller;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
-use TYPO3\CMS\Backend\Template\DocumentTemplate;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController;
 
 /**
@@ -82,8 +80,6 @@ class GridController extends AbstractWidgetController {
 	 * @return string
 	 */
 	public function indexAction() {
-		$doc = new DocumentTemplate();
-		$doc->getPageRenderer()->addCssFile(ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css');
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $this->row);
 		$paths = $this->configurationService->getViewConfigurationForExtensionName('flux');
@@ -91,4 +87,5 @@ class GridController extends AbstractWidgetController {
 		$templatePathAndFilename = ResolveUtility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath);
 		$this->view->setTemplatePathAndFilename($templatePathAndFilename);
 	}
+
 }

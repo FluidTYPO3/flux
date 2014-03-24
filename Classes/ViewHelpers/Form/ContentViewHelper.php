@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -52,7 +52,11 @@ class ContentViewHelper extends AbstractFormViewHelper {
 	public function render() {
 		/** @var FluidTYPO3\Flux\Form\Container\Content $content */
 		$content = $this->getForm()->createContainer('Content', $this->arguments['name'], $this->arguments['label']);
-		$this->getContainer()->add($content);
+		$container = $this->getContainer();
+		$container->add($content);
+		$this->setContainer($content);
+		$this->renderChildren();
+		$this->setContainer($container);
 	}
 
 }

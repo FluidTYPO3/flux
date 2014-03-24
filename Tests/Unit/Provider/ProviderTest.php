@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Provider;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -175,7 +175,6 @@ class ProviderTest extends AbstractProviderTest {
 		$instance = $this->getMock($className, array('getParentFieldName', 'getTableName', 'loadRecordFromDatabase'));
 		$instance->expects($this->once())->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($rowWithPid));
 		$instance->expects($this->once())->method('getParentFieldName')->with($row)->will($this->returnValue('pid'));
-		$instance->expects($this->once())->method('getTableName')->with($row)->will($this->returnValue('pages'));
 		$result = $this->callInaccessibleMethod($instance, 'getParentFieldValue', $row);
 		$this->assertEquals($rowWithPid['pid'], $result);
 	}

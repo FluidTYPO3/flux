@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,6 +23,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
+
+use FluidTYPO3\Flux\Form\Field\Checkbox;
 
 /**
  * Checkbox FlexForm field ViewHelper

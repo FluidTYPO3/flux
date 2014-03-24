@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -35,7 +35,7 @@ abstract class AbstractContainerTest extends AbstractFormTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string	');
+	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string');
 
 	/**
 	 * @return ContainerInterface

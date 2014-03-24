@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -28,16 +28,11 @@ namespace FluidTYPO3\Flux\Form;
  * @package Flux
  * @subpackage Form
  */
-interface FieldContainerInterface extends FormInterface {
+interface FieldContainerInterface extends ContainerInterface {
 
 	/**
 	 * @return FieldInterface[]
 	 */
 	public function getFields();
-
-	/**
-	 * @return string
-	 */
-	public function getTransform();
 
 }

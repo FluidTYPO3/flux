@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -60,6 +60,17 @@ abstract class AbstractTestCase extends BaseTestCase {
 	const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
 	/**
+	 * @param string $name
+	 * @param array $data
+	 * @param string $dataName
+	 */
+	public function __construct($name = NULL, array $data = array(), $dataName = '') {
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$this->objectManager = clone $objectManager;
+		parent::__construct($name, $data, $dataName);
+	}
+
+	/**
 	 * @param string $propertyName
 	 * @param mixed $value
 	 * @param mixed $expectedValue
@@ -76,7 +87,7 @@ abstract class AbstractTestCase extends BaseTestCase {
 		} else {
 			$this->assertNull($chained);
 		}
-		$this->assertSame($expectedValue, $instance->$getter());
+		$this->assertEquals($expectedValue, $instance->$getter());
 	}
 
 	/**

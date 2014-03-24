@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -152,17 +152,6 @@ interface RelationFieldInterface extends MultiValueFieldInterface {
 	public function getForeignUnique();
 
 	/**
-	 * @param string $itemListStyle
-	 * @return RelationFieldInterface
-	 */
-	public function setItemListStyle($itemListStyle);
-
-	/**
-	 * @return string
-	 */
-	public function getItemListStyle();
-
-	/**
 	 * @param string $localizationMode
 	 * @return RelationFieldInterface
 	 */
@@ -183,17 +172,6 @@ interface RelationFieldInterface extends MultiValueFieldInterface {
 	 * @return boolean
 	 */
 	public function getLocalizeChildrenAtParentLocalization();
-
-	/**
-	 * @param string $selectedListStyle
-	 * @return RelationFieldInterface
-	 */
-	public function setSelectedListStyle($selectedListStyle);
-
-	/**
-	 * @return string
-	 */
-	public function getSelectedListStyle();
 
 	/**
 	 * @param string $symmetricField

@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -52,6 +52,23 @@ abstract class AbstractPipeTestCase extends AbstractTestCase {
 		$instance = $this->createInstance();
 		$label = $instance->getLabel();
 		$this->assertNotEmpty($label);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetFormFields() {
+		$fields = $this->createInstance()->getFormFields();
+		$this->assertIsArray($fields);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $fields['class']);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $fields['label']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canLoadSettings() {
+		$this->createInstance()->loadSettings($this->defaultData);
 	}
 
 }

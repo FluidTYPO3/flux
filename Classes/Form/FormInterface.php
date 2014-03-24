@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -90,9 +90,38 @@ interface FormInterface {
 	public function getParent();
 
 	/**
+	 * @param array $variables
+	 * @return FormInterface
+	 */
+	public function setVariables($variables);
+
+	/**
+	 * @return array
+	 */
+	public function getVariables();
+
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @return FormInterface
+	 */
+	public function setVariable($name, $value);
+
+	/**
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function getVariable($name);
+
+	/**
 	 * @return ContainerInterface
 	 */
 	public function getRoot();
+
+	/**
+	 * @return string
+	 */
+	public function getPath();
 
 	/**
 	 * @param string $extensionName

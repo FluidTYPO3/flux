@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -396,7 +396,7 @@ class ContentServiceTest extends AbstractTestCase {
 		);
 		$tceMain = new DataHandler();
 		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
-		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($copiedRow['uid'])->will($this->returnValue($copiedRow));
+		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($copiedRow));
 		$mock->pasteAfter($command, $row, $parameters, $tceMain);
 	}
 
@@ -415,7 +415,7 @@ class ContentServiceTest extends AbstractTestCase {
 			1,
 		);
 		$tceMain = new DataHandler();
-		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($row));
+		$mock->expects($this->never())->method('loadRecordFromDatabase');
 		$mock->pasteAfter($command, $row, $parameters, $tceMain);
 	}
 
@@ -434,7 +434,7 @@ class ContentServiceTest extends AbstractTestCase {
 			'1-move-2-2-area-1',
 		);
 		$tceMain = new DataHandler();
-		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($row));
+		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
 		$mock->pasteAfter($command, $row, $parameters, $tceMain);
 	}
 

@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -25,10 +25,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
-use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
-use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 
 /**
  * @package Flux

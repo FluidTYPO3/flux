@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -74,10 +74,42 @@ class ControllerActionsTest extends AbstractFieldTest {
 	/**
 	 * @test
 	 */
+	public function convertActionListToArrayReturnsSameValueIfAlreadyArray() {
+		$component = $this->createInstance();
+		$input = array();
+		$output = $this->callInaccessibleMethod($component, 'convertActionListToArray', $input);
+		$this->assertEquals($input, $output);
+	}
+
+	/**
+	 * @test
+	 */
+	public function returnsNullIfBuiltControllerClassNameDoesNotExist() {
+		$component = $this->createInstance();
+		$component->setExtensionName('doesnotexist');
+		$className = $this->callInaccessibleMethod($component, 'buildExpectedAndExistingControllerClassName', 'Content');
+		$this->assertNull($className);
+	}
+
+	/**
+	 * @test
+	 */
 	public function acceptsNamespacedClasses() {
 		$expectedClassName = 'FluidTYPO3\Flux\Controller\ContentController';
 		$component = $this->createInstance();
 		$component->setExtensionName('FluidTYPO3.Flux');
+		$className = $this->callInaccessibleMethod($component, 'buildExpectedAndExistingControllerClassName', 'Content');
+		$this->assertSame($expectedClassName, $className);
+	}
+
+	/**
+	 * @test
+	 */
+	public function acceptsLegacyNamedClasses() {
+		$expectedClassName = 'Tx_Flux_Controller_ContentController';
+		class_alias('FluidTYPO3\Flux\Controller\ContentController', 'Tx_Flux_Controller_ContentController');
+		$component = $this->createInstance();
+		$component->setExtensionName('flux');
 		$className = $this->callInaccessibleMethod($component, 'buildExpectedAndExistingControllerClassName', 'Content');
 		$this->assertSame($expectedClassName, $className);
 	}
@@ -234,6 +266,42 @@ class ControllerActionsTest extends AbstractFieldTest {
 	}
 
 	/**
+	 * @test
+	 */
+	public function getActionsForExtensionNameAndPluginNameReturnsExpectedValue() {
+		$instance = $this->createInstance();
+		$instance->setPluginName('API');
+		$instance->setExtensionName('FluidTYPO3.Flux');
+		$output = $this->callInaccessibleMethod($instance, 'getActionsForExtensionNameAndPluginName');
+		$expected = array(
+			'Flux' => array(
+				'renderChildContent',
+			),
+		);
+		$this->assertEquals($expected, $output);
+	}
+
+	/**
+	 * @test
+	 */
+	public function buildItemsForActionsSkipsNonExistingControllerNames() {
+		$instance = $this->createInstance();
+		$instance->setExtensionName('FluidTYPO3.Flux');
+		$actions = array(
+			'Content' => 'render',
+			'DoesNotExist' => 'render'
+		);
+		$expected = array(
+			array(
+				'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:.content.render',
+				'Content->render'
+			)
+		);
+		$output = $this->callInaccessibleMethod($instance, 'buildItemsForActions', $actions);
+		$this->assertEquals($expected, $output);
+	}
+
+	/**
 	 * @param ControllerActions $component
 	 * @param boolean $useDefaults
 	 * @return array
@@ -269,6 +337,13 @@ class ControllerActionsTest extends AbstractFieldTest {
 		}
 		$label = $this->callInaccessibleMethod($component, 'getLabelForControllerAction', $controllerName, $actionName);
 		return $label;
+	}
+
+	/**
+	 * @disabledtest
+	 */
+	public function prefixesParentObjectNameToAutoLabelIfInsideObject() {
+
 	}
 
 }

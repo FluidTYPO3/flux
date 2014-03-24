@@ -42,3 +42,9 @@ if (TRUE === class_exists('FluidTYPO3\Flux\Core')) {
 	\FluidTYPO3\Flux\Core::registerPipe('flashMessage');
 	\FluidTYPO3\Flux\Core::registerPipe('typeConverter');
 }
+
+/** @var $extbaseObjectContainer \TYPO3\CMS\Extbase\Object\Container\Container */
+$extbaseObjectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\Container\Container');
+$extbaseObjectContainer->registerImplementation('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface', 'FluidTYPO3\Flux\Configuration\ConfigurationManager');
+unset($extbaseObjectContainer);
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] = 'FluidTYPO3\Flux\Hooks\WizardItemsHookSubscriber';

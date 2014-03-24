@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Form;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@namelesscoder.net>
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -60,6 +60,14 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		$form = $this->createInstance();
 		$form->setExtensionName('Flux');
 		$this->assertEquals('Flux', $form->getExtensionName());
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetAndSetVariables() {
+		$variables = array('test' => 'foobar');
+		$this->assertGetterAndSetterWorks('variables', $variables, $variables, TRUE);
 	}
 
 	/**
