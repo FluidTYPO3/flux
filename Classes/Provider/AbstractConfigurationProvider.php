@@ -478,9 +478,9 @@ class Tx_Flux_Provider_AbstractConfigurationProvider implements Tx_Flux_Provider
 			$values = $this->getFlexFormValues($branch);
 			$variables = $this->getTemplateVariables($branch);
 			foreach ($variables['fields'] as $field) {
-				$name = $field['configuration']['name'];
-				$stop = (TRUE === isset($field['configuration']['stopInheritance']));
-				$inherit = (TRUE === isset($field['configuration']['inheritEmpty']));
+				$name = $field['name'];
+				$stop = (TRUE === isset($field['stopInheritance']));
+				$inherit = (TRUE === isset($field['inheritEmpty']));
 				$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
 				if (TRUE === $stop) {
 					unset($values[$name]);
