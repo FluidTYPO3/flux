@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,6 +24,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
+
 /**
  * ### Condition: Are content areas of this content reord collapsed?
  *
@@ -32,7 +35,7 @@
  * @package Flux
  * @subpackage ViewHelpers
  */
-class Tx_Flux_ViewHelpers_IsCollapsedViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractConditionViewHelper {
+class IsCollapsedViewHelper extends AbstractConditionViewHelper {
 
 	/**
 	 * Render method
@@ -41,16 +44,13 @@ class Tx_Flux_ViewHelpers_IsCollapsedViewHelper extends Tx_Fluid_Core_ViewHelper
 	 * @return string
 	 */
 	public function render($record) {
-		if (FALSE === isset($_COOKIE['fluxCollapseStates'])) {
-			return $this->renderElseChild();
+		$cookie = array();
+		if (TRUE === isset($_COOKIE['fluxCollapseStates'])) {
+			$cookie = $_COOKIE['fluxCollapseStates'];
+			$cookie = urldecode($cookie);
+			$cookie = json_decode($cookie);
 		}
-		$cookie = $_COOKIE['fluxCollapseStates'];
-		$cookie = urldecode($cookie);
-		$cookie = json_decode($cookie);
-		if (in_array($record['uid'], $cookie)) {
-			return $this->renderThenChild();
-		}
-		return $this->renderElseChild();
+		return TRUE === in_array($record['uid'], $cookie) ? $this->renderThenChild() : $this->renderElseChild();
 	}
 
 }

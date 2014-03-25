@@ -1,0 +1,8 @@
+{namespace flux=FluidTYPO3\Flux\ViewHelpers}
+<f:layout name="Default" />
+<f:section name="Configuration">
+	<flux:form id="test">
+		<flux:field.input name="native" label="Native field" />
+		<f:render partial="FormComponents" arguments="{form: form, container: container}" />
+	</flux:form>
+</f:section>

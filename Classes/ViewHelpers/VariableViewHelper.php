@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,13 +24,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 /**
  * Fetches a single variable from the template variables
  *
  * @package Flux
  * @subpackage ViewHelpers
  */
-class Tx_Flux_ViewHelpers_VariableViewHelper extends Tx_Flux_Core_ViewHelper_AbstractFlexformViewHelper {
+class VariableViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * @param string $name
@@ -40,7 +43,7 @@ class Tx_Flux_ViewHelpers_VariableViewHelper extends Tx_Flux_Core_ViewHelper_Abs
 			return $this->templateVariableContainer->get($name);
 		} else {
 			$parts = explode('.', $name);
-			return Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($this->templateVariableContainer->get(array_shift($parts)), implode('.', $parts));
+			return ObjectAccess::getPropertyPath($this->templateVariableContainer->get(array_shift($parts)), implode('.', $parts));
 		}
 	}
 

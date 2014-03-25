@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,13 +24,26 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Service\ContentService;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+
 /**
  * Content / NewViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers\Be\Uri\Content
  */
-class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper {
+class NewViewHelper extends AbstractViewHelper {
+
+	/**
+	 * Initialize
+	 * @return void
+	 */
+	public function initializeArguments() {
+		$this->registerArgument('row', 'array', 'Record row', TRUE);
+		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
+	}
 
 	/**
 	 * Render uri
@@ -42,21 +56,22 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_NewViewHelper extends Tx_Flux_Core_Vie
 		$uid = $this->arguments['row']['uid'];
 		$area = $this->arguments['area'];
 		$sysLang = $this->arguments['row']['sys_language_uid'];
-		$returnUri = $this->getReturnUri($pid);
+		$returnUri = urlencode($_SERVER['REQUEST_URI']);
 		if ($area) {
 			$returnUri .= '%23' . $area . '%3A' . $uid;
 			if (0 < $after) {
 				$returnUri .= '%3A-' . $after;
 			}
 		}
-		$icon = $this->getIcon('actions-document-new', 'Insert new content element in this position');
+		$icon = MiscellaneousUtility::getIcon('actions-document-new', 'Insert new content element in this position');
 		$uri = 'db_new_content_el.php?id=' . $pid .
 			'&uid_pid=' . $pid .
-			'&colPos=18181' .
+			'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
 			'&sys_language_uid=' . $sysLang .
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
 			'&defVals[tt_content][tx_flux_column]=' . $area .
 			'&returnUrl=' . $returnUri;
-		return $this->wrapLink($icon, $uri);
+		return MiscellaneousUtility::wrapLink($icon, htmlspecialchars($uri));
 	}
+
 }

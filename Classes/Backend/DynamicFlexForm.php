@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,6 +24,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Dynamic FlexForm insertion hook class
  *
@@ -31,15 +34,15 @@
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_DynamicFlexForm {
+class DynamicFlexForm {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var \FluidTYPO3\Flux\Service\FluxService
 	 */
 	protected $configurationService;
 
@@ -47,9 +50,9 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->configurationManager = $this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManagerInterface');
-		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$this->configurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
+		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 	}
 
 	/**
@@ -61,25 +64,16 @@ class Tx_Flux_Backend_DynamicFlexForm {
 	 * @param string $table
 	 * @param string $fieldName
 	 * @return void
-	 * @throws Exception
 	 */
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName) {
-		if (Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing() === FALSE) {
-			$fieldName = NULL;
-		}
 		if (empty($fieldName) === TRUE) {
-				// forcibly assert type NULL if an empty field name was passed. There are
-				// no empty fields in a database, it's a plain mystery why TYPO3 may pass ''
+			// Cast NULL if an empty but not-NULL field name was passed. This has significance to the Flux internals in
+			// respect to which ConfigurationProvider(s) are returned.
 			$fieldName = NULL;
 		}
-		$provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $fieldName, $row);
-		if (NULL === $provider) {
-			return;
-		}
-		try {
+		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
+		foreach ($providers as $provider) {
 			$provider->postProcessDataStructure($row, $dataStructArray, $conf);
-		} catch (Exception $e) {
-			$this->configurationService->debug($e);
 		}
 	}
 

@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@wildside.dk>
  *
  *  All rights reserved
  *
@@ -23,6 +24,30 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\View\ExposedTemplateView;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Extbase\Mvc\Web\Responsee;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
+use TYPO3\CMS\Extbase\Reflection\ReflectionService;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+
 /**
  * Flux FlexForm integration Service
  *
@@ -31,25 +56,30 @@
  * @package Flux
  * @subpackage Service
  */
-class Tx_Flux_Service_FluxService implements t3lib_Singleton {
+class FluxService implements SingletonInterface {
+
+	/**
+	 * @var boolean
+	 */
+	protected $silent = FALSE;
 
 	/**
 	 * @var array
 	 */
-	private static $sentDebugMessages = array();
+	protected static $sentDebugMessages = array();
 
 	/**
 	 * @var array
 	 */
 	private static $friendlySeverities = array(
-		t3lib_div::SYSLOG_SEVERITY_INFO,
-		t3lib_div::SYSLOG_SEVERITY_NOTICE
+		GeneralUtility::SYSLOG_SEVERITY_INFO,
+		GeneralUtility::SYSLOG_SEVERITY_NOTICE
 	);
 
 	/**
 	 * @var array
 	 */
-	private static $cache = array();
+	protected static $cache = array();
 
 	/**
 	 * @var string
@@ -63,115 +93,137 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 
 	/**
 	 *
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Extbase_Reflection_Service
+	 * @var ReflectionService
 	 */
 	protected $reflectionService;
 
 	/**
-	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @param ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManagerInterface $objectManager
+	 * @param ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @param Tx_Extbase_Reflection_Service $reflectionService
+	 * @param ReflectionService $reflectionService
 	 * @return void
 	 */
-	public function injectReflectionService(Tx_Extbase_Reflection_Service $reflectionService) {
+	public function injectReflectionService(ReflectionService $reflectionService) {
 		$this->reflectionService = $reflectionService;
 	}
 
 	/**
-	 * @param string $extensionName
-	 * @param string $controllerName
-	 * @return Tx_Flux_MVC_View_ExposedTemplateView
+	 * @return void
 	 */
-	public function getPreparedExposedTemplateView($extensionName = NULL, $controllerName = NULL) {
-		if (NULL === $extensionName || FALSE === t3lib_extMgm::isLoaded($extensionName)) {
+	public function initializeObject() {
+		$this->loadTypoScriptConfigurationProviderInstances();
+	}
+
+	/**
+	 * @param string $qualifiedExtensionName
+	 * @param string $controllerName
+	 * @param array $paths
+	 * @param array $variables
+	 * @return ExposedTemplateView
+	 */
+	public function getPreparedExposedTemplateView($qualifiedExtensionName = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
+		$qualifiedExtensionName = GeneralUtility::camelCaseToLowerCaseUnderscored($qualifiedExtensionName);
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($qualifiedExtensionName);
+		$vendorName = ExtensionNamingUtility::getVendorName($qualifiedExtensionName);
+		if (NULL === $qualifiedExtensionName || FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
-			$extensionName = 'Flux';
+			$qualifiedExtensionName = 'Flux';
 		}
+		$extensionName = ExtensionNamingUtility::getExtensionName($qualifiedExtensionName);
 		if (NULL === $controllerName) {
 			$controllerName = 'Flux';
 		}
-		/** @var $context Tx_Extbase_MVC_Controller_ControllerContext */
-		$context = $this->objectManager->get('Tx_Extbase_MVC_Controller_ControllerContext');
-		/** @var $request Tx_Extbase_MVC_Web_Request */
-		$request = $this->objectManager->get('Tx_Extbase_MVC_Web_Request');
-		/** @var $response Tx_Extbase_MVC_Web_Response */
-		$response = $this->objectManager->get('Tx_Extbase_MVC_Web_Response');
+		/** @var $context ControllerContext */
+		$context = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
+		/** @var $request Request */
+		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
+		/** @var $response Responsee */
+		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
 		$request->setControllerExtensionName($extensionName);
 		$request->setControllerName($controllerName);
+		$request->setControllerVendorName($vendorName);
 		$request->setDispatched(TRUE);
-		/** @var $uriBuilder Tx_Extbase_Mvc_Web_Routing_UriBuilder */
-		$uriBuilder = $this->objectManager->get('Tx_Extbase_Mvc_Web_Routing_UriBuilder');
+		/** @var $uriBuilder UriBuilder */
+		$uriBuilder = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');
 		$uriBuilder->setRequest($request);
+		$context->setUriBuilder($uriBuilder);
 		$context->setRequest($request);
 		$context->setResponse($response);
-		/** @var $exposedView Tx_Flux_MVC_View_ExposedTemplateView */
-		$exposedView = $this->objectManager->get('Tx_Flux_MVC_View_ExposedTemplateView');
+		/** @var $exposedView ExposedTemplateView */
+		$exposedView = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
 		$exposedView->setControllerContext($context);
+		if (0 < count($variables)) {
+			$exposedView->assignMultiple($variables);
+		}
+		if (TRUE === isset($paths['layoutRootPath']) && FALSE === empty($paths['layoutRootPath'])) {
+			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
+		}
+		if (TRUE === isset($paths['partialRootPath']) && FALSE === empty($paths['partialRootPath'])) {
+			$exposedView->setPartialRootPath($paths['partialRootPath']);
+		}
+		if (TRUE === isset($paths['templateRootPath']) && FALSE === empty($paths['templateRootPath'])) {
+			$exposedView->setTemplateRootPath($paths['templateRootPath']);
+		}
 		return $exposedView;
 	}
 
 	/**
 	 * @param string $templatePathAndFilename
-	 * @param string $variableName
 	 * @param string $section
+	 * @param string $formName
 	 * @param array $paths
-	 * @param string|NULL $extensionName
+	 * @param string $extensionName
 	 * @param array $variables
-	 * @throws Exception
-	 * @return mixed
+	 * @return Form|NULL
 	 */
-	public function getStoredVariable($templatePathAndFilename, $variableName, $section = 'Configuration', $paths = array(), $extensionName = NULL, $variables = array()) {
+	public function getFormFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $formName = 'form', $paths = array(), $extensionName = NULL, $variables = array()) {
 		if (FALSE === file_exists($templatePathAndFilename)) {
-			throw new Exception('The template file "' . $templatePathAndFilename . '" was not found.', 1366824347);
+			return NULL;
 		}
 		$variableCheck = json_encode($variables);
-		$actionName = strtolower(pathinfo($templatePathAndFilename, PATHINFO_FILENAME));
-		$cacheKey = md5($templatePathAndFilename . $variableName . $extensionName . implode('', $paths) . $section . $variableCheck);
+		$cacheKey = md5($templatePathAndFilename . $formName . $extensionName . implode('', $paths) . $section . $variableCheck);
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$exposedView = $this->getPreparedExposedTemplateView($extensionName);
-		$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
-		if (0 < count($variables)) {
-			$exposedView->assignMultiple($variables);
+		try {
+			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
+			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+			self::$cache[$cacheKey] = $exposedView->getForm($section, $formName);
+		} catch (\Exception $error) {
+			$this->debug($error);
+			/** @var Form $form */
+			self::$cache[$cacheKey] = $this->objectManager->get('FluidTYPO3\Flux\Form');
+			self::$cache[$cacheKey]->add(self::$cache[$cacheKey]->createField('UserFunction', 'func')->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField'));
 		}
-		if (TRUE === isset($paths['layoutRootPath'])) {
-			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
-		}
-		if (TRUE === isset($paths['partialRootPath'])) {
-			$exposedView->setPartialRootPath($paths['partialRootPath']);
-		}
-		$value = $exposedView->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', $variableName, $section, $paths, $extensionName, $actionName);
-		self::$cache[$cacheKey] = $value;
-		return $value;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
-	 * Reads a Grid constructed using flux:flexform.grid, returning an array of
+	 * Reads a Grid constructed using flux:grid, returning an array of
 	 * defined rows and columns along with any content areas.
 	 *
 	 * Note about specific implementations:
@@ -185,50 +237,24 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * selected page template to know exactly how the BackendLayout looks.
 	 *
 	 * @param string $templatePathAndFilename
-	 * @param array $variables
-	 * @param string|NULL $configurationSection
+	 * @param string $section
+	 * @param string $gridName
 	 * @param array $paths
 	 * @param string $extensionName
-	 * @return array
-	 * @throws Exception
+	 * @param array $variables
+	 * @return Grid|NULL
 	 */
-	public function getGridFromTemplateFile($templatePathAndFilename, array $variables = array(), $configurationSection = NULL, array $paths = array(), $extensionName = NULL) {
-		try {
-			$paths = Tx_Flux_Utility_Path::translatePath($paths);
-			$stored = $this->getStoredVariable($templatePathAndFilename, 'storage', $configurationSection, $paths, $extensionName, $variables);
-			$grid = isset($stored['grid']) ? $stored['grid'] : NULL;
-		} catch (Exception $error) {
-			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-				throw $error;
-			} else {
-				t3lib_div::sysLog($error->getMessage(), 'flux');
-			}
-			$grid = array();
+	public function getGridFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $gridName = 'grid', array $paths = array(), $extensionName = NULL, array $variables = array()) {
+		$grid = NULL;
+		if (TRUE === file_exists($templatePathAndFilename)) {
+			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
+			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
+			$grid = $exposedView->getGrid($section, $gridName);
+		}
+		if (NULL === $grid) {
+			$grid = Grid::create(array('name' => $gridName));
 		}
 		return $grid;
-	}
-
-	/**
-	 * Gets a stored FlexForm configuration and applies any dynamic values to
-	 * create a current representation of the FlexForm sheet+fields array
-	 *
-	 * @param string $templateFile The absolute filename containing the configuration
-	 * @param mixed $values Optional values to use when rendering the configuration
-	 * @param string|NULL $section Optional section name containing the configuration
-	 * @param array|NULL $paths Template paths; required if template renders Partials (from inside section if $section != NULL)
-	 * @param string|NULL $extensionName If specified, uses this extensionName in an injected ControllerContext
-	 * @throws Exception
-	 * @return array
-	 */
-	public function getFlexFormConfigurationFromFile($templateFile, $values, $section = NULL, $paths = NULL, $extensionName = NULL) {
-		$config = NULL;
-		try {
-			$config = $this->getStoredVariable($templateFile, 'storage', $section, $paths, $extensionName, $values);
-		} catch (Exception $error) {
-			$this->message('Reading file ' . $templateFile . ' caused an error - see next message', t3lib_div::SYSLOG_SEVERITY_FATAL);
-			$this->debug($error);
-		}
-		return $config;
 	}
 
 	/**
@@ -236,12 +262,13 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return array|NULL
 	 */
 	public function getViewConfigurationForExtensionName($extensionName) {
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionName);
 		if (FALSE === is_array($configuration) || 0 === count($configuration) || TRUE === empty($configuration['templateRootPath'])) {
 			$configuration = array(
-				'templateRootPath' => 'EXT:' . $extensionName . '/Resources/Private/Templates',
-				'partialRootPath' => 'EXT:' . $extensionName . '/Resources/Private/Partials',
-				'layoutRootPath' => 'EXT:' . $extensionName . '/Resources/Private/Layouts',
+				'templateRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Templates',
+				'partialRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Partials',
+				'layoutRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Layouts',
 			);
 		}
 		return $configuration;
@@ -273,50 +300,32 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$config = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		$config = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		if (FALSE === isset($config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'])) {
 			return NULL;
 		}
 		$config = $config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
-		$config = Tx_Flux_Utility_Array::convertTypoScriptArrayToPlainArray($config);
+		$config = GeneralUtility::removeDotsFromTS($config);
 		if ($extensionName) {
 			$config = $config[$extensionName];
 		}
 		if (FALSE === is_array($config)) {
 			$config = array();
 		}
-		$config = Tx_Flux_Utility_Path::translatePath($config);
+		$config = PathUtility::translatePath($config);
 		self::$cache[$cacheKey] = $config;
 		return $config;
 	}
 
 	/**
-	 * @param string $extensionKey
-	 * @param string $controllerName
-	 * @return boolean
-	 */
-	public function detectControllerClassPresenceFromExtensionKeyAndControllerType($extensionKey, $controllerName) {
-		if (FALSE !== strpos($extensionKey, '.')) {
-			list ($vendorName, $extensionName) = explode('.', $extensionKey);
-			$potentialClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
-			if (TRUE === class_exists($potentialClassName)) {
-				return TRUE;
-			}
-		}
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$potentialClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
-		return class_exists($potentialClassName);
-	}
-
-	/**
-	 * Resolve the top-priority ConfigurationPrivider which can provide
+	 * ResolveUtility the top-priority ConfigurationPrivider which can provide
 	 * a working FlexForm configuration baed on the given parameters.
 	 *
 	 * @param string $table
 	 * @param string $fieldName
 	 * @param array $row
 	 * @param string $extensionKey
-	 * @return Tx_Flux_Provider_ConfigurationProviderInterface|NULL
+	 * @return ProviderInterface|NULL
 	 */
 	public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		if (is_array($row) === FALSE) {
@@ -347,56 +356,36 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $fieldName
 	 * @param array $row
 	 * @param string $extensionKey
-	 * @return Tx_Flux_Provider_ConfigurationProviderInterface[]
+	 * @return ProviderInterface[]
 	 */
-	public function resolveConfigurationProviders($table, $fieldName, array $row=NULL, $extensionKey=NULL) {
+	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		if (is_array($row) === FALSE) {
 			$row = array();
 		}
-		$rowIdentity = TRUE === isset($row['uid']) ? $row['uid'] : NULL;
+		$rowIdentity = TRUE === isset($row['uid']) ? $row['uid'] : uniqid();
 		$cacheKey = $table . $fieldName . $rowIdentity . $extensionKey;
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
-		$bindToFieldName = Tx_Flux_Utility_Version::assertHasFixedFlexFormFieldNamePassing();
-		$providers = Tx_Flux_Core::getRegisteredFlexFormProviders();
+		$providers = Core::getRegisteredFlexFormProviders();
+		$typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
+		$providers = array_merge($providers, $typoScriptConfigurationProviders);
 		$prioritizedProviders = array();
 		foreach ($providers as $providerClassNameOrInstance) {
 			if (is_object($providerClassNameOrInstance)) {
 				$provider = &$providerClassNameOrInstance;
 			} else {
-				$providerCacheKey = $table . $fieldName . $rowIdentity . $extensionKey . $providerClassNameOrInstance;
-				if (TRUE === isset(self::$cache[$providerCacheKey])) {
-					$provider = &self::$cache[$providerCacheKey];
-				} else {
-					$provider = $this->objectManager->get($providerClassNameOrInstance);
-				}
+				$provider = $this->objectManager->get($providerClassNameOrInstance);
 			}
-			$priority = $provider->getPriority($row);
-			$providerFieldName = $provider->getFieldName($row);
-			$providerExtensionKey = $provider->getExtensionKey($row);
-			$providerTableName = $provider->getTableName($row);
-			if (FALSE === is_array($prioritizedProviders[$priority])) {
-				$prioritizedProviders[$priority] = array();
+			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($providerClassNameOrInstance))) {
+				throw new \RuntimeException(is_object($providerClassNameOrInstance) ? get_class($providerClassNameOrInstance) : $providerClassNameOrInstance . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
 			}
-			$matchesTableName = ($providerTableName === $table);
-			$matchesFieldName = ($providerFieldName === $fieldName || FALSE === $bindToFieldName || NULL === $fieldName);
-			$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
-			/** @var Tx_Flux_Provider_ConfigurationProviderInterface $provider */
-			if ($matchesExtensionKey && $matchesTableName && $matchesFieldName) {
-				if ($provider instanceof Tx_Flux_Provider_ContentObjectConfigurationProviderInterface) {
-					/** @var Tx_Flux_Provider_ContentObjectConfigurationProviderInterface $provider */
-					if (FALSE === isset($row['CType']) || $provider->getContentObjectType($row) === $row['CType']) {
-						$prioritizedProviders[$priority][] = $provider;
-					}
-				} elseif (TRUE === $provider instanceof Tx_Flux_Provider_PluginConfigurationProviderInterface) {
-					/** @var Tx_Flux_Provider_PluginConfigurationProviderInterface $provider */
-					if (FALSE === isset($row['list_type']) || $provider->getListType($row) === $row['list_type']) {
-						$prioritizedProviders[$priority][] = $provider;
-					}
-				} else {
-					$prioritizedProviders[$priority][] = $provider;
+			if (TRUE === $provider->trigger($row, $table, $fieldName, $extensionKey)) {
+				$priority = $provider->getPriority($row);
+				if (FALSE === is_array($prioritizedProviders[$priority])) {
+					$prioritizedProviders[$priority] = array();
 				}
+				$prioritizedProviders[$priority][] = $provider;
 			}
 		}
 		ksort($prioritizedProviders);
@@ -411,60 +400,32 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	}
 
 	/**
-	 * @param array $config
-	 * @return array|NULL
+	 * @return ProviderInterface[]
 	 */
-	public function convertFlexFormConfigurationToDataStructure($config) {
-		/** @var $flexFormStructureProvider Tx_Flux_Provider_Structure_FlexFormStructureProvider */
-		$flexFormStructureProvider = $this->objectManager->get('Tx_Flux_Provider_Structure_FlexFormStructureProvider');
-		$dataStructArray = $flexFormStructureProvider->render($config);
-		if ((FALSE === is_array($dataStructArray['ROOT']['el']) && FALSE === is_array($dataStructArray['sheets'])) || (count($dataStructArray['sheets']) < 1 && count($dataStructArray['ROOT']['el']) < 1 && count($dataStructArray['sheets'][key($dataStructArray['sheets'])]) === 0)) {
-			$config['parameters'] = array(
-				'userFunction' => 'Tx_Flux_UserFunction_NoFields->renderField'
-			);
-			$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
+	protected function loadTypoScriptConfigurationProviderInstances() {
+		$cacheKey = 'typoscript_providers';
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
 		}
-		return $dataStructArray;
-	}
-
-	/**
-	 * Updates $dataStructArray by reference, filling it with a proper data structure
-	 * based on the selected template file.
-	 *
-	 * @param string $templateFile
-	 * @param array $values
-	 * @param array $paths
-	 * @param array $dataStructArray
-	 * @param string $section
-	 * @param string $extensionName
-	 * @throws Exception
-	 * @return void
-	 */
-	public function convertFlexFormTemplateToDataStructure($templateFile, $values, $paths, &$dataStructArray, $section = NULL, $extensionName = NULL) {
-		$className = get_class($this);
-		try {
-			if (NULL === $templateFile) {
-				$this->message('A template file path was NULL - this might indicate an error in class ' . $className);
-				$config['parameters'] = array(
-					'userFunction' => 'Tx_Flux_UserFunction_NoTemplate->renderField'
-				);
-				$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-				return;
-			}
-			$config = $this->getFlexFormConfigurationFromFile($templateFile, $values, $section, $paths, $extensionName);
-			$dataStructArray = $this->convertFlexFormConfigurationToDataStructure($config);
-		} catch (Exception $e) {
-			$this->message('Attempting to convert FlexForm XML to array using file ' . $templateFile . ' failed - ' .
-				'see next error message');
-			$this->debug($e);
-			$config['parameters'] = array(
-				'exception' => $e,
-				'userFunction' => 'Tx_Flux_UserFunction_ErrorReporter->renderField'
-			);
-			if (FALSE === t3lib_extMgm::isLoaded('templavoila')) {
-				$dataStructArray = $this->objectManager->get('Tx_Flux_Provider_Structure_FallbackStructureProvider')->render($config);
-			}
+		$typoScriptSettings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		if (FALSE === isset($typoScriptSettings['plugin.']['tx_flux.']['providers.'])) {
+			return array();
 		}
+		$providerConfigurations = GeneralUtility::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
+		self::$cache[$cacheKey] = array();
+		foreach ($providerConfigurations as $name => $providerSettings) {
+			if (TRUE === isset($providerSettings['className']) && TRUE === class_exists($providerSettings['className'])) {
+				$className = $providerSettings['className'];
+			} else {
+				$className = 'FluidTYPO3\Flux\Provider\Provider';
+			}
+			/** @var ProviderInterface $provider */
+			$provider = $this->objectManager->get($className);
+			$provider->setName($name);
+			$provider->loadSettings($providerSettings);
+			self::$cache[$cacheKey][$name] = $provider;
+		}
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -475,103 +436,31 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * Note: multi-language flexForms are not supported yet
 	 *
 	 * @param string $flexFormContent flexForm xml string
-	 * @param array $fluxConfiguration An array from a Flux template file. If transformation instructions are contained in this configuration they are applied after conversion to array
+	 * @param Form $form An instance of \FluidTYPO3\Flux\Form. If transformation instructions are contained in this configuration they are applied after conversion to array
 	 * @param string $languagePointer language pointer used in the flexForm
 	 * @param string $valuePointer value pointer used in the flexForm
 	 * @return array the processed array
 	 */
-	public function convertFlexFormContentToArray($flexFormContent, $fluxConfiguration = NULL, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
-		$settings = array();
+	public function convertFlexFormContentToArray($flexFormContent, Form $form = NULL, $languagePointer = 'lDEF', $valuePointer = 'vDEF') {
+		if (TRUE === empty($flexFormContent)) {
+			return array();
+		}
 		if (TRUE === empty($languagePointer)) {
 			$languagePointer = 'lDEF';
 		}
 		if (TRUE === empty($valuePointer)) {
 			$valuePointer = 'vDEF';
 		}
-		$flexFormArray = t3lib_div::xml2array($flexFormContent);
-		$flexFormArray = (TRUE === isset($flexFormArray['data']) && TRUE === is_array($flexFormArray['data']) ? $flexFormArray['data'] : $flexFormArray);
-		if (FALSE === is_array($flexFormArray)) {
-			return $settings;
+		// preliminary decode. The method called caches the decoded results so we can do almost without performance impact.
+		$decoded = GeneralUtility::xml2array($flexFormContent);
+		if (FALSE === isset($decoded['data']) || FALSE === is_array($decoded['data'])) {
+			return array();
 		}
-		foreach (array_values($flexFormArray) as $languages) {
-			if (!is_array($languages) || !isset($languages[$languagePointer])) {
-				continue;
-			}
-			if (!is_array($languages[$languagePointer])) {
-				$currentNode = $languages[$languagePointer];
-				continue;
-			}
-			foreach ($languages[$languagePointer] as $valueKey => $valueDefinition) {
-				if (FALSE === strpos($valueKey, '.')) {
-					$settings[$valueKey] = $this->walkFlexFormNode($valueDefinition, $valuePointer);
-				} else {
-					$valueKeyParts = explode('.', $valueKey);
-					$currentNode =& $settings;
-
-					foreach ($valueKeyParts as $valueKeyPart) {
-						$currentNode =& $currentNode[$valueKeyPart];
-					}
-
-					if (is_array($valueDefinition)) {
-						if (array_key_exists($valuePointer, $valueDefinition)) {
-							$currentNode = $valueDefinition[$valuePointer];
-						} else {
-							$currentNode = $this->walkFlexFormNode($valueDefinition, $valuePointer);
-						}
-					} else {
-						$currentNode = $valueDefinition;
-					}
-				}
-			}
-		}
-		if (TRUE === is_array($fluxConfiguration)) {
-			$settings = $this->transformAccordingToConfiguration($settings, $fluxConfiguration);
+		$settings = $this->objectManager->get('TYPO3\CMS\Extbase\Service\FlexFormService')->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
+		if (NULL !== $form) {
+			$settings = $this->transformAccordingToConfiguration($settings, $form);
 		}
 		return $settings;
-	}
-
-	/**
-	 * Parses a flexForm node recursively and takes care of sections etc
-	 *
-	 * @param array $nodeArray The flexForm node to parse
-	 * @param string $valuePointer The valuePointer to use for value retrieval
-	 * @return array
-	 */
-	private function walkFlexFormNode($nodeArray, $valuePointer = 'vDEF') {
-		if (is_array($nodeArray)) {
-			$return = array();
-			foreach ($nodeArray as $nodeKey => $nodeValue) {
-				if ($nodeKey === $valuePointer) {
-					return $nodeValue;
-				}
-				if (in_array($nodeKey, array('el', '_arrayContainer'))) {
-					return $this->walkFlexFormNode($nodeValue, $valuePointer);
-				}
-				if (substr($nodeKey, 0, 1) === '_') {
-					continue;
-				}
-				if (strpos($nodeKey, '.')) {
-					$nodeKeyParts = explode('.', $nodeKey);
-					$currentNode = &$return;
-					$total = (count($nodeKeyParts) - 1);
-					for ($i = 0; $i < $total; $i++) {
-						$currentNode = &$currentNode[$nodeKeyParts[$i]];
-					}
-					$newNode = array(next($nodeKeyParts) => $nodeValue);
-					$currentNode = $this->walkFlexFormNode($newNode, $valuePointer);
-				} else if (is_array($nodeValue)) {
-					if (array_key_exists($valuePointer, $nodeValue)) {
-						$return[$nodeKey] = $nodeValue[$valuePointer];
-					} else {
-						$return[$nodeKey] = $this->walkFlexFormNode($nodeValue, $valuePointer);
-					}
-				} else {
-					$return[$nodeKey] = $nodeValue;
-				}
-			}
-			return $return;
-		}
-		return $nodeArray;
 	}
 
 	/**
@@ -580,25 +469,20 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * attributes on fields to determine how to transform values.
 	 *
 	 * @param array $values
-	 * @param array $fluxConfiguration
+	 * @param Form $form
 	 * @param string $prefix
 	 * @return array
 	 */
-	public function transformAccordingToConfiguration($values, $fluxConfiguration = NULL, $prefix = '') {
-		if (FALSE === is_array($values) || NULL === $fluxConfiguration) {
-			return $values;
-		}
-		foreach ($values as $index => $value) {
+	public function transformAccordingToConfiguration($values, Form $form, $prefix = '') {
+		foreach ((array) $values as $index => $value) {
 			if (TRUE === is_array($value)) {
-				$value = $this->transformAccordingToConfiguration($value, $fluxConfiguration, $prefix . (FALSE === empty($prefix) ? '.' : '') . $index);
-			} elseif (TRUE === isset($fluxConfiguration['fields'])) {
-				foreach ($fluxConfiguration['fields'] as $field) {
-					$fieldConfiguration = $field->createStructure();
-					$fieldName = $fieldConfiguration['TCEforms']['config']['name'];
-					$transformType = $fieldConfiguration['TCEforms']['config']['transform'];
-					if ($fieldName === $prefix . (FALSE === empty($prefix) ? '.' : '') . $index && FALSE === empty($transformType)) {
-						$value = $this->transformValueToType($value, $transformType);
-					}
+				$value = $this->transformAccordingToConfiguration($value, $form, $prefix . $index . '.');
+			} else {
+				/** @var FieldInterface|ContainerInterface $object */
+				$object = $form->get($prefix . $index, TRUE);
+				if (FALSE !== $object) {
+					$transformType = $object->getTransform();
+					$value = $this->transformValueToType($value, $transformType);
 				}
 			}
 			$values[$index] = $value;
@@ -613,17 +497,16 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $dataType
 	 * @return mixed
 	 */
-	private function transformValueToType($value, $dataType) {
-		if ($dataType == 'int' || $dataType == 'integer') {
+	protected function transformValueToType($value, $dataType) {
+		if ('int' === $dataType || 'integer' === $dataType) {
 			return intval($value);
-		} else if ($dataType == 'float') {
+		} elseif ('float' === $dataType) {
 			return floatval($value);
-		} else if ($dataType == 'array') {
+		} elseif ('array' === $dataType) {
 			return explode(',', $value);
-		} else if (strpos($dataType, 'Tx_') === 0) {
+		} else {
 			return $this->getObjectOfType($dataType, $value);
 		}
-		return $value;
 	}
 
 	/**
@@ -634,48 +517,61 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @return mixed
 	 */
 	private function getObjectOfType($dataType, $uids) {
-		$uids = trim($uids, ',');
-		$identifiers = explode(',', $uids);
+		$identifiers = TRUE === is_array($uids) ? $uids : GeneralUtility::trimExplode(',', trim($uids, ','), TRUE);
+		$identifiers = array_map('intval', $identifiers);
+		$isModel = (FALSE !== strpos($dataType, '_Domain_Model_') || FALSE !== strpos($dataType, '\\Domain\\Model\\'));
+		list ($container, $object) = FALSE !== strpos($dataType, '<') ? explode('<', trim($dataType, '>')) : array(NULL, $dataType);
+		$repositoryClassName = str_replace('_Domain_Model_', '_Domain_Repository_', str_replace('\\Domain\\Model\\', '\\Domain\\Repository\\', $object)) . 'Repository';
 		// Fast decisions
-		if (FALSE !== strpos($dataType, '_Domain_Model_') && FALSE === strpos($dataType, '<')) {
-			$repositoryClassName = str_replace('_Model_', '_Repository_', $dataType) . 'Repository';
-			if (class_exists($repositoryClassName)) {
+		if (TRUE === $isModel && NULL === $container) {
+			if (TRUE === class_exists($repositoryClassName)) {
 				$repository = $this->objectManager->get($repositoryClassName);
 				$uid = array_pop($identifiers);
 				return $repository->findOneByUid($uid);
 			}
-		} else if (class_exists($dataType)) {
+		} elseif (TRUE === class_exists($dataType)) {
 			// using constructor value to support objects like DateTime
 			return $this->objectManager->get($dataType, $uids);
 		}
 		// slower decisions with support for type-hinted collection objects
-		list ($container, $object) = explode('<', trim($dataType, '>'));
 		if ($container && $object) {
-			if (FALSE !== strpos($object, '_Domain_Model_') && $uids) {
-				$repositoryClassName = str_replace('_Model_', '_Repository_', $object) . 'Repository';
-				/** @var $repository Tx_Extbase_Persistence_Repository */
+			if (TRUE === $isModel && TRUE === class_exists($repositoryClassName) && 0 < count($identifiers)) {
+				/** @var $repository RepositoryInterface */
 				$repository = $this->objectManager->get($repositoryClassName);
-				$query = $repository->createQuery();
-				$query->matching($query->in('uid', $uids));
-				return $query->execute();
+				return $this->loadObjectsFromRepository($repository, $identifiers);
 			} else {
 				$container = $this->objectManager->get($container);
 				return $container;
 			}
+		}
+		return $uids;
+	}
+
+	/**
+	 * @param RepositoryInterface $repository
+	 * @param array $identifiers
+	 * @return mixed
+	 */
+	private function loadObjectsFromRepository(RepositoryInterface $repository, $identifiers) {
+		if (TRUE === method_exists($repository, 'findByIdentifiers')) {
+			return $repository->findByIdentifiers($identifiers);
 		} else {
-			// passthrough; neither object nor type hinted collection object
-			return $uids;
+			$query = $repository->createQuery();
+			$query->matching($query->in('uid', $identifiers));
+			return $query->execute();
 		}
 	}
 
 	/**
 	 * @param mixed $instance
+	 * @param boolean $plainText
+	 * @param integer $depth
 	 * @return void
 	 */
-	public function debug($instance) {
+	public function debug($instance, $plainText = FALSE, $depth = 2) {
 		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
-			if (TRUE === $instance instanceof Exception) {
-				t3lib_div::sysLog('Flux Debug: Suppressed Exception - "' . $instance->getMessage() . '" (' . $instance->getCode() . ')', 'flux');
+			if (TRUE === $instance instanceof \Exception) {
+				GeneralUtility::sysLog('Flux Debug: Suppressed Exception - "' . $instance->getMessage() . '" (' . $instance->getCode() . ')', 'flux');
 			}
 			return;
 		}
@@ -687,48 +583,63 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (TRUE === isset(self::$sentDebugMessages[$hash])) {
 			return;
 		}
-		if (TRUE === $instance instanceof Tx_Flux_MVC_View_ExposedTemplateView) {
-			$this->debugView($instance);
-		} elseif (TRUE === $instance instanceof Tx_Flux_Provider_ConfigurationProviderInterface) {
-			$this->debugProvider($instance);
-		} elseif (TRUE === $instance instanceof Exception) {
-			$this->debugException($instance);
+		if (TRUE === $instance instanceof ExposedTemplateView) {
+			$this->debugView($instance, $plainText, $depth);
+		} elseif (TRUE === $instance instanceof ProviderInterface) {
+			$this->debugProvider($instance, $plainText, $depth);
+		} elseif (TRUE === $instance instanceof \Exception) {
+			$this->debugException($instance, $plainText, $depth);
 		} else {
-			$this->debugMixed($instance);
+			$this->debugMixed($instance, $plainText, $depth);
 		}
 		self::$sentDebugMessages[$hash] = TRUE;
 	}
 
 	/**
 	 * @param mixed $variable
+	 * @param boolean $plainText
+	 * @param integer $depth
 	 * @return void
 	 */
-	public function debugMixed($variable) {
-		Tx_Extbase_Utility_Debugger::var_dump($variable);
+	public function debugMixed($variable, $plainText = FALSE, $depth = 2) {
+		$this->passToDebugger($variable, 'Flux variable debug', $depth, $plainText, FALSE);
 	}
 
 	/**
-	 * @param Exception $error
+	 * @param \Exception $error
 	 * @return void
 	 */
-	public function debugException(Exception $error) {
-		$this->message($error->getMessage() . ' (' . $error->getCode() . ')', t3lib_div::SYSLOG_SEVERITY_FATAL);
+	public function debugException(\Exception $error) {
+		$this->message($error->getMessage() . ' (' . $error->getCode() . ')', GeneralUtility::SYSLOG_SEVERITY_FATAL);
 	}
 
 	/**
-	 * @param Tx_Flux_MVC_View_ExposedTemplateView $view
+	 * @param ExposedTemplateView $view
+	 * @param boolean $plainText
+	 * @param integer $depth
 	 * @return void
 	 */
-	public function debugView(Tx_Flux_MVC_View_ExposedTemplateView $view) {
-		Tx_Extbase_Utility_Debugger::var_dump($view);
+	public function debugView(ExposedTemplateView $view, $plainText = FALSE, $depth = 2) {
+		$this->passToDebugger($view, 'Flux View debug', $depth, $plainText, FALSE);;
 	}
 
 	/**
-	 * @param Tx_Flux_Provider_ConfigurationProviderInterface $provider
+	 * @param ProviderInterface $provider
+	 * @param boolean $plainText
+	 * @param integer $depth
 	 * @return void
 	 */
-	public function debugProvider(Tx_Flux_Provider_ConfigurationProviderInterface $provider) {
-		Tx_Extbase_Utility_Debugger::var_dump($provider);
+	public function debugProvider(ProviderInterface $provider, $plainText = FALSE, $depth = 2) {
+		$this->passToDebugger($provider, 'Flux Provider debug', $depth, $plainText, FALSE);
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function passToDebugger() {
+		if (FALSE === $this->silent) {
+			call_user_func_array(array('TYPO3\CMS\Extbase\Utility\DebuggerUtility', 'var_dump'), array(func_get_args()));
+		}
 	}
 
 	/**
@@ -737,7 +648,7 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 	 * @param string $title
 	 * @return NULL
 	 */
-	public function message($message, $severity = t3lib_div::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
+	public function message($message, $severity = GeneralUtility::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
 		if (1 > $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']) {
 			return NULL;
 		}
@@ -748,12 +659,19 @@ class Tx_Flux_Service_FluxService implements t3lib_Singleton {
 		if (2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] && TRUE === in_array($severity, self::$friendlySeverities)) {
 			return NULL;
 		}
-		$isAjaxCall = (boolean) 0 < t3lib_div::_GET('ajaxCall');
-		$flashMessage = new t3lib_FlashMessage($message, $title, $severity);
+		$isAjaxCall = (boolean) 0 < GeneralUtility::_GET('ajaxCall');
+		$flashMessage = new FlashMessage($message, $title, $severity);
 		$flashMessage->setStoreInSession($isAjaxCall);
-		t3lib_FlashMessageQueue::addMessage($flashMessage);
+		FlashMessageQueue::addMessage($flashMessage);
 		self::$sentDebugMessages[$hash] = TRUE;
 		return NULL;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function flushCache() {
+		self::$cache = array();
 	}
 
 }

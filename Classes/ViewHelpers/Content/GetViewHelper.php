@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Content;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,6 +24,10 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+
 /**
  * ### Content: Get ViewHelper
  *
@@ -31,31 +36,31 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class GetViewHelper extends AbstractViewHelper {
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @param Tx_Flux_Service_FluxService $configurationService
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(Tx_Flux_Service_FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
 	/**
-	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @param ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
@@ -66,6 +71,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 	public function initializeArguments() {
 		$this->registerArgument('area', 'string', 'Name of the area to render');
 		$this->registerArgument('limit', 'integer', 'Optional limit to the number of content elements to render');
+		$this->registerArgument('offset', 'integer', 'Optional offset to the limit', FALSE, 0);
 		$this->registerArgument('order', 'string', 'Optional sort order of content elements - RAND() supported', FALSE, 'sorting');
 		$this->registerArgument('sortDirection', 'string', 'Optional sort direction of content elements', FALSE, 'ASC');
 		$this->registerArgument('as', 'string', 'Variable name to register, then render child content and insert all results as an array of records', FALSE);
@@ -90,14 +96,15 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 		$order = $this->arguments['order'];
 		$area = $this->arguments['area'];
 		$limit = $this->arguments['limit'] ? $this->arguments['limit'] : 99999;
+		$offset = intval($this->arguments['offset']);
 		$sortDirection = $this->arguments['sortDirection'];
 		$order .= ' ' . $sortDirection;
 		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
 			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
 			AND deleted = 0 AND hidden = 0";
-		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $conditions, 'uid', $order, $limit);
-		$elements = (FALSE === (boolean) $this->arguments['render']) ? $rows : $this->getRenderedRecord($rows);
-		if (FALSE === isset($this->arguments['as'])) {
+		$rows = (array) $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $conditions, 'uid', $order, $offset . ',' . $limit);
+		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);
+		if (TRUE === empty($this->arguments['as'])) {
 			$content = $elements;
 		} else {
 			$as = $this->arguments['as'];
@@ -126,7 +133,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 	 * @param array $rows database rows of records (each item is a tt_content table record)
 	 * @return array
 	 */
-	protected function getRenderedRecord($rows) {
+	protected function getRenderedRecords($rows) {
 		$elements = array();
 		foreach ($rows as $row) {
 			$conf = array(
@@ -134,7 +141,7 @@ class Tx_Flux_ViewHelpers_Content_GetViewHelper extends Tx_Fluid_Core_ViewHelper
 				'source' => $row['uid'],
 				'dontCheckPid' => 1
 			);
-			array_push($elements, $GLOBALS['TSFE']->cObj->RECORDS($conf));
+			array_push($elements, $this->configurationManager->getContentObject()->RECORDS($conf));
 		}
 		return $elements;
 	}

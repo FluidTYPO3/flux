@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -22,20 +23,22 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Backend\Form\FormEngine;
+
 /**
  * Renders HTML stored in a Fluid FlexForm HTML field
  *
  * @package Flux
  * @subpackage UserFunction
  */
-class Tx_Flux_UserFunction_HtmlOutput {
+class HtmlOutput {
 
 	/**
 	 * @param array $parameters
-	 * @param t3lib_TCEforms $pObj
+	 * @param FormEngine $pObj
 	 * @return mixed
 	 */
-	public function renderField(array &$parameters, t3lib_TCEforms &$pObj) {
+	public function renderField(array &$parameters, FormEngine &$pObj) {
 		unset($pObj);
 		return trim($parameters['parameters']['closure']($parameters));
 	}

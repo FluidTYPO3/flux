@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,19 +24,24 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Utility\ClipBoardUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+
 /**
  * Content / NewViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers\Be\Uri\Content
  */
-class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper {
+class PasteViewHelper extends AbstractViewHelper {
 
 	/**
+	 * Initialize
 	 * @return void
 	 */
 	public function initializeArguments() {
-		parent::initializeArguments();
+		$this->registerArgument('row', 'array', 'Record row', TRUE);
+		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
 		$this->registerArgument('reference', 'boolean', 'If TRUE, pastes as reference', FALSE, FALSE);
 		$this->registerArgument('relativeTo', 'array', 'If filled with an array, assumes clicable icon is placed below this content record', FALSE, array());
 	}
@@ -47,38 +53,30 @@ class Tx_Flux_ViewHelpers_Be_Link_Content_PasteViewHelper extends Tx_Flux_Core_V
 	 */
 	public function render() {
 		$reference = (boolean) $this->arguments['reference'];
-		$clipData = $GLOBALS['BE_USER']->getModuleData('clipboard', $GLOBALS['BE_USER']->getTSConfigVal('options.saveClipboard') ? '' : 'ses');
-		$mode = TRUE === isset($clipData['current']) ? $clipData['current'] : 'normal';
-		$hasClip = TRUE === isset($clipData[$mode]['el']) && 0 < count($clipData[$mode]['el']);
-		if (FALSE === $hasClip) {
-			return NULL;
-		}
-		if (FALSE === isset($clipData[$mode]['mode']) && TRUE === $reference) {
-			return NULL;
+		$relativeTo = $this->getRelativeToValue();
+		return ClipBoardUtility::createIconWithUrl($relativeTo, $reference);
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getRelativeToValue() {
+		$reference = (boolean) $this->arguments['reference'];
+		if (TRUE === $reference) {
+			$command = 'reference';
+		} else {
+			$command = 'paste';
 		}
 		$row = $this->arguments['row'];
 		$area = $this->arguments['area'];
 		$pid = $row['pid'];
 		$uid = $row['uid'];
 		$relativeUid = TRUE === isset($this->arguments['relativeTo']['uid']) ? $this->arguments['relativeTo']['uid'] : 0;
-		$clipBoard = new t3lib_clipboard();
-		if (TRUE === $reference) {
-			$command = 'reference';
-			$label = 'Paste as reference in this position';
-			$icon = 'actions-insert-reference';
-		} else {
-			$command = 'paste';
-			$label = 'Paste in this position';
-			$icon = 'actions-document-paste-after';
-		}
 		$relativeTo = $pid . '-' . $command . '-' . $relativeUid . '-' . $uid;
 		if (FALSE === empty($area)) {
 			$relativeTo .= '-' . $area;
 		}
-		$icon = $this->getIcon($icon, $label);
-		$uri = "javascript:top.content.list_frame.location.href=top.TS.PATH_typo3+'";
-		$uri .= $clipBoard->pasteUrl('tt_content', $relativeTo);
-		$uri .= "';";
-		return $this->wrapLink($icon, $uri);
+		return $relativeTo;
 	}
+
 }

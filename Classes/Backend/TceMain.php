@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,33 +24,35 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_TceMain {
+class TceMain {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var \FluidTYPO3\Flux\Service\FluxService
 	 */
 	protected $configurationService;
 
 	/**
 	 * @var boolean
 	 */
-	private $cachesCleared = FALSE;
+	static private $cachesCleared = FALSE;
 
 	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->configurationService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+		$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 	}
 
 	/**
@@ -57,7 +60,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $relativeTo Filled if command is relative to another element
-	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference) {
@@ -71,7 +74,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $relativeTo Filled if command is relative to another element
-	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference) {
@@ -84,7 +87,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param array $incomingFieldArray The original field names and their values before they are processed
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
-	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, &$reference) {
@@ -97,7 +100,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $fieldArray The field names and their values to be processed
-	 * @param t3lib_TCEmain $reference Reference to the parent object (TCEmain)
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$reference) {
@@ -110,7 +113,7 @@ class Tx_Flux_Backend_TceMain {
 	 * @param string $table	The table we're dealing with
 	 * @param mixed $id Either the record UID or a string if a new record has been created
 	 * @param array $fieldArray The record row how it has been inserted into the database
-	 * @param t3lib_TCEmain $reference A reference to the TCEmain instance
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the TCEmain instance
 	 * @return void
 	 */
 	public function processDatamap_afterDatabaseOperations($status, $table, $id, &$fieldArray, &$reference) {
@@ -126,42 +129,32 @@ class Tx_Flux_Backend_TceMain {
 	 * @param mixed $id
 	 * @param array $record
 	 * @param array $arguments
-	 * @param t3lib_TCEmain $reference
-	 * @throws Exception
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
 	 * @return void
 	 */
 	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, &$reference) {
 		try {
-			if (strpos($id, 'NEW') !== FALSE) {
+			if (FALSE !== strpos($id, 'NEW')) {
 				$id = $reference->substNEWwithIDs[$id];
 			}
-			if ($record === NULL) {
-				$record = array();
-			}
 			$clause = "uid = '" . $id . "'";
-			$saveRecordData = FALSE;
-			if (count($record) === 0) {
-				$saveRecordData = TRUE;
+			if (0 === count($record)) {
+				// patch: when a record is completely empty but a UID exists
 				$loadedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $table, $clause);
-				if (is_array($loadedRecord) === TRUE) {
-					$loadedRecord = array_pop($loadedRecord);
-				} else {
-					$loadedRecord = array();
-				}
-				$record = &$loadedRecord;
-				if (isset($arguments['row']) === TRUE) {
+				if (TRUE === is_array($loadedRecord)) {
+					$record = array_pop($loadedRecord);
 					$arguments['row'] = &$record;
 				}
 			}
 			$arguments[] = &$reference;
-				// check for a registered generic ConfigurationProvider for $table
+			// check for a registered generic ConfigurationProvider for $table
 			$detectedProviders = array();
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
 			foreach ($providers as $provider) {
 				$class = get_class($provider);
 				$detectedProviders[$class] = $provider;
 			}
-				// check each field for a registered ConfigurationProvider
+			// check each field for a registered ConfigurationProvider
 			foreach ($record as $fieldName => $unusedValue) {
 				$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $record);
 				foreach ($providers as $provider) {
@@ -170,13 +163,13 @@ class Tx_Flux_Backend_TceMain {
 				}
 			}
 			foreach ($detectedProviders as $provider) {
-				call_user_func_array(array($provider, $methodName), $arguments);
+				if (TRUE === $provider->shouldCall($methodName, $record)) {
+					call_user_func_array(array($provider, $methodName), $arguments);
+					$provider->trackMethodCall($methodName, $record);
+				}
 			}
-			if ($saveRecordData === TRUE && isset($arguments['row']) === TRUE && is_array($arguments['row']) === TRUE && count($arguments['row']) > 0) {
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table, $clause, $arguments['row']);
-			}
-		} catch (Exception $error) {
-			$this->configurationService->debugException($error);
+		} catch (\Exception $error) {
+			$this->configurationService->debug($error);
 		}
 	}
 
@@ -187,24 +180,18 @@ class Tx_Flux_Backend_TceMain {
 	 * @return void
 	 */
 	public function clearCacheCommand($command) {
-		if (TRUE === $this->cachesCleared) {
+		if (TRUE === self::$cachesCleared) {
 			return;
-		}
-		$manifestCacheFiles = glob(t3lib_div::getFileAbsFileName('typo3temp/*-manifest.cache'));
-		if (FALSE !== $manifestCacheFiles) {
-			foreach ($manifestCacheFiles as $manifestCacheFile) {
-				unlink($manifestCacheFile);
-			}
 		}
 		$tables = array_keys($GLOBALS['TCA']);
 		foreach ($tables as $table) {
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL);
 			foreach ($providers as $provider) {
-				/** @var $provider Tx_Flux_Provider_ConfigurationProviderInterface */
+				/** @var $provider \FluidTYPO3\Flux\Provider\ProviderInterface */
 				$provider->clearCacheCommand($command);
 			}
 		}
-		$this->cachesCleared = TRUE;
+		self::$cachesCleared = TRUE;
 	}
 
 }

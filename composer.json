@@ -1,0 +1,6 @@
+{
+    "name": "fluidtypo3/flux",
+    "description": "The flux package from FluidTYPO3",
+    "type": "typo3-cms-extension",
+    "version": "7.0.0"
+}

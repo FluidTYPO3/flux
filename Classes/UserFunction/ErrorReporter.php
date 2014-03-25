@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -28,7 +29,7 @@
  * @package	Flux
  * @subpackage UserFunction
  */
-class Tx_Flux_UserFunction_ErrorReporter {
+class ErrorReporter {
 
 	/**
 	 * @param array $parameters
@@ -38,7 +39,7 @@ class Tx_Flux_UserFunction_ErrorReporter {
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj);
 		$exception = $parameters['fieldConf']['config']['parameters'][0]['exception'];
-		if ($exception instanceof Exception) {
+		if ($exception instanceof \Exception) {
 			$code = $exception->getCode();
 			$message = $exception->getMessage();
 			$type = get_class($exception);

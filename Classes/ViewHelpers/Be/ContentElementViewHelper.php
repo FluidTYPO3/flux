@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Be;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,20 +24,32 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+
 /**
  * @package Flux
  * @subpackage ViewHelpers\Be
  */
-class Tx_Flux_ViewHelpers_Be_ContentElementViewHelper extends Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper {
+class ContentElementViewHelper extends AbstractViewHelper {
 
 	/**
-	 * @param mixed $dblist
+	 * Initialize
+	 * @return void
+	 */
+	public function initializeArguments() {
+		$this->registerArgument('row', 'array', 'Record row', TRUE);
+		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
+		$this->registerArgument('dblist', 'TYPO3\CMS\Backend\View\PageLayoutView', 'Instance of PageLayoutView preconfigured to render each record', TRUE);
+	}
+
+	/**
 	 * @return string
 	 */
-	public function render($dblist) {
+	public function render() {
+		$dblist = $this->arguments['dblist'];
 		$record = $this->arguments['row'];
 		$rendered = $dblist->tt_content_drawHeader($record);
-		$rendered .= $dblist->tt_content_drawItem($record);
+		$rendered .= '<div class="t3-page-ce-body-inner">' . $dblist->tt_content_drawItem($record) . '</div>';
 		$rendered .= '</div>';
 		return $rendered;
 	}

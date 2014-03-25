@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2010 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -22,16 +23,20 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+
 /**
  * FLUX CORE
  *
  * Quick-access API methods to easily integrate with Flux
  *
- * @author Claus Due, Wildside A/S
  * @package Flux
  * @subpackage Core
  */
-class Tx_Flux_Core {
+class Core {
 
 	/**
 	 * Contains all ConfigurationProviders registered with Flux
@@ -40,13 +45,32 @@ class Tx_Flux_Core {
 	private static $providers = array();
 
 	/**
+	 * @var array
+	 */
+	protected static $pipes = array();
+
+	/**
+	 * @var array
+	 */
+	protected static $outlets = array();
+
+	/**
+	 * Contains all Forms for tables registered with Flux
+	 * @var array
+	 */
+	private static $forms = array(
+		'models' => array(),
+		'tables' => array()
+	);
+
+	/**
 	 * Contains ConfigurationProviders which have been unregistered
 	 * @var array
 	 */
 	private static $unregisteredProviders = array();
 
 	/**
-	 * Contains all extensions registered with Fluidpages
+	 * Contains all extensions registered with Flux
 	 * @var array
 	 */
 	private static $extensions = array();
@@ -55,29 +79,77 @@ class Tx_Flux_Core {
 	 * Contains all programatically added TypoScript configuration files for auto-inclusion
 	 * @var array
 	 */
-	private static $staticTypoScriptFiles = array();
+	private static $staticTypoScript = array();
 
 	/**
 	 * @return array
 	 */
-	public static function getStaticTypoScriptLocations() {
-		return self::$staticTypoScriptFiles;
+	public static function getStaticTypoScript() {
+		return self::$staticTypoScript;
 	}
 
 	/**
 	 * @param mixed $locationOrLocations
 	 * @return void
 	 */
-	public static function addGlobalTypoScript($locationOrLocations) {
+	public static function addStaticTypoScript($locationOrLocations) {
 		if (TRUE === is_array($locationOrLocations) || TRUE === $locationOrLocations instanceof Traversable) {
 			foreach ($locationOrLocations as $location) {
-				self::addGlobalTypoScript($location);
+				self::addStaticTypoScript($location);
 			}
-			return;
 		} else {
-			if (FALSE === in_array($locationOrLocations, self::$staticTypoScriptFiles)) {
-				array_push(self::$staticTypoScriptFiles, $locationOrLocations);
+			if (FALSE === in_array($locationOrLocations, self::$staticTypoScript)) {
+				array_push(self::$staticTypoScript, $locationOrLocations);
 			}
+		}
+	}
+
+	/**
+	 * @param string $table
+	 * @param Form $form
+	 * @return void
+	 */
+	public static function registerFormForTable($table, Form $form) {
+		if (NULL === $form->getName()) {
+			$form->setName($table);
+		}
+		if (NULL === $form->getExtensionName() && TRUE === isset($GLOBALS['_EXTKEY'])) {
+			$form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
+		}
+		self::$forms['tables'][$table] = $form;
+	}
+
+	/**
+	 * Registers automatic Form instance building and use as TCA for a model object class/table.
+	 *
+	 * @param string $className
+	 * @return void
+	 */
+	public static function registerAutoFormForModelObjectClassName($className) {
+		self::registerFormForModelObjectClassName($className);
+	}
+
+	/**
+	 * Registers a Form instance to use when TCA for a model object class/table is requested.
+	 *
+	 * @param string $className
+	 * @param Form $form
+	 * @return void
+	 */
+	public static function registerFormForModelObjectClassName($className, Form $form = NULL) {
+		if (NULL !== $form && TRUE === isset($GLOBALS['_EXTKEY']) && NULL === $form->getExtensionName()) {
+			$form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
+		}
+		self::$forms['models'][$className] = $form;
+	}
+
+	/**
+	 * @param string $className
+	 * @return void
+	 */
+	public static function unregisterFormForModelObjectClassName($className) {
+		if (TRUE === isset(self::$forms['models'][$className])) {
+			unset(self::$forms['models'][$className]);
 		}
 	}
 
@@ -114,18 +186,10 @@ class Tx_Flux_Core {
 	 *
 	 * @param string|object $classNameOrInstance
 	 * @return void
-	 * @throws Exception
+	 * @throws \RuntimeException
 	 */
 	public static function registerConfigurationProvider($classNameOrInstance) {
-		if (is_object($classNameOrInstance) === FALSE) {
-			if (class_exists($classNameOrInstance) === FALSE) {
-				throw new Exception('ConfigurationProvider class ' . $classNameOrInstance . ' does not exists', 1327173514);
-			}
-		}
-		if (in_array('Tx_Flux_Provider_ConfigurationProviderInterface', class_implements($classNameOrInstance)) === FALSE) {
-			throw new Exception(is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance . ' must implement one of the Provider interfaces from Flux/Provider', 1327173536);
-		}
-		if (in_array($classNameOrInstance, self::$unregisteredProviders) === FALSE && in_array($classNameOrInstance, self::$providers) === FALSE) {
+		if (FALSE === in_array($classNameOrInstance, self::$unregisteredProviders) && FALSE === in_array($classNameOrInstance, self::$providers)) {
 			array_push(self::$providers, $classNameOrInstance);
 		}
 	}
@@ -152,10 +216,10 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function registerFluidFlexFormPlugin($extensionKey, $pluginSignature, $templateFilename, $variables=array(), $section=NULL, $paths=NULL, $fieldName='pi_flexform') {
-		/** @var Tx_Extbase_Object_ObjectManagerInterface $objectManager */
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider */
-		$provider = $objectManager->get('Tx_Flux_Provider_Configuration_Fallback_PluginConfigurationProvider');
+		/** @var ObjectManagerInterface $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var $provider ProviderInterface */
+		$provider = $objectManager->get('FluidTYPO3\Flux\Provider\ContentProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName($fieldName);
 		$provider->setExtensionKey($extensionKey);
@@ -181,11 +245,11 @@ class Tx_Flux_Core {
 	 * @param string $fieldName Optional fieldname if not from pi_flexform
 	 * @return void
 	 */
-	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables=array(), $section=NULL, $paths=NULL, $fieldName='pi_flexform') {
-		/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider */
-		$provider = $objectManager->get('Tx_Flux_Provider_Configuration_Fallback_ContentObjectConfigurationProvider');
+	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables = array(), $section = NULL, $paths = NULL, $fieldName = 'pi_flexform') {
+		/** @var $objectManager ObjectManagerInterface */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var $provider ProviderInterface */
+		$provider = $objectManager->get('FluidTYPO3\Flux\Provider\ContentProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName($fieldName);
 		$provider->setExtensionKey($extensionKey);
@@ -210,11 +274,11 @@ class Tx_Flux_Core {
 	 * @param mixed|NULL Optional paths array / Closure to return paths
 	 * @return void
 	 */
-	public static function registerFluidFlexFormTable($table, $fieldName, $templateFilename, $variables=array(), $section=NULL, $paths=NULL) {
-		/** @var $objectManager Tx_Extbase_Object_ObjectManagerInterface */
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		/** @var $provider Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider */
-		$provider = $objectManager->get('Tx_Flux_Provider_Configuration_Fallback_ConfigurationProvider');
+	public static function registerFluidFlexFormTable($table, $fieldName, $templateFilename, $variables = array(), $section = NULL, $paths = NULL) {
+		/** @var $objectManager ObjectManagerInterface */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var $provider ProviderInterface */
+		$provider = $objectManager->get('FluidTYPO3\Flux\Provider\Provider');
 		$provider->setTableName($table);
 		$provider->setFieldName($fieldName);
 		$provider->setTemplatePathAndFilename($templateFilename);
@@ -229,12 +293,51 @@ class Tx_Flux_Core {
 	 * @return void
 	 */
 	public static function unregisterConfigurationProvider($providerClassName) {
-		if (in_array($providerClassName, self::$providers) === TRUE) {
+		if (TRUE === in_array($providerClassName, self::$providers)) {
 			$index = array_search($providerClassName, self::$providers);
 			unset(self::$providers[$index]);
-		}
-		if (in_array($providerClassName, self::$unregisteredProviders) === FALSE) {
+		} elseif (FALSE === in_array($providerClassName, self::$unregisteredProviders)) {
 			array_push(self::$unregisteredProviders, $providerClassName);
+		}
+	}
+
+	/**
+	 * @param string $typeOrClassName
+	 * @param string $insteadOfNativeType
+	 * @return void
+	 */
+	public static function registerPipe($typeOrClassName, $insteadOfNativeType = NULL) {
+		$key = NULL === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
+		self::$pipes[$key] = $typeOrClassName;
+	}
+
+	/**
+	 * @param string $typeOrClassName
+	 */
+	public static function unregisterPipe($typeOrClassName) {
+		if (TRUE === in_array($typeOrClassName, self::$pipes)) {
+			$index = array_search($typeOrClassName, self::$pipes);
+			unset(self::$pipes[$index]);
+		}
+	}
+
+	/**
+	 * @param string $typeOrClassName
+	 * @param string $insteadOfNativeType
+	 * @return void
+	 */
+	public static function registerOutlet($typeOrClassName, $insteadOfNativeType = NULL) {
+		$key = NULL === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
+		self::$outlets[$key] = $typeOrClassName;
+	}
+
+	/**
+	 * @param string $typeOrClassName
+	 */
+	public static function unregisterOutlet($typeOrClassName) {
+		if (TRUE === in_array($typeOrClassName, self::$outlets)) {
+			$index = array_search($typeOrClassName, self::$outlets);
+			unset(self::$outlets[$index]);
 		}
 	}
 
@@ -245,6 +348,56 @@ class Tx_Flux_Core {
 	public static function getRegisteredFlexFormProviders() {
 		reset(self::$providers);
 		return self::$providers;
+	}
+
+	/**
+	 * @return Form[]
+	 */
+	public static function getRegisteredFormsForTables() {
+		return self::$forms['tables'];
+	}
+
+	/**
+	 * @param string $table
+	 * @return Form|NULL
+	 */
+	public static function getRegisteredFormForTable($table) {
+		if (TRUE === isset(self::$forms['tables'][$table])) {
+			return self::$forms['tables'][$table];
+		}
+		return NULL;
+	}
+
+	/**
+	 * @return Form[]
+	 */
+	public static function getRegisteredFormsForModelObjectClasses() {
+		return self::$forms['models'];
+	}
+
+	/**
+	 * @param string $class
+	 * @return Form|NULL
+	 */
+	public static function getRegisteredFormForModelObjectClass($class) {
+		if (TRUE === isset(self::$forms['models'][$class])) {
+			return self::$forms['models'][$class];
+		}
+		return NULL;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getPipes() {
+		return array_values(self::$pipes);
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getOutlets() {
+		return array_values(self::$outlets);
 	}
 
 }

@@ -1,4 +1,5 @@
 <?php
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,21 +23,27 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+
 /**
  * Returns options for a "content area" selector box
  *
  * @package Flux
  * @subpackage Backend
  */
-class Tx_Flux_Backend_AreaListItemsProcessor {
+class AreaListItemsProcessor {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Flux_Service_FluxService
+	 * @var FluxService
 	 */
 	protected $fluxService;
 
@@ -44,8 +51,8 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->fluxService = $this->objectManager->get('Tx_Flux_Service_FluxService');
+		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$this->fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 	}
 
 	/**
@@ -83,24 +90,27 @@ class Tx_Flux_Backend_AreaListItemsProcessor {
 	 * @return array
 	 */
 	public function getContentAreasDefinedInContentElement($uid) {
-		$record = array_pop($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', "uid = '" . $uid . "'"));
-		/** @var $provider Tx_Flux_Provider_ConfigurationProviderInterface */
-		$provider = $this->fluxService->resolvePrimaryConfigurationProvider('tt_content', NULL, $record);
-		$extensionKey = $provider->getExtensionKey($record);
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$values = $provider->getTemplateVariables($record);
-		$templatePathAndFilename = $provider->getTemplatePathAndFilename($record);
-		$grid = $this->fluxService->getGridFromTemplateFile($templatePathAndFilename, $values, 'Configuration', $extensionName);
+		$uid = (integer) $uid;
+		$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', "uid = '" . $uid . "'");
+		/** @var $providers ProviderInterface[] */
+		$providers = $this->fluxService->resolveConfigurationProviders('tt_content', NULL, $record);
 		$columns = array();
-		foreach ($grid as $row) {
-			foreach ($row as $column) {
-				foreach ($column['areas'] as $area) {
-					array_push($columns, array($area['label'], $area['name']));
+		foreach ($providers as $provider) {
+			$grid = $provider->getGrid($record);
+			if (TRUE === empty($grid)) {
+				continue;
+			}
+			$gridConfiguration = $grid->build();
+			foreach ($gridConfiguration['rows'] as $row) {
+				foreach ($row['columns'] as $column) {
+					foreach ($column['areas'] as $area) {
+						array_push($columns, array($area['label'] . ' (' . $area['name'] . ')', $area['name']));
 
+					}
 				}
 			}
 		}
-		return $columns;
+		return array_unique($columns);
 	}
 
 }

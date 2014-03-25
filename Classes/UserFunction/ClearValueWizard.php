@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\UserFunction;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -22,13 +23,15 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+
 /**
  * Renders a checkbox which, when checked, clears a flexform field value.
  *
  * @package	Flux
  * @subpackage UserFunction
  */
-class Tx_Flux_UserFunction_ClearValueWizard {
+class ClearValueWizard {
 
 	/**
 	 * @param array $parameters
@@ -40,7 +43,7 @@ class Tx_Flux_UserFunction_ClearValueWizard {
 		$nameSegments[6] .= '_clear';
 		$fieldName = implode('][', $nameSegments);
 		$html = '<label style="opacity: 0.65; padding-left: 2em"><input type="checkbox" name="' . $fieldName . '_clear" ';
-		$html .= ' value="1" /> ' . Tx_Extbase_Utility_Localization::translate('flux.clearValue', 'Flux') . '</label>';
+		$html .= ' value="1" /> ' . LocalizationUtility::translate('flux.clearValue', 'Flux') . '</label>';
 		return $html;
 	}
 }

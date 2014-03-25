@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Widget\Controller;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,13 +24,18 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\ResolveUtility;
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController;
+
 /**
  * Grid Widget Controller
  *
  * @package Flux
  * @subpackage ViewHelpers/Widget
  */
-class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core_Widget_AbstractWidgetController {
+class GridController extends AbstractWidgetController {
 
 	/**
 	 * @var array
@@ -42,10 +48,23 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 	protected $row = array();
 
 	/**
-	 * @param array $grid
+	 * @var FluxService
+	 */
+	protected $configurationService;
+
+	/**
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function setGrid($grid) {
+	public function injectConfigurationService(FluxService $configurationService) {
+		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param Grid $grid
+	 * @return void
+	 */
+	public function setGrid(Grid $grid) {
 		$this->grid = $grid;
 	}
 
@@ -58,52 +77,15 @@ class Tx_Flux_ViewHelpers_Widget_Controller_GridController extends Tx_Fluid_Core
 	}
 
 	/**
-	 * @return void
-	 */
-	protected function assignGridVariables() {
-		foreach ($this->grid as $index => $columns) {
-			$this->grid[$index]['totalColumnCount'] = array();
-			foreach ($columns as $columnIndex => $column) {
-				$add = (1 + ($column['colspan'] - 1));
-				for ($i = 0; $i < $add; $i++) {
-					array_push($this->grid[$index]['totalColumnCount'], 1);
-				}
-				if (isset($column['areas']) === TRUE) {
-					foreach ($column['areas'] as $areaIndex => $area) {
-						$this->grid[$index][$columnIndex]['areas'][$areaIndex]['md5'] = md5(implode('', $this->row) . $area['name']);
-					}
-				}
-				$this->grid[$index][$columnIndex]['md5'] = md5(implode('', $this->row) . $column['name']);
-			}
-			if (Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero() === TRUE) {
-				unset($this->grid[$index]['totalColumnCount']);
-			}
-		}
-	}
-
-	/**
 	 * @return string
 	 */
 	public function indexAction() {
-		$this->assignGridVariables();
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $this->row);
-		$paths = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		if (TRUE === isset($paths['plugin.']['tx_flux.']['view.']['templateRootPath'])) {
-			$templateRootPath = $paths['plugin.']['tx_flux.']['view.']['templateRootPath'];
-		} else {
-			$templateRootPath = t3lib_extMgm::extPath('flux', 'Resources/Private/Templates');
-		}
-		if ('/' !== substr($templateRootPath, -1)) {
-			$templateRootPath .= '/';
-		}
-		$templatePathAndFilename = $templateRootPath . 'ViewHelpers/Widget/Grid/Index.html';
-		if (TRUE === Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
-			$templatePathAndFilename = $templateRootPath . 'ViewHelpers/Widget/Grid/GridElements.html';
-		} elseif (TRUE === Tx_Flux_Utility_Version::assertCoreVersionIsBelowSixPointZero()) {
-			$templatePathAndFilename = $templateRootPath . 'ViewHelpers/Widget/Grid/Legacy.html';
-		}
-		$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+		$paths = $this->configurationService->getViewConfigurationForExtensionName('flux');
+		$templateRootPath = TRUE === isset($paths['templateRootPath']) ? $paths['templateRootPath'] : NULL;
+		$templatePathAndFilename = ResolveUtility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath);
 		$this->view->setTemplatePathAndFilename($templatePathAndFilename);
 	}
+
 }

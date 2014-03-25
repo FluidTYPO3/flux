@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Be;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2010 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,13 +24,27 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Utility\VersionUtility;
+use TYPO3\CMS\Backend\View\PageLayoutView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+
 /**
  * ContentAreaViewHelper
  *
  * @package Flux
  * @subpackage ViewHelpers\Be
  */
-class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Flux_Core_ViewHelper_AbstractBackendViewHelper {
+class ContentAreaViewHelper extends AbstractViewHelper {
+
+	/**
+	 * Initialize
+	 * @return void
+	 */
+	public function initializeArguments() {
+		$this->registerArgument('row', 'array', 'Record row', TRUE);
+		$this->registerArgument('area', 'string', 'If placed inside Fluid FCE, use this to indicate which area to insert into');
+	}
 
 	/**
 	 * Render uri
@@ -44,8 +59,9 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Flux_Core_ViewHelp
 		$pageRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages', "uid = '" . $row['pid'] . "'");
 		$pageRecord = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pageRes);
 		$GLOBALS['TYPO3_DB']->sql_free_result($pageRes);
-		/** @var $dblist tx_cms_layout */
-		$dblist = t3lib_div::makeInstance('tx_cms_layout');
+		// note: the following chained makeInstance is not an error; it is there to make the ViewHelper work on TYPO3 6.0
+		/** @var $dblist PageLayoutView */
+		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
 		$dblist->script = 'db_layout.php';
 		$dblist->showIcon = 1;
@@ -83,7 +99,7 @@ class Tx_Flux_ViewHelpers_Be_ContentAreaViewHelper extends Tx_Flux_Core_ViewHelp
 		$this->templateVariableContainer->remove('dblist');
 		$this->templateVariableContainer->remove('fluxColumnId');
 
-		if (FALSE === Tx_Flux_Utility_Version::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
+		if (FALSE === VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
 			$content = '<div id="column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX">' . $content . '</div>';
 		}
 

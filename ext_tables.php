@@ -5,26 +5,31 @@ if (!defined('TYPO3_MODE')) {
 
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF);
 
-Tx_Extbase_Utility_Extension::registerPlugin($_EXTKEY, 'API', 'Flux API (do not use on pages)');
+$TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
+	'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container',
+	\FluidTYPO3\Flux\Service\ContentService::COLPOS_FLUXCONTENT
+);
 
-t3lib_div::loadTCA('tt_content');
-t3lib_extMgm::addTCAcolumns('tt_content', array(
+
+\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', array(
 		'tx_flux_column' => array (
 			'exclude' => 0,
-			'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xml:tt_content.tx_flux_column',
+			'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_column',
+			'displayCond' => 'FIELD:tx_flux_parent:>:0',
 			'config' => array (
 				'type' => 'select',
 				'default' => '',
-				'itemsProcFunc' => 'EXT:flux/Classes/Backend/AreaListItemsProcessor.php:Tx_Flux_Backend_AreaListItemsProcessor->itemsProcFunc'
+				'itemsProcFunc' => 'FluidTYPO3\Flux\Backend\AreaListItemsProcessor->itemsProcFunc'
 			)
 		),
 		'tx_flux_parent' => array (
 			'exclude' => 0,
-			'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xml:tt_content.tx_flux_parent',
+			'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_parent',
 			'config' => array (
 				'type' => 'select',
 				'foreign_table' => 'tt_content',
-				'foreign_table_where' => "AND tt_content.CType = 'fed_fce' AND tt_content.pid = '###CURRENT_PID###'",
+				'foreign_table_where' => "tt_content.pid = '###CURRENT_PID###'",
 				'default' => 0,
 				'size' => 1,
 				'maxitems' => 1,
@@ -37,11 +42,18 @@ t3lib_extMgm::addTCAcolumns('tt_content', array(
 				'foreign_table' => 'tt_content',
 				'foreign_field' => 'tx_flux_parent',
 				'foreign_sortby' => 'sorting',
+				'appearance' => array(
+					'collapseAll' => TRUE,
+					'enabledControls' => array(
+						'new' => FALSE,
+						'hide' => TRUE
+					)
+				)
 			)
 		),
 	)
 );
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('tt_content', ',--div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tabs.relation,tx_flux_column,tx_flux_children;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_children,,,');
 
-$TCA['tt_content']['columns']['colPos']['config']['items'][] = array('LLL:EXT:flux/locallang.xml:tt_content.tx_flux_container', 18181);
 
-Tx_Flux_Core::registerConfigurationProvider('Tx_Flux_Provider_Configuration_ContentObjectConfigurationProvider');
+\FluidTYPO3\Flux\Core::registerConfigurationProvider('FluidTYPO3\Flux\Provider\ContentProvider');

@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Content;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -31,7 +32,7 @@
  * @package Flux
  * @subpackage ViewHelpers/Flexform
  */
-class Tx_Flux_ViewHelpers_Content_RenderViewHelper extends Tx_Flux_ViewHelpers_Content_GetViewHelper {
+class RenderViewHelper extends GetViewHelper {
 
 	/**
 	 * Render

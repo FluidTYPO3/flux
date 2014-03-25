@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" product-name="flux" date="2014-01-05T14:38:32+01:00">
+		<header/>
+		<body>
+			<trans-unit id="tt_content.tx_flux_container">
+				<source>Content Container</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_flux_parent">
+				<source>Parent element</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_flux_column">
+				<source>Content area of parent</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_flux_children">
+				<source>Child content</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tabs.relation">
+				<source>Relations</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_flux_options">
+				<source>Options</source>
+			</trans-unit>
+			<trans-unit id="flux.clearValue">
+				<source>Clear value</source>
+			</trans-unit>
+			<trans-unit id="pipes.standard.label">
+				<source>Standard pipe (no action)</source>
+			</trans-unit>
+			<trans-unit id="pipes.controller.label">
+				<source>Controller action pipe</source>
+			</trans-unit>
+			<trans-unit id="pipes.email.label">
+				<source>Email sending pipe</source>
+			</trans-unit>
+			<trans-unit id="pipes.flashMessage.label">
+				<source>FlashMessage dispatch pipe</source>
+			</trans-unit>
+			<trans-unit id="pipes.typeConverter.label">
+				<source>Extbase TypeConverter pipe</source>
+			</trans-unit>
+			<trans-unit id="reference">
+				<source>Reference to content on page '%s' - click to jump to original</source>
+			</trans-unit>
+			<trans-unit id="user.no_fields">
+				<source>No fields found in form</source>
+			</trans-unit>
+			<trans-unit id="user.no_selection">
+				<source>No form selected/configured (enabling Flux debug will produce more information)</source>
+			</trans-unit>
+			<trans-unit id="user.no_template">
+				<source>No FlexForm source selected. This is usually caused by incorrect template paths being returned by a
+				ConfigurationProvider - in the case of FED/FluidContent/FluidPages this can also be caused by not having selected a page template
+				or Fluid content element type, which can be considered a safe "error" that is only reported because debug mode is enabled in Flux.
+				The parameters which lead to this error were:</source>
+			</trans-unit>
+			<trans-unit id="flux.this_table_does_not_exist.fields.input" xml:space="preserve">
+				<source>flux.this_table_does_not_exist.fields.input</source>
+			</trans-unit>
+			<trans-unit id="flux.this_table_does_not_exist" xml:space="preserve">
+				<source>flux.this_table_does_not_exist</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

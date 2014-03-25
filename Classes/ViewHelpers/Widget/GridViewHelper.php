@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Flux\ViewHelpers\Widget;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,42 +24,41 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\Widget\Controller\GridController;
+
 /**
  * Grid Widget for rendering a grid in previews of BE elements
  *
  * @package Flux
  * @subpackage ViewHelpers/Widget
  */
-class Tx_Flux_ViewHelpers_Widget_GridViewHelper extends Tx_Fluid_Core_Widget_AbstractWidgetViewHelper {
+class GridViewHelper extends AbstractWidgetViewHelper {
 
 	/**
-	 * @var Tx_Flux_ViewHelpers_Widget_Controller_GridController
+	 * @var GridController
 	 */
 	protected $controller;
 
 	/**
-	 * @param Tx_Flux_ViewHelpers_Widget_Controller_GridController $controller
+	 * @param GridController $controller
 	 * @return void
 	 */
-	public function injectController(Tx_Flux_ViewHelpers_Widget_Controller_GridController $controller) {
+	public function injectController(GridController $controller) {
 		$this->controller = $controller;
 	}
 
 	/**
 	 * @return string
-	 * @throws Exception
 	 */
 	public function render() {
-		if (TYPO3_MODE !== 'BE') {
-			return '';
-		}
 		if ($this->templateVariableContainer->exists('grid')) {
 			$this->controller->setGrid($this->templateVariableContainer->get('grid'));
 		}
 		if ($this->templateVariableContainer->exists('row')) {
 			$this->controller->setRow($this->templateVariableContainer->get('row'));
 		}
-
 		return $this->initiateSubRequest();
 	}
 
