@@ -101,9 +101,8 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @test
 	 */
 	public function postProcessCommandCallsExpectedMethodToMoveRecord() {
-		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand', 'updateRecord'));
+		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand'));
 		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('move' => 1)));
-		$mock->expects($this->once())->method('updateRecord');
 		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
 		$mockContentService->expects($this->once())->method('moveRecord');
 		ObjectAccess::setProperty($mock, 'contentService', $mockContentService, TRUE);
@@ -119,15 +118,14 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @test
 	 */
 	public function postProcessCommandCallsExpectedMethodToCopyRecord() {
-		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand', 'updateRecord'));
+		$record = $this->getBasicRecord();
+		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand'));
 		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('paste' => 1)));
-		$mock->expects($this->once())->method('updateRecord');
 		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
 		$mockContentService->expects($this->once())->method('pasteAfter');
 		ObjectAccess::setProperty($mock, 'contentService', $mockContentService, TRUE);
 		$command = 'copy';
 		$id = 0;
-		$record = $this->getBasicRecord();
 		$relativeTo = 0;
 		$reference = new DataHandler();
 		$mock->postProcessCommand($command, $id, $record, $relativeTo, $reference);
@@ -137,15 +135,14 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @test
 	 */
 	public function postProcessCommandCallsExpectedMethodToPasteRecord() {
-		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand', 'updateRecord'));
+		$record = $this->getBasicRecord();
+		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand'));
 		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('paste' => 1)));
-		$mock->expects($this->once())->method('updateRecord');
 		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
 		$mockContentService->expects($this->once())->method('pasteAfter');
 		ObjectAccess::setProperty($mock, 'contentService', $mockContentService, TRUE);
 		$command = 'move';
 		$id = 0;
-		$record = $this->getBasicRecord();
 		$relativeTo = 0;
 		$reference = new DataHandler();
 		$mock->postProcessCommand($command, $id, $record, $relativeTo, $reference);
