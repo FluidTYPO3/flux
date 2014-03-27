@@ -110,9 +110,6 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 			} else {
 				$this->contentService->moveRecord($row, $relativeTo, $reference);
 			}
-			if (0 < count($row)) {
-				$this->updateRecord($row, $id);
-			}
 		}
 	}
 

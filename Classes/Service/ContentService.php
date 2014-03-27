@@ -106,7 +106,7 @@ class ContentService implements SingletonInterface {
 			$record['colPos'] = self::COLPOS_FLUXCONTENT;
 		} elseif (0 > $relativeUid) {
 			$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid));
-			$record['sorting'] = $tceMain->resorting('tt_content', $row['pid'], 'sorting', abs($relativeUid));
+			$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', abs($relativeUid));
 			$record['pid'] = $relativeRecord['pid'];
 			$record['colPos'] = $relativeRecord['colPos'];
 			$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
@@ -124,7 +124,6 @@ class ContentService implements SingletonInterface {
 			$record['pid'] = $pid;
 		}
 		$this->updateRecordInDatabase($record, $id);
-		$row = $record;
 	}
 
 	/**
@@ -165,6 +164,7 @@ class ContentService implements SingletonInterface {
 		if (0 < $row['tx_flux_parent']) {
 			$row['colPos'] = self::COLPOS_FLUXCONTENT;
 		}
+		$this->updateRecordInDatabase($row);
 		return TRUE;
 	}
 
