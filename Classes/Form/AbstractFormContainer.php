@@ -46,6 +46,16 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	protected $transform;
 
 	/**
+	 * @var boolean
+	 */
+	protected $inheritEmpty = FALSE;
+
+	/**
+	 * @var boolean
+	 */
+	protected $stopInheritance = FALSE;
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
@@ -206,6 +216,38 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	 */
 	public function getTransform() {
 		return $this->transform;
+	}
+
+	/**
+	 * @param boolean $inheritEmpty
+	 * @return ContainerInterface
+	 */
+	public function setInheritEmpty($inheritEmpty) {
+		$this->inheritEmpty = (boolean) $inheritEmpty;
+		return $this;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getInheritEmpty() {
+		return (boolean) $this->inheritEmpty;
+	}
+
+	/**
+	 * @param boolean $stopInheritance
+	 * @return ContainerInterface
+	 */
+	public function setStopInheritance($stopInheritance) {
+		$this->stopInheritance = (boolean) $stopInheritance;
+		return $this;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getStopInheritance() {
+		return (boolean) $this->stopInheritance;
 	}
 
 }
