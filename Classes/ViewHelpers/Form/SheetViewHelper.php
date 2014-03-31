@@ -44,7 +44,7 @@ class SheetViewHelper extends AbstractFormViewHelper {
 	public function initializeArguments() {
 		$this->registerArgument('name', 'string', 'Name of the group, used as FlexForm sheet name, must be FlexForm XML-valid tag name string', TRUE);
 		$this->registerArgument('label', 'string', 'Label for the field group - used as tab name in FlexForm. Optional - if not ' .
-			'specified, Flux tries to detect an LLL label named "flux.sheets.fluxFormId.foobar" based on sheet name, in ' .
+			'specified, Flux tries to detect an LLL label named "flux.fluxFormId.sheets.foobar" based on sheet name, in ' .
 			'scope of extension rendering the Flux form.', FALSE, NULL);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
