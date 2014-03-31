@@ -61,6 +61,28 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	protected $fieldName = 'pi_flexform';
 
 	/**
+	 * @param array $row
+	 * @return integer
+	 */
+	public function getPriority(array $row) {
+		if (FALSE === empty($row['list_type'])) {
+			return 0;
+		}
+		return $this->priority;
+	}
+
+	/**
+	 * @param array $row
+	 * @param string $table
+	 * @param string $field
+	 * @param string $extensionKey
+	 * @return boolean
+	 */
+	public function trigger(array $row, $table, $field, $extensionKey = NULL) {
+		return FALSE === empty($row['list_type']) || parent::trigger($row, $table, $field, $extensionKey);
+	}
+
+	/**
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row
