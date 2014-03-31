@@ -155,8 +155,10 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	 */
 	protected function attachStyle() {
 		if (FALSE === self::$stylesIncluded) {
-			$doc = new DocumentTemplate();
-			$doc->getPageRenderer()->addCssFile(ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css');
+			$doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
+			$doc->backPath = $GLOBALS['BACK_PATH'];
+
+			$doc->getPageRenderer()->addCssFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css');
 			self::$stylesIncluded = TRUE;
 		}
 	}
