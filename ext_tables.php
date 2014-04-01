@@ -29,7 +29,7 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 			'config' => array (
 				'type' => 'select',
 				'foreign_table' => 'tt_content',
-				'foreign_table_where' => "tt_content.pid = '###CURRENT_PID###'",
+				'foreign_table_where' => "AND tt_content.pid = '###CURRENT_PID###'",
 				'default' => 0,
 				'size' => 1,
 				'maxitems' => 1,
