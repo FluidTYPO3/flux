@@ -22,6 +22,8 @@ namespace FluidTYPO3\Flux\UserFunction;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Error\DebugExceptionHandler;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Renders an exception error message in a nice way
@@ -38,7 +40,7 @@ class ErrorReporter {
 	 */
 	public function renderField(&$parameters, &$pObj) {
 		unset($pObj);
-		$exception = $parameters['fieldConf']['config']['parameters'][0]['exception'];
+		$exception = reset($parameters['fieldConf']['config']['arguments']);
 		if ($exception instanceof \Exception) {
 			$code = $exception->getCode();
 			$message = $exception->getMessage();

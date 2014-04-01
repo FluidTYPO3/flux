@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field\Inline;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Form\Field\Inline\Fal;
+use FluidTYPO3\Flux\Form\InlineRelationFieldInterface;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractInlineFieldViewHelper;
 use TYPO3\CMS\Core\Resource\File;
 
@@ -84,6 +85,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 		$allowedExtensions = $this->arguments['allowedExtensions'];
 		$disallowedExtensions = $this->arguments['disallowedExtensions'];
 
+		/** @var Fal $component */
 		$component = $this->getPreparedComponent('Inline/Fal');
 		if (FALSE === is_array($this->arguments['foreignMatchFields'])) {
 			$component->setForeignMatchFields(array(

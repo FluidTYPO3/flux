@@ -249,7 +249,10 @@ class FluxService implements SingletonInterface {
 			$this->debug($error);
 			/** @var Form $form */
 			self::$cache[$cacheKey] = $this->objectManager->get('FluidTYPO3\Flux\Form');
-			self::$cache[$cacheKey]->add(self::$cache[$cacheKey]->createField('UserFunction', 'func')->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField'));
+			self::$cache[$cacheKey]->add(self::$cache[$cacheKey]
+				->createField('UserFunction', 'error')
+				->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField')
+				->setArguments(array($error)));
 		}
 		return self::$cache[$cacheKey];
 	}
