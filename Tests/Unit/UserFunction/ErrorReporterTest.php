@@ -40,7 +40,7 @@ class ErrorReporterTest extends AbstractUserFunctionTest {
 	protected $parameters = array(
 		'fieldConf' => array(
 			'config' => array(
-				'parameters' => array(
+				'arguments' => array(
 				)
 			)
 		)
@@ -51,10 +51,8 @@ class ErrorReporterTest extends AbstractUserFunctionTest {
 	 */
 	protected function getParameters() {
 		$parameters = $this->parameters;
-		$parameters['fieldConf']['config']['parameters'] = array(
-			array(
-				'exception' => 'Ignored text ' . self::FAKE_MESSAGE . ' (' . self::FAKE_CODE . ') ignored text'
-			)
+		$parameters['fieldConf']['config']['arguments'] = array(
+			'Ignored text ' . self::FAKE_MESSAGE . ' (' . self::FAKE_CODE . ') ignored text'
 		);
 		return $parameters;
 	}
@@ -65,7 +63,7 @@ class ErrorReporterTest extends AbstractUserFunctionTest {
 	public function supportsExceptionAsParameter() {
 		$userFunctionReference = $this->getClassName() . '->' . $this->methodName;
 		$parameters = $this->getParameters();
-		$parameters['fieldConf']['config']['parameters'][0]['exception'] = new \Exception(self::FAKE_MESSAGE, self::FAKE_CODE);
+		$parameters['fieldConf']['config']['arguments'] = array(new \Exception(self::FAKE_MESSAGE, self::FAKE_CODE));
 		$output = GeneralUtility::callUserFunction($userFunctionReference, $parameters, $this->getCallerInstance());
 		$this->assertOutputContainsExpectedMessageAndCode($output);
 	}
