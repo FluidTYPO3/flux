@@ -52,6 +52,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 			'AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
+		$this->registerArgument('options', 'array', 'Custom options to be assigned to Form object - valid values depends on the context. See docs of extension in which you use this feature.');
 	}
 
 	/**
@@ -77,7 +78,12 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$this->renderChildren();
 		$this->viewHelperVariableContainer->remove(self::SCOPE, 'container');
 		$this->templateVariableContainer->remove('container');
-		$form->setVariables($this->arguments['variables']);
+		if (TRUE === is_array($this->arguments['variables'])) {
+			$form->setVariables($this->arguments['variables']);
+		}
+		if (TRUE === is_array($this->arguments['options'])) {
+			$form->setOptions($this->arguments['options']);
+		}
 	}
 
 }
