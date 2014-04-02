@@ -172,6 +172,12 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		}
 	}
 
+	/**
+	 * @param FormInterface $component
+	 * @param array $whitelist
+	 * @param array $blacklist
+	 * @return array
+	 */
 	protected function appendToWhiteAndBlacklistFromComponent(FormInterface $component, array $whitelist, array $blacklist) {
 		$allowed = $component->getVariable('allowedContentTypes');
 		if (NULL !== $allowed) {
