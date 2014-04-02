@@ -45,6 +45,7 @@ use TYPO3\CMS\Extbase\Mvc\Web\Responsee;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
@@ -136,6 +137,37 @@ class FluxService implements SingletonInterface {
 	 */
 	public function initializeObject() {
 		$this->loadTypoScriptConfigurationProviderInstances();
+	}
+
+	/**
+	 * @param array $objects
+	 * @param string $sortBy
+	 * @param string $sortDirection
+	 */
+	public function sortObjectsByProperty(array $objects, $sortBy, $sortDirection = 'ASC') {
+		$sorted = array();
+		$sort = array();
+		foreach ($objects as $index => $object) {
+			$sortValue = ObjectAccess::getPropertyPath($object, $sortBy);
+			$sort[$index] = $sortValue;
+		}
+		if ('ASC' === strtoupper($sortDirection)) {
+			asort($sort, SORT_NATURAL);
+		} else {
+			arsort($sort, SORT_NATURAL);
+		}
+		$hasStringIndex = FALSE;
+		foreach ($sort as $index => $value) {
+			$sorted[$index] = $objects[$index];
+			if (TRUE === is_string($index)) {
+				$hasStringIndex = TRUE;
+			}
+		}
+		if (FALSE === $hasStringIndex) {
+			// reset out-of-sequence indices if provided indices contain no strings
+			$sorted = array_values($sorted);
+		}
+		return $sorted;
 	}
 
 	/**
