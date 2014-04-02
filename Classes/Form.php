@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux;
  *****************************************************************/
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
 
@@ -381,7 +382,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 * @return mixed
 	 */
 	public function getOption($name) {
-		return TRUE === isset($this->options[$name]) ? $this->options[$name] : NULL;
+		return ObjectAccess::getPropertyPath($this->options, $name);
 	}
 
 	/**
