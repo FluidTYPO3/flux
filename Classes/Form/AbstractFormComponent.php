@@ -408,7 +408,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return mixed
 	 */
 	public function getVariable($name) {
-		return TRUE === isset($this->variables[$name]) ? $this->variables[$name] : NULL;
+		return ObjectAccess::getPropertyPath($this->variables, $name);
 	}
 
 	/**
