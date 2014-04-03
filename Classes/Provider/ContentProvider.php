@@ -90,6 +90,10 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference) {
+		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $row)) {
+			return;
+		}
+
 		parent::postProcessRecord($operation, $id, $row, $reference);
 		$parameters = GeneralUtility::_GET();
 		$this->contentService->affectRecordByRequestParameters($row, $parameters, $reference);
@@ -103,6 +107,10 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference) {
+		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $row)) {
+			return;
+		}
+
 		parent::postProcessDatabaseOperation($status, $id, $row, $reference);
 		if ($status === 'new') {
 			$this->contentService->initializeRecord($row, $reference);
@@ -121,6 +129,10 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference) {
+		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $row)) {
+			return;
+		}
+
 		parent::postProcessCommand($command, $id, $row, $relativeTo, $reference);
 		$pasteCommands = array('copy', 'move');
 		if (TRUE === in_array($command, $pasteCommands)) {
