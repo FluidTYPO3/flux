@@ -155,13 +155,4 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 		return (array) $command;
 	}
 
-	/**
-	 * @param array $record
-	 * @param integer $uid
-	 * @return array
-	 */
-	protected function updateRecord($record, $uid) {
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $uid . "'", $record);
-	}
-
 }
