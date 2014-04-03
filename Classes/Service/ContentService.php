@@ -193,7 +193,7 @@ class ContentService implements SingletonInterface {
 			$newLanguageUid = NULL;
 
 			if (0 < $oldUid) {
-				$clause = "(tx_flux_column LIKE '%:" . $oldUid . "' || tx_flux_parent = '" . $oldUid . "') AND deleted = 0 AND hidden = 0";
+				$clause = "(tx_flux_column LIKE '%:" . $oldUid . "' || tx_flux_parent = '" . $oldUid . "') AND deleted = 0";
 				$children = $this->loadRecordsFromDatabase($clause);
 				if (1 > count($children)) {
 					continue;
