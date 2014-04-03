@@ -187,45 +187,49 @@ class ContentService implements SingletonInterface {
 	}
 
 	/**
-	 * @param array $row
-	 * @param DataHandler $tceMain
-	 * @return NULL
-	 */
+	* @param array $row
+	* @param DataHandler $tceMain
+	* @return NULL
+	*/
 	public function initializeRecord(array $row, DataHandler $tceMain) {
-		$id = $row['uid'];
-		$newUid = $tceMain->substNEWwithIDs[$id];
-		$oldUid = $row['t3_origuid'];
 		$languageFieldName = $GLOBALS['TCA']['tt_content']['ctrl']['languageField'];
-		$newLanguageUid = NULL;
-		if ($oldUid) {
-			$oldRecord = $this->loadRecordFromDatabase($oldUid);
-			if (FALSE === empty($row[$languageFieldName])) {
-				$newLanguageUid = $row[$languageFieldName];
-			} elseif (FALSE === empty($oldRecord[$languageFieldName])) {
-				$newLanguageUid = $oldRecord[$languageFieldName];
-			} else {
-				$newLanguageUid = 1; // TODO: resolve config.sys_language_uid but WITHOUT using Extbase TS resolution, consider pid of new record
-			}
-			$clause = "(tx_flux_column LIKE '%:" . $oldUid . "' || tx_flux_parent = '" . $oldUid . "') AND deleted = 0 AND hidden = 0";
-			$children = $this->loadRecordsFromDatabase($clause);
-			if (1 > count($children)) {
-				return NULL;
-			}
-			// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
-			foreach ($children as $child) {
-				$area = $child['tx_flux_column'];
-				$overrideValues = array(
-					'tx_flux_column' => $area,
-					'tx_flux_parent' => $newUid,
-					$languageFieldName => $newLanguageUid
-				);
-				if ($oldRecord[$languageFieldName] !== $newLanguageUid && $oldRecord['pid'] === $row['pid']) {
-					$childUid = $tceMain->localize('tt_content', $child['uid'], $newLanguageUid);
-					$this->updateRecordInDatabase($overrideValues, $childUid);
+
+		foreach ($tceMain->datamap['tt_content'] as $substitutionId => $newRecord) {
+			$newUid = intval($tceMain->substNEWwithIDs[$substitutionId]);
+			$oldUid = intval($newRecord['t3_origuid']);
+			$newLanguageUid = NULL;
+
+			if (0 < $oldUid) {
+				$clause = "(tx_flux_column LIKE '%:" . $oldUid . "' || tx_flux_parent = '" . $oldUid . "') AND deleted = 0 AND hidden = 0";
+				$children = $this->loadRecordsFromDatabase($clause);
+				if (1 > count($children)) {
+					continue;
+				}
+
+				$oldRecord = $this->loadRecordFromDatabase($oldUid);
+				if (FALSE === empty($newRecord[$languageFieldName])) {
+					$newLanguageUid = $newRecord[$languageFieldName];
+				} elseif (FALSE === empty($oldRecord[$languageFieldName])) {
+					$newLanguageUid = $oldRecord[$languageFieldName];
+				} else {
+					$newLanguageUid = 1; // TODO: resolve config.sys_language_uid but WITHOUT using Extbase TS resolution, consider pid of new record
+				}
+
+				// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
+				foreach ($children as $child) {
+					$area = $child['tx_flux_column'];
+					$overrideValues = array(
+						'tx_flux_column' => $area,
+						'tx_flux_parent' => $newUid,
+						$languageFieldName => $newLanguageUid
+					);
+					if ($oldRecord[$languageFieldName] !== $newLanguageUid && $oldRecord['pid'] === $row['pid']) {
+						$childUid = $tceMain->localize('tt_content', $child['uid'], $newLanguageUid);
+						$this->updateRecordInDatabase($overrideValues, $childUid);
+					}
 				}
 			}
 		}
-		return NULL;
 	}
 
 	/**
