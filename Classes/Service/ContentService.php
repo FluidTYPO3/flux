@@ -109,12 +109,15 @@ class ContentService implements SingletonInterface {
 				$relativeRecord = $this->loadLocalizedRecordFromDatabase(abs($relativeUid), $record['sys_language_uid']);
 			}
 
-			if (FALSE === empty($possibleArea)) {
+			$updateColPos = TRUE;
+			if (FALSE === empty($possibleArea) || FALSE === empty($record['tx_flux_column'])) {
+                $updateColPos = FALSE;
 				if ($copyFromUid === $parentUid) {
 					$record['tx_flux_parent'] = $parentUid;
 					if (0 > $relativeUid) {
 						$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
 					}
+					$updateColPos = TRUE;
 				} else {
 					$parentRecord = $this->loadLocalizedRecordFromDatabase($parentUid, $record['sys_language_uid']);
 					if ($copyFromUid === intval($parentRecord['uid'])) {
@@ -122,6 +125,7 @@ class ContentService implements SingletonInterface {
 						if (0 > $relativeUid) {
 							$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
 						}
+						$updateColPos = TRUE;
 					} elseif (false === empty($record['tx_flux_parent'])) {
 						$parentRecord = $this->loadLocalizedRecordFromDatabase($record['tx_flux_parent'], $record['sys_language_uid']);
 						$record['tx_flux_parent'] = $parentRecord['uid'];
@@ -129,7 +133,9 @@ class ContentService implements SingletonInterface {
 						$record['tx_flux_parent'] = '';
 					}
 				}
-				$record['tx_flux_column'] = $possibleArea;
+				if (FALSE === empty($possibleArea)) {
+					$record['tx_flux_column'] = $possibleArea;
+				}
 				$record['colPos'] = self::COLPOS_FLUXCONTENT;
 			} elseif (0 > $relativeUid) {
 				$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
@@ -143,7 +149,7 @@ class ContentService implements SingletonInterface {
 				$record['tx_flux_column'] = '';
 				$record['tx_flux_parent'] = '';
 			}
-			if (FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos) {
+			if (TRUE === $updateColPos && (FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos)) {
 				$record['colPos'] = $possibleColPos;
 			}
 			if (TRUE === isset($pid) && FALSE === isset($relativeRecord['pid'])) {
