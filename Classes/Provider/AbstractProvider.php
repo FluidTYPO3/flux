@@ -985,30 +985,30 @@ class AbstractProvider implements ProviderInterface {
 
 	/**
 	 * @param string $methodName
-	 * @param array $row
+	 * @param mixed $id
 	 */
-	public function trackMethodCall($methodName, array $row) {
-		$cacheKey = get_class($this). $methodName . (TRUE === isset($row['uid']) ? $row['uid'] : '');
+	public function trackMethodCall($methodName, $id) {
+		$cacheKey = get_class($this). $methodName . $id;
 		self::$trackedMethodCalls[$cacheKey] = TRUE;
 	}
 
 	/**
 	 * @param string $methodName
-	 * @param array $row
+	 * @param mixed $id
 	 * @return boolean
 	 */
-	public function shouldCall($methodName, array $row) {
-		return self::shouldCallWithClassName(get_class($this), $methodName, $row);
+	public function shouldCall($methodName, $id) {
+		return self::shouldCallWithClassName(get_class($this), $methodName, $id);
 	}
 
 	/**
 	* @param string $className
 	* @param string $methodName
-	* @param array $row
+	* @param mixed $id
 	* @return boolean
 	*/
-	protected function shouldCallWithClassName($className, $methodName, array $row) {
-		$cacheKey = $className . $methodName . (TRUE === isset($row['uid']) ? $row['uid'] : '');
+	protected function shouldCallWithClassName($className, $methodName, $id) {
+		$cacheKey = $className . $methodName . $id;
 		return empty(self::$trackedMethodCalls[$cacheKey]);
 	}
 
