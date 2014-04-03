@@ -225,8 +225,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock = $this->createMock($methods);
 		$row = array('uid' => -1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
@@ -241,8 +241,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
 		$row = array('uid' => -1, 't3_origuid' => 999999999999, 'sys_language_uid' => 1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
@@ -257,8 +257,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
 		$row = array('uid' => -1, 't3_origuid' => 999999999999);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
@@ -270,8 +270,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock = $this->createMock($methods);
 		$mock->expects($this->atLeastOnce())->method('loadRecordsFromDatabase');
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
@@ -288,8 +288,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock->expects($this->exactly(2))->method('updateRecordInDatabase');
 		$row = array('uid' => -1, 't3_origuid' => 99999999999999);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler', array('localize'));
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
