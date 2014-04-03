@@ -108,6 +108,8 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 		parent::postProcessRecord($operation, $id, $row, $reference);
 		$parameters = GeneralUtility::_GET();
 		$this->contentService->affectRecordByRequestParameters($row, $parameters, $reference);
+
+		self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 	}
 
 	/**
@@ -126,6 +128,8 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 		if ($status === 'new') {
 			$this->contentService->initializeRecord($id, $row, $reference);
 		}
+
+		self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 	}
 
 	/**
@@ -157,6 +161,8 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 				$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
 			}
 		}
+
+		self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 	}
 
 	/**
@@ -165,6 +171,20 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	protected function getCallbackCommand() {
 		$command = GeneralUtility::_GET('CB');
 		return (array) $command;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getMoveData() {
+		$rawPostData = file_get_contents('php://input');
+		if (FALSE === empty($rawPostData)) {
+			$request = json_decode($rawPostData, TRUE);
+			if (TRUE === isset($request['method']) && TRUE === isset($request['data']) && 'moveContentElement' === $request['method']) {
+				return $request['data'];
+			}
+		}
+		return NULL;
 	}
 
 }
