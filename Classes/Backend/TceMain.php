@@ -163,9 +163,9 @@ class TceMain {
 				}
 			}
 			foreach ($detectedProviders as $provider) {
-				if (TRUE === $provider->shouldCall($methodName, $record)) {
+				if (TRUE === $provider->shouldCall($methodName, $id)) {
 					call_user_func_array(array($provider, $methodName), $arguments);
-					$provider->trackMethodCall($methodName, $record);
+					$provider->trackMethodCall($methodName, $id);
 				}
 			}
 		} catch (\Exception $error) {
