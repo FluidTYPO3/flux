@@ -98,6 +98,7 @@ class ContentService implements SingletonInterface {
 		$id = $row['uid'];
 		if (1 < substr_count($parameters[1], '-')) {
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
+			$parentUid = intval($parentUid);
 			$relativeUid = 0 - $relativeUid;
 		} else {
 			list ($tablename, $pid, $relativeUid) = $parameters;
@@ -115,21 +116,36 @@ class ContentService implements SingletonInterface {
 				$mappingArray[$copyFromUid] = $record;
 			}
 		}
-		if (0 > $relativeUid) {
-			$relativeRecord = $this->loadLocalizedRecordFromDatabase(abs($relativeUid), $record['sys_language_uid']);
-		}
+
 		foreach ($mappingArray as $copyFromUid => $record) {
-			if (NULL !== $relativeRecord && $relativeRecord['tx_flux_parent'] === $record['tx_flux_parent']) {
-				$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
+			if (0 > $relativeUid) {
+				$relativeRecord = $this->loadLocalizedRecordFromDatabase(abs($relativeUid), $record['sys_language_uid']);
 			}
 
 			if (FALSE === empty($possibleArea)) {
-				$recordParentUid = FALSE === empty($record['tx_flux_parent']) ? $record['tx_flux_parent'] : $parentUid;
-				$parentRecord = $this->loadLocalizedRecordFromDatabase($recordParentUid, $record['sys_language_uid']);
-				$record['tx_flux_parent'] = $parentRecord['uid'];
+				if ($copyFromUid === $parentUid) {
+					$record['tx_flux_parent'] = $parentUid;
+					if (0 > $relativeUid) {
+						$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
+					}
+				} else {
+					$parentRecord = $this->loadLocalizedRecordFromDatabase($parentUid, $record['sys_language_uid']);
+					if ($copyFromUid === intval($parentRecord['uid'])) {
+						$record['tx_flux_parent'] = $parentRecord['uid'];
+						if (0 > $relativeUid) {
+							$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
+						}
+					} elseif (false === empty($record['tx_flux_parent'])) {
+						$parentRecord = $this->loadLocalizedRecordFromDatabase($record['tx_flux_parent'], $record['sys_language_uid']);
+						$record['tx_flux_parent'] = $parentRecord['uid'];
+					} else {
+						$record['tx_flux_parent'] = '';
+					}
+				}
 				$record['tx_flux_column'] = $possibleArea;
 				$record['colPos'] = self::COLPOS_FLUXCONTENT;
 			} elseif (0 > $relativeUid) {
+				$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
 				$record['pid'] = $relativeRecord['pid'];
 				$record['colPos'] = $relativeRecord['colPos'];
 				$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
