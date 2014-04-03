@@ -50,7 +50,7 @@ class MiscellaneousUtility {
 	* @return string
 	*/
 	public static function wrapLink($inner, $uri) {
-		return '<a href="' . $uri . '">' . $inner . '</a>' . LF;
+		return '<a href="#" onclick="window.location.href=' . $uri . '">' . $inner . '</a>' . LF;
 	}
 
 }
