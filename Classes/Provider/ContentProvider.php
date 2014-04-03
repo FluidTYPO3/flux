@@ -101,7 +101,7 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference) {
-		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $row)) {
+		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
 			return;
 		}
 
@@ -118,7 +118,7 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference) {
-		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $row)) {
+		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
 			return;
 		}
 
@@ -140,7 +140,7 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference) {
-		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $row)) {
+		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
 			return;
 		}
 
