@@ -89,41 +89,46 @@ class ContentService implements SingletonInterface {
 		} else {
 			list ($tablename, $pid, $relativeUid) = $parameters;
 		}
-		if ($command !== 'copy') {
-			$record = $row;
+		$mappingArray = array();
+		if ('copy'!== $command) {
+			$mappingArray[$id] = $row;
 		} else {
-			$copiedUid = $tceMain->copyMappingArray['tt_content'][$id];
-			$record = $this->loadRecordFromDatabase($copiedUid);
-			if ('reference' === $subCommand) {
-				$record['CType'] = 'shortcut';
-				$record['records'] = $id;
+			foreach ($tceMain->copyMappingArray['tt_content'] as $copyFromUid => $copyToUid) {
+				$record = $this->loadRecordFromDatabase($copyToUid);
+				if ('reference' === $subCommand) {
+					$record['CType'] = 'shortcut';
+					$record['records'] = $id;
+				}
+				$mappingArray[$copyFromUid] = $record;
 			}
-			$id = $copiedUid;
 		}
-		if (FALSE === empty($possibleArea)) {
-			$record['tx_flux_parent'] = $parentUid;
-			$record['tx_flux_column'] = $possibleArea;
-			$record['colPos'] = self::COLPOS_FLUXCONTENT;
-		} elseif (0 > $relativeUid) {
-			$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid));
-			$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', abs($relativeUid));
-			$record['pid'] = $relativeRecord['pid'];
-			$record['colPos'] = $relativeRecord['colPos'];
-			$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
-			$record['tx_flux_parent'] = $relativeRecord['tx_flux_parent'];
-		} elseif (0 < $relativeUid) {
-			$record['sorting'] = 0;
-			$record['pid'] = $relativeUid;
-			$record['tx_flux_column'] = '';
-			$record['tx_flux_parent'] = '';
+		foreach ($mappingArray as $copyFromUid => $record) {
+			if (FALSE === empty($possibleArea)) {
+				$parentRecord = $this->loadLocalizedRecordFromDatabase($parentUid, $record['sys_language_uid']);
+				$record['tx_flux_parent'] = $parentRecord['uid'];
+				$record['tx_flux_column'] = $possibleArea;
+				$record['colPos'] = self::COLPOS_FLUXCONTENT;
+			} elseif (0 > $relativeUid) {
+				$relativeRecord = $this->loadLocalizedRecordFromDatabase(abs($relativeUid), $record['sys_language_uid']);
+				$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
+				$record['pid'] = $relativeRecord['pid'];
+				$record['colPos'] = $relativeRecord['colPos'];
+				$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
+				$record['tx_flux_parent'] = $relativeRecord['tx_flux_parent'];
+			} elseif (0 < $relativeUid) {
+				$record['sorting'] = 0;
+				$record['pid'] = $relativeUid;
+				$record['tx_flux_column'] = '';
+				$record['tx_flux_parent'] = '';
+			}
+			if (FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos) {
+				$record['colPos'] = $possibleColPos;
+			}
+			if (TRUE === isset($pid) && FALSE === isset($relativeRecord['pid'])) {
+				$record['pid'] = $pid;
+			}
+			$this->updateRecordInDatabase($record);
 		}
-		if (FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos) {
-			$record['colPos'] = $possibleColPos;
-		}
-		if (TRUE === isset($pid) && FALSE === isset($relativeRecord['pid'])) {
-			$record['pid'] = $pid;
-		}
-		$this->updateRecordInDatabase($record, $id);
 	}
 
 	/**
@@ -269,6 +274,21 @@ class ContentService implements SingletonInterface {
 			$uidOrClause = "uid = '" . intval($uidOrClause) . "'";
 		}
 		return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', $uidOrClause);
+	}
+
+	/**
+	 * @param int $uid
+	 * @param int $languageUid
+	 * @return array|FALSE
+	*/
+	protected function loadLocalizedRecordFromDatabase($uid, $languageUid) {
+		$uid = intval($uid);
+		$languageUid = intval($languageUid);
+		if (0 === $languageUid) {
+			return BackendUtility::getRecord('tt_content', $uid);
+		} else {
+			return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', 'l18n_parent = ' . $uid . ' AND sys_language_uid = ' . $languageUid);
+		}
 	}
 
 	/**
