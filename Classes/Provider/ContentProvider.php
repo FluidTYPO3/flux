@@ -153,7 +153,8 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 				$parameters = explode('|', $pasteCommand);
 				$this->contentService->pasteAfter($command, $row, $parameters, $reference);
 			} else {
-				$this->contentService->moveRecord($row, $relativeTo, $reference);
+				$moveData = $this->getMoveData();
+				$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
 			}
 		}
 	}

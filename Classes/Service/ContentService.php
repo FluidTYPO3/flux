@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\Service;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Flux FlexForm integration Service
@@ -164,9 +165,11 @@ class ContentService implements SingletonInterface {
 	 *
 	 * @param array $row The row which may, may not, trigger moving.
 	 * @param string $relativeTo If not-zero moves record to after this UID (negative) or top of this colPos (positive)
+     * @param array $parameters List of parameters defining the move operation target
+     * @param DataHandler $tceMain
 	 * @return boolean
 	 */
-	public function moveRecord(array &$row, &$relativeTo) {
+	public function moveRecord(array &$row, &$relativeTo, $parameters, DataHandler $tceMain) {
 		if (FALSE !== strpos($relativeTo, 'FLUX')) {
 			// Triggers when CE is dropped on a nested content area's header dropzone (EXT:gridelements)
 			list ($areaName, $parentElementUid, $pid) = explode('-', trim($relativeTo, '-'));
@@ -183,11 +186,19 @@ class ContentService implements SingletonInterface {
 			$row['colPos'] = $colPos;
 			$row['sorting'] = -1;
 		} elseif (0 <= intval($relativeTo)) {
-			// dropping an element in a column header dropzone in 6.0 only sends the "colPos"
-			// and this colPos may contain nothing but positive integers. Bring the severe hacking.
-			$backtrace = debug_backtrace();
-			$this->affectRecordByBacktrace($row, $backtrace);
-		} elseif (0 > intval($relativeTo) || 0 > $row['pid']) {
+			if (FALSE === empty($parameters[1])) {
+				list($prefix, $column, $prefix2, $page, $areaUniqid, $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
+				$relativeUid = intval($relativeUid);
+				if ('colpos' === $prefix && 'page' === $prefix2 && 'top' === $relativePosition && 0 < $relativeUid) {
+					$row['tx_flux_parent'] = $relativeUid;
+					$row['tx_flux_column'] = $area;
+				} else {
+					$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
+				}
+			} else {
+				$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
+			}
+		} elseif (0 > intval($relativeTo)) {
 			// inserting a new element after another element. Check column position of that element.
 			$relativeToRecord = $this->loadRecordFromDatabase(abs($relativeTo));
 			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
@@ -244,36 +255,6 @@ class ContentService implements SingletonInterface {
 				}
 			}
 		}
-	}
-
-	/**
-	 * @param array $row
-	 * @param array $backtrace
-	 * @return boolean
-	 */
-	public function affectRecordByBacktrace(array &$row, array $backtrace) {
-		$retrievedArgument = NULL;
-		$targetClass = 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands';
-		$targetFunction = 'moveContentElement';
-		foreach (array_reverse($backtrace) as $stackItem) {
-			if ($stackItem['class'] === $targetClass && $stackItem['function'] === $targetFunction) {
-				$retrievedArgument = $stackItem['args'][1];
-				$segments = explode('-', $retrievedArgument);
-				$slice = array_slice($segments, count($segments) - 3);
-				if ($slice[0] === 'top') {
-					$row['tx_flux_parent'] = $slice[1];
-					$row['tx_flux_column'] = $slice[2];
-					$row['colPos'] = self::COLPOS_FLUXCONTENT;
-				} elseif ($slice[0] === 'after') {
-					$row['pid'] = 0 - $slice[1];
-					$row['tx_flux_column'] = $slice[2];
-				} else {
-					$row['tx_flux_parent'] = $row['tx_flux_column'] = '';
-				}
-				break;
-			}
-		}
-		return TRUE;
 	}
 
 	/**
