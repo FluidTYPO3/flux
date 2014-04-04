@@ -103,6 +103,7 @@ class ContentProviderTest extends AbstractProviderTest {
 		$record = $this->getBasicRecord();
 		$relativeTo = 0;
 		$reference = new DataHandler();
+		$mock->reset();
 		$mock->postProcessCommand($command, $id, $record, $relativeTo, $reference);
 	}
 
@@ -120,6 +121,7 @@ class ContentProviderTest extends AbstractProviderTest {
 		$id = 0;
 		$relativeTo = 0;
 		$reference = new DataHandler();
+		$mock->reset();
 		$mock->postProcessCommand($command, $id, $record, $relativeTo, $reference);
 	}
 
@@ -137,6 +139,7 @@ class ContentProviderTest extends AbstractProviderTest {
 		$id = 0;
 		$relativeTo = 0;
 		$reference = new DataHandler();
+		$mock->reset();
 		$mock->postProcessCommand($command, $id, $record, $relativeTo, $reference);
 	}
 

@@ -173,6 +173,10 @@ class ContentServiceTest extends AbstractTestCase {
 			'sys_language_uid' => 1
 		);
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
+		$mock->expects($this->once())->method('loadRecordsFromDatabase')->will($this->returnValue(array(
+			Records::$contentRecordWithParentAndChildren,
+			Records::$contentRecordWithParentAndWithoutChildren
+		)));
 		$row = array('uid' => -1, 't3_origuid' => 999999999999, 'sys_language_uid' => 1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
@@ -189,6 +193,10 @@ class ContentServiceTest extends AbstractTestCase {
 			'sys_language_uid' => 1
 		);
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
+		$mock->expects($this->once())->method('loadRecordsFromDatabase')->will($this->returnValue(array(
+			Records::$contentRecordWithParentAndChildren,
+			Records::$contentRecordWithParentAndWithoutChildren
+		)));
 		$row = array('uid' => -1, 't3_origuid' => 999999999999);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
@@ -241,9 +249,10 @@ class ContentServiceTest extends AbstractTestCase {
 			'colPos' => ContentService::COLPOS_FLUXCONTENT
 		);
 		$relativeTo = -1;
+		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(1)->will($this->returnValue($relativeRecord));
 		$mock->expects($this->once())->method('updateRecordInDatabase');
-		$mock->moveRecord($row, $relativeTo);
+		$mock->moveRecord($row, $relativeTo, array(), $tceMain);
 		$this->assertEquals($relativeRecord['tx_flux_column'], $row['tx_flux_column']);
 		$this->assertEquals($relativeRecord['tx_flux_parent'], $row['tx_flux_parent']);
 		$this->assertEquals($relativeRecord['colPos'], $row['colPos']);
