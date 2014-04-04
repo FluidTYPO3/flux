@@ -39,7 +39,7 @@ use TYPO3\CMS\Core\Resource\File;
  * 		-> v:var.set(name: 'settings.files')}
  * 
  * And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
- * 	{v:resource.record.fal(record: page, field: 'settings.files', table: 'pages') 
+ * 	{v:page.resources.fal(field: 'settings.files')
  * 		-> v:iterator.first() 
  * 		-> v:var.set(name: 'settings.files')}
  * 
