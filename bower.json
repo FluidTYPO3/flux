@@ -1,0 +1,28 @@
+{
+  "name": "flux",
+  "version": "7.0.0",
+  "homepage": "http://fluidtypo3.org",
+  "description": "The flux package from FluidTYPO3",
+  "main": "ext_emconf.php",
+  "keywords": [
+    "TYPO3",
+    "CMS",
+    "extension",
+    "templating",
+    "bootstrap",
+    "flux",
+    "fedext",
+    "fluid"
+  ],
+  "authors": [
+    "FluidTYPO3 Team"
+  ],
+  "license": "GPL-2.0+",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
