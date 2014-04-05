@@ -58,6 +58,24 @@ abstract class AbstractContainerTest extends AbstractFormTest {
 	/**
 	 * @test
 	 */
+	public function canGetAndSetInheritEmpty() {
+		$instance = $this->createInstance();
+		$instance->setInheritEmpty(TRUE);
+		$this->assertEquals(TRUE, $instance->getInheritEmpty());
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetAndSetStopInheritance() {
+		$instance = $this->createInstance();
+		$instance->setStopInheritance(TRUE);
+		$this->assertEquals(TRUE, $instance->getStopInheritance());
+	}
+
+	/**
+	 * @test
+	 */
 	public function returnsFalseIfChildObjectNameDoesNotExistRecursively() {
 		$instance = $this->createInstance();
 		$subContainer = $instance->createContainer('Container', 'testcontainer');
