@@ -127,7 +127,7 @@ class ContentService implements SingletonInterface {
 							$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
 						}
 						$updateColPos = TRUE;
-					} elseif (false === empty($record['tx_flux_parent'])) {
+					} elseif (FALSE === empty($record['tx_flux_parent'])) {
 						$parentRecord = $this->loadLocalizedRecordFromDatabase($record['tx_flux_parent'], $record['sys_language_uid']);
 						$record['tx_flux_parent'] = $parentRecord['uid'];
 					} else {
