@@ -89,17 +89,6 @@ class ContentProviderTest extends AbstractProviderTest {
 	/**
 	 * @test
 	 */
-	public function canUpdateRecord() {
-		$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid', 'tt_content', '1=1', 1);
-		if (FALSE !== $record) {
-			$instance = $this->createInstance();
-			$this->callInaccessibleMethod($instance, 'updateRecord', $record, $record['uid']);
-		}
-	}
-
-	/**
-	 * @test
-	 */
 	public function postProcessCommandCallsExpectedMethodToMoveRecord() {
 		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand'));
 		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('move' => 1)));

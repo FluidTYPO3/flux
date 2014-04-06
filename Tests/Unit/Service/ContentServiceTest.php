@@ -36,30 +36,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ContentServiceTest extends AbstractTestCase {
 
 	/**
-	 * @var array
-	 */
-	private static $BACKTRACE_FIXTURE = array(
-		array(
-			'class' => 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands',
-			'function' => 'moveContentElement',
-			'args' => array()
-		),
-		array(
-			'class' => 'TYPO3\\CMS\\Backend\\View\\PageLayout\\ExtDirect\\ExtdirectPageCommands',
-			'function' => 'unrecognised',
-			'args' => array()
-		),
-		array(
-			'class' => 'Unrecognised',
-			'function' => 'void',
-			'args' => array(
-				'foo',
-				'bar'
-			)
-		)
-	);
-
-	/**
 	 * @return ContentService
 	 */
 	protected function createInstance() {
@@ -132,49 +108,6 @@ class ContentServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function affectsRecordByBacktraceWithDropTargetTop() {
-		$expectedParent = 123;
-		$expectedColumn = 'myarea';
-		$backtrace = self::$BACKTRACE_FIXTURE;
-		$backtrace[0]['args'] = array(
-			0 => 'unused',
-			1 => 'void-void-void-void-top-' . $expectedParent . '-' . $expectedColumn
-		);
-		$row = $this->fireBacktraceDetection($backtrace);
-		$this->assertEquals($expectedColumn, $row['tx_flux_column']);
-		$this->assertEquals($expectedParent, $row['tx_flux_parent']);
-		$this->assertEquals(ContentService::COLPOS_FLUXCONTENT, $row['colPos']);
-	}
-
-	/**
-	 * @test
-	 */
-	public function affectsRecordByBacktraceWithDropTargetAfter() {
-		$expectedParent = 123;
-		$expectedColumn = '';
-		$backtrace = self::$BACKTRACE_FIXTURE;
-		$backtrace[0]['args'] = array(
-			0 => 'unused',
-			1 => 'void-void-void-void-after-' . $expectedParent . '-' . $expectedColumn
-		);
-		$row = $this->fireBacktraceDetection($backtrace);
-		$this->assertEquals($expectedColumn, $row['tx_flux_column']);
-		$this->assertEquals(0 - $expectedParent, $row['pid']);
-	}
-
-	/**
-	 * @test
-	 */
-	public function affectsRecordByBacktraceWithDropTargetNone() {
-		$backtrace = self::$BACKTRACE_FIXTURE;
-		$row = $this->fireBacktraceDetection($backtrace);
-		$this->assertEmpty($row['tx_flux_column']);
-		$this->assertEmpty($row['tx_flux_parent']);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canLoadRecordsFromDatabase() {
 		$instance = $this->createInstance();
 		$result = $this->callInaccessibleMethod($instance, 'loadRecordsFromDatabase', 'uid IN(0)');
@@ -208,8 +141,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock = $this->createMock($methods);
 		$row = array('uid' => -1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
@@ -224,8 +157,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
 		$row = array('uid' => -1, 't3_origuid' => 999999999999, 'sys_language_uid' => 1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
@@ -240,8 +173,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
 		$row = array('uid' => -1, 't3_origuid' => 999999999999);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
@@ -253,8 +186,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock = $this->createMock($methods);
 		$mock->expects($this->atLeastOnce())->method('loadRecordsFromDatabase');
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
@@ -271,20 +204,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock->expects($this->exactly(2))->method('updateRecordInDatabase');
 		$row = array('uid' => -1, 't3_origuid' => 99999999999999);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler', array('localize'));
-		$tceMain->substNEWwithIDs = array();
-		$mock->initializeRecord($row, $tceMain);
-	}
-
-	/**
-	 * @test
-	 */
-	public function moveRecordWithPositiveColumnPositionDetectsParentLocationFromBacktrace() {
-		$methods = array('affectRecordByBacktrace');
-		$row = array();
-		$mock = $this->createMock($methods);
-		$mock->expects($this->once())->method('affectRecordByBacktrace')->with($row);
-		$relativeTo = 1;
-		$mock->moveRecord($row, $relativeTo);
+		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
 	/**
@@ -308,42 +229,6 @@ class ContentServiceTest extends AbstractTestCase {
 		$this->assertEquals($relativeRecord['tx_flux_parent'], $row['tx_flux_parent']);
 		$this->assertEquals($relativeRecord['colPos'], $row['colPos']);
 		$this->assertEquals(-1, $relativeTo);
-	}
-
-	/**
-	 * @test
-	 */
-	public function moveRecordWithCombinedFluxRelativeToValueSetsExpectedRecordPropertiesAndUpdatesRelativeToValue() {
-		$methods = array('affectRecordByBacktrace');
-		$mock = $this->createMock($methods);
-		$row = array(
-			'pid' => 1
-		);
-		$relativeTo = 'area-1-2-FLUX';
-		$mock->moveRecord($row, $relativeTo);
-		$this->assertEquals('area', $row['tx_flux_column']);
-		$this->assertEquals('1', $row['tx_flux_parent']);
-		$this->assertEquals('2', $row['pid']);
-		$this->assertEquals(-1, $row['sorting']);
-		$this->assertEquals(2, $relativeTo);
-	}
-
-	/**
-	 * @test
-	 */
-	public function moveRecordWithCombinedGridelementsRelativeToValueSetsExpectedRecordPropertiesAndUpdatesRelativeToValue() {
-		$methods = array('affectRecordByBacktrace');
-		$mock = $this->createMock($methods);
-		$row = array(
-			'pid' => 1
-		);
-		$relativeTo = '1x2';
-		$mock->moveRecord($row, $relativeTo);
-		$this->assertEquals(NULL, $row['tx_flux_column']);
-		$this->assertEquals(NULL, $row['tx_flux_parent']);
-		$this->assertEquals('2', $row['colPos']);
-		$this->assertEquals(-1, $row['sorting']);
-		$this->assertEquals(1, $relativeTo);
 	}
 
 	/**
@@ -436,16 +321,6 @@ class ContentServiceTest extends AbstractTestCase {
 		$tceMain = new DataHandler();
 		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
 		$mock->pasteAfter($command, $row, $parameters, $tceMain);
-	}
-
-	/**
-	 * @param array $backtrace
-	 * @return array
-	 */
-	protected function fireBacktraceDetection($backtrace) {
-		$row = array();
-		$this->createInstance()->affectRecordByBacktrace($row, $backtrace);
-		return $row;
 	}
 
 	/**

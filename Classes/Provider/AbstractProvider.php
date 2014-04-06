@@ -980,21 +980,56 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * Use by TceMain to track method calls to providers for a certain $id.
+	 * Every provider should only be called once per method / $id.
+	 * When TceMain has called the provider it will call this method afterwards.
+	 *
 	 * @param string $methodName
-	 * @param array $row
+	 * @param mixed $id
 	 */
-	public function trackMethodCall($methodName, array $row) {
-		$cacheKey = get_class($this). $methodName . (TRUE === isset($row['uid']) ? $row['uid'] : '');
+	public function trackMethodCall($methodName, $id) {
+		return self::trackMethodCallWithClassName(get_class($this), $methodName, $id);
+	}
+
+	/**
+	 * Use by TceMain to track method calls to providers for a certain $id.
+	 * Every provider should only be called once per method / $id.
+	 * Before calling a provider, TceMain will call this method.
+	 * If the provider hasn't been called for that method / $id before, it is.
+	 *
+	 *
+	 * @param string $methodName
+	 * @param mixed $id
+	 * @return boolean
+	 */
+	public function shouldCall($methodName, $id) {
+		return self::shouldCallWithClassName(get_class($this), $methodName, $id);
+	}
+
+	/**
+	 * Internal method. See trackMethodCall.
+	 * This is used by flux own provider to make sure on inheritance they are still only executed once.
+	 *
+	 * @param string $className
+	 * @param string $methodName
+	 * @param mixed $id
+	 */
+	protected function trackMethodCallWithClassName($className, $methodName, $id) {
+		$cacheKey = $className . $methodName . $id;
 		self::$trackedMethodCalls[$cacheKey] = TRUE;
 	}
 
 	/**
+	 * Internal method. See shouldCall.
+	 * This is used by flux own provider to make sure on inheritance they are still only executed once.
+	 *
+	 * @param string $className
 	 * @param string $methodName
-	 * @param array $row
+	 * @param mixed $id
 	 * @return boolean
 	 */
-	public function shouldCall($methodName, array $row) {
-		$cacheKey = get_class($this). $methodName . (TRUE === isset($row['uid']) ? $row['uid'] : '');
+	protected function shouldCallWithClassName($className, $methodName, $id) {
+		$cacheKey = $className . $methodName . $id;
 		return empty(self::$trackedMethodCalls[$cacheKey]);
 	}
 
