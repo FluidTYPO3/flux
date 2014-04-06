@@ -302,7 +302,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
-		$variables['record'] = $this->loadRecordFromDatabase($row['uid']);
+		$variables['record'] = $row;
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
 		return $grid;
 	}
