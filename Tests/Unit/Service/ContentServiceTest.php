@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\Service;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -197,7 +198,11 @@ class ContentServiceTest extends AbstractTestCase {
 	public function canUpdateRecordInDatabase() {
 		$instance = $this->createInstance();
 		$row = array('uid' => 0);
+		$backup = $GLOBALS['TYPO3_DB'];
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_UPDATEquery'));
+		$GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_UPDATEquery');
 		$this->callInaccessibleMethod($instance, 'updateRecordInDatabase', $row);
+		$GLOBALS['TYPO3_DB'] = $backup;
 	}
 
 	/**
@@ -279,10 +284,11 @@ class ContentServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function moveRecordWithPositiveColumnPositionDetectsParentLocationFromBacktrace() {
-		$methods = array('affectRecordByBacktrace');
+		$methods = array('affectRecordByBacktrace', 'updateRecordInDatabase');
 		$row = array();
 		$mock = $this->createMock($methods);
 		$mock->expects($this->once())->method('affectRecordByBacktrace')->with($row);
+		$mock->expects($this->once())->method('updateRecordInDatabase');
 		$relativeTo = 1;
 		$mock->moveRecord($row, $relativeTo);
 	}
@@ -291,7 +297,7 @@ class ContentServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function moveRecordWithNegativeRelativeToValueLoadsRelativeRecordFromDatabaseAndCopiesValuesToRecordAndSetsColumnPositionAndUpdatesRelativeToValue() {
-		$methods = array('loadRecordFromDatabase');
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
 		$mock = $this->createMock($methods);
 		$row = array(
 			'pid' => 1
@@ -303,6 +309,7 @@ class ContentServiceTest extends AbstractTestCase {
 		);
 		$relativeTo = -1;
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(1)->will($this->returnValue($relativeRecord));
+		$mock->expects($this->once())->method('updateRecordInDatabase');
 		$mock->moveRecord($row, $relativeTo);
 		$this->assertEquals($relativeRecord['tx_flux_column'], $row['tx_flux_column']);
 		$this->assertEquals($relativeRecord['tx_flux_parent'], $row['tx_flux_parent']);
@@ -314,12 +321,13 @@ class ContentServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function moveRecordWithCombinedFluxRelativeToValueSetsExpectedRecordPropertiesAndUpdatesRelativeToValue() {
-		$methods = array('affectRecordByBacktrace');
+		$methods = array('affectRecordByBacktrace', 'updateRecordInDatabase');
 		$mock = $this->createMock($methods);
 		$row = array(
 			'pid' => 1
 		);
 		$relativeTo = 'area-1-2-FLUX';
+		$mock->expects($this->once())->method('updateRecordInDatabase');
 		$mock->moveRecord($row, $relativeTo);
 		$this->assertEquals('area', $row['tx_flux_column']);
 		$this->assertEquals('1', $row['tx_flux_parent']);
@@ -332,12 +340,13 @@ class ContentServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function moveRecordWithCombinedGridelementsRelativeToValueSetsExpectedRecordPropertiesAndUpdatesRelativeToValue() {
-		$methods = array('affectRecordByBacktrace');
+		$methods = array('affectRecordByBacktrace', 'updateRecordInDatabase');
 		$mock = $this->createMock($methods);
 		$row = array(
 			'pid' => 1
 		);
 		$relativeTo = '1x2';
+		$mock->expects($this->once())->method('updateRecordInDatabase');
 		$mock->moveRecord($row, $relativeTo);
 		$this->assertEquals(NULL, $row['tx_flux_column']);
 		$this->assertEquals(NULL, $row['tx_flux_parent']);
