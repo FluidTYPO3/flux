@@ -73,6 +73,16 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function canGetAndSetSingleVariable() {
+		$test = 'foobar';
+		$instance = $this->createInstance();
+		$instance->setVariable('test', $test);
+		$this->assertEquals($test, $instance->getVariable('test'));
+	}
+
+	/**
+	 * @test
+	 */
 	public function canGetLabel() {
 		$className = $this->getObjectClassName();
 		$instance = $this->objectManager->get($className);

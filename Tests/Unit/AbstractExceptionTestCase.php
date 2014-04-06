@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Utility;
+namespace FluidTYPO3\Flux\Tests\Unit;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,35 +22,39 @@ namespace FluidTYPO3\Flux\Utility;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ * ************************************************************* */
 
-use TYPO3\CMS\Backend\Utility\IconUtility;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 /**
- * MiscellaneousUtility Utility
- *
  * @package Flux
- * @subpackage Utility
  */
-class MiscellaneousUtility {
+abstract class AbstractExceptionTestCase extends AbstractTestCase {
 
 	/**
-	* @param string $icon
-	* @param string $title
-	* @return string
-	*/
-	public static function getIcon($icon, $title = NULL) {
-		$configuration = array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new');
-		return IconUtility::getSpriteIcon($icon, $configuration);
+	 * @test
+	 */
+	public function canBeCreatedUsingConstructor() {
+		$message = 'message';
+		$code = 123;
+		$class = $this->createInstanceClassName();
+		$instance = new $class($message, $code);
+		$this->assertEquals($message, $instance->getMessage());
+		$this->assertEquals($code, $instance->getCode());
 	}
 
 	/**
-	* @param string $inner
-	* @param string $uri
-	* @return string
-	*/
-	public static function wrapLink($inner, $uri) {
-		return '<a href="#" onclick="window.location.href=\'' . $uri . '\';">' . $inner . '</a>' . LF;
+	 * @test
+	 */
+	public function supportsPreviousException() {
+		$message = 'message';
+		$code = 123;
+		$previous = new \Exception('previous');
+		$class = $this->createInstanceClassName();
+		$instance = new $class($message, $code, $previous);
+		$this->assertEquals($message, $instance->getMessage());
+		$this->assertEquals($code, $instance->getCode());
+		$this->assertSame($previous, $instance->getPrevious());
 	}
 
 }

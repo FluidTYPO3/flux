@@ -214,8 +214,15 @@ abstract class AbstractTestCase extends BaseTestCase {
 	/**
 	 * @return object
 	 */
+	protected function createInstanceClassName() {
+		return substr(get_class($this), 0, -4);
+	}
+
+	/**
+	 * @return object
+	 */
 	protected function createInstance() {
-		$instance = $this->objectManager->get(substr(get_class($this), 0, -4));
+		$instance = $this->objectManager->get($this->createInstanceClassName());
 		return $instance;
 	}
 

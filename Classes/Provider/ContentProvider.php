@@ -61,6 +61,10 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	protected $fieldName = 'pi_flexform';
 
 	/**
+	 * Note: This Provider will -always- trigger on tt_content list_type records (plugin)
+	 * but has the lowest possible (0) priority, ensuring that any
+	 * Provider which wants to take over, can do so.
+	 *
 	 * @param array $row
 	 * @return integer
 	 */
@@ -72,6 +76,10 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * Note: This Provider will -always- trigger on tt_content list_type records (plugin)
+	 * but has the lowest possible (0) priority, ensuring that any
+	 * Provider which wants to take over, can do so.
+	 *
 	 * @param array $row
 	 * @param string $table
 	 * @param string $field
@@ -79,7 +87,10 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return boolean
 	 */
 	public function trigger(array $row, $table, $field, $extensionKey = NULL) {
-		return FALSE === empty($row['list_type']) || parent::trigger($row, $table, $field, $extensionKey);
+		if ($table === $this->tableName && FALSE === empty($row['list_type'])) {
+			return TRUE;
+		}
+		return parent::trigger($row, $table, $field, $extensionKey);
 	}
 
 	/**

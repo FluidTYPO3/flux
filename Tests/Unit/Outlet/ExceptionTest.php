@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Utility;
+namespace FluidTYPO3\Flux\Outlet;
 /***************************************************************
  *  Copyright notice
  *
@@ -22,35 +22,13 @@ namespace FluidTYPO3\Flux\Utility;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ * ************************************************************* */
 
-use TYPO3\CMS\Backend\Utility\IconUtility;
+use FluidTYPO3\Flux\Tests\Unit\AbstractExceptionTestCase;
 
 /**
- * MiscellaneousUtility Utility
- *
  * @package Flux
- * @subpackage Utility
  */
-class MiscellaneousUtility {
-
-	/**
-	* @param string $icon
-	* @param string $title
-	* @return string
-	*/
-	public static function getIcon($icon, $title = NULL) {
-		$configuration = array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new');
-		return IconUtility::getSpriteIcon($icon, $configuration);
-	}
-
-	/**
-	* @param string $inner
-	* @param string $uri
-	* @return string
-	*/
-	public static function wrapLink($inner, $uri) {
-		return '<a href="#" onclick="window.location.href=\'' . $uri . '\';">' . $inner . '</a>' . LF;
-	}
+class ExceptionTest extends AbstractExceptionTestCase {
 
 }
