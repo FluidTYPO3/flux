@@ -33,30 +33,22 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 class DataViewHelperTest extends AbstractViewHelperTestCase {
 
 	/**
-	 * @param string $table
-	 * @return array
-	 */
-	protected function getTestingRecordUid($table) {
-		$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid', $table, '1=1', 'uid', 1);
-		if (FALSE === is_array($records)) {
-			return 0;
-		}
-		$record = array_pop($records);
-		return TRUE === is_array($record) ? array_pop($record) : 0;
-	}
-
-	/**
 	 * @test
 	 */
 	public function failsWithInvalidTable() {
 		$arguments = array(
 			'table' => 'invalid',
 			'field' => 'pi_flexform',
-			'uid' => $this->getTestingRecordUid('invalid')
+			'uid' => 1
 		);
+		$viewHelper = $this->buildViewHelperInstance($arguments);
 		$this->setUseOutputBuffering(TRUE);
-		$output = $this->executeViewHelper($arguments);
+		$backup = $GLOBALS['TYPO3_DB'];
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+		$GLOBALS['TYPO3_DB']->expects($this->never())->method('exec_SELECTgetSingleRow');
+		$output = $viewHelper->initializeArgumentsAndRender();
 		$this->assertEquals('Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.', $output);
+		$GLOBALS['TYPO3_DB'] = $backup;
 	}
 
 	/**
@@ -79,7 +71,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$arguments = array(
 			'table' => 'tt_content',
 			'field' => 'invalid',
-			'uid' => $this->getTestingRecordUid('tt_content')
+			'uid' => 1
 		);
 		$this->setUseOutputBuffering(TRUE);
 		$output = $this->executeViewHelper($arguments);
@@ -93,7 +85,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$arguments = array(
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
-			'uid' => $this->getTestingRecordUid('tt_content')
+			'uid' => 1
 		);
 		$this->executeViewHelper($arguments);
 	}
@@ -117,11 +109,17 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$arguments = array(
 			'table' => 'be_users',
 			'field' => 'username',
-			'uid' => $this->getTestingRecordUid('be_users')
+			'uid' => 1
 		);
-		$output = $this->executeViewHelper($arguments);
+		$viewHelper = $this->buildViewHelperInstance($arguments);
+		$this->setUseOutputBuffering(TRUE);
+		$backup = $GLOBALS['TYPO3_DB'];
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+		$GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow')->will($this->returnValue(NULL));
+		$output = $viewHelper->initializeArgumentsAndRender();
 		$this->assertIsArray($output);
 		$this->assertEmpty($output);
+		$GLOBALS['TYPO3_DB'] = $backup;
 	}
 
 	/**
@@ -131,7 +129,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$arguments = array(
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
-			'uid' => $this->getTestingRecordUid('tt_content')
+			'uid' => 1
 		);
 		$this->executeViewHelper($arguments);
 		$this->executeViewHelper($arguments);
@@ -144,7 +142,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$arguments = array(
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
-			'uid' => $this->getTestingRecordUid('tt_content'),
+			'uid' => 1,
 			'as' => 'test'
 		);
 		$this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments);
@@ -157,7 +155,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$arguments = array(
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
-			'uid' => $this->getTestingRecordUid('tt_content'),
+			'uid' => 1,
 			'as' => 'test'
 		);
 		$this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments, array('test' => 'somevar'));
