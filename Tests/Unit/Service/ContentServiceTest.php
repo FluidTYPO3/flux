@@ -73,7 +73,9 @@ class ContentServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canDetectParentElementAreaFromRecord() {
-		$result = $this->createInstance()->detectParentElementAreaFromRecord(0);
+		$mock = $this->createMock(array('loadRecordFromDatabase'));
+		$mock->expects($this->once())->method('loadRecordFromDatabase');
+		$result = $mock->detectParentElementAreaFromRecord(0);
 		$this->assertNull($result);
 	}
 
@@ -81,7 +83,9 @@ class ContentServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canDetectParentUidFromRecord() {
-		$result = $this->createInstance()->detectParentUidFromRecord(0);
+		$mock = $this->createMock(array('loadRecordFromDatabase'));
+		$mock->expects($this->once())->method('loadRecordFromDatabase');
+		$result = $mock->detectParentUidFromRecord(0);
 		$this->assertIsInteger($result);
 	}
 
@@ -178,9 +182,13 @@ class ContentServiceTest extends AbstractTestCase {
 	 */
 	public function canLoadRecordsFromDatabase() {
 		$instance = $this->createInstance();
+		$backup = $GLOBALS['TYPO3_DB'];
+		$records = array(Records::$contentRecordWithParentAndWithoutChildren);
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetRows'));
+		$GLOBALS['TYPO3_DB']->expects($this->atLeastOnce())->method('exec_SELECTgetRows')->will($this->returnValue($records));
 		$result = $this->callInaccessibleMethod($instance, 'loadRecordsFromDatabase', 'uid IN(0)');
-		$this->assertIsArray($result);
-		$this->assertEmpty($result);
+		$this->assertEquals($records, $result);
+		$GLOBALS['TYPO3_DB'] = $backup;
 	}
 
 	/**
@@ -188,8 +196,13 @@ class ContentServiceTest extends AbstractTestCase {
 	 */
 	public function canLoadRecordFromDatabaseByUid() {
 		$instance = $this->createInstance();
+		$backup = $GLOBALS['TYPO3_DB'];
+		$records = array(Records::$contentRecordWithParentAndWithoutChildren);
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTquery', 'sql_fetch_assoc', 'sql_free_result'));
+		$GLOBALS['TYPO3_DB']->expects($this->once())->method('sql_fetch_assoc')->will($this->returnValue($records));
 		$result = $this->callInaccessibleMethod($instance, 'loadRecordFromDatabase', 9999999999999);
-		$this->assertNull($result);
+		$this->assertEquals($records, $result);
+		$GLOBALS['TYPO3_DB'] = $backup;
 	}
 
 	/**
