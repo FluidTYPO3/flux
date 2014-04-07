@@ -33,17 +33,17 @@ use TYPO3\CMS\Core\Resource\File;
  * Repeats rendering of children with a typical for loop: starting at index $from it will loop until the index has reached $to.
  *
  * To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
- * 
+ *
  * Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
- * 	{v:content.resources.fal(field: 'settings.files') 
- * 		-> v:iterator.first() 
+ * 	{v:content.resources.fal(field: 'settings.files')
+ * 		-> v:iterator.first()
  * 		-> v:var.set(name: 'settings.files')}
- * 
+ *
  * And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
  * 	{v:page.resources.fal(field: 'settings.files')
- * 		-> v:iterator.first() 
+ * 		-> v:iterator.first()
  * 		-> v:var.set(name: 'settings.files')}
- * 
+ *
  * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
  * @author Johannes Pieper <pieper@dlrg.de> DLRG e.V.
  * @package Flux
@@ -108,14 +108,17 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 				)
 			))
 		);
-		$component->setForeignTypes(array(
-			'0' => array(
-				'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
-			),
-			File::FILETYPE_IMAGE => array(
-				'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
-			),
-		));
+
+		if (FALSE === $this->hasArgument('foreignTypes')) {
+			$component->setForeignTypes(array(
+				'0' => array(
+					'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
+				),
+				File::FILETYPE_IMAGE => array(
+					'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
+				),
+			));
+		}
 
 		return $component;
 	}
