@@ -108,15 +108,18 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 				)
 			))
 		);
-		$component->setForeignTypes(array(
-			'0' => array(
-				'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
-			),
-			File::FILETYPE_IMAGE => array(
-				'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
-			),
-		));
 
+		if (FALSE === is_array($this->arguments['foreignTypes'])) {
+			$component->setForeignTypes(array(
+				'0' => array(
+					'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
+				),
+				File::FILETYPE_IMAGE => array(
+					'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
+				),
+			));
+		}
+		
 		return $component;
 	}
 
