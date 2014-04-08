@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
@@ -61,7 +62,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		);
 		$this->setUseOutputBuffering(TRUE);
 		$output = $this->executeViewHelper($arguments);
-		$this->assertEquals('Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "row" attribute.', $output);
+		$this->assertEquals('Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.', $output);
 	}
 
 	/**
@@ -125,40 +126,33 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 	/**
 	 * @test
 	 */
-	public function canExecuteViewHelperAndTriggerCache() {
-		$arguments = array(
-			'table' => 'tt_content',
-			'field' => 'pi_flexform',
-			'uid' => 1
-		);
-		$this->executeViewHelper($arguments);
-		$this->executeViewHelper($arguments);
-	}
-
-	/**
-	 * @test
-	 */
 	public function supportsAsArgument() {
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row['pi_flexform'] = $row['test'];
 		$arguments = array(
+			'record' => $row,
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
-			'uid' => 1,
 			'as' => 'test'
 		);
-		$this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments);
+		$output = $this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments);
+		$this->assertEquals($output, 'Some text');
 	}
 
 	/**
 	 * @test
 	 */
 	public function supportsAsArgumentAndBacksUpExistingVariable() {
+		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$row['pi_flexform'] = $row['test'];
 		$arguments = array(
+			'record' => $row,
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
-			'uid' => 1,
 			'as' => 'test'
 		);
-		$this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments, array('test' => 'somevar'));
+		$output = $this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments, array('test' => 'somevar'));
+		$this->assertEquals($output, 'Some text');
 	}
 
 }
