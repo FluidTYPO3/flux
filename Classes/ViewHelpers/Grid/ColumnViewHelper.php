@@ -55,8 +55,9 @@ class ColumnViewHelper extends AbstractFormViewHelper {
 	 * @return string
 	 */
 	public function render() {
+		$name = ('column' === $this->arguments['name'] ? uniqid('column') : $this->arguments['name']);
 		/** @var Column $column */
-		$column = $this->getForm()->createContainer('Column', $this->arguments['name'], $this->arguments['label']);
+		$column = $this->getForm()->createContainer('Column', $name, $this->arguments['label']);
 		$column->setColspan($this->arguments['colspan']);
 		$column->setRowspan($this->arguments['rowspan']);
 		$column->setStyle($this->arguments['style']);
