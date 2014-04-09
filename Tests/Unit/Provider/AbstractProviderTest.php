@@ -116,15 +116,6 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function clearCacheCommandReturnsEarlyWhenGivenUid() {
-		$provider = $this->getConfigurationProviderInstance();
-		$return = $provider->clearCacheCommand(array('uid' => 1));
-		$this->assertEmpty($return);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canGetAndSetListType() {
 		$record = Records::$contentRecordIsParentAndHasChildren;
 		/** @var ProviderInterface $instance */

@@ -152,9 +152,9 @@ class FluxService implements SingletonInterface {
 			$sort[$index] = $sortValue;
 		}
 		if ('ASC' === strtoupper($sortDirection)) {
-			asort($sort, SORT_NATURAL);
+			asort($sort);
 		} else {
-			arsort($sort, SORT_NATURAL);
+			arsort($sort);
 		}
 		$hasStringIndex = FALSE;
 		foreach ($sort as $index => $value) {
