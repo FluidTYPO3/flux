@@ -1,6 +1,7 @@
 <?php
 
 return array (
+  'version' => 4,
   'packages' =>
   array (
     'builder' =>
