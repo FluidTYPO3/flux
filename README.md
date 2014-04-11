@@ -6,7 +6,7 @@ Flux: Fluid FlexForms
 > used in your own plugins to enable dynamic forms and a few extra features such as adding nested content elements to your plugin
 > or performing special actions whenever a record from your extension is saved, moved, deleted and so on.
 
-[![Build Status](https://travis-ci.org/FluidTYPO3/flux.png?branch=master)](https://travis-ci.org/FluidTYPO3/flux)
+[![Build Status](https://travis-ci.org/FluidTYPO3/flux.svg?branch=development)](https://travis-ci.org/FluidTYPO3/flux)
 
 ## Code Quality
 
@@ -77,5 +77,3 @@ Therefore the best advise is this:
 Other extensions which are closely related to this extension:
 
 * https://github.com/FluidTYPO3/vhs is a highly suggested companion for any type of Fluid templates, providing useful ViewHelpers.
-
-![Please forgive the tracking - your data is in good hands!](https://fedext.net/bigbrother.php?repository=flux)
