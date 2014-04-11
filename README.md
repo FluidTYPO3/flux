@@ -1,12 +1,12 @@
 Flux: Fluid FlexForms
 =====================
 
+<img src="https://travis-ci.org/FluidTYPO3/flux.svg?branch=development" height="30" /> <img src="http://ci.fluidtypo3.org/build-status/image/4?branch=development" height="30" />
+
 > Flux uses Fluid ViewHelpers to define a form structure which can be rendered in the TYPO3 backend when editing special types of
 > records - used for example by the Fluid Content extension to enable dynamic content elements based on Fluid templates. Can be
 > used in your own plugins to enable dynamic forms and a few extra features such as adding nested content elements to your plugin
 > or performing special actions whenever a record from your extension is saved, moved, deleted and so on.
-
-[![Build Status](https://travis-ci.org/FluidTYPO3/flux.svg?branch=development)](https://travis-ci.org/FluidTYPO3/flux)
 
 ## What does it do?
 
