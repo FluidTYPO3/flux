@@ -81,9 +81,10 @@ class DataViewHelper extends AbstractViewHelper {
 	 * @throws Exception
 	 */
 	public function render($table, $field, $uid = NULL, $record = NULL, $as = NULL) {
-		if (NULL === $record && NULL === $uid) {
+		if (NULL === $record && NULL === $uid && 'tt_content' === $table) {
 			$cObj = $this->configurationManager->getContentObject();
 			$record = $cObj->data;
+			$autoDiscoveredContentElementRecord = TRUE;
 		}
 		if (NULL === $uid && NULL !== $record && TRUE === isset($record['uid'])) {
 			$uid = $record['uid'];
@@ -114,9 +115,9 @@ class DataViewHelper extends AbstractViewHelper {
 				$backupVariable = $this->templateVariableContainer->get($as);
 				$this->templateVariableContainer->remove($as);
 			}
-			if (FALSE === $this->templateVariableContainer->exists('record')) {
+			if (TRUE == $autoDiscoveredContentElementRecord && FALSE === $this->templateVariableContainer->exists('record')) {
 				$this->templateVariableContainer->add('record', $record);
-				$addedRecord = TRUE;
+				$addedContentElementRecordToTemplateVariableContainer = TRUE;
 			}
 			$this->templateVariableContainer->add($as, $dataArray);
 			$content = $this->renderChildren();
@@ -124,7 +125,7 @@ class DataViewHelper extends AbstractViewHelper {
 			if (TRUE === isset($backupVariable)) {
 				$this->templateVariableContainer->add($as, $backupVariable);
 			}
-			if (TRUE === $addedRecord) {
+			if (TRUE === $addedContentElementRecordToTemplateVariableContainer) {
 				$this->templateVariableContainer->remove('record');
 			}
 			return $content;
