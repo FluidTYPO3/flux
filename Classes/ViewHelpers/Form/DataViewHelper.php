@@ -58,6 +58,19 @@ class DataViewHelper extends AbstractViewHelper {
 	}
 
 	/**
+	 * @var \Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 */
+	protected $configurationManager;
+
+	/**
+	 * @param \Tx_Extbase_Configuration_ConfigurationManagerInterface An instance of the Configuration Manager
+	 * @return void
+	 */
+	public function injectConfigurationManager(\Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+		$this->configurationManager = $configurationManager;
+	}
+
+	/**
 	 * Render method
 	 * @param string $table
 	 * @param string $field
@@ -68,6 +81,10 @@ class DataViewHelper extends AbstractViewHelper {
 	 * @throws Exception
 	 */
 	public function render($table, $field, $uid = NULL, $record = NULL, $as = NULL) {
+		if (NULL === $record && NULL === $uid) {
+			$cObj = $this->configurationManager->getContentObject();
+			$record = $cObj->data;
+		}
 		if (NULL === $uid && NULL !== $record && TRUE === isset($record['uid'])) {
 			$uid = $record['uid'];
 		}
@@ -97,11 +114,18 @@ class DataViewHelper extends AbstractViewHelper {
 				$backupVariable = $this->templateVariableContainer->get($as);
 				$this->templateVariableContainer->remove($as);
 			}
+			if (FALSE === $this->templateVariableContainer->exists('record')) {
+				$this->templateVariableContainer->add('record', $record);
+				$addedRecord = TRUE;
+			}
 			$this->templateVariableContainer->add($as, $dataArray);
 			$content = $this->renderChildren();
 			$this->templateVariableContainer->remove($as);
 			if (TRUE === isset($backupVariable)) {
 				$this->templateVariableContainer->add($as, $backupVariable);
+			}
+			if (TRUE === $addedRecord) {
+				$this->templateVariableContainer->remove('record');
 			}
 			return $content;
 		}
