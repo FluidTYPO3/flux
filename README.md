@@ -8,14 +8,6 @@ Flux: Fluid FlexForms
 
 [![Build Status](https://travis-ci.org/FluidTYPO3/flux.svg?branch=development)](https://travis-ci.org/FluidTYPO3/flux)
 
-## Code Quality
-
-![Abstraction Instability Chart](Documentation/ComplexityChart.png)
-![Inheritance and dependency risk](Documentation/PyramidChart.png)
-
-_Understanding the [Abstraction Instability Chart](http://pdepend.org/documentation/handbook/reports/abstraction-instability-chart.html)
-and [Pyramid Chart](http://pdepend.org/documentation/handbook/reports/overview-pyramid.html)._
-
 ## What does it do?
 
 Flux uses a range of ViewHelpers to define a set of configuration (fields, their layout, how to process them etc) inside a Fluid
@@ -58,7 +50,7 @@ Therefore the best advise is this:
   reference and a clear goal as use case. For example: studying a page templating guide for EXT:fluidpages naturally show you
   how fields are used (as will any Flux-related guide) but more importantly, it also demonstrates how to access the fields when
   rendering takes place.
-* Always keep the [ViewHelper Reference for Flux](http://fluidtypor.org/viewhelpers/flux.html) handy; it clearly specifies every
+* Always keep the [ViewHelper Reference for Flux](http://fluidtypo3.org/viewhelpers/flux.html) handy; it clearly specifies every
   option you have when it comes to building the configuration.
 * Remember that Flux fields and the concept around building a form out of those fields, is exactly the same concept as the well-
   known TCEforms, which you have come across in many other aspects: it all uses the same way of thinking as when you define TCA
