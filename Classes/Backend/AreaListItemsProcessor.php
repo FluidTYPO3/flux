@@ -110,7 +110,7 @@ class AreaListItemsProcessor {
 				}
 			}
 		}
-		return array_unique($columns);
+		return array_unique($columns, SORT_REGULAR);
 	}
 
 }
