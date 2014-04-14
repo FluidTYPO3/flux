@@ -732,7 +732,7 @@ class AbstractProvider implements ProviderInterface {
 		$this->configurationManager->setContentObject($existingContentObject);
 		$previewContent = trim($previewContent);
 		$headerContent = NULL;
-		return array($headerContent, $previewContent, FALSE);
+		return array($headerContent, $previewContent, empty($previewContent));
 	}
 
 	/**
