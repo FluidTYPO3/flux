@@ -116,15 +116,6 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function clearCacheCommandReturnsEarlyWhenGivenUid() {
-		$provider = $this->getConfigurationProviderInstance();
-		$return = $provider->clearCacheCommand(array('uid' => 1));
-		$this->assertEmpty($return);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canGetAndSetListType() {
 		$record = Records::$contentRecordIsParentAndHasChildren;
 		/** @var ProviderInterface $instance */
@@ -628,13 +619,14 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canLoadRecordFromDatabase() {
-		$provider = $this->getConfigurationProviderInstance();
+		$backup = $GLOBALS['TYPO3_DB'];
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$table = $provider->getTableName($row);
-		if (FALSE === empty($table)) {
-			$result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
-			$this->assertNotNull($result);
-		}
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+		$GLOBALS['TYPO3_DB']->expects($this->atLeastOnce())->method('exec_SELECTgetSingleRow')->will($this->returnValue($row));
+		$provider = $this->getConfigurationProviderInstance();
+		$result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
+		$this->assertNotNull($result);
+		$GLOBALS['TYPO3_DB'] = $backup;
 	}
 
 	/**

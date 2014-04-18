@@ -1,0 +1,19 @@
+{
+  "name": "fluidtypo3-flux",
+  "homepage": "http://fluidtypo3.org",
+  "description": "The flux package from FluidTYPO3",
+  "keywords": [
+    "TYPO3",
+    "CMS",
+    "extension",
+    "templating",
+    "bootstrap",
+    "flux",
+    "fedext",
+    "fluid"
+  ],
+  "authors": [
+    "FluidTYPO3 Team"
+  ],
+  "license": "GPL-2.0+"
+}

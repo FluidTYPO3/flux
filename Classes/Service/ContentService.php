@@ -266,10 +266,9 @@ class ContentService implements SingletonInterface {
 	 */
 	protected function loadRecordFromDatabase($uidOrClause) {
 		if (0 < intval($uidOrClause) && TRUE === is_integer($uidOrClause)) {
-			return BackendUtility::getRecord('tt_content', $uidOrClause);
-		} else {
-			return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', $uidOrClause);
+			$uidOrClause = "uid = '" . intval($uidOrClause) . "'";
 		}
+		return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', $uidOrClause);
 	}
 
 	/**

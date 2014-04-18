@@ -31,7 +31,7 @@ use FluidTYPO3\Flux\Form\Field\Inline;
  * @package Flux
  * @subpackage Form\Field
  */
-abstract class AbstractInlineFormField extends AbstractRelationFormField {
+abstract class AbstractInlineFormField extends AbstractRelationFormField implements InlineRelationFieldInterface {
 
 	/**
 	 * If true, all child records are shown as collapsed.
@@ -427,16 +427,16 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField {
 	}
 
 	/**
-	 * @param string $foreignTypes
+	 * @param array $foreignTypes
 	 * @return RelationFieldInterface
 	 */
 	public function setForeignTypes($foreignTypes) {
-		$this->foreignTypes = $foreignTypes;
+		$this->foreignTypes = TRUE === is_array($foreignTypes) ? $foreignTypes : NULL;
 		return $this;
 	}
 
 	/**
-	 * @return string
+	 * @return array
 	 */
 	public function getForeignTypes() {
 		return $this->foreignTypes;

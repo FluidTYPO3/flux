@@ -40,7 +40,7 @@ before_script:
   - if [[ "$DB" == "mysql" && -f typo3conf/ext/builder/Build/ImportSchema.sql ]]; then mysql -uroot typo3_test < typo3conf/ext/builder/Build/ImportSchema.sql; fi
   - if [[ "$DB" == "mysql" && -f typo3conf/ext/flux/Build/ImportSchema.sql ]]; then mysql -uroot typo3_test < typo3conf/ext/flux/Build/ImportSchema.sql; fi
   - if [[ -f typo3conf/LocalConfiguration.php && -f typo3conf/ext/flux/Build/LocalConfiguration.php ]]; then cp typo3conf/ext/flux/Build/LocalConfiguration.php typo3conf/LocalConfiguration.php; fi
-  - if [[ -f typo3conf/PackageStates.php && -f typo3conf/ext/flux/Build/PackageStates.php ]]; then cp typo3conf/ext/flux/Build/PackageStates.php typo3conf/PackageStates.php; fi
+  - if [[ -f typo3conf/ext/flux/Build/PackageStates.php ]]; then cp typo3conf/ext/flux/Build/PackageStates.php typo3conf/PackageStates.php; fi
   - if [[ -f typo3conf/localconf.php && -f typo3conf/ext/flux/Build/localconf.php ]]; then cp typo3conf/ext/flux/Build/localconf.php typo3conf/localconf.php; fi
   - if [[ -f typo3conf/ext/flux/Tests/phpunit.xml ]]; then cp typo3conf/ext/flux/Tests/phpunit.xml phpunit.xml; fi
 

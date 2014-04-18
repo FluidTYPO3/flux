@@ -24,7 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\RelationFieldInterface;
+use FluidTYPO3\Flux\Form\InlineRelationFieldInterface;
 
 /**
  * Inline-style FlexForm field ViewHelper
@@ -53,12 +53,14 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
 		$this->registerArgument('enabledControls', 'array', "Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. Set either one to TRUE or FALSE to show or hide it.", FALSE, FALSE);
 		$this->registerArgument('headerThumbnail', 'array', 'Associative array with header thumbnail.', FALSE, FALSE);
 		$this->registerArgument('foreignMatchFields', 'array', 'The fields and values of the child record which have to match. For FAL the field/key is "fieldname" and the value has to be defined.', FALSE, FALSE);
+		$this->registerArgument('foreignTypes', 'array', 'Overrides the "types" TCA array of the target table with this array (beware! must be specified fully in order to work!). Expects an array of arrays; indexed by' .
+			' type number - each array containing for example a "showitem" index with a CSV list of field names to be shown when inline-editing the related record.');
 		$this->registerArgument('levelLinksPosition', 'string', 'Level links position.', FALSE, NULL);
 	}
 
 	/**
 	 * @param string $type
-	 * @return RelationFieldInterface
+	 * @return InlineRelationFieldInterface
 	 */
 	public function getComponent($type = 'Inline') {
 		$component = $this->getPreparedComponent($type);
@@ -67,10 +69,10 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
 
 	/**
 	 * @param string $type
-	 * @return RelationFieldInterface
+	 * @return InlineRelationFieldInterface
 	 */
 	protected function getPreparedComponent($type) {
-		/** @var RelationFieldInterface $component */
+		/** @var InlineRelationFieldInterface $component */
 		$component = parent::getPreparedComponent($type);
 		$component->setCollapseAll($this->arguments['collapseAll']);
 		$component->setExpandSingle($this->arguments['expandSingle']);
@@ -90,6 +92,9 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
 		}
 		if (TRUE === is_array($this->arguments['foreignMatchFields'])) {
 			$component->setForeignMatchFields($this->arguments['foreignMatchFields']);
+		}
+		if (TRUE === is_array($this->arguments['foreignTypes'])) {
+			$component->setForeignTypes($this->arguments['foreignTypes']);
 		}
 		$component->setLevelLinksPosition($this->arguments['levelLinksPosition']);
 		return $component;

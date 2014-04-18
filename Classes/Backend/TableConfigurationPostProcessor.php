@@ -67,9 +67,8 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 */
 	public function processData() {
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->loadTypoScriptConfigurationProviderInstances();
 		/** @var FluxService $fluxService */
-		$fluxService = $objectManager->get('FluidTYPO3\Flux\Service\FluxService');
-		$fluxService->initializeObject();
 		/** @var DataMapFactory $dataMapFactory */
 		$dataMapFactory = $objectManager->get('TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory');
 		$forms = Core::getRegisteredFormsForTables();

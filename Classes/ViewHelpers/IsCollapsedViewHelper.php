@@ -44,12 +44,7 @@ class IsCollapsedViewHelper extends AbstractConditionViewHelper {
 	 * @return string
 	 */
 	public function render($record) {
-		$cookie = array();
-		if (TRUE === isset($_COOKIE['fluxCollapseStates'])) {
-			$cookie = $_COOKIE['fluxCollapseStates'];
-			$cookie = urldecode($cookie);
-			$cookie = json_decode($cookie);
-		}
+		$cookie = TRUE === isset($_COOKIE['fluxCollapseStates']) ? json_decode(urldecode($_COOKIE['fluxCollapseStates'])) : array();
 		return TRUE === in_array($record['uid'], $cookie) ? $this->renderThenChild() : $this->renderElseChild();
 	}
 

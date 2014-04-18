@@ -270,13 +270,12 @@ class AbstractProvider implements ProviderInterface {
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
+		$variables = array();
 
 		// Special case: when saving a new record variable $row[$fieldName] is already an array
 		// and must not be processed by the configuration service.
 		if (FALSE === is_array($row[$fieldName])) {
 			$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
-		} else {
-			$variables = array();
 		}
 
 		$variables['record'] = $row;
@@ -302,7 +301,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$fieldName = $this->getFieldName($row);
 		$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
-		$variables['record'] = $this->loadRecordFromDatabase($row['uid']);
+		$variables['record'] = $row;
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
 		return $grid;
 	}
@@ -670,15 +669,6 @@ class AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function clearCacheCommand($command = array()) {
-		// only empty the cache when "clear configuration cache is pressed"
-		if ('temp_cached' !== $command['cacheCmd']) {
-			return;
-		}
-		if (TRUE === isset($command['uid'])) {
-			return;
-		}
-		$files = glob(PATH_site . 'typo3temp/flux-*');
-		FALSE === $files ? : array_map('unlink', $files);
 	}
 
 	/**
@@ -742,7 +732,7 @@ class AbstractProvider implements ProviderInterface {
 		$this->configurationManager->setContentObject($existingContentObject);
 		$previewContent = trim($previewContent);
 		$headerContent = NULL;
-		return array($headerContent, $previewContent, FALSE);
+		return array($headerContent, $previewContent, empty($previewContent));
 	}
 
 	/**

@@ -43,7 +43,7 @@ class ConfigurationManager extends CoreConfigurationManager implements Configura
 	 * @return void
 	 */
 	protected function initializeConcreteConfigurationManager() {
-		if ($this->environmentService->isEnvironmentInFrontendMode()) {
+		if (TRUE === $this->environmentService->isEnvironmentInFrontendMode()) {
 			$this->concreteConfigurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager');
 		} else {
 			$this->concreteConfigurationManager = $this->objectManager->get('FluidTYPO3\Flux\Configuration\BackendConfigurationManager');

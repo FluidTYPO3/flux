@@ -1,6 +1,6 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Field;
-/***************************************************************
+namespace FluidTYPO3\Flux\Form;
+/*****************************************************************
  *  Copyright notice
  *
  *  (c) 2014 Claus Due <claus@namelesscoder.net>
@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This script is part of the TYPO3 project. The TYPO3 project is
  *  free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
+ *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
  *  The GNU General Public License can be found at
@@ -22,29 +22,23 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
-
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
+ *****************************************************************/
 
 /**
  * @package Flux
+ * @subpackage Form
  */
-class InlineViewHelperTest extends AbstractFieldViewHelperTestCase {
+interface InlineRelationFieldInterface extends RelationFieldInterface {
 
 	/**
-	 * @var array
+	 * @param mixed $foreignTypes
+	 * @return InlineRelationFieldInterface
 	 */
-	protected $defaultArguments = array(
-		'name' => 'test',
-		'enabledControls' => array(
-			'new' => TRUE,
-			'hide' => TRUE
-		),
-		'foreignTypes' => array(
-			0 => array(
-				'showitem' => 'a,b,c'
-			)
-		)
-	);
+	public function setForeignTypes($foreignTypes);
+
+	/**
+	 * @return array
+	 */
+	public function getForeignTypes();
 
 }

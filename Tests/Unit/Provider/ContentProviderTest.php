@@ -54,6 +54,9 @@ class ContentProviderTest extends AbstractProviderTest {
 		$provider = $this->getConfigurationProviderInstance();
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$relativeUid = 0;
+		$contentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('updateRecordInDatabase'));
+		$contentService->expects($this->once())->method('updateRecordInDatabase');
+		ObjectAccess::setProperty($provider, 'contentService', $contentService, TRUE);
 		$provider->postProcessCommand('move', 0, $row, $relativeUid, $tceMain);
 	}
 

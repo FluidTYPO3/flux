@@ -1,0 +1,34 @@
+build_settings:
+    verbose: false
+    ignore:
+        - "Tests"
+    mysql:
+        host: "localhost"
+        user: "test"
+        pass: ""
+
+setup:
+    mysql:
+        - "DROP DATABASE IF EXISTS test;"
+        - "CREATE DATABASE test;"
+    wipe:
+        directory: /testing/
+    copy_build:
+        directory: /testing/typo3conf/ext/flux
+    typo3_install:
+        version: master
+        directory: /testing/
+    typo3_extension_install:
+        extension: flux
+        directory: /testing/
+test:
+    php_parallel_lint:
+        directory: /testing/typo3conf/ext/flux
+        recursive: true
+    php_loc:
+        allow_failures: true
+        directory: /testing/typo3conf/ext/flux
+
+complete:
+    mysql:
+        - "DROP DATABASE IF EXISTS test;"

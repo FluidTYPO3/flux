@@ -53,6 +53,11 @@ class InlineTest extends AbstractFieldTest {
 			Form::CONTROL_HIDE => TRUE,
 			Form::CONTROL_DELETE => FALSE,
 			Form::CONTROL_LOCALISE => FALSE,
+		),
+		'foreignTypes' => array(
+			0 => array(
+				'showitem' => 'a,b,c'
+			)
 		)
 	);
 

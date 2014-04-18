@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Field;
+namespace FluidTYPO3\Flux\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,27 +24,24 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
  */
-class InlineViewHelperTest extends AbstractFieldViewHelperTestCase {
+class VariableViewHelperTest extends AbstractViewHelperTestCase {
 
 	/**
-	 * @var array
+	 * @test
 	 */
-	protected $defaultArguments = array(
-		'name' => 'test',
-		'enabledControls' => array(
-			'new' => TRUE,
-			'hide' => TRUE
-		),
-		'foreignTypes' => array(
-			0 => array(
-				'showitem' => 'a,b,c'
-			)
-		)
-	);
+	public function addsVariableToContainer() {
+		$containerMock = $this->getMock('FluidTYPO3\Flux\Form', array('setVariable'));
+		$containerMock->expects($this->once())->method('setVariable')->with('test', 'testvalue');
+		$instance = $this->getMock($this->createInstanceClassName(), array('getContainer'));
+		$instance->expects($this->once())->method('getContainer')->will($this->returnValue($containerMock));
+		$instance->setArguments(array('name' => 'test', 'value' => 'testvalue'));
+		$instance->render();
+	}
 
 }

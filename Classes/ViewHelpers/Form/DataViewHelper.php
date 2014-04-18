@@ -71,15 +71,13 @@ class DataViewHelper extends AbstractViewHelper {
 		if (NULL === $uid && NULL !== $record && TRUE === isset($record['uid'])) {
 			$uid = $record['uid'];
 		}
-		if (TRUE === isset(self::$dataCache[$uid.$table.$field])) {
-		    $dataArray = self::$dataCache[$uid.$table.$field];
-		} elseif (TRUE === isset($GLOBALS['TCA'][$table]) && TRUE === isset($GLOBALS['TCA'][$table]['columns'][$field])) {
+		if (TRUE === isset($GLOBALS['TCA'][$table]) && TRUE === isset($GLOBALS['TCA'][$table]['columns'][$field])) {
 			if (NULL === $record) {
 				$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,' . $field, $table, sprintf('uid=%d', $uid));
 			}
 			if (FALSE === $record) {
 				throw new Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .
-					'provide the "row" attribute.', $table, $field, $uid), 1358679983);
+					'provide the "record" attribute.', $table, $field, $uid), 1358679983);
 			}
 			$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $record);
 			if (0 === count($providers)) {
@@ -91,7 +89,6 @@ class DataViewHelper extends AbstractViewHelper {
 					$dataArray = RecursiveArrayUtility::merge($dataArray, $data);
 				}
 			}
-			self::$dataCache[$uid.$table.$field] = $dataArray;
 		} else {
 			throw new Exception('Invalid table:field "' . $table . ':' . $field . '" - does not exist in TYPO3 TCA.', 1387049117);
 		}

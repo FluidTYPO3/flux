@@ -1,20 +1,12 @@
 Flux: Fluid FlexForms
 =====================
 
+<img src="https://travis-ci.org/FluidTYPO3/flux.svg?branch=development" height="30" /> <img src="http://ci.fluidtypo3.org/build-status/image/4?branch=development" height="30" />
+
 > Flux uses Fluid ViewHelpers to define a form structure which can be rendered in the TYPO3 backend when editing special types of
 > records - used for example by the Fluid Content extension to enable dynamic content elements based on Fluid templates. Can be
 > used in your own plugins to enable dynamic forms and a few extra features such as adding nested content elements to your plugin
 > or performing special actions whenever a record from your extension is saved, moved, deleted and so on.
-
-[![Build Status](https://travis-ci.org/FluidTYPO3/flux.png?branch=master)](https://travis-ci.org/FluidTYPO3/flux)
-
-## Code Quality
-
-![Abstraction Instability Chart](Documentation/ComplexityChart.png)
-![Inheritance and dependency risk](Documentation/PyramidChart.png)
-
-_Understanding the [Abstraction Instability Chart](http://pdepend.org/documentation/handbook/reports/abstraction-instability-chart.html)
-and [Pyramid Chart](http://pdepend.org/documentation/handbook/reports/overview-pyramid.html)._
 
 ## What does it do?
 
@@ -58,7 +50,7 @@ Therefore the best advise is this:
   reference and a clear goal as use case. For example: studying a page templating guide for EXT:fluidpages naturally show you
   how fields are used (as will any Flux-related guide) but more importantly, it also demonstrates how to access the fields when
   rendering takes place.
-* Always keep the [ViewHelper Reference for Flux](http://fedext.net/viewhelpers/flux.html) handy; it clearly specifies every
+* Always keep the [ViewHelper Reference for Flux](http://fluidtypo3.org/viewhelpers/flux.html) handy; it clearly specifies every
   option you have when it comes to building the configuration.
 * Remember that Flux fields and the concept around building a form out of those fields, is exactly the same concept as the well-
   known TCEforms, which you have come across in many other aspects: it all uses the same way of thinking as when you define TCA
@@ -77,5 +69,3 @@ Therefore the best advise is this:
 Other extensions which are closely related to this extension:
 
 * https://github.com/FluidTYPO3/vhs is a highly suggested companion for any type of Fluid templates, providing useful ViewHelpers.
-
-![Please forgive the tracking - your data is in good hands!](https://fedext.net/bigbrother.php?repository=flux)

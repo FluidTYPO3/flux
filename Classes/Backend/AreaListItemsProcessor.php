@@ -3,7 +3,7 @@ namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2012 Claus Due <claus@namelesscoder.net>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -110,7 +110,7 @@ class AreaListItemsProcessor {
 				}
 			}
 		}
-		return array_unique($columns);
+		return array_unique($columns, SORT_REGULAR);
 	}
 
 }
