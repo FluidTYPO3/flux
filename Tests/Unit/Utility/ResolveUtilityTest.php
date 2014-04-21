@@ -106,17 +106,13 @@ class ResolveTest extends AbstractTestCase {
 	public function canDetectWidgetTemplatePathAndFilenameAndTrimsTrailingSlash() {
 		$templateRootPath = ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/');
 		$expectedDefault = $templateRootPath . 'ViewHelpers/Widget/Grid/Index.html';
-		$expectedLegacy = $templateRootPath . 'ViewHelpers/Widget/Grid/Legacy.html';
 		$expectedWithGridelementsVersionTwo = $templateRootPath . 'ViewHelpers/Widget/Grid/GridElements.html';
 		$utility = new ResolveUtility();
 		ObjectAccess::setProperty($utility, 'initialized', TRUE, TRUE);
-		ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', FALSE, TRUE);
 		$this->assertSame($expectedDefault, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
 		ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', TRUE, TRUE);
 		$this->assertSame($expectedWithGridelementsVersionTwo, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
 		ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', FALSE, TRUE);
-		ObjectAccess::setProperty($utility, 'isLegacyCoreVersion', TRUE, TRUE);
-		$this->assertSame($expectedLegacy, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
 		ObjectAccess::setProperty($utility, 'initialized', FALSE, TRUE);
 	}
 

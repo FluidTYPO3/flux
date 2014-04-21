@@ -46,17 +46,11 @@ class ResolveUtility {
 	protected static $hasGridElementsVersionTwo = FALSE;
 
 	/**
-	 * @var boolean
-	 */
-	protected static $isLegacyCoreVersion = FALSE;
-
-	/**
 	 * @return void
 	 */
 	private static function initialize() {
 		if (FALSE === self::$initialized) {
 			self::$hasGridElementsVersionTwo = VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
-			self::$isLegacyCoreVersion = VersionUtility::assertCoreVersionIsBelowSixPointZero();
 		}
 		self::$initialized = TRUE;
 	}
@@ -121,8 +115,6 @@ class ResolveUtility {
 		$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Index.html';
 		if (TRUE === self::$hasGridElementsVersionTwo) {
 			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/GridElements.html';
-		} elseif (TRUE === self::$isLegacyCoreVersion) {
-			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Legacy.html';
 		}
 		$templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
 		return $templatePathAndFilename;
