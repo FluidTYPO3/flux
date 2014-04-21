@@ -45,7 +45,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	/**
 	 * @var boolean
 	 */
-	protected static $stylesIncluded = FALSE;
+	protected static $assetsIncluded = FALSE;
 
 	/**
 	 * @var ObjectManagerInterface
@@ -110,7 +110,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 				break;
 			}
 		}
-		$this->attachStyle();
+		$this->attachAssets();
 		return NULL;
 	}
 
@@ -140,13 +140,14 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	/**
 	 * @return void
 	 */
-	protected function attachStyle() {
-		if (FALSE === self::$stylesIncluded) {
+	protected function attachAssets() {
+		if (FALSE === self::$assetsIncluded) {
 			$doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 			$doc->backPath = $GLOBALS['BACK_PATH'];
 
 			$doc->getPageRenderer()->addCssFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css');
-			self::$stylesIncluded = TRUE;
+			$doc->getPageRenderer()->addJsFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/js/fluxCollapse.js');
+			self::$assetsIncluded = TRUE;
 		}
 	}
 

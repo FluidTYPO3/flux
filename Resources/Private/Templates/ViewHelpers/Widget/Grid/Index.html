@@ -1,46 +1,17 @@
 {namespace flux=FluidTYPO3\Flux\ViewHelpers}
 
-<div id="container-record-{row.uid}" class="grid-visibility-toggle">
+<div class="grid-visibility-toggle">
 
-<div id="content-blind-{row.uid}" class="content-blind"></div>
-<div id="toggle-content-{row.uid}" class="toggle-content">
-	<span id="toggle-{row.uid}" class="t3-icon t3-icon-actions t3-icon-view-table-{f:if(condition: record.hidden, then: 'expand', else: 'collapse')}"></span>
-</div>
-<div id="grid-container-{row.uid}">
+	<div class="toggle-content" data-uid="{row.uid}">
+		<span class="t3-icon t3-icon-actions t3-icon-view-table-{flux:isCollapsed(record: row, then: 'expand', else: 'collapse')}"></span>
+	</div>
+
 	<f:render section="Grid" arguments="{_all}" />
-</div>
-<script type="text/javascript">
-	fluxCollapse{row.uid} = function() {
-		var cookie = Ext.decode(Ext.util.Cookies.get('fluxCollapseStates'));
-		if (cookie == '') {
-			cookie = [];
-		};
-		if (Ext.get('content-grid-{row.uid}').isDisplayed()) {
-			Ext.get('content-blind-{row.uid}').insertFirst(Ext.get('content-grid-{row.uid}'));
-			Ext.get('toggle-{row.uid}').replaceClass('t3-icon-view-table-collapse', 't3-icon-view-table-expand');
-			if (cookie.indexOf({row.uid}) < 0) {
-				cookie.push({row.uid});
-			};
-		} else {
-			Ext.get('grid-container-{row.uid}').insertFirst(Ext.get('content-grid-{row.uid}'));
-			Ext.get('toggle-{row.uid}').replaceClass('t3-icon-view-table-expand', 't3-icon-view-table-collapse');
-			for (var i in cookie) {
-				if (cookie[i] == {row.uid}) {
-					delete(cookie[i]);
-				};
-			};
-		};
-		Ext.util.Cookies.set('fluxCollapseStates', Ext.encode(cookie));
-	};
-	Ext.get('toggle-content-{row.uid}').on('click', fluxCollapse{row.uid});
-	if (Ext.get('content-grid-{row.uid}').hasClass('hidden')) {
-		fluxCollapse{row.uid}();
-	};
-</script>
+
 </div>
 
 <f:section name="Grid">
-	<table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" class="flux-grid{flux:isCollapsed(record: row, then: ' hidden')}">
+	<table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" class="flux-grid{flux:isCollapsed(record: row, then: ' flux-grid-hidden')}">
 		<tbody>
 		<f:for each="{grid.rows}" as="gridrow" iteration="rowIteration">
 			<tr>
