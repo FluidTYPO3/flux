@@ -60,6 +60,15 @@
 			<trans-unit id="flux.this_table_does_not_exist" xml:space="preserve">
 				<source>flux.this_table_does_not_exist</source>
 			</trans-unit>
+			<trans-unit id="new">
+				<source>Insert new content element in this position</source>
+			</trans-unit>
+			<trans-unit id="paste">
+				<source>Paste in this position</source>
+			</trans-unit>
+			<trans-unit id="paste_reference">
+				<source>Paste as reference in this position</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

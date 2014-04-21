@@ -26,6 +26,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be\Link\Content;
 
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -56,14 +58,16 @@ class NewViewHelper extends AbstractViewHelper {
 		$uid = $this->arguments['row']['uid'];
 		$area = $this->arguments['area'];
 		$sysLang = $this->arguments['row']['sys_language_uid'];
-		$returnUri = urlencode($_SERVER['REQUEST_URI']);
-		if ($area) {
-			$returnUri .= '%23' . $area . '%3A' . $uid;
+		$returnUri = rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI'));
+
+		if (FALSE === empty($area)) {
+			$returnUri .= rawurlencode('#') . $area . rawurlencode(':') . $uid;
 			if (0 < $after) {
-				$returnUri .= '%3A-' . $after;
+				$returnUri .= rawurlencode(':') . '-' . $after;
 			}
 		}
-		$icon = MiscellaneousUtility::getIcon('actions-document-new', 'Insert new content element in this position');
+
+		$icon = MiscellaneousUtility::getIcon('actions-document-new');
 		$uri = 'db_new_content_el.php?id=' . $pid .
 			'&uid_pid=' . $pid .
 			'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
@@ -71,7 +75,9 @@ class NewViewHelper extends AbstractViewHelper {
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .
 			'&defVals[tt_content][tx_flux_column]=' . $area .
 			'&returnUrl=' . $returnUri;
-		return MiscellaneousUtility::wrapLink($icon, htmlspecialchars($uri));
+		$title = LocalizationUtility::translate('new', 'Flux');
+
+		return MiscellaneousUtility::wrapLink($icon, $uri, $title);
 	}
 
 }

@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\Utility;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * ClipBoard Utility
@@ -82,24 +83,24 @@ class ClipBoardUtility {
 	 * @return string
 	 */
 	public static function createIconWithUrl($relativeTo, $reference = FALSE) {
+		$reference = (boolean) $reference;
 		$data = self::getClipBoardData($reference);
 		if (NULL === $data) {
 			return '';
 		}
-		$reference = (boolean) $reference;
-		$clipBoard = new \TYPO3\CMS\Backend\Clipboard\Clipboard();
+
 		if (TRUE === $reference) {
-			$label = 'Paste as reference in this position';
-			$icon = 'actions-insert-reference';
+			$icon = MiscellaneousUtility::getIcon('actions-insert-reference');
+			$title = LocalizationUtility::translate('paste_reference', 'Flux');
 		} else {
-			$label = 'Paste in this position';
-			$icon = 'actions-document-paste-after';
+			$icon = MiscellaneousUtility::getIcon('actions-document-paste-after');
+			$title = LocalizationUtility::translate('paste', 'Flux');
 		}
-		$icon = MiscellaneousUtility::getIcon($icon, $label);
-		$uri = "javascript:top.content.list_frame.location.href=top.TS.PATH_typo3+'";
+
+		$clipBoard = new \TYPO3\CMS\Backend\Clipboard\Clipboard();
 		$uri .= $clipBoard->pasteUrl('tt_content', $relativeTo);
-		$uri .= "';";
-		return MiscellaneousUtility::wrapLink($icon, $uri);
+
+		return MiscellaneousUtility::wrapLink($icon, $uri, $title);
 	}
 
 }
