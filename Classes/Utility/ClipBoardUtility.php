@@ -98,6 +98,7 @@ class ClipBoardUtility {
 		}
 
 		$clipBoard = new \TYPO3\CMS\Backend\Clipboard\Clipboard();
+		$clipBoard->initializeClipboard();
 		$uri .= $clipBoard->pasteUrl('tt_content', $relativeTo);
 
 		return MiscellaneousUtility::wrapLink($icon, $uri, $title);
