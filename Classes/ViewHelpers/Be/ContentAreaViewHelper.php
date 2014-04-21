@@ -108,7 +108,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$this->templateVariableContainer->remove('fluxColumnId');
 
 		if (FALSE === VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
-			$content = '<div id="column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX">' . $content . '</div>';
+			$content = '<div id="' . $fluxColumnId . '">' . $content . '</div>';
 		}
 
 		return $content;
