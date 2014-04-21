@@ -48,26 +48,6 @@ class ContentServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function canDetectParentElementAreaFromRecord() {
-		$mock = $this->createMock(array('loadRecordFromDatabase'));
-		$mock->expects($this->once())->method('loadRecordFromDatabase');
-		$result = $mock->detectParentElementAreaFromRecord(0);
-		$this->assertNull($result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canDetectParentUidFromRecord() {
-		$mock = $this->createMock(array('loadRecordFromDatabase'));
-		$mock->expects($this->once())->method('loadRecordFromDatabase');
-		$result = $mock->detectParentUidFromRecord(0);
-		$this->assertIsInteger($result);
-	}
-
-	/**
-	 * @test
-	 */
 	public function affectByRequestParametersReturnsEarlyWithUnrecognisedUrl() {
 		$parameters = array(
 			'returnUrl' => 'some.php?arg=1#hascutoffpointbutnovalues'

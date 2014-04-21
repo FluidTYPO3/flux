@@ -271,26 +271,6 @@ class ContentService implements SingletonInterface {
 	}
 
 	/**
-	 * @param integer $uid
-	 * @return string
-	 */
-	public function detectParentElementAreaFromRecord($uid) {
-		$uid = abs($uid);
-		$record = $this->loadRecordFromDatabase($uid);
-		return $record['tx_flux_column'];
-	}
-
-	/**
-	 * @param integer $uid
-	 * @return integer
-	 */
-	public function detectParentUidFromRecord($uid) {
-		$uid = abs($uid);
-		$record = $this->loadRecordFromDatabase($uid);
-		return intval($record['tx_flux_parent']);
-	}
-
-	/**
 	 * @param mixed $uidOrClause
 	 * @return array|FALSE
 	 */
