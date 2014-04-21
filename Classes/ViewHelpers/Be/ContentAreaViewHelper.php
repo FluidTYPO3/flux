@@ -91,6 +91,14 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 
 		$fluxColumnId = 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX';
 
+		$modSettings = $GLOBALS['SOBE']->MOD_SETTINGS;
+		if (2 === intval($modSettings['function'])) {
+			$dblist->tt_contentConfig['single'] = 0;
+			$dblist->tt_contentConfig['languageMode'] = 1;
+			$dblist->tt_contentConfig['languageCols'] = array(0 => $GLOBALS['LANG']->getLL('m_default'));
+			$dblist->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
+		}
+
 		$this->templateVariableContainer->add('records', $records);
 		$this->templateVariableContainer->add('dblist', $dblist);
 		$this->templateVariableContainer->add('fluxColumnId', $fluxColumnId);

@@ -63,9 +63,13 @@
 									</div>
 									<f:for each="{records}" as="record">
 										<div class="t3-page-ce" id="element-tt_content-{record.uid}">
-											<div class="t3-page-ce-dragitem">
+											<f:if condition="{dblist.tt_contentConfig.languageMode} == 0">
+												<div class="t3-page-ce-dragitem">
+											</f:if>
 												<flux:be.contentElement row="{record}" dblist="{dblist}" />
-											</div>
+											<f:if condition="{dblist.tt_contentConfig.languageMode} == 0">
+												</div>
+											</f:if>
 											<div class="t3-page-ce-dropzone" id="colpos-{record.colPos}-page-{row.pid}-{row.uid}-after-{record.uid}" style="height: 16px;">
 												<div class="t3-page-ce-wrapper-new-ce">
 													<flux:be.link.content.new after="{record.uid}" row="{row}" area="{area.name}" />
