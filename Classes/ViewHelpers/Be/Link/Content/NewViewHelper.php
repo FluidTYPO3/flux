@@ -60,16 +60,15 @@ class NewViewHelper extends AbstractViewHelper {
 		$sysLang = $this->arguments['row']['sys_language_uid'];
 		$returnUri = rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI'));
 
-		if (FALSE === empty($area)) {
-			$returnUri .= rawurlencode('#') . $area . rawurlencode(':') . $uid;
-			if (0 < $after) {
-				$returnUri .= rawurlencode(':') . '-' . $after;
-			}
+		if (FALSE === empty($area) && FALSE === empty($after)) {
+			$after = '-' . $after;
+		} else {
+			$after = $pid;
 		}
 
 		$icon = MiscellaneousUtility::getIcon('actions-document-new');
 		$uri = 'db_new_content_el.php?id=' . $pid .
-			'&uid_pid=' . $pid .
+			'&uid_pid=' . $after .
 			'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
 			'&sys_language_uid=' . $sysLang .
 			'&defVals[tt_content][tx_flux_parent]=' . $uid .

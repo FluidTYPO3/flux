@@ -33,7 +33,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * This Configuration Provider has the lowest possible priority
  * and is only used to execute a set of hook-style methods for
  * processing records. This processing ensures that relationships
- * between content elements get stored correctly -
+ * between content elements get stored correctly.
  *
  * @package Flux
  * @subpackage Provider
@@ -93,7 +93,7 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 		return parent::trigger($row, $table, $field, $extensionKey);
 	}
 
-	/**
+	/*
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row
@@ -107,7 +107,7 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 
 		parent::postProcessRecord($operation, $id, $row, $reference);
 		$parameters = GeneralUtility::_GET();
-		$this->contentService->affectRecordByRequestParameters($row, $parameters, $reference);
+		$this->contentService->affectRecordByRequestParameters($id, $row, $parameters, $reference);
 
 		self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 	}
