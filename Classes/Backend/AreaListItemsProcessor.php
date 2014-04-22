@@ -77,7 +77,7 @@ class AreaListItemsProcessor {
 		array_unshift($items, array('', '')); // adds an empty option in the beginning of the item list
 		if ($urlRequestedArea) {
 			foreach ($items as $index => $set) {
-				if ($set[0] !== $urlRequestedArea) {
+				if ($set[1] !== $urlRequestedArea) {
 					unset($items[$index]);
 				}
 			}
