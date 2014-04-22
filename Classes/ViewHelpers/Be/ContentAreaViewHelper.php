@@ -89,6 +89,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition, 'uid', 'sorting ASC');
 		$records = $dblist->getResult($res);
 
+		// EXT:gridelements support
 		$fluxColumnId = 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX';
 
 		$modSettings = $GLOBALS['SOBE']->MOD_SETTINGS;
@@ -106,10 +107,6 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$this->templateVariableContainer->remove('records');
 		$this->templateVariableContainer->remove('dblist');
 		$this->templateVariableContainer->remove('fluxColumnId');
-
-		if (FALSE === VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
-			$content = '<div id="' . $fluxColumnId . '">' . $content . '</div>';
-		}
 
 		return $content;
 	}
