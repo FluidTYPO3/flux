@@ -137,6 +137,17 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 				}
 			}
 		}
+		foreach ($items as $name => $item) {
+			if (FALSE === empty($defaultValues['tt_content']['tx_flux_column'])) {
+				$items[$name]['tt_content_defValues']['tx_flux_column'] = $defaultValues['tt_content']['tx_flux_column'];
+				$items[$name]['params'] .= '&defVals[tt_content][tx_flux_column]=' . rawurlencode($defaultValues['tt_content']['tx_flux_column']);
+			}
+			if (FALSE === empty($defaultValues['tt_content']['tx_flux_parent'])) {
+				$items[$name]['tt_content_defValues']['tx_flux_parent'] = $defaultValues['tt_content']['tx_flux_parent'];
+				$items[$name]['params'] .= '&defVals[tt_content][tx_flux_parent]=' . rawurlencode($defaultValues['tt_content']['tx_flux_parent']);
+				$items[$name]['params'] .= '&overrideVals[tt_content][tx_flux_parent]=' . rawurlencode($defaultValues['tt_content']['tx_flux_parent']);
+			}
+		}
 		// White/blacklist filtering. If whitelist contains elements, filter the list
 		// of possible types by whitelist first. Then apply the blacklist, removing
 		// any element types recorded herein.
