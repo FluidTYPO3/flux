@@ -161,17 +161,17 @@ class ContentService implements SingletonInterface {
 			$row['colPos'] = $colPos;
 			$row['sorting'] = 0;
 		} elseif (0 <= intval($relativeTo)) {
+			$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 			if (FALSE === empty($parameters[1])) {
 				list($prefix, $column, $prefix2, $page, $areaUniqid, $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
 				$relativeUid = intval($relativeUid);
-				if ('colpos' === $prefix && 'page' === $prefix2 && 'top' === $relativePosition && 0 < $relativeUid) {
-					$row['tx_flux_parent'] = $relativeUid;
-					$row['tx_flux_column'] = $area;
-				} else {
-					$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
+				if ('colpos' === $prefix && 'page' === $prefix2) {
+					$row['colPos'] = $column;
+					if ('top' === $relativePosition && 0 < $relativeUid) {
+						$row['tx_flux_parent'] = $relativeUid;
+						$row['tx_flux_column'] = $area;
+					}
 				}
-			} else {
-				$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 			}
 		} elseif (0 > intval($relativeTo)) {
 			// inserting a new element after another element. Check column position of that element.
