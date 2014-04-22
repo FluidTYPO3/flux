@@ -162,8 +162,8 @@ class ContentService implements SingletonInterface {
 	 *
 	 * @param array $row The row which may, may not, trigger moving.
 	 * @param string $relativeTo If not-zero moves record to after this UID (negative) or top of this colPos (positive)
-     * @param array $parameters List of parameters defining the move operation target
-     * @param DataHandler $tceMain
+	 * @param array $parameters List of parameters defining the move operation target
+	 * @param DataHandler $tceMain
 	 * @return void
 	 */
 	public function moveRecord(array &$row, &$relativeTo, $parameters, DataHandler $tceMain) {
