@@ -167,21 +167,12 @@ class ContentService implements SingletonInterface {
 	 * @return void
 	 */
 	public function moveRecord(array &$row, &$relativeTo, $parameters, DataHandler $tceMain) {
-		if (FALSE !== strpos($relativeTo, 'FLUX')) {
-			// Triggers when CE is dropped on a nested content area's header dropzone (EXT:gridelements)
-			list ($areaName, $parentElementUid, $pid) = explode('-', trim($relativeTo, '-'));
-			$row['tx_flux_column'] = $areaName;
-			$row['tx_flux_parent'] = $parentElementUid;
-			$row['pid'] = $pid;
-			$row['sorting'] = -1;
-			$relativeTo = $pid;
-		} elseif (FALSE !== strpos($relativeTo, 'x')) {
-			// Triggers when CE is dropped on a root (not CE) column header's dropzone (EXT:gridelements)
-			// set colPos and remove FCE relation
-			list ($relativeTo, $colPos) = explode('x', $relativeTo);
+		if (FALSE !== strpos($relativeTo, 'x')) {
+			// EXT:gridelements support
+			list($relativeTo, $colPos) = explode('x', $relativeTo);
 			$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 			$row['colPos'] = $colPos;
-			$row['sorting'] = -1;
+			$row['sorting'] = 0;
 		} elseif (0 <= intval($relativeTo)) {
 			if (FALSE === empty($parameters[1])) {
 				list($prefix, $column, $prefix2, $page, $areaUniqid, $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
