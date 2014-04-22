@@ -25,7 +25,9 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Service\RecordService;
+use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Utility\VersionUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -97,13 +99,6 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 			$dblist->itemLabels[$name] = $GLOBALS['LANG']->sL($val['label']);
 		}
 
-		$condition = "((tx_flux_column = '" . $area . ':' . $row['uid'] . "') OR (tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "')) AND deleted = 0";
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition, 'uid', 'sorting ASC');
-		$records = $dblist->getResult($res);
-
-		// EXT:gridelements support
-		$fluxColumnId = 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX';
-
 		$modSettings = $GLOBALS['SOBE']->MOD_SETTINGS;
 		if (2 === intval($modSettings['function'])) {
 			$dblist->tt_contentConfig['single'] = 0;
@@ -111,6 +106,18 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 			$dblist->tt_contentConfig['languageCols'] = array(0 => $GLOBALS['LANG']->getLL('m_default'));
 			$dblist->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
 		}
+
+		$showHidden = $modSettings['tt_content_showHidden'] ? '' : BackendUtility::BEenableFields('tt_content');
+		$condition = "tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' AND deleted = 0";
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition . $showHidden, 'uid', 'sorting ASC');
+		$records = $dblist->getResult($res);
+
+		foreach ($records as &$record) {
+			$record['isDisabled'] = $dblist->isDisabled('tt_content', $record);
+		}
+
+		// EXT:gridelements support
+		$fluxColumnId = 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX';
 
 		$this->templateVariableContainer->add('records', $records);
 		$this->templateVariableContainer->add('dblist', $dblist);
