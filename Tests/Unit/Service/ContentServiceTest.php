@@ -48,51 +48,6 @@ class ContentServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function affectByRequestParametersReturnsEarlyWithUnrecognisedUrl() {
-		$parameters = array(
-			'returnUrl' => 'some.php?arg=1#hascutoffpointbutnovalues'
-		);
-		$record = Records::$contentRecordIsParentAndHasChildren;
-		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$result = $this->createInstance()->affectRecordByRequestParameters($record, $parameters, $tceMain);
-		$this->assertFalse($result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function affectByRequestParametersAppliesContentAreaAndParentWithRecognisedUrl() {
-		$parameters = array(
-			'returnUrl' => 'some.php?arg=1#areaname:999999'
-		);
-		$record = Records::$contentRecordIsParentAndHasChildren;
-		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$result = $this->createInstance()->affectRecordByRequestParameters($record, $parameters, $tceMain);
-		$this->assertTrue($result);
-		$this->assertSame('areaname', $record['tx_flux_column']);
-		$this->assertSame('999999', $record['tx_flux_parent']);
-	}
-
-	/**
-	 * @test
-	 */
-	public function affectByRequestParametersAppliesContentAreaAndParentWithRecognisedUrlRelativeToElement() {
-		$parameters = array(
-			'returnUrl' => 'some.php?arg=1#areaname:999999:-999998'
-		);
-		$record = Records::$contentRecordIsParentAndHasChildren;
-		$oldSorting = $record['sorting'];
-		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$result = $this->createInstance()->affectRecordByRequestParameters($record, $parameters, $tceMain);
-		$this->assertTrue($result);
-		$this->assertSame('areaname', $record['tx_flux_column']);
-		$this->assertSame('999999', $record['tx_flux_parent']);
-		$this->assertNotSame($oldSorting, $record['sorting']);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canLoadRecordsFromDatabase() {
 		$instance = $this->createInstance();
 		$backup = $GLOBALS['TYPO3_DB'];
@@ -123,11 +78,10 @@ class ContentServiceTest extends AbstractTestCase {
 	public function canUpdateRecordInDatabase() {
 		$instance = $this->createInstance();
 		$row = array('uid' => 0);
-		$backup = $GLOBALS['TYPO3_DB'];
-		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_UPDATEquery'));
-		$GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_UPDATEquery');
+		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\RecordService', array('update'));
+		$mockContentService->expects($this->once())->method('update')->will($this->returnValue(TRUE));
+		$instance->injectRecordService($mockContentService);
 		$this->callInaccessibleMethod($instance, 'updateRecordInDatabase', $row);
-		$GLOBALS['TYPO3_DB'] = $backup;
 	}
 
 	/**
@@ -148,17 +102,13 @@ class ContentServiceTest extends AbstractTestCase {
 	public function canInitializeBlankRecordWithLanguage() {
 		$methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDatabase');
 		$mock = $this->createMock($methods);
-		$oldRecord = array(
-			'sys_language_uid' => 1
-		);
-		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
 		$mock->expects($this->once())->method('loadRecordsFromDatabase')->will($this->returnValue(array(
 			Records::$contentRecordWithParentAndChildren,
 			Records::$contentRecordWithParentAndWithoutChildren
 		)));
-		$row = array('uid' => -1, 't3_origuid' => 999999999999, 'sys_language_uid' => 1);
+		$row = array('uid' => 1, 't3_origuid' => 999999999999, 'sys_language_uid' => 1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$tceMain->substNEWwithIDs = array('NEW12345' => 1);
 		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
@@ -168,17 +118,13 @@ class ContentServiceTest extends AbstractTestCase {
 	public function canInitializeBlankRecordWithLanguageInOldRecord() {
 		$methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDatabase');
 		$mock = $this->createMock($methods);
-		$oldRecord = array(
-			'sys_language_uid' => 1
-		);
-		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
 		$mock->expects($this->once())->method('loadRecordsFromDatabase')->will($this->returnValue(array(
 			Records::$contentRecordWithParentAndChildren,
 			Records::$contentRecordWithParentAndWithoutChildren
 		)));
-		$row = array('uid' => -1, 't3_origuid' => 999999999999);
+		$row = array('uid' => 1, 't3_origuid' => 999999999999, 'sys_language_uid' => 1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$tceMain->substNEWwithIDs = array('NEW12345' => 1);
 		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
@@ -187,11 +133,11 @@ class ContentServiceTest extends AbstractTestCase {
 	 */
 	public function canInitializeCopiedRecordWithoutChildren() {
 		$methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDatabase');
-		$row = array('uid' => -1, 't3_origuid' => 99999999999999);
+		$row = array('uid' => 1, 't3_origuid' => 99999999999999, 'sys_language_uid' => 1);
 		$mock = $this->createMock($methods);
-		$mock->expects($this->atLeastOnce())->method('loadRecordsFromDatabase');
+		$mock->expects($this->atLeastOnce())->method('loadRecordsFromDatabase')->will($this->returnValue(array()));
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$tceMain->substNEWwithIDs = array('NEW12345' => 1);
 		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 
@@ -201,15 +147,15 @@ class ContentServiceTest extends AbstractTestCase {
 	public function canInitializeCopiedRecordWithChildren() {
 		$methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDatabase');
 		$children = array(
-			array('uid' => -1),
-			array('uid' => -2)
+			array('uid' => 1),
+			array('uid' => 2)
 		);
 		$mock = $this->createMock($methods);
 		$mock->expects($this->atLeastOnce())->method('loadRecordsFromDatabase')->will($this->returnValue($children));
-		$mock->expects($this->exactly(2))->method('updateRecordInDatabase');
-		$row = array('uid' => -1, 't3_origuid' => 99999999999999);
+		$mock->expects($this->exactly(3))->method('updateRecordInDatabase');
+		$row = array('uid' => 1, 't3_origuid' => 99999999999999, 'sys_language_uid' => 1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler', array('localize'));
-		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
+		$tceMain->substNEWwithIDs = array('NEW12345' => 1);
 		$mock->initializeRecord('NEW12345', $row, $tceMain);
 	}
 

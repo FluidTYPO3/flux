@@ -277,10 +277,9 @@ class ContentService implements SingletonInterface {
 	/**
 	 * @param array $row
 	 * @param integer $uid
-	 * @param DataHandler $tceMain
 	 * @return void
 	 */
-	protected function updateRecordInDatabase(array $row, $uid = NULL, DataHandler $tceMain) {
+	protected function updateRecordInDatabase(array $row, $uid = NULL) {
 		if (NULL === $uid) {
 			$row['uid'] = $uid;
 		}
