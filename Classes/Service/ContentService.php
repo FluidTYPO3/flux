@@ -282,7 +282,7 @@ class ContentService implements SingletonInterface {
 			$uidOrClause = "uid = '" . intval($uidOrClause) . "'";
 		}
 		$records = $this->recordService->get('tt_content', '*', $uidOrClause);
-		return NULL === $records ? FALSE : $records;
+		return NULL === $records ? FALSE : array_pop($records);
 	}
 
 	/**

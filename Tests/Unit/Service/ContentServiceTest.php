@@ -196,13 +196,12 @@ class ContentServiceTest extends AbstractTestCase {
 	 */
 	public function canLoadRecordFromDatabaseByUid() {
 		$instance = $this->createInstance();
-		$backup = $GLOBALS['TYPO3_DB'];
 		$records = array(Records::$contentRecordWithParentAndWithoutChildren);
-		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTquery', 'sql_fetch_assoc', 'sql_free_result'));
-		$GLOBALS['TYPO3_DB']->expects($this->once())->method('sql_fetch_assoc')->will($this->returnValue($records));
+		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\RecordService', array('get'));
+		$mockContentService->expects($this->once())->method('get')->will($this->returnValue($records));
+		$instance->injectRecordService($mockContentService);
 		$result = $this->callInaccessibleMethod($instance, 'loadRecordFromDatabase', 9999999999999);
-		$this->assertEquals($records, $result);
-		$GLOBALS['TYPO3_DB'] = $backup;
+		$this->assertEquals(array_pop($records), $result);
 	}
 
 	/**
