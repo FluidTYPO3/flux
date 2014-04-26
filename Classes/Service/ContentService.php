@@ -286,8 +286,6 @@ class ContentService implements SingletonInterface {
 	}
 
 	/**
-<<<<<<< Updated upstream
-=======
 	 * @param int $uid
 	 * @param int $languageUid
 	 * @return array|FALSE
@@ -304,7 +302,6 @@ class ContentService implements SingletonInterface {
 	}
 
 	/**
->>>>>>> Stashed changes
 	 * @param string $clause
 	 * @return array|FALSE
 	 */
