@@ -38,6 +38,19 @@ use TYPO3\CMS\Core\SingletonInterface;
  */
 class ContentService implements SingletonInterface {
 
+	/**
+	 * @var RecordService
+	 */
+	protected $recordService;
+
+	/**
+	 * @param RecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(RecordService $recordService) {
+		$this->recordService = $recordService;
+	}
+
 	const COLPOS_FLUXCONTENT = 18181;
 
 	/**
@@ -268,15 +281,35 @@ class ContentService implements SingletonInterface {
 		if (0 < intval($uidOrClause) && TRUE === is_integer($uidOrClause)) {
 			$uidOrClause = "uid = '" . intval($uidOrClause) . "'";
 		}
-		return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'tt_content', $uidOrClause);
+		$records = $this->recordService->get('tt_content', '*', $uidOrClause);
+		return NULL === $records ? FALSE : $records;
 	}
 
 	/**
+<<<<<<< Updated upstream
+=======
+	 * @param int $uid
+	 * @param int $languageUid
+	 * @return array|FALSE
+	*/
+	protected function loadLocalizedRecordFromDatabase($uid, $languageUid) {
+		$uid = intval($uid);
+		$languageUid = intval($languageUid);
+		if (0 === $languageUid) {
+			return BackendUtility::getRecord('tt_content', $uid);
+		} else {
+			$records = $this->recordService->get('tt_content', '*', 'l18n_parent = ' . $uid . ' AND sys_language_uid = ' . $languageUid);
+			return NULL === $records ? FALSE : $records;
+		}
+	}
+
+	/**
+>>>>>>> Stashed changes
 	 * @param string $clause
 	 * @return array|FALSE
 	 */
 	protected function loadRecordsFromDatabase($clause) {
-		return $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $clause);
+		return $this->recordService->get('tt_content', '*', $clause);
 	}
 
 	/**
@@ -286,9 +319,9 @@ class ContentService implements SingletonInterface {
 	 */
 	protected function updateRecordInDatabase($row, $uid = NULL) {
 		if (NULL === $uid) {
-			$uid = $row['uid'];
+			$row['uid'] = $uid;
 		}
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', "uid = '" . $uid . "'", $row);
+		$this->recordService->update('tt_content', $row);
 	}
 
 }
