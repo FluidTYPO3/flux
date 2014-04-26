@@ -135,11 +135,15 @@ class TceMain {
 	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, &$reference) {
 		try {
 			if (FALSE !== strpos($id, 'NEW')) {
-				$id = $reference->substNEWwithIDs[$id];
+				if (FALSE === empty($reference->substNEWwithIDs[$id])) {
+					$id = intval($reference->substNEWwithIDs[$id]);
+				}
+			} else {
+				$id = intval($id);
 			}
-			$clause = "uid = '" . $id . "'";
-			if (0 === count($record)) {
+			if (TRUE === is_integer($id) && 0 === count($record)) {
 				// patch: when a record is completely empty but a UID exists
+				$clause = "uid = '" . $id . "'";
 				$loadedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $table, $clause);
 				if (TRUE === is_array($loadedRecord)) {
 					$record = array_pop($loadedRecord);
@@ -163,9 +167,9 @@ class TceMain {
 				}
 			}
 			foreach ($detectedProviders as $provider) {
-				if (TRUE === $provider->shouldCall($methodName, $record)) {
+				if (TRUE === $provider->shouldCall($methodName, $id)) {
 					call_user_func_array(array($provider, $methodName), $arguments);
-					$provider->trackMethodCall($methodName, $record);
+					$provider->trackMethodCall($methodName, $id);
 				}
 			}
 		} catch (\Exception $error) {
