@@ -272,8 +272,6 @@ abstract class AbstractFormComponent implements FormInterface {
 			$prefix = 'columns';
 		} elseif (TRUE === $this instanceof Object) {
 			$prefix = 'objects';
-		} elseif (TRUE === $this instanceof Content) {
-			$prefix = 'areas';
 		} elseif (TRUE === $this instanceof Container) {
 			$prefix = 'containers';
 		} elseif (TRUE === $this instanceof FieldInterface) {

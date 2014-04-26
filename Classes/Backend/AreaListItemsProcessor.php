@@ -103,10 +103,7 @@ class AreaListItemsProcessor {
 			$gridConfiguration = $grid->build();
 			foreach ($gridConfiguration['rows'] as $row) {
 				foreach ($row['columns'] as $column) {
-					foreach ($column['areas'] as $area) {
-						array_push($columns, array($area['label'] . ' (' . $area['name'] . ')', $area['name']));
-
-					}
+					array_push($columns, array($column['label'] . ' (' . $column['name'] . ')', $column['name']));
 				}
 			}
 		}

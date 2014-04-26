@@ -29,6 +29,14 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 /**
  * Adds a content area to a source using Flux FlexForms
  *
+ * DEPRECATED: is now redundant. You can delete this instance
+ * and instead just use the `flux:grid.column` and set `name`
+ * to your desired content area name.
+ *
+ * This class will remain here for a few more versions and if
+ * used, will override the name you set on `flux:grid.column`
+ * in order to allow a smooth migration.
+ *
  * @package Flux
  * @subpackage ViewHelpers/Form
  */
@@ -50,11 +58,9 @@ class ContentViewHelper extends AbstractFormViewHelper {
 	 * @return string
 	 */
 	public function render() {
-		/** @var FluidTYPO3\Flux\Form\Container\Content $content */
-		$content = $this->getForm()->createContainer('Content', $this->arguments['name'], $this->arguments['label']);
 		$container = $this->getContainer();
-		$container->add($content);
-		$this->setContainer($content);
+		$container->setName($this->arguments['name']);
+		$container->setLabel($this->arguments['label']);
 		$this->renderChildren();
 		$this->setContainer($container);
 	}
