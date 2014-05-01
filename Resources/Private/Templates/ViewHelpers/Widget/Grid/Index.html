@@ -32,7 +32,7 @@
 									</div>
 								</div>
 								<f:for each="{records}" as="record">
-									<div class="t3-page-ce" id="element-tt_content-{record.uid}">
+									<div class="t3-page-ce{f:if(condition: record.isDisabled, then: ' t3-page-ce-hidden')}" id="element-tt_content-{record.uid}">
 										<f:if condition="{dblist.tt_contentConfig.languageMode} == 0">
 											<div class="t3-page-ce-dragitem">
 										</f:if>
