@@ -67,10 +67,10 @@ abstract class AbstractContainerTest extends AbstractFormTest {
 	/**
 	 * @test
 	 */
-	public function canGetAndSetStopInheritance() {
+	public function canGetAndSetInherit() {
 		$instance = $this->createInstance();
-		$instance->setStopInheritance(TRUE);
-		$this->assertEquals(TRUE, $instance->getStopInheritance());
+		$instance->setInherit(FALSE);
+		$this->assertEquals(FALSE, $instance->getInherit());
 	}
 
 	/**
