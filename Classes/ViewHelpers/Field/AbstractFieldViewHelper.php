@@ -52,7 +52,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('enabled', 'boolean', 'If FALSE, disables the field in the FlexForm', FALSE, TRUE);
 		$this->registerArgument('requestUpdate', 'boolean', 'If TRUE, the form is force-saved and reloaded when field value changes', FALSE, FALSE);
 		$this->registerArgument('displayCond', 'string', 'Optional "Display Condition" (TCA style) for this particular field', FALSE, NULL);
-		$this->registerArgument('inherit', 'integer', 'If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider', FALSE, 99);
+		$this->registerArgument('inherit', 'boolean', 'If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider', FALSE, TRUE);
 		$this->registerArgument('inheritEmpty', 'boolean', 'If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider', FALSE, TRUE);
 		$this->registerArgument('clear', 'boolean', 'If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value', FALSE, FALSE);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
@@ -73,7 +73,6 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 		$component->setDisplayCondition($this->arguments['displayCond']);
 		$component->setInherit($this->arguments['inherit']);
 		$component->setInheritEmpty($this->arguments['inheritEmpty']);
-		$component->setStopInheritance($this->arguments['stopInheritance']);
 		$component->setTransform($this->arguments['transform']);
 		$component->setClearable($this->arguments['clear']);
 		$component->setVariables($this->arguments['variables']);
