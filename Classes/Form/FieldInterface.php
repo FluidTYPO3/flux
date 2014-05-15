@@ -124,17 +124,6 @@ interface FieldInterface extends FormInterface {
 	public function getInheritEmpty();
 
 	/**
-	 * @param boolean $stopInheritance
-	 * @return FieldInterface
-	 */
-	public function setStopInheritance($stopInheritance);
-
-	/**
-	 * @return boolean
-	 */
-	public function getStopInheritance();
-
-	/**
 	 * @param boolean $exclude
 	 * @return FieldInterface
 	 */

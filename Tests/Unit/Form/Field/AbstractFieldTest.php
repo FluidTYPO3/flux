@@ -42,16 +42,6 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 	/**
 	 * @test
 	 */
-	public function canGetAndSetStopInheritance() {
-		$instance = $this->canChainAllChainableSetters();
-		$this->assertFalse($instance->setStopInheritance(FALSE)->getStopInheritance());
-		$this->assertTrue($instance->setStopInheritance(TRUE)->getStopInheritance());
-		$this->performTestBuild($instance);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canGetAndSetInheritEmpty() {
 		$instance = $this->canChainAllChainableSetters();
 		$this->assertFalse($instance->setInheritEmpty(FALSE)->getInheritEmpty());
