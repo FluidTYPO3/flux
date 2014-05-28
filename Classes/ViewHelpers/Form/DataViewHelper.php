@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception;
@@ -43,10 +44,22 @@ class DataViewHelper extends AbstractViewHelper {
 	private static $dataCache = array();
 
 	/**
+	 * @var RecordService
+	 */
+	protected $recordService;
+
+	/**
 	 * @var FluxService
 	 */
 	protected $configurationService;
 
+	/**
+	 * @param RecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(RecordService $recordService) {
+		$this->recordService = $recordService;
+	}
 
 	/**
 	 * Inject Flux service
@@ -73,9 +86,9 @@ class DataViewHelper extends AbstractViewHelper {
 		}
 		if (TRUE === isset($GLOBALS['TCA'][$table]) && TRUE === isset($GLOBALS['TCA'][$table]['columns'][$field])) {
 			if (NULL === $record) {
-				$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,' . $field, $table, sprintf('uid=%d', $uid));
+				$record = $this->recordService->getSingle($table, '*', $uid);
 			}
-			if (FALSE === $record) {
+			if (NULL === $record) {
 				throw new Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .
 					'provide the "record" attribute.', $table, $field, $uid), 1358679983);
 			}
