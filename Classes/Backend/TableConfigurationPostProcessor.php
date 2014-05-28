@@ -66,6 +66,9 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 * @return void
 	 */
 	public function processData() {
+		if (TYPO3_REQUESTTYPE_INSTALL === (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
+			return;
+		}
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->loadTypoScriptConfigurationProviderInstances();
 		/** @var FluxService $fluxService */

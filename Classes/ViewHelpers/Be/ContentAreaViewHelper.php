@@ -25,7 +25,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Service\ContentService;
-use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
@@ -39,19 +38,6 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  * @subpackage ViewHelpers\Be
  */
 class ContentAreaViewHelper extends AbstractViewHelper {
-
-	/**
-	 * @var RecordService
-	 */
-	protected $recordService;
-
-	/**
-	 * @param RecordService $recordService
-	 * @return void
-	 */
-	public function injectRecordService(RecordService $recordService) {
-		$this->recordService = $recordService;
-	}
 
 	/**
 	 * Initialize
@@ -72,7 +58,9 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$row = $this->arguments['row'];
 		$area = $this->arguments['area'];
 
-		$pageRecord = $this->recordService->getSingle('pages', '*', $row['pid']);
+		$pageRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages', "uid = '" . $row['pid'] . "'");
+		$pageRecord = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pageRes);
+		$GLOBALS['TYPO3_DB']->sql_free_result($pageRes);
 		// note: the following chained makeInstance is not an error; it is there to make the ViewHelper work on TYPO3 6.0
 		/** @var $dblist PageLayoutView */
 		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');

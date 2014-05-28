@@ -39,19 +39,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ContentService implements SingletonInterface {
 
-	/**
-	 * @var RecordService
-	 */
-	protected $recordService;
-
-	/**
-	 * @param RecordService $recordService
-	 * @return void
-	 */
-	public function injectRecordService(RecordService $recordService) {
-		$this->recordService = $recordService;
-	}
-
 	const COLPOS_FLUXCONTENT = 18181;
 
 	/*
@@ -226,7 +213,7 @@ class ContentService implements SingletonInterface {
 			$this->updateRecordInDatabase($overrideValues, $newUid, $tceMain);
 
 			// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
-			$children = $this->loadRecordsFromDatabase('tx_flux_parent = "' . $oldUid . "'");
+			$children = $this->loadRecordsFromDatabase($oldUid);
 			foreach ($children as $child) {
 				$overrideValues = array(
 					'tx_flux_parent' => $newUid
@@ -238,52 +225,43 @@ class ContentService implements SingletonInterface {
 	}
 
 	/**
-	 * @param integer $uidOrClause
+	 * @param integer $uid
 	 * @param integer $languageUid
 	 * @return array|NULL
 	 */
-	protected function loadRecordFromDatabase($uidOrClause, $languageUid = 0) {
-		$languageClause = NULL;
-		$uid = $uidOrClause;
-		if (0 < intval($uidOrClause) && TRUE === is_integer($uidOrClause)) {
-			$languageClause = 'l18n_parent = ' . $uid . ' AND sys_language_uid = ' . $languageUid;
-			$uidClause = " AND uid = '" . intval($uidOrClause) . "'";
-		}
-		$records = $this->recordService->get('tt_content', '*', $languageClause . $uidClause);
-		return NULL === $records ? FALSE : array_pop($records);
-	}
-
-	/**
-	 * @param int $uid
-	 * @param int $languageUid
-	 * @return array|FALSE
-	*/
-	protected function loadLocalizedRecordFromDatabase($uid, $languageUid) {
+	protected function loadRecordFromDatabase($uid, $languageUid = 0) {
 		$uid = intval($uid);
 		$languageUid = intval($languageUid);
 		if (0 === $languageUid) {
 			return BackendUtility::getRecord('tt_content', $uid);
+		} else {
+			return BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
 		}
 	}
 
 	/**
-	 * @param mixed $clause
+	 * @param integer $parentUid
 	 * @return array|NULL
 	 */
-	protected function loadRecordsFromDatabase($clause) {
-		return $this->recordService->get('tt_content', '*', $clause);
+	protected function loadRecordsFromDatabase($parentUid) {
+		$parentUid = intval($parentUid);
+		return BackendUtility::getRecordsByField('tt_content', 'tx_flux_parent', $parentUid);
 	}
 
 	/**
 	 * @param array $row
 	 * @param integer $uid
+	 * @param DataHandler $tceMain
 	 * @return void
 	 */
-	protected function updateRecordInDatabase(array $row, $uid = NULL) {
+	protected function updateRecordInDatabase(array $row, $uid = NULL, DataHandler $tceMain) {
 		if (NULL === $uid) {
-			$row['uid'] = $uid;
+			$uid = $row['uid'];
 		}
-		$this->recordService->update('tt_content', $row);
+		$uid = intval($uid);
+		if (FALSE === empty($uid)) {
+			$tceMain->updateDB('tt_content', $uid, $row);
+		}
 	}
 
 }
