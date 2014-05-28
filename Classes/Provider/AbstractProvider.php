@@ -398,6 +398,7 @@ class AbstractProvider implements ProviderInterface {
 			self::$cache[$cacheKey] = $inheritedConfiguration;
 			return (array) $inheritedConfiguration;
 		}
+		$immediateConfiguration = RecursiveArrayUtility::removeKeysByValue($immediateConfiguration, '');
 		$merged = RecursiveArrayUtility::merge($inheritedConfiguration, $immediateConfiguration);
 		self::$cache[$cacheKey] = $merged;
 		return $merged;
