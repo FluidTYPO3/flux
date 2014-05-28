@@ -83,4 +83,22 @@ class RecursiveArrayUtility {
 		return $array1;
 	}
 
+	/**
+	 * @param array $array
+	 * @param mixed $value
+	 *
+	 * @return array
+	 */
+	public static function removeKeysByValue($array, $value) {
+		foreach ($array as $key => $val) {
+			if (TRUE === is_array($val)) {
+				$array[$key] = self::removeKeysByValue($val, $value);
+			} else {
+				if ($value === $val) {
+					unset($array[$key]);
+				}
+			}
+		}
+		return $array;
+	}
 }

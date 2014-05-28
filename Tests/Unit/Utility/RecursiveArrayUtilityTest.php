@@ -92,4 +92,53 @@ class RecursiveArrayUtilityTest extends AbstractTestCase {
 		$this->assertSame($expected, $product);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canOperateArrayRemoveKeysByValueFunction() {
+		$array = array(
+			'bar' => TRUE,
+			'baz' => TRUE,
+			'same' => array(
+					'foo' => TRUE
+			),
+			'foo' => array(
+					'bar' => TRUE,
+					'foo' => '',
+					'foa' => ' ',
+					'fob' => '0',
+					'foc' => NULL,
+					'fod' => 0,
+			),
+			'baa' => TRUE,
+			'fob' => '',
+			'foc' => ' ',
+			'fod' => '0',
+			'foe' => NULL,
+			'fof' => 0,
+		);
+		$expected = array(
+			'bar' => TRUE,
+			'baz' => TRUE,
+			'same' => array(
+					'foo' => TRUE
+			),
+			'foo' => array(
+					'bar' => TRUE,
+					'foa' => ' ',
+					'fob' => '0',
+					'foc' => NULL,
+					'fod' => 0,
+			),
+			'baa' => TRUE,
+			'foc' => ' ',
+			'fod' => '0',
+			'foe' => NULL,
+			'fof' => 0,
+		);
+
+		$resultArray = RecursiveArrayUtility::removeKeysByValue($array, '');
+		$this->assertSame($expected, $resultArray);
+	}
+
 }
