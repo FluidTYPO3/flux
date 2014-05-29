@@ -154,12 +154,10 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	 * @throws Exception
 	 */
 	public function getTemplatePathAndFilename($actionName = NULL) {
-		if (NULL !== $this->templatePathAndFilename) {
-			return $this->templatePathAndFilename;
-		}
 		if (TRUE === empty($actionName)) {
 			$actionName = $this->controllerContext->getRequest()->getControllerActionName();
 		}
+		$actionName = str_replace('_', '/', $actionName);
 		$actionName = ucfirst($actionName);
 		$paths = $this->expandGenericPathPattern($this->templatePathAndFilenamePattern, FALSE, FALSE);
 		foreach ($paths as &$templatePathAndFilename) {
