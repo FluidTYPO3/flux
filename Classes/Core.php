@@ -219,7 +219,7 @@ class Core {
 		/** @var ObjectManagerInterface $objectManager */
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		/** @var $provider ProviderInterface */
-		$provider = $objectManager->get('FluidTYPO3\Flux\Provider\ContentProvider');
+		$provider = $objectManager->get('FluidTYPO3\Flux\Provider\Provider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName($fieldName);
 		$provider->setExtensionKey($extensionKey);
