@@ -106,6 +106,17 @@ class ResolveUtility {
 	}
 
 	/**
+	 * @param string $path
+	 * @return string
+	 */
+	public static function convertAllPathSegmentsToUpperCamelCase($path) {
+		$pathSegments = explode('/', $path);
+		$pathSegments = array_map('ucfirst', $pathSegments);
+		$path = implode('/', $pathSegments);
+		return $path;
+	}
+
+	/**
 	 * @param array $paths
 	 * @param string $controllerName
 	 * @param string $controllerAction
@@ -114,13 +125,14 @@ class ResolveUtility {
 	 */
 	public static function resolveTemplatePathAndFilenameByPathAndControllerNameAndActionAndFormat(array $paths, $controllerName, $controllerAction, $format = 'html') {
 		$templateRootPath = rtrim($paths['templateRootPath'], '/') . '/' . $controllerName . '/';
-		$templatePathAndFilename = $templateRootPath . $controllerAction . '.' . $format;
+		$controllerActionPath = self::convertAllPathSegmentsToUpperCamelCase($controllerAction);
+		$templatePathAndFilename = $templateRootPath . $controllerActionPath . '.' . $format;
 		if (TRUE === isset($paths['overlays']) && TRUE === is_array($paths['overlays'])) {
 			foreach ($paths['overlays'] as $possibleOverlayPaths) {
 				if (TRUE === isset($possibleOverlayPaths['templateRootPath'])) {
 					$overlayTemplateRootPath = $possibleOverlayPaths['templateRootPath'];
 					$overlayTemplateRootPath = rtrim($overlayTemplateRootPath, '/') . '/' . $controllerName . '/';
-					$possibleOverlayFile = GeneralUtility::getFileAbsFileName($overlayTemplateRootPath . $controllerAction . '.' . $format);
+					$possibleOverlayFile = GeneralUtility::getFileAbsFileName($overlayTemplateRootPath . $controllerActionPath . '.' . $format);
 					if (TRUE === file_exists($possibleOverlayFile)) {
 						$templatePathAndFilename = $possibleOverlayFile;
 						break;
