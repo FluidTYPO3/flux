@@ -29,6 +29,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -166,6 +167,11 @@ class AbstractProvider implements ProviderInterface {
 	protected $contentService;
 
 	/**
+	 * @var RecordService
+	 */
+	protected $recordService;
+
+	/**
 	 * @param ObjectManagerInterface $objectManager
 	 * @return void
 	 */
@@ -195,6 +201,14 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	public function injectContentService(ContentService $contentService) {
 		$this->contentService = $contentService;
+	}
+
+	/**
+	 * @param RecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(RecordService $recordService) {
+		$this->recordService = $recordService;
 	}
 
 	/**
@@ -947,7 +961,7 @@ class AbstractProvider implements ProviderInterface {
 	protected function loadRecordFromDatabase($uid) {
 		$uid = intval($uid);
 		$tableName = $this->tableName;
-		return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $tableName, "uid = '" . $uid . "'");
+		return $this->recordService->getSingle($tableName, '*', $uid);
 	}
 
 	/**
