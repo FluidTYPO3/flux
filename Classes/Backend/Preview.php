@@ -26,6 +26,7 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Backend\Template\DocumentTemplate;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
@@ -58,11 +59,17 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	protected $configurationService;
 
 	/**
+	 * @var RecordService
+	 */
+	protected $recordService;
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
 		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+		$this->recordService = $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService');
 	}
 
 	/**
@@ -134,7 +141,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	 * @return array
 	 */
 	protected function getPageTitleAndPidFromContentUid($contentUid) {
-		return reset($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('p.title, t.pid', 'tt_content t, pages p', "t.uid = '" . $contentUid . "' AND p.uid = t.pid"));
+		return reset($this->recordService->get('tt_content t, pages p', 'p.title, t.pid', "t.uid = '" . $contentUid . "' AND p.uid = t.pid"));
 	}
 
 	/**

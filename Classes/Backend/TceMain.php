@@ -43,6 +43,11 @@ class TceMain {
 	protected $configurationService;
 
 	/**
+	 * @var \FluidTYPO3\Flux\Service\RecordService
+	 */
+	protected $recordService;
+
+	/**
 	 * @var boolean
 	 */
 	static private $cachesCleared = FALSE;
@@ -53,6 +58,7 @@ class TceMain {
 	public function __construct() {
 		$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+		$this->recordService = $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService');
 	}
 
 	/**
@@ -143,8 +149,7 @@ class TceMain {
 			}
 			if (TRUE === is_integer($id) && 0 === count($record)) {
 				// patch: when a record is completely empty but a UID exists
-				$clause = "uid = '" . $id . "'";
-				$loadedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $table, $clause);
+				$loadedRecord = $this->recordService->getSingle($table, '*', $id);
 				if (TRUE === is_array($loadedRecord)) {
 					$record = array_pop($loadedRecord);
 					$arguments['row'] = &$record;
