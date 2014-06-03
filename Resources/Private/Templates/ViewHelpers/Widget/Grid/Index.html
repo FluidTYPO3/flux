@@ -1,14 +1,13 @@
 {namespace flux=FluidTYPO3\Flux\ViewHelpers}
 
-<div class="grid-visibility-toggle">
-
-	<div class="toggle-content" data-uid="{row.uid}">
-		<span class="t3-icon t3-icon-actions t3-icon-view-table-{flux:isCollapsed(record: row, then: 'expand', else: 'collapse')}"></span>
+<f:if condition="{grid.rows -> f:count()} > 0">
+	<div class="grid-visibility-toggle">
+		<div class="toggle-content" data-uid="{row.uid}">
+			<span class="t3-icon t3-icon-actions t3-icon-view-table-{flux:isCollapsed(record: row, then: 'expand', else: 'collapse')}"></span>
+		</div>
+		<f:render section="Grid" arguments="{_all}" />
 	</div>
-
-	<f:render section="Grid" arguments="{_all}" />
-
-</div>
+</f:if>
 
 <f:section name="Grid">
 	<table cellspacing="0" cellpadding="0" id="content-grid-{row.uid}" class="flux-grid{flux:isCollapsed(record: row, then: ' flux-grid-hidden')}">
