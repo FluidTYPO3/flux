@@ -90,6 +90,41 @@ class RecordServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function updateMethodCallsExpectedDatabaseMethod() {
+		$table = 'test';
+		$uid = 123;
+		$fields = array('foo' => 'bar', 'uid' => $uid);
+		$mock = $this->getMockServiceInstance(array(), array('exec_UPDATEquery'));
+		self::$connectionMock->expects($this->once())->method('exec_UPDATEquery')->with($table, "uid = '" . $uid . "'", $fields);
+		$mock->update($table, $fields, $uid);
+	}
+
+	/**
+	 * @test
+	 */
+	public function deleteMethodCallsExpectedDatabaseMethodWithUid() {
+		$table = 'test';
+		$uid = 123;
+		$mock = $this->getMockServiceInstance(array(), array('exec_DELETEquery'));
+		self::$connectionMock->expects($this->once())->method('exec_DELETEquery')->with($table, "uid = '" . $uid . "'");
+		$mock->delete($table, $uid);
+	}
+
+	/**
+	 * @test
+	 */
+	public function deleteMethodCallsExpectedDatabaseMethodWithRecord() {
+		$table = 'test';
+		$uid = 123;
+		$record = array('uid' => 123);
+		$mock = $this->getMockServiceInstance(array(), array('exec_DELETEquery'));
+		self::$connectionMock->expects($this->once())->method('exec_DELETEquery')->with($table, "uid = '" . $uid . "'");
+		$mock->delete($table, $record);
+	}
+
+	/**
+	 * @test
+	 */
 	public function returnsDatabaseConnection() {
 		$instance = $this->createInstance();
 		$this->assertSame($GLOBALS['TYPO3_DB'], $this->callInaccessibleMethod($instance, 'getDatabaseConnection'));
