@@ -151,7 +151,7 @@ class TceMain {
 				// patch: when a record is completely empty but a UID exists
 				$loadedRecord = $this->recordService->getSingle($table, '*', $id);
 				if (TRUE === is_array($loadedRecord)) {
-					$record = array_pop($loadedRecord);
+					$record = $loadedRecord;
 					$arguments['row'] = &$record;
 				}
 			}
