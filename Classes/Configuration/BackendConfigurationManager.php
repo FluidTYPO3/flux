@@ -169,7 +169,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 		$time = time();
 		$condition = 'root = 1 AND hidden = 0 AND deleted = 0 AND (starttime = 0 OR starttime < ' . $time . ') AND (endtime = 0 OR endtime > ' . $time . ')';
 		$numberOfTemplates = count($this->recordService->get('sys_template', 'uid', $condition));
-		if (1 > $numberOfTemplates) {
+		if (1 < $numberOfTemplates) {
 			return 0;
 		}
 		$record = reset($this->recordService->get('sys_template', '*', $condition));
