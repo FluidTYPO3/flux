@@ -41,6 +41,33 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
  * Using this ViewHelper after `flux:grid` will cause this ViewHelper
  * to be ignored.
  *
+ * ### Example of difference
+ *
+ * ```xml
+ * <flux:form id="myform">
+ *     <!-- Creates a basic Grid with one row and one column, names
+ *          the column "mycontent" and makes Flux use this Grid -->
+ *     <flux:content name="mycontent" />
+ *     <!-- Additional flux:content tags are completely ignored -->
+ * </flux:form>
+ * ```
+ *
+ * ```xml
+ * <flux:form id="myform">
+ *     <!-- Creates a full, multi-column/row Grid -->
+ *     <flux:grid>
+ *         <flux:grid.row>
+ *             <flux:grid.column name="mycontentA" />
+ *             <flux:grid.column name="mycontentB" />
+ *         </flux:grid.row>
+ *         <flux:grid.row>
+ *             <flux:grid.column name="mycontentC" colspan="2" />
+ *         </flux:grid.row>
+ *     </flux:grid>
+ *     <!-- No use of flux:content is possible after this point -->
+ * </flux:form>
+ * ```
+ *
  * @package Flux
  * @subpackage ViewHelpers/Form
  */
