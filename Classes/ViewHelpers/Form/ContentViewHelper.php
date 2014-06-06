@@ -24,18 +24,22 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 
 /**
  * Adds a content area to a source using Flux FlexForms
  *
- * DEPRECATED: is now redundant. You can delete this instance
- * and instead just use the `flux:grid.column` and set `name`
- * to your desired content area name.
+ * Only works to insert a single content area into your element.
+ * To insert multiple content areas, use instead a full `flux:grid`
+ * with your desired row and column structure; each column then
+ * becomes a content area.
  *
- * This class will remain here for a few more versions and if
- * used, will override the name you set on `flux:grid.column`
- * in order to allow a smooth migration.
+ * Using `flux:grid` after this ViewHelper in the same `flux:form`
+ * will overwrite this ViewHelper.
+ *
+ * Using this ViewHelper after `flux:grid` will cause this ViewHelper
+ * to be ignored.
  *
  * @package Flux
  * @subpackage ViewHelpers/Form
@@ -58,11 +62,17 @@ class ContentViewHelper extends AbstractFormViewHelper {
 	 * @return string
 	 */
 	public function render() {
-		$container = $this->getContainer();
-		$container->setName($this->arguments['name']);
-		$container->setLabel($this->arguments['label']);
-		$this->renderChildren();
-		$this->setContainer($container);
+		$originalContainer = $this->getContainer();
+		if (FALSE === $originalContainer instanceof Column) {
+			// get the current Grid and check for existence of one row and one column, if missing then create them:
+			$grid = $this->getGrid('grid');
+			if (0 === count($grid->getRows())) {
+				$row = $grid->createContainer('Row', 'row');
+				$column = $row->createContainer('Column', 'column');
+				$column->setName($this->arguments['name']);
+				$column->setLabel($this->arguments['label']);
+			}
+		}
 	}
 
 }
