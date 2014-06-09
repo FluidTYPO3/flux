@@ -85,6 +85,9 @@ class ContentService implements SingletonInterface {
 					$record['CType'] = 'shortcut';
 					$record['records'] = $id;
 				}
+				if ((FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos)) {
+					$record['colPos'] = $possibleColPos;
+				}
 				$mappingArray[$copyFromUid] = $record;
 			}
 		}
