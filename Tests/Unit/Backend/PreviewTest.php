@@ -42,7 +42,9 @@ class PreviewTest extends AbstractTestCase {
 	public function setup() {
 		$tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
 		foreach ($tempFiles as $tempFile) {
-			unlink($tempFile);
+			if (TRUE === file_exists($tempFile)) {
+				unlink($tempFile);
+			}
 		}
 	}
 
