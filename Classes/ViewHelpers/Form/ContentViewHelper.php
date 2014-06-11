@@ -99,6 +99,9 @@ class ContentViewHelper extends AbstractFormViewHelper {
 				$column->setName($this->arguments['name']);
 				$column->setLabel($this->arguments['label']);
 			}
+		} else {
+			$originalContainer->setName($this->arguments['name']);
+			$originalContainer->setLabel($this->arguments['label']);
 		}
 	}
 
