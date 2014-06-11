@@ -64,6 +64,7 @@ class Tree extends AbstractRelationFormField {
 			'showHeader' => $this->getShowHeader(),
 			'width' => $this->getWidth()
 		);
+		$configuration['treeConfig']['appearance'] = $configuration['treeConfig'];
 		return $configuration;
 	}
 
