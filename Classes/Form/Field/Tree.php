@@ -60,9 +60,11 @@ class Tree extends AbstractRelationFormField {
 		$configuration['renderMode'] = 'tree';
 		$configuration['treeConfig'] = array(
 			'parentField' => $this->getParentField(),
-			'expandAll' => $this->getExpandAll(),
-			'showHeader' => $this->getShowHeader(),
-			'width' => $this->getWidth()
+			'appearance' => array (
+				'expandAll' => $this->getExpandAll(),
+				'showHeader' => $this->getShowHeader(),
+				'width' => $this->getWidth(),
+			),
 		);
 		return $configuration;
 	}
