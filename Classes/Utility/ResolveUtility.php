@@ -103,6 +103,7 @@ class ResolveUtility {
 	 * @return array
 	 */
 	public static function resolveCurrentPageRecord() {
+		self::initialize();
 		if (TRUE === isset($GLOBALS['TSFE']->page)) {
 			$record = self::$recordService->getSingle('pages', '*', $GLOBALS['TSFE']->id);
 		} elseif ('BE' === TYPO3_MODE) {
