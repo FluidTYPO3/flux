@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\Utility;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -46,11 +47,17 @@ class ResolveUtility {
 	protected static $hasGridElementsVersionTwo = FALSE;
 
 	/**
+	 * @var WorkspacesAwareRecordService
+	 */
+	protected static $recordService;
+
+	/**
 	 * @return void
 	 */
 	private static function initialize() {
 		if (FALSE === self::$initialized) {
 			self::$hasGridElementsVersionTwo = VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
+			self::$recordService = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('FluidTYPO3\Flux\Service\WorkspacesAwareRecordService');
 		}
 		self::$initialized = TRUE;
 	}
@@ -97,9 +104,9 @@ class ResolveUtility {
 	 */
 	public static function resolveCurrentPageRecord() {
 		if (TRUE === isset($GLOBALS['TSFE']->page)) {
-			$record = $GLOBALS['TSFE']->page;
+			$record = self::$recordService->getSingle('pages', '*', $GLOBALS['TSFE']->id);
 		} elseif ('BE' === TYPO3_MODE) {
-			$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', "uid = '" . GeneralUtility::_GET('id') . "'");
+			$records = self::$recordService->get('pages', '*', GeneralUtility::_GET('id'));
 			$record = array_pop($records);
 		}
 		return $record;
