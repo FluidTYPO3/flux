@@ -29,7 +29,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 /**
  * @package Flux
  */
-class MiscellaneousTest extends AbstractTestCase {
+class MiscellaneousUtiltyTest extends AbstractTestCase {
 
 	/**
 	 * Setup

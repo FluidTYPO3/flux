@@ -32,7 +32,7 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 /**
  * @package Flux
  */
-class ResolveTest extends AbstractTestCase {
+class ResolveUtilityTest extends AbstractTestCase {
 
 	/**
 	 * @test
@@ -120,13 +120,13 @@ class ResolveTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canDetectCurrentPageRecord() {
-		$result = ResolveUtility::resolveCurrentPageRecord();
-		$this->assertNull($result);
-		$expected = array('uid' => 99999999);
-		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$expected = reset($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', 'pid=0'));
+		$GLOBALS['TSFE'] = new \stdClass();
 		$GLOBALS['TSFE']->page = $expected;
+		$GLOBALS['TSFE']->id = $expected['uid'];
 		$result = ResolveUtility::resolveCurrentPageRecord();
 		$this->assertSame($result, $expected);
+		unset($GLOBALS['TSFE']);
 	}
 
 }
