@@ -76,7 +76,7 @@ class ContentService implements SingletonInterface {
 			list ($tablename, $pid, $relativeUid) = $parameters;
 		}
 		$mappingArray = array();
-		if ('copy'!== $command) {
+		if ('copy' !== $command) {
 			$mappingArray[$id] = $row;
 		} else {
 			foreach ($tceMain->copyMappingArray['tt_content'] as $copyFromUid => $copyToUid) {
