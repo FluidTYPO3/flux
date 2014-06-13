@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
@@ -113,14 +114,12 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'uid' => 1
 		);
 		$viewHelper = $this->buildViewHelperInstance($arguments);
-		$this->setUseOutputBuffering(TRUE);
-		$backup = $GLOBALS['TYPO3_DB'];
-		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
-		$GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow')->will($this->returnValue(NULL));
+		$mockRecordService = $this->getMock('FluidTYPO3\Flux\Service\RecordService', array('getSingle'));
+		$mockRecordService->expects($this->once())->method('getSingle')->will($this->returnValue(NULL));
+		ObjectAccess::setProperty($viewHelper, 'recordService', $mockRecordService, TRUE);
 		$output = $viewHelper->initializeArgumentsAndRender();
 		$this->assertIsArray($output);
 		$this->assertEmpty($output);
-		$GLOBALS['TYPO3_DB'] = $backup;
 	}
 
 	/**
