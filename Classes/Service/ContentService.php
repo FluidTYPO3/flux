@@ -85,9 +85,7 @@ class ContentService implements SingletonInterface {
 					$record['CType'] = 'shortcut';
 					$record['records'] = $id;
 				}
-				if ((FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos)) {
-					$record['colPos'] = $possibleColPos;
-				}
+
 				$mappingArray[$copyFromUid] = $record;
 			}
 		}
@@ -97,15 +95,12 @@ class ContentService implements SingletonInterface {
 				$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid), $record['sys_language_uid']);
 			}
 
-			$updateColPos = TRUE;
 			if (FALSE === empty($possibleArea) || FALSE === empty($record['tx_flux_column'])) {
-                $updateColPos = FALSE;
 				if ($copyFromUid === $parentUid) {
 					$record['tx_flux_parent'] = $parentUid;
 					if (0 > $relativeUid) {
 						$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
 					}
-					$updateColPos = TRUE;
 				} else {
 					$parentRecord = $this->loadRecordFromDatabase($parentUid, $record['sys_language_uid']);
 					if ($copyFromUid === intval($parentRecord['uid'])) {
@@ -113,7 +108,6 @@ class ContentService implements SingletonInterface {
 						if (0 > $relativeUid) {
 							$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
 						}
-						$updateColPos = TRUE;
 					} elseif (FALSE === empty($record['tx_flux_parent'])) {
 						$parentRecord = $this->loadRecordFromDatabase($record['tx_flux_parent'], $record['sys_language_uid']);
 						$record['tx_flux_parent'] = $parentRecord['uid'];
@@ -131,19 +125,25 @@ class ContentService implements SingletonInterface {
 				$record['colPos'] = $relativeRecord['colPos'];
 				$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
 				$record['tx_flux_parent'] = $relativeRecord['tx_flux_parent'];
-			} elseif (0 < $relativeUid) {
+			} elseif (0 <= $relativeUid) {
 				$record['sorting'] = 0;
 				$record['pid'] = $relativeUid;
 				$record['tx_flux_column'] = '';
 				$record['tx_flux_parent'] = '';
 			}
-			if (TRUE === $updateColPos && (FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos)) {
-				$record['colPos'] = $possibleColPos;
-			}
 			if (TRUE === isset($pid) && FALSE === isset($relativeRecord['pid'])) {
 				$record['pid'] = $pid;
 			}
+			if ((FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos)) {
+				$record['colPos'] = $possibleColPos;
+			}
+			if (self::COLPOS_FLUXCONTENT !== intval($possibleColPos)) {
+				$record['tx_flux_parent'] = 0;
+				$record['tx_flux_column'] = '';
+			}
+			$record['tx_flux_parent'] = intval($record['tx_flux_parent']);
 			$this->updateRecordInDatabase($record, NULL, $tceMain);
+			$tceMain->registerDBList['tt_content'][$record['uid']];
 		}
 	}
 
