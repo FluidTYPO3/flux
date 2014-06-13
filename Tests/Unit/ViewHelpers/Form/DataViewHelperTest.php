@@ -61,7 +61,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
 		);
-		$this->setUseOutputBuffering(TRUE);
 		$output = $this->executeViewHelper($arguments);
 		$this->assertEquals('Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.', $output);
 	}
@@ -118,8 +117,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$mockRecordService->expects($this->once())->method('getSingle')->will($this->returnValue(NULL));
 		ObjectAccess::setProperty($viewHelper, 'recordService', $mockRecordService, TRUE);
 		$output = $viewHelper->initializeArgumentsAndRender();
-		$this->assertIsArray($output);
-		$this->assertEmpty($output);
+		$this->assertEquals('Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid ' . $arguments['uid'] . ' do not exist and you did not manually provide the "record" attribute.', $output);
 	}
 
 	/**

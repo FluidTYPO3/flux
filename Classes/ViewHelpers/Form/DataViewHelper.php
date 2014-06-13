@@ -83,7 +83,7 @@ class DataViewHelper extends AbstractViewHelper {
 			if (NULL === $record) {
 				$record = $this->recordService->getSingle($table, 'uid,' . $field, $uid);
 			}
-			if (FALSE === $record) {
+			if (NULL === $record) {
 				throw new Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .
 					'provide the "record" attribute.', $table, $field, $uid), 1358679983);
 			}
