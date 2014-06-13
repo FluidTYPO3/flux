@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Service\ContentService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
@@ -38,6 +39,19 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  * @subpackage ViewHelpers\Be
  */
 class ContentAreaViewHelper extends AbstractViewHelper {
+
+	/**
+	 * @var WorkspacesAwareRecordService
+	 */
+	protected $recordService;
+
+	/**
+	 * @param WorkspacesAwareRecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(WorkspacesAwareRecordService $recordService) {
+		$this->recordService = $recordService;
+	}
 
 	/**
 	 * Initialize
@@ -58,9 +72,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$row = $this->arguments['row'];
 		$area = $this->arguments['area'];
 
-		$pageRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages', "uid = '" . $row['pid'] . "'");
-		$pageRecord = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pageRes);
-		$GLOBALS['TYPO3_DB']->sql_free_result($pageRes);
+		$pageRecord = $this->recordService->getSingle('pages', '*', $row['pid']);
 		// note: the following chained makeInstance is not an error; it is there to make the ViewHelper work on TYPO3 6.0
 		/** @var $dblist PageLayoutView */
 		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
@@ -97,8 +109,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 
 		$showHidden = $modSettings['tt_content_showHidden'] ? '' : BackendUtility::BEenableFields('tt_content');
 		$condition = "tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' AND deleted = 0";
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition . $showHidden, 'uid', 'sorting ASC');
-		$records = $dblist->getResult($res);
+		$records = $this->recordService->get('tt_content', '*', $condition . $showHidden, 'uid', 'sorting ASC');
 
 		foreach ($records as &$record) {
 			$record['isDisabled'] = $dblist->isDisabled('tt_content', $record);

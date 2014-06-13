@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -49,6 +50,11 @@ class GetViewHelper extends AbstractViewHelper {
 	protected $configurationManager;
 
 	/**
+	 * @var WorkspacesAwareRecordService
+	 */
+	protected $recordService;
+
+	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
@@ -62,6 +68,14 @@ class GetViewHelper extends AbstractViewHelper {
 	 */
 	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
+	}
+
+	/**
+	 * @param WorkspacesAwareRecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(WorkspacesAwareRecordService $recordService) {
+		$this->recordService = $recordService;
 	}
 
 	/**
@@ -102,7 +116,7 @@ class GetViewHelper extends AbstractViewHelper {
 		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
 			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
 			AND deleted = 0 AND hidden = 0";
-		$rows = (array) $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'tt_content', $conditions, 'uid', $order, $offset . ',' . $limit);
+		$rows = $this->recordService->get('tt_content', '*', $conditions, 'uid', $order, $offset . ',' . $limit);
 		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);
 		if (TRUE === empty($this->arguments['as'])) {
 			$content = $elements;
