@@ -23,7 +23,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
-
+use FluidTYPO3\Flux\Form\Field\Tree;
 /**
  * Tree (select supertype) FlexForm field ViewHelper
  *
@@ -39,9 +39,12 @@ class TreeViewHelper extends AbstractRelationFieldViewHelper {
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->registerArgument('parentField', 'string', 'Field containing UID of parent record', TRUE);
-		$this->registerArgument('expandAll', 'boolean', 'If TRUE, expands all branches', FALSE, FALSE);
-		$this->registerArgument('showHeader', 'boolean', 'If TRUE, displays tree header', FALSE, FALSE);
-		$this->registerArgument('width', 'integer', 'Width of TreeView component', FALSE, 400);
+		$this->registerArgument('allowRecursiveMode', 'boolean', 'If TRUE, the selection of a node will trigger the selection of all child nodes too (recursively)', FALSE, Tree::DEFAULT_ALLOW_RECURSIVE_MODE);
+		$this->registerArgument('expandAll', 'boolean', 'If TRUE, expands all branches', FALSE, Tree::DEFAULT_EXPAND_ALL);
+		$this->registerArgument('nonSelectableLevels', 'string', 'Comma-separated list of levels that will not be selectable, by default the root node (which is "0") cannot be selected', FALSE, Tree::DEFAULT_NON_SELECTABLE_LEVELS);
+		$this->registerArgument('maxLevels', 'integer', ' The maximal amount of levels to be rendered (can be used to stop possible recursions)', FALSE, Tree::DEFAULT_MAX_LEVELS);
+		$this->registerArgument('showHeader', 'boolean', 'If TRUE, displays tree header', FALSE, Tree::DEFAULT_SHOW_HEADER);
+		$this->registerArgument('width', 'integer', 'Width of TreeView component', FALSE, Tree::DEFAULT_WIDTH);
 	}
 
 	/**
@@ -52,7 +55,10 @@ class TreeViewHelper extends AbstractRelationFieldViewHelper {
 		/** @var Tree $tree */
 		$tree = $this->getPreparedComponent('Tree');
 		$tree->setParentField($this->arguments['parentField']);
+		$tree->setAllowRecursiveMode($this->arguments['allowRecursiveMode']);
 		$tree->setExpandAll($this->arguments['expandAll']);
+		$tree->setNonSelectableLevels($this->arguments['nonSelectableLevels']);
+		$tree->setMaxLevels($this->arguments['maxLevels']);
 		$tree->setShowHeader($this->arguments['showHeader']);
 		$tree->setWidth($this->arguments['width']);
 		return $tree;
