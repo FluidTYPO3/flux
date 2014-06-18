@@ -78,8 +78,8 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 			return $this->currentPageUid;
 		}
 		$pageUids = $this->getPrioritizedPageUids();
-		while (TRUE === empty($this->currentPageUid) && $this->currentPageUid = array_shift($pageUids)) {
-			// do nothing here, all done in the "while" expression - but expand control structure body to comply to CGL.
+		while (TRUE === empty($this->currentPageUid) && 0 < count($pageUids)) {
+			$this->currentPageUid = array_shift($pageUids);
 		};
 		return $this->currentPageUid;
 	}
