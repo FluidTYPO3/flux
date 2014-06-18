@@ -57,6 +57,14 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	}
 
 	/**
+	 * @param integer $currentPageId
+	 * @return void
+	 */
+	public function setCurrentPageId($currentPageId) {
+		$this->currentPageUid = $currentPageId;
+	}
+
+	/**
 	 * Extended page UID fetch
 	 *
 	 * Uses a range of additional page UID resolve methods to
@@ -65,7 +73,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 *
 	 * @return integer
 	 */
-	protected function getCurrentPageId() {
+	public function getCurrentPageId() {
 		if (0 < $this->currentPageUid) {
 			return $this->currentPageUid;
 		}

@@ -50,4 +50,29 @@ class ConfigurationManager extends CoreConfigurationManager implements Configura
 		}
 	}
 
+	/**
+	 * @param integer $currentPageId
+	 * @return void
+	 */
+	public function setCurrentPageUid($currentPageId) {
+		if (TRUE === $this->configurationManager instanceof BackendConfigurationManager) {
+			$this->concreteConfigurationManager->setCurrentPageId($currentPageId);
+		}
+	}
+
+	/**
+	 * Extended page UID fetch
+	 *
+	 * Uses a range of additional page UID resolve methods to
+	 * find the currently active page UID from URL, active
+	 * record, etc.
+	 *
+	 * @return integer
+	 */
+	public function getCurrentPageId() {
+		if (TRUE === $this->configurationManager instanceof BackendConfigurationManager) {
+			return $this->concreteConfigurationManager->getCurrentPageId();
+		}
+	}
+
 }
