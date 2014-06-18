@@ -126,7 +126,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 		$table = key($editArgument);
 		$argumentPair = reset($editArgument);
 		$id = key($argumentPair);
-		if (0 > $id && $table === 'tt_content') {
+		if (0 > $id && 'tt_content' === $table) {
 			// TYPO3 wants to insert a new tt_content element after the element with uid=abs($id)
 			$id = -$id;
 		} elseif ('pages' === $table || 'new' === reset($argumentPair)) {
