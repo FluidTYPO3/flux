@@ -274,7 +274,7 @@ class FluxService implements SingletonInterface {
 	 */
 	public function getViewConfigurationForExtensionName($extensionName) {
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionName);
+		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey);
 		if (FALSE === is_array($configuration) || 0 === count($configuration) || TRUE === empty($configuration['templateRootPath'])) {
 			$configuration = array(
 				'templateRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Templates',
@@ -290,7 +290,8 @@ class FluxService implements SingletonInterface {
 	 * @return array|NULL
 	 */
 	public function getBackendViewConfigurationForExtensionName($extensionName) {
-		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionName, 'module');
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey, 'module');
 		return $configuration;
 	}
 
