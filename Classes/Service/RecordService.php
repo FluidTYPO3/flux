@@ -85,6 +85,22 @@ class RecordService implements SingletonInterface {
 	}
 
 	/**
+	 * @param string $table
+	 * @param string $fields
+	 * @param string $condition
+	 * @param array $values
+	 * @return array
+	 */
+	public function preparedGet($table, $fields, $condition, $values = array()) {
+		$connection = $this->getDatabaseConnection();
+		$query = $connection->prepare_SELECTquery($fields, $table, $condition);
+		$query->execute($values);
+		$result = $query->fetchAll();
+		$query->free();
+		return $result;
+	}
+
+	/**
 	 * @return DatabaseConnection
 	 */
 	protected function getDatabaseConnection() {
