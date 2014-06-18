@@ -69,9 +69,8 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	public function canCreateFluxFormFromClassName() {
 		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
 		$object = GeneralUtility::getUserObj('FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor');
-		if ('6.2' !== substr(TYPO3_version, 0, 3)) {
-			// note: mock contains a DateTime which has a constructor argument which ObjectManager tries to reflect;
-			// causing an ReflectionException. Problem is suppressed on 6.2 only, at the time of writing this comment.
+		if ('6.1' === substr(TYPO3_version, 0, 3)) {
+			// note: mock contains a DateTime which has a constructor argument which older ObjectManagers try to reflect
 			$this->setExpectedException('ReflectionException');
 		}
 		$form = $object->generateFormInstanceFromClassName($class, 'tt_content');
@@ -85,9 +84,8 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	 */
 	public function triggersDomainModelAnalysisWhenFormsAreRegistered() {
 		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
-		if ('6.2' !== substr(TYPO3_version, 0, 3)) {
-			// note: mock contains a DateTime which has a constructor argument which ObjectManager tries to reflect;
-			// causing an ReflectionException. Problem is suppressed on 6.2 only, at the time of writing this comment.
+		if ('6.1' === substr(TYPO3_version, 0, 3)) {
+			// note: mock contains a DateTime which has a constructor argument which older ObjectManagers try to reflect
 			$this->setExpectedException('ReflectionException');
 		}
 		$form = Form::create();
