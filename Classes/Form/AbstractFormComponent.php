@@ -306,6 +306,8 @@ abstract class AbstractFormComponent implements FormInterface {
 		if (FALSE === empty($label)) {
 			if (0 === strpos($label, 'LLL:') && 0 !== strpos($label, 'LLL:EXT:')) {
 				return LocalizationUtility::translate(substr($label, 4), $extensionKey);
+			} else if (0 === strpos($label, 'LLL:EXT:')) {
+				return LocalizationUtility::translate($label, $extensionKey);
 			} else {
 				return $label;
 			}
