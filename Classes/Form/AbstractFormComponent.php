@@ -304,7 +304,9 @@ abstract class AbstractFormComponent implements FormInterface {
 		$extensionKey = FALSE === strpos($extensionName, '.') ? $extensionName : substr($extensionName, strpos($extensionName, '.') + 1);
 		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
 		if (FALSE === empty($label)) {
-			if (0 === strpos($label, 'LLL:') && 0 !== strpos($label, 'LLL:EXT:')) {
+			if (0 === strpos($label, 'LLL:EXT:')) {
+				return LocalizationUtility::translate($label, NULL);
+			} else if (0 === strpos($label, 'LLL:') ) {
 				return LocalizationUtility::translate(substr($label, 4), $extensionKey);
 			} else {
 				return $label;
