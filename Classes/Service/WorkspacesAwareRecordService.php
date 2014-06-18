@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /**
@@ -34,5 +35,65 @@ use TYPO3\CMS\Core\SingletonInterface;
  * @subpackage Service
  */
 class WorkspacesAwareRecordService extends RecordService implements SingletonInterface {
+
+	/**
+	 * @param string $table
+	 * @param string $fields
+	 * @param string $clause
+	 * @param string $groupBy
+	 * @param string $orderBy
+	 * @param string $limit
+	 * @return array|NULL
+	 */
+	public function get($table, $fields, $clause = '1=1', $groupBy = '', $orderBy = '', $limit = '') {
+		$records = parent::get($table, $fields, $clause, $groupBy, $orderBy, $limit);
+		return NULL === $records ? NULL : $this->overlayRecords($table, $records);
+	}
+
+	/**
+	 * @param string $table
+	 * @param string $fields
+	 * @param string $uid
+	 * @return array|NULL
+	 */
+	public function getSingle($table, $fields, $uid) {
+		$record = parent::getSingle($table, $fields, $uid);
+		return NULL === $record ? NULL : $this->overlayRecord($table, $record);
+	}
+
+	/**
+	 * @param string $table
+	 * @param string $fields
+	 * @param string $condition
+	 * @param array $values
+	 * @return array
+	 */
+	public function preparedGet($table, $fields, $condition, $values = array()) {
+		$records = parent::preparedGet($table, $fields, $condition, $values);
+		return $this->overlayRecords($table, $records);
+	}
+
+	/**
+	 * @param string $table
+	 * @param array $records
+	 * @return array
+	 */
+	protected function overlayRecords($table, array $records) {
+		foreach ($records as $index => $record) {
+			$records[$index] = $this->overlayRecord($table, $record);
+		}
+		return $records;
+	}
+
+	/**
+	 * @param string $table
+	 * @param array $record
+	 * @return array
+	 */
+	protected function overlayRecord($table, array $record) {
+		$copy = $record;
+		BackendUtility::workspaceOL($table, $copy);
+		return $copy;
+	}
 
 }
