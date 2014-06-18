@@ -269,6 +269,24 @@ class FluxService implements SingletonInterface {
 	}
 
 	/**
+	 * Gets an array with the default view configuration for the provided
+	 * extension key. Maybe overwritten by a sub-service class adding
+	 * additional subfolders used by default.
+	 * (e.g. EXT:fluidpages can provide "Resources/Private/Templates/Page"
+	 * as default templateRootPath)
+	 *
+	 * @param string $extensionKey
+	 * @return array
+	 */
+	protected function getDefaultViewConfigurationForExtensionKey($extensionKey) {
+		return array(
+			'templateRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Templates',
+			'partialRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Partials',
+			'layoutRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Layouts',
+		);
+	}
+
+	/**
 	 * @param string $extensionName
 	 * @return array|NULL
 	 */
@@ -276,11 +294,7 @@ class FluxService implements SingletonInterface {
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey);
 		if (FALSE === is_array($configuration) || 0 === count($configuration) || TRUE === empty($configuration['templateRootPath'])) {
-			$configuration = array(
-				'templateRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Templates',
-				'partialRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Partials',
-				'layoutRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Layouts',
-			);
+			$configuration = $this->getDefaultViewConfigurationForExtensionKey($extensionKey);
 		}
 		return $configuration;
 	}
