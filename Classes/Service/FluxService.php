@@ -278,7 +278,7 @@ class FluxService implements SingletonInterface {
 	 * @param string $extensionKey
 	 * @return array
 	 */
-	public function getDefaultViewConfigurationForExtensionKey($extensionKey) {
+	protected function getDefaultViewConfigurationForExtensionKey($extensionKey) {
 		return array(
 			'templateRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Templates',
 			'partialRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Partials',
