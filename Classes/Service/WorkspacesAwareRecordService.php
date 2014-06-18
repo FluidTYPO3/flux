@@ -26,6 +26,7 @@ namespace FluidTYPO3\Flux\Service;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * Service to wrap around record operations normally going through
@@ -79,6 +80,9 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
 	 * @return array
 	 */
 	protected function overlayRecords($table, array $records) {
+		if (FALSE === $this->hasWorkspacesSupport()) {
+			return $records;
+		}
 		foreach ($records as $index => $record) {
 			$records[$index] = $this->overlayRecord($table, $record);
 		}
@@ -91,9 +95,19 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
 	 * @return array
 	 */
 	protected function overlayRecord($table, array $record) {
+		if (FALSE === $this->hasWorkspacesSupport()) {
+			return $record;
+		}
 		$copy = $record;
 		BackendUtility::workspaceOL($table, $copy);
 		return $copy;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	protected function hasWorkspacesSupport() {
+		return ExtensionManagementUtility::isLoaded('workspaces');
 	}
 
 }
