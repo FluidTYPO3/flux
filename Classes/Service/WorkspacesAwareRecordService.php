@@ -80,7 +80,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
 	 * @return array
 	 */
 	protected function overlayRecords($table, array $records) {
-		if (FALSE === $this->hasWorkspacesSupport()) {
+		if (FALSE === $this->hasWorkspacesSupport($table)) {
 			return $records;
 		}
 		foreach ($records as $index => $record) {
@@ -95,19 +95,20 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
 	 * @return array
 	 */
 	protected function overlayRecord($table, array $record) {
-		if (FALSE === $this->hasWorkspacesSupport()) {
+		if (FALSE === $this->hasWorkspacesSupport($table)) {
 			return $record;
 		}
 		$copy = $record;
 		BackendUtility::workspaceOL($table, $copy);
-		return $copy;
+		return $copy === FALSE ? $record : $copy;
 	}
 
 	/**
+	 * @param string $table
 	 * @return boolean
 	 */
-	protected function hasWorkspacesSupport() {
-		return ExtensionManagementUtility::isLoaded('workspaces');
+	protected function hasWorkspacesSupport($table) {
+		return BackendUtility::isTableWorkspaceEnabled($table);
 	}
 
 }
