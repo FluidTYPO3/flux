@@ -146,7 +146,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 			throw new \UnexpectedValueException('Submitted table "' . $table . '" is not registered in TCA', 1392143931);
 		}
 		$record = $this->recordService->getSingle($table, 'pid', $id);
-		return (NULL !== $record ? $this->getPageIdFromRecord($record) : 0);
+		return TRUE === is_array($record) ? $this->getPageIdFromRecord($record) : 0;
 	}
 
 	/**
