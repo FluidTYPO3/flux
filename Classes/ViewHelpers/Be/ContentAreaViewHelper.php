@@ -109,7 +109,8 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 
 		$showHidden = $modSettings['tt_content_showHidden'] ? '' : BackendUtility::BEenableFields('tt_content');
 		$condition = "tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' AND deleted = 0";
-		$records = $this->recordService->get('tt_content', '*', $condition . $showHidden, 'uid', 'sorting ASC');
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition . $showHidden, 'uid', 'sorting ASC');
+		$records = $dblist->getResult($res);
 
 		foreach ($records as &$record) {
 			$record['isDisabled'] = $dblist->isDisabled('tt_content', $record);
