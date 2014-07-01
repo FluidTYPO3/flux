@@ -89,7 +89,6 @@ class ContentService implements SingletonInterface {
 				$mappingArray[$copyFromUid] = $record;
 			}
 		}
-		
 		foreach ($mappingArray as $copyFromUid => $record) {
 			if (0 > $relativeUid) {
 				$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid), $record['sys_language_uid']);
@@ -99,7 +98,6 @@ class ContentService implements SingletonInterface {
 				$record['tx_flux_parent'] = 0;
 				$record['tx_flux_column'] = '';
 			}
-			
 			if (FALSE === empty($possibleArea) || FALSE === empty($record['tx_flux_column'])) {
 				if ($copyFromUid === $parentUid) {
 					$record['tx_flux_parent'] = $parentUid;
