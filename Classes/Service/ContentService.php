@@ -67,7 +67,6 @@ class ContentService implements SingletonInterface {
 	 * @return void
 	 */
 	public function pasteAfter($command, array &$row, $parameters, DataHandler $tceMain) {
-
 		$id = $row['uid'];
 		if (1 < substr_count($parameters[1], '-')) {
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
@@ -92,17 +91,14 @@ class ContentService implements SingletonInterface {
 		}
 
 		foreach ($mappingArray as $copyFromUid => $record) {
-
 			if (0 > $relativeUid) {
 				$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid), $record['sys_language_uid']);
 			}
-
 			if ('copy' !== $command) {
 				$record['colPos'] = '';
 				$record['tx_flux_parent'] = 0;
 				$record['tx_flux_column'] = '';
 			}
-
 			if (FALSE === empty($possibleArea) || FALSE === empty($record['tx_flux_column'])) {
 				if ($copyFromUid === $parentUid) {
 					$record['tx_flux_parent'] = $parentUid;
@@ -129,7 +125,6 @@ class ContentService implements SingletonInterface {
 				if (FALSE === empty($possibleArea)) {
 					$record['tx_flux_column'] = $possibleArea;
 				}
-
 				$record['colPos'] = self::COLPOS_FLUXCONTENT;
 			} elseif (0 > $relativeUid) {
 				$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
@@ -146,8 +141,6 @@ class ContentService implements SingletonInterface {
 			if (TRUE === isset($pid) && FALSE === isset($relativeRecord['pid'])) {
 				$record['pid'] = $pid;
 			}
-
-
 			if ((FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos) && TRUE === empty($parentRecord)) {
 				$record['colPos'] = $possibleColPos;
 			}
@@ -155,12 +148,9 @@ class ContentService implements SingletonInterface {
 				$record['tx_flux_parent'] = 0;
 				$record['tx_flux_column'] = '';
 			}
-
-
 			$record['tx_flux_parent'] = intval($record['tx_flux_parent']);
 			$this->updateRecordInDatabase($record, NULL, $tceMain);
 			$tceMain->registerDBList['tt_content'][$record['uid']];
-
 			unset($parentRecord,$relativeRecord);
 		}
 	}
