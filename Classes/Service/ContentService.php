@@ -94,7 +94,11 @@ class ContentService implements SingletonInterface {
 			if (0 > $relativeUid) {
 				$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid), $record['sys_language_uid']);
 			}
-
+			if ('copy' !== $command) {
+				$record['colPos'] = '';
+				$record['tx_flux_parent'] = 0;
+				$record['tx_flux_column'] = '';
+			}
 			if (FALSE === empty($possibleArea) || FALSE === empty($record['tx_flux_column'])) {
 				if ($copyFromUid === $parentUid) {
 					$record['tx_flux_parent'] = $parentUid;
@@ -113,6 +117,9 @@ class ContentService implements SingletonInterface {
 						$record['tx_flux_parent'] = $parentRecord['uid'];
 					} else {
 						$record['tx_flux_parent'] = '';
+						if (FALSE === empty($possibleArea)) {
+							$record['tx_flux_parent'] = $parentUid;
+						}
 					}
 				}
 				if (FALSE === empty($possibleArea)) {
@@ -134,16 +141,17 @@ class ContentService implements SingletonInterface {
 			if (TRUE === isset($pid) && FALSE === isset($relativeRecord['pid'])) {
 				$record['pid'] = $pid;
 			}
-			if ((FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos)) {
+			if ((FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos) && TRUE === empty($parentRecord)) {
 				$record['colPos'] = $possibleColPos;
 			}
-			if (self::COLPOS_FLUXCONTENT !== intval($possibleColPos)) {
+			if (self::COLPOS_FLUXCONTENT !== intval($possibleColPos) && TRUE === empty($parentRecord)) {
 				$record['tx_flux_parent'] = 0;
 				$record['tx_flux_column'] = '';
 			}
 			$record['tx_flux_parent'] = intval($record['tx_flux_parent']);
 			$this->updateRecordInDatabase($record, NULL, $tceMain);
 			$tceMain->registerDBList['tt_content'][$record['uid']];
+			unset($parentRecord,$relativeRecord);
 		}
 	}
 
