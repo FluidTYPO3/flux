@@ -144,10 +144,8 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 				}
 				foreach ($grid->getRows() as $row) {
 					foreach ($row->getColumns() as $column) {
-						foreach ($column->getAreas() as $area) {
-							if ($area->getName() === $fluxAreaName) {
-								list ($whitelist, $blacklist) = $this->appendToWhiteAndBlacklistFromComponent($area, $whitelist, $blacklist);
-							}
+						if ($column->getName() === $fluxAreaName) {
+							list ($whitelist, $blacklist) = $this->appendToWhiteAndBlacklistFromComponent($column, $whitelist, $blacklist);
 						}
 					}
 				}

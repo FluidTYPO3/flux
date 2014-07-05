@@ -97,7 +97,7 @@ class Column extends AbstractFormContainer implements ContainerInterface {
 	 * @return Column
 	 */
 	public function setColumnPosition($columnPosition) {
-		$this->columnPosition = $columnPosition;
+		$this->columnPosition = (integer) $columnPosition;
 		return $this;
 	}
 
