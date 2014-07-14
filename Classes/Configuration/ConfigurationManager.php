@@ -55,7 +55,7 @@ class ConfigurationManager extends CoreConfigurationManager implements Configura
 	 * @return void
 	 */
 	public function setCurrentPageUid($currentPageId) {
-		if (TRUE === $this->configurationManager instanceof BackendConfigurationManager) {
+		if (TRUE === $this->concreteConfigurationManager instanceof BackendConfigurationManager) {
 			$this->concreteConfigurationManager->setCurrentPageId($currentPageId);
 		}
 	}
@@ -70,7 +70,7 @@ class ConfigurationManager extends CoreConfigurationManager implements Configura
 	 * @return integer
 	 */
 	public function getCurrentPageId() {
-		if (TRUE === $this->configurationManager instanceof BackendConfigurationManager) {
+		if (TRUE === $this->concreteConfigurationManager instanceof BackendConfigurationManager) {
 			return $this->concreteConfigurationManager->getCurrentPageId();
 		}
 	}
