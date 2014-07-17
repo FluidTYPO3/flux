@@ -43,7 +43,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'uid' => 1
 		);
 		$viewHelper = $this->buildViewHelperInstance($arguments);
-		$this->setUseOutputBuffering(TRUE);
 		$backup = $GLOBALS['TYPO3_DB'];
 		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
 		$GLOBALS['TYPO3_DB']->expects($this->never())->method('exec_SELECTgetSingleRow');
@@ -60,7 +59,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
 		);
-		$this->setUseOutputBuffering(TRUE);
 		$output = $this->executeViewHelper($arguments);
 		$this->assertEquals('Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.', $output);
 	}
@@ -74,7 +72,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'field' => 'invalid',
 			'uid' => 1
 		);
-		$this->setUseOutputBuffering(TRUE);
 		$output = $this->executeViewHelper($arguments);
 		$this->assertEquals('Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.', $output);
 	}
@@ -113,7 +110,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'uid' => 1
 		);
 		$viewHelper = $this->buildViewHelperInstance($arguments);
-		$this->setUseOutputBuffering(TRUE);
 		$backup = $GLOBALS['TYPO3_DB'];
 		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
 		$GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow')->will($this->returnValue(NULL));
