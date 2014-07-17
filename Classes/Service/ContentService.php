@@ -147,7 +147,11 @@ class ContentService implements SingletonInterface {
 			// set colPos and remove FCE relation
 			list ($relativeTo, $colPos) = explode('x', $relativeTo);
 			$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
-			$row['colPos'] = $colPos;
+			if (0 < (integer)$relativeTo) {
+				$row['colPos'] = $colPos;
+			} else {
+				$row['colPos'] = -1;
+			}
 			$row['sorting'] = -1;
 		} elseif (0 <= intval($relativeTo)) {
 			// dropping an element in a column header dropzone in 6.0 only sends the "colPos"
