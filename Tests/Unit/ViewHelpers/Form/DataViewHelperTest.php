@@ -104,6 +104,22 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 	/**
 	 * @test
 	 */
+	public function canUseChildNodeAsRecord() {
+		$arguments = array(
+			'table' => 'tt_content',
+			'field' => 'pi_flexform',
+			'uid' => 1
+		);
+		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
+		$content = $this->createNode('Array', $record);
+		$viewHelper = $this->buildViewHelperInstance($arguments, array(), $content);
+		$output = $viewHelper->initializeArgumentsAndRender();
+		$this->assertIsArray($output);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canExecuteViewHelperWithUnregisteredTableAndReturnEmptyArray() {
 		$arguments = array(
 			'table' => 'be_users',

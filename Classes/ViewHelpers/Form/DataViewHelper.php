@@ -76,6 +76,9 @@ class DataViewHelper extends AbstractViewHelper {
 	 * @throws Exception
 	 */
 	public function render($table, $field, $uid = NULL, $record = NULL, $as = NULL) {
+		if (NULL === $record && NULL === $as) {
+			$record = $this->renderChildren();
+		}
 		if (NULL === $uid && NULL !== $record && TRUE === isset($record['uid'])) {
 			$uid = $record['uid'];
 		}
