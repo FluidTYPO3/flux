@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\View;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
@@ -154,10 +155,13 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	 * @throws Exception
 	 */
 	public function getTemplatePathAndFilename($actionName = NULL) {
+		if (NULL !== $this->templatePathAndFilename) {
+			return $this->templatePathAndFilename;
+		}
 		if (TRUE === empty($actionName)) {
 			$actionName = $this->controllerContext->getRequest()->getControllerActionName();
 		}
-		$actionName = ucfirst($actionName);
+		$actionName = ResolveUtility::convertAllPathSegmentsToUpperCamelCase($actionName);
 		$paths = $this->expandGenericPathPattern($this->templatePathAndFilenamePattern, FALSE, FALSE);
 		foreach ($paths as &$templatePathAndFilename) {
 			$templatePathAndFilename = str_replace('@action', $actionName, $templatePathAndFilename);

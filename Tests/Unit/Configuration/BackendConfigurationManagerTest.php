@@ -26,11 +26,20 @@ namespace FluidTYPO3\Flux\Configuration;
 
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package FluidTYPO3\Flux
  */
 class BackendConfigurationManagerTest extends AbstractTestCase {
+
+	/**
+	 * @test
+	 */
+	public function canCreateInstance() {
+		$instance = $this->createInstance();
+		$this->assertInstanceOf($this->createInstanceClassName(), $instance);
+	}
 
 	/**
 	 * @test
@@ -65,6 +74,45 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 		$mock = $this->getMock($this->createInstanceClassName());
 		$result = $this->callInaccessibleMethod($mock, 'getPageIdFromRecord', $record);
 		$this->assertEquals(0, $result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getPageIdFromGetReturnsExpectedValue() {
+		$_GET['id'] = 123;
+		$mock = $this->getMock($this->createInstanceClassName());
+		$result = $this->callInaccessibleMethod($mock, 'getPageIdFromGet');
+		$this->assertEquals(123, $result);
+		unset($_GET['id']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getPageIdFromPostReturnsExpectedValue() {
+		$_POST['id'] = 123;
+		$mock = $this->getMock($this->createInstanceClassName());
+		$result = $this->callInaccessibleMethod($mock, 'getPageIdFromPost');
+		$this->assertEquals(123, $result);
+		unset($_POST['id']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getCurrentPageIdReturnsProtectedPropertyOnlyIfSet() {
+		$pageUid = 54642;
+
+		$mock = $this->objectManager->get($this->createInstanceClassName());
+		ObjectAccess::setProperty($mock, 'currentPageUid', 0, TRUE);
+		ObjectAccess::setProperty($mock, 'recordService', $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService'), TRUE);
+		$result = $this->callInaccessibleMethod($mock, 'getCurrentPageId');
+		$this->assertNotEquals($pageUid, $result);
+		ObjectAccess::setProperty($mock, 'currentPageUid', $pageUid, TRUE);
+		$result = $this->callInaccessibleMethod($mock, 'getCurrentPageId');
+		$this->assertEquals($pageUid, $result);
+		ObjectAccess::setProperty($mock, 'currentPageUid', 0, TRUE);
 	}
 
 }

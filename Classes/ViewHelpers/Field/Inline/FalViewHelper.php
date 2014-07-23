@@ -37,12 +37,12 @@ use TYPO3\CMS\Core\Resource\File;
  * Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
  * 	{v:content.resources.fal(field: 'settings.files')
  * 		-> v:iterator.first()
- * 		-> v:var.set(name: 'settings.files')}
+ * 		-> v:variable.set(name: 'settings.files')}
  *
  * And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
  * 	{v:page.resources.fal(field: 'settings.files')
  * 		-> v:iterator.first()
- * 		-> v:var.set(name: 'settings.files')}
+ * 		-> v:variable.set(name: 'settings.files')}
  *
  * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
  * @author Johannes Pieper <pieper@dlrg.de> DLRG e.V.

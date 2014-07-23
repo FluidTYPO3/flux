@@ -43,6 +43,11 @@ class TceMain {
 	protected $configurationService;
 
 	/**
+	 * @var \FluidTYPO3\Flux\Service\RecordService
+	 */
+	protected $recordService;
+
+	/**
 	 * @var boolean
 	 */
 	static private $cachesCleared = FALSE;
@@ -53,6 +58,7 @@ class TceMain {
 	public function __construct() {
 		$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+		$this->recordService = $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService');
 	}
 
 	/**
@@ -135,14 +141,17 @@ class TceMain {
 	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, &$reference) {
 		try {
 			if (FALSE !== strpos($id, 'NEW')) {
-				$id = $reference->substNEWwithIDs[$id];
+				if (FALSE === empty($reference->substNEWwithIDs[$id])) {
+					$id = intval($reference->substNEWwithIDs[$id]);
+				}
+			} else {
+				$id = intval($id);
 			}
-			$clause = "uid = '" . $id . "'";
-			if (0 === count($record)) {
+			if (TRUE === is_integer($id) && 0 === count($record)) {
 				// patch: when a record is completely empty but a UID exists
-				$loadedRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', $table, $clause);
+				$loadedRecord = $this->recordService->getSingle($table, '*', $id);
 				if (TRUE === is_array($loadedRecord)) {
-					$record = array_pop($loadedRecord);
+					$record = $loadedRecord;
 					$arguments['row'] = &$record;
 				}
 			}
@@ -163,9 +172,9 @@ class TceMain {
 				}
 			}
 			foreach ($detectedProviders as $provider) {
-				if (TRUE === $provider->shouldCall($methodName, $record)) {
+				if (TRUE === $provider->shouldCall($methodName, $id)) {
 					call_user_func_array(array($provider, $methodName), $arguments);
-					$provider->trackMethodCall($methodName, $record);
+					$provider->trackMethodCall($methodName, $id);
 				}
 			}
 		} catch (\Exception $error) {

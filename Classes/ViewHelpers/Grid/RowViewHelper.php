@@ -50,7 +50,7 @@ class RowViewHelper extends AbstractFormViewHelper {
 	 * @return string
 	 */
 	public function render() {
-		$name = ('row' === $this->arguments['name'] ? uniqid('row') : $this->arguments['name']);
+		$name = ('row' === $this->arguments['name'] ? uniqid('row', TRUE) : $this->arguments['name']);
 		$row = $this->getForm()->createContainer('Row', $name, $this->arguments['label']);
 		$row->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();

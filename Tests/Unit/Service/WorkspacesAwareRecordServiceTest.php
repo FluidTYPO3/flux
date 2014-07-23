@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Container;
+namespace FluidTYPO3\Flux\Service;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,6 +27,6 @@ namespace FluidTYPO3\Flux\Form\Container;
 /**
  * @package Flux
  */
-class ContentTest extends AbstractContainerTest {
+class WorkspacesAwareRecordServiceTest extends RecordServiceTest {
 
 }

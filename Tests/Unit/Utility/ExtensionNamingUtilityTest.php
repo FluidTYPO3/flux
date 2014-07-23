@@ -32,7 +32,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
  * @package Flux
  * @subpackage Utility
  */
-class ExtensionTest extends AbstractTestCase {
+class ExtensionNamingUtilityTest extends AbstractTestCase {
 
 	/**
 	 * @test

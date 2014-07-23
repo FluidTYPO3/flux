@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\Utility;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -46,9 +47,9 @@ class ResolveUtility {
 	protected static $hasGridElementsVersionTwo = FALSE;
 
 	/**
-	 * @var boolean
+	 * @var WorkspacesAwareRecordService
 	 */
-	protected static $isLegacyCoreVersion = FALSE;
+	protected static $recordService;
 
 	/**
 	 * @return void
@@ -56,7 +57,7 @@ class ResolveUtility {
 	private static function initialize() {
 		if (FALSE === self::$initialized) {
 			self::$hasGridElementsVersionTwo = VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
-			self::$isLegacyCoreVersion = VersionUtility::assertCoreVersionIsBelowSixPointZero();
+			self::$recordService = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('FluidTYPO3\Flux\Service\WorkspacesAwareRecordService');
 		}
 		self::$initialized = TRUE;
 	}
@@ -102,13 +103,53 @@ class ResolveUtility {
 	 * @return array
 	 */
 	public static function resolveCurrentPageRecord() {
+		self::initialize();
 		if (TRUE === isset($GLOBALS['TSFE']->page)) {
-			$record = $GLOBALS['TSFE']->page;
+			$record = self::$recordService->getSingle('pages', '*', $GLOBALS['TSFE']->id);
 		} elseif ('BE' === TYPO3_MODE) {
-			$records = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', "uid = '" . GeneralUtility::_GET('id') . "'");
+			$records = self::$recordService->get('pages', '*', GeneralUtility::_GET('id'));
 			$record = array_pop($records);
 		}
 		return $record;
+	}
+
+	/**
+	 * @param string $path
+	 * @return string
+	 */
+	public static function convertAllPathSegmentsToUpperCamelCase($path) {
+		$pathSegments = explode('/', $path);
+		$pathSegments = array_map('ucfirst', $pathSegments);
+		$path = implode('/', $pathSegments);
+		return $path;
+	}
+
+	/**
+	 * @param array $paths
+	 * @param string $controllerName
+	 * @param string $controllerAction
+	 * @param string $format
+	 * @return string
+	 */
+	public static function resolveTemplatePathAndFilenameByPathAndControllerNameAndActionAndFormat(array $paths, $controllerName, $controllerAction, $format = 'html') {
+		$templateRootPath = rtrim($paths['templateRootPath'], '/') . '/' . $controllerName . '/';
+		$controllerActionPath = self::convertAllPathSegmentsToUpperCamelCase($controllerAction);
+		$templatePathAndFilename = $templateRootPath . $controllerActionPath . '.' . $format;
+		if (TRUE === isset($paths['overlays']) && TRUE === is_array($paths['overlays'])) {
+			foreach ($paths['overlays'] as $possibleOverlayPaths) {
+				if (TRUE === isset($possibleOverlayPaths['templateRootPath'])) {
+					$overlayTemplateRootPath = $possibleOverlayPaths['templateRootPath'];
+					$overlayTemplateRootPath = rtrim($overlayTemplateRootPath, '/') . '/' . $controllerName . '/';
+					$possibleOverlayFile = GeneralUtility::getFileAbsFileName($overlayTemplateRootPath . $controllerActionPath . '.' . $format);
+					if (TRUE === file_exists($possibleOverlayFile)) {
+						$templatePathAndFilename = $possibleOverlayFile;
+						break;
+					}
+				}
+			}
+		}
+		$templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
+		return $templatePathAndFilename;
 	}
 
 	/**
@@ -121,8 +162,6 @@ class ResolveUtility {
 		$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Index.html';
 		if (TRUE === self::$hasGridElementsVersionTwo) {
 			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/GridElements.html';
-		} elseif (TRUE === self::$isLegacyCoreVersion) {
-			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Legacy.html';
 		}
 		$templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
 		return $templatePathAndFilename;

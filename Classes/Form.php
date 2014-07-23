@@ -343,7 +343,10 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$translated = NULL;
 		if (TRUE === empty($description)) {
 			$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
-			$description = 'LLL:EXT:' . $extensionKey . '/Resources/Private/Language/locallang.xlf:flux.' . $this->id . '.description';
+			$relativeFilePath = $this->getLocalLanguageFileRelativePath();
+			$relativeFilePath = ltrim($relativeFilePath, '/');
+			$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
+			$description = $filePrefix . ':' . trim('flux.' . $this->id . '.description');
 		}
 		if (0 === strpos($description, 'LLL:EXT:')) {
 			$translated = LocalizationUtility::translate($description, $extensionKey);

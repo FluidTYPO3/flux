@@ -36,21 +36,21 @@ class MiscellaneousUtility {
 
 	/**
 	* @param string $icon
-	* @param string $title
 	* @return string
 	*/
-	public static function getIcon($icon, $title = NULL) {
-		$configuration = array('title' => $title, 'class' => 't3-icon-actions t3-icon-document-new');
+	public static function getIcon($icon) {
+		$configuration = array('class' => 't3-icon-actions t3-icon-document-new');
 		return IconUtility::getSpriteIcon($icon, $configuration);
 	}
 
 	/**
 	* @param string $inner
 	* @param string $uri
+	* @param string $title
 	* @return string
 	*/
-	public static function wrapLink($inner, $uri) {
-		return '<a href="javascript:;" onclick="javascript:window.location.href=\'' . addslashes($uri) . '\';">' . $inner . '</a>' . LF;
+	public static function wrapLink($inner, $uri, $title) {
+		return '<a href="#" onclick="window.location.href=\'' . htmlspecialchars($uri) . '\'" title="' . $title . '">' . $inner . '</a>';
 	}
 
 }

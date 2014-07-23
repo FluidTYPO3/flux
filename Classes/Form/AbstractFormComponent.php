@@ -272,8 +272,6 @@ abstract class AbstractFormComponent implements FormInterface {
 			$prefix = 'columns';
 		} elseif (TRUE === $this instanceof Object) {
 			$prefix = 'objects';
-		} elseif (TRUE === $this instanceof Content) {
-			$prefix = 'areas';
 		} elseif (TRUE === $this instanceof Container) {
 			$prefix = 'containers';
 		} elseif (TRUE === $this instanceof FieldInterface) {
@@ -306,7 +304,9 @@ abstract class AbstractFormComponent implements FormInterface {
 		$extensionKey = FALSE === strpos($extensionName, '.') ? $extensionName : substr($extensionName, strpos($extensionName, '.') + 1);
 		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
 		if (FALSE === empty($label)) {
-			if (0 === strpos($label, 'LLL:') && 0 !== strpos($label, 'LLL:EXT:')) {
+			if (0 === strpos($label, 'LLL:EXT:')) {
+				return LocalizationUtility::translate($label, NULL);
+			} else if (0 === strpos($label, 'LLL:') ) {
 				return LocalizationUtility::translate(substr($label, 4), $extensionKey);
 			} else {
 				return $label;

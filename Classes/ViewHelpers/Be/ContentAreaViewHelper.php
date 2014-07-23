@@ -24,7 +24,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Service\ContentService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\VersionUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -36,6 +39,19 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  * @subpackage ViewHelpers\Be
  */
 class ContentAreaViewHelper extends AbstractViewHelper {
+
+	/**
+	 * @var WorkspacesAwareRecordService
+	 */
+	protected $recordService;
+
+	/**
+	 * @param WorkspacesAwareRecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(WorkspacesAwareRecordService $recordService) {
+		$this->recordService = $recordService;
+	}
 
 	/**
 	 * Initialize
@@ -56,9 +72,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$row = $this->arguments['row'];
 		$area = $this->arguments['area'];
 
-		$pageRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'pages', "uid = '" . $row['pid'] . "'");
-		$pageRecord = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($pageRes);
-		$GLOBALS['TYPO3_DB']->sql_free_result($pageRes);
+		$pageRecord = $this->recordService->getSingle('pages', '*', $row['pid']);
 		// note: the following chained makeInstance is not an error; it is there to make the ViewHelper work on TYPO3 6.0
 		/** @var $dblist PageLayoutView */
 		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
@@ -85,10 +99,24 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 			$dblist->itemLabels[$name] = $GLOBALS['LANG']->sL($val['label']);
 		}
 
-		$condition = "((tx_flux_column = '" . $area . ':' . $row['uid'] . "') OR (tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "')) AND deleted = 0";
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition, 'uid', 'sorting ASC');
+		$modSettings = $GLOBALS['SOBE']->MOD_SETTINGS;
+		if (2 === intval($modSettings['function'])) {
+			$dblist->tt_contentConfig['single'] = 0;
+			$dblist->tt_contentConfig['languageMode'] = 1;
+			$dblist->tt_contentConfig['languageCols'] = array(0 => $GLOBALS['LANG']->getLL('m_default'));
+			$dblist->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
+		}
+
+		$showHidden = $modSettings['tt_content_showHidden'] ? '' : BackendUtility::BEenableFields('tt_content');
+		$condition = "tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' AND deleted = 0";
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition . $showHidden, 'uid', 'sorting ASC');
 		$records = $dblist->getResult($res);
 
+		foreach ($records as &$record) {
+			$record['isDisabled'] = $dblist->isDisabled('tt_content', $record);
+		}
+
+		// EXT:gridelements support
 		$fluxColumnId = 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX';
 
 		$this->templateVariableContainer->add('records', $records);
@@ -98,10 +126,6 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$this->templateVariableContainer->remove('records');
 		$this->templateVariableContainer->remove('dblist');
 		$this->templateVariableContainer->remove('fluxColumnId');
-
-		if (FALSE === VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2)) {
-			$content = '<div id="column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX">' . $content . '</div>';
-		}
 
 		return $content;
 	}

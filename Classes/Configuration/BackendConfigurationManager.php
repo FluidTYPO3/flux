@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Configuration;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager as CoreBackendConfigurationManager;
@@ -43,6 +44,27 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	protected $currentPageUid = 0;
 
 	/**
+	 * @var RecordService
+	 */
+	protected $recordService;
+
+	/**
+	 * @param RecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(RecordService $recordService) {
+		$this->recordService = $recordService;
+	}
+
+	/**
+	 * @param integer $currentPageId
+	 * @return void
+	 */
+	public function setCurrentPageId($currentPageId) {
+		$this->currentPageUid = $currentPageId;
+	}
+
+	/**
 	 * Extended page UID fetch
 	 *
 	 * Uses a range of additional page UID resolve methods to
@@ -51,17 +73,14 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 *
 	 * @return integer
 	 */
-	protected function getCurrentPageId() {
+	public function getCurrentPageId() {
 		if (0 < $this->currentPageUid) {
 			return $this->currentPageUid;
 		}
 		$pageUids = $this->getPrioritizedPageUids();
-		foreach ($pageUids as $pageUid) {
-			if (0 < $pageUid) {
-				$this->currentPageUid = $pageUid;
-				break;
-			}
-		}
+		while (TRUE === empty($this->currentPageUid) && 0 < count($pageUids)) {
+			$this->currentPageUid = array_shift($pageUids);
+		};
 		return $this->currentPageUid;
 	}
 
@@ -117,14 +136,17 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 		$table = key($editArgument);
 		$argumentPair = reset($editArgument);
 		$id = key($argumentPair);
-		if ('pages' === $table || 'new' === reset($argumentPair)) {
+		if (0 > $id && 'tt_content' === $table) {
+			// TYPO3 wants to insert a new tt_content element after the element with uid=abs($id)
+			$id = -$id;
+		} elseif ('pages' === $table || 'new' === reset($argumentPair)) {
 			return (integer) $id;
 		}
 		if (FALSE === isset($GLOBALS['TCA'][$table])) {
 			throw new \UnexpectedValueException('Submitted table "' . $table . '" is not registered in TCA', 1392143931);
 		}
-		$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('pid', $table, "uid = '" . (integer) $id . "'");
-		return (FALSE !== $record ? $this->getPageIdFromRecord($record) : 0);
+		$record = $this->recordService->getSingle($table, 'pid', $id);
+		return TRUE === is_array($record) ? $this->getPageIdFromRecord($record) : 0;
 	}
 
 	/**
@@ -151,11 +173,12 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	protected function getPageIdFromTypoScriptRecordIfOnlyOneRecordExists() {
 		$time = time();
 		$condition = 'root = 1 AND hidden = 0 AND deleted = 0 AND (starttime = 0 OR starttime < ' . $time . ') AND (endtime = 0 OR endtime > ' . $time . ')';
-		$numberOfTemplates = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('uid', 'sys_template', $condition);
-		if (1 > $numberOfTemplates) {
+		$templates = $this->recordService->get('sys_template', 'uid', $condition);
+		$numberOfTemplates = count($templates);
+		if (1 !== $numberOfTemplates) {
 			return 0;
 		}
-		$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_template', $condition);
+		$record = reset($templates);
 		return $this->getPageIdFromRecord($record);
 	}
 

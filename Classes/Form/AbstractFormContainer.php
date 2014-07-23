@@ -48,12 +48,12 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	/**
 	 * @var boolean
 	 */
-	protected $inheritEmpty = FALSE;
+	protected $inherit = TRUE;
 
 	/**
 	 * @var boolean
 	 */
-	protected $stopInheritance = FALSE;
+	protected $inheritEmpty = FALSE;
 
 	/**
 	 * CONSTRUCTOR
@@ -111,7 +111,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	}
 
 	/**
-	 * @param array|Traversable $children
+	 * @param array|\Traversable $children
 	 * @return FormInterface
 	 */
 	public function addAll($children) {
@@ -219,6 +219,22 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	}
 
 	/**
+	 * @param boolean $inherit
+	 * @return ContainerInterface
+	 */
+	public function setInherit($inherit) {
+		$this->inherit = (boolean) $inherit;
+		return $this;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getInherit() {
+		return (boolean) $this->inherit;
+	}
+
+	/**
 	 * @param boolean $inheritEmpty
 	 * @return ContainerInterface
 	 */
@@ -232,22 +248,6 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	 */
 	public function getInheritEmpty() {
 		return (boolean) $this->inheritEmpty;
-	}
-
-	/**
-	 * @param boolean $stopInheritance
-	 * @return ContainerInterface
-	 */
-	public function setStopInheritance($stopInheritance) {
-		$this->stopInheritance = (boolean) $stopInheritance;
-		return $this;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getStopInheritance() {
-		return (boolean) $this->stopInheritance;
 	}
 
 }

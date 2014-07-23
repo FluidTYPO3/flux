@@ -53,6 +53,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 		$this->registerArgument('options', 'array', 'Custom options to be assigned to Form object - valid values depends on the context. See docs of extension in which you use this feature.');
+		$this->registerArgument('localLanguageFileRelativePath', 'string', 'Relative (from extension) path to locallang file containing labels for the LLL values used in this form.', FALSE, NULL);
 	}
 
 	/**
@@ -72,6 +73,9 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$form->setCompact($this->arguments['compact']);
 		$form->setGroup($this->arguments['wizardTab']);
 		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
+		if (FALSE === empty($this->arguments['localLanguageFileRelativePath'])) {
+			$form->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
+		}
 		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, 'form', $form);
 		$this->templateVariableContainer->add('form', $form);
 		$this->setContainer($container);

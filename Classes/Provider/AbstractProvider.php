@@ -29,6 +29,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -166,6 +167,11 @@ class AbstractProvider implements ProviderInterface {
 	protected $contentService;
 
 	/**
+	 * @var WorkspacesAwareRecordService
+	 */
+	protected $recordService;
+
+	/**
 	 * @param ObjectManagerInterface $objectManager
 	 * @return void
 	 */
@@ -195,6 +201,14 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	public function injectContentService(ContentService $contentService) {
 		$this->contentService = $contentService;
+	}
+
+	/**
+	 * @param WorkspacesAwareRecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(WorkspacesAwareRecordService $recordService) {
+		$this->recordService = $recordService;
 	}
 
 	/**
@@ -789,10 +803,10 @@ class AbstractProvider implements ProviderInterface {
 			$values = $this->getFlexFormValues($branch);
 			foreach ($fields as $field) {
 				$name = $field->getName();
-				$stop = (TRUE === $field->getStopInheritance());
-				$inherit = (TRUE === $field->getInheritEmpty());
+				$inherit = (TRUE === $field->getInherit());
+				$inheritEmpty = (TRUE === $field->getInheritEmpty());
 				$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
-				if (TRUE === $stop || (FALSE === $inherit && TRUE === $empty)) {
+				if (FALSE === $inherit || (TRUE === $inheritEmpty && TRUE === $empty)) {
 					unset($values[$name]);
 				}
 			}
@@ -947,7 +961,7 @@ class AbstractProvider implements ProviderInterface {
 	protected function loadRecordFromDatabase($uid) {
 		$uid = intval($uid);
 		$tableName = $this->tableName;
-		return $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $tableName, "uid = '" . $uid . "'");
+		return $this->recordService->getSingle($tableName, '*', $uid);
 	}
 
 	/**
@@ -970,21 +984,56 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * Use by TceMain to track method calls to providers for a certain $id.
+	 * Every provider should only be called once per method / $id.
+	 * When TceMain has called the provider it will call this method afterwards.
+	 *
 	 * @param string $methodName
-	 * @param array $row
+	 * @param mixed $id
 	 */
-	public function trackMethodCall($methodName, array $row) {
-		$cacheKey = get_class($this). $methodName . (TRUE === isset($row['uid']) ? $row['uid'] : '');
+	public function trackMethodCall($methodName, $id) {
+		return self::trackMethodCallWithClassName(get_class($this), $methodName, $id);
+	}
+
+	/**
+	 * Use by TceMain to track method calls to providers for a certain $id.
+	 * Every provider should only be called once per method / $id.
+	 * Before calling a provider, TceMain will call this method.
+	 * If the provider hasn't been called for that method / $id before, it is.
+	 *
+	 *
+	 * @param string $methodName
+	 * @param mixed $id
+	 * @return boolean
+	 */
+	public function shouldCall($methodName, $id) {
+		return self::shouldCallWithClassName(get_class($this), $methodName, $id);
+	}
+
+	/**
+	 * Internal method. See trackMethodCall.
+	 * This is used by flux own provider to make sure on inheritance they are still only executed once.
+	 *
+	 * @param string $className
+	 * @param string $methodName
+	 * @param mixed $id
+	 */
+	protected function trackMethodCallWithClassName($className, $methodName, $id) {
+		$cacheKey = $className . $methodName . $id;
 		self::$trackedMethodCalls[$cacheKey] = TRUE;
 	}
 
 	/**
+	 * Internal method. See shouldCall.
+	 * This is used by flux own provider to make sure on inheritance they are still only executed once.
+	 *
+	 * @param string $className
 	 * @param string $methodName
-	 * @param array $row
+	 * @param mixed $id
 	 * @return boolean
 	 */
-	public function shouldCall($methodName, array $row) {
-		$cacheKey = get_class($this). $methodName . (TRUE === isset($row['uid']) ? $row['uid'] : '');
+	protected function shouldCallWithClassName($className, $methodName, $id) {
+		$cacheKey = $className . $methodName . $id;
 		return empty(self::$trackedMethodCalls[$cacheKey]);
 	}
 
@@ -993,6 +1042,7 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	public function reset() {
 		self::$cache = array();
+		self::$trackedMethodCalls = array();
 	}
 
 }
