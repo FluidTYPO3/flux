@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\Controller;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -89,11 +90,24 @@ abstract class AbstractFluxController extends ActionController {
 	protected $data = array();
 
 	/**
+	 * @var WorkspacesAwareRecordService
+	 */
+	protected $workspacesAwareRecordService;
+
+	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param WorkspacesAwareRecordService $workspacesAwareRecordService
+	 * @return void
+	 */
+	public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService) {
+		$this->workspacesAwareRecordService = $workspacesAwareRecordService;
 	}
 
 	/**
