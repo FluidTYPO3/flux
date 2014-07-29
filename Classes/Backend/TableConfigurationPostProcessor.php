@@ -101,26 +101,26 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$tableConfiguration = self::$tableTemplate;
 		$fields = array();
-		$labelFields = $form->getOption('labels');
+		$labelFields = $form->getOption(Form::OPTION_TCA_LABELS);
 		$enableColumns = array();
 		foreach ($form->getFields() as $field) {
 			$name = $field->getName();
 			// note: extracts the TCEforms sub-array from the configuration, as required in TCA.
 			$fields[$name] = array_pop($field->build());
 		}
-		if (TRUE === $form->getOption('hide')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_HIDE)) {
 			$enableColumns['disabled'] = 'hidden';
 		}
-		if (TRUE === $form->getOption('start')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_START)) {
 			$enableColumns['start'] = 'starttime';
 		}
-		if (TRUE === $form->getOption('end')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_END)) {
 			$enableColumns['end'] = 'endtime';
 		}
-		if (TRUE === $form->getOption('frontendUserGroup')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_FEGROUP)) {
 			$enableColumns['fe_group'] = 'fe_group';
 		}
-		$tableConfiguration['iconfile'] = ExtensionManagementUtility::extRelPath($extensionKey) . $form->getIcon();
+		$tableConfiguration['iconfile'] = ExtensionManagementUtility::extRelPath($extensionKey) . $form->getOption(Form::OPTION_ICON);
 		$tableConfiguration['enablecolumns'] = $enableColumns;
 		$showRecordsFieldList = $this->buildShowItemList($form);
 		$GLOBALS['TCA'][$table] = array(
@@ -136,7 +136,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 				)
 			)
 		);
-		if (TRUE === $form->getOption('delete')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_DELETE)) {
 			$GLOBALS['TCA'][$table]['ctrl']['delete'] = 'deleted';
 		}
 		if (NULL === $labelFields) {
