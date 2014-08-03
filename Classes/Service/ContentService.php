@@ -28,6 +28,8 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Service\RecordService;
 
 /**
  * Flux FlexForm integration Service
@@ -41,6 +43,32 @@ class ContentService implements SingletonInterface {
 
 	const COLPOS_FLUXCONTENT = 18181;
 
+	/**
+	 * @var RecordService
+	 */
+	protected $recordService;
+
+	/**
+	 * @var WorkspacesAwareRecordService
+	 */
+	protected $workspacesAwareRecordService;
+
+	/**
+	 * @param RecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(RecordService $recordService) {
+		$this->recordService = $recordService;
+	}
+
+	/**
+	 * @param WorkspacesAwareRecordService $workspacesAwareRecordService
+	 * @return void
+	 */
+	public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService) {
+		$this->workspacesAwareRecordService = $workspacesAwareRecordService;
+	}
+
 	/*
 	 * @param String $id
 	 * @param array $row
@@ -50,7 +78,7 @@ class ContentService implements SingletonInterface {
 	 */
 	public function affectRecordByRequestParameters($id, array &$row, $parameters, DataHandler $tceMain) {
 		if (FALSE === empty($parameters['overrideVals']['tt_content']['tx_flux_parent'])) {
-			$row['tx_flux_parent'] = intval($parameters['overrideVals']['tt_content']['tx_flux_parent']);
+			$row['tx_flux_parent'] = (integer) $parameters['overrideVals']['tt_content']['tx_flux_parent'];
 			if (0 < $row['tx_flux_parent']) {
 				$row['colPos'] = self::COLPOS_FLUXCONTENT;
 			}
@@ -70,7 +98,7 @@ class ContentService implements SingletonInterface {
 		$id = $row['uid'];
 		if (1 < substr_count($parameters[1], '-')) {
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
-			$parentUid = intval($parentUid);
+			$parentUid = (integer) $parentUid;
 			$relativeUid = 0 - $relativeUid;
 		} else {
 			list ($tablename, $pid, $relativeUid) = $parameters;
@@ -103,7 +131,7 @@ class ContentService implements SingletonInterface {
 					}
 				} else {
 					$parentRecord = $this->loadRecordFromDatabase($parentUid, $record['sys_language_uid']);
-					if ($copyFromUid === intval($parentRecord['uid'])) {
+					if ($copyFromUid === (integer) $parentRecord['uid']) {
 						$record['tx_flux_parent'] = $parentRecord['uid'];
 						if (0 > $relativeUid) {
 							$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
@@ -137,11 +165,11 @@ class ContentService implements SingletonInterface {
 			if ((FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos)) {
 				$record['colPos'] = $possibleColPos;
 			}
-			if (self::COLPOS_FLUXCONTENT !== intval($possibleColPos)) {
+			if (self::COLPOS_FLUXCONTENT !== (integer) $possibleColPos) {
 				$record['tx_flux_parent'] = 0;
 				$record['tx_flux_column'] = '';
 			}
-			$record['tx_flux_parent'] = intval($record['tx_flux_parent']);
+			$record['tx_flux_parent'] = (integer) $record['tx_flux_parent'];
 			$this->updateRecordInDatabase($record, NULL, $tceMain);
 			$tceMain->registerDBList['tt_content'][$record['uid']];
 		}
@@ -161,13 +189,13 @@ class ContentService implements SingletonInterface {
 			// EXT:gridelements support
 			list($relativeTo, $colPos) = explode('x', $relativeTo);
 			$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
-			$row['colPos'] = $colPos;
+			$row['colPos'] = (integer) $colPos;
 			$row['sorting'] = 0;
-		} elseif (0 <= intval($relativeTo)) {
+		} elseif (0 <= (integer) $relativeTo) {
 			$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 			if (FALSE === empty($parameters[1])) {
 				list($prefix, $column, $prefix2, $page, $areaUniqid, $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
-				$relativeUid = intval($relativeUid);
+				$relativeUid = (integer) $relativeUid;
 				if ('colpos' === $prefix && 'page' === $prefix2) {
 					$row['colPos'] = $column;
 					if ('top' === $relativePosition && 0 < $relativeUid) {
@@ -176,7 +204,7 @@ class ContentService implements SingletonInterface {
 					}
 				}
 			}
-		} elseif (0 > intval($relativeTo)) {
+		} elseif (0 > (integer) $relativeTo) {
 			// inserting a new element after another element. Check column position of that element.
 			$relativeToRecord = $this->loadRecordFromDatabase(abs($relativeTo));
 			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
@@ -199,9 +227,9 @@ class ContentService implements SingletonInterface {
 		$origUidFieldName = $GLOBALS['TCA']['tt_content']['ctrl']['origUid'];
 		$languageFieldName = $GLOBALS['TCA']['tt_content']['ctrl']['languageField'];
 
-		$newUid = intval($tceMain->substNEWwithIDs[$id]);
-		$oldUid = intval($row[$origUidFieldName]);
-		$newLanguageUid = intval($row[$languageFieldName]);
+		$newUid = (integer) $tceMain->substNEWwithIDs[$id];
+		$oldUid = (integer) $row[$origUidFieldName];
+		$newLanguageUid = (integer) $row[$languageFieldName];
 
 		if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid) {
 			$oldRecord = $this->loadRecordFromDatabase($oldUid);
@@ -233,13 +261,15 @@ class ContentService implements SingletonInterface {
 	 * @return array|NULL
 	 */
 	protected function loadRecordFromDatabase($uid, $languageUid = 0) {
-		$uid = intval($uid);
-		$languageUid = intval($languageUid);
+		$uid = (integer) $uid;
+		$languageUid = (integer) $languageUid;
 		if (0 === $languageUid) {
-			return BackendUtility::getRecord('tt_content', $uid);
+			$record = BackendUtility::getRecord('tt_content', $uid);
 		} else {
-			return BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
+			$record = BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
 		}
+		$record = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $record['uid']);
+		return $record;
 	}
 
 	/**
@@ -247,8 +277,8 @@ class ContentService implements SingletonInterface {
 	 * @return array|NULL
 	 */
 	protected function loadRecordsFromDatabase($parentUid) {
-		$parentUid = intval($parentUid);
-		return BackendUtility::getRecordsByField('tt_content', 'tx_flux_parent', $parentUid);
+		$parentUid = (integer) $parentUid;
+		return $this->workspacesAwareRecordService->get('tt_content', '*', "tx_flux_parent = '" . $parentUid . "'");
 	}
 
 	/**
@@ -261,9 +291,21 @@ class ContentService implements SingletonInterface {
 		if (NULL === $uid) {
 			$uid = $row['uid'];
 		}
-		$uid = intval($uid);
+		$uid = (integer) $uid;
 		if (FALSE === empty($uid)) {
-			$tceMain->updateDB('tt_content', $uid, $row);
+			$row['uid'] = $uid;
+			$this->workspacesAwareRecordService->update('tt_content', $row);
+			// reload our record for the next bits to have access to all fields
+			$row = $this->recordService->getSingle('tt_content', '*', $uid);
+		}
+		$versionedRecordUid = (integer) (TRUE === isset($row['t3ver_oid']) && 0 < (integer) $row['t3ver_oid'] ? $row['t3ver_oid'] : 0);
+		if (0 < $versionedRecordUid) {
+			// temporary record; duplicate key values of original record into temporary one.
+			// Note: will continue to call this method until all temporary records in chain have been processed.
+			$placeholder = $this->recordService->getSingle('tt_content', '*', $row['t3ver_oid']);
+			$placeholder['tx_flux_parent'] = (integer) $row['tx_flux_parent'];
+			$placeholder['tx_flux_column'] = $row['tx_flux_column'];
+			$this->updateRecordInDatabase($placeholder, $row['t3ver_oid'], $tceMain);
 		}
 	}
 
