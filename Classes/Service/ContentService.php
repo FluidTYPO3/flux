@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\Service;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Service\RecordService;
@@ -185,12 +186,12 @@ class ContentService implements SingletonInterface {
 	 * @return void
 	 */
 	public function moveRecord(array &$row, &$relativeTo, $parameters, DataHandler $tceMain) {
-		if (FALSE !== strpos($relativeTo, 'x')) {
-			// EXT:gridelements support
-			list($relativeTo, $colPos) = explode('x', $relativeTo);
+		if (FALSE !== strpos($relativeTo, 'x') && TRUE === ExtensionManagementUtility::isLoaded('gridelements')) {
+			// EXT:gridelements support: when dropping elements on a gridelements container drop zone, the
+			// current relationships to a Flux parent element, if one is defined, must be cleared.
+			// Note: this support may very well be temporary, depending on the level to which gridelements
+			// adopts Flux usage.
 			$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
-			$row['colPos'] = (integer) $colPos;
-			$row['sorting'] = 0;
 		} elseif (0 <= (integer) $relativeTo) {
 			$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 			if (FALSE === empty($parameters[1])) {
