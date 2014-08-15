@@ -125,10 +125,6 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 		}
 
 		parent::postProcessDatabaseOperation($status, $id, $row, $reference);
-		if ($status === 'new') {
-			$this->contentService->initializeRecord($id, $row, $reference);
-		}
-
 		self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 	}
 

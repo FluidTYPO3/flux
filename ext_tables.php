@@ -44,12 +44,18 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 				'foreign_field' => 'tx_flux_parent',
 				'foreign_sortby' => 'sorting',
 				'appearance' => array(
+					'showPossibleLocalizationRecords' => TRUE,
 					'collapseAll' => TRUE,
 					'enabledControls' => array(
 						'new' => FALSE,
-						'hide' => TRUE
+						'hide' => TRUE,
+						'localize' => TRUE,
 					)
-				)
+				),
+				'behaviour' => array(
+					'localizationMode' => 'select',
+					'localizeChildrenAtParentLocalization' => TRUE,
+				),
 			)
 		),
 	)
