@@ -55,6 +55,7 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 				'behaviour' => array(
 					'localizationMode' => 'select',
 					'localizeChildrenAtParentLocalization' => TRUE,
+					'enableCascadingDelete' => TRUE,
 				),
 			)
 		),
