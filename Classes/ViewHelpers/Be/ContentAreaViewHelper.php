@@ -75,7 +75,8 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$pageRecord = $this->recordService->getSingle('pages', '*', $row['pid']);
 		// note: the following chained makeInstance is not an error; it is there to make the ViewHelper work on TYPO3 6.0
 		/** @var $dblist PageLayoutView */
-		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
+		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')
+			->get('TYPO3\CMS\Backend\View\PageLayoutView');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
 		$dblist->script = 'db_layout.php';
 		$dblist->showIcon = 1;
@@ -100,15 +101,39 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		}
 
 		$modSettings = $GLOBALS['SOBE']->MOD_SETTINGS;
+		$modLanguage = (integer) $GLOBALS['FLUX']['tt_content-LP'] ?: (integer) $modSettings['language'];
 		if (2 === intval($modSettings['function'])) {
 			$dblist->tt_contentConfig['single'] = 0;
 			$dblist->tt_contentConfig['languageMode'] = 1;
 			$dblist->tt_contentConfig['languageCols'] = array(0 => $GLOBALS['LANG']->getLL('m_default'));
-			$dblist->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
+			$dblist->tt_contentConfig['languageColsPointer'] = $modLanguage;
+		}
+
+		$condition = 'colPos = "' . ContentService::COLPOS_FLUXCONTENT . '" AND deleted = 0 AND tx_flux_column = "' . $area . '"';
+		$languageCondition = 'sys_language_uid IN (-1,' . $modLanguage . ')';
+		$fluxParentCondition = ' tx_flux_parent = ' . (integer) $row['uid'];
+
+		if (0 >= $modLanguage) {
+			$condition = implode(' AND ', array($condition, $languageCondition, $fluxParentCondition));
+		} else {
+			$uidCondition = implode(' AND ', array($condition, 'sys_language_uid = 0', $fluxParentCondition));
+
+			$uids = array();
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tt_content', $uidCondition);
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				$uids[] = (integer) $row['uid'];
+			}
+
+			if (0 >= count($uids)) {
+				$parentCondition = $fluxParentCondition;
+			} else {
+				$languageParentCondition = 'l18n_parent IN (' . implode(',', $uids) . ')';
+				$parentCondition = '((' . $fluxParentCondition . ') OR (' . $languageParentCondition . '))';
+			}
+			$condition = implode(' AND ', array($condition, $languageCondition, $parentCondition));
 		}
 
 		$showHidden = $modSettings['tt_content_showHidden'] ? '' : BackendUtility::BEenableFields('tt_content');
-		$condition = "tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' AND deleted = 0 AND sys_language_uid IN (-1," . (integer) $modSettings['language'] . ')';
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition . $showHidden, 'uid', 'sorting ASC');
 		$records = $dblist->getResult($res);
 
