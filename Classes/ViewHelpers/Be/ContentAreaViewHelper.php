@@ -82,7 +82,6 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$dblist->setLMargin = 0;
 		$dblist->doEdit = 1;
 		$dblist->no_noWrap = 1;
-		$dblist->setLMargin = 0;
 		$dblist->ext_CALC_PERMS = $GLOBALS['BE_USER']->calcPerms($pageRecord);
 		$dblist->id = $row['pid'];
 		$dblist->nextThree = 1;
@@ -98,8 +97,14 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
 			$dblist->itemLabels[$name] = $GLOBALS['LANG']->sL($val['label']);
 		}
-
 		$modSettings = $GLOBALS['SOBE']->MOD_SETTINGS;
+		$modMenu = $GLOBALS['SOBE']->MOD_MENU;
+
+			// Initializes page languages and icons
+		$dblist->initializeLanguages();
+			// Fetch current page localizations from MOD_MENU['language'] to use in condition.
+		$modMenuLanguages = is_array($modMenu['language']) ? implode(',', array_keys($modMenu['language'])) : '0';
+
 		if (2 === intval($modSettings['function'])) {
 			$dblist->tt_contentConfig['single'] = 0;
 			$dblist->tt_contentConfig['languageMode'] = 1;
@@ -108,7 +113,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		}
 
 		$showHidden = $modSettings['tt_content_showHidden'] ? '' : BackendUtility::BEenableFields('tt_content');
-		$condition = "tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' AND deleted = 0 AND sys_language_uid IN (-1," . (integer) $modSettings['language'] . ')';
+		$condition = "tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' AND deleted = 0 AND sys_language_uid IN (-1," . $modMenuLanguages . ')';
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition . $showHidden, 'uid', 'sorting ASC');
 		$records = $dblist->getResult($res);
 
