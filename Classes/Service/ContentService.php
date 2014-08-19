@@ -219,44 +219,6 @@ class ContentService implements SingletonInterface {
 	}
 
 	/**
-	 * @param String $id
-	 * @param array $row
-	 * @param DataHandler $tceMain
-	 * @return void
-	 */
-	public function initializeRecord($id, array &$row, DataHandler $tceMain) {
-		$origUidFieldName = $GLOBALS['TCA']['tt_content']['ctrl']['origUid'];
-		$languageFieldName = $GLOBALS['TCA']['tt_content']['ctrl']['languageField'];
-
-		$newUid = (integer) $tceMain->substNEWwithIDs[$id];
-		$oldUid = (integer) $row[$origUidFieldName];
-		$newLanguageUid = (integer) $row[$languageFieldName];
-
-		if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid) {
-			$oldRecord = $this->loadRecordFromDatabase($oldUid);
-			if ($oldRecord[$languageFieldName] === $newLanguageUid || $oldRecord['pid'] !== $row['pid']) {
-				return;
-			}
-
-			$sortbyFieldName = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
-			$overrideValues = array(
-				$sortbyFieldName => $tceMain->resorting('tt_content', $row['pid'], $sortbyFieldName, $oldUid)
-			);
-			$this->updateRecordInDatabase($overrideValues, $newUid, $tceMain);
-
-			// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
-			$children = $this->loadRecordsFromDatabase($oldUid);
-			foreach ($children as $child) {
-				$overrideValues = array(
-					'tx_flux_parent' => $newUid
-				);
-				$childUid = $tceMain->localize('tt_content', $child['uid'], $newLanguageUid);
-				$this->updateRecordInDatabase($overrideValues, $childUid, $tceMain);
-			}
-		}
-	}
-
-	/**
 	 * @param integer $uid
 	 * @param integer $languageUid
 	 * @return array|NULL

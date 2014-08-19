@@ -62,38 +62,6 @@ class ContentServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function canInitializeBlankRecord() {
-		$methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDatabase');
-		$mock = $this->createMock($methods);
-		$row = array('uid' => -1);
-		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
-		$mock->initializeRecord('NEW12345', $row, $tceMain);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canInitializeBlankRecordWithLanguage() {
-		$methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDatabase');
-		$mock = $this->createMock($methods);
-		$oldRecord = array(
-			'sys_language_uid' => 0
-		);
-		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
-		$mock->expects($this->once())->method('loadRecordsFromDatabase')->will($this->returnValue(array(
-			Records::$contentRecordWithParentAndChildren,
-			Records::$contentRecordWithParentAndWithoutChildren
-		)));
-		$row = array('uid' => 1, 't3_origuid' => 999999999999, 'sys_language_uid' => 1);
-		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array('NEW12345' => 1);
-		$mock->initializeRecord('NEW12345', $row, $tceMain);
-	}
-
-	/**
-	 * @test
-	 */
 	public function moveRecordWithNegativeRelativeToValueLoadsRelativeRecordFromDatabaseAndCopiesValuesToRecordAndSetsColumnPositionAndUpdatesRelativeToValue() {
 		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
 		$mock = $this->createMock($methods);

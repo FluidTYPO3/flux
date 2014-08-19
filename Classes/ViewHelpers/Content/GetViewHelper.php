@@ -113,11 +113,56 @@ class GetViewHelper extends AbstractViewHelper {
 		$offset = intval($this->arguments['offset']);
 		$sortDirection = $this->arguments['sortDirection'];
 		$order .= ' ' . $sortDirection;
-		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
-			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
-			AND deleted = 0 AND hidden = 0";
+
+			// condition for sys_language_uid, so we also include content elements with [All] language.
+		$languageFilterContent = '-1,' . $GLOBALS['TSFE']->sys_language_uid;
+			
+			// try to filter by sys_language_overlay
+		switch ($GLOBALS['TSFE']->sys_language_contentOL) {
+			case 'hideNonTranslated':
+				$contentFallbackLanguageFilterContent = '-1';
+				break;
+			case '0':
+				$contentFallbackLanguageFilterContent = '-1,' . $GLOBALS['TSFE']->sys_language_uid;
+				break;
+			default:
+			case '1':
+				$contentFallbackLanguageFilterContent = '-1,0';
+				break;
+		}
+			
+		$conditions = "(";
+			// Original condition + include check that language is [All] or current.
+		$conditions.= " (tx_flux_column = '" . $area . ':' . $localizedUid . "' AND sys_language_uid IN (" . $languageFilterContent . "))";
+		$conditions.= " OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "') AND sys_language_uid IN (" . $languageFilterContent . "))";
+			
+			// Added condition to also include content that has the "default" record as parent, and always check that languages is [All] or current.
+		$conditions.= " OR (tx_flux_parent = '" . $id . "' AND tx_flux_column = '" . $area . "' AND sys_language_uid IN (" . $languageFilterContent . "))";
+			
+			// Add condition for content fallback, also include records from 'l18n_parent' when content_fallback is enabled
+		if ($GLOBALS['TSFE']->sys_language_mode == 'content_fallback') {
+			$conditions.= " OR (
+				( tx_flux_parent = '" . $id . "' OR tx_flux_parent = '" . $localizedUid . "' OR tx_flux_parent = '" . $record['l18n_parent'] . "' )
+				AND tx_flux_column = '" . $area . "' 
+				AND sys_language_uid IN (" . $contentFallbackLanguageFilterContent . ")
+				AND ( SELECT count(localizedRecords.uid) 
+						FROM tt_content localizedRecords 
+						WHERE localizedRecords.l18n_parent = tt_content.uid 
+						AND localizedRecords.sys_language_uid = " . $GLOBALS['TSFE']->sys_language_uid . " 
+						AND deleted = 0
+						AND hidden = 0
+					) = 0
+				)";
+		}
+
+		$conditions.= ")";
+		
+			// Original condition for deleted and hidden
+		$conditions.= " AND deleted = 0 AND hidden = 0";
+		
 		$rows = $this->recordService->get('tt_content', '*', $conditions, 'uid', $order, $offset . ',' . $limit);
 		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);
+
 		if (TRUE === empty($this->arguments['as'])) {
 			$content = $elements;
 		} else {
