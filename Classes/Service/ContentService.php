@@ -97,13 +97,31 @@ class ContentService implements SingletonInterface {
 	 */
 	public function pasteAfter($command, array &$row, $parameters, DataHandler $tceMain) {
 		$id = $row['uid'];
+		$tablename = 'tt_content';
 		if (1 < substr_count($parameters[1], '-')) {
+			// Parameters were passed in a hyphen-glued string, created by Flux and passed into command.
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
 			$parentUid = (integer) $parentUid;
-			$relativeUid = 0 - $relativeUid;
+			$relativeUid = 0 - (integer) $relativeUid;
+			if (FALSE === empty($possibleArea)) {
+				// Flux content area detected, override colPos to virtual Flux column number.
+				// The $possibleColPos variable may or may not already be set but must be
+				// overridden regardless.
+				$possibleColPos = self::COLPOS_FLUXCONTENT;
+			}
 		} else {
+			// Parameters are directly from TYPO3 and it almost certainly is a paste to page column.
 			list ($tablename, $pid, $relativeUid) = $parameters;
+			if (0 >= (integer) $pid) {
+				// Third parameter is not passed by every context. If not set and $pid is negative,
+				// we must assume that the positive value of $pid is our relative target UID.
+				$relativeUid = (integer) $pid;
+			}
 		}
+
+		// Creating the copy mapping array. Initial processing of all records being pasted,
+		// either simply assigning them (copy action) or adjusting the copies to become
+		// "insert records" elements which then render the original record (paste reference).
 		$mappingArray = array();
 		if ('copy' !== $command) {
 			$mappingArray[$id] = $row;
@@ -119,60 +137,33 @@ class ContentService implements SingletonInterface {
 			}
 		}
 
-		foreach ($mappingArray as $copyFromUid => $record) {
-			if (0 > $relativeUid) {
-				$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid), $record['sys_language_uid']);
-			}
-
-			if (FALSE === empty($possibleArea) || FALSE === empty($record['tx_flux_column'])) {
-				if ($copyFromUid === $parentUid) {
-					$record['tx_flux_parent'] = $parentUid;
-					if (0 > $relativeUid) {
-						$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
-					}
-				} else {
-					$parentRecord = $this->loadRecordFromDatabase($parentUid, $record['sys_language_uid']);
-					if ($copyFromUid === (integer) $parentRecord['uid']) {
-						$record['tx_flux_parent'] = $parentRecord['uid'];
-						if (0 > $relativeUid) {
-							$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
-						}
-					} elseif (FALSE === empty($record['tx_flux_parent'])) {
-						$parentRecord = $this->loadRecordFromDatabase($record['tx_flux_parent'], $record['sys_language_uid']);
-						$record['tx_flux_parent'] = $parentRecord['uid'];
-					} else {
-						$record['tx_flux_parent'] = '';
-					}
-				}
-				if (FALSE === empty($possibleArea)) {
-					$record['tx_flux_column'] = $possibleArea;
-				}
-				$record['colPos'] = self::COLPOS_FLUXCONTENT;
-			} elseif (0 > $relativeUid) {
-				$record['sorting'] = $tceMain->resorting('tt_content', $relativeRecord['pid'], 'sorting', $relativeRecord['uid']);
-				$record['pid'] = $relativeRecord['pid'];
-				$record['colPos'] = $relativeRecord['colPos'];
-				$record['tx_flux_column'] = $relativeRecord['tx_flux_column'];
-				$record['tx_flux_parent'] = $relativeRecord['tx_flux_parent'];
-			} elseif (0 <= $relativeUid) {
-				$record['sorting'] = 0;
-				$record['pid'] = $relativeUid;
-				$record['tx_flux_column'] = '';
-				$record['tx_flux_parent'] = '';
-			}
-			if (TRUE === isset($pid) && FALSE === isset($relativeRecord['pid'])) {
+		// If copying is performed relative to another element we must assume the values of
+		// that element and use them as target relation values regardless of earlier parameters.
+		if (0 > $relativeUid) {
+			$relativeRecord = $this->loadRecordFromDatabase(abs($relativeUid));
+			$possibleColPos = (integer) $relativeRecord['colPos'];
+			$possibleArea = $relativeRecord['tx_flux_column'];
+			$parentUid = (integer) $relativeRecord['tx_flux_parent'];
+		}
+		foreach ($mappingArray as $record) {
+			if (0 < $pid) {
 				$record['pid'] = $pid;
 			}
 			if ((FALSE === empty($possibleColPos) || 0 === $possibleColPos || '0' === $possibleColPos)) {
 				$record['colPos'] = $possibleColPos;
 			}
-			if (self::COLPOS_FLUXCONTENT !== (integer) $possibleColPos) {
+			if (self::COLPOS_FLUXCONTENT === (integer) $possibleColPos) {
+				$record['tx_flux_column'] = $possibleArea;
+				$record['tx_flux_parent'] = (integer) $parentUid;
+			} else {
 				$record['tx_flux_parent'] = 0;
 				$record['tx_flux_column'] = '';
 			}
-			$record['tx_flux_parent'] = (integer) $record['tx_flux_parent'];
+			if (0 > $relativeUid) {
+				$record['sorting'] = $tceMain->resorting($tablename, $relativeRecord['pid'], 'sorting', abs($relativeUid));
+			}
 			$this->updateRecordInDatabase($record, NULL, $tceMain);
-			$tceMain->registerDBList['tt_content'][$record['uid']];
+			$tceMain->registerDBList[$tablename][$record['uid']];
 		}
 	}
 
