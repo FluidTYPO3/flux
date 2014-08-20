@@ -51,6 +51,11 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	protected $configurationService;
 
 	/**
+	 * @var string
+	 */
+	protected $templateSource = NULL;
+
+	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
@@ -170,6 +175,25 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 			}
 		}
 		return parent::getTemplatePathAndFilename($actionName);
+	}
+
+	/**
+	 * @param string $templateSource
+	 * @return void
+	 */
+	public function setTemplateSource($templateSource) {
+		$this->templateSource = $templateSource;
+	}
+
+	/**
+	 * @param string $actionName
+	 * @return string
+	 */
+	protected function getTemplateSource($actionName = NULL) {
+		if (NULL !== $this->templateSource) {
+			return $this->templateSource;
+		}
+		return parent::getTemplateSource($actionName);
 	}
 
 	/**
