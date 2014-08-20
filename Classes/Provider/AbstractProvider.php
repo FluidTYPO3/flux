@@ -387,6 +387,20 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * Get the source of the template to be rendered. Default implementation
+	 * returns the source of whichever filename is returned from the Provider.
+	 * Overriding this method in other implementations allows the Provider
+	 * to operate without a template file.
+	 *
+	 * @param array $row
+	 * @return string|NULL
+	 */
+	public function getTemplateSource(array $row) {
+		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+		return file_get_contents($templatePathAndFilename);
+	}
+
+	/**
 	 * Converts the contents of the provided row's Flux-enabled field,
 	 * at the same time running through the inheritance tree generated
 	 * by getInheritanceTree() in order to apply inherited values.
