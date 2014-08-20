@@ -275,7 +275,9 @@ class AbstractProvider implements ProviderInterface {
 			return $this->form;
 		}
 		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		if (FALSE === file_exists($templatePathAndFilename)) {
+		$templateSource = $this->getTemplateSource($row);
+		if (NULL === $templateSource) {
+			// Early return: no template file, no source - NULL expected.
 			return NULL;
 		}
 		$section = $this->getConfigurationSectionName($row);
@@ -294,7 +296,9 @@ class AbstractProvider implements ProviderInterface {
 
 		$variables['record'] = $row;
 		$variables = GeneralUtility::array_merge_recursive_overrule($this->templateVariables, $variables);
-		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
+		$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, $controllerName, $paths, $variables);
+		$view->setTemplateSource($templateSource);
+		$form = $view->getForm($section, $formName);
 		$form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
 		return $form;
 	}
@@ -397,7 +401,7 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	public function getTemplateSource(array $row) {
 		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		return file_get_contents($templatePathAndFilename);
+		return TRUE === file_exists($templatePathAndFilename) ? file_get_contents($templatePathAndFilename) : NULL;
 	}
 
 	/**
