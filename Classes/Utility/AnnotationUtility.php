@@ -50,7 +50,7 @@ class AnnotationUtility {
 	 * @param string|boolean $propertyName
 	 * @return string
 	 */
-	public static function getAnnotationValueFromClass($className, $annotationName, $propertyName = FALSE) {
+	public static function getAnnotationValueFromClass($className, $annotationName, $propertyName = NULL) {
 		if (TRUE === isset(self::$cache['reflections'][$className])) {
 			$reflection = self::$cache['reflections'][$className];
 		} else {
@@ -64,21 +64,23 @@ class AnnotationUtility {
 		} else {
 			$sample = new $className();
 			$annotations = array();
-			if (FALSE === $propertyName) {
+			if (NULL === $propertyName) {
 				if (TRUE === $reflection->isTaggedWith($annotationName)) {
 					$annotations = $reflection->getTagValues($annotationName);
 				}
-			} else {
+			} elseif (FALSE === $propertyName) {
 				$properties = ObjectAccess::getGettablePropertyNames($sample);
 				foreach ($properties as $reflectedPropertyName) {
 					if (FALSE === property_exists($className, $reflectedPropertyName)) {
 						continue;
 					}
-					$reflectedProperty = $reflection->getProperty($reflectedPropertyName);
-					if (TRUE === $reflectedProperty->isTaggedWith($annotationName)) {
-						$annotations[$reflectedPropertyName] = $reflectedProperty->getTagValues($annotationName);
+					$propertyAnnotationValues = self::getPropertyAnnotations($reflection, $reflectedPropertyName, $annotationName);
+					if (NULL !== $propertyAnnotationValues) {
+						$annotations[$reflectedPropertyName] = $propertyAnnotationValues;
 					}
 				}
+			} else {
+				$annotations = self::getPropertyAnnotations($reflection, $propertyName, $annotationName);
 			}
 			$annotations = self::parseAnnotation($annotations);
 		}
@@ -87,6 +89,20 @@ class AnnotationUtility {
 			return $annotations[$propertyName];
 		}
 		return $annotations;
+	}
+
+	/**
+	 * @param ClassReflection $reflection
+	 * @param string $propertyName
+	 * @param string $annotationName
+	 * @return array
+	 */
+	protected static function getPropertyAnnotations(ClassReflection $reflection, $propertyName, $annotationName) {
+		$reflectedProperty = $reflection->getProperty($propertyName);
+		if (TRUE === $reflectedProperty->isTaggedWith($annotationName)) {
+			return $reflectedProperty->getTagValues($annotationName);
+		}
+		return NULL;
 	}
 
 	/**
