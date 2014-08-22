@@ -45,8 +45,13 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 				'foreign_sortby' => 'sorting',
 				'appearance' => array(
 					'collapseAll' => TRUE,
+					'showPossibleLocalizationRecords' => TRUE,
+					'showAllLocalizationLink' => TRUE,
+					'showSynchronizationLink' => TRUE,
 					'enabledControls' => array(
 						'new' => FALSE,
+						'localize' => TRUE,
+						'sort' => FALSE,
 						'hide' => TRUE
 					)
 				)
