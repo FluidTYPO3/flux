@@ -122,9 +122,9 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		}
 		$tableConfiguration['iconfile'] = ExtensionManagementUtility::extRelPath($extensionKey) . $form->getOption(Form::OPTION_ICON);
 		$tableConfiguration['enablecolumns'] = $enableColumns;
+		$tableConfiguration['title'] = $form->getLabel();
 		$showRecordsFieldList = $this->buildShowItemList($form);
 		$GLOBALS['TCA'][$table] = array(
-			'title' => $form->getLabel(),
 			'ctrl' => $tableConfiguration,
 			'interface' => array(
 				'showRecordFieldList' => implode(',', array_keys($fields))
@@ -154,16 +154,18 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 * @return Form
 	 */
 	public function generateFormInstanceFromClassName($class, $table) {
-		$labelFields = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Label', NULL);
+		$labelFields = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Label');
+		$iconAnnotation = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Icon');
 		$extensionName = $this->getExtensionNameFromModelClassName($class);
-		$values = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Field', NULL);
-		$sheets = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Sheet', NULL);
+		$values = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Field', FALSE);
+		$sheets = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Sheet', FALSE);
 		$labels = TRUE === is_array($labelFields) ? array_keys($labelFields) : array(key($values));
-		$hasVisibilityToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
-		$hasDeleteToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Delete');
-		$hasStartTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\StartTime');
-		$hasEndTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\EndTime');
-		$hasFrontendGroupToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\FrontendUserGroup');
+		$icon = TRUE === isset($iconAnnotation['config']['path']) ? $iconAnnotation['config']['path'] : 'ext_icon.png';
+		$hasVisibilityToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Hide', FALSE);
+		$hasDeleteToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Delete', FALSE);
+		$hasStartTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\StartTime', FALSE);
+		$hasEndTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\EndTime', FALSE);
+		$hasFrontendGroupToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\FrontendUserGroup', FALSE);
 		$form = Form::create();
 		$form->setName($table);
 		$form->setExtensionName($extensionName);
@@ -172,6 +174,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		$form->setOption('hide', $hasVisibilityToggle);
 		$form->setOption('start', $hasStartTimeToggle);
 		$form->setOption('end', $hasEndTimeToggle);
+		$form->setOption(Form::OPTION_ICON, $icon);
 		$form->setOption('frontendUserGroup', $hasFrontendGroupToggle);
 		$fields = array();
 		foreach ($sheets as $propertyName => $sheetAnnotation) {
@@ -183,12 +186,15 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		}
 		foreach ($fields as $sheetName => $propertyNames) {
 			$form->remove($sheetName);
-			$sheets[$sheetName] = $form->createContainer('Sheet', $sheetName);
+			$sheet = $form->createContainer('Sheet', $sheetName);
 			foreach ($propertyNames as $propertyName) {
 				$settings = $values[$propertyName];
 				if (TRUE === isset($settings['type'])) {
-					$field = AbstractFormField::create($settings);
-					$sheets[$sheetName]->add($field);
+					$fieldType = ucfirst($settings['type']);
+					$field = $sheet->createField($fieldType, $propertyName);
+					foreach ($settings as $settingName => $settingValue) {
+						ObjectAccess::setProperty($field, $settingName, $settingValue);
+					}
 				}
 			}
 		}
