@@ -196,7 +196,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 				if (TRUE === isset($settings['type'])) {
 					$fieldType = ucfirst($settings['type']);
 					$field = $sheet->createField($fieldType, $propertyName);
-					foreach ($settings as $settingName => $settingValue) {
+					foreach ($settings['config'] as $settingName => $settingValue) {
 						ObjectAccess::setProperty($field, $settingName, $settingValue);
 					}
 				}
