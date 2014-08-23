@@ -71,17 +71,13 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		}
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->loadTypoScriptConfigurationProviderInstances();
-		/** @var FluxService $fluxService */
-		/** @var DataMapFactory $dataMapFactory */
-		$dataMapFactory = $objectManager->get('TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory');
 		$forms = Core::getRegisteredFormsForTables();
 		$models = Core::getRegisteredFormsForModelObjectClasses();
 		foreach ($forms as $fullTableName => $form) {
 			$this->processFormForTable($fullTableName, $form);
 		}
 		foreach ($models as $modelClassName => $form) {
-			$map = $dataMapFactory->buildDataMap($modelClassName);
-			$fullTableName = $map->getTableName();
+			$fullTableName = $this->resolveTableName($modelClassName);
 			if (NULL === $form) {
 				$form = $this->generateFormInstanceFromClassName($modelClassName, $fullTableName);
 			}
@@ -123,6 +119,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		$tableConfiguration['iconfile'] = ExtensionManagementUtility::extRelPath($extensionKey) . $form->getOption(Form::OPTION_ICON);
 		$tableConfiguration['enablecolumns'] = $enableColumns;
 		$tableConfiguration['title'] = $form->getLabel();
+		$tableConfiguration['languageField'] = 'sys_language_uid';
 		$showRecordsFieldList = $this->buildShowItemList($form);
 		$GLOBALS['TCA'][$table] = array(
 			'ctrl' => $tableConfiguration,
@@ -154,7 +151,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 * @return Form
 	 */
 	public function generateFormInstanceFromClassName($class, $table) {
-		$labelFields = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Label');
+		$labelFields = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Label', FALSE);
 		$iconAnnotation = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Icon');
 		$extensionName = $this->getExtensionNameFromModelClassName($class);
 		$values = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Field', FALSE);
@@ -164,11 +161,11 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 			$labels[$index] = GeneralUtility::camelCaseToLowerCaseUnderscored($labelField);
 		}
 		$icon = TRUE === isset($iconAnnotation['config']['path']) ? $iconAnnotation['config']['path'] : 'ext_icon.png';
-		$hasVisibilityToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Hide', FALSE);
-		$hasDeleteToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Delete', FALSE);
-		$hasStartTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\StartTime', FALSE);
-		$hasEndTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\EndTime', FALSE);
-		$hasFrontendGroupToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\FrontendUserGroup', FALSE);
+		$hasVisibilityToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
+		$hasDeleteToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Delete');
+		$hasStartTimeToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\StartTime');
+		$hasEndTimeToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\EndTime');
+		$hasFrontendGroupToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\FrontendUserGroup');
 		$form = Form::create();
 		$form->setName($table);
 		$form->setExtensionName($extensionName);
@@ -238,6 +235,29 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 			}
 		}
 		return implode(', ', $parts);
+	}
+
+	/**
+	 * Resolve the table name for the given class name
+	 *
+	 * @param string $className
+	 * @return string The table name
+	 */
+	protected function resolveTableName($className) {
+		$className = ltrim($className, '\\');
+		if (strpos($className, '\\') !== FALSE) {
+			$classNameParts = explode('\\', $className, 6);
+			// Skip vendor and product name for core classes
+			if (strpos($className, 'TYPO3\\CMS\\') === 0) {
+				$classPartsToSkip = 2;
+			} else {
+				$classPartsToSkip = 1;
+			}
+			$tableName = 'tx_' . strtolower(implode('_', array_slice($classNameParts, $classPartsToSkip)));
+		} else {
+			$tableName = strtolower($className);
+		}
+		return $tableName;
 	}
 
 }
