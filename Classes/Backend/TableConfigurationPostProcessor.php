@@ -160,6 +160,9 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		$values = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Field', FALSE);
 		$sheets = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Sheet', FALSE);
 		$labels = TRUE === is_array($labelFields) ? array_keys($labelFields) : array(key($values));
+		foreach ($labels as $index => $labelField) {
+			$labels[$index] = GeneralUtility::camelCaseToLowerCaseUnderscored($labelField);
+		}
 		$icon = TRUE === isset($iconAnnotation['config']['path']) ? $iconAnnotation['config']['path'] : 'ext_icon.png';
 		$hasVisibilityToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Hide', FALSE);
 		$hasDeleteToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Delete', FALSE);
@@ -189,6 +192,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 			$sheet = $form->createContainer('Sheet', $sheetName);
 			foreach ($propertyNames as $propertyName) {
 				$settings = $values[$propertyName];
+				$propertyName = GeneralUtility::camelCaseToLowerCaseUnderscored($propertyName);
 				if (TRUE === isset($settings['type'])) {
 					$fieldType = ucfirst($settings['type']);
 					$field = $sheet->createField($fieldType, $propertyName);
