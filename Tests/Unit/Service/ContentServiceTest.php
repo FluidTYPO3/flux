@@ -74,26 +74,6 @@ class ContentServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function canInitializeBlankRecordWithLanguage() {
-		$methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDatabase');
-		$mock = $this->createMock($methods);
-		$oldRecord = array(
-			'sys_language_uid' => 0
-		);
-		$mock->expects($this->once())->method('loadRecordFromDatabase')->with(999999999999)->will($this->returnValue($oldRecord));
-		$mock->expects($this->once())->method('loadRecordsFromDatabase')->will($this->returnValue(array(
-			Records::$contentRecordWithParentAndChildren,
-			Records::$contentRecordWithParentAndWithoutChildren
-		)));
-		$row = array('uid' => 1, 't3_origuid' => 999999999999, 'sys_language_uid' => 1);
-		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->substNEWwithIDs = array('NEW12345' => 1);
-		$mock->initializeRecord('NEW12345', $row, $tceMain);
-	}
-
-	/**
-	 * @test
-	 */
 	public function moveRecordWithNegativeRelativeToValueLoadsRelativeRecordFromDatabaseAndCopiesValuesToRecordAndSetsColumnPositionAndUpdatesRelativeToValue() {
 		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
 		$mock = $this->createMock($methods);
@@ -146,6 +126,7 @@ class ContentServiceTest extends AbstractTestCase {
 	public function pasteAfterAsReferenceRelativeToRecord() {
 		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
 		$mock = $this->createMock($methods);
+
 		$command = 'copy';
 		$row = array(
 			'uid' => 1
@@ -161,8 +142,15 @@ class ContentServiceTest extends AbstractTestCase {
 			1,
 			'1-reference-2-2-0'
 		);
+		$cmdMap = array(
+			'tt_content' => array(
+				$copiedRow['uid'] => array(
+					$row['uid'] => 'copy'),
+			),
+		);
 		$tceMain = new DataHandler();
 		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
+		$tceMain->cmdmap = $cmdMap;
 		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($copiedRow));
 		$mock->pasteAfter($command, $row, $parameters, $tceMain);
 	}

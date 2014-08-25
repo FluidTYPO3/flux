@@ -126,7 +126,10 @@ class ContentService implements SingletonInterface {
 		if ('copy' !== $command) {
 			$mappingArray[$id] = $row;
 		} else {
-			foreach ($tceMain->copyMappingArray['tt_content'] as $copyFromUid => $copyToUid) {
+			// Only override values from content elements in cmdmap to prevent that child elements "inherits"
+			// tx_flux_parent and tx_flux_column which would position them outside their tx_flux_parent.
+			foreach ($tceMain->cmdmap['tt_content'] as $copyFromUid => $cmdMapValues) {
+				$copyToUid = $tceMain->copyMappingArray['tt_content'][$copyFromUid];
 				$record = $this->loadRecordFromDatabase($copyToUid);
 				if ('reference' === $subCommand) {
 					$record['CType'] = 'shortcut';
@@ -234,16 +237,6 @@ class ContentService implements SingletonInterface {
 				$sortbyFieldName => $tceMain->resorting('tt_content', $row['pid'], $sortbyFieldName, $oldUid)
 			);
 			$this->updateRecordInDatabase($overrideValues, $newUid, $tceMain);
-
-			// Perform localization on all children, since this is not handled by the TCA field which otherwise cascades changes
-			$children = $this->loadRecordsFromDatabase($oldUid);
-			foreach ($children as $child) {
-				$overrideValues = array(
-					'tx_flux_parent' => $newUid
-				);
-				$childUid = $tceMain->localize('tt_content', $child['uid'], $newLanguageUid);
-				$this->updateRecordInDatabase($overrideValues, $childUid, $tceMain);
-			}
 		}
 	}
 
