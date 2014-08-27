@@ -119,7 +119,7 @@ class GetViewHelper extends AbstractViewHelper {
 			OR (tx_flux_parent = '" . $id . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $id . "')))
 			AND deleted = 0 AND hidden = 0";
 		$rows = $this->recordService->get('tt_content', '*', $conditions, 'uid', $order, $offset . ',' . $limit);
-	
+
 		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);
 		if (TRUE === empty($this->arguments['as'])) {
 			$content = $elements;
