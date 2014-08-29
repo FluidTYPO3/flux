@@ -187,8 +187,8 @@ class ContentService implements SingletonInterface {
 			// adopts Flux usage.
 			$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 		} elseif (0 <= (integer) $relativeTo) {
-			$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 			if (FALSE === empty($parameters[1])) {
+				$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 				list($prefix, $column, $prefix2, $page, $areaUniqid, $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
 				$relativeUid = (integer) $relativeUid;
 				if ('colpos' === $prefix && 'page' === $prefix2) {

@@ -97,6 +97,7 @@ class GridController extends AbstractWidgetController {
 		$workspaceVersionOfRecord = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $this->row['uid']);
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $workspaceVersionOfRecord);
+		$this->view->assign('colPosFluxContent', 18181);
 		$paths = $this->configurationService->getViewConfigurationForExtensionName('flux');
 		$templateRootPath = TRUE === isset($paths['templateRootPath']) ? $paths['templateRootPath'] : NULL;
 		$templatePathAndFilename = ResolveUtility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath);
