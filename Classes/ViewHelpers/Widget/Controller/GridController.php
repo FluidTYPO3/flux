@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget\Controller;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
@@ -97,7 +98,7 @@ class GridController extends AbstractWidgetController {
 		$workspaceVersionOfRecord = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $this->row['uid']);
 		$this->view->assign('grid', $this->grid);
 		$this->view->assign('row', $workspaceVersionOfRecord);
-		$this->view->assign('colPosFluxContent', 18181);
+		$this->view->assign('colPosFluxContent', ContentService::COLPOS_FLUXCONTENT);
 		$paths = $this->configurationService->getViewConfigurationForExtensionName('flux');
 		$templateRootPath = TRUE === isset($paths['templateRootPath']) ? $paths['templateRootPath'] : NULL;
 		$templatePathAndFilename = ResolveUtility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath);
