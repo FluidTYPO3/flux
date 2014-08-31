@@ -205,6 +205,7 @@ class ContentService implements SingletonInterface {
 			$row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
 			$row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
 			$row['colPos'] = $relativeToRecord['colPos'];
+			$row['sorting'] = $tceMain->resorting('tt_content', $relativeToRecord['pid'], 'sorting', abs($relativeTo));
 		}
 		if (0 < $row['tx_flux_parent']) {
 			$row['colPos'] = self::COLPOS_FLUXCONTENT;
