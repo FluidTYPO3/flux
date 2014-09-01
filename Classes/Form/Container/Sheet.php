@@ -36,13 +36,57 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 class Sheet extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface {
 
 	/**
+	 * @var string
+	 */
+	protected $description;
+
+	/**
+	 * @var string
+	 */
+	protected $shortDescription;
+
+	/**
+	 * @param string $shortDescription
+	 * @return self
+	 */
+	public function setShortDescription($shortDescription) {
+		$this->shortDescription = $shortDescription;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getShortDescription() {
+		return $this->resolveLocalLanguageValueOfLabel($this->shortDescription, $this->getPath() . '.shortDescription');
+	}
+
+	/**
+	 * @param string $description
+	 * @return self
+	 */
+	public function setDescription($description) {
+		$this->description = $description;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDescription() {
+		return $this->resolveLocalLanguageValueOfLabel($this->description, $this->getPath() . '.description');
+	}
+
+	/**
 	 * @return array
 	 */
 	public function build() {
 		$sheetStructArray = array(
 			'ROOT' => array(
 				'TCEforms' => array(
-					'sheetTitle' => $this->getLabel()
+					'sheetTitle' => $this->getLabel(),
+					'sheetDescription' => $this->getDescription(),
+					'sheetShortDescr' => $this->getShortDescription()
 				),
 				'type' => 'array',
 				'el' => $this->buildChildren()

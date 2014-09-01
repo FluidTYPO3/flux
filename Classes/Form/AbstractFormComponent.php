@@ -288,7 +288,15 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return string
 	 */
 	public function getLabel() {
-		$label = $this->label;
+		return $this->resolveLocalLanguageValueOfLabel($this->label);
+	}
+
+	/**
+	 * @param string $label
+	 * @param string $path
+	 * @return NULL|string
+	 */
+	protected function resolveLocalLanguageValueOfLabel($label, $path = NULL) {
 		if (TRUE === $this->getDisableLocalLanguageLabels()) {
 			return $label;
 		}
@@ -315,10 +323,12 @@ abstract class AbstractFormComponent implements FormInterface {
 		if ((TRUE === empty($extensionKey) || FALSE === ExtensionManagementUtility::isLoaded($extensionKey))) {
 			return $name;
 		}
-		if (FALSE === $this instanceof Form) {
-			$path = $this->getPath();
-		} else {
-			$path = '';
+		if (TRUE === empty($path)) {
+			if (FALSE === $this instanceof Form) {
+				$path = $this->getPath();
+			} else {
+				$path = '';
+			}
 		}
 		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 		$relativeFilePath = ltrim($relativeFilePath, '/');
