@@ -167,10 +167,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$compactExtensionToggleOn = 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'];
 		$compactConfigurationToggleOn = 0 < $copy->getCompact();
 		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets)) {
-			$dataStructArray['ROOT'] = array(
-				'type' => 'array',
-				'el' => $copy->last()->build(),
-			);
+			$dataStructArray = $copy->last()->build();
+			$dataStructArray['ROOT'] = $dataStructArray['ROOT'];
+			unset($dataStructArray['ROOT']['TCEforms']);
 		} elseif (0 < count($sheets)) {
 			$dataStructArray['sheets'] = $copy->buildChildren();
 		} else {
