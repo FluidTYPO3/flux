@@ -112,11 +112,14 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 			$dblist->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
 		}
 
+		// The following solution is half lifted from \TYPO3\CMS\Backend\View\PageLayoutView::getContentRecordsPerColumn
+		// and relies on TYPO3 core query parts for enable-clause-, language- and versioning placeholders. All that needs
+		// to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will not remove
+		// records based on them having remove placeholders.
 		$condition = "AND tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' ";
 		$condition .= "AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' ";
 		$queryParts = $dblist->makeQueryArray('tt_content', $row['pid'], $condition);
 		$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
-		// Traverse any selected elements and render their display code:
 		$rows = $dblist->getResult($result);
 
 		foreach ($rows as $index => &$record) {
