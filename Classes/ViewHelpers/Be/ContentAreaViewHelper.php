@@ -30,6 +30,7 @@ use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Versioning\VersionState;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -90,6 +91,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$dblist->tt_contentConfig['showInfo'] = 1;
 		$dblist->tt_contentConfig['single'] = 0;
 		$dblist->CType_labels = array();
+		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";
 		foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
 			$dblist->CType_labels[$val[1]] = $GLOBALS['LANG']->sL($val[0]);
 		}
@@ -99,12 +101,9 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		}
 
 		$modSettings = $GLOBALS['SOBE']->MOD_SETTINGS;
-		$modMenu = $GLOBALS['SOBE']->MOD_MENU;
 
 		// Initializes page languages and icons so they are available in PageLayoutView if languageMode is set.
 		$dblist->initializeLanguages();
-		// Fetch current page localizations from MOD_MENU['language'] to use in condition.
-		$modMenuLanguages = is_array($modMenu['language']) ? implode(',', array_keys($modMenu['language'])) : '0';
 
 		if (2 === intval($modSettings['function'])) {
 			$dblist->tt_contentConfig['single'] = 0;
@@ -113,19 +112,25 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 			$dblist->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
 		}
 
-		$showHidden = $modSettings['tt_content_showHidden'] ? '' : BackendUtility::BEenableFields('tt_content');
-		$condition = "tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' AND deleted = 0 AND sys_language_uid IN (-1," . $modMenuLanguages . ')';
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tt_content', $condition . $showHidden, 'uid', 'sorting ASC');
-		$records = $dblist->getResult($res);
+		$condition = "AND tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' ";
+		$condition .= "AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' ";
+		$queryParts = $dblist->makeQueryArray('tt_content', $row['pid'], $condition);
+		$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
+		// Traverse any selected elements and render their display code:
+		$rows = $dblist->getResult($result);
 
-		foreach ($records as &$record) {
-			$record['isDisabled'] = $dblist->isDisabled('tt_content', $record);
+		foreach ($rows as $index => &$record) {
+			if (TRUE === VersionState::cast($record['t3ver_state'])->equals(VersionState::DELETE_PLACEHOLDER)) {
+				unset($rows[$index]);
+			} else {
+				$record['isDisabled'] = $dblist->isDisabled('tt_content', $record);
+			}
 		}
 
 		// EXT:gridelements support
 		$fluxColumnId = 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX';
 
-		$this->templateVariableContainer->add('records', $records);
+		$this->templateVariableContainer->add('records', $rows);
 		$this->templateVariableContainer->add('dblist', $dblist);
 		$this->templateVariableContainer->add('fluxColumnId', $fluxColumnId);
 		$content = $this->renderChildren();
