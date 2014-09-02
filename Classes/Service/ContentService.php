@@ -70,7 +70,7 @@ class ContentService implements SingletonInterface {
 		$this->workspacesAwareRecordService = $workspacesAwareRecordService;
 	}
 
-	/*
+	/**
 	 * @param String $id
 	 * @param array $row
 	 * @param array $parameters
