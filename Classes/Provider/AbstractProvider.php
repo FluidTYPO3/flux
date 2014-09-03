@@ -274,13 +274,13 @@ class AbstractProvider implements ProviderInterface {
 		if (NULL !== $this->form) {
 			return $this->form;
 		}
-		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 		$templateSource = $this->getTemplateSource($row);
 		if (NULL === $templateSource) {
 			// Early return: no template file, no source - NULL expected.
 			return NULL;
 		}
 		$section = $this->getConfigurationSectionName($row);
+		$controllerName = 'Flux';
 		$formName = 'form';
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
