@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:php="http://www.php.net/"
 targetNamespace="http://typo3.org/ns/FluidTYPO3/Flux/ViewHelpers">
 <xsd:element name="be.contentArea">
 <xsd:annotation>
@@ -151,7 +152,7 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[### Content: Get ViewHelper
 
- Gets all child content of a record based on area.]]>
+Gets all child content of a record based on area.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -229,7 +230,7 @@ php:type="boolean">
 <xsd:documentation>
 <![CDATA[### Content: Render ViewHelper
 
- Renders all child content of a record based on area.]]>
+Renders all child content of a record based on area.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -307,7 +308,7 @@ php:type="boolean">
 <xsd:documentation>
 <![CDATA[### Content: Render ViewHelper
 
- Renders all child content of a record based on area.]]>
+Renders all child content of a record based on area.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -462,11 +463,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -578,11 +579,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -694,11 +695,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -733,62 +734,62 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[ControllerActions ViewHelper
 
- Renders a FlexForm select field with options fetched from
- requested extensionName/pluginName and other settings.
+Renders a FlexForm select field with options fetched from
+requested extensionName/pluginName and other settings.
 
- There are three basic ways of adding selection options:
+There are three basic ways of adding selection options:
 
- - You can use the "extensionName" and "pluginName" to render all
-   possible actions from an Extbase plugin that you've defined. It
-   doesn't have to be your own plugin - if for example you are
-   rendering actions from EXT:news or another through your own plugin.
- - Or you can use the "actions" argument which is an array:
-   {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
- - And you can extend any of the two methods above with the "subActions"
-   parameter, which allows you to extend the allowed actions whenever
-   the specified combination of ControllerName + actionName is encountered.
-   Example:             actions="{ControllerName: 'action1,action2'}"
+- You can use the "extensionName" and "pluginName" to render all
+  possible actions from an Extbase plugin that you've defined. It
+  doesn't have to be your own plugin - if for example you are
+  rendering actions from EXT:news or another through your own plugin.
+- Or you can use the "actions" argument which is an array:
+  {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
+- And you can extend any of the two methods above with the "subActions"
+  parameter, which allows you to extend the allowed actions whenever
+  the specified combination of ControllerName + actionName is encountered.
+  Example:              actions="{ControllerName: 'action1,action2'}"
                         subActions="{ControllerName: {action1: 'action3,action4'}}"
-   Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
+  Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
                                         ControllerName->action2 with LLL values based on "action2"
-   By default Flux will create one option per action when reading
-   Controller actions - using "subActions" it becomes possible to add
-   additional actions to the list of allowed actions that the option
-   will contain, as opposed to having only one action per option.
+  By default Flux will create one option per action when reading
+  Controller actions - using "subActions" it becomes possible to add
+  additional actions to the list of allowed actions that the option
+  will contain, as opposed to having only one action per option.
 
- And there are a few ways to limit the options that are displayed:
+And there are a few ways to limit the options that are displayed:
 
- - You can use "excludeActions" to specify an array in the same
-   syntax used by the "actions" argument, these are then excluded.
- - You can specifiy the "controllerName" argument in which case
-   only actions from that Controller are displayed.
+- You can use "excludeActions" to specify an array in the same
+  syntax used by the "actions" argument, these are then excluded.
+- You can specifiy the "controllerName" argument in which case
+  only actions from that Controller are displayed.
 
- And there are a couple of ways to define/resolve labels for actions:
+And there are a couple of ways to define/resolve labels for actions:
 
- - You can add an LLL label in your locallang_db file:
-   lowercasepluginname.lowercasecontrollername.actionfunctionname
-   example index: myext.articlecontroller.show
- - You can do nothing, in which case the very first line of
-   the PHP doc-comment of each action method is used. This value can
-   even be an LLL:file reference (in case you don't want to use the
-   pattern above - but beware this is somewhat expensive processing)
- - Or you can do nothing at all, not even add a doc comment, in which
-   case the Controller->action syntax is used instead.
+- You can add an LLL label in your locallang_db file:
+  lowercasepluginname.lowercasecontrollername.actionfunctionname
+  example index: myext.articlecontroller.show
+- You can do nothing, in which case the very first line of
+  the PHP doc-comment of each action method is used. This value can
+  even be an LLL:file reference (in case you don't want to use the
+  pattern above - but beware this is somewhat expensive processing)
+- Or you can do nothing at all, not even add a doc comment, in which
+  case the Controller->action syntax is used instead.
 
- Marking actions that have required arguments (which cause errors if
- rendered on a page that is accessible through a traditional menu) is
- possible but is deactivated for LLL labels; if you use LLL labels
- and your action requires an argument, be user friendly and note so
- in the LLL label or docs as applies.
+Marking actions that have required arguments (which cause errors if
+rendered on a page that is accessible through a traditional menu) is
+possible but is deactivated for LLL labels; if you use LLL labels
+and your action requires an argument, be user friendly and note so
+in the LLL label or docs as applies.
 
- Lastly, you can set a custom name for the field in which case the
- value does not trigger the Extbase SwitchableControllerActions feature
- but instead works as any other Flux FlexForm field would.
+Lastly, you can set a custom name for the field in which case the
+value does not trigger the Extbase SwitchableControllerActions feature
+but instead works as any other Flux FlexForm field would.
 
- To use the field just place it in your Flux form (but in almost all
- cases leave out the "name" argument which is required on all other
- field types at the time of writing this). Where the field is placed
- is not important; the order and the sheet location don't matter.]]>
+To use the field just place it in your Flux form (but in almost all
+cases leave out the "name" argument which is required on all other
+field types at the time of writing this). Where the field is placed
+is not important; the order and the sheet location don't matter.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -867,338 +868,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="inheritEmpty"
-default="true" php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="clear" default="false"
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
 php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:array" name="variables"
-default="array ( )" php:type="array">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="validate" default="'trim'"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[FlexForm-type validation configuration for this input]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:integer" name="size" default="1"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Size of the selector box]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="multiple" default="false"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, allows multiple selections]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:integer" name="minItems" default="0"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Minimum required number of items to be selected]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:integer" name="maxItems" default="1"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Maxium allowed number of items to be selected]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="itemListStyle"
-default="NULL" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Overrides the default list style when maxItems > 1]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="selectedListStyle"
-default="NULL" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Overrides the default selected list style when maxItems > 1 and renderMode is default]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="renderMode"
-default="'default'" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Alternative rendering mode - default is an HTML select field but you can also use fx "checkbox" - see TCA select field "renderMode" attribute]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:mixed" name="items" default="NULL"
-php:type="mixed">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Optional, full list of items to display - note: if used, this overrides any automatic option filling!]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="extensionName"
-default="NULL" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="pluginName" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="controllerName"
-default="NULL" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:array" name="actions" default="array ( )"
-php:type="array">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:array" name="excludeActions"
-default="array ( )" php:type="array">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Array of "ControllerName" => "csv,of,actions" which must be excluded]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="prefixOnRequiredArguments"
-default="'*'" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[A short string denoting that the method takes arguments, ex * (which should then be explained in the documentation for your extension about how to setup your plugins]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="disableLocalLanguageLabels"
-default="false" php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, disables LLL label usage and just uses the class comment or Controller->action syntax]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string"
-name="localLanguageFileRelativePath"
-default="'/Resources/Private/Language/locallang_db.xml'"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Relative (from extension $extensionName) path to locallang file containing the action method labels]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:array" name="subActions"
-default="array ( )" php:type="array">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Array of sub actions {ControllerName: {list: 'update,delete'}, OtherController: {new: 'create'}} which are also allowed but not presented as options when the mapped action is selected (in example: if ControllerName->list is selected, ControllerName->update and ControllerName->delete are allowed - but cannot be selected).]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="separator" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Separator string (glue) for Controller->action values, defaults to "->". Empty values result in default being used.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-</xsd:complexType>
-</xsd:element>
-<xsd:element name="field.controllerActions">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[ControllerActions ViewHelper
-
- Renders a FlexForm select field with options fetched from
- requested extensionName/pluginName and other settings.
-
- There are three basic ways of adding selection options:
-
- - You can use the "extensionName" and "pluginName" to render all
-   possible actions from an Extbase plugin that you've defined. It
-   doesn't have to be your own plugin - if for example you are
-   rendering actions from EXT:news or another through your own plugin.
- - Or you can use the "actions" argument which is an array:
-   {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
- - And you can extend any of the two methods above with the "subActions"
-   parameter, which allows you to extend the allowed actions whenever
-   the specified combination of ControllerName + actionName is encountered.
-   Example:             actions="{ControllerName: 'action1,action2'}"
-                        subActions="{ControllerName: {action1: 'action3,action4'}}"
-   Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
-                                        ControllerName->action2 with LLL values based on "action2"
-   By default Flux will create one option per action when reading
-   Controller actions - using "subActions" it becomes possible to add
-   additional actions to the list of allowed actions that the option
-   will contain, as opposed to having only one action per option.
-
- And there are a few ways to limit the options that are displayed:
-
- - You can use "excludeActions" to specify an array in the same
-   syntax used by the "actions" argument, these are then excluded.
- - You can specifiy the "controllerName" argument in which case
-   only actions from that Controller are displayed.
-
- And there are a couple of ways to define/resolve labels for actions:
-
- - You can add an LLL label in your locallang_db file:
-   lowercasepluginname.lowercasecontrollername.actionfunctionname
-   example index: myext.articlecontroller.show
- - You can do nothing, in which case the very first line of
-   the PHP doc-comment of each action method is used. This value can
-   even be an LLL:file reference (in case you don't want to use the
-   pattern above - but beware this is somewhat expensive processing)
- - Or you can do nothing at all, not even add a doc comment, in which
-   case the Controller->action syntax is used instead.
-
- Marking actions that have required arguments (which cause errors if
- rendered on a page that is accessible through a traditional menu) is
- possible but is deactivated for LLL labels; if you use LLL labels
- and your action requires an argument, be user friendly and note so
- in the LLL label or docs as applies.
-
- Lastly, you can set a custom name for the field in which case the
- value does not trigger the Extbase SwitchableControllerActions feature
- but instead works as any other Flux FlexForm field would.
-
- To use the field just place it in your Flux form (but in almost all
- cases leave out the "name" argument which is required on all other
- field types at the time of writing this). Where the field is placed
- is not important; the order and the sheet location don't matter.]]>
-</xsd:documentation>
-</xsd:annotation>
-<xsd:complexType mixed="true">
-<xsd:sequence>
-<xsd:any minOccurs="0" maxOccurs="1" />
-</xsd:sequence>
-<xsd:attribute type="xsd:string" name="name"
-default="'switchableControllerActions'" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Name of the field]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="label" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="default" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Default value for this attribute]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="required" default="false"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, this attribute must be filled when editing the FCE]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="exclude" default="false"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="transform" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Tx_MyExt_Domain_Model_Object or ObjectStorage with type hint. Also supported are FED Resource classes.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="enabled" default="true"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If FALSE, disables the field in the FlexForm]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="requestUpdate"
-default="false" php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, the form is force-saved and reloaded when field value changes]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="displayCond" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Optional "Display Condition" (TCA style) for this particular field]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -1387,62 +1061,62 @@ php:type="string">
 <xsd:documentation>
 <![CDATA[ControllerActions ViewHelper
 
- Renders a FlexForm select field with options fetched from
- requested extensionName/pluginName and other settings.
+Renders a FlexForm select field with options fetched from
+requested extensionName/pluginName and other settings.
 
- There are three basic ways of adding selection options:
+There are three basic ways of adding selection options:
 
- - You can use the "extensionName" and "pluginName" to render all
-   possible actions from an Extbase plugin that you've defined. It
-   doesn't have to be your own plugin - if for example you are
-   rendering actions from EXT:news or another through your own plugin.
- - Or you can use the "actions" argument which is an array:
-   {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
- - And you can extend any of the two methods above with the "subActions"
-   parameter, which allows you to extend the allowed actions whenever
-   the specified combination of ControllerName + actionName is encountered.
-   Example:             actions="{ControllerName: 'action1,action2'}"
+- You can use the "extensionName" and "pluginName" to render all
+  possible actions from an Extbase plugin that you've defined. It
+  doesn't have to be your own plugin - if for example you are
+  rendering actions from EXT:news or another through your own plugin.
+- Or you can use the "actions" argument which is an array:
+  {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
+- And you can extend any of the two methods above with the "subActions"
+  parameter, which allows you to extend the allowed actions whenever
+  the specified combination of ControllerName + actionName is encountered.
+  Example:              actions="{ControllerName: 'action1,action2'}"
                         subActions="{ControllerName: {action1: 'action3,action4'}}"
-   Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
+  Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
                                         ControllerName->action2 with LLL values based on "action2"
-   By default Flux will create one option per action when reading
-   Controller actions - using "subActions" it becomes possible to add
-   additional actions to the list of allowed actions that the option
-   will contain, as opposed to having only one action per option.
+  By default Flux will create one option per action when reading
+  Controller actions - using "subActions" it becomes possible to add
+  additional actions to the list of allowed actions that the option
+  will contain, as opposed to having only one action per option.
 
- And there are a few ways to limit the options that are displayed:
+And there are a few ways to limit the options that are displayed:
 
- - You can use "excludeActions" to specify an array in the same
-   syntax used by the "actions" argument, these are then excluded.
- - You can specifiy the "controllerName" argument in which case
-   only actions from that Controller are displayed.
+- You can use "excludeActions" to specify an array in the same
+  syntax used by the "actions" argument, these are then excluded.
+- You can specifiy the "controllerName" argument in which case
+  only actions from that Controller are displayed.
 
- And there are a couple of ways to define/resolve labels for actions:
+And there are a couple of ways to define/resolve labels for actions:
 
- - You can add an LLL label in your locallang_db file:
-   lowercasepluginname.lowercasecontrollername.actionfunctionname
-   example index: myext.articlecontroller.show
- - You can do nothing, in which case the very first line of
-   the PHP doc-comment of each action method is used. This value can
-   even be an LLL:file reference (in case you don't want to use the
-   pattern above - but beware this is somewhat expensive processing)
- - Or you can do nothing at all, not even add a doc comment, in which
-   case the Controller->action syntax is used instead.
+- You can add an LLL label in your locallang_db file:
+  lowercasepluginname.lowercasecontrollername.actionfunctionname
+  example index: myext.articlecontroller.show
+- You can do nothing, in which case the very first line of
+  the PHP doc-comment of each action method is used. This value can
+  even be an LLL:file reference (in case you don't want to use the
+  pattern above - but beware this is somewhat expensive processing)
+- Or you can do nothing at all, not even add a doc comment, in which
+  case the Controller->action syntax is used instead.
 
- Marking actions that have required arguments (which cause errors if
- rendered on a page that is accessible through a traditional menu) is
- possible but is deactivated for LLL labels; if you use LLL labels
- and your action requires an argument, be user friendly and note so
- in the LLL label or docs as applies.
+Marking actions that have required arguments (which cause errors if
+rendered on a page that is accessible through a traditional menu) is
+possible but is deactivated for LLL labels; if you use LLL labels
+and your action requires an argument, be user friendly and note so
+in the LLL label or docs as applies.
 
- Lastly, you can set a custom name for the field in which case the
- value does not trigger the Extbase SwitchableControllerActions feature
- but instead works as any other Flux FlexForm field would.
+Lastly, you can set a custom name for the field in which case the
+value does not trigger the Extbase SwitchableControllerActions feature
+but instead works as any other Flux FlexForm field would.
 
- To use the field just place it in your Flux form (but in almost all
- cases leave out the "name" argument which is required on all other
- field types at the time of writing this). Where the field is placed
- is not important; the order and the sheet location don't matter.]]>
+To use the field just place it in your Flux form (but in almost all
+cases leave out the "name" argument which is required on all other
+field types at the time of writing this). Where the field is placed
+is not important; the order and the sheet location don't matter.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -1521,11 +1195,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -1714,62 +1388,62 @@ php:type="string">
 <xsd:documentation>
 <![CDATA[ControllerActions ViewHelper
 
- Renders a FlexForm select field with options fetched from
- requested extensionName/pluginName and other settings.
+Renders a FlexForm select field with options fetched from
+requested extensionName/pluginName and other settings.
 
- There are three basic ways of adding selection options:
+There are three basic ways of adding selection options:
 
- - You can use the "extensionName" and "pluginName" to render all
-   possible actions from an Extbase plugin that you've defined. It
-   doesn't have to be your own plugin - if for example you are
-   rendering actions from EXT:news or another through your own plugin.
- - Or you can use the "actions" argument which is an array:
-   {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
- - And you can extend any of the two methods above with the "subActions"
-   parameter, which allows you to extend the allowed actions whenever
-   the specified combination of ControllerName + actionName is encountered.
-   Example:             actions="{ControllerName: 'action1,action2'}"
+- You can use the "extensionName" and "pluginName" to render all
+  possible actions from an Extbase plugin that you've defined. It
+  doesn't have to be your own plugin - if for example you are
+  rendering actions from EXT:news or another through your own plugin.
+- Or you can use the "actions" argument which is an array:
+  {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
+- And you can extend any of the two methods above with the "subActions"
+  parameter, which allows you to extend the allowed actions whenever
+  the specified combination of ControllerName + actionName is encountered.
+  Example:              actions="{ControllerName: 'action1,action2'}"
                         subActions="{ControllerName: {action1: 'action3,action4'}}"
-   Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
+  Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
                                         ControllerName->action2 with LLL values based on "action2"
-   By default Flux will create one option per action when reading
-   Controller actions - using "subActions" it becomes possible to add
-   additional actions to the list of allowed actions that the option
-   will contain, as opposed to having only one action per option.
+  By default Flux will create one option per action when reading
+  Controller actions - using "subActions" it becomes possible to add
+  additional actions to the list of allowed actions that the option
+  will contain, as opposed to having only one action per option.
 
- And there are a few ways to limit the options that are displayed:
+And there are a few ways to limit the options that are displayed:
 
- - You can use "excludeActions" to specify an array in the same
-   syntax used by the "actions" argument, these are then excluded.
- - You can specifiy the "controllerName" argument in which case
-   only actions from that Controller are displayed.
+- You can use "excludeActions" to specify an array in the same
+  syntax used by the "actions" argument, these are then excluded.
+- You can specifiy the "controllerName" argument in which case
+  only actions from that Controller are displayed.
 
- And there are a couple of ways to define/resolve labels for actions:
+And there are a couple of ways to define/resolve labels for actions:
 
- - You can add an LLL label in your locallang_db file:
-   lowercasepluginname.lowercasecontrollername.actionfunctionname
-   example index: myext.articlecontroller.show
- - You can do nothing, in which case the very first line of
-   the PHP doc-comment of each action method is used. This value can
-   even be an LLL:file reference (in case you don't want to use the
-   pattern above - but beware this is somewhat expensive processing)
- - Or you can do nothing at all, not even add a doc comment, in which
-   case the Controller->action syntax is used instead.
+- You can add an LLL label in your locallang_db file:
+  lowercasepluginname.lowercasecontrollername.actionfunctionname
+  example index: myext.articlecontroller.show
+- You can do nothing, in which case the very first line of
+  the PHP doc-comment of each action method is used. This value can
+  even be an LLL:file reference (in case you don't want to use the
+  pattern above - but beware this is somewhat expensive processing)
+- Or you can do nothing at all, not even add a doc comment, in which
+  case the Controller->action syntax is used instead.
 
- Marking actions that have required arguments (which cause errors if
- rendered on a page that is accessible through a traditional menu) is
- possible but is deactivated for LLL labels; if you use LLL labels
- and your action requires an argument, be user friendly and note so
- in the LLL label or docs as applies.
+Marking actions that have required arguments (which cause errors if
+rendered on a page that is accessible through a traditional menu) is
+possible but is deactivated for LLL labels; if you use LLL labels
+and your action requires an argument, be user friendly and note so
+in the LLL label or docs as applies.
 
- Lastly, you can set a custom name for the field in which case the
- value does not trigger the Extbase SwitchableControllerActions feature
- but instead works as any other Flux FlexForm field would.
+Lastly, you can set a custom name for the field in which case the
+value does not trigger the Extbase SwitchableControllerActions feature
+but instead works as any other Flux FlexForm field would.
 
- To use the field just place it in your Flux form (but in almost all
- cases leave out the "name" argument which is required on all other
- field types at the time of writing this). Where the field is placed
- is not important; the order and the sheet location don't matter.]]>
+To use the field just place it in your Flux form (but in almost all
+cases leave out the "name" argument which is required on all other
+field types at the time of writing this). Where the field is placed
+is not important; the order and the sheet location don't matter.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -1848,11 +1522,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -2041,62 +1715,62 @@ php:type="string">
 <xsd:documentation>
 <![CDATA[ControllerActions ViewHelper
 
- Renders a FlexForm select field with options fetched from
- requested extensionName/pluginName and other settings.
+Renders a FlexForm select field with options fetched from
+requested extensionName/pluginName and other settings.
 
- There are three basic ways of adding selection options:
+There are three basic ways of adding selection options:
 
- - You can use the "extensionName" and "pluginName" to render all
-   possible actions from an Extbase plugin that you've defined. It
-   doesn't have to be your own plugin - if for example you are
-   rendering actions from EXT:news or another through your own plugin.
- - Or you can use the "actions" argument which is an array:
-   {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
- - And you can extend any of the two methods above with the "subActions"
-   parameter, which allows you to extend the allowed actions whenever
-   the specified combination of ControllerName + actionName is encountered.
-   Example:             actions="{ControllerName: 'action1,action2'}"
+- You can use the "extensionName" and "pluginName" to render all
+  possible actions from an Extbase plugin that you've defined. It
+  doesn't have to be your own plugin - if for example you are
+  rendering actions from EXT:news or another through your own plugin.
+- Or you can use the "actions" argument which is an array:
+  {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
+- And you can extend any of the two methods above with the "subActions"
+  parameter, which allows you to extend the allowed actions whenever
+  the specified combination of ControllerName + actionName is encountered.
+  Example:              actions="{ControllerName: 'action1,action2'}"
                         subActions="{ControllerName: {action1: 'action3,action4'}}"
-   Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
+  Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
                                         ControllerName->action2 with LLL values based on "action2"
-   By default Flux will create one option per action when reading
-   Controller actions - using "subActions" it becomes possible to add
-   additional actions to the list of allowed actions that the option
-   will contain, as opposed to having only one action per option.
+  By default Flux will create one option per action when reading
+  Controller actions - using "subActions" it becomes possible to add
+  additional actions to the list of allowed actions that the option
+  will contain, as opposed to having only one action per option.
 
- And there are a few ways to limit the options that are displayed:
+And there are a few ways to limit the options that are displayed:
 
- - You can use "excludeActions" to specify an array in the same
-   syntax used by the "actions" argument, these are then excluded.
- - You can specifiy the "controllerName" argument in which case
-   only actions from that Controller are displayed.
+- You can use "excludeActions" to specify an array in the same
+  syntax used by the "actions" argument, these are then excluded.
+- You can specifiy the "controllerName" argument in which case
+  only actions from that Controller are displayed.
 
- And there are a couple of ways to define/resolve labels for actions:
+And there are a couple of ways to define/resolve labels for actions:
 
- - You can add an LLL label in your locallang_db file:
-   lowercasepluginname.lowercasecontrollername.actionfunctionname
-   example index: myext.articlecontroller.show
- - You can do nothing, in which case the very first line of
-   the PHP doc-comment of each action method is used. This value can
-   even be an LLL:file reference (in case you don't want to use the
-   pattern above - but beware this is somewhat expensive processing)
- - Or you can do nothing at all, not even add a doc comment, in which
-   case the Controller->action syntax is used instead.
+- You can add an LLL label in your locallang_db file:
+  lowercasepluginname.lowercasecontrollername.actionfunctionname
+  example index: myext.articlecontroller.show
+- You can do nothing, in which case the very first line of
+  the PHP doc-comment of each action method is used. This value can
+  even be an LLL:file reference (in case you don't want to use the
+  pattern above - but beware this is somewhat expensive processing)
+- Or you can do nothing at all, not even add a doc comment, in which
+  case the Controller->action syntax is used instead.
 
- Marking actions that have required arguments (which cause errors if
- rendered on a page that is accessible through a traditional menu) is
- possible but is deactivated for LLL labels; if you use LLL labels
- and your action requires an argument, be user friendly and note so
- in the LLL label or docs as applies.
+Marking actions that have required arguments (which cause errors if
+rendered on a page that is accessible through a traditional menu) is
+possible but is deactivated for LLL labels; if you use LLL labels
+and your action requires an argument, be user friendly and note so
+in the LLL label or docs as applies.
 
- Lastly, you can set a custom name for the field in which case the
- value does not trigger the Extbase SwitchableControllerActions feature
- but instead works as any other Flux FlexForm field would.
+Lastly, you can set a custom name for the field in which case the
+value does not trigger the Extbase SwitchableControllerActions feature
+but instead works as any other Flux FlexForm field would.
 
- To use the field just place it in your Flux form (but in almost all
- cases leave out the "name" argument which is required on all other
- field types at the time of writing this). Where the field is placed
- is not important; the order and the sheet location don't matter.]]>
+To use the field just place it in your Flux form (but in almost all
+cases leave out the "name" argument which is required on all other
+field types at the time of writing this). Where the field is placed
+is not important; the order and the sheet location don't matter.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -2175,11 +1849,338 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="inheritEmpty"
+default="true" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="clear" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:array" name="variables"
+default="array ( )" php:type="array">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="validate" default="'trim'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlexForm-type validation configuration for this input]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="size" default="1"
 php:type="integer">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[Size of the selector box]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="multiple" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, allows multiple selections]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="minItems" default="0"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Minimum required number of items to be selected]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="maxItems" default="1"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Maxium allowed number of items to be selected]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="itemListStyle"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Overrides the default list style when maxItems > 1]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="selectedListStyle"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Overrides the default selected list style when maxItems > 1 and renderMode is default]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="renderMode"
+default="'default'" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Alternative rendering mode - default is an HTML select field but you can also use fx "checkbox" - see TCA select field "renderMode" attribute]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:mixed" name="items" default="NULL"
+php:type="mixed">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Optional, full list of items to display - note: if used, this overrides any automatic option filling!]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="extensionName"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="pluginName" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="controllerName"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:array" name="actions" default="array ( )"
+php:type="array">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:array" name="excludeActions"
+default="array ( )" php:type="array">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Array of "ControllerName" => "csv,of,actions" which must be excluded]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="prefixOnRequiredArguments"
+default="'*'" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[A short string denoting that the method takes arguments, ex * (which should then be explained in the documentation for your extension about how to setup your plugins]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="disableLocalLanguageLabels"
+default="false" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, disables LLL label usage and just uses the class comment or Controller->action syntax]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string"
+name="localLanguageFileRelativePath"
+default="'/Resources/Private/Language/locallang_db.xml'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Relative (from extension $extensionName) path to locallang file containing the action method labels]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:array" name="subActions"
+default="array ( )" php:type="array">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Array of sub actions {ControllerName: {list: 'update,delete'}, OtherController: {new: 'create'}} which are also allowed but not presented as options when the mapped action is selected (in example: if ControllerName->list is selected, ControllerName->update and ControllerName->delete are allowed - but cannot be selected).]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="separator" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Separator string (glue) for Controller->action values, defaults to "->". Empty values result in default being used.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="field.controllerActions">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[ControllerActions ViewHelper
+
+Renders a FlexForm select field with options fetched from
+requested extensionName/pluginName and other settings.
+
+There are three basic ways of adding selection options:
+
+- You can use the "extensionName" and "pluginName" to render all
+  possible actions from an Extbase plugin that you've defined. It
+  doesn't have to be your own plugin - if for example you are
+  rendering actions from EXT:news or another through your own plugin.
+- Or you can use the "actions" argument which is an array:
+  {ControllerName: 'action1,action2,action3', OtherControllerName: 'action1'}
+- And you can extend any of the two methods above with the "subActions"
+  parameter, which allows you to extend the allowed actions whenever
+  the specified combination of ControllerName + actionName is encountered.
+  Example:              actions="{ControllerName: 'action1,action2'}"
+                        subActions="{ControllerName: {action1: 'action3,action4'}}"
+  Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
+                                        ControllerName->action2 with LLL values based on "action2"
+  By default Flux will create one option per action when reading
+  Controller actions - using "subActions" it becomes possible to add
+  additional actions to the list of allowed actions that the option
+  will contain, as opposed to having only one action per option.
+
+And there are a few ways to limit the options that are displayed:
+
+- You can use "excludeActions" to specify an array in the same
+  syntax used by the "actions" argument, these are then excluded.
+- You can specifiy the "controllerName" argument in which case
+  only actions from that Controller are displayed.
+
+And there are a couple of ways to define/resolve labels for actions:
+
+- You can add an LLL label in your locallang_db file:
+  lowercasepluginname.lowercasecontrollername.actionfunctionname
+  example index: myext.articlecontroller.show
+- You can do nothing, in which case the very first line of
+  the PHP doc-comment of each action method is used. This value can
+  even be an LLL:file reference (in case you don't want to use the
+  pattern above - but beware this is somewhat expensive processing)
+- Or you can do nothing at all, not even add a doc comment, in which
+  case the Controller->action syntax is used instead.
+
+Marking actions that have required arguments (which cause errors if
+rendered on a page that is accessible through a traditional menu) is
+possible but is deactivated for LLL labels; if you use LLL labels
+and your action requires an argument, be user friendly and note so
+in the LLL label or docs as applies.
+
+Lastly, you can set a custom name for the field in which case the
+value does not trigger the Extbase SwitchableControllerActions feature
+but instead works as any other Flux FlexForm field would.
+
+To use the field just place it in your Flux form (but in almost all
+cases leave out the "name" argument which is required on all other
+field types at the time of writing this). Where the field is placed
+is not important; the order and the sheet location don't matter.]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="name"
+default="'switchableControllerActions'" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Name of the field]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="label" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="default" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Default value for this attribute]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="required" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, this attribute must be filled when editing the FCE]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="exclude" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="transform" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Tx_MyExt_Domain_Model_Object or ObjectStorage with type hint. Also supported are FED Resource classes.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="enabled" default="true"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If FALSE, disables the field in the FlexForm]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="requestUpdate"
+default="false" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the form is force-saved and reloaded when field value changes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="displayCond" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Optional "Display Condition" (TCA style) for this particular field]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -2445,11 +2446,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -2578,11 +2579,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -2711,11 +2712,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -2844,11 +2845,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -2977,11 +2978,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -3197,11 +3198,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -3417,11 +3418,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -3637,11 +3638,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -3857,11 +3858,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -4297,11 +4298,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -4737,11 +4738,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -5177,11 +5178,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -5617,11 +5618,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -6057,11 +6058,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -6420,17 +6421,17 @@ default="NULL" php:type="string">
 <xsd:documentation>
 <![CDATA[Repeats rendering of children with a typical for loop: starting at index $from it will loop until the index has reached $to.
 
- To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
+To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
 
- Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
+Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
         {v:content.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}
+                -> v:variable.set(name: 'settings.files')}
 
- And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
+And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
         {v:page.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}]]>
+                -> v:variable.set(name: 'settings.files')}]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -6509,11 +6510,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -6889,17 +6890,17 @@ default="''" php:type="string">
 <xsd:documentation>
 <![CDATA[Repeats rendering of children with a typical for loop: starting at index $from it will loop until the index has reached $to.
 
- To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
+To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
 
- Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
+Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
         {v:content.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}
+                -> v:variable.set(name: 'settings.files')}
 
- And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
+And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
         {v:page.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}]]>
+                -> v:variable.set(name: 'settings.files')}]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -6978,11 +6979,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -7358,17 +7359,17 @@ default="''" php:type="string">
 <xsd:documentation>
 <![CDATA[Repeats rendering of children with a typical for loop: starting at index $from it will loop until the index has reached $to.
 
- To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
+To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
 
- Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
+Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
         {v:content.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}
+                -> v:variable.set(name: 'settings.files')}
 
- And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
+And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
         {v:page.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}]]>
+                -> v:variable.set(name: 'settings.files')}]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -7447,11 +7448,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -7827,17 +7828,17 @@ default="''" php:type="string">
 <xsd:documentation>
 <![CDATA[Repeats rendering of children with a typical for loop: starting at index $from it will loop until the index has reached $to.
 
- To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
+To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
 
- Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
+Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
         {v:content.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}
+                -> v:variable.set(name: 'settings.files')}
 
- And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
+And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
         {v:page.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}]]>
+                -> v:variable.set(name: 'settings.files')}]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -7916,11 +7917,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -8296,17 +8297,17 @@ default="''" php:type="string">
 <xsd:documentation>
 <![CDATA[Repeats rendering of children with a typical for loop: starting at index $from it will loop until the index has reached $to.
 
- To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
+To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
 
- Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
+Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
         {v:content.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}
+                -> v:variable.set(name: 'settings.files')}
 
- And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
+And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
         {v:page.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}]]>
+                -> v:variable.set(name: 'settings.files')}]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -8385,11 +8386,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -8765,17 +8766,17 @@ default="''" php:type="string">
 <xsd:documentation>
 <![CDATA[Repeats rendering of children with a typical for loop: starting at index $from it will loop until the index has reached $to.
 
- To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
+To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
 
- Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
+Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
         {v:content.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}
+                -> v:variable.set(name: 'settings.files')}
 
- And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
+And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
         {v:page.resources.fal(field: 'settings.files')
                 -> v:iterator.first()
-                -> v:var.set(name: 'settings.files')}]]>
+                -> v:variable.set(name: 'settings.files')}]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -8854,11 +8855,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -9311,11 +9312,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -9475,11 +9476,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -9639,11 +9640,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -9726,8 +9727,8 @@ php:type="string">
 <xsd:documentation>
 <![CDATA[None field ViewHelper
 
- Makes a read-only component which supports a default value
- but which cannot be edited.]]>
+Makes a read-only component which supports a default value
+but which cannot be edited.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -9806,11 +9807,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -9845,8 +9846,8 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[None field ViewHelper
 
- Makes a read-only component which supports a default value
- but which cannot be edited.]]>
+Makes a read-only component which supports a default value
+but which cannot be edited.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -9925,11 +9926,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -9964,8 +9965,8 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[None field ViewHelper
 
- Makes a read-only component which supports a default value
- but which cannot be edited.]]>
+Makes a read-only component which supports a default value
+but which cannot be edited.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -10044,11 +10045,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -10160,329 +10161,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="inheritEmpty"
-default="true" php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="clear" default="false"
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
 php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:array" name="variables"
-default="array ( )" php:type="array">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="validate" default="'trim'"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[FlexForm-type validation configuration for this input]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:integer" name="size" default="1"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Size of the selector box]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="multiple" default="false"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, allows multiple selections]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:integer" name="minItems" default="0"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Minimum required number of items to be selected]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:integer" name="maxItems" default="1"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Maxium allowed number of items to be selected]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="itemListStyle"
-default="NULL" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Overrides the default list style when maxItems > 1]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="selectedListStyle"
-default="NULL" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Overrides the default selected list style when maxItems > 1 and renderMode is default]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="renderMode"
-default="'default'" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Alternative rendering mode - default is an HTML select field but you can also use fx "checkbox" - see TCA select field "renderMode" attribute]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="table" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Define foreign table name to turn selector into a record selector for that table]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="condition" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Condition to use when selecting from "foreignTable", supports FlexForm "foregin_table_where" markers]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="mm" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Optional name of MM table to use for record selection]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="foreignField" default="''"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[The foreign_field is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="foreignLabel" default="''"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If set, it overrides the label set in TCA[foreign_table]['ctrl']['label'] for the inline-view.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="foreignSelector"
-default="''" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The foreign_selector points to a field of the foreign_table that is responsible for providing a selector-box  this field on the foreign_table usually has the type "select" and also has a "foreign_table" defined.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="foreignSortby" default="''"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Define a field on the child record (or on the intermediate table) that stores the manual sorting information.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="foreignDefaultSortby"
-default="''" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If a fieldname for foreign_sortby is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="foreignTableField"
-default="''" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with foreign_field, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="foreignUnique" default="''"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Field which must be uniue for all children of a parent record.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="symmetricField" default="''"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="symmetricLabel" default="''"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If set, this overrides the default label of the selected symmetric_field.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="symmetricSortby"
-default="''" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[This works like foreign_sortby, but defines the field on foreign_table where the "other" sort order is stored.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="localizationMode"
-default="''" php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean"
-name="localizeChildrenAtParentLocalization" default="false"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Defines whether children should be localized when the localization of the parent gets created.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean"
-name="disableMovingChildrenWithParent" default="false"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Disables that child records get moved along with their parent records.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="showThumbs" default="true"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, adds thumbnail display when editing in BE]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-</xsd:complexType>
-</xsd:element>
-<xsd:element name="field.relation">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Select-type FlexForm field ViewHelper]]>
-</xsd:documentation>
-</xsd:annotation>
-<xsd:complexType mixed="true">
-<xsd:sequence>
-<xsd:any minOccurs="0" maxOccurs="1" />
-</xsd:sequence>
-<xsd:attribute type="xsd:string" name="name" default="NULL"
-php:type="string" use="required">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Name of the attribute, FlexForm XML-valid tag name string]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="label" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="default" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Default value for this attribute]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="required" default="false"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, this attribute must be filled when editing the FCE]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="exclude" default="false"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="transform" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Tx_MyExt_Domain_Model_Object or ObjectStorage with type hint. Also supported are FED Resource classes.]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="enabled" default="true"
-php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If FALSE, disables the field in the FlexForm]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:boolean" name="requestUpdate"
-default="false" php:type="boolean">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If TRUE, the form is force-saved and reloaded when field value changes]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:string" name="displayCond" default="NULL"
-php:type="string">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[Optional "Display Condition" (TCA style) for this particular field]]>
-</xsd:documentation>
-</xsd:annotation>
-</xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
-<xsd:annotation>
-<xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -10796,11 +10479,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -11114,11 +10797,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -11432,11 +11115,329 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="inheritEmpty"
+default="true" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="clear" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:array" name="variables"
+default="array ( )" php:type="array">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="validate" default="'trim'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlexForm-type validation configuration for this input]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="size" default="1"
 php:type="integer">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[Size of the selector box]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="multiple" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, allows multiple selections]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="minItems" default="0"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Minimum required number of items to be selected]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="maxItems" default="1"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Maxium allowed number of items to be selected]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="itemListStyle"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Overrides the default list style when maxItems > 1]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="selectedListStyle"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Overrides the default selected list style when maxItems > 1 and renderMode is default]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="renderMode"
+default="'default'" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Alternative rendering mode - default is an HTML select field but you can also use fx "checkbox" - see TCA select field "renderMode" attribute]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="table" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Define foreign table name to turn selector into a record selector for that table]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="condition" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Condition to use when selecting from "foreignTable", supports FlexForm "foregin_table_where" markers]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="mm" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Optional name of MM table to use for record selection]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="foreignField" default="''"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[The foreign_field is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="foreignLabel" default="''"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If set, it overrides the label set in TCA[foreign_table]['ctrl']['label'] for the inline-view.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="foreignSelector"
+default="''" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The foreign_selector points to a field of the foreign_table that is responsible for providing a selector-box  this field on the foreign_table usually has the type "select" and also has a "foreign_table" defined.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="foreignSortby" default="''"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Define a field on the child record (or on the intermediate table) that stores the manual sorting information.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="foreignDefaultSortby"
+default="''" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If a fieldname for foreign_sortby is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="foreignTableField"
+default="''" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with foreign_field, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="foreignUnique" default="''"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Field which must be uniue for all children of a parent record.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="symmetricField" default="''"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="symmetricLabel" default="''"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If set, this overrides the default label of the selected symmetric_field.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="symmetricSortby"
+default="''" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[This works like foreign_sortby, but defines the field on foreign_table where the "other" sort order is stored.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="localizationMode"
+default="''" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean"
+name="localizeChildrenAtParentLocalization" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Defines whether children should be localized when the localization of the parent gets created.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean"
+name="disableMovingChildrenWithParent" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Disables that child records get moved along with their parent records.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="showThumbs" default="true"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, adds thumbnail display when editing in BE]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="field.relation">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Select-type FlexForm field ViewHelper]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="name" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Name of the attribute, FlexForm XML-valid tag name string]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="label" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="default" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Default value for this attribute]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="required" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, this attribute must be filled when editing the FCE]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="exclude" default="false"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="transform" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Tx_MyExt_Domain_Model_Object or ObjectStorage with type hint. Also supported are FED Resource classes.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="enabled" default="true"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If FALSE, disables the field in the FlexForm]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="requestUpdate"
+default="false" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the form is force-saved and reloaded when field value changes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="displayCond" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Optional "Display Condition" (TCA style) for this particular field]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -11750,11 +11751,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -11938,11 +11939,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -12126,11 +12127,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -12314,11 +12315,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -12502,11 +12503,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -12658,11 +12659,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -12814,11 +12815,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -12970,11 +12971,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -13212,11 +13213,35 @@ php:type="string" use="required">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="allowRecursiveMode"
+default="false" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the selection of a node will trigger the selection of all child nodes too (recursively)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
 <xsd:attribute type="xsd:boolean" name="expandAll" default="false"
 php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
 <![CDATA[If TRUE, expands all branches]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="nonSelectableLevels"
+default="'0'" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Comma-separated list of levels that will not be selectable, by default the root node (which is "0") cannot be selected]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="maxLevels" default="2"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[The maximal amount of levels to be rendered (can be used to stop possible recursions)]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -13228,7 +13253,7 @@ php:type="boolean">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="width" default="400"
+<xsd:attribute type="xsd:integer" name="width" default="280"
 php:type="integer">
 <xsd:annotation>
 <xsd:documentation>
@@ -13320,11 +13345,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -13562,11 +13587,35 @@ php:type="string" use="required">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="allowRecursiveMode"
+default="false" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the selection of a node will trigger the selection of all child nodes too (recursively)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
 <xsd:attribute type="xsd:boolean" name="expandAll" default="false"
 php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
 <![CDATA[If TRUE, expands all branches]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="nonSelectableLevels"
+default="'0'" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Comma-separated list of levels that will not be selectable, by default the root node (which is "0") cannot be selected]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="maxLevels" default="2"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[The maximal amount of levels to be rendered (can be used to stop possible recursions)]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -13578,7 +13627,7 @@ php:type="boolean">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="width" default="400"
+<xsd:attribute type="xsd:integer" name="width" default="280"
 php:type="integer">
 <xsd:annotation>
 <xsd:documentation>
@@ -13670,11 +13719,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -13912,11 +13961,35 @@ php:type="string" use="required">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="allowRecursiveMode"
+default="false" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the selection of a node will trigger the selection of all child nodes too (recursively)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
 <xsd:attribute type="xsd:boolean" name="expandAll" default="false"
 php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
 <![CDATA[If TRUE, expands all branches]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="nonSelectableLevels"
+default="'0'" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Comma-separated list of levels that will not be selectable, by default the root node (which is "0") cannot be selected]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="maxLevels" default="2"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[The maximal amount of levels to be rendered (can be used to stop possible recursions)]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -13928,7 +14001,7 @@ php:type="boolean">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="width" default="400"
+<xsd:attribute type="xsd:integer" name="width" default="280"
 php:type="integer">
 <xsd:annotation>
 <xsd:documentation>
@@ -14020,11 +14093,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -14262,11 +14335,35 @@ php:type="string" use="required">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="allowRecursiveMode"
+default="false" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the selection of a node will trigger the selection of all child nodes too (recursively)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
 <xsd:attribute type="xsd:boolean" name="expandAll" default="false"
 php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
 <![CDATA[If TRUE, expands all branches]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="nonSelectableLevels"
+default="'0'" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Comma-separated list of levels that will not be selectable, by default the root node (which is "0") cannot be selected]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="maxLevels" default="2"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[The maximal amount of levels to be rendered (can be used to stop possible recursions)]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -14278,7 +14375,7 @@ php:type="boolean">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="width" default="400"
+<xsd:attribute type="xsd:integer" name="width" default="280"
 php:type="integer">
 <xsd:annotation>
 <xsd:documentation>
@@ -14370,11 +14467,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -14612,11 +14709,35 @@ php:type="string" use="required">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="allowRecursiveMode"
+default="false" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[If TRUE, the selection of a node will trigger the selection of all child nodes too (recursively)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
 <xsd:attribute type="xsd:boolean" name="expandAll" default="false"
 php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
 <![CDATA[If TRUE, expands all branches]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="nonSelectableLevels"
+default="'0'" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Comma-separated list of levels that will not be selectable, by default the root node (which is "0") cannot be selected]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="maxLevels" default="2"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[The maximal amount of levels to be rendered (can be used to stop possible recursions)]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -14628,7 +14749,7 @@ php:type="boolean">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="width" default="400"
+<xsd:attribute type="xsd:integer" name="width" default="280"
 php:type="integer">
 <xsd:annotation>
 <xsd:documentation>
@@ -14720,11 +14841,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -14852,11 +14973,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -14984,11 +15105,11 @@ php:type="string">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
-<xsd:attribute type="xsd:integer" name="inherit" default="99"
-php:type="integer">
+<xsd:attribute type="xsd:boolean" name="inherit" default="true"
+php:type="boolean">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[If 0 (zero), prevents inheritance of the value for this particular field - if inheritance is enabled by the ConfigurationProvider]]>
+<![CDATA[If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -15073,7 +15194,7 @@ default="'../typo3conf/ext/flux/Resources/Public/Icons/Plugin.png'"
 php:type="string">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[Optional icon file to use when displaying this content element in the new content element wizard]]>
+<![CDATA[DEPRECATED: Use `options="{icon: 'iconreference'}"`. Optional icon file to use when displaying this content element in the new content element wizard]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -15097,7 +15218,7 @@ php:type="boolean">
 php:type="string">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[Optional tab name (usually extension key) in which to place the content element in the new content element wizard]]>
+<![CDATA[DEPRECATED: Use `options="{group: 'GroupName'}". Optional tab name (usually extension key) in which to place the content element in the new content element wizard]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -15122,6 +15243,15 @@ php:type="array">
 <xsd:annotation>
 <xsd:documentation>
 <![CDATA[Custom options to be assigned to Form object - valid values depends on the context. See docs of extension in which you use this feature.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string"
+name="localLanguageFileRelativePath" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Relative (from extension) path to locallang file containing labels for the LLL values used in this form.]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -15166,7 +15296,7 @@ default="'../typo3conf/ext/flux/Resources/Public/Icons/Plugin.png'"
 php:type="string">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[Optional icon file to use when displaying this content element in the new content element wizard]]>
+<![CDATA[DEPRECATED: Use `options="{icon: 'iconreference'}"`. Optional icon file to use when displaying this content element in the new content element wizard]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -15190,7 +15320,7 @@ php:type="boolean">
 php:type="string">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[Optional tab name (usually extension key) in which to place the content element in the new content element wizard]]>
+<![CDATA[DEPRECATED: Use `options="{group: 'GroupName'}". Optional tab name (usually extension key) in which to place the content element in the new content element wizard]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -15218,6 +15348,15 @@ php:type="array">
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
+<xsd:attribute type="xsd:string"
+name="localLanguageFileRelativePath" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Relative (from extension) path to locallang file containing labels for the LLL values used in this form.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
 </xsd:complexType>
 </xsd:element>
 <xsd:element name="form.container">
@@ -15225,13 +15364,13 @@ php:type="array">
 <xsd:documentation>
 <![CDATA[### FlexForm Field Container element
 
- Use around other Flux fields to make these fields nested visually
- and in variable scopes (i.e. a field called "name" inside a palette
- called "person" would end up with "person" being an array containing
- the "name" property, rendered as {person.name} in Fluid.
+Use around other Flux fields to make these fields nested visually
+and in variable scopes (i.e. a field called "name" inside a palette
+called "person" would end up with "person" being an array containing
+the "name" property, rendered as {person.name} in Fluid.
 
- The field grouping can be hidden or completely removed. In this regard
- this element is a simpler version of the Section and Object logic.]]>
+The field grouping can be hidden or completely removed. In this regard
+this element is a simpler version of the Section and Object logic.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -15269,13 +15408,13 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[### FlexForm Field Container element
 
- Use around other Flux fields to make these fields nested visually
- and in variable scopes (i.e. a field called "name" inside a palette
- called "person" would end up with "person" being an array containing
- the "name" property, rendered as {person.name} in Fluid.
+Use around other Flux fields to make these fields nested visually
+and in variable scopes (i.e. a field called "name" inside a palette
+called "person" would end up with "person" being an array containing
+the "name" property, rendered as {person.name} in Fluid.
 
- The field grouping can be hidden or completely removed. In this regard
- this element is a simpler version of the Section and Object logic.]]>
+The field grouping can be hidden or completely removed. In this regard
+this element is a simpler version of the Section and Object logic.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -15313,13 +15452,13 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[### FlexForm Field Container element
 
- Use around other Flux fields to make these fields nested visually
- and in variable scopes (i.e. a field called "name" inside a palette
- called "person" would end up with "person" being an array containing
- the "name" property, rendered as {person.name} in Fluid.
+Use around other Flux fields to make these fields nested visually
+and in variable scopes (i.e. a field called "name" inside a palette
+called "person" would end up with "person" being an array containing
+the "name" property, rendered as {person.name} in Fluid.
 
- The field grouping can be hidden or completely removed. In this regard
- this element is a simpler version of the Section and Object logic.]]>
+The field grouping can be hidden or completely removed. In this regard
+this element is a simpler version of the Section and Object logic.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -15355,7 +15494,45 @@ default="array ( )" php:type="array">
 <xsd:element name="form.content">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[Adds a content area to a source using Flux FlexForms]]>
+<![CDATA[Adds a content area to a source using Flux FlexForms
+
+Only works to insert a single content area into your element.
+To insert multiple content areas, use instead a full `flux:grid`
+with your desired row and column structure; each column then
+becomes a content area.
+
+Using `flux:grid` after this ViewHelper in the same `flux:form`
+will overwrite this ViewHelper.
+
+Using this ViewHelper after `flux:grid` will cause this ViewHelper
+to be ignored.
+
+### Example of difference
+
+```xml
+<flux:form id="myform">
+    <!-- Creates a basic Grid with one row and one column, names
+         the column "mycontent" and makes Flux use this Grid -->
+    <flux:content name="mycontent" />
+    <!-- Additional flux:content tags are completely ignored -->
+</flux:form>
+```
+
+```xml
+<flux:form id="myform">
+    <!-- Creates a full, multi-column/row Grid -->
+    <flux:grid>
+        <flux:grid.row>
+            <flux:grid.column name="mycontentA" />
+            <flux:grid.column name="mycontentB" />
+        </flux:grid.row>
+        <flux:grid.row>
+            <flux:grid.column name="mycontentC" colspan="2" />
+        </flux:grid.row>
+    </flux:grid>
+    <!-- No use of flux:content is possible after this point -->
+</flux:form>
+```]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -15383,7 +15560,45 @@ php:type="string">
 <xsd:element name="form.content">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[Adds a content area to a source using Flux FlexForms]]>
+<![CDATA[Adds a content area to a source using Flux FlexForms
+
+Only works to insert a single content area into your element.
+To insert multiple content areas, use instead a full `flux:grid`
+with your desired row and column structure; each column then
+becomes a content area.
+
+Using `flux:grid` after this ViewHelper in the same `flux:form`
+will overwrite this ViewHelper.
+
+Using this ViewHelper after `flux:grid` will cause this ViewHelper
+to be ignored.
+
+### Example of difference
+
+```xml
+<flux:form id="myform">
+    <!-- Creates a basic Grid with one row and one column, names
+         the column "mycontent" and makes Flux use this Grid -->
+    <flux:content name="mycontent" />
+    <!-- Additional flux:content tags are completely ignored -->
+</flux:form>
+```
+
+```xml
+<flux:form id="myform">
+    <!-- Creates a full, multi-column/row Grid -->
+    <flux:grid>
+        <flux:grid.row>
+            <flux:grid.column name="mycontentA" />
+            <flux:grid.column name="mycontentB" />
+        </flux:grid.row>
+        <flux:grid.row>
+            <flux:grid.column name="mycontentC" colspan="2" />
+        </flux:grid.row>
+    </flux:grid>
+    <!-- No use of flux:content is possible after this point -->
+</flux:form>
+```]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -15465,8 +15680,8 @@ php:type="string">
 <xsd:documentation>
 <![CDATA[FlexForm field section object ViewHelper
 
- Use this inside flux:form.section to name and divide the fields
- into individual objects that can be inserted into the section.]]>
+Use this inside flux:form.section to name and divide the fields
+into individual objects that can be inserted into the section.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -15504,8 +15719,8 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[FlexForm field section object ViewHelper
 
- Use this inside flux:form.section to name and divide the fields
- into individual objects that can be inserted into the section.]]>
+Use this inside flux:form.section to name and divide the fields
+into individual objects that can be inserted into the section.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -15651,7 +15866,7 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[FlexForm sheet ViewHelper
 
- Groups FlexForm fields into sheets.]]>
+Groups FlexForm fields into sheets.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -15679,6 +15894,22 @@ default="array ( )" php:type="array">
 <xsd:annotation>
 <xsd:documentation>
 <![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="description" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Optional string or LLL reference with a desription of the purpose of the sheet]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="shortDescription"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Optional shorter version of description of purpose of the sheet, LLL reference supported]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -15689,7 +15920,7 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[FlexForm sheet ViewHelper
 
- Groups FlexForm fields into sheets.]]>
+Groups FlexForm fields into sheets.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -15717,6 +15948,22 @@ default="array ( )" php:type="array">
 <xsd:annotation>
 <xsd:documentation>
 <![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="description" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Optional string or LLL reference with a desription of the purpose of the sheet]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="shortDescription"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Optional shorter version of description of purpose of the sheet, LLL reference supported]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -16063,8 +16310,8 @@ default="array ( )" php:type="array">
 <xsd:documentation>
 <![CDATA[### Condition: Are content areas of this content reord collapsed?
 
- A condition ViewHelper which renders the `then` child if
- the current content element's content areas are collapsed.]]>
+A condition ViewHelper which renders the `then` child if
+the current content element's content areas are collapsed.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
@@ -16102,8 +16349,8 @@ php:type="array" use="required">
 <xsd:documentation>
 <![CDATA[### Condition: Are content areas of this content reord collapsed?
 
- A condition ViewHelper which renders the `then` child if
- the current content element's content areas are collapsed.]]>
+A condition ViewHelper which renders the `then` child if
+the current content element's content areas are collapsed.]]>
 </xsd:documentation>
 </xsd:annotation>
 <xsd:complexType mixed="true">
