@@ -37,14 +37,6 @@ use TYPO3\CMS\Fluid\Core\Parser\TemplateParser;
 class AnnotationUtility {
 
 	/**
-	 * @var array
-	 */
-	private static $cache = array(
-		'reflections' => array(),
-		'annotations' => array()
-	);
-
-	/**
 	 * @param string $className
 	 * @param string $annotationName
 	 * @param string|boolean $propertyName
