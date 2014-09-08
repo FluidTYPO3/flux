@@ -460,21 +460,13 @@ class AbstractProvider implements ProviderInterface {
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		if (FALSE === is_array($paths)) {
-			$extensionKey = $this->getExtensionKey($row);
-			if (FALSE === empty($extensionKey) && TRUE === ExtensionManagementUtility::isLoaded($extensionKey)) {
+			if (FALSE === empty($extensionKey)) {
 				$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 			}
 		}
-
-		if (NULL !== $paths && FALSE === is_array($paths)) {
-			$this->configurationService->message('Template paths resolved for "' . $extensionKey . '" was not an array.', GeneralUtility::SYSLOG_SEVERITY_WARNING);
-			$paths = NULL;
-		}
-
 		if (TRUE === is_array($paths)) {
 			$paths = PathUtility::translatePath($paths);
 		}
-
 		return $paths;
 	}
 

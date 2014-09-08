@@ -296,6 +296,10 @@ class FluxService implements SingletonInterface {
 		if (FALSE === is_array($configuration) || 0 === count($configuration) || TRUE === empty($configuration['templateRootPath'])) {
 			$configuration = $this->getDefaultViewConfigurationForExtensionKey($extensionKey);
 		}
+		if (FALSE === is_array($configuration)) {
+			$this->message('Template paths resolved for "' . $extensionName . '" was not an array.', GeneralUtility::SYSLOG_SEVERITY_WARNING);
+			$configuration = NULL;
+		}
 		return $configuration;
 	}
 
