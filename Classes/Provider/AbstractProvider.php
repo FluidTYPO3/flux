@@ -471,19 +471,6 @@ class AbstractProvider implements ProviderInterface {
 			$paths = NULL;
 		}
 
-		if (NULL === $paths) {
-			$extensionKey = $this->getExtensionKey($row);
-			if (FALSE === empty($extensionKey) && TRUE === ExtensionManagementUtility::isLoaded($extensionKey)) {
-				$paths = array(
-					ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Templates/'),
-					ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Partials/'),
-					ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Layouts/')
-				);
-			} else {
-				$paths = array();
-			}
-		}
-
 		if (TRUE === is_array($paths)) {
 			$paths = PathUtility::translatePath($paths);
 		}
