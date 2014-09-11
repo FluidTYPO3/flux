@@ -211,6 +211,13 @@ class ContentService implements SingletonInterface {
 			$row['colPos'] = self::COLPOS_FLUXCONTENT;
 		}
 		$this->updateRecordInDatabase($row, NULL, $tceMain);
+		$movePlaceholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid']);
+		if (FALSE !== $movePlaceholder) {
+			$movePlaceholder['tx_flux_parent'] = $row['tx_flux_parent'];
+			$movePlaceholder['tx_flux_column'] = $row['tx_flux_column'];
+			$movePlaceholder['colPos'] = $row['colPos'];
+			$this->updateRecordInDatabase($movePlaceholder, NULL, $tceMain);
+		}
 	}
 
 	/**
