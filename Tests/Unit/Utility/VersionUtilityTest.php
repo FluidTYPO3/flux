@@ -42,22 +42,6 @@ class VersionUtilityTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function canAssertIfCoreIsLegacyVersion() {
-		$isLegacy = VersionUtility::assertCoreVersionIsBelowSixPointZero();
-		$this->assertIsBoolean($isLegacy);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canAssertIfCoreIsRecentVersion() {
-		$isLegacy = VersionUtility::assertCoreVersionIsAtLeastSixPointZero();
-		$this->assertIsBoolean($isLegacy);
-	}
-
-	/**
-	 * @test
-	 */
 	public function returnsFalseIfExtensionKeyIsNotLoaded() {
 		$isFalseResponse = VersionUtility::assertExtensionVersionIsAtLeastVersion('void', 1, 0, 0);
 		$this->assertFalse($isFalseResponse);
