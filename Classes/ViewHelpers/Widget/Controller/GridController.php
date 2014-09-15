@@ -25,7 +25,9 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget\Controller;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController;
 
@@ -53,11 +55,24 @@ class GridController extends AbstractWidgetController {
 	protected $configurationService;
 
 	/**
+	 * @var WorkspacesAwareRecordService
+	 */
+	protected $workspacesAwareRecordService;
+
+	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param WorkspacesAwareRecordService $workspacesAwareRecordService
+	 * @return void
+	 */
+	public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService) {
+		$this->workspacesAwareRecordService = $workspacesAwareRecordService;
 	}
 
 	/**
@@ -80,8 +95,10 @@ class GridController extends AbstractWidgetController {
 	 * @return string
 	 */
 	public function indexAction() {
+		$workspaceVersionOfRecord = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $this->row['uid']);
 		$this->view->assign('grid', $this->grid);
-		$this->view->assign('row', $this->row);
+		$this->view->assign('row', $workspaceVersionOfRecord);
+		$this->view->assign('colPosFluxContent', ContentService::COLPOS_FLUXCONTENT);
 		$paths = $this->configurationService->getViewConfigurationForExtensionName('flux');
 		$templateRootPath = TRUE === isset($paths['templateRootPath']) ? $paths['templateRootPath'] : NULL;
 		$templatePathAndFilename = ResolveUtility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath);

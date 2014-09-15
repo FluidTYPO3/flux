@@ -34,6 +34,14 @@ use FluidTYPO3\Flux\Outlet\OutletInterface;
  */
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface {
 
+	const OPTION_GROUP = 'group';
+	const OPTION_ICON = 'icon';
+	const OPTION_TCA_LABELS = 'labels';
+	const OPTION_TCA_HIDE = 'hide';
+	const OPTION_TCA_START = 'start';
+	const OPTION_TCA_END = 'end';
+	const OPTION_TCA_DELETE = 'delete';
+	const OPTION_TCA_FEGROUP = 'frontendUserGroup';
 	const POSITION_TOP = 'top';
 	const POSITION_BOTTOM = 'bottom';
 	const POSITION_BOTH = 'both';
@@ -59,20 +67,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 * @var string
 	 */
 	protected $id;
-
-	/**
-	 * Optional icon which represents the form.
-	 *
-	 * @var string
-	 */
-	protected $icon;
-
-	/**
-	 * Logical, human-readable or LLL group name this Form belongs to.
-	 *
-	 * @var string
-	 */
-	protected $group;
 
 	/**
 	 * Should be set to contain the extension name in UpperCamelCase of
@@ -173,10 +167,8 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$compactExtensionToggleOn = 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'];
 		$compactConfigurationToggleOn = 0 < $copy->getCompact();
 		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets)) {
-			$dataStructArray['ROOT'] = array(
-				'type' => 'array',
-				'el' => $copy->last()->build(),
-			);
+			$dataStructArray = $copy->last()->build();
+			unset($dataStructArray['ROOT']['TCEforms']);
 		} elseif (0 < count($sheets)) {
 			$dataStructArray['sheets'] = $copy->buildChildren();
 		} else {
@@ -269,7 +261,8 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 * @return Form\FormInterface
 	 */
 	public function setGroup($group) {
-		$this->group = $group;
+		GeneralUtility::logDeprecatedFunction();
+		$this->setOption(self::OPTION_GROUP, $group);
 		return $this;
 	}
 
@@ -277,23 +270,28 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 * @return string
 	 */
 	public function getGroup() {
-		return $this->group;
+		GeneralUtility::logDeprecatedFunction();
+		return $this->getOption(self::OPTION_GROUP);
 	}
 
 	/**
 	 * @param string $icon
 	 * @return Form\FormInterface
+	 * @deprecated
 	 */
 	public function setIcon($icon) {
-		$this->icon = $icon;
+		GeneralUtility::logDeprecatedFunction();
+		$this->setOption(self::OPTION_ICON, $icon);
 		return $this;
 	}
 
 	/**
 	 * @return string
+	 * @deprecated
 	 */
 	public function getIcon() {
-		$icon = $this->icon;
+		GeneralUtility::logDeprecatedFunction();
+		$icon = $this->getOption(self::OPTION_ICON);
 		if (0 === strpos($icon, 'EXT:')) {
 			$icon = GeneralUtility::getFileAbsFileName($icon);
 		}

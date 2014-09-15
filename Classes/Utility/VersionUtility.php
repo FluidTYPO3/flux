@@ -35,22 +35,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 class VersionUtility {
 
 	/**
-	 * @return boolean
-	 */
-	public static function assertCoreVersionIsBelowSixPointZero() {
-		$version = explode('.', TYPO3_version);
-		return ($version[0] < 6);
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public static function assertCoreVersionIsAtLeastSixPointZero() {
-		$version = explode('.', TYPO3_version);
-		return ($version[0] >= 6);
-	}
-
-	/**
 	 * @param string $extensionKey
 	 * @param integer $majorVersion
 	 * @param integer $minorVersion

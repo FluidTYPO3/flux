@@ -274,11 +274,13 @@ class AbstractProvider implements ProviderInterface {
 		if (NULL !== $this->form) {
 			return $this->form;
 		}
-		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		if (FALSE === file_exists($templatePathAndFilename)) {
+		$templateSource = $this->getTemplateSource($row);
+		if (NULL === $templateSource) {
+			// Early return: no template file, no source - NULL expected.
 			return NULL;
 		}
 		$section = $this->getConfigurationSectionName($row);
+		$controllerName = 'Flux';
 		$formName = 'form';
 		$paths = $this->getTemplatePaths($row);
 		$extensionKey = $this->getExtensionKey($row);
@@ -294,7 +296,9 @@ class AbstractProvider implements ProviderInterface {
 
 		$variables['record'] = $row;
 		$variables = GeneralUtility::array_merge_recursive_overrule($this->templateVariables, $variables);
-		$form = $this->configurationService->getFormFromTemplateFile($templatePathAndFilename, $section, $formName, $paths, $extensionName, $variables);
+		$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, $controllerName, $paths, $variables);
+		$view->setTemplateSource($templateSource);
+		$form = $view->getForm($section, $formName);
 		$form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
 		return $form;
 	}
@@ -387,6 +391,20 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * Get the source of the template to be rendered. Default implementation
+	 * returns the source of whichever filename is returned from the Provider.
+	 * Overriding this method in other implementations allows the Provider
+	 * to operate without a template file.
+	 *
+	 * @param array $row
+	 * @return string|NULL
+	 */
+	public function getTemplateSource(array $row) {
+		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+		return TRUE === file_exists($templatePathAndFilename) ? file_get_contents($templatePathAndFilename) : NULL;
+	}
+
+	/**
 	 * Converts the contents of the provided row's Flux-enabled field,
 	 * at the same time running through the inheritance tree generated
 	 * by getInheritanceTree() in order to apply inherited values.
@@ -442,34 +460,13 @@ class AbstractProvider implements ProviderInterface {
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		if (FALSE === is_array($paths)) {
-			$extensionKey = $this->getExtensionKey($row);
-			if (FALSE === empty($extensionKey) && TRUE === ExtensionManagementUtility::isLoaded($extensionKey)) {
+			if (FALSE === empty($extensionKey)) {
 				$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 			}
 		}
-
-		if (NULL !== $paths && FALSE === is_array($paths)) {
-			$this->configurationService->message('Template paths resolved for "' . $extensionKey . '" was not an array.', GeneralUtility::SYSLOG_SEVERITY_WARNING);
-			$paths = NULL;
-		}
-
-		if (NULL === $paths) {
-			$extensionKey = $this->getExtensionKey($row);
-			if (FALSE === empty($extensionKey) && TRUE === ExtensionManagementUtility::isLoaded($extensionKey)) {
-				$paths = array(
-					ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Templates/'),
-					ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Partials/'),
-					ExtensionManagementUtility::extPath($extensionKey, 'Resources/Private/Layouts/')
-				);
-			} else {
-				$paths = array();
-			}
-		}
-
 		if (TRUE === is_array($paths)) {
 			$paths = PathUtility::translatePath($paths);
 		}
-
 		return $paths;
 	}
 

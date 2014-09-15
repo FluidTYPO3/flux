@@ -71,17 +71,13 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		}
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->loadTypoScriptConfigurationProviderInstances();
-		/** @var FluxService $fluxService */
-		/** @var DataMapFactory $dataMapFactory */
-		$dataMapFactory = $objectManager->get('TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory');
 		$forms = Core::getRegisteredFormsForTables();
 		$models = Core::getRegisteredFormsForModelObjectClasses();
 		foreach ($forms as $fullTableName => $form) {
 			$this->processFormForTable($fullTableName, $form);
 		}
 		foreach ($models as $modelClassName => $form) {
-			$map = $dataMapFactory->buildDataMap($modelClassName);
-			$fullTableName = $map->getTableName();
+			$fullTableName = $this->resolveTableName($modelClassName);
 			if (NULL === $form) {
 				$form = $this->generateFormInstanceFromClassName($modelClassName, $fullTableName);
 			}
@@ -101,30 +97,31 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$tableConfiguration = self::$tableTemplate;
 		$fields = array();
-		$labelFields = $form->getOption('labels');
+		$labelFields = $form->getOption(Form::OPTION_TCA_LABELS);
 		$enableColumns = array();
 		foreach ($form->getFields() as $field) {
 			$name = $field->getName();
 			// note: extracts the TCEforms sub-array from the configuration, as required in TCA.
 			$fields[$name] = array_pop($field->build());
 		}
-		if (TRUE === $form->getOption('hide')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_HIDE)) {
 			$enableColumns['disabled'] = 'hidden';
 		}
-		if (TRUE === $form->getOption('start')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_START)) {
 			$enableColumns['start'] = 'starttime';
 		}
-		if (TRUE === $form->getOption('end')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_END)) {
 			$enableColumns['end'] = 'endtime';
 		}
-		if (TRUE === $form->getOption('frontendUserGroup')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_FEGROUP)) {
 			$enableColumns['fe_group'] = 'fe_group';
 		}
-		$tableConfiguration['iconfile'] = ExtensionManagementUtility::extRelPath($extensionKey) . $form->getIcon();
+		$tableConfiguration['iconfile'] = ExtensionManagementUtility::extRelPath($extensionKey) . $form->getOption(Form::OPTION_ICON);
 		$tableConfiguration['enablecolumns'] = $enableColumns;
+		$tableConfiguration['title'] = $form->getLabel();
+		$tableConfiguration['languageField'] = 'sys_language_uid';
 		$showRecordsFieldList = $this->buildShowItemList($form);
 		$GLOBALS['TCA'][$table] = array(
-			'title' => $form->getLabel(),
 			'ctrl' => $tableConfiguration,
 			'interface' => array(
 				'showRecordFieldList' => implode(',', array_keys($fields))
@@ -136,7 +133,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 				)
 			)
 		);
-		if (TRUE === $form->getOption('delete')) {
+		if (TRUE === $form->getOption(Form::OPTION_TCA_DELETE)) {
 			$GLOBALS['TCA'][$table]['ctrl']['delete'] = 'deleted';
 		}
 		if (NULL === $labelFields) {
@@ -154,16 +151,21 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 * @return Form
 	 */
 	public function generateFormInstanceFromClassName($class, $table) {
-		$labelFields = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Label', NULL);
+		$labelFields = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Label', FALSE);
+		$iconAnnotation = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Icon');
 		$extensionName = $this->getExtensionNameFromModelClassName($class);
-		$values = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Field', NULL);
-		$sheets = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Sheet', NULL);
+		$values = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Field', FALSE);
+		$sheets = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Form\Sheet', FALSE);
 		$labels = TRUE === is_array($labelFields) ? array_keys($labelFields) : array(key($values));
-		$hasVisibilityToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
-		$hasDeleteToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Delete');
-		$hasStartTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\StartTime');
-		$hasEndTimeToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\EndTime');
-		$hasFrontendGroupToggle = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\FrontendUserGroup');
+		foreach ($labels as $index => $labelField) {
+			$labels[$index] = GeneralUtility::camelCaseToLowerCaseUnderscored($labelField);
+		}
+		$icon = TRUE === isset($iconAnnotation['config']['path']) ? $iconAnnotation['config']['path'] : 'ext_icon.png';
+		$hasVisibilityToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Hide');
+		$hasDeleteToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\Delete');
+		$hasStartTimeToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\StartTime');
+		$hasEndTimeToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\EndTime');
+		$hasFrontendGroupToggle = (boolean) AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Control\FrontendUserGroup');
 		$form = Form::create();
 		$form->setName($table);
 		$form->setExtensionName($extensionName);
@@ -172,6 +174,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		$form->setOption('hide', $hasVisibilityToggle);
 		$form->setOption('start', $hasStartTimeToggle);
 		$form->setOption('end', $hasEndTimeToggle);
+		$form->setOption(Form::OPTION_ICON, $icon);
 		$form->setOption('frontendUserGroup', $hasFrontendGroupToggle);
 		$fields = array();
 		foreach ($sheets as $propertyName => $sheetAnnotation) {
@@ -183,12 +186,16 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 		}
 		foreach ($fields as $sheetName => $propertyNames) {
 			$form->remove($sheetName);
-			$sheets[$sheetName] = $form->createContainer('Sheet', $sheetName);
+			$sheet = $form->createContainer('Sheet', $sheetName);
 			foreach ($propertyNames as $propertyName) {
 				$settings = $values[$propertyName];
+				$propertyName = GeneralUtility::camelCaseToLowerCaseUnderscored($propertyName);
 				if (TRUE === isset($settings['type'])) {
-					$field = AbstractFormField::create($settings);
-					$sheets[$sheetName]->add($field);
+					$fieldType = ucfirst($settings['type']);
+					$field = $sheet->createField($fieldType, $propertyName);
+					foreach ($settings['config'] as $settingName => $settingValue) {
+						ObjectAccess::setProperty($field, $settingName, $settingValue);
+					}
 				}
 			}
 		}
@@ -228,6 +235,29 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 			}
 		}
 		return implode(', ', $parts);
+	}
+
+	/**
+	 * Resolve the table name for the given class name
+	 *
+	 * @param string $className
+	 * @return string The table name
+	 */
+	protected function resolveTableName($className) {
+		$className = ltrim($className, '\\');
+		if (strpos($className, '\\') !== FALSE) {
+			$classNameParts = explode('\\', $className, 6);
+			// Skip vendor and product name for core classes
+			if (strpos($className, 'TYPO3\\CMS\\') === 0) {
+				$classPartsToSkip = 2;
+			} else {
+				$classPartsToSkip = 1;
+			}
+			$tableName = 'tx_' . strtolower(implode('_', array_slice($classNameParts, $classPartsToSkip)));
+		} else {
+			$tableName = strtolower($className);
+		}
+		return $tableName;
 	}
 
 }

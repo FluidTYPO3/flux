@@ -48,7 +48,12 @@ class ContentElementViewHelper extends AbstractViewHelper {
 	public function render() {
 		$dblist = $this->arguments['dblist'];
 		$record = $this->arguments['row'];
-		$rendered = $dblist->tt_content_drawHeader($record);
+		// varables for function tt_content_drawHeader
+		$space = 0;
+		$disableMoveAndNewButtons = FALSE;
+		$langMode = $dblist->tt_contentConfig['languageMode'];
+		$dragDropEnabled = FALSE;
+		$rendered = $dblist->tt_content_drawHeader($record, $space, $disableMoveAndNewButtons, $langMode, $dragDropEnabled);
 		$rendered .= '<div class="t3-page-ce-body-inner">' . $dblist->tt_content_drawItem($record) . '</div>';
 		$rendered .= '</div>';
 		return $rendered;

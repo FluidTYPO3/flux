@@ -47,6 +47,18 @@ class FluxServiceTest extends AbstractTestCase {
 		}
 	}
 
+
+	/**
+	 * @test
+	 */
+	public function dispatchesMessageOnInvalidPathsReturned() {
+		$className = substr(get_class($this), 0, -4);
+		$instance = $this->getMock($className, array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptSubConfiguration'));
+		$instance->expects($this->once())->method('getTypoScriptSubConfiguration')->will($this->returnValue(NULL));
+		$instance->expects($this->once())->method('getDefaultViewConfigurationForExtensionKey')->will($this->returnValue(NULL));
+		$instance->getViewConfigurationForExtensionName('Flux');
+	}
+
 	/**
 	 * @test
 	 */

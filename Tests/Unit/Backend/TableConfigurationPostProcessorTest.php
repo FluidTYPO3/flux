@@ -60,7 +60,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 		$this->assertContains($field, $GLOBALS['TCA'][$table]['interface']['showRecordFieldList']);
 		$this->assertContains($field, $GLOBALS['TCA'][$table]['types'][0]['showitem']);
 		$this->assertEquals($GLOBALS['TCA'][$table]['ctrl']['label'], 'title');
-		$this->assertEquals('flux.this_table_does_not_exist', $GLOBALS['TCA'][$table]['title']);
+		$this->assertContains('flux.this_table_does_not_exist', $GLOBALS['TCA'][$table]['ctrl']['title']);
 	}
 
 	/**
@@ -69,10 +69,6 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	public function canCreateFluxFormFromClassName() {
 		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
 		$object = GeneralUtility::getUserObj('FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor');
-		if ('6.1' === substr(TYPO3_version, 0, 3)) {
-			// note: mock contains a DateTime which has a constructor argument which older ObjectManagers try to reflect
-			$this->setExpectedException('ReflectionException');
-		}
 		$form = $object->generateFormInstanceFromClassName($class, 'tt_content');
 		$this->assertIsValidAndWorkingFormObject($form);
 		$this->callInaccessibleMethod($object, 'processFormForTable', 'void', $form);
@@ -84,10 +80,6 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	 */
 	public function triggersDomainModelAnalysisWhenFormsAreRegistered() {
 		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
-		if ('6.1' === substr(TYPO3_version, 0, 3)) {
-			// note: mock contains a DateTime which has a constructor argument which older ObjectManagers try to reflect
-			$this->setExpectedException('ReflectionException');
-		}
 		$form = Form::create();
 		Core::registerAutoFormForModelObjectClassName($class);
 		$object = GeneralUtility::getUserObj('FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor');

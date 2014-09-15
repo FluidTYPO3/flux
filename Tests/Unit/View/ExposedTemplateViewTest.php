@@ -263,6 +263,16 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	}
 
 	/**
+	 * @test
+	 */
+	public function canSetAndThenGetTemplateSource() {
+		$service = $this->createFluxServiceInstance();
+		$view = $service->getPreparedExposedTemplateView('Flux', 'API');
+		$view->setTemplateSource('dummy-source');
+		$this->assertEquals('dummy-source', $this->callInaccessibleMethod($view, 'getTemplateSource'));
+	}
+
+	/**
 	 * @param $templatePathAndFilename
 	 * @return \FluidTYPO3\Flux\View\ExposedTemplateView
 	 */

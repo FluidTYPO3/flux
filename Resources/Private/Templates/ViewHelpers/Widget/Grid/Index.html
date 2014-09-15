@@ -22,7 +22,7 @@
 							</div>
 							<div class="fce-container t3-page-ce-wrapper">
 								<div class="t3-page-ce">
-									<div class="t3-page-ce-dropzone" id="colpos-{row.colPos}-page-{row.pid}-{area.md5}-top-{row.uid}-{area.name}" style="height: 16px;">
+									<div class="t3-page-ce-dropzone" id="colpos-{colPosFluxContent}-page-{row.pid}-{area.md5}-top-{row.uid}-{area.name}" style="height: 16px;">
 										<div class="t3-page-ce-wrapper-new-ce">
 											<flux:be.link.content.new row="{row}" area="{area.name}" />
 											<flux:be.link.content.paste row="{row}" area="{area.name}" />
@@ -31,7 +31,7 @@
 									</div>
 								</div>
 								<f:for each="{records}" as="record">
-									<div class="t3-page-ce{f:if(condition: record.isDisabled, then: ' t3-page-ce-hidden')}" id="element-tt_content-{record.uid}">
+									<div class="t3-page-ce{f:if(condition: record.isDisabled, then: ' t3-page-ce-hidden')} {record._CSSCLASS}" id="element-tt_content-{record.uid}">
 										<f:if condition="{dblist.tt_contentConfig.languageMode} == 0">
 											<div class="t3-page-ce-dragitem">
 										</f:if>
@@ -39,7 +39,7 @@
 										<f:if condition="{dblist.tt_contentConfig.languageMode} == 0">
 											</div>
 										</f:if>
-										<div class="t3-page-ce-dropzone" id="colpos-{record.colPos}-page-{row.pid}-{row.uid}-after-{record.uid}" style="height: 16px;">
+										<div class="t3-page-ce-dropzone" id="colpos-{colPosFluxContent}-page-{row.pid}-{row.uid}-after-{record.uid}" style="height: 16px;">
 											<div class="t3-page-ce-wrapper-new-ce">
 												<flux:be.link.content.new after="{record.uid}" row="{row}" area="{area.name}" />
 												<flux:be.link.content.paste row="{row}" relativeTo="{record}" area="{area.name}" />

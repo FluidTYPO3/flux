@@ -147,22 +147,6 @@ class ProviderTest extends AbstractProviderTest {
 		$grid = $provider->getGrid($record);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $grid);
 	}
-
-	/**
-	 * @test
-	 */
-	public function dispatchesMessageOnInvalidPathsReturnedFromConfigurationService() {
-		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$className = substr(get_class($this), 0, -4);
-		$instance = $this->getMock($className, array('getExtensionKey'));
-		$instance->expects($this->atLeastOnce())->method('getExtensionKey')->will($this->returnValue('flux'));
-		$configurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('message', 'getViewConfigurationForExtensionName'));
-		$configurationService->expects($this->once())->method('message');
-		$configurationService->expects($this->once())->method('getViewConfigurationForExtensionName')->will($this->returnValue('invalidstring'));
-		ObjectAccess::setProperty($instance, 'configurationService', $configurationService, TRUE);
-		$instance->getTemplatePaths($row);
-	}
-
 	/**
 	 * @test
 	 */

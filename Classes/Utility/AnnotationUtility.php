@@ -37,56 +37,53 @@ use TYPO3\CMS\Fluid\Core\Parser\TemplateParser;
 class AnnotationUtility {
 
 	/**
-	 * @var array
-	 */
-	private static $cache = array(
-		'reflections' => array(),
-		'annotations' => array()
-	);
-
-	/**
 	 * @param string $className
 	 * @param string $annotationName
 	 * @param string|boolean $propertyName
-	 * @return string
+	 * @return array|boolean
 	 */
-	public static function getAnnotationValueFromClass($className, $annotationName, $propertyName = FALSE) {
-		if (TRUE === isset(self::$cache['reflections'][$className])) {
-			$reflection = self::$cache['reflections'][$className];
-		} else {
-			$reflection = self::$cache['reflections'][$className] = new ClassReflection($className);
-		}
-		if (FALSE === isset(self::$cache['annotations'][$className])) {
-			self::$cache['annotations'][$className] = array();
-		}
-		if (TRUE === isset(self::$cache['annotations'][$className][$annotationName])) {
-			$annotations = self::$cache['annotations'][$className][$annotationName];
-		} else {
-			$sample = new $className();
-			$annotations = array();
-			if (FALSE === $propertyName) {
-				if (TRUE === $reflection->isTaggedWith($annotationName)) {
-					$annotations = $reflection->getTagValues($annotationName);
+	public static function getAnnotationValueFromClass($className, $annotationName, $propertyName = NULL) {
+		$reflection = new ClassReflection($className);
+		$sample = new $className();
+		$annotations = array();
+		if (NULL === $propertyName) {
+			if (FALSE === $reflection->isTaggedWith($annotationName)) {
+				return FALSE;
+			}
+			$annotations = $reflection->getTagValues($annotationName);
+		} elseif (FALSE === $propertyName) {
+			$properties = ObjectAccess::getGettablePropertyNames($sample);
+			foreach ($properties as $reflectedPropertyName) {
+				if (FALSE === property_exists($className, $reflectedPropertyName)) {
+					continue;
 				}
-			} else {
-				$properties = ObjectAccess::getGettablePropertyNames($sample);
-				foreach ($properties as $reflectedPropertyName) {
-					if (FALSE === property_exists($className, $reflectedPropertyName)) {
-						continue;
-					}
-					$reflectedProperty = $reflection->getProperty($reflectedPropertyName);
-					if (TRUE === $reflectedProperty->isTaggedWith($annotationName)) {
-						$annotations[$reflectedPropertyName] = $reflectedProperty->getTagValues($annotationName);
-					}
+				$propertyAnnotationValues = self::getPropertyAnnotations($reflection, $reflectedPropertyName, $annotationName);
+				if (NULL !== $propertyAnnotationValues) {
+					$annotations[$reflectedPropertyName] = $propertyAnnotationValues;
 				}
 			}
-			$annotations = self::parseAnnotation($annotations);
+		} else {
+			$annotations = self::getPropertyAnnotations($reflection, $propertyName, $annotationName);
 		}
-		self::$cache['annotations'][$className][$annotationName] = $annotations;
+		$annotations = self::parseAnnotation($annotations);
 		if (NULL !== $propertyName && TRUE === isset($annotations[$propertyName])) {
 			return $annotations[$propertyName];
 		}
 		return $annotations;
+	}
+
+	/**
+	 * @param ClassReflection $reflection
+	 * @param string $propertyName
+	 * @param string $annotationName
+	 * @return array
+	 */
+	protected static function getPropertyAnnotations(ClassReflection $reflection, $propertyName, $annotationName) {
+		$reflectedProperty = $reflection->getProperty($propertyName);
+		if (TRUE === $reflectedProperty->isTaggedWith($annotationName)) {
+			return $reflectedProperty->getTagValues($annotationName);
+		}
+		return NULL;
 	}
 
 	/**
@@ -120,16 +117,20 @@ class AnnotationUtility {
 	 * @return string
 	 */
 	public static function parseAnnotation($annotation) {
-		if (TRUE === empty($annotation)) {
-			return TRUE;
-		} elseif (TRUE === is_array($annotation)) {
-			if (TRUE === isset($annotation[0]) && 1 === count($annotation)) {
+		if (TRUE === is_array($annotation)) {
+			if (TRUE === empty($annotation)) {
+				return TRUE;
+			} elseif (TRUE === isset($annotation[0]) && 1 === count($annotation)) {
 				return self::parseAnnotation(array_pop($annotation));
 			}
 			return array_map(array(self, 'parseAnnotation'), $annotation);
 		}
 		$pattern = TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
 		$annotation = trim($annotation);
+		if (TRUE === empty($annotation)) {
+			// simple indication that annotation does exist but has no attributes.
+			return TRUE;
+		}
 		if (FALSE === strpos($annotation, '(') && FALSE === strpos($annotation, ')')) {
 			$annotation .= '()';
 		}

@@ -30,4 +30,18 @@ namespace FluidTYPO3\Flux\Form\Container;
  */
 class SheetTest extends AbstractContainerTest {
 
+	/**
+	 * @test
+	 */
+	public function testDescriptionPropertyWorks() {
+		$this->assertGetterAndSetterWorks('description', 'foobardescription', 'foobardescription', TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testShortDescriptionPropertyWorks() {
+		$this->assertGetterAndSetterWorks('shortDescription', 'foobarshortdescription', 'foobarshortdescription', TRUE);
+	}
+
 }

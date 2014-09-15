@@ -28,7 +28,8 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 			'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_parent',
 			'displayCond' => 'FIELD:tx_flux_parent:>:0',
 			'config' => array (
-				'type' => 'none',
+				'type' => 'input',
+				'readOnly' => TRUE,
 				'foreign_table' => 'tt_content',
 				'foreign_table_where' => "AND tt_content.pid = '###CURRENT_PID###'",
 				'default' => 0,
@@ -45,11 +46,20 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 				'foreign_sortby' => 'sorting',
 				'appearance' => array(
 					'collapseAll' => TRUE,
+					'showPossibleLocalizationRecords' => TRUE,
+					'showAllLocalizationLink' => TRUE,
+					'showSynchronizationLink' => TRUE,
 					'enabledControls' => array(
 						'new' => FALSE,
+						'localize' => TRUE,
+						'sort' => FALSE,
 						'hide' => TRUE
 					)
-				)
+				),
+				'behaviour' => array(
+					'localizationMode' => 'select',
+					'localizeChildrenAtParentLocalization' => TRUE,
+				),
 			)
 		),
 	)

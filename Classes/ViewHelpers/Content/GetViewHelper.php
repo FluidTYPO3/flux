@@ -106,17 +106,20 @@ class GetViewHelper extends AbstractViewHelper {
 		}
 		$record = $this->templateVariableContainer->get('record');
 		$id = $record['uid'];
-		$localizedUid = $record['_LOCALIZED_UID'] > 0 ? $record['_LOCALIZED_UID'] : $id;
 		$order = $this->arguments['order'];
 		$area = $this->arguments['area'];
 		$limit = $this->arguments['limit'] ? $this->arguments['limit'] : 99999;
 		$offset = intval($this->arguments['offset']);
 		$sortDirection = $this->arguments['sortDirection'];
 		$order .= ' ' . $sortDirection;
-		$conditions = "((tx_flux_column = '" . $area . ':' . $localizedUid . "')
-			OR (tx_flux_parent = '" . $localizedUid . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $localizedUid . "')))
+		// Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and colummn.
+		// The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.
+		// Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the localized version or default version.
+		$conditions = "((tx_flux_column = '" . $area . ':' . $id . "')
+			OR (tx_flux_parent = '" . $id . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $id . "')))
 			AND deleted = 0 AND hidden = 0";
 		$rows = $this->recordService->get('tt_content', '*', $conditions, 'uid', $order, $offset . ',' . $limit);
+
 		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);
 		if (TRUE === empty($this->arguments['as'])) {
 			$content = $elements;
