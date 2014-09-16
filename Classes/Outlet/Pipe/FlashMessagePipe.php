@@ -40,6 +40,8 @@ use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
  */
 class FlashMessagePipe extends AbstractPipe implements PipeInterface {
 
+	const FLASHMESSAGE_QUEUE = 'extbase.flashmessages.flux';
+
 	/**
 	 * @var integer
 	 */
@@ -65,8 +67,9 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface {
 	 * @return void
 	 */
 	public function conduct($data) {
+		$queue = new FlashMessageQueue(self::FLASHMESSAGE_QUEUE);
 		$flashMessage = new FlashMessage($this->getMessage(), $this->getTitle(), $this->getSeverity(), $this->getStoreInSession());
-		FlashMessageQueue::addMessage($flashMessage);
+		$queue->enqueue($flashMessage);
 		return $data;
 	}
 
