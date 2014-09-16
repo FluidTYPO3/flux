@@ -37,7 +37,7 @@ class HtmlOutputTest extends AbstractUserFunctionTest {
 	);
 
 	/**
-	 * @return t3lib_TCEforms
+	 * @return \TYPO3\CMS\Backend\Form\FormEngine
 	 */
 	protected function getCallerInstance() {
 		return $this->objectManager->get('TYPO3\\CMS\\Backend\\Form\\FormEngine');
