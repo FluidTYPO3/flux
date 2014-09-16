@@ -38,7 +38,7 @@ use FluidTYPO3\Flux\Form\Field\None;
 class NoneViewHelper extends AbstractFieldViewHelper {
 
 	/**
-	 * @return Identity
+	 * @return None
 	 */
 	public function getComponent() {
 		/** @var None $none */
