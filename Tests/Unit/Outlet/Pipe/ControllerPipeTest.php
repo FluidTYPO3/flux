@@ -73,7 +73,7 @@ class ControllerPipeTest extends AbstractPipeTestCase {
 		$controllerMock->expects($this->once())->method('canProcessRequest')->will($this->returnValue(TRUE));
 		$signalSlotDispatcherMock = $this->getMock('TYPO3\CMS\Extbase\SignalSlot\Dispatcher', array('dispatch'));
 		$configurationManagerMock = $this->getMock('TYPO3\CMS\Extbase\Configuration\ConfigurationManager', array('isFeatureEnabled'));
-		$configurationManagerMock->expects($this->atLeastOnce())->method('isFeatureEnabled')->will($this->returnValue(TRUE));
+		$configurationManagerMock->expects($this->any())->method('isFeatureEnabled')->will($this->returnValue(TRUE));
 		$propertyMappingServiceMock = $this->getMock('TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService', array('initializePropertyMappingConfigurationFromRequest'));
 		$argumentsMock = $this->getMock('TYPO3\CMS\Extbase\Mvc\Controller\Arguments', array('getIterator'));
 		$argumentsMock->expects($this->atLeastOnce())->method('getIterator')->will($this->returnValue(new \ArrayIterator(array(new Argument('test', 'string')))));
