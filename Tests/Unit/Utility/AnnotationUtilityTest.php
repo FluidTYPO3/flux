@@ -25,7 +25,6 @@ namespace FluidTYPO3\Flux\Utility;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * @package Flux

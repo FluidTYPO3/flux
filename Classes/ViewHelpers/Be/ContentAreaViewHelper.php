@@ -26,7 +26,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
 
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

@@ -25,7 +25,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field\Inline;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
  * @package Flux

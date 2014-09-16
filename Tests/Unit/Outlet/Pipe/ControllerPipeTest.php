@@ -26,7 +26,6 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
 
 use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 use TYPO3\CMS\Extbase\Mvc\Controller\Argument;
-use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**

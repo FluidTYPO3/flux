@@ -26,7 +26,6 @@ namespace FluidTYPO3\Flux\Form;
 
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Container;
-use FluidTYPO3\Flux\Form\Container\Content;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Object;
 use FluidTYPO3\Flux\Form\Container\Section;

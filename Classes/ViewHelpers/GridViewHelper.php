@@ -24,8 +24,6 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-
 /**
  * Grid container ViewHelper
  *

@@ -24,8 +24,6 @@ namespace FluidTYPO3\Flux\UserFunction;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\UserFunction\AbstractUserFunctionTest;
-
 /**
  * @package Flux
  */

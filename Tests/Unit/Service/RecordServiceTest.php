@@ -26,7 +26,6 @@ namespace FluidTYPO3\Flux\Service;
 
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux

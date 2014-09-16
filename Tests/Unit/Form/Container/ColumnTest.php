@@ -24,9 +24,6 @@ namespace FluidTYPO3\Flux\Form\Container;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Form\Container\AbstractContainerTest;
-use FluidTYPO3\Flux\Form\Container\Column;
-
 /**
  * @package Flux
  */

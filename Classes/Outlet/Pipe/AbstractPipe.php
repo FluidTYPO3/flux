@@ -26,7 +26,6 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Form\Field\None;
 use FluidTYPO3\Flux\Form\Field\Select;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;

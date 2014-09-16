@@ -26,7 +26,6 @@ namespace FluidTYPO3\Flux\Service;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * Service to wrap around record operations normally going through

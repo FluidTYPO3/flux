@@ -25,7 +25,6 @@ namespace FluidTYPO3\Flux\Form\Container;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
-use FluidTYPO3\Flux\Form\Container\Object;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
