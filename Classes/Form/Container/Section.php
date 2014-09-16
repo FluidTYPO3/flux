@@ -38,7 +38,7 @@ class Section extends AbstractFormContainer implements ContainerInterface {
 
 	/**
 	 * @param array $settings
-	 * @return FluidTYPO3\Flux\Form\Container\Section
+	 * @return \FluidTYPO3\Flux\Form\Container\Section
 	 */
 	public static function create(array $settings) {
 		/** @var ObjectManagerInterface $objectManager */
