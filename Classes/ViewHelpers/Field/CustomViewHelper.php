@@ -57,7 +57,7 @@ class CustomViewHelper extends UserFuncViewHelper {
 	}
 
 	/**
-	 * @return Closure
+	 * @return \Closure
 	 */
 	protected function buildClosure() {
 		$self = $this;

@@ -84,9 +84,9 @@ class Select extends AbstractMultiValueFormField {
 			foreach ($itemNames as $itemName) {
 				array_push($items, array($itemName, $itemName));
 			}
-		} elseif (TRUE === is_array($this->items) || TRUE === $this->items instanceof Traversable) {
+		} elseif (TRUE === is_array($this->items) || TRUE === $this->items instanceof \Traversable) {
 			foreach ($this->items as $itemIndex => $itemValue) {
-				if (TRUE === is_array($itemValue) || TRUE === $itemValue instanceof ArrayObject) {
+				if (TRUE === is_array($itemValue) || TRUE === $itemValue instanceof \ArrayObject) {
 					array_push($items, $itemValue);
 				} else {
 					array_push($items, array($itemValue, $itemIndex));
