@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -339,7 +340,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	public function getDescription() {
 		$description = $this->description;
 		$translated = NULL;
-		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($this->extensionName);
 		if (TRUE === empty($description)) {
 			$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 			$relativeFilePath = ltrim($relativeFilePath, '/');
