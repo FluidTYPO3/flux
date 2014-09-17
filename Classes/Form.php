@@ -339,8 +339,8 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	public function getDescription() {
 		$description = $this->description;
 		$translated = NULL;
+		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
 		if (TRUE === empty($description)) {
-			$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName);
 			$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 			$relativeFilePath = ltrim($relativeFilePath, '/');
 			$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
