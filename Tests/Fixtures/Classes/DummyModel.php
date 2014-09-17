@@ -39,7 +39,7 @@ class Dummy extends AbstractEntity {
 	/**
 	 * @Flux\Form\Field dateTime
 	 * @Flux\Form\Sheet options
-	 * @var DateTime
+	 * @var \DateTime
 	 */
 	protected $crdate;
 
@@ -52,7 +52,7 @@ class Dummy extends AbstractEntity {
 	protected $title;
 
 	/**
-	 * @param DateTime $crdate
+	 * @param \DateTime $crdate
 	 * @return void
 	 */
 	public function setCrdate($crdate) {

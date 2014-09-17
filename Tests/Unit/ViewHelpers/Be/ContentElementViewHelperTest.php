@@ -24,7 +24,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Backend\TypoScriptTemplate;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Backend\Controller\BackendController;

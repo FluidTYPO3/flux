@@ -22,8 +22,6 @@ namespace FluidTYPO3\Flux\UserFunction;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use TYPO3\CMS\Core\Error\DebugExceptionHandler;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Renders an exception error message in a nice way

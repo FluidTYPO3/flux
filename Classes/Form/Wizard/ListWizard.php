@@ -77,10 +77,10 @@ class ListWizard extends AbstractWizard {
 	 */
 	public function buildConfiguration() {
 		$structure = array(
-			'JSopenParams' => 'height=' . $this->arguments['height'] . ',width=' . $this->arguments['width'] . ',status=0,menubar=0,scrollbars=1',
+			'JSopenParams' => 'height=' . $this->getHeight() . ',width=' . $this->getWidth() . ',status=0,menubar=0,scrollbars=1',
 			'params' => array(
-				'table' => $this->arguments['table'],
-				'pid' => $this->arguments['pid'],
+				'table' => $this->getTable(),
+				'pid' => $this->getStoragePageUid(),
 			)
 		);
 		return $structure;

@@ -25,7 +25,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux

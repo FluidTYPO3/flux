@@ -67,8 +67,8 @@ class Slider extends AbstractWizard {
 	 */
 	public function buildConfiguration() {
 		$configuration = array(
-			'width' => $this->arguments['width'],
-			'step' => $this->arguments['step'],
+			'width' => $this->getWidth(),
+			'step' => $this->getStep(),
 		);
 		return $configuration;
 	}

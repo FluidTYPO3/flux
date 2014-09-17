@@ -24,7 +24,6 @@ namespace FluidTYPO3\Flux\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**

@@ -158,7 +158,6 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	/**
 	 * @param string $actionName
 	 * @return string
-	 * @throws Exception
 	 */
 	public function getTemplatePathAndFilename($actionName = NULL) {
 		if (NULL !== $this->templatePathAndFilename) {

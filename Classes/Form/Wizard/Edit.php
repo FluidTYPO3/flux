@@ -73,7 +73,7 @@ class Edit extends AbstractWizard {
 	public function buildConfiguration() {
 		$configuration = array(
 			'type' => 'popup',
-			'title' => $this->arguments['title'],
+			'title' => $this->getLabel(),
 			'icon' => $this->icon,
 			'script' => $this->script,
 			'popup_onlyOpenIfSelected' => intval($this->getOpenOnlyIfSelected()),

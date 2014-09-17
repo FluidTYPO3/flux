@@ -112,7 +112,7 @@ abstract class AbstractFluxController extends ActionController {
 
 	/**
 	 * @return void
-	 * @throws RuntimeException
+	 * @throws \RuntimeException
 	 */
 	protected function initializeSettings() {
 		$row = $this->getRecord();

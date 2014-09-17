@@ -24,8 +24,6 @@ namespace FluidTYPO3\Flux\Tests\Unit;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-
 /**
  * @package Flux
  */
