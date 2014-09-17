@@ -26,8 +26,6 @@ namespace FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Section;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Extbase\Utility\TypeHandlingUtility;
 
 /**
  * @package Flux
@@ -86,7 +84,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	protected $enable = TRUE;
 
 	/**
-	 * @var SplObjectStorage
+	 * @var \SplObjectStorage
 	 */
 	protected $wizards;
 

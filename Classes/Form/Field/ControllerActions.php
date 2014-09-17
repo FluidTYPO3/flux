@@ -25,7 +25,6 @@ namespace FluidTYPO3\Flux\Form\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -381,7 +380,7 @@ class ControllerActions extends Select {
 	 */
 	protected function reflectAction($controllerName, $actionName) {
 		$controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
-		/** @var ReflectionMethod $methodReflection */
+		/** @var \ReflectionMethod $methodReflection */
 		$controllerClassReflection = new \ReflectionClass($controllerClassName);
 		$methodReflection = $controllerClassReflection->getMethod($actionName . 'Action');
 		return $methodReflection;

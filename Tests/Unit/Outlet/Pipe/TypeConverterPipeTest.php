@@ -25,12 +25,6 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
-use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
-use TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter;
-use TYPO3\CMS\Extbase\Property\TypeConverter\FloatConverter;
-use TYPO3\CMS\Extbase\Property\TypeConverter\IntegerConverter;
-use TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter;
-use TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter;
 
 /**
  * @package Flux

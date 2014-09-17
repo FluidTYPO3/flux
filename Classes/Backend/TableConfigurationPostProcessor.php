@@ -26,14 +26,11 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Form\AbstractFormField;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Persistence\Mapper\DataMapFactory;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**

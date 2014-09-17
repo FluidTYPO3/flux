@@ -93,7 +93,7 @@ class Core {
 	 * @return void
 	 */
 	public static function addStaticTypoScript($locationOrLocations) {
-		if (TRUE === is_array($locationOrLocations) || TRUE === $locationOrLocations instanceof Traversable) {
+		if (TRUE === is_array($locationOrLocations) || TRUE === $locationOrLocations instanceof \Traversable) {
 			foreach ($locationOrLocations as $location) {
 				self::addStaticTypoScript($location);
 			}

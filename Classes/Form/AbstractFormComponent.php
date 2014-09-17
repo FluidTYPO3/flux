@@ -26,13 +26,13 @@ namespace FluidTYPO3\Flux\Form;
 
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Container;
-use FluidTYPO3\Flux\Form\Container\Content;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Object;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -309,8 +309,7 @@ abstract class AbstractFormComponent implements FormInterface {
 			$id = $root->getName();
 			$extensionName = $root->getExtensionName();
 		}
-		$extensionKey = FALSE === strpos($extensionName, '.') ? $extensionName : substr($extensionName, strpos($extensionName, '.') + 1);
-		$extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
+		$extensionKey = ExtensionNamingUtility::getExtensionKey( $extensionName );
 		if (FALSE === empty($label)) {
 			if (0 === strpos($label, 'LLL:EXT:')) {
 				return LocalizationUtility::translate($label, NULL);
