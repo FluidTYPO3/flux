@@ -92,7 +92,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 			$this->getPageIdFromPost(),
 			$this->getPageIdFromRecordIdentifiedInEditUrlArgument(),
 			$this->getPageIdFromContentObject(),
-			$this->getPageIdFromTypoScriptRecordIfOnlyOneRecordExists(),
+			TRUE === $this->recordService instanceof RecordService ? $this->getPageIdFromTypoScriptRecordIfOnlyOneRecordExists() : 0,
 		);
 	}
 
