@@ -313,13 +313,13 @@ interface ProviderInterface {
 	public function getFlexFormValues(array $row);
 
 	/**
-	 * Gets an inheritance tree (ordered parent -> ... -> this record)
-	 * of record arrays containing raw values.
+	 * Implement to return a controller action name associated with $row.
+	 * Default strategy: return base name of Provider class minus the "Provider" suffix.
 	 *
 	 * @param array $row
-	 * @return array
+	 * @return string
 	 */
-	public function getInheritanceTree(array $row);
+	public function getControllerNameFromRecord(array $row);
 
 	/**
 	 * @param array $row
@@ -338,6 +338,15 @@ interface ProviderInterface {
 	 * @return string
 	 */
 	public function getControllerActionReferenceFromRecord(array $row);
+
+	/**
+	 * Gets an inheritance tree (ordered parent -> ... -> this record)
+	 * of record arrays containing raw values.
+	 *
+	 * @param array $row
+	 * @return array
+	 */
+	public function getInheritanceTree(array $row);
 
 	/**
 	 * @param Form $form
