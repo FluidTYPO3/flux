@@ -60,7 +60,8 @@ class Core {
 	 */
 	private static $forms = array(
 		'models' => array(),
-		'tables' => array()
+		'tables' => array(),
+		'packages' => array()
 	);
 
 	/**
@@ -150,6 +151,27 @@ class Core {
 	public static function unregisterFormForModelObjectClassName($className) {
 		if (TRUE === isset(self::$forms['models'][$className])) {
 			unset(self::$forms['models'][$className]);
+		}
+	}
+
+	/**
+	 * Registers a package key (Vendor.ExtensionName) which is expected to
+	 * contain Domain/Form/{$modelName}Form classes.
+	 *
+	 * @param string $packageName
+	 * @return void
+	 */
+	public static function registerFluxDomainFormPackage($packageName) {
+		self::$forms['packages'][$packageName] = TRUE;
+	}
+
+	/**
+	 * @param string $packageName
+	 * @return void
+	 */
+	public static function unregisterFluxDomainFormPackage($packageName) {
+		if (TRUE === isset(self::$forms['packages'][$packageName])) {
+			unset(self::$forms['packages'][$packageName]);
 		}
 	}
 
@@ -373,6 +395,13 @@ class Core {
 	 */
 	public static function getRegisteredFormsForModelObjectClasses() {
 		return self::$forms['models'];
+	}
+
+	/**
+	 * @return Form[]
+	 */
+	public static function getRegisteredPackagesForAutoForms() {
+		return self::$forms['packages'];
 	}
 
 	/**
