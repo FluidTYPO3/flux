@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Flux: Fluid FlexForms',
-	'description' => 'Uses Fluid to render FlexForms, making them highly dynamic. Has built-in content preview in BE page module for any content using Flux. Offspring of the FED extension.',
+	'description' => 'Backend form and frontend content rendering assistance API with focus on productivity.',
 	'category' => 'misc',
 	'shy' => 0,
 	'version' => '7.1.0',
@@ -34,7 +34,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'CGLcompliance_note' => '',
 	'constraints' => array(
 		'depends' => array(
-			'typo3' => '6.1.0-6.2.99',
+			'typo3' => '6.1.0-6.3.99',
 			'cms' => '',
 			'extbase' => '',
 			'fluid' => '',
