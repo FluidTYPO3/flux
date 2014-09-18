@@ -169,6 +169,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$compactConfigurationToggleOn = 0 < $copy->getCompact();
 		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets)) {
 			$dataStructArray = $copy->last()->build();
+			$dataStructArray['meta'] = array('langDisable' => 1);
 			unset($dataStructArray['ROOT']['TCEforms']);
 		} elseif (0 < count($sheets)) {
 			$dataStructArray['sheets'] = $copy->buildChildren();
