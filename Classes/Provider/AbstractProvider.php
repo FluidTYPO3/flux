@@ -716,8 +716,8 @@ class AbstractProvider implements ProviderInterface {
 	 * @return array
 	 */
 	public function getPreview(array $row) {
-		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		if (FALSE === file_exists($templatePathAndFilename)) {
+		$templateSource = $this->getTemplateSource($row);
+		if (TRUE === empty($templateSource)) {
 			return array(NULL, NULL, TRUE);
 		}
 		$extensionKey = $this->getExtensionKey($row);
@@ -730,9 +730,10 @@ class AbstractProvider implements ProviderInterface {
 		$label = LocalizationUtility::translate($formLabel, $extensionKey);
 		$variables['label'] = $label;
 		$variables['row'] = $row;
+		$variables['record'] = $row;
 
 		$view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, 'Content', $paths, $variables);
-		$view->setTemplatePathAndFilename($templatePathAndFilename);
+		$view->setTemplateSource($templateSource);
 
 		$existingContentObject = $this->configurationManager->getContentObject();
 		$contentObject = new ContentObjectRenderer();
