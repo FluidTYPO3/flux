@@ -133,6 +133,11 @@ class AbstractProvider implements ProviderInterface {
 	protected $extensionKey = NULL;
 
 	/**
+	 * @var string|NULL
+	 */
+	protected $packageName = NULL;
+
+	/**
 	 * @var integer
 	 */
 	protected $priority = 50;
@@ -277,10 +282,11 @@ class AbstractProvider implements ProviderInterface {
 	 * @return string
 	 */
 	protected function resolveFormClassName(array $row) {
-		$extensionKey = $this->getControllerExtensionKeyFromRecord($row);
+		$packageName = $this->getControllerPackageNameFromRecord($row);
+		$packageKey = str_replace('.', '\\', $packageName);
 		$controllerName = $this->getControllerNameFromRecord($row);
 		$action = $this->getControllerActionFromRecord($row);
-		$expectedClassName = sprintf(self::FORM_CLASS_PATTERN, $extensionKey, $controllerName, ucfirst($action));
+		$expectedClassName = sprintf(self::FORM_CLASS_PATTERN, $packageKey, $controllerName, ucfirst($action));
 		return TRUE === class_exists($expectedClassName) ? $expectedClassName : NULL;
 	}
 
@@ -294,7 +300,7 @@ class AbstractProvider implements ProviderInterface {
 		}
 		$formClassName = $this->resolveFormClassName($row);
 		if (NULL !== $formClassName) {
-			$form = $this->objectManager->get($formClassName);
+			$form = $formClassName::create($row);
 		} else {
 			$templateSource = $this->getTemplateSource($row);
 			if (NULL === $templateSource) {
@@ -891,6 +897,16 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	public function getControllerExtensionKeyFromRecord(array $row) {
 		return $this->extensionKey;
+	}
+
+	/**
+	 * Stub: Get the package name of the controller associated with $row
+	 *
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerPackageNameFromRecord(array $row) {
+		return $this->packageName;
 	}
 
 	/**
