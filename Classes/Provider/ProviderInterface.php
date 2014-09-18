@@ -328,6 +328,15 @@ interface ProviderInterface {
 	public function getControllerExtensionKeyFromRecord(array $row);
 
 	/**
+	 * Implement this and return a fully qualified VendorName.PackageName
+	 * value based on $row.
+	 *
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerPackageNameFromRecord(array $row);
+
+	/**
 	 * @param array $row
 	 * @return string
 	 */
