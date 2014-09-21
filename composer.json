@@ -9,6 +9,12 @@
 		"irc": "irc://irc.freenode.org/fedext",
 		"issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
 	},
+	"autoload": {
+		"psr-4": {
+			"FluidTYPO3\\Flux\\Tests\\Unit\\": "Tests/Unit/",
+			"FluidTYPO3\\Flux\\": "Classes/"
+		}
+	},
 	"suggest": {
 		"fluidtypo3/vhs": "ViewHelper library for Fluid templates.",
 		"fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid.",
