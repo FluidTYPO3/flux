@@ -11,7 +11,6 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 );
 
 
-\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', array(
 		'tx_flux_column' => array (
 			'exclude' => 0,
