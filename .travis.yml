@@ -59,4 +59,3 @@ after_script:
   - cd flux
   - composer install
   - php vendor/bin/coveralls -v
-  - cat build/logs/clover.xml
