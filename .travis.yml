@@ -60,4 +60,5 @@ script:
   - if [[ -f typo3conf/ext/flux/Tests/phpunit.xml ]]; then typo3/cli_dispatch.phpsh phpunit -c phpunit.xml --coverage-clover build/logs/clover.xml; fi
 
 after_script:
+  - mv ./typo3conf/ext/flux/.git ./
   - php vendor/bin/coveralls
