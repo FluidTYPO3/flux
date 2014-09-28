@@ -20,5 +20,8 @@
 		"fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid.",
 		"fluidtypo3/fluidcontent": "Gives the ability to render Content Templates with pure fluid.",
 		"fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
+	},
+	"require-dev": {
+		"satooshi/php-coveralls": "dev-master"
 	}
 }

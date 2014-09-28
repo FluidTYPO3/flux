@@ -15,6 +15,8 @@ matrix:
        env: DB=mysql TYPO3=master INTEGRATION=master
 
 before_script:
+  - composer install
+  - mv vendor ../
   - cd ..
   - git clone --single-branch --branch $INTEGRATION --depth 1 git://github.com/typo3-ci/TYPO3-Travis-Integration.git build-environment
   - git clone --depth 1 git://github.com/FluidTYPO3/FluidTYPO3-CodingStandards.git build-environment/FluidTYPO3-CodingStandards
@@ -28,6 +30,7 @@ before_script:
   - mkdir fileadmin
   - mkdir uploads
   - mkdir typo3temp
+  - mkdir -p build/logs
 
   - git clone --depth 1 git://git.typo3.org/TYPO3CMS/Extensions/phpunit.git typo3conf/ext/phpunit
   - git clone --single-branch --branch development --depth 1 git://github.com/FluidTYPO3/builder.git typo3conf/ext/builder
@@ -53,4 +56,7 @@ script:
 # PHPCodeSniffer code inspection with only errors displayed (no warnings)
   - build-environment/CodeSniffer/scripts/phpcs -n --standard=$PWD/build-environment/FluidTYPO3-CodingStandards/ruleset.xml $PWD/typo3conf/ext/flux
 # PHPUnit tests from overridden phpunit tests configuration file
-  - if [[ -f typo3conf/ext/flux/Tests/phpunit.xml ]]; then typo3/cli_dispatch.phpsh phpunit -c phpunit.xml; fi
+  - if [[ -f typo3conf/ext/flux/Tests/phpunit.xml ]]; then typo3/cli_dispatch.phpsh phpunit -c phpunit.xml --coverage-clover build/logs/clover.xml; fi
+
+after_script:
+  - php vendor/bin/coveralls
