@@ -61,4 +61,5 @@ after_script:
   - mkdir -p typo3conf/ext/flux/
   - mv Classes typo3conf/ext/flux/
   - ln -s typo3conf/ext/flux/Classes src
-  - php vendor/bin/coveralls
+  - php vendor/bin/coveralls -v
+  - cat build/logs/clover.xml
