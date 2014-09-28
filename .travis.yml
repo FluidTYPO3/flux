@@ -58,7 +58,7 @@ script:
 after_script:
   - cd flux
   - composer install
-  - mkdir -p typo3conf/ext/Classes
+  - mkdir -p typo3conf/ext/flux/
   - mv Classes typo3conf/ext/flux/
   - ln -s typo3conf/ext/flux/Classes src
   - php vendor/bin/coveralls
