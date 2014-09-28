@@ -18,6 +18,7 @@ before_script:
   - composer install
   - mv vendor ../
   - cd ..
+  - mkdir src
   - git clone --single-branch --branch $INTEGRATION --depth 1 git://github.com/typo3-ci/TYPO3-Travis-Integration.git build-environment
   - git clone --depth 1 git://github.com/FluidTYPO3/FluidTYPO3-CodingStandards.git build-environment/FluidTYPO3-CodingStandards
   - git clone git://github.com/squizlabs/PHP_CodeSniffer.git build-environment/CodeSniffer
