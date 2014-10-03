@@ -314,17 +314,25 @@ class AbstractProvider implements ProviderInterface {
 			$extensionKey = $this->getExtensionKey($row);
 			$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 			$fieldName = $this->getFieldName($row);
-			$variables = array();
+			$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$signature = str_replace('_', '', $extensionKey);
+			$variables = array(
+				'record' => $row,
+			);
+			if (TRUE === isset($typoScript['plugin.']['tx_' . $signature . '.']['settings.'])) {
+				$variables['settings'] = GeneralUtility::removeDotsFromTS($typoScript['plugin.']['tx_' . $signature . '.']['settings.']);
+			}
 
 			// Special case: when saving a new record variable $row[$fieldName] is already an array
 			// and must not be processed by the configuration service.
 			if (FALSE === is_array($row[$fieldName])) {
-				$variables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+				$recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+				$variables = GeneralUtility::array_merge_recursive_overrule($variables, $recordVariables);
 			}
 
-			$variables['record'] = $row;
 			$variables = GeneralUtility::array_merge_recursive_overrule($this->templateVariables, $variables);
 			$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, $controllerName, $paths, $variables);
+
 			$view->setTemplateSource($templateSource);
 			$form = $view->getForm($section, $formName);
 		}
