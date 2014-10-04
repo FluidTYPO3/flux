@@ -30,6 +30,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
@@ -224,15 +225,46 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 	 */
 	public function canInitializeView() {
 		$controllerClassName = substr(get_class($this), 0, -4);
-		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array(), array(), '', FALSE);
+		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('setTemplatePathAndFilename'), array(), '', FALSE);
 		ObjectAccess::setProperty($view, 'objectManager', $this->objectManager, TRUE);
-		$instance = $this->getMock($controllerClassName, array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewObject', 'initializeViewVariables'));
-		ObjectAccess::setProperty($instance, 'configurationManager', $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManager'), TRUE);
-		$instance->expects($this->at(0))->method('intiializeProvider');
+		$provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getTemplateFilename'));
+		$instance = $this->getAccessibleMock($controllerClassName,
+			array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables'));
+		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getPreparedExposedTemplateView'));
+		$fluxService->expects($this->once())->method('getPreparedExposedTemplateView')->will($this->returnValue($view));
+		$instance->_set('configurationManager', $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManager'));
+		$instance->_set('configurationService', $fluxService);
+		$instance->_set('provider', $provider);
+		$instance->_set('request', new Request());
+		$instance->_set('controllerContext', new ControllerContext());
+		$instance->expects($this->at(0))->method('initializeProvider');
 		$instance->expects($this->at(1))->method('initializeSettings');
 		$instance->expects($this->at(2))->method('initializeOverriddenSettings');
-		$instance->expects($this->at(3))->method('initializeViewObject');
-		$instance->expects($this->at(4))->method('initializeViewVariables');
+		$instance->expects($this->at(3))->method('initializeViewVariables');
+		$instance->initializeView($view);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canInitializeViewWithTemplateSource() {
+		$controllerClassName = substr(get_class($this), 0, -4);
+		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('setTemplateSource'), array(), '', FALSE);
+		ObjectAccess::setProperty($view, 'objectManager', $this->objectManager, TRUE);
+		$provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getTemplateFilename', 'getTemplateSource'));
+		$instance = $this->getAccessibleMock($controllerClassName,
+			array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables'));
+		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getPreparedExposedTemplateView'));
+		$fluxService->expects($this->once())->method('getPreparedExposedTemplateView')->will($this->returnValue($view));
+		$instance->_set('configurationManager', $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManager'));
+		$instance->_set('configurationService', $fluxService);
+		$instance->_set('provider', $provider);
+		$instance->_set('request', new Request());
+		$instance->_set('controllerContext', new ControllerContext());
+		$instance->expects($this->at(0))->method('initializeProvider');
+		$instance->expects($this->at(1))->method('initializeSettings');
+		$instance->expects($this->at(2))->method('initializeOverriddenSettings');
+		$instance->expects($this->at(3))->method('initializeViewVariables');
 		$instance->initializeView($view);
 	}
 
