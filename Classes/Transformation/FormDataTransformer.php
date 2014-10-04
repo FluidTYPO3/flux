@@ -104,7 +104,7 @@ class FormDataTransformer {
 	 * @param string $uids
 	 * @return mixed
 	 */
-	private function getObjectOfType($dataType, $uids) {
+	protected function getObjectOfType($dataType, $uids) {
 		$identifiers = TRUE === is_array($uids) ? $uids : GeneralUtility::trimExplode(',', trim($uids, ','), TRUE);
 		$identifiers = array_map('intval', $identifiers);
 		$isModel = (FALSE !== strpos($dataType, '_Domain_Model_') || FALSE !== strpos($dataType, '\\Domain\\Model\\'));
@@ -115,7 +115,7 @@ class FormDataTransformer {
 			if (TRUE === class_exists($repositoryClassName)) {
 				$repository = $this->objectManager->get($repositoryClassName);
 				$uid = array_pop($identifiers);
-				return $repository->findOneByUid($uid);
+				return $repository->findByUid($uid);
 			}
 		} elseif (TRUE === class_exists($dataType)) {
 			// using constructor value to support objects like DateTime
@@ -140,7 +140,7 @@ class FormDataTransformer {
 	 * @param array $identifiers
 	 * @return mixed
 	 */
-	private function loadObjectsFromRepository(RepositoryInterface $repository, $identifiers) {
+	protected function loadObjectsFromRepository(RepositoryInterface $repository, $identifiers) {
 		if (TRUE === method_exists($repository, 'findByIdentifiers')) {
 			return $repository->findByIdentifiers($identifiers);
 		} else {
