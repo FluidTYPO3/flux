@@ -261,4 +261,15 @@ class CoreTest extends AbstractTestCase {
 		$this->assertNotContains($fakeClass, Core::getRegisteredFlexFormProviders());
 	}
 
+	/**
+	 * @test
+	 */
+	public function canRegisterAndUnregisterPackagesForFormGeneration() {
+		$fakePackage = 'MyFakeVendor.MyFakePackage';
+		Core::registerFluxDomainFormPackage($fakePackage);
+		$this->assertArrayHasKey($fakePackage, Core::getRegisteredPackagesForAutoForms());
+		Core::unregisterFluxDomainFormPackage($fakePackage);
+		$this->assertArrayNotHasKey($fakePackage, Core::getRegisteredPackagesForAutoForms());
+	}
+
 }
