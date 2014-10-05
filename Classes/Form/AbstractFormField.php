@@ -84,6 +84,11 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	protected $enable = TRUE;
 
 	/**
+	 * @var string
+	 */
+	protected $validate;
+
+	/**
 	 * @var \SplObjectStorage
 	 */
 	protected $wizards;
@@ -398,6 +403,33 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	 */
 	public function getEnable() {
 		return (boolean) $this->enable;
+	}
+
+	/**
+	 * @param string $validate
+	 * @return FieldInterface
+	 */
+	public function setValidate($validate) {
+		$this->validate = $validate;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getValidate() {
+		if (FALSE === (boolean) $this->getRequired()) {
+			$validate = $this->validate;
+		} else {
+			if (TRUE === empty($this->validate)) {
+				$validate = 'required';
+			} else {
+				$validators = GeneralUtility::trimExplode(',', $this->validate);
+				array_push($validators, 'required');
+				$validate = implode(',', $validators);
+			}
+		}
+		return $validate;
 	}
 
 	/**

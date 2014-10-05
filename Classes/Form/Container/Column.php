@@ -63,17 +63,9 @@ class Column extends AbstractFormContainer implements ContainerInterface {
 			'colspan' => $this->getColspan(),
 			'rowspan' => $this->getRowspan(),
 			'style' => $this->getStyle(),
-			'colPos' => $this->getColumnPosition(),
-			'areas' => $this->buildChildren()
+			'colPos' => $this->getColumnPosition()
 		);
 		return $structure;
-	}
-
-	/**
-	 * @return Content[]
-	 */
-	public function getAreas() {
-		return (array) iterator_to_array($this->children);
 	}
 
 	/**

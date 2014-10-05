@@ -65,7 +65,7 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface {
 
 	/**
 	 * @param array $data
-	 * @return void
+	 * @return mixed
 	 */
 	public function conduct($data) {
 		$queue = new FlashMessageQueue(self::FLASHMESSAGE_QUEUE);
@@ -85,14 +85,14 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface {
 			FlashMessage::WARNING => 'WARNING'
 		);
 		$fields = parent::getFormFields();
-		$fields['message'] = Text::create(array('type' => 'Text'))
-			->setName('message');
-		$fields['title'] = Input::create(array('type' => 'Input'))
-			->setName('title');
-		$fields['severity'] = Select::create(array('type' => 'Select'))
-			->setName('severity')
-			->setItems($severities)
-			->setDefault(FlashMessage::OK);
+		$fields['message'] = Text::create(array('type' => 'Text'))->setName('message');
+		$fields['title'] = Input::create(array('type' => 'Input'))->setName('title');
+		/** @var Select $severity */
+		$severity = Select::create(array('type' => 'Select'));
+		$severity->setName('severity');
+		$severity->setItems($severities);
+		$severity->setDefault(FlashMessage::OK);
+		$fields['severity'] = $severity;
 		return $fields;
 	}
 

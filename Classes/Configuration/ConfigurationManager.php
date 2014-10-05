@@ -40,6 +40,11 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 class ConfigurationManager extends CoreConfigurationManager implements ConfigurationManagerInterface, SingletonInterface {
 
 	/**
+	 * @var BackendConfigurationManager
+	 */
+	protected $concreteConfigurationManager;
+
+	/**
 	 * @return void
 	 */
 	protected function initializeConcreteConfigurationManager() {
@@ -73,6 +78,7 @@ class ConfigurationManager extends CoreConfigurationManager implements Configura
 		if (TRUE === $this->concreteConfigurationManager instanceof BackendConfigurationManager) {
 			return $this->concreteConfigurationManager->getCurrentPageId();
 		}
+		return 0;
 	}
 
 }

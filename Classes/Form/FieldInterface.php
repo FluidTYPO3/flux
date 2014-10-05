@@ -146,6 +146,17 @@ interface FieldInterface extends FormInterface {
 	public function getEnable();
 
 	/**
+	 * @param string $validate
+	 * @return FieldInterface
+	 */
+	public function setValidate($validate);
+
+	/**
+	 * @return string
+	 */
+	public function getValidate();
+
+	/**
 	 * @param WizardInterface $wizard
 	 * @return FormInterface
 	 */

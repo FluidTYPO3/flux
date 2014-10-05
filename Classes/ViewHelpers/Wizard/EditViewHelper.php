@@ -45,6 +45,9 @@ class EditViewHelper extends AbstractWizardViewHelper {
 		$this->registerArgument('openOnlyIfSelected', 'boolean', 'Only open the edit dialog if an item is selected', FALSE, TRUE);
 	}
 
+	/**
+	 * @return Edit
+	 */
 	public function getComponent() {
 		/** @var Edit $component */
 		$component = $this->getPreparedComponent('Edit');

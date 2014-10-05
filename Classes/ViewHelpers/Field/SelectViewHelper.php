@@ -43,6 +43,9 @@ class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 		$this->registerArgument('items', 'mixed', 'Items for the selector; array / CSV / Traversable / Query supported', TRUE);
 	}
 
+	/**
+	 * @return Select
+	 */
 	public function getComponent() {
 		/** @var Select $component */
 		$component = $this->getPreparedComponent('Select');

@@ -42,6 +42,7 @@ class TypoScriptTemplate {
 	 * @return void
 	 */
 	public function preprocessIncludeStaticTypoScriptSources(array &$params, TemplateService $pObj) {
+		unset($pObj);
 		if (TRUE === isset($params['row']['root']) && TRUE === (boolean) $params['row']['root']) {
 			$existingTemplates = GeneralUtility::trimExplode(',', $params['row']['include_static_file']);
 			$globalStaticTemplates = Core::getStaticTypoScript();

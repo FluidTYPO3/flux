@@ -28,6 +28,7 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
+use FluidTYPO3\Flux\Utility\DebuggerUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
@@ -412,7 +413,7 @@ class FluxService implements SingletonInterface {
 	 * @return void
 	 */
 	public function debug($instance, $plainText = FALSE, $depth = 2) {
-		\FluidTYPO3\Flux\Utility\DebuggerUtility::debug($instance, $plainText, $depth);
+		DebuggerUtility::debug($instance, $plainText, $depth);
 	}
 
 	/**
@@ -422,7 +423,7 @@ class FluxService implements SingletonInterface {
 	 * @return NULL
 	 */
 	public function message($message, $severity = GeneralUtility::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
-		\FluidTYPO3\Flux\Utility\DebuggerUtility::message($message, $severity, $title);
+		DebuggerUtility::message($message, $severity, $title);
 	}
 
 	/**

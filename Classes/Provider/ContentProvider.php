@@ -93,7 +93,7 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 		return parent::trigger($row, $table, $field, $extensionKey);
 	}
 
-	/*
+	/**
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row

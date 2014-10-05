@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Backend\Clipboard\Clipboard;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -96,9 +97,9 @@ class ClipBoardUtility {
 			$title = LocalizationUtility::translate('paste', 'Flux');
 		}
 
-		$clipBoard = new \TYPO3\CMS\Backend\Clipboard\Clipboard();
+		$clipBoard = new Clipboard();
 		$clipBoard->initializeClipboard();
-		$uri .= $clipBoard->pasteUrl('tt_content', $relativeTo);
+		$uri = $clipBoard->pasteUrl('tt_content', $relativeTo);
 
 		return MiscellaneousUtility::wrapLink($icon, $uri, $title);
 	}

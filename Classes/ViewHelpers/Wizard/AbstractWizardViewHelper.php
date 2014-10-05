@@ -52,15 +52,6 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
-	 * @return void
-	 */
-	public function render() {
-		$component = $this->getComponent();
-		$field = $this->getContainer();
-		$field->add($component);
-	}
-
-	/**
 	 * @param string $type
 	 * @return WizardInterface
 	 */

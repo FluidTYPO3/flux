@@ -80,10 +80,13 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 	 * Constructor
 	 */
 	public function __construct() {
+		/** @var ObjectManagerInterface $objectManager */
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$this->injectObjectManager($objectManager);
+		/** @var FluxService $configurationService */
 		$configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 		$this->injectConfigurationService($configurationService);
+		/** @var RecordService $recordService */
 		$recordService = $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService');
 		$this->injectRecordService($recordService);
 	}
@@ -117,6 +120,8 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		// Detect what was clicked in order to create the new content element; decide restrictions
 		// based on this.
 		$defaultValues = GeneralUtility::_GET('defVals');
+		$relativeRecordUid = 0;
+		$fluxAreaName = NULL;
 		if (0 > $parentObject->uid_pid) {
 			// pasting after another element means we should try to resolve the Flux content relation
 			// from that element instead of GET parameters (clicked: "create new" icon after other element)

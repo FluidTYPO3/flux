@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -270,7 +271,7 @@ class Core {
 	public static function registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $templateFilename, $variables = array(), $section = NULL, $paths = NULL, $fieldName = 'pi_flexform') {
 		/** @var $objectManager ObjectManagerInterface */
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-		/** @var $provider ProviderInterface */
+		/** @var $provider ContentProvider */
 		$provider = $objectManager->get('FluidTYPO3\Flux\Provider\ContentProvider');
 		$provider->setTableName('tt_content');
 		$provider->setFieldName($fieldName);

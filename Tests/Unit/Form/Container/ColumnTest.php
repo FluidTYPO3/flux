@@ -29,14 +29,4 @@ namespace FluidTYPO3\Flux\Form\Container;
  */
 class ColumnTest extends AbstractContainerTest {
 
-	/**
-	 * @test
-	 */
-	public function canUseGetAreasMethod() {
-		/** @var Column $instance */
-		$instance = $this->createInstance();
-		$this->performTestBuild($instance);
-		$this->assertEmpty($instance->getAreas());
-	}
-
 }

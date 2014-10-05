@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  *****************************************************************/
 
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use FluidTYPO3\Flux\Form\Container\Object as ObjectComponent;
 
 /**
  * FlexForm field section object ViewHelper
@@ -55,7 +56,7 @@ class ObjectViewHelper extends AbstractFormViewHelper {
 	 * @return void
 	 */
 	public function render() {
-		/** @var Object $object */
+		/** @var ObjectComponent $object */
 		$object = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Object');
 		$object->setName($this->arguments['name']);
 		$object->setLabel($this->arguments['label']);
