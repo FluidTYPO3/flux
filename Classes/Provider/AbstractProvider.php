@@ -841,13 +841,7 @@ class AbstractProvider implements ProviderInterface {
 			$fields = $form->getFields();
 			$values = $this->getFlexFormValues($branch);
 			foreach ($fields as $field) {
-				$name = $field->getName();
-				$inherit = (TRUE === $field->getInherit());
-				$inheritEmpty = (TRUE === $field->getInheritEmpty());
-				$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
-				if (FALSE === $inherit || (TRUE === $inheritEmpty && TRUE === $empty)) {
-					unset($values[$name]);
-				}
+				$values = $this->unsetInheritedValues($field, $values);
 			}
 			$data = RecursiveArrayUtility::merge($data, $values);
 		}
@@ -856,6 +850,22 @@ class AbstractProvider implements ProviderInterface {
 		}
 		self::$cache[$cacheKey] = $data;
 		return $data;
+	}
+
+	/**
+	 * @param FieldInterface $field
+	 * @param array $values
+	 * @return array
+	 */
+	protected function unsetInheritedValues(FieldInterface $field, $values) {
+		$name = $field->getName();
+		$inherit = (boolean) $field->getInherit();
+		$inheritEmpty = (boolean) $field->getInheritEmpty();
+		$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
+		if (FALSE === $inherit || (TRUE === $inheritEmpty && TRUE === $empty)) {
+			unset($values[$name]);
+		}
+		return $values;
 	}
 
 	/**

@@ -40,6 +40,7 @@ class ContentProviderTest extends AbstractProviderTest {
 	public function triggersContentManipulatorOnDatabaseOperationNew() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
+		/** @var DataHandler $tceMain */
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$provider->postProcessDatabaseOperation('new', $row['uid'], $row, $tceMain);
 	}
@@ -51,6 +52,7 @@ class ContentProviderTest extends AbstractProviderTest {
 		$_GET['CB'] = array('paste' => 'tt_content|0');
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
+		/** @var DataHandler $tceMain */
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$relativeUid = 0;
 		$contentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('updateRecordInDatabase'));
@@ -140,6 +142,73 @@ class ContentProviderTest extends AbstractProviderTest {
 		$reference = new DataHandler();
 		$mock->reset();
 		$mock->postProcessCommand($command, $id, $record, $relativeTo, $reference);
+	}
+
+	/**
+	 * @test
+	 */
+	public function postProcessDatabaseOperationWithStatusNewCallsInitializeRecord() {
+		$contentService = $this->getMock('FluidTYPO3\\Flux\\Service\\ContentService', array('initializeRecord'));
+		$contentService->expects($this->once())->method('initializeRecord');
+		/** @var DataHandler $tceMain */
+		$tceMain = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		$row = array();
+		$mock = $this->objectManager->get($this->createInstanceClassName());
+		$mock->reset();
+		ObjectAccess::setProperty($mock, 'contentService', $contentService, TRUE);
+		$mock->postProcessDatabaseOperation('new', 1, $row, $tceMain);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider getPriorityTestValues
+	 * @param array $row
+	 * @param integer $expectedPriority
+	 */
+	public function testGetPriority(array $row, $expectedPriority) {
+		$provider = $this->objectManager->get($this->createInstanceClassName());
+		$priority = $provider->getPriority($row);
+		$this->assertEquals($expectedPriority, $priority);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getPriorityTestValues() {
+		return array(
+			array(array('CType' => 'anyotherctype', 'list_type' => ''), 50),
+			array(array('CType' => 'anyotherctype', 'list_type' => 'withlisttype'), 0),
+		);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider getTriggerTestValues
+	 * @param array $row
+	 * @param string $table
+	 * @param string $field
+	 * @param string $extensionKey
+	 * @param boolean $expectedResult
+	 */
+	public function testTrigger($row, $table, $field, $extensionKey, $expectedResult) {
+		$provider = $this->objectManager->get($this->createInstanceClassName());
+		$result = $provider->trigger($row, $table, $field, $extensionKey);
+		$this->assertEquals($expectedResult, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getTriggerTestValues() {
+		return array(
+			array(array(), 'not_tt_content', 'pi_flexform', NULL, FALSE),
+			array(array('list_type' => 'any', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', NULL, FALSE),
+			array(array('list_type' => 'any', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', 'flux', FALSE),
+			// triggers on record having list_type and CType, default field name and any combo of ext key
+			array(array('list_type' => 'any', 'CType' => 'any'), 'tt_content', 'pi_flexform', NULL, TRUE),
+			array(array('list_type' => 'any', 'CType' => 'any'), 'tt_content', 'pi_flexform', 'fluidpages', TRUE),
+			array(array('list_type' => 'any', 'CType' => 'any'), 'tt_content', 'pi_flexform', 'flux', TRUE),
+		);
 	}
 
 }
