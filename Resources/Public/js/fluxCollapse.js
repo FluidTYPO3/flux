@@ -47,8 +47,10 @@ FluidTYPO3.Components.FluxCollapse = {
 			fluxGrid.removeClass('flux-grid-hidden');
 			toggle.replaceClass('t3-icon-view-table-expand', 't3-icon-view-table-collapse');
 			for (var i in cookie) {
-				if (cookie[i] == uid) {
-					delete(cookie[i]);
+				if (cookie.hasOwnProperty(i)) {
+					if (cookie[i] == uid) {
+						delete(cookie[i]);
+					}
 				}
 			}
 		} else {
