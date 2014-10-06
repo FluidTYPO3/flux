@@ -23,8 +23,6 @@ namespace FluidTYPO3\Flux\Backend;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
