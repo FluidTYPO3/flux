@@ -115,9 +115,7 @@ class ProviderResolver {
 	 * @return ProviderInterface[]
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
-		if (FALSE === is_array($row)) {
-			$row = array();
-		}
+		$row = FALSE === is_array($row) ? array() : $row;
 		$providers = Core::getRegisteredFlexFormProviders();
 		$typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
 		$providers = array_merge($providers, $typoScriptConfigurationProviders);

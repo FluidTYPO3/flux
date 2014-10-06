@@ -101,15 +101,12 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference) {
-		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
-			return;
+		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
+			parent::postProcessRecord($operation, $id, $row, $reference);
+			$parameters = GeneralUtility::_GET();
+			$this->contentService->affectRecordByRequestParameters($id, $row, $parameters, $reference);
+			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 		}
-
-		parent::postProcessRecord($operation, $id, $row, $reference);
-		$parameters = GeneralUtility::_GET();
-		$this->contentService->affectRecordByRequestParameters($id, $row, $parameters, $reference);
-
-		self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 	}
 
 	/**
@@ -120,16 +117,13 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference) {
-		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
-			return;
+		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
+			parent::postProcessDatabaseOperation($status, $id, $row, $reference);
+			if ($status === 'new') {
+				$this->contentService->initializeRecord($id, $row, $reference);
+			}
+			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 		}
-
-		parent::postProcessDatabaseOperation($status, $id, $row, $reference);
-		if ($status === 'new') {
-			$this->contentService->initializeRecord($id, $row, $reference);
-		}
-
-		self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 	}
 
 	/**
@@ -144,25 +138,22 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference) {
-		if (FALSE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
-			return;
-		}
-
-		parent::postProcessCommand($command, $id, $row, $relativeTo, $reference);
-		$pasteCommands = array('copy', 'move');
-		if (TRUE === in_array($command, $pasteCommands)) {
-			$callback = $this->getCallbackCommand();
-			if (TRUE === isset($callback['paste'])) {
-				$pasteCommand = $callback['paste'];
-				$parameters = explode('|', $pasteCommand);
-				$this->contentService->pasteAfter($command, $row, $parameters, $reference);
-			} else {
-				$moveData = $this->getMoveData();
-				$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
+		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
+			parent::postProcessCommand($command, $id, $row, $relativeTo, $reference);
+			$pasteCommands = array('copy', 'move');
+			if (TRUE === in_array($command, $pasteCommands)) {
+				$callback = $this->getCallbackCommand();
+				if (TRUE === isset($callback['paste'])) {
+					$pasteCommand = $callback['paste'];
+					$parameters = explode('|', $pasteCommand);
+					$this->contentService->pasteAfter($command, $row, $parameters, $reference);
+				} else {
+					$moveData = $this->getMoveData();
+					$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
+				}
 			}
+			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 		}
-
-		self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 	}
 
 	/**
@@ -174,17 +165,18 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * @return array
+	 * @return array|NULL
 	 */
 	protected function getMoveData() {
+		$return = NULL;
 		$rawPostData = file_get_contents('php://input');
 		if (FALSE === empty($rawPostData)) {
 			$request = json_decode($rawPostData, TRUE);
-			if (TRUE === isset($request['method']) && TRUE === isset($request['data']) && 'moveContentElement' === $request['method']) {
-				return $request['data'];
-			}
+			$hasRequestData = TRUE === isset($request['method']) && TRUE === isset($request['data']);
+			$isMoveMethod = 'moveContentElement' === $request['method'];
+			$return = (TRUE === $hasRequestData && TRUE === $isMoveMethod) ? $request['data'] : NULL;
 		}
-		return NULL;
+		return $return;
 	}
 
 }
