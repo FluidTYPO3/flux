@@ -66,10 +66,7 @@ class AnnotationUtility {
 			$annotations = self::getPropertyAnnotations($reflection, $propertyName, $annotationName);
 		}
 		$annotations = self::parseAnnotation($annotations);
-		if (NULL !== $propertyName && TRUE === isset($annotations[$propertyName])) {
-			return $annotations[$propertyName];
-		}
-		return $annotations;
+		return (NULL !== $propertyName && TRUE === isset($annotations[$propertyName])) ? $annotations[$propertyName] : $annotations;
 	}
 
 	/**
