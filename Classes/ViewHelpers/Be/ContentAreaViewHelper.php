@@ -85,7 +85,6 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$dblist->ext_CALC_PERMS = $GLOBALS['BE_USER']->calcPerms($pageRecord);
 		$dblist->id = $row['pid'];
 		$dblist->nextThree = 1;
-		$dblist->showCommands = 1;
 		$dblist->tt_contentConfig['showCommands'] = 1;
 		$dblist->tt_contentConfig['showInfo'] = 1;
 		$dblist->tt_contentConfig['single'] = 0;

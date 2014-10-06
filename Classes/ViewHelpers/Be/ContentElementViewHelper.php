@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -46,6 +47,7 @@ class ContentElementViewHelper extends AbstractViewHelper {
 	 * @return string
 	 */
 	public function render() {
+		/** @var PageLayoutView $dblist */
 		$dblist = $this->arguments['dblist'];
 		$record = $this->arguments['row'];
 		// varables for function tt_content_drawHeader

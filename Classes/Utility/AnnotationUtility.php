@@ -123,7 +123,7 @@ class AnnotationUtility {
 			} elseif (TRUE === isset($annotation[0]) && 1 === count($annotation)) {
 				return self::parseAnnotation(array_pop($annotation));
 			}
-			return array_map(array(self, 'parseAnnotation'), $annotation);
+			return array_map(array('FluidTYPO3\\Flux\\Utility\\AnnotationUtility', 'parseAnnotation'), $annotation);
 		}
 		$pattern = TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
 		$annotation = trim($annotation);

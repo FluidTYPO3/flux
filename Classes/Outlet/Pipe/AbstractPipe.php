@@ -82,10 +82,17 @@ abstract class AbstractPipe implements PipeInterface {
 	 */
 	public function getFormFields() {
 		$class = get_class($this);
-		$fields = array(
-			'label' => Input::create(array('type' => 'Input'))->setName('label')->setDefault($this->getLabel()),
-			'class' => Select::create(array('type' => 'Select'))->setName('class')->setItems(array($class => $class))
+		/** @var Input $labelField */
+		$labelField = Input::create(array('type' => 'Input'));
+		$labelField->setName('label');
+		$labelField->setDefault($this->getLabel());
+		/** @var Select $classField */
+		$classField = Select::create(array('type' => 'Select'));
+		$classField->setName('class');
+		$classField->setItems(array($class => $class));
+		return array(
+			'label' => $labelField,
+			'class' => $classField
 		);
-		return $fields;
 	}
 }

@@ -69,13 +69,14 @@ class ContentService implements SingletonInterface {
 	}
 
 	/**
-	 * @param String $id
+	 * @param mixed $id
 	 * @param array $row
 	 * @param array $parameters
 	 * @param DataHandler $tceMain
 	 * @return void
 	 */
 	public function affectRecordByRequestParameters($id, array &$row, $parameters, DataHandler $tceMain) {
+		unset($id, $tceMain);
 		if (FALSE === empty($parameters['overrideVals']['tt_content']['tx_flux_parent'])) {
 			$row['tx_flux_parent'] = (integer) $parameters['overrideVals']['tt_content']['tx_flux_parent'];
 			if (0 < $row['tx_flux_parent']) {
@@ -96,6 +97,11 @@ class ContentService implements SingletonInterface {
 	public function pasteAfter($command, array &$row, $parameters, DataHandler $tceMain) {
 		$id = $row['uid'];
 		$tablename = 'tt_content';
+		$subCommand = NULL;
+		$possibleArea = NULL;
+		$parentUid = NULL;
+		$relativeRecord = NULL;
+		$possibleColPos = NULL;
 		if (1 < substr_count($parameters[1], '-')) {
 			// Parameters were passed in a hyphen-glued string, created by Flux and passed into command.
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
@@ -187,7 +193,7 @@ class ContentService implements SingletonInterface {
 		} elseif (0 <= (integer) $relativeTo) {
 			if (FALSE === empty($parameters[1])) {
 				$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
-				list($prefix, $column, $prefix2, $page, $areaUniqid, $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
+				list($prefix, $column, $prefix2, , , $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
 				$relativeUid = (integer) $relativeUid;
 				if ('colpos' === $prefix && 'page' === $prefix2) {
 					$row['colPos'] = $column;

@@ -140,14 +140,8 @@ class FormDataTransformer {
 	 * @param array $identifiers
 	 * @return mixed
 	 */
-	protected function loadObjectsFromRepository(RepositoryInterface $repository, $identifiers) {
-		if (TRUE === method_exists($repository, 'findByIdentifiers')) {
-			return $repository->findByIdentifiers($identifiers);
-		} else {
-			$query = $repository->createQuery();
-			$query->matching($query->in('uid', $identifiers));
-			return $query->execute();
-		}
+	protected function loadObjectsFromRepository(RepositoryInterface $repository, array $identifiers) {
+		return array_map(array($repository, 'findByUid'), $identifiers);
 	}
 
 }

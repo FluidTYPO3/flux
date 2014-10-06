@@ -135,7 +135,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 */
 	public function add(Form\FormInterface $child) {
 		if (FALSE === $child instanceof Form\Container\Sheet) {
-			$this->last()->add($child);
+			/** @var Form\Container\Sheet $last */
+			$last = $this->last();
+			$last->add($child);
 		} else {
 			$children = $this->children;
 			foreach ($children as $existingChild) {

@@ -143,6 +143,7 @@ abstract class AbstractFormComponent implements FormInterface {
 			}
 		}
 		if (TRUE === $object instanceof FieldContainerInterface && TRUE === isset($settings['fields'])) {
+			/** @var FieldContainerInterface $object */
 			foreach ($settings['fields'] as $fieldName => $fieldSettings) {
 				if (FALSE === isset($fieldSettings['name'])) {
 					$fieldSettings['name'] = $fieldName;

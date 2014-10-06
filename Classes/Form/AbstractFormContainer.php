@@ -117,11 +117,12 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	}
 
 	/**
-	 * @param string $childName
+	 * @param FieldInterface|string $childName
 	 * @return FormInterface|FALSE
 	 */
 	public function remove($childName) {
 		foreach ($this->children as $child) {
+			/** @var FieldInterface $child */
 			$isMatchingInstance = (TRUE === $childName instanceof FormInterface && $childName->getName() === $child->getName());
 			$isMatchingName = ($childName === $child->getName());
 			if (TRUE === $isMatchingName || TRUE === $isMatchingInstance) {

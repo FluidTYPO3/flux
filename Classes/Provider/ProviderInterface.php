@@ -35,6 +35,30 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 interface ProviderInterface {
 
 	/**
+	 * Use by TceMain to track method calls to providers for a certain $id.
+	 * Every provider should only be called once per method / $id.
+	 * Before calling a provider, TceMain will call this method.
+	 * If the provider hasn't been called for that method / $id before, it is.
+	 *
+	 *
+	 * @param string $methodName
+	 * @param mixed $id
+	 * @return boolean
+	 */
+	public function shouldCall($methodName, $id);
+
+	/**
+	 * Use by TceMain to track method calls to providers for a certain $id.
+	 * Every provider should only be called once per method / $id.
+	 * When TceMain has called the provider it will call this method afterwards.
+	 *
+	 * @param string $methodName
+	 * @param mixed $id
+	 * @return void
+	 */
+	public function trackMethodCall($methodName, $id);
+
+	/**
 	 * @param array $settings
 	 * @return void
 	 */
@@ -132,6 +156,26 @@ interface ProviderInterface {
 	 * @return string|NULL
 	 */
 	public function getConfigurationSectionName(array $row);
+
+	/**
+	 * @param string $listType
+	 */
+	public function setListType($listType);
+
+	/**
+	 * @return string
+	 */
+	public function getListType();
+
+	/**
+	 * @param string $contentObjectType
+	 */
+	public function setContentObjectType($contentObjectType);
+
+	/**
+	 * @return string
+	 */
+	public function getContentObjectType();
 
 	/**
 	 * Get the field name which will trigger processing

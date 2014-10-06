@@ -48,7 +48,7 @@ class ExtensionNamingUtility {
 	 * @return string
 	 */
 	public static function getVendorName($qualifiedExtensionName) {
-		list($vendorName, $extensionKey) = self::getVendorNameAndExtensionKey($qualifiedExtensionName);
+		list($vendorName, ) = self::getVendorNameAndExtensionKey($qualifiedExtensionName);
 		return $vendorName;
 	}
 
@@ -57,7 +57,7 @@ class ExtensionNamingUtility {
 	 * @return string
 	 */
 	public static function getExtensionKey($qualifiedExtensionName) {
-		list($vendorName, $extensionKey) = self::getVendorNameAndExtensionKey($qualifiedExtensionName);
+		list(, $extensionKey) = self::getVendorNameAndExtensionKey($qualifiedExtensionName);
 		return $extensionKey;
 	}
 
@@ -66,7 +66,7 @@ class ExtensionNamingUtility {
 	 * @return string
 	 */
 	public static function getExtensionName($qualifiedExtensionName) {
-		list($vendorName, $extensionName) = self::getVendorNameAndExtensionName($qualifiedExtensionName);
+		list(, $extensionName) = self::getVendorNameAndExtensionName($qualifiedExtensionName);
 		return $extensionName;
 	}
 

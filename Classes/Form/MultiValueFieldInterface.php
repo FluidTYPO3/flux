@@ -95,4 +95,15 @@ interface MultiValueFieldInterface extends FieldInterface {
 	 */
 	public function getSelectedListStyle();
 
+	/**
+	 * @param string $renderMode
+	 * @return MultiValueFieldInterface
+	 */
+	public function setRenderMode($renderMode);
+
+	/**
+	 * @return string
+	 */
+	public function getRenderMode();
+
 }

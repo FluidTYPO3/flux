@@ -71,11 +71,12 @@ class FormDataTransformerTest extends AbstractTestCase {
 	 */
 	public function supportsFindByIdentifiers() {
 		$instance = new FormDataTransformer();
-		$identifiers = array(123);
-		$repository = $this->getMock('TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserGroupRepository', array('findByIdentifiers'), array(), '', FALSE);
-		$repository->expects($this->once())->method('findByIdentifiers')->will($this->returnValue('foobar'));
+		$identifiers = array('foobar', 'foobar2');
+		$repository = $this->getMock('TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserGroupRepository', array('findByUid'),
+			array(), '', FALSE);
+		$repository->expects($this->exactly(2))->method('findByUid')->will($this->returnArgument(0));
 		$result = $this->callInaccessibleMethod($instance, 'loadObjectsFromRepository', $repository, $identifiers);
-		$this->assertEquals($result, 'foobar');
+		$this->assertEquals($result, array('foobar', 'foobar2'));
 	}
 
 }

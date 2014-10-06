@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\Backend;
  *****************************************************************/
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 
 /**
  * @package Flux
@@ -157,6 +158,7 @@ class TceMain {
 			}
 			$arguments[] = &$reference;
 			// check for a registered generic ConfigurationProvider for $table
+			/** @var ProviderInterface[] $detectedProviders */
 			$detectedProviders = array();
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
 			foreach ($providers as $provider) {

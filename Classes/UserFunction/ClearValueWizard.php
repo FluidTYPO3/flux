@@ -39,6 +39,7 @@ class ClearValueWizard {
 	 * @return string
 	 */
 	public function renderField(&$parameters, &$pObj) {
+		unset($pObj);
 		$nameSegments = explode('][', $parameters['itemName']);
 		$nameSegments[6] .= '_clear';
 		$fieldName = implode('][', $nameSegments);

@@ -4,6 +4,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /***************************************************************
@@ -120,7 +121,7 @@ class DebuggerUtility extends \TYPO3\CMS\Extbase\Utility\DebuggerUtility {
 	 * @return void
 	 */
 	protected static function passToDebugger() {
-		call_user_func_array(array(self, 'var_dump'), array(func_get_args()));
+		call_user_func_array(array('FluidTYPO3\\Flux\\Utility\\DebuggerUtility', 'var_dump'), array(func_get_args()));
 	}
 
 	/**
@@ -143,7 +144,8 @@ class DebuggerUtility extends \TYPO3\CMS\Extbase\Utility\DebuggerUtility {
 		$isAjaxCall = (boolean) 0 < GeneralUtility::_GET('ajaxCall');
 		$flashMessage = new FlashMessage($message, $title, $severity);
 		$flashMessage->setStoreInSession($isAjaxCall);
-		FlashMessageQueue::addMessage($flashMessage);
+		$flashMessageQueue = new FlashMessageQueue('flux');
+		$flashMessageQueue->addMessage($flashMessage);
 		self::$sentDebugMessages[$hash] = TRUE;
 		return NULL;
 	}

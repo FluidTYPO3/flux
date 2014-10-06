@@ -300,7 +300,7 @@ class AbstractProvider implements ProviderInterface {
 		}
 		$formClassName = $this->resolveFormClassName($row);
 		if (NULL !== $formClassName) {
-			$form = $formClassName::create($row);
+			$form = call_user_func_array(array($formClassName, 'create'), array($row));
 		} else {
 			$templateSource = $this->getTemplateSource($row);
 			if (NULL === $templateSource) {
@@ -608,18 +608,21 @@ class AbstractProvider implements ProviderInterface {
 			$dom->preserveWhiteSpace = FALSE;
 			$dom->formatOutput = TRUE;
 			foreach ($dom->getElementsByTagName('field') as $fieldNode) {
+				/** @var \DOMElement $fieldNode */
 				if (TRUE === in_array($fieldNode->getAttribute('index'), $removals)) {
 					$fieldNode->parentNode->removeChild($fieldNode);
 				}
 			}
 			// Assign a hidden ID to all container-type nodes, making the value available in templates etc.
 			foreach ($dom->getElementsByTagName('el') as $containerNode) {
+				/** @var \DOMElement $containerNode */
 				$hasIdNode = FALSE;
 				if (0 < $containerNode->attributes->length) {
 					// skip <el> tags reserved for other purposes by attributes; only allow pure <el> tags.
 					continue;
 				}
 				foreach ($containerNode->childNodes as $fieldNodeInContainer) {
+					/** @var \DOMElement $fieldNodeInContainer */
 					if (FALSE === $fieldNodeInContainer instanceof \DOMElement) {
 						continue;
 					}
@@ -1050,9 +1053,10 @@ class AbstractProvider implements ProviderInterface {
 	 *
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @return void
 	 */
 	public function trackMethodCall($methodName, $id) {
-		return self::trackMethodCallWithClassName(get_class($this), $methodName, $id);
+		self::trackMethodCallWithClassName(get_class($this), $methodName, $id);
 	}
 
 	/**
@@ -1077,6 +1081,7 @@ class AbstractProvider implements ProviderInterface {
 	 * @param string $className
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @return void
 	 */
 	protected function trackMethodCallWithClassName($className, $methodName, $id) {
 		$cacheKey = $className . $methodName . $id;
