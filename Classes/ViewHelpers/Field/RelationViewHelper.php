@@ -32,4 +32,11 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 class RelationViewHelper extends AbstractRelationFieldViewHelper {
 
+	/**
+	 * @return void
+	 */
+	public function initializeArguments() {
+		parent::initializeArguments();
+	}
+
 }

@@ -91,15 +91,7 @@ class DataViewHelper extends AbstractViewHelper {
 					'provide the "record" attribute.', $table, $field, $uid), 1358679983);
 			}
 			$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $record);
-			if (0 === count($providers)) {
-				$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field]);
-			} else {
-				$dataArray = array();
-				foreach ($providers as $provider) {
-					$data = (array) $provider->getFlexFormValues($record);
-					$dataArray = RecursiveArrayUtility::merge($dataArray, $data);
-				}
-			}
+			$dataArray = $this->readDataArrayFromProvidersOrUsingDefaultMethod($providers, $record, $field);
 		} else {
 			throw new Exception('Invalid table:field "' . $table . ':' . $field . '" - does not exist in TYPO3 TCA.', 1387049117);
 		}
@@ -118,4 +110,24 @@ class DataViewHelper extends AbstractViewHelper {
 		}
 		return $dataArray;
 	}
+
+	/**
+	 * @param array $providers
+	 * @param array $record
+	 * @param string $field
+	 * @return array
+	 */
+	protected function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field) {
+		if (0 === count($providers)) {
+			$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field]);
+		} else {
+			$dataArray = array();
+			foreach ($providers as $provider) {
+				$data = (array) $provider->getFlexFormValues($record);
+				$dataArray = RecursiveArrayUtility::merge($dataArray, $data);
+			}
+		}
+		return $dataArray;
+	}
+
 }

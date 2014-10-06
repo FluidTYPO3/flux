@@ -165,4 +165,17 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$this->assertEquals($output, 'Some text');
 	}
 
+	/**
+	 * @test
+	 */
+	public function readDataArrayFromProvidersOrUsingDefaultMethodCallsConfigurationServiceConvertOnEmptyProviderArray() {
+		$mock = $this->createInstance();
+		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('convertFlexFormContentToArray'));
+		$providers = array();
+		$record = array();
+		$field = NULL;
+		ObjectAccess::setProperty($mock, 'configurationService', $configurationService, TRUE);
+		$this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
+	}
+
 }
