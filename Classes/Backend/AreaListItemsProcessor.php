@@ -28,6 +28,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * Returns options for a "content area" selector box
@@ -62,14 +63,22 @@ class AreaListItemsProcessor {
 	}
 
 	/**
+	 * @return array
+	 */
+	protected function readParentAndAreaNameFromUrl() {
+		$urlRequestedParent = ObjectAccess::getPropertyPath($_GET, 'defVals.tt_content.tx_flux_parent');
+		$urlRequestedArea = ObjectAccess::getPropertyPath($_GET, 'defVals.tt_content.tx_flux_column');
+		return array($urlRequestedParent, $urlRequestedArea);
+	}
+
+	/**
 	 * ItemsProcFunc - adds items to tt_content.colPos selector (first, pipes through EXT:gridelements)
 	 *
 	 * @param array $params
 	 * @return void
 	 */
 	public function itemsProcFunc(&$params) {
-		$urlRequestedArea = $_GET['defVals']['tt_content']['tx_flux_column'];
-		$urlRequestedParent = $urlRequestedValue = $_GET['defVals']['tt_content']['tx_flux_parent'];
+		list ($urlRequestedParent, $urlRequestedArea) = $this->readParentAndAreaNameFromUrl();
 		if ($urlRequestedParent) {
 			$parentUid = $urlRequestedParent;
 		} else {
