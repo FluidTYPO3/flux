@@ -310,15 +310,9 @@ abstract class AbstractFormComponent implements FormInterface {
 			$id = $root->getName();
 			$extensionName = $root->getExtensionName();
 		}
-		$extensionKey = ExtensionNamingUtility::getExtensionKey( $extensionName );
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		if (FALSE === empty($label)) {
-			if (0 === strpos($label, 'LLL:EXT:')) {
-				return LocalizationUtility::translate($label, NULL);
-			} else if (0 === strpos($label, 'LLL:') ) {
-				return LocalizationUtility::translate(substr($label, 4), $extensionKey);
-			} else {
-				return $label;
-			}
+			return $this->translateLabelReference($label, $extensionKey);
 		}
 		if ((TRUE === empty($extensionKey) || FALSE === ExtensionManagementUtility::isLoaded($extensionKey))) {
 			return $name;
@@ -336,6 +330,20 @@ abstract class AbstractFormComponent implements FormInterface {
 		$labelIdentifier = $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
 		$translated = LocalizationUtility::translate($labelIdentifier, $extensionKey);
 		return (NULL !== $translated ? $translated : $labelIdentifier);
+	}
+
+	/**
+	 * @param string $label
+	 * @param string $extensionKey
+	 * @return NULL|string
+	 */
+	protected function translateLabelReference($label, $extensionKey) {
+		if (0 === strpos($label, 'LLL:EXT:')) {
+			return LocalizationUtility::translate($label, NULL);
+		} else if (0 === strpos($label, 'LLL:') ) {
+			return LocalizationUtility::translate(substr($label, 4), $extensionKey);
+		}
+		return $label;
 	}
 
 	/**
