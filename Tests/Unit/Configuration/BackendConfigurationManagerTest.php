@@ -24,6 +24,8 @@ namespace FluidTYPO3\Flux\Configuration;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -39,6 +41,25 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	public function canCreateInstance() {
 		$instance = $this->createInstance();
 		$this->assertInstanceOf($this->createInstanceClassName(), $instance);
+	}
+
+	/**
+	 * @test
+	 */
+	public function supportsInjectors() {
+		$instance = new BackendConfigurationManager();
+		$recordService = new RecordService();
+		$instance->injectRecordService($recordService);
+		$this->assertAttributeSame($recordService, 'recordService', $instance);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canSetCurrentPageId() {
+		$instance = new BackendConfigurationManager();
+		$instance->setCurrentPageId(123);
+		$this->assertAttributeEquals(123, 'currentPageUid', $instance);
 	}
 
 	/**
@@ -103,7 +124,6 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	 */
 	public function getCurrentPageIdReturnsProtectedPropertyOnlyIfSet() {
 		$pageUid = 54642;
-
 		$mock = $this->objectManager->get($this->createInstanceClassName());
 		ObjectAccess::setProperty($mock, 'currentPageUid', 0, TRUE);
 		ObjectAccess::setProperty($mock, 'recordService', $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService'), TRUE);
@@ -113,6 +133,18 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 		$result = $this->callInaccessibleMethod($mock, 'getCurrentPageId');
 		$this->assertEquals($pageUid, $result);
 		ObjectAccess::setProperty($mock, 'currentPageUid', 0, TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getPageIdFromRecordUidDelegatesToRecordService() {
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', array('getSingle'));
+		$recordService->expects($this->once())->method('getSingle')
+			->with('table', 'pid', 123)->will($this->returnValue(array('foo' => 'bar')));
+		$mock = $this->objectManager->get($this->createInstanceClassName());
+		$mock->injectRecordService($recordService);
+		$this->callInaccessibleMethod($mock, 'getPageIdFromRecordUid', 'table', 123);
 	}
 
 }
