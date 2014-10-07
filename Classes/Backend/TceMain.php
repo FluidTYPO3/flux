@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Backend;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 
@@ -67,7 +68,7 @@ class TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $relativeTo Filled if command is relative to another element
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
+	 * @param DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference) {
@@ -81,7 +82,7 @@ class TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $relativeTo Filled if command is relative to another element
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
+	 * @param DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference) {
@@ -94,12 +95,13 @@ class TceMain {
 	 * @param array $incomingFieldArray The original field names and their values before they are processed
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
+	 * @param DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, &$reference) {
 		$arguments = array('row' => &$incomingFieldArray, 'id' => $id);
-		$this->executeConfigurationProviderMethod('preProcessRecord', $table, $id, $incomingFieldArray, $arguments, $reference);
+		$incomingFieldArray = $this->executeConfigurationProviderMethod(
+			'preProcessRecord', $table, $id, $incomingFieldArray, $arguments, $reference);
 	}
 
 	/**
@@ -107,12 +109,13 @@ class TceMain {
 	 * @param string $table The table TCEmain is currently processing
 	 * @param string $id The records id (if any)
 	 * @param array $fieldArray The field names and their values to be processed
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference Reference to the parent object (TCEmain)
+	 * @param DataHandler $reference Reference to the parent object (TCEmain)
 	 * @return void
 	 */
 	public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$reference) {
 		$arguments = array('status' => $status, 'id' => $id, 'row' => &$fieldArray);
-		$this->executeConfigurationProviderMethod('postProcessRecord', $table, $id, $fieldArray, $arguments, $reference);
+		$fieldArray = $this->executeConfigurationProviderMethod(
+			'postProcessRecord', $table, $id, $fieldArray, $arguments, $reference);
 	}
 
 	/**
@@ -120,12 +123,13 @@ class TceMain {
 	 * @param string $table	The table we're dealing with
 	 * @param mixed $id Either the record UID or a string if a new record has been created
 	 * @param array $fieldArray The record row how it has been inserted into the database
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference A reference to the TCEmain instance
+	 * @param DataHandler $reference A reference to the TCEmain instance
 	 * @return void
 	 */
 	public function processDatamap_afterDatabaseOperations($status, $table, $id, &$fieldArray, &$reference) {
 		$arguments = array('status' => $status, 'id' => $id, 'row' => &$fieldArray);
-		$this->executeConfigurationProviderMethod('postProcessDatabaseOperation', $table, $id, $fieldArray, $arguments, $reference);
+		$fieldArray = $this->executeConfigurationProviderMethod('postProcessDatabaseOperation',
+			$table, $id, $fieldArray, $arguments, $reference);
 	}
 
 	/**
@@ -136,43 +140,16 @@ class TceMain {
 	 * @param mixed $id
 	 * @param array $record
 	 * @param array $arguments
-	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $reference
+	 * @param DataHandler $reference
 	 * @return void
 	 */
-	protected function executeConfigurationProviderMethod($methodName, $table, $id, array &$record, array &$arguments, &$reference) {
+	protected function executeConfigurationProviderMethod($methodName, $table, $id, array $record, array $arguments, DataHandler $reference) {
 		try {
-			if (FALSE !== strpos($id, 'NEW')) {
-				if (FALSE === empty($reference->substNEWwithIDs[$id])) {
-					$id = intval($reference->substNEWwithIDs[$id]);
-				}
-			} else {
-				$id = intval($id);
-			}
-			if (TRUE === is_integer($id) && 0 === count($record)) {
-				// patch: when a record is completely empty but a UID exists
-				$loadedRecord = $this->recordService->getSingle($table, '*', $id);
-				if (TRUE === is_array($loadedRecord)) {
-					$record = $loadedRecord;
-					$arguments['row'] = &$record;
-				}
-			}
+			$id = $this->resolveRecordUid($id, $reference);
+			$record = $this->ensureRecordDataIsLoaded($table, $id, $record);
+			$arguments['row'] = &$record;
 			$arguments[] = &$reference;
-			// check for a registered generic ConfigurationProvider for $table
-			/** @var ProviderInterface[] $detectedProviders */
-			$detectedProviders = array();
-			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
-			foreach ($providers as $provider) {
-				$class = get_class($provider);
-				$detectedProviders[$class] = $provider;
-			}
-			// check each field for a registered ConfigurationProvider
-			foreach ($record as $fieldName => $unusedValue) {
-				$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $record);
-				foreach ($providers as $provider) {
-					$class = get_class($provider);
-					$detectedProviders[$class] = $provider;
-				}
-			}
+			$detectedProviders = $this->detectUniqueProviders($table, $record);
 			foreach ($detectedProviders as $provider) {
 				if (TRUE === $provider->shouldCall($methodName, $id)) {
 					call_user_func_array(array($provider, $methodName), $arguments);
@@ -182,6 +159,63 @@ class TceMain {
 		} catch (\Exception $error) {
 			$this->configurationService->debug($error);
 		}
+		return $record;
+	}
+
+	/**
+	 * @param string $table
+	 * @param integer $id
+	 * @param array $record
+	 * @return array|NULL
+	 */
+	protected function ensureRecordDataIsLoaded($table, $id, array $record) {
+		if (TRUE === is_integer($id) && 0 === count($record)) {
+			// patch: when a record is completely empty but a UID exists
+			$loadedRecord = $this->recordService->getSingle($table, '*', $id);
+			$record = TRUE === is_array($loadedRecord) ? $loadedRecord : $record;
+		}
+		return $record;
+	}
+
+	/**
+	 * @param string $table
+	 * @param array $record
+	 * @return ProviderInterface[]
+	 */
+	protected function detectUniqueProviders($table, array $record) {
+		// check for a registered generic ConfigurationProvider for $table
+		/** @var ProviderInterface[] $detectedProviders */
+		$detectedProviders = array();
+		$providers = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
+		foreach ($providers as $provider) {
+			$class = get_class($provider);
+			$detectedProviders[$class] = $provider;
+		}
+		// check each field for a registered ConfigurationProvider
+		foreach ($record as $fieldName => $unusedValue) {
+			$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $record);
+			foreach ($providers as $provider) {
+				$class = get_class($provider);
+				$detectedProviders[$class] = $provider;
+			}
+		}
+		return $detectedProviders;
+	}
+
+	/**
+	 * @param integer $id
+	 * @param DataHandler $reference
+	 * @return integer
+	 */
+	protected function resolveRecordUid($id, DataHandler $reference) {
+		if (FALSE !== strpos($id, 'NEW')) {
+			if (FALSE === empty($reference->substNEWwithIDs[$id])) {
+				$id = intval($reference->substNEWwithIDs[$id]);
+			}
+		} else {
+			$id = intval($id);
+		}
+		return $id;
 	}
 
 	/**
@@ -198,7 +232,7 @@ class TceMain {
 		foreach ($tables as $table) {
 			$providers = $this->configurationService->resolveConfigurationProviders($table, NULL);
 			foreach ($providers as $provider) {
-				/** @var $provider \FluidTYPO3\Flux\Provider\ProviderInterface */
+				/** @var $provider ProviderInterface */
 				$provider->clearCacheCommand($command);
 			}
 		}
