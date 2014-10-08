@@ -240,4 +240,29 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		$this->assertSame(LocalizationUtility::translate('tt_content.tx_flux_container', 'flux'), $result);
 	}
 
+	/**
+	 * @test
+	 * @dataProvider getLabelTranslationTestValues
+	 * @param string $input
+	 * @param string $extensionKey
+	 * @param string $expectedOutput
+	 */
+	public function testTranslateLabelReference($input, $extensionKey, $expectedOutput) {
+		$mock = $this->getMock($this->createInstanceClassName());
+		$result = $this->callInaccessibleMethod($mock, 'translateLabelReference', $input, $extensionKey);
+		$this->assertEquals($expectedOutput, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getLabelTranslationTestValues() {
+		return array(
+			array('label', NULL, 'label'),
+			array('LLL:tt_content.tx_flux_container', 'flux', 'Content Container'),
+			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', NULL, 'Content Container'),
+			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', 'flux', 'Content Container'),
+		);
+	}
+
 }

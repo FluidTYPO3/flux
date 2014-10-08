@@ -29,6 +29,8 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -260,6 +262,20 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 		$output = $view->getTemplatePathAndFilename('index');
 		$this->assertNotEmpty($output);
 		$this->assertFileExists($output);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getTemplatePathAndFilenameCallsExpectedMethodSequenceInStandardTemplateViewMode() {
+		$request = new Request();
+		$controllerContext = $this->getMock('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerContext', array('getRequest'));
+		$controllerContext->expects($this->once())->method('getRequest')->will($this->returnValue($request));
+		$mock = $this->getMock($this->createInstanceClassName(), array('expandGenericPathPattern'), array(), '', FALSE);
+		$mock->expects($this->any())->method('expandGenericPathPattern')->will($this->returnValue(array('/dev/null/')));
+		$mock->setControllerContext($controllerContext);
+		$this->setExpectedException('TYPO3\\CMS\\Fluid\\View\\Exception\\InvalidTemplateResourceException');
+		$mock->getTemplatePathAndFilename();
 	}
 
 	/**

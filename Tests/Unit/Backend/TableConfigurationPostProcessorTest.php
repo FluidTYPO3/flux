@@ -118,4 +118,28 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 		$this->assertEquals('FluidTYPO3.Flux', $extensionName);
 	}
 
+	/**
+	 * @test
+	 * @dataProvider getClassToTableTestValues
+	 * @param string $class
+	 * @param string $expectedTable
+	 */
+	public function testResolveTableName($class, $expectedTable) {
+		$instance = new TableConfigurationPostProcessor();
+		$result = $this->callInaccessibleMethod($instance, 'resolveTableName', $class);
+		$this->assertEquals($expectedTable, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getClassToTableTestValues() {
+		return array(
+			array('syslog', 'syslog'),
+			array('FluidTYPO3\\Flux\\Domain\\Model\\ObjectName', 'tx_flux_domain_model_objectname'),
+			array('TYPO3\\CMS\\Extbase\\Domain\\Model\\ObjectName', 'tx_extbase_domain_model_objectname'),
+			array('Tx_Flux_Domain_Model_ObjectName', 'tx_flux_domain_model_objectname'),
+		);
+	}
+
 }
