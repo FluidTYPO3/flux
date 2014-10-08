@@ -68,10 +68,7 @@ class ClipBoardUtility {
 		}
 		$mode = TRUE === isset($clipData['current']) ? $clipData['current'] : 'normal';
 		$hasClip = TRUE === isset($clipData[$mode]['el']) && 0 < count($clipData[$mode]['el']);
-		if (FALSE === $hasClip) {
-			return NULL;
-		}
-		if (FALSE === isset($clipData[$mode]['mode']) && TRUE === $reference) {
+		if (FALSE === $hasClip || (FALSE === isset($clipData[$mode]['mode']) && TRUE === $reference)) {
 			return NULL;
 		}
 		return $clipData;
