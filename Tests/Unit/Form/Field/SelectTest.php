@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Form\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\Persistence\Generic\Query;
 
 /**
@@ -87,14 +88,39 @@ class SelectTest extends AbstractFieldTest {
 	 * @test
 	 */
 	public function canConsumeQueryObjectItems() {
+		$GLOBALS['TCA']['foobar']['ctrl']['label'] = 'username';
 		/** @var Select $instance */
-		$instance = $this->createInstance();
-		/** @var Query $query */
-		$query = $this->objectManager->get('TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository')->createQuery();
-		$query->getQuerySettings()->setRespectStoragePage(FALSE);
+		$instance = $this->objectManager->get($this->createInstanceClassName());
+		$query = $this->getMock('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Query', array('execute', 'getType'), array(), '', FALSE);
+		$query->expects($this->any())->method('getType')->will($this->returnValue('foobar'));
+		$query->expects($this->any())->method('execute')->will($this->returnValue(array(
+			new FrontendUser('user1'),
+			new FrontendUser('user2')
+		)));
 		$instance->setItems($query);
-		$this->assertIsArray($instance->getItems());
+		$result = $instance->getItems();
+		$this->assertIsArray($result);
 		$this->performTestBuild($instance);
+		$this->assertEquals(array(
+			array('user1', NULL), array('user2', NULL)
+		), $result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getLabelPropertyNameTranslatesTableNameFromObjectTypeRespectingTableMapping() {
+		$instance = $this->objectManager->get($this->createInstanceClassName());
+		$configurationManager = $this->getMock('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager', array('getConfiguration'));
+		$instance->injectConfigurationManager($configurationManager);
+		$table = 'foo';
+		$type = 'bar';
+		$fixture = array('config.' => array('tx_extbase.' => array('persistence.' => array('classes.' =>
+			array($type . '.' => array('mapping.' => array('tableName' => $table . 'suffix')))))));
+		$configurationManager->expects($this->once())->method('getConfiguration')->will($this->returnValue($fixture));
+		$GLOBALS['TCA'][$table . 'suffix']['ctrl']['label'] = $table . 'label';
+		$propertyName = $this->callInaccessibleMethod($instance, 'getLabelPropertyName', $table, $type);
+		$this->assertEquals($table . 'label', $propertyName);
 	}
 
 }

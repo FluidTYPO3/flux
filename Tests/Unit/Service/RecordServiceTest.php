@@ -129,4 +129,20 @@ class RecordServiceTest extends AbstractTestCase {
 		$this->assertSame($GLOBALS['TYPO3_DB'], $this->callInaccessibleMethod($instance, 'getDatabaseConnection'));
 	}
 
+	/**
+	 * @test
+	 */
+	public function preparedGetCallsExpectedMethodSequence() {
+		$query = $this->getMock('TYPO3\\CMS\\Core\\Database\\PreparedStatement',
+			array('execute', 'fetchAll', 'free'), array(), '', FALSE);
+		$connection = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('prepare_SELECTquery'));
+		$connection->expects($this->once())->method('prepare_SELECTquery')->will($this->returnValue($query));
+		$query->expects($this->once())->method('execute');
+		$query->expects($this->once())->method('fetchAll')->will($this->returnValue(array()));
+		$query->expects($this->once())->method('free');
+		$mock = $this->getMock($this->createInstanceClassName(), array('getDatabaseConnection'));
+		$mock->expects($this->once())->method('getDatabaseConnection')->will($this->returnValue($connection));
+		$mock->preparedGet('table', '', '', array());
+	}
+
 }

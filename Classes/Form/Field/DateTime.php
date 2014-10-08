@@ -37,4 +37,12 @@ class DateTime extends Input implements FieldInterface {
 	 */
 	protected $validate = 'date';
 
+	/**
+	 * @param array $settings
+	 * @return FieldInterface
+	 */
+	public static function create(array $settings = array()) {
+		return parent::create($settings);
+	}
+
 }

@@ -27,7 +27,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Persistence\Generic\Query;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -79,7 +79,9 @@ class Select extends AbstractMultiValueFormField {
 	 */
 	public function getItems() {
 		$items = array();
-		if (TRUE === is_string($this->items)) {
+		if (TRUE === $this->items instanceof QueryInterface) {
+			$items = $this->addOptionsFromResults($this->items);
+		} elseif (TRUE === is_string($this->items)) {
 			$itemNames = GeneralUtility::trimExplode(',', $this->items);
 			foreach ($itemNames as $itemName) {
 				array_push($items, array($itemName, $itemName));
@@ -91,25 +93,6 @@ class Select extends AbstractMultiValueFormField {
 				} else {
 					array_push($items, array($itemValue, $itemIndex));
 				}
-			}
-		} elseif (TRUE === $this->items instanceof Query) {
-			/** @var Query $query */
-			$query = $this->items;
-			$results = $query->execute();
-			$type = $query->getType();
-			$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-			$table = strtolower(str_replace('\\', '_', $type));
-			if (TRUE === isset($typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'])) {
-				$mapping = $typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'];
-				if (TRUE === isset($mapping['mapping.']['tableName'])) {
-					$table = $mapping['mapping.']['tableName'];
-				}
-			}
-			$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
-			$propertyName = GeneralUtility::underscoredToLowerCamelCase($labelField);
-			foreach ($results as $result) {
-				$uid = $result->getUid();
-				array_push($items, array(ObjectAccess::getProperty($result, $propertyName), $uid));
 			}
 		}
 		$emptyOption = $this->getEmptyOption();
@@ -133,6 +116,41 @@ class Select extends AbstractMultiValueFormField {
 	 */
 	public function getEmptyOption() {
 		return $this->emptyOption;
+	}
+
+	/**
+	 * @param QueryInterface $query
+	 * @return array
+	 */
+	protected function addOptionsFromResults(QueryInterface $query) {
+		$items = array();
+		$results = $query->execute();
+		$type = $query->getType();
+		$table = strtolower(str_replace('\\', '_', $type));
+		$propertyName = $this->getLabelPropertyName($table, $type);
+		foreach ($results as $result) {
+			$uid = $result->getUid();
+			array_push($items, array(ObjectAccess::getProperty($result, $propertyName), $uid));
+		}
+		return $items;
+	}
+
+	/**
+	 * @param string $table
+	 * @param string $type
+	 * @return string
+	 */
+	protected function getLabelPropertyName($table, $type) {
+		$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		if (TRUE === isset($typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'])) {
+			$mapping = $typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'];
+			if (TRUE === isset($mapping['mapping.']['tableName'])) {
+				$table = $mapping['mapping.']['tableName'];
+			}
+		}
+		$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
+		$propertyName = GeneralUtility::underscoredToLowerCamelCase($labelField);
+		return $propertyName;
 	}
 
 }

@@ -92,7 +92,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 			$this->getPageIdFromPost(),
 			$this->getPageIdFromRecordIdentifiedInEditUrlArgument(),
 			$this->getPageIdFromContentObject(),
-			TRUE === $this->recordService instanceof RecordService ? $this->getPageIdFromTypoScriptRecordIfOnlyOneRecordExists() : 0,
+			parent::getCurrentPageId(),
 		);
 	}
 
@@ -177,23 +177,6 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	protected function getPageIdFromContentObject() {
 		$record = $this->getContentObject()->data;
 		return TRUE === is_array($record) ? $this->getPageIdFromRecord($record) : 0;
-	}
-
-	/**
-	 * Reads the PID of the root TypoScript record if there is only
-	 * one single, active TypoScript template in the site. If there
-	 * is more then one active template, no page UID is returned from
-	 * this method - but very likely, one is returned from one of the
-	 * other methods.
-	 *
-	 * @return integer
-	 */
-	protected function getPageIdFromTypoScriptRecordIfOnlyOneRecordExists() {
-		$time = time();
-		$condition = 'root = 1 AND hidden = 0 AND deleted = 0 AND (starttime = 0 OR starttime < ' . $time . ') AND (endtime = 0 OR endtime > ' . $time . ')';
-		$templates = $this->recordService->get('sys_template', 'pid', $condition);
-		$numberOfTemplates = count($templates);
-		return (1 !== $numberOfTemplates) ? 0 : $this->getPageIdFromRecord(reset($templates));
 	}
 
 	/**
