@@ -26,6 +26,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
 
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Vhs\Utility\ViewHelperUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -63,15 +64,83 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 	}
 
 	/**
-	 * Render uri
+	 * Render a list of nested content elements
 	 *
 	 * @return string
 	 */
 	public function render() {
-
-		$row = $this->arguments['row'];
+		$row = (array) $this->arguments['row'];
 		$area = $this->arguments['area'];
+		$dblist = $this->getInitializePageLayoutView();
+		$this->configurePageLayoutViewForLanguageMode($dblist);
+		$variables = array(
+			'records' => $this->getRecords($dblist, $row, $area),
+			'dblist' => $dblist,
+			// EXT:gridelements support
+			'fluxColumnId' => 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX'
+		);
+		return ViewHelperUtility::renderChildrenWithVariables($this, $this->templateVariableContainer, $variables);
+	}
 
+	/**
+	 * @return integer
+	 */
+	protected function getActiveWorkspaceId() {
+		return (integer) $GLOBALS['BE_USER']->workspace;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getPageModuleSettings() {
+		return $GLOBALS['SOBE']->MOD_SETTINGS;
+	}
+
+	/**
+	 * @param PageLayoutView $view
+	 * @param array $row
+	 * @param string $area
+	 * @return array
+	 */
+	protected function getRecords(PageLayoutView $view, array $row, $area) {
+		// The following solution is half lifted from \TYPO3\CMS\Backend\View\PageLayoutView::getContentRecordsPerColumn
+		// and relies on TYPO3 core query parts for enable-clause-, language- and versioning placeholders. All that needs
+		// to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will not remove
+		// records based on them having remove placeholders.
+		$condition = "AND tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' ";
+		$condition .= "AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' ";
+		$queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
+		$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
+		$rows = $view->getResult($result);
+		$workspaceId = $this->getActiveWorkspaceId();
+		foreach ($rows as $index => &$record) {
+			if (0 < $workspaceId) {
+				$workspaceRecord = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, 'tt_content', $record['uid']);
+				$record = (FALSE !== $workspaceRecord ? $workspaceRecord : $record);
+			}
+			BackendUtility::movePlhOL('tt_content', $record);
+			if (TRUE === $this->isDeleteOrMovePlaceholder($record)) {
+				unset($rows[$index]);
+			} else {
+				$record['isDisabled'] = $view->isDisabled('tt_content', $record);
+			}
+		}
+		return $rows;
+	}
+
+	/**
+	 * @param mixed $record
+	 * @return boolean
+	 */
+	protected function isDeleteOrMovePlaceholder($record) {
+		return (TRUE === empty($record) || TRUE === VersionState::cast($record['t3ver_state'])->equals(VersionState::DELETE_PLACEHOLDER));
+	}
+
+	/**
+	 * @return PageLayoutView
+	 */
+	protected function getInitializePageLayoutView() {
+		$row = $this->arguments['row'];
 		$pageRecord = $this->recordService->getSingle('pages', '*', $row['pid']);
 		// note: the following chained makeInstance is not an error; it is there to make the ViewHelper work on TYPO3 6.0
 		/** @var $dblist PageLayoutView */
@@ -97,56 +166,24 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
 			$dblist->itemLabels[$name] = $GLOBALS['LANG']->sL($val['label']);
 		}
+		return $dblist;
+	}
 
-		$modSettings = $GLOBALS['SOBE']->MOD_SETTINGS;
-
+	/**
+	 * @param PageLayoutView $view
+	 * @return PageLayoutView
+	 */
+	protected function configurePageLayoutViewForLanguageMode(PageLayoutView $view) {
 		// Initializes page languages and icons so they are available in PageLayoutView if languageMode is set.
-		$dblist->initializeLanguages();
-
+		$view->initializeLanguages();
+		$modSettings = $this->getPageModuleSettings();
 		if (2 === intval($modSettings['function'])) {
-			$dblist->tt_contentConfig['single'] = 0;
-			$dblist->tt_contentConfig['languageMode'] = 1;
-			$dblist->tt_contentConfig['languageCols'] = array(0 => $GLOBALS['LANG']->getLL('m_default'));
-			$dblist->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
+			$view->tt_contentConfig['single'] = 0;
+			$view->tt_contentConfig['languageMode'] = 1;
+			$view->tt_contentConfig['languageCols'] = array(0 => $GLOBALS['LANG']->getLL('m_default'));
+			$view->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
 		}
-
-		// The following solution is half lifted from \TYPO3\CMS\Backend\View\PageLayoutView::getContentRecordsPerColumn
-		// and relies on TYPO3 core query parts for enable-clause-, language- and versioning placeholders. All that needs
-		// to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will not remove
-		// records based on them having remove placeholders.
-		$condition = "AND tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' ";
-		$condition .= "AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' ";
-		$queryParts = $dblist->makeQueryArray('tt_content', $row['pid'], $condition);
-		$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
-		$rows = $dblist->getResult($result);
-		$workspaceId = (integer) $GLOBALS['BE_USER']->workspace;
-		foreach ($rows as $index => &$record) {
-			if (0 < $workspaceId) {
-				$workspaceRecord = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, 'tt_content', $record['uid']);
-				if (FALSE !== $workspaceRecord) {
-					$record = $workspaceRecord;
-				}
-			}
-			BackendUtility::movePlhOL('tt_content', $record);
-			if (TRUE === empty($record) || TRUE === VersionState::cast($record['t3ver_state'])->equals(VersionState::DELETE_PLACEHOLDER)) {
-				unset($rows[$index]);
-			} else {
-				$record['isDisabled'] = $dblist->isDisabled('tt_content', $record);
-			}
-		}
-
-		// EXT:gridelements support
-		$fluxColumnId = 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX';
-
-		$this->templateVariableContainer->add('records', $rows);
-		$this->templateVariableContainer->add('dblist', $dblist);
-		$this->templateVariableContainer->add('fluxColumnId', $fluxColumnId);
-		$content = $this->renderChildren();
-		$this->templateVariableContainer->remove('records');
-		$this->templateVariableContainer->remove('dblist');
-		$this->templateVariableContainer->remove('fluxColumnId');
-
-		return $content;
+		return $view;
 	}
 
 }
