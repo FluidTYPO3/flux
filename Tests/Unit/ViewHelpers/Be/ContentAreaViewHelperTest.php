@@ -26,7 +26,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Backend\View\PageLayoutView;
-use TYPO3\CMS\Core\Versioning\VersionState;
 
 /**
  * @package Flux
@@ -52,7 +51,7 @@ class ContentAreaViewHelperTest extends AbstractViewHelperTestCase {
 		return array(
 			array(array(), TRUE),
 			array(array('uid' => 123), FALSE),
-			array(array('t3ver_state' => VersionState::DELETE_PLACEHOLDER), TRUE)
+			array(array('t3ver_state' => ContentAreaViewHelper::DELETE_PLACEHOLDER), TRUE)
 		);
 	}
 
