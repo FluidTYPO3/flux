@@ -103,14 +103,8 @@ class ResolveUtility {
 	 */
 	public static function resolveCurrentPageRecord() {
 		self::initialize();
-		$record = NULL;
-		if (TRUE === isset($GLOBALS['TSFE']->page)) {
-			$record = self::$recordService->getSingle('pages', '*', $GLOBALS['TSFE']->id);
-		} elseif ('BE' === TYPO3_MODE) {
-			$records = self::$recordService->get('pages', '*', GeneralUtility::_GET('id'));
-			$record = array_pop($records);
-		}
-		return $record;
+		$recordUid = (integer) (TRUE === isset($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->id : GeneralUtility::_GET('id');
+		return self::$recordService->getSingle('pages', '*', $recordUid);
 	}
 
 	/**
