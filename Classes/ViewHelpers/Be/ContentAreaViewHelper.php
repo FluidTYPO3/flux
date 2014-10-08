@@ -29,7 +29,6 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Versioning\VersionState;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -39,6 +38,11 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  * @subpackage ViewHelpers\Be
  */
 class ContentAreaViewHelper extends AbstractViewHelper {
+
+	/**
+	 * @TODO: replace usages with VersionState implementation when dropping 6.1 support
+	 */
+	const DELETE_PLACEHOLDER = 2;
 
 	/**
 	 * @var WorkspacesAwareRecordService
@@ -153,7 +157,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 	 * @return boolean
 	 */
 	protected function isDeleteOrMovePlaceholder($record) {
-		return (TRUE === empty($record) || TRUE === VersionState::cast($record['t3ver_state'])->equals(VersionState::DELETE_PLACEHOLDER));
+		return (TRUE === empty($record) || self::DELETE_PLACEHOLDER === (integer) $record['t3ver_state']);
 	}
 
 	/**
