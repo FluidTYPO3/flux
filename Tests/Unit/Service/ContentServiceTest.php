@@ -192,6 +192,42 @@ class ContentServiceTest extends AbstractTestCase {
 	}
 
 	/**
+	 * @test
+	 */
+	public function loadRecordsFromDatabaseDelegatesToRecordService() {
+		$mock = new ContentService();
+		/** @var WorkspacesAwareRecordService $mockService */
+		$mockService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('get'));
+		$mockService->expects($this->once())->method('get')->with('tt_content', '*', "tx_flux_parent = '123'");
+		$mock->injectWorkspacesAwareRecordService($mockService);
+		$this->callInaccessibleMethod($mock, 'loadRecordsFromDatabase', 123);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testLoadRecordFromDatabaseWithLanguageUidZero() {
+		$mock = new ContentService();
+		/** @var WorkspacesAwareRecordService $mockService */
+		$mockService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+		$mockService->expects($this->once())->method('getSingle')->with('tt_content', '*');
+		$mock->injectWorkspacesAwareRecordService($mockService);
+		$this->callInaccessibleMethod($mock, 'loadRecordFromDatabase', 123, 0);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testLoadRecordFromDatabaseWithLanguageUidNotZero() {
+		$mock = new ContentService();
+		/** @var WorkspacesAwareRecordService $mockService */
+		$mockService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+		$mockService->expects($this->once())->method('getSingle')->with('tt_content', '*');
+		$mock->injectWorkspacesAwareRecordService($mockService);
+		$this->callInaccessibleMethod($mock, 'loadRecordFromDatabase', 123, 321);
+	}
+
+	/**
 	 * @param array $functions
 	 * @return PHPUnit_Framework_MockObject_MockObject
 	 */
