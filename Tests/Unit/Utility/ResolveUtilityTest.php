@@ -26,6 +26,7 @@ namespace FluidTYPO3\Flux\Utility;
 
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -126,6 +127,23 @@ class ResolveUtilityTest extends AbstractTestCase {
 		$result = ResolveUtility::resolveCurrentPageRecord();
 		$this->assertSame($result, $expected);
 		unset($GLOBALS['TSFE']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function resolvePossibleOverlayTemplateFileDetectsOverlayFile() {
+		$overlays = array(
+			array('templateRootPath' => 'EXT:flux/Resources/Private/Templates/SomeFolder/'),
+			array('templateRootPath' => 'EXT:flux/Resources/Private/Templates/'),
+			array('templateRootPath' => 'EXT:flux/Resources/Private/Templates/ViewHelpers/Widget/')
+		);
+		$controller = 'Grid';
+		$action = 'index';
+		$format = 'html';
+		$result = ResolveUtility::resolvePossibleOverlayTemplateFile($overlays, $controller, $action, $format);
+		$expected = GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Private/Templates/ViewHelpers/Widget/Grid/Index.html');
+		$this->assertEquals($expected, $result);
 	}
 
 }
