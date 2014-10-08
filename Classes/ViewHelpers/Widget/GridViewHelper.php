@@ -24,8 +24,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper;
 use FluidTYPO3\Flux\ViewHelpers\Widget\Controller\GridController;
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper;
 
 /**
  * Grid Widget for rendering a grid in previews of BE elements

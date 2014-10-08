@@ -24,10 +24,10 @@ namespace FluidTYPO3\Flux\Transformation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use FluidTYPO3\Flux\Form\FieldInterface;
-use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 

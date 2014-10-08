@@ -24,8 +24,8 @@ namespace FluidTYPO3\Flux\Tests\Unit;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;

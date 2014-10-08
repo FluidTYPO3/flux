@@ -24,8 +24,8 @@ namespace FluidTYPO3\Flux\Form\Field\Inline;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\AbstractInlineFormField;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\AbstractInlineFormField;
 
 /**
  * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH

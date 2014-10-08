@@ -24,10 +24,10 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
-use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Form\Field\Text;
 use FluidTYPO3\Flux\Form\Field\Select;
+use FluidTYPO3\Flux\Form\Field\Text;
+use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 

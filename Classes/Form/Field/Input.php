@@ -28,7 +28,6 @@ use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-
 /**
  * @package Flux
  * @subpackage Form\Field

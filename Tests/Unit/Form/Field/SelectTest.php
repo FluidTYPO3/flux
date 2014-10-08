@@ -25,7 +25,6 @@ namespace FluidTYPO3\Flux\Form\Field;
  * ************************************************************* */
 
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
-use TYPO3\CMS\Extbase\Persistence\Generic\Query;
 
 /**
  * @package Flux

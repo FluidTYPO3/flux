@@ -24,9 +24,9 @@ namespace FluidTYPO3\Flux\Form\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\AbstractFormTest;
-use FluidTYPO3\Flux\Form;
 
 /**
  * author Claus Due <claus@namelesscoder.net>

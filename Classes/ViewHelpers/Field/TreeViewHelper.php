@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 use FluidTYPO3\Flux\Form\Field\Tree;
+
 /**
  * Tree (select supertype) FlexForm field ViewHelper
  *
