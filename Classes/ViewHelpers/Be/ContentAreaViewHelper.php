@@ -26,7 +26,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Be;
 
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use FluidTYPO3\Vhs\Utility\ViewHelperUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -73,13 +72,15 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$area = $this->arguments['area'];
 		$dblist = $this->getInitializePageLayoutView();
 		$this->configurePageLayoutViewForLanguageMode($dblist);
-		$variables = array(
-			'records' => $this->getRecords($dblist, $row, $area),
-			'dblist' => $dblist,
-			// EXT:gridelements support
-			'fluxColumnId' => 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX'
-		);
-		return ViewHelperUtility::renderChildrenWithVariables($this, $this->templateVariableContainer, $variables);
+		$this->templateVariableContainer->add('records', $this->getRecords($dblist, $row, $area));
+		$this->templateVariableContainer->add('dblist', $dblist);
+		// EXT:gridelements support
+		$this->templateVariableContainer->add('fluxColumnId', 'column-' . $area . '-' . $row['uid'] . '-' . $row['pid'] . '-FLUX');
+		$content = $this->renderChildren();
+		$this->templateVariableContainer->remove('records');
+		$this->templateVariableContainer->remove('dblist');
+		$this->templateVariableContainer->remove('fluxColumnId');
+		return $content;
 	}
 
 	/**
