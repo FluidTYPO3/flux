@@ -399,11 +399,6 @@ class FluxService implements SingletonInterface {
 		if (TRUE === empty($valuePointer)) {
 			$valuePointer = 'vDEF';
 		}
-		// preliminary decode. The method called caches the decoded results so we can do almost without performance impact.
-		$decoded = GeneralUtility::xml2array($flexFormContent);
-		if (FALSE === isset($decoded['data']) || FALSE === is_array($decoded['data'])) {
-			return array();
-		}
 		$settings = $this->objectManager->get('TYPO3\CMS\Extbase\Service\FlexFormService')->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
 		if (NULL !== $form) {
 			/** @var FormDataTransformer $transformer */
