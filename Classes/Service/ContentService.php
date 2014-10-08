@@ -169,7 +169,7 @@ class ContentService implements SingletonInterface {
 			if (0 > $relativeUid) {
 				$record['sorting'] = $tceMain->resorting($tablename, $relativeRecord['pid'], 'sorting', abs($relativeUid));
 			}
-			$this->updateRecordInDatabase($record, NULL, $tceMain);
+			$this->updateRecordInDatabase($record);
 			$tceMain->registerDBList[$tablename][$record['uid']];
 		}
 	}
@@ -214,13 +214,13 @@ class ContentService implements SingletonInterface {
 		if (0 < $row['tx_flux_parent']) {
 			$row['colPos'] = self::COLPOS_FLUXCONTENT;
 		}
-		$this->updateRecordInDatabase($row, NULL, $tceMain);
+		$this->updateRecordInDatabase($row);
 		$movePlaceholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid']);
 		if (FALSE !== $movePlaceholder) {
 			$movePlaceholder['tx_flux_parent'] = $row['tx_flux_parent'];
 			$movePlaceholder['tx_flux_column'] = $row['tx_flux_column'];
 			$movePlaceholder['colPos'] = $row['colPos'];
-			$this->updateRecordInDatabase($movePlaceholder, NULL, $tceMain);
+			$this->updateRecordInDatabase($movePlaceholder);
 		}
 	}
 
@@ -248,7 +248,7 @@ class ContentService implements SingletonInterface {
 			$overrideValues = array(
 				$sortbyFieldName => $tceMain->resorting('tt_content', $row['pid'], $sortbyFieldName, $oldUid)
 			);
-			$this->updateRecordInDatabase($overrideValues, $newUid, $tceMain);
+			$this->updateRecordInDatabase($overrideValues, $newUid);
 		}
 	}
 
@@ -281,10 +281,9 @@ class ContentService implements SingletonInterface {
 	/**
 	 * @param array $row
 	 * @param integer $uid
-	 * @param DataHandler $tceMain
 	 * @return void
 	 */
-	protected function updateRecordInDatabase(array $row, $uid = NULL, DataHandler $tceMain) {
+	protected function updateRecordInDatabase(array $row, $uid = NULL) {
 		if (NULL === $uid) {
 			$uid = $row['uid'];
 		}
@@ -302,7 +301,7 @@ class ContentService implements SingletonInterface {
 			$placeholder = $this->recordService->getSingle('tt_content', '*', $row['t3ver_oid']);
 			$placeholder['tx_flux_parent'] = (integer) $row['tx_flux_parent'];
 			$placeholder['tx_flux_column'] = $row['tx_flux_column'];
-			$this->updateRecordInDatabase($placeholder, $row['t3ver_oid'], $tceMain);
+			$this->updateRecordInDatabase($placeholder, $row['t3ver_oid']);
 		}
 	}
 
