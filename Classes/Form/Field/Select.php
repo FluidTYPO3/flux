@@ -27,7 +27,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Persistence\Generic\Query;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -79,7 +79,7 @@ class Select extends AbstractMultiValueFormField {
 	 */
 	public function getItems() {
 		$items = array();
-		if (TRUE === $this->items instanceof Query) {
+		if (TRUE === $this->items instanceof QueryInterface) {
 			$items = $this->addOptionsFromResults($this->items);
 		} elseif (TRUE === is_string($this->items)) {
 			$itemNames = GeneralUtility::trimExplode(',', $this->items);
@@ -119,10 +119,10 @@ class Select extends AbstractMultiValueFormField {
 	}
 
 	/**
-	 * @param Query $query
+	 * @param QueryInterface $query
 	 * @return array
 	 */
-	protected function addOptionsFromResults(Query $query) {
+	protected function addOptionsFromResults(QueryInterface $query) {
 		$items = array();
 		$results = $query->execute();
 		$type = $query->getType();
