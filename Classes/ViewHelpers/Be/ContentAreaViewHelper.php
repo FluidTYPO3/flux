@@ -87,7 +87,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 	 * @return integer
 	 */
 	protected function getActiveWorkspaceId() {
-		return (integer) $GLOBALS['BE_USER']->workspace;
+		return (integer) (TRUE === isset($GLOBALS['BE_USER']->workspace) ? $GLOBALS['BE_USER']->workspace : 0);
 	}
 
 	/**
@@ -113,12 +113,18 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
 		$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
 		$rows = $view->getResult($result);
-		$workspaceId = $this->getActiveWorkspaceId();
+		$rows = $this->processRecordOverlays($rows, $view);
+		return $rows;
+	}
+
+	/**
+	 * @param array $rows
+	 * @param PageLayoutView $view
+	 * @return array
+	 */
+	protected function processRecordOverlays(array $rows, PageLayoutView $view) {
 		foreach ($rows as $index => &$record) {
-			if (0 < $workspaceId) {
-				$workspaceRecord = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, 'tt_content', $record['uid']);
-				$record = (FALSE !== $workspaceRecord ? $workspaceRecord : $record);
-			}
+			$record = $this->getWorkspaceVersionOfRecordOrRecordItself($record);
 			BackendUtility::movePlhOL('tt_content', $record);
 			if (TRUE === $this->isDeleteOrMovePlaceholder($record)) {
 				unset($rows[$index]);
@@ -127,6 +133,19 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 			}
 		}
 		return $rows;
+	}
+
+	/**
+	 * @param array $record
+	 * @return array
+	 */
+	protected function getWorkspaceVersionOfRecordOrRecordItself(array $record) {
+		$workspaceId = $this->getActiveWorkspaceId();
+		if (0 < $workspaceId) {
+			$workspaceRecord = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, 'tt_content', $record['uid']);
+			$record = (FALSE !== $workspaceRecord ? $workspaceRecord : $record);
+		}
+		return $record;
 	}
 
 	/**
