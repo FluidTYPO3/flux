@@ -28,6 +28,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
@@ -225,6 +226,103 @@ class ContentServiceTest extends AbstractTestCase {
 		$mockService->expects($this->once())->method('getSingle')->with('tt_content', '*');
 		$mock->injectWorkspacesAwareRecordService($mockService);
 		$this->callInaccessibleMethod($mock, 'loadRecordFromDatabase', 123, 321);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testUpdateRecordInDatabaseWithVersionedRecord() {
+		$row = array(
+			'uid' => 123,
+			't3ver_oid' => 321,
+			'tx_flux_parent' => '3',
+			'tx_flux_column' => 'area'
+		);
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', array('getSingle'));
+		$recordService->expects($this->at(0))->method('getSingle')->will($this->returnValue($row));
+		$recordService->expects($this->at(1))->method('getSingle')->will($this->returnValue(array()));
+		$workspaceSercice = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('update'));
+		$workspaceSercice->expects($this->exactly(2))->method('update');
+		$mock = $this->objectManager->get($this->createInstanceClassName());
+		$mock->injectRecordService($recordService);
+		$mock->injectWorkspacesAwareRecordService($workspaceSercice);
+		$this->callInaccessibleMethod($mock, 'updateRecordInDatabase', $row);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testUpdateMovePlaceholderWithPlaceholder() {
+		$row = array('tx_flux_parent' => '', 'tx_flux_column' => '', 'colPos' => 0, 'uid' => 123);
+		$mock = $this->getMock($this->createInstanceClassName(), array('getMovePlaceholder', 'updateRecordInDatabase'));
+		$mock->expects($this->once())->method('getMovePlaceholder')->will($this->returnValue($row));
+		$mock->expects($this->once())->method('updateRecordInDatabase');
+		$this->callInaccessibleMethod($mock, 'updateMovePlaceholder', $row);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider getLanguageInitializationTestValues
+	 * @param integer $newUid
+	 * @param integer $oldUid
+	 * @param integer $newLanguageUid
+	 * @param boolean $expectsInitialization
+	 */
+	public function testInitializeRecordByNewAndOldAndLanguageUids($newUid, $oldUid, $newLanguageUid, $expectsInitialization) {
+		$mock = $this->getMock($this->createInstanceClassName(), array('loadRecordFromDatabase', 'updateRecordInDatabase'));
+		$dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
+		$row = array('pid' => 1, 'uid' => 1, 'language' => 1);
+		$mock->expects($this->once())->method('loadRecordFromDatabase')->will($this->returnValue($row));
+		if (TRUE === $expectsInitialization) {
+			$mock->expects($this->once())->method('updateRecordInDatabase');
+			$dataHandler->expects($this->once())->method('resorting');
+		} else {
+			$mock->expects($this->never())->method('updateRecordInDatabase');
+			$dataHandler->expects($this->never())->method('resorting');
+		}
+		$this->callInaccessibleMethod($mock, 'initializeRecordByNewAndOldAndLanguageUids',
+			$row, $newUid, $oldUid, $newLanguageUid, 'language', $dataHandler);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getLanguageInitializationTestValues() {
+		return array(
+			array(1, 2, 2, TRUE),
+			array(1, 2, 1, FALSE)
+		);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider getMoveRecordTestValues
+	 * @param array $parameters
+	 * @param integer $relativeTo
+	 */
+	public function testMoveRecord($parameters, $relativeTo) {
+		$row = array(
+
+		);
+		$mock = $this->getMock($this->createInstanceClassName(),
+			array('loadRecordFromDatabase', 'updateRecordInDatabase', 'updateMovePlaceholder'));
+		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
+		$mock->expects($this->any())->method('updateRecordInDatabase');
+		$mock->expects($this->any())->method('updateMovePlaceholder');
+		$dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
+		$dataHandler->expects($this->any())->method('resorting');
+		$mock->moveRecord($row, $relativeTo, $parameters, $dataHandler);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getMoveRecordTestValues() {
+		return array(
+			array(array('', 'prefix-column-prefix2-unused-unused-top-1-area'), 1),
+			array(array('', 'prefix-column-prefix2-unused-unused-top-1-area'), -1),
+			array(array('', 'colpos-column-page-unused-unused-top-1-area'), 1),
+		);
 	}
 
 	/**
