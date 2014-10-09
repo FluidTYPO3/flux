@@ -121,4 +121,48 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		);
 	}
 
+	/**
+	 * @test
+	 */
+	public function applyDefaultValuesAppliesValues() {
+		$instance = new WizardItemsHookSubscriber();
+		$defaultValues = array('tx_flux_column' => 'foobararea', 'tx_flux_parent' => 321);
+		$items = array(
+			array('tt_content_defValues' => '', 'params' => '')
+		);
+		$result = $this->callInaccessibleMethod($instance, 'applyDefaultValues', $items, $defaultValues);
+		$this->assertEquals($defaultValues['tx_flux_column'], $result[0]['tt_content_defValues']['tx_flux_column']);
+		$this->assertEquals($defaultValues['tx_flux_parent'], $result[0]['tt_content_defValues']['tx_flux_parent']);
+		$this->assertContains('[tx_flux_column]=foobararea', $result[0]['params']);
+		$this->assertContains('[tx_flux_parent]=321', $result[0]['params']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testManipulateWizardItemsWithDefaultValues() {
+		$defaultValues = array('tx_flux_column' => 'foobararea', 'tx_flux_parent' => 321);
+		$items = array(
+			array('tt_content_defValues' => '', 'params' => '')
+		);
+		$instance = $this->getMock(
+			$this->createInstanceClassName(),
+			array(
+				'getDefaultValues', 'readWhitelistAndBlacklistFromPageColumn', 'readWhitelistAndBlacklistFromColumn',
+				'applyDefaultValues', 'applyWhitelist', 'applyBlacklist', 'trimItems'
+			)
+		);
+		$lists = array(array(), array());
+		$instance->expects($this->once())->method('readWhitelistAndBlacklistFromPageColumn')->will($this->returnValue($lists));
+		$instance->expects($this->once())->method('readWhitelistAndBlacklistFromColumn')->will($this->returnValue($lists));
+		$instance->expects($this->once())->method('applyDefaultValues')->will($this->returnValue($items));
+		$instance->expects($this->once())->method('applyWhitelist')->will($this->returnValue($items));
+		$instance->expects($this->once())->method('applyBlacklist')->will($this->returnValue($items));
+		$instance->expects($this->once())->method('trimItems')->will($this->returnValue($items));
+		$instance->expects($this->once())->method('getDefaultValues')->will($this->returnValue($defaultValues));
+		$controller = new NewContentElementController();
+		$instance->manipulateWizardItems($items, $controller);
+		$this->assertNotEmpty($items);
+	}
+
 }

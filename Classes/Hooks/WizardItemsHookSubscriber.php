@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\Hooks;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
+use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -97,12 +98,61 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 	 * @return void
 	 */
 	public function manipulateWizardItems(&$items, &$parentObject) {
-		$whitelist = array();
-		$blacklist = array();
 		// if a Provider is registered for the "pages" table, try to get a Grid from it. If the Grid
 		// returned contains a Column which matches the desired colPos value, attempt to read a list
 		// of allowed/denied content element types from it.
-		$pageRecord = $this->recordService->getSingle('pages', '*', $parentObject->id);
+		list ($whitelist, $blacklist) = $this->readWhitelistAndBlacklistFromPageColumn($parentObject);
+		// Detect what was clicked in order to create the new content element; decide restrictions
+		// based on this.
+		$defaultValues = $this->getDefaultValues();
+		$relativeRecordUid = 0;
+		$fluxAreaName = NULL;
+		if (0 > $parentObject->uid_pid) {
+			// pasting after another element means we should try to resolve the Flux content relation
+			// from that element instead of GET parameters (clicked: "create new" icon after other element)
+			$relativeRecordUid = abs($parentObject->uid_pid);
+			$relativeRecord = $this->recordService->getSingle('tt_content', '*', $relativeRecordUid);
+			$fluxAreaName = $relativeRecord['tx_flux_column'];
+		} elseif (TRUE === isset($defaultValues['tx_flux_column'])) {
+			// attempt to read the target Flux content area from GET parameters (clicked: "create new" icon
+			// in top of nested Flux content area
+			$fluxAreaName = $defaultValues['tx_flux_column'];
+			$relativeRecordUid = $defaultValues['tx_flux_parent'];
+		}
+		// if these variables now indicate that we are inserting content elements into a Flux-enabled content
+		// area inside another content element, attempt to read allowed/denied content types from the
+		// Grid returned by the Provider that applies to the parent element's type and configuration
+		// (admitted, that's quite a mouthful - but it's not that different from reading the values from
+		// a page template like above; it's the same principle).
+		if (0 < $relativeRecordUid && FALSE === empty($fluxAreaName)) {
+			list ($whitelist, $blacklist) = $this->readWhitelistAndBlacklistFromColumn($relativeRecordUid, $fluxAreaName, $whitelist, $blacklist);
+		}
+		$items = $this->applyDefaultValues($items, $defaultValues);
+		// White/blacklist filtering. If whitelist contains elements, filter the list
+		// of possible types by whitelist first. Then apply the blacklist, removing
+		// any element types recorded herein.
+		$items = $this->applyWhitelist($whitelist, $items);
+		$items = $this->applyBlacklist($blacklist, $items);
+		// Finally, loop through the items list and clean up any tabs with zero element types inside.
+		$items = $this->trimItems($items);
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getDefaultValues() {
+		$values = GeneralUtility::_GET('defVals');
+		return (array) $values['tt_content'];
+	}
+
+	/**
+	 * @param NewContentElementController $parentObject
+	 * @return array
+	 */
+	protected function readWhitelistAndBlacklistFromPageColumn(NewContentElementController $parentObject) {
+		$whitelist = array();
+		$blacklist = array();
+		$pageRecord = $this->recordService->getSingle('pages', '*', (integer) $parentObject->id);
 		$pageProviders = $this->configurationService->resolveConfigurationProviders('pages', NULL, $pageRecord);
 		foreach ($pageProviders as $pageProvider) {
 			$grid = $pageProvider->getGrid($pageRecord);
@@ -117,78 +167,60 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 				}
 			}
 		}
-		// Detect what was clicked in order to create the new content element; decide restrictions
-		// based on this.
-		$defaultValues = GeneralUtility::_GET('defVals');
-		$relativeRecordUid = 0;
-		$fluxAreaName = NULL;
-		if (0 > $parentObject->uid_pid) {
-			// pasting after another element means we should try to resolve the Flux content relation
-			// from that element instead of GET parameters (clicked: "create new" icon after other element)
-			$relativeRecordUid = abs($parentObject->uid_pid);
-			$relativeRecord = $this->recordService->getSingle('tt_content', '*', $relativeRecordUid);
-			$fluxAreaName = $relativeRecord['tx_flux_column'];
-		} elseif (TRUE === isset($defaultValues['tt_content']['tx_flux_column'])) {
-			// attempt to read the target Flux content area from GET parameters (clicked: "create new" icon
-			// in top of nested Flux content area
-			$fluxAreaName = $defaultValues['tt_content']['tx_flux_column'];
-			$relativeRecordUid = $defaultValues['tt_content']['tx_flux_parent'];
-		}
-		// if these variables now indicate that we are inserting content elements into a Flux-enabled content
-		// area inside another content element, attempt to read allowed/denied content types from the
-		// Grid returned by the Provider that applies to the parent element's type and configuration
-		// (admitted, that's quite a mouthful - but it's not that different from reading the values from
-		// a page template like above; it's the same principle).
-		if (0 < $relativeRecordUid && FALSE === empty($fluxAreaName)) {
-			$relativeRecord = $this->recordService->getSingle('tt_content', '*', $relativeRecordUid);
-			$contentProviders = $this->configurationService->resolveConfigurationProviders('tt_content', NULL, $relativeRecord);
-			foreach ($contentProviders as $contentProvider) {
-				$grid = $contentProvider->getGrid($relativeRecord);
-				if (NULL === $grid) {
-					continue;
-				}
-				foreach ($grid->getRows() as $row) {
-					foreach ($row->getColumns() as $column) {
-						if ($column->getName() === $fluxAreaName) {
-							list ($whitelist, $blacklist) = $this->appendToWhiteAndBlacklistFromComponent($column, $whitelist, $blacklist);
-						}
+		return array($whitelist, $blacklist);
+	}
+
+	/**
+	 * @param integer $relativeRecordUid
+	 * @param string $fluxAreaName
+	 * @param array $whitelist
+	 * @param array $blacklist
+	 * @return array
+	 */
+	protected function readWhitelistAndBlacklistFromColumn($relativeRecordUid, $fluxAreaName, $whitelist, $blacklist) {
+		$relativeRecord = $this->recordService->getSingle('tt_content', '*', (integer) $relativeRecordUid);
+		$contentProviders = $this->configurationService->resolveConfigurationProviders('tt_content', NULL, $relativeRecord);
+		foreach ($contentProviders as $contentProvider) {
+			$grid = $contentProvider->getGrid($relativeRecord);
+			if (NULL === $grid) {
+				continue;
+			}
+			foreach ($grid->getRows() as $row) {
+				foreach ($row->getColumns() as $column) {
+					if ($column->getName() === $fluxAreaName) {
+						list ($whitelist, $blacklist) = $this->appendToWhiteAndBlacklistFromComponent($column, $whitelist, $blacklist);
 					}
 				}
 			}
 		}
+		return array($whitelist, $blacklist);
+	}
+
+	/**
+	 * @param array $items
+	 * @param array $defaultValues
+	 * @return array
+	 */
+	protected function applyDefaultValues(array $items, array $defaultValues) {
 		foreach ($items as $name => $item) {
-			if (FALSE === empty($defaultValues['tt_content']['tx_flux_column'])) {
-				$items[$name]['tt_content_defValues']['tx_flux_column'] = $defaultValues['tt_content']['tx_flux_column'];
-				$items[$name]['params'] .= '&defVals[tt_content][tx_flux_column]=' . rawurlencode($defaultValues['tt_content']['tx_flux_column']);
+			if (FALSE === empty($defaultValues['tx_flux_column'])) {
+				$items[$name]['tt_content_defValues']['tx_flux_column'] = $defaultValues['tx_flux_column'];
+				$items[$name]['params'] .= '&defVals[tt_content][tx_flux_column]=' . rawurlencode($defaultValues['tx_flux_column']);
 			}
-			if (FALSE === empty($defaultValues['tt_content']['tx_flux_parent'])) {
-				$items[$name]['tt_content_defValues']['tx_flux_parent'] = $defaultValues['tt_content']['tx_flux_parent'];
-				$items[$name]['params'] .= '&defVals[tt_content][tx_flux_parent]=' . rawurlencode($defaultValues['tt_content']['tx_flux_parent']);
-				$items[$name]['params'] .= '&overrideVals[tt_content][tx_flux_parent]=' . rawurlencode($defaultValues['tt_content']['tx_flux_parent']);
-			}
-		}
-		// White/blacklist filtering. If whitelist contains elements, filter the list
-		// of possible types by whitelist first. Then apply the blacklist, removing
-		// any element types recorded herein.
-		$whitelist = array_unique($whitelist);
-		$blacklist = array_unique($blacklist);
-		if (0 < count($whitelist)) {
-			foreach ($items as $name => $item) {
-				if (FALSE !== strpos($name, '_') && FALSE === in_array($item['tt_content_defValues']['CType'], $whitelist)) {
-					unset($items[$name]);
-				}
+			if (FALSE === empty($defaultValues['tx_flux_parent'])) {
+				$items[$name]['tt_content_defValues']['tx_flux_parent'] = $defaultValues['tx_flux_parent'];
+				$items[$name]['params'] .= '&defVals[tt_content][tx_flux_parent]=' . rawurlencode($defaultValues['tx_flux_parent']);
+				$items[$name]['params'] .= '&overrideVals[tt_content][tx_flux_parent]=' . rawurlencode($defaultValues['tx_flux_parent']);
 			}
 		}
-		if (0 < count($blacklist)) {
-			foreach ($blacklist as $contentElementType) {
-				foreach ($items as $name => $item) {
-					if ($item['tt_content_defValues']['CType'] === $contentElementType) {
-						unset($items[$name]);
-					}
-				}
-			}
-		}
-		// Finally, loop through the items list and clean up any tabs with zero element types inside.
+		return $items;
+	}
+
+	/**
+	 * @param array $items
+	 * @return array
+	 */
+	protected function trimItems(array $items) {
 		$preserveHeaders = array();
 		foreach ($items as $name => $item) {
 			if (FALSE !== strpos($name, '_')) {
@@ -200,6 +232,43 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 				unset($items[$name]);
 			}
 		}
+		return $items;
+	}
+
+	/**
+	 * @param array $blacklist
+	 * @param array $items
+	 * @return array
+	 */
+	protected function applyBlacklist(array $blacklist, array $items) {
+		$blacklist = array_unique($blacklist);
+		if (0 < count($blacklist)) {
+			foreach ($blacklist as $contentElementType) {
+				foreach ($items as $name => $item) {
+					if ($item['tt_content_defValues']['CType'] === $contentElementType) {
+						unset($items[$name]);
+					}
+				}
+			}
+		}
+		return $items;
+	}
+
+	/**
+	 * @param array $whitelist
+	 * @param array $items
+	 * @return array
+	 */
+	protected function applyWhitelist(array $whitelist, array $items) {
+		$whitelist = array_unique($whitelist);
+		if (0 < count($whitelist)) {
+			foreach ($items as $name => $item) {
+				if (FALSE !== strpos($name, '_') && FALSE === in_array($item['tt_content_defValues']['CType'], $whitelist)) {
+					unset($items[$name]);
+				}
+			}
+		}
+		return $items;
 	}
 
 	/**
