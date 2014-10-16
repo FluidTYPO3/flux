@@ -109,6 +109,9 @@ class Text extends Input implements FieldInterface {
 	 */
 	public function setEnableRichText($enableRichText) {
 		$this->enableRichText = (boolean) $enableRichText;
+		if (TRUE === $enableRichText && TRUE === empty($this->defaultExtras)) {
+			$this->setDefaultExtras('richtext[]');
+		}
 		return $this;
 	}
 
