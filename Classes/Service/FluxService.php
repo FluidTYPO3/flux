@@ -30,6 +30,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
@@ -293,10 +294,9 @@ class FluxService implements SingletonInterface {
 	 */
 	public function getViewConfigurationForExtensionName($extensionName) {
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey);
-		if (FALSE === is_array($configuration) || 0 === count($configuration) || TRUE === empty($configuration['templateRootPath'])) {
-			$configuration = $this->getDefaultViewConfigurationForExtensionKey($extensionKey);
-		}
+		$configuration = $this->getDefaultViewConfigurationForExtensionKey($extensionKey);
+		$subConfiguration = (array) $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey);
+		$configuration = RecursiveArrayUtility::merge($configuration, $subConfiguration);
 		if (FALSE === is_array($configuration)) {
 			$this->message('Template paths resolved for "' . $extensionName . '" was not an array.', GeneralUtility::SYSLOG_SEVERITY_WARNING);
 			$configuration = NULL;
