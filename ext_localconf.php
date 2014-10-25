@@ -30,7 +30,6 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php'][
 
 
 if (TRUE === class_exists('FluidTYPO3\Flux\Core')) {
-	\FluidTYPO3\Flux\Core::registerConfigurationProvider('FluidTYPO3\Flux\Provider\ContentProvider');
 
 	// native Outlets, replaceable by short name in subsequent registerOutlet() calls by adding second argument (string, name of type)
 	\FluidTYPO3\Flux\Core::registerOutlet('standard');
@@ -48,3 +47,10 @@ $extbaseObjectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('
 $extbaseObjectContainer->registerImplementation('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface', 'FluidTYPO3\Flux\Configuration\ConfigurationManager');
 unset($extbaseObjectContainer);
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] = 'FluidTYPO3\Flux\Hooks\WizardItemsHookSubscriber';
+
+
+if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'])) {
+	$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] = array(
+		'groups' => array('system')
+	);
+}

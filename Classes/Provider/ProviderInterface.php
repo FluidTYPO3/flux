@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Provider;
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Flux\Collection\CollectableInterface;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -32,7 +33,7 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
  * @package Flux
  * @subpackage Provider
  */
-interface ProviderInterface {
+interface ProviderInterface extends CollectableInterface {
 
 	/**
 	 * Use by TceMain to track method calls to providers for a certain $id.

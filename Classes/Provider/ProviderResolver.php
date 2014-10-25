@@ -25,7 +25,9 @@ namespace FluidTYPO3\Flux\Provider;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Package\PackageInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\PackageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -55,6 +57,11 @@ class ProviderResolver {
 	protected $objectManager;
 
 	/**
+	 * @var PackageService
+	 */
+	protected $packageService;
+
+	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
@@ -76,6 +83,14 @@ class ProviderResolver {
 	 */
 	public function injectObjectManager(ObjectManagerInterface $objectManager) {
 		$this->objectManager = $objectManager;
+	}
+
+	/**
+	 * @param PackageService $packageService
+	 * @return void
+	 */
+	public function injectPackageService(PackageService $packageService) {
+		$this->packageService = $packageService;
 	}
 
 	/**
@@ -116,7 +131,7 @@ class ProviderResolver {
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		$row = FALSE === is_array($row) ? array() : $row;
-		$providers = Core::getRegisteredFlexFormProviders();
+		$providers = $this->packageService->getCombinedCollection(PackageInterface::COLLECTION_PROVIDERS)->getAll();
 		$typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
 		$providers = array_merge($providers, $typoScriptConfigurationProviders);
 		$prioritizedProviders = array();
