@@ -359,7 +359,8 @@ class FluxService implements SingletonInterface {
 	 * @return ProviderInterface|NULL
 	 */
 	public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
-		return $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->resolvePrimaryConfigurationProvider($table, $fieldName, $row, $extensionKey);
+		return $this->objectManager->get('FluidTYPO3\\Flux\\Provider\\ProviderResolver')
+			->resolvePrimaryConfigurationProvider($table, $fieldName, $row, $extensionKey);
 	}
 
 	/**
@@ -373,7 +374,8 @@ class FluxService implements SingletonInterface {
 	 * @return ProviderInterface[]
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
-		return $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
+		return $this->objectManager->get('FluidTYPO3\\Flux\\Provider\\ProviderResolver')
+			->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
 	}
 
 	/**

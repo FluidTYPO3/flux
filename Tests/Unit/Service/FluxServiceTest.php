@@ -90,19 +90,6 @@ class FluxServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function throwsExceptionWhenResolvingInvalidConfigurationProviderInstances() {
-		$instance = $this->createInstance();
-		$record = array('test' => 'test');
-		Core::registerConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
-		$this->setExpectedException('RuntimeException', NULL, 1327173536);
-		$instance->flushCache();
-		$instance->resolveConfigurationProviders('tt_content', 'pi_flexform', $record);
-		Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
-	}
-
-	/**
-	 * @test
-	 */
 	public function canInstantiateFluxService() {
 		$service = $this->createFluxServiceInstance();
 		$this->assertInstanceOf('FluidTYPO3\Flux\Service\FluxService', $service);

@@ -25,7 +25,10 @@ namespace FluidTYPO3\Flux\Provider;
  *****************************************************************/
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Package\PackageInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\PackageService;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -37,7 +40,12 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  *
  * @package FluidTYPO3\Flux
  */
-class ProviderResolver {
+class ProviderResolver implements SingletonInterface {
+
+	/**
+	 * @var array
+	 */
+	protected static $providers = NULL;
 
 	/**
 	 * @var FluxService
@@ -53,6 +61,11 @@ class ProviderResolver {
 	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
+
+	/**
+	 * @var PackageService
+	 */
+	protected $packageService;
 
 	/**
 	 * @param FluxService $configurationService
@@ -79,6 +92,14 @@ class ProviderResolver {
 	}
 
 	/**
+	 * @param PackageService $packageService
+	 * @return void
+	 */
+	public function injectPackageService(PackageService $packageService) {
+		$this->packageService = $packageService;
+	}
+
+	/**
 	 * ResolveUtility the top-priority ConfigurationPrivider which can provide
 	 * a working FlexForm configuration baed on the given parameters.
 	 *
@@ -93,14 +114,8 @@ class ProviderResolver {
 			$row = array();
 		}
 		$providers = $this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
-		$priority = 0;
-		$providerWithTopPriority = NULL;
-		foreach ($providers as $provider) {
-			if ($provider->getPriority($row) >= $priority) {
-				$providerWithTopPriority = $provider;
-			}
-		}
-		return $providerWithTopPriority;
+		$providerWithTopPriority = end($providers);
+		return FALSE === $providerWithTopPriority ? NULL : $providerWithTopPriority;
 	}
 
 	/**
@@ -116,19 +131,9 @@ class ProviderResolver {
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		$row = FALSE === is_array($row) ? array() : $row;
-		$providers = Core::getRegisteredFlexFormProviders();
-		$typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
-		$providers = array_merge($providers, $typoScriptConfigurationProviders);
+		$providers = $this->getAllProviders();
 		$prioritizedProviders = array();
-		foreach ($providers as $providerClassNameOrInstance) {
-			if (TRUE === is_object($providerClassNameOrInstance)) {
-				$provider = &$providerClassNameOrInstance;
-			} else {
-				$provider = $this->objectManager->get($providerClassNameOrInstance);
-			}
-			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($providerClassNameOrInstance))) {
-				throw new \RuntimeException(is_object($providerClassNameOrInstance) ? get_class($providerClassNameOrInstance) : $providerClassNameOrInstance . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
-			}
+		foreach ($providers as $provider) {
 			if (TRUE === $provider->trigger($row, $table, $fieldName, $extensionKey)) {
 				$priority = $provider->getPriority($row);
 				if (FALSE === is_array($prioritizedProviders[$priority])) {
@@ -169,6 +174,25 @@ class ProviderResolver {
 			$providers[$name] = $provider;
 		}
 		return $providers;
+	}
+
+	/**
+	 * @return ProviderInterface[]
+	 */
+	protected function getAllProviders() {
+		if (TRUE === is_array(self::$providers)) {
+			return self::$providers;
+		}
+		$providers = $this->packageService->getCombinedCollection(PackageInterface::COLLECTION_PROVIDERS)->getAll();
+		$typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
+		$providers = array_merge($providers, $typoScriptConfigurationProviders);
+		foreach ($providers as $index => $instanceOrClass) {
+			$providers[$index] = (TRUE === is_string($instanceOrClass) ? $this->objectManager->get($instanceOrClass) : $instanceOrClass);
+			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($providers[$index]))) {
+				throw new \RuntimeException(get_class($instanceOrClass)  . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
+			}
+		}
+		return self::$providers = $providers;
 	}
 
 }

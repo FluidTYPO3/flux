@@ -26,6 +26,8 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Package\Applicator\LocalconfApplicator;
+use FluidTYPO3\Flux\Package\Applicator\TablesApplicator;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
@@ -64,6 +66,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 */
 	public function processData() {
 		if (TYPO3_REQUESTTYPE_INSTALL !== (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
+			TablesApplicator::apply();
 			$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 			$objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->loadTypoScriptConfigurationProviderInstances();
 			$forms = Core::getRegisteredFormsForTables();

@@ -329,7 +329,7 @@ class ControllerActions extends Select {
 	 */
 	protected function buildExpectedAndExistingControllerClassName($controllerName) {
 		$extensionName = $this->getExtensionName();
-		list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
+		list ($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
 		if (NULL !== $vendorName) {
 			$controllerClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
 		} else {

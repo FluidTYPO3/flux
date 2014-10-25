@@ -539,7 +539,7 @@ class AbstractProvider implements ProviderInterface {
 	 * @return string
 	 */
 	public function getName() {
-		return $this->name;
+		return $this->name = NULL !== $this->name ? $this->name : uniqid('provider-' . $this->tableName . '-' . $this->fieldName);
 	}
 
 	/**
