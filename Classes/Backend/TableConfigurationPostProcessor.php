@@ -64,42 +64,48 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 */
 	public function processData() {
 		if (TYPO3_REQUESTTYPE_INSTALL !== (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
-			$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-			$objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->loadTypoScriptConfigurationProviderInstances();
-			$forms = Core::getRegisteredFormsForTables();
-			$models = Core::getRegisteredFormsForModelObjectClasses();
-			$packages = array_keys(Core::getRegisteredPackagesForAutoForms());
-			foreach ($packages as $packageName) {
-				list ($vendorName, $extensionName) = explode('.', $packageName);
-				$namespace = $vendorName . '\\' . $extensionName . '\\Domain\\';
-				$extensionKey = ExtensionNamingUtility::getExtensionKey($packageName);
-				$folder = ExtensionManagementUtility::extPath($extensionKey, 'Classes/Domain/Form/');
-				$files = glob($folder . '*Form.php');
-				$files = FALSE === $files ? array() : $files;
-				foreach ($files as $fileName) {
-					$basename = pathinfo($fileName, PATHINFO_FILENAME);
-					$formClassName = $namespace . 'Form\\' . $basename;
-					$modelClassName = $namespace . 'Model\\' . substr($basename, 0, -4);
-					$fullTableName = $this->resolveTableName($modelClassName);
-					$models[$modelClassName] = $formClassName::create();
-					$models[$modelClassName]->setName($fullTableName);
-					$models[$modelClassName]->setExtensionName($packageName);
-				}
-			}
-			foreach ($forms as $fullTableName => $form) {
-				$this->processFormForTable($fullTableName, $form);
-			}
-			foreach ($models as $modelClassName => $form) {
+			$this->generateTableConfigurationForProviderForms();
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function generateTableConfigurationForProviderForms() {
+		$forms = Core::getRegisteredFormsForTables();
+		$models = Core::getRegisteredFormsForModelObjectClasses();
+		$packages = array_keys(Core::getRegisteredPackagesForAutoForms());
+		foreach ($packages as $packageName) {
+			list ($vendorName, $extensionName) = explode('.', $packageName);
+			$namespace = $vendorName . '\\' . $extensionName . '\\Domain\\';
+			$extensionKey = ExtensionNamingUtility::getExtensionKey($packageName);
+			$folder = ExtensionManagementUtility::extPath($extensionKey, 'Classes/Domain/Form/');
+			$files = glob($folder . '*Form.php');
+			$files = FALSE === $files ? array() : $files;
+			foreach ($files as $fileName) {
+				$basename = pathinfo($fileName, PATHINFO_FILENAME);
+				$formClassName = $namespace . 'Form\\' . $basename;
+				$modelClassName = $namespace . 'Model\\' . substr($basename, 0, -4);
 				$fullTableName = $this->resolveTableName($modelClassName);
-				if (NULL === $form) {
-					$form = $this->generateFormInstanceFromClassName($modelClassName, $fullTableName);
-				}
-				if (NULL === $form->getName()) {
-					$form->setName($fullTableName);
-				}
-				$this->processFormForTable($fullTableName, $form);
+				$models[$modelClassName] = $formClassName::create();
+				$models[$modelClassName]->setName($fullTableName);
+				$models[$modelClassName]->setExtensionName($packageName);
 			}
 		}
+		foreach ($forms as $fullTableName => $form) {
+			$this->processFormForTable($fullTableName, $form);
+		}
+		foreach ($models as $modelClassName => $form) {
+			$fullTableName = $this->resolveTableName($modelClassName);
+			if (NULL === $form) {
+				$form = $this->generateFormInstanceFromClassName($modelClassName, $fullTableName);
+			}
+			if (NULL === $form->getName()) {
+				$form->setName($fullTableName);
+			}
+			$this->processFormForTable($fullTableName, $form);
+		}
+
 	}
 
 	/**
