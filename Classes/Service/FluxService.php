@@ -65,6 +65,14 @@ class FluxService implements SingletonInterface {
 	/**
 	 * @var array
 	 */
+	protected static $friendlySeverities = array(
+		GeneralUtility::SYSLOG_SEVERITY_INFO,
+		GeneralUtility::SYSLOG_SEVERITY_NOTICE,
+	);
+
+	/**
+	 * @var array
+	 */
 	protected $sentDebugMessages = array();
 
 	/**
