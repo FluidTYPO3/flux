@@ -102,28 +102,6 @@ interface FieldInterface extends FormInterface {
 	public function getRequestUpdate();
 
 	/**
-	 * @param integer $inherit
-	 * @return FieldInterface
-	 */
-	public function setInherit($inherit);
-
-	/**
-	 * @return integer
-	 */
-	public function getInherit();
-
-	/**
-	 * @param boolean $inheritEmpty
-	 * @return FieldInterface
-	 */
-	public function setInheritEmpty($inheritEmpty);
-
-	/**
-	 * @return boolean
-	 */
-	public function getInheritEmpty();
-
-	/**
 	 * @param boolean $exclude
 	 * @return FieldInterface
 	 */

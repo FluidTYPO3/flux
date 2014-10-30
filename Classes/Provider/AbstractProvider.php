@@ -27,6 +27,7 @@ namespace FluidTYPO3\Flux\Provider;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -853,11 +854,11 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * @param FieldInterface $field
+	 * @param FormInterface $field
 	 * @param array $values
 	 * @return array
 	 */
-	protected function unsetInheritedValues(FieldInterface $field, $values) {
+	protected function unsetInheritedValues(FormInterface $field, $values) {
 		$name = $field->getName();
 		$inherit = (boolean) $field->getInherit();
 		$inheritEmpty = (boolean) $field->getInheritEmpty();
