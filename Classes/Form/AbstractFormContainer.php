@@ -214,36 +214,4 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 		return $this->transform;
 	}
 
-	/**
-	 * @param boolean $inherit
-	 * @return ContainerInterface
-	 */
-	public function setInherit($inherit) {
-		$this->inherit = (boolean) $inherit;
-		return $this;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getInherit() {
-		return (boolean) $this->inherit;
-	}
-
-	/**
-	 * @param boolean $inheritEmpty
-	 * @return ContainerInterface
-	 */
-	public function setInheritEmpty($inheritEmpty) {
-		$this->inheritEmpty = (boolean) $inheritEmpty;
-		return $this;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getInheritEmpty() {
-		return (boolean) $this->inheritEmpty;
-	}
-
 }

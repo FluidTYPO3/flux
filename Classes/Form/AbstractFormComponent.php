@@ -103,6 +103,16 @@ abstract class AbstractFormComponent implements FormInterface {
 	protected $variables = array();
 
 	/**
+	 * @var boolean
+	 */
+	protected $inherit = FALSE;
+
+	/**
+	 * @var boolean
+	 */
+	protected $inheritEmpty = FALSE;
+
+	/**
 	 * @param ObjectManagerInterface $objectManager
 	 * @return void
 	 */
@@ -449,6 +459,38 @@ abstract class AbstractFormComponent implements FormInterface {
 			return FALSE;
 		}
 		return ('FluidTYPO3\Flux\Form\Container\\' . $type === get_class($parent) || TRUE === is_a($parent, $type));
+	}
+
+	/**
+	 * @param boolean $inherit
+	 * @return FormInterface
+	 */
+	public function setInherit($inherit) {
+		$this->inherit = (boolean) $inherit;
+		return $this;
+	}
+
+	/**
+	 * @return integer
+	 */
+	public function getInherit() {
+		return (boolean) $this->inherit;
+	}
+
+	/**
+	 * @param boolean $inheritEmpty
+	 * @return FormInterface
+	 */
+	public function setInheritEmpty($inheritEmpty) {
+		$this->inheritEmpty = (boolean) $inheritEmpty;
+		return $this;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getInheritEmpty() {
+		return (boolean) $this->inheritEmpty;
 	}
 
 }

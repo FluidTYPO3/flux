@@ -169,4 +169,26 @@ interface FormInterface {
 	 */
 	public function createWizard($type, $name, $label = NULL);
 
+	/**
+	 * @param integer $inherit
+	 * @return FormInterface
+	 */
+	public function setInherit($inherit);
+
+	/**
+	 * @return integer
+	 */
+	public function getInherit();
+
+	/**
+	 * @param boolean $inheritEmpty
+	 * @return FormInterface
+	 */
+	public function setInheritEmpty($inheritEmpty);
+
+	/**
+	 * @return boolean
+	 */
+	public function getInheritEmpty();
+
 }
