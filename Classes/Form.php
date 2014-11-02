@@ -393,6 +393,14 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	}
 
 	/**
+	 * @param string $name
+	 * @return boolean
+	 */
+	public function hasOption($name) {
+		return TRUE === isset($this->options[$name]);
+	}
+
+	/**
 	 * @return boolean
 	 */
 	public function hasChildren() {
