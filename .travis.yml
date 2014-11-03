@@ -86,7 +86,7 @@ script:
   - >
     if [[ -f typo3conf/ext/flux/Tests/phpunit7.xml && "$TYPO3" == "master" ]]; then
       echo "Running unit tests for EXT:flux (CMS 7)";
-      ./bin/phpunit --colors -c typo3conf/ext/flux/Tests/phpunit7.xml --coverage-clover flux/build/logs/clover.xml;
+      ./bin/phpunit --colors -c phpunit.xml --coverage-clover flux/build/logs/clover.xml;
     fi
 
 after_script:
