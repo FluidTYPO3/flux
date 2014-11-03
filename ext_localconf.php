@@ -14,7 +14,7 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF)
 	}
 	plugin.tx_flux.settings {
 		flexform {
-			rteDefaults = richtext[*]:rte_transform[mode=ts_css]
+			rteDefaults = richtext:rte_transform[flag=rte_enabled|mode=ts_css]
 		}
 	}
 ');
