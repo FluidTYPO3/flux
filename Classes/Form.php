@@ -362,6 +362,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 * @return Form\FormInterface
 	 */
 	public function setOptions(array $options) {
+		if (!array_key_exists('group', $options) || !$options['group']) {
+			$options['group'] = 'FCE';
+		}
 		$this->options = $options;
 		return $this;
 	}
