@@ -71,6 +71,9 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	public function getForm($sectionName = 'Configuration', $formName = 'form') {
 		/** @var Form $form */
 		$form = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, $formName, $sectionName);
+		if (TRUE === isset($this->templatePathAndFilename)) {
+			$form->setOption(Form::OPTION_TEMPLATEFILE, $this->templatePathAndFilename);
+		}
 		return $form;
 	}
 

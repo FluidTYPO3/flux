@@ -43,6 +43,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	const OPTION_TCA_END = 'end';
 	const OPTION_TCA_DELETE = 'delete';
 	const OPTION_TCA_FEGROUP = 'frontendUserGroup';
+	const OPTION_TEMPLATEFILE = 'templateFile';
 	const POSITION_TOP = 'top';
 	const POSITION_BOTTOM = 'bottom';
 	const POSITION_BOTH = 'both';
@@ -389,6 +390,14 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 */
 	public function getOption($name) {
 		return ObjectAccess::getPropertyPath($this->options, $name);
+	}
+
+	/**
+	 * @param string $name
+	 * @return boolean
+	 */
+	public function hasOption($name) {
+		return TRUE === isset($this->options[$name]);
 	}
 
 	/**
