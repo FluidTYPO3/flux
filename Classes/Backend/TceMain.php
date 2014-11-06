@@ -141,7 +141,7 @@ class TceMain {
 	 * @param array $record
 	 * @param array $arguments
 	 * @param DataHandler $reference
-	 * @return void
+	 * @return array
 	 */
 	protected function executeConfigurationProviderMethod($methodName, $table, $id, array $record, array $arguments, DataHandler $reference) {
 		try {

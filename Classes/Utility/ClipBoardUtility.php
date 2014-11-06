@@ -64,7 +64,7 @@ class ClipBoardUtility {
 		if (TRUE === is_array(self::$cache)) {
 			$clipData = self::$cache;
 		} else {
-			$clipData = $GLOBALS['BE_USER']->getModuleData('clipboard', $GLOBALS['BE_USER']->getTSConfigVal('options.saveClipboard') ? '' : 'ses');
+			$clipData = self::getBackendUser()->getModuleData('clipboard', self::getBackendUser()->getTSConfigVal('options.saveClipboard') ? '' : 'ses');
 		}
 		$mode = TRUE === isset($clipData['current']) ? $clipData['current'] : 'normal';
 		$hasClip = TRUE === isset($clipData[$mode]['el']) && 0 < count($clipData[$mode]['el']);
@@ -99,6 +99,13 @@ class ClipBoardUtility {
 		$uri = $clipBoard->pasteUrl('tt_content', $relativeTo);
 
 		return MiscellaneousUtility::wrapLink($icon, $uri, $title);
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+	 */
+	protected static function getBackendUser() {
+		return $GLOBALS['BE_USER'];
 	}
 
 }

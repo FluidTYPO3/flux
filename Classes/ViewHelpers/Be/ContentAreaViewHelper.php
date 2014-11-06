@@ -115,7 +115,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$condition = "AND tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' ";
 		$condition .= "AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' ";
 		$queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
-		$result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
+		$result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
 		$rows = $view->getResult($result);
 		$rows = $this->processRecordOverlays($rows, $view);
 		return $rows;
@@ -175,7 +175,7 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$dblist->setLMargin = 0;
 		$dblist->doEdit = 1;
 		$dblist->no_noWrap = 1;
-		$dblist->ext_CALC_PERMS = $GLOBALS['BE_USER']->calcPerms($pageRecord);
+		$dblist->ext_CALC_PERMS = $this->getBackendUser()->calcPerms($pageRecord);
 		$dblist->id = $row['pid'];
 		$dblist->nextThree = 1;
 		$dblist->tt_contentConfig['showCommands'] = 1;
@@ -184,11 +184,11 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		$dblist->CType_labels = array();
 		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";
 		foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
-			$dblist->CType_labels[$val[1]] = $GLOBALS['LANG']->sL($val[0]);
+			$dblist->CType_labels[$val[1]] = $this->getLanguageService()->sL($val[0]);
 		}
 		$dblist->itemLabels = array();
 		foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
-			$dblist->itemLabels[$name] = $GLOBALS['LANG']->sL($val['label']);
+			$dblist->itemLabels[$name] = $this->getLanguageService()->sL($val['label']);
 		}
 		return $dblist;
 	}
@@ -204,10 +204,31 @@ class ContentAreaViewHelper extends AbstractViewHelper {
 		if (2 === intval($modSettings['function'])) {
 			$view->tt_contentConfig['single'] = 0;
 			$view->tt_contentConfig['languageMode'] = 1;
-			$view->tt_contentConfig['languageCols'] = array(0 => $GLOBALS['LANG']->getLL('m_default'));
+			$view->tt_contentConfig['languageCols'] = array(0 => $this->getLanguageService()->getLL('m_default'));
 			$view->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
 		}
 		return $view;
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Core\Database\DatabaseConnection
+	 */
+	protected function getDatabaseConnection() {
+		return $GLOBALS['TYPO3_DB'];
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+	 */
+	protected function getBackendUser() {
+		return $GLOBALS['BE_USER'];
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Lang\LanguageService
+	 */
+	protected function getLanguageService() {
+		return $GLOBALS['LANG'];
 	}
 
 }
