@@ -122,6 +122,7 @@ class DataViewHelper extends AbstractViewHelper {
 			$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field]);
 		} else {
 			$dataArray = array();
+			/** @var \FluidTYPO3\Flux\Provider\ProviderInterface $provider */
 			foreach ($providers as $provider) {
 				$data = (array) $provider->getFlexFormValues($record);
 				$dataArray = RecursiveArrayUtility::merge($dataArray, $data);

@@ -164,7 +164,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 */
 	protected function getEditArgumentValuePair() {
 		$editArgument = GeneralUtility::_GET('edit');
-		return TRIE === is_array($editArgument) ? $editArgument : array(array());
+		return TRUE === is_array($editArgument) ? $editArgument : array(array());
 	}
 
 	/**
