@@ -34,13 +34,12 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use FluidTYPO3\Flux\View\PreviewView;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * @package Flux
@@ -754,6 +753,13 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * @return PreviewView
+	 */
+	protected function getPreviewView() {
+		return $this->objectManager->get('FluidTYPO3\\Flux\\View\\PreviewView');
+	}
+
+	/**
 	 * Get preview chunks - header and content - as
 	 * array(string $headerContent, string $previewContent, boolean $continueRendering)
 	 *
@@ -769,34 +775,8 @@ class AbstractProvider implements ProviderInterface {
 	 * @return array
 	 */
 	public function getPreview(array $row) {
-		$templateSource = $this->getTemplateSource($row);
-		if (TRUE === empty($templateSource)) {
-			return array(NULL, NULL, TRUE);
-		}
-		$extensionKey = $this->getExtensionKey($row);
-		$flexformVariables = $this->getFlexFormValues($row);
-		$templateVariables = $this->getTemplateVariables($row);
-		$variables = RecursiveArrayUtility::merge($templateVariables, $flexformVariables);
-		$paths = $this->getTemplatePaths($row);
-		$form = $this->getForm($row);
-		$formLabel = $form->getLabel();
-		$label = LocalizationUtility::translate($formLabel, $extensionKey);
-		$variables['label'] = $label;
-		$variables['row'] = $row;
-		$variables['record'] = $row;
-
-		$view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, 'Content', $paths, $variables);
-		$view->setTemplateSource($templateSource);
-
-		$existingContentObject = $this->configurationManager->getContentObject();
-		$contentObject = new ContentObjectRenderer();
-		$contentObject->start($row, $this->getTableName($row));
-		$this->configurationManager->setContentObject($contentObject);
-		$previewContent = $view->renderStandaloneSection('Preview', $variables);
-		$this->configurationManager->setContentObject($existingContentObject);
-		$previewContent = trim($previewContent);
-		$headerContent = NULL;
-		return array($headerContent, $previewContent, empty($previewContent));
+		$previewContent = $this->getPreviewView()->getPreview($this, $row);
+		return array(NULL, $previewContent, empty($previewContent));
 	}
 
 	/**
