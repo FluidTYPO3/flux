@@ -211,7 +211,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 				$settings = $values[$propertyName];
 				$propertyName = GeneralUtility::camelCaseToLowerCaseUnderscored($propertyName);
 				if (TRUE === isset($settings['type'])) {
-					$fieldType = ucfirst($settings['type']);
+					$fieldType = implode('/', array_map('ucfirst', explode('.', $settings['type'])));
 					$field = $sheet->createField($fieldType, $propertyName);
 					foreach ($settings['config'] as $settingName => $settingValue) {
 						ObjectAccess::setProperty($field, $settingName, $settingValue);
