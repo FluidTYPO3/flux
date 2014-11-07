@@ -184,7 +184,11 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 * @return integer
 	 */
 	protected function getPageIdFromRecord(array $record) {
-		return (integer) (FALSE === isset($record['pid']) ? : $record['pid']);
+		if (FALSE === isset($record['pid'])) {
+			return 0;
+		}
+
+		return (integer) $record['pid'];
 	}
 
 }
