@@ -1,35 +1,48 @@
 language: php
 
 php:
-  - 5.4
+  #- 5.4
   - 5.5
-  - 5.6
+  #- 5.6
 
 env:
-  - DB=mysql TYPO3=master INTEGRATION=master INTRODUCTION=master
-  - DB=mysql TYPO3=TYPO3_6-2 INTEGRATION=master INTRODUCTION=master
+  - DB=mysql TYPO3=master INTEGRATION=master INTRODUCTION=master COVERAGE=0
+  - DB=mysql TYPO3=TYPO3_6-2 INTEGRATION=master INTRODUCTION=master COVERAGE=0
 
-matrix:
-   include:
-     - php: 5.3
-       env: DB=mysql TYPO3=TYPO3_6-2 INTEGRATION=master INTRODUCTION=master
+#matrix:
+#   include:
+#     - php: 5.3
+#       env: DB=mysql TYPO3=TYPO3_6-2 INTEGRATION=master INTRODUCTION=master
 
 before_script:
-  - composer self-update
   - cd ..
-  - git clone --single-branch --branch $INTEGRATION --depth 1 git://github.com/typo3-ci/TYPO3-Travis-Integration.git build-environment
-  - git clone --depth 1 git://github.com/FluidTYPO3/FluidTYPO3-CodingStandards.git build-environment/FluidTYPO3-CodingStandards
-  - git clone git://github.com/squizlabs/PHP_CodeSniffer.git build-environment/CodeSniffer
-  - git clone --single-branch --branch $TYPO3 --depth 1 https://github.com/TYPO3/TYPO3.CMS.git core
-  - source build-environment/install-helper.sh
-  - git clone --single-branch --branch $INTRODUCTION --depth 1 git://git.typo3.org/TYPO3CMS/Distributions/Introduction.git build-environment/Introduction
-  - mv core/typo3 .
-  - if [[ -d core/t3lib ]]; then mv core/t3lib . ; fi
-  - mv build-environment/typo3conf .
-  - mkdir fileadmin
-  - mkdir uploads
-  - mkdir typo3temp
-  - mkdir -p flux/build/logs
+  - composer self-update
+  - git clone --single-branch --branch $TYPO3 --depth 1 https://github.com/TYPO3/TYPO3.CMS.git typo3_core
+  - mv typo3_core/* .
+  - sudo apt-get install parallel
+  - composer self-update
+  - composer install
+  - mkdir -p uploads typo3temp typo3conf/ext
+  - mv flux typo3conf/ext/
+  #- git clone --single-branch --branch $INTEGRATION --depth 1 git://github.com/typo3-ci/TYPO3-Travis-Integration.git build-environment
+  #- git clone --depth 1 git://github.com/FluidTYPO3/FluidTYPO3-CodingStandards.git build-environment/FluidTYPO3-CodingStandards
+  #- git clone git://github.com/squizlabs/PHP_CodeSniffer.git build-environment/CodeSniffer
+  #- git clone --single-branch --branch $TYPO3 --depth 1 https://github.com/TYPO3/TYPO3.CMS.git core
+  #- source build-environment/install-helper.sh
+  #- git clone --single-branch --branch $INTRODUCTION --depth 1 git://git.typo3.org/TYPO3CMS/Distributions/Introduction.git build-environment/Introduction
+  #- mv core/typo3 .
+  #- if [[ -d core/t3lib ]]; then mv core/t3lib . ; fi
+  #- mv build-environment/typo3conf .
+  #- mkdir fileadmin
+  #- mkdir uploads
+  #- mkdir typo3temp
+  #- mkdir -p flux/build/logs
+  - >
+    if [[ "$COVERAGE" == "0" ]]; then
+      echo;
+      echo "Running unit tests";
+      ./bin/phpunit --colors -c typo3conf/ext/flux/Tests/phpunit7.xml
+    fi
 
   - >
     if [[ "$TYPO3" == "master" ]]; then
