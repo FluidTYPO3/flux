@@ -1,26 +1,21 @@
 <phpunit backupGlobals="false"
-        backupStaticAttributes="false"
-        bootstrap="../../typo3/sysext/core/Build/UnitTestsBootstrap.php"
-        colors="true"
-        convertErrorsToExceptions="true"
-        convertWarningsToExceptions="true"
-        forceCoversAnnotation="false"
-        processIsolation="false"
-        stopOnError="false"
-        stopOnFailure="false"
-        stopOnIncomplete="false"
-        stopOnSkipped="false"
-        strict="false"
-        verbose="false">
+		 backupStaticAttributes="false"
+		 bootstrap="../../../../typo3/sysext/core/Build/UnitTestsBootstrap.php"
+		 colors="true"
+		 convertErrorsToExceptions="true"
+		 convertWarningsToExceptions="true"
+		 forceCoversAnnotation="false"
+		 processIsolation="false"
+		 stopOnError="false"
+		 stopOnFailure="false"
+		 stopOnIncomplete="false"
+		 stopOnSkipped="false"
+		 strict="false"
+		 verbose="false">
 
-        <testsuites>
-                <testsuite name="EXT:flux">
-                        <directory>typo3conf/ext/flux/Tests</directory>
-                </testsuite>
-        </testsuites>
-		<filter>
-				<whitelist>
-						<directory>typo3conf/ext/flux/Classes</directory>
-				</whitelist>
-		</filter>
+	<testsuites>
+		<testsuite name="EXT:flux">
+			<directory>./Unit/</directory>
+		</testsuite>
+	</testsuites>
 </phpunit>
