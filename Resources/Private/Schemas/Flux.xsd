@@ -15247,7 +15247,8 @@ php:type="array">
 </xsd:annotation>
 </xsd:attribute>
 <xsd:attribute type="xsd:string"
-name="localLanguageFileRelativePath" default="NULL"
+name="localLanguageFileRelativePath"
+default="'/Resources/Private/Language/locallang.xlf'"
 php:type="string">
 <xsd:annotation>
 <xsd:documentation>
@@ -15349,7 +15350,8 @@ php:type="array">
 </xsd:annotation>
 </xsd:attribute>
 <xsd:attribute type="xsd:string"
-name="localLanguageFileRelativePath" default="NULL"
+name="localLanguageFileRelativePath"
+default="'/Resources/Private/Language/locallang.xlf'"
 php:type="string">
 <xsd:annotation>
 <xsd:documentation>
@@ -15551,7 +15553,7 @@ php:type="string" use="required">
 php:type="string">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[Label for content area, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.areas.foobar" based on area name, in scope of extension rendering the Flux form.]]>
+<![CDATA[Label for content area, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.columns.foobar" based on column name, in scope of extension rendering the Flux form.]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
@@ -15617,7 +15619,7 @@ php:type="string" use="required">
 php:type="string">
 <xsd:annotation>
 <xsd:documentation>
-<![CDATA[Label for content area, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.areas.foobar" based on area name, in scope of extension rendering the Flux form.]]>
+<![CDATA[Label for content area, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.columns.foobar" based on column name, in scope of extension rendering the Flux form.]]>
 </xsd:documentation>
 </xsd:annotation>
 </xsd:attribute>
