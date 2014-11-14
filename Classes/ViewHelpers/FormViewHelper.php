@@ -47,7 +47,6 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('mergeValues', 'boolean', 'DEPRECATED AND IGNORED. To cause value merging, simly prefix your field names with the table name, e.g. ' .
 			'"tt_content.header" will overwrite the "header" column in the record with the FlexForm field value when saving the record.', FALSE, FALSE);
 		$this->registerArgument('enabled', 'boolean', 'If FALSE, makes the FCE inactive', FALSE, TRUE);
-		$this->registerArgument('wizardTab', 'string', 'DEPRECATED: Use `options="{group: \'GroupName\'}". Optional tab name (usually extension key) in which to place the content element in the new content element wizard', FALSE, 'FCE');
 		$this->registerArgument('compact', 'boolean', 'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES ' .
 			'AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
@@ -72,7 +71,6 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$form->setCompact($this->arguments['compact']);
 		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
 		$form->setOption(Form::OPTION_ICON, $this->arguments['icon']);
-		$form->setOption(Form::OPTION_GROUP, $this->arguments['wizardTab']);
 		$form->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
 		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, 'form', $form);
 		$this->templateVariableContainer->add('form', $form);

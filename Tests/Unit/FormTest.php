@@ -91,16 +91,6 @@ class FormTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function canUseGroupProperty() {
-		$form = $this->getDummyFormFromTemplate();
-		$group = 'dummyGroup';
-		$form->setGroup($group);
-		$this->assertSame($group, $form->getGroup());
-	}
-
-	/**
-	 * @test
-	 */
 	public function canUseExtensionNameProperty() {
 		$form = $this->getDummyFormFromTemplate();
 		$extensionName = 'flux';
