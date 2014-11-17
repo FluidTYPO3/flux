@@ -64,6 +64,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 		/** @var Form $form */
 		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 		$container = $form->last();
+		// configure Form instance
 		$form->setId($this->arguments['id']);
 		$form->setName($this->arguments['id']);
 		$form->setLabel($this->arguments['label']);
@@ -71,17 +72,22 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$form->setEnabled($this->arguments['enabled']);
 		$form->setCompact($this->arguments['compact']);
 		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
-		$form->setOption(Form::OPTION_ICON, $this->arguments['icon']);
-		$form->setOption(Form::OPTION_GROUP, $this->arguments['wizardTab']);
 		$form->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
+		$form->setVariables((array) $this->arguments['variables']);
+		$form->setOptions((array) $this->arguments['options']);
+		if (FALSE === $form->hasOption(Form::OPTION_ICON)) {
+			$form->setOption(Form::OPTION_ICON, $this->arguments['icon']);
+		}
+		if (FALSE === $form->hasOption(Form::OPTION_GROUP)) {
+			$form->setOption(Form::OPTION_GROUP, $this->arguments['wizardTab']);
+		}
+		// rendering child nodes with Form as active container
 		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, 'form', $form);
 		$this->templateVariableContainer->add('form', $form);
 		$this->setContainer($container);
 		$this->renderChildren();
 		$this->viewHelperVariableContainer->remove(self::SCOPE, 'container');
 		$this->templateVariableContainer->remove('container');
-		$form->setVariables((array) $this->arguments['variables']);
-		$form->setOptions((array) $this->arguments['options']);
 	}
 
 }
