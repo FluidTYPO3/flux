@@ -56,6 +56,25 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	protected $templateSource = NULL;
 
 	/**
+	 * @var array
+	 */
+	protected $providerPaths = array();
+
+	/**
+	 * @return array
+	 */
+	public function getProviderPaths() {
+		return $this->providerPaths;
+	}
+
+	/**
+	 * @param array $providerPaths
+	 */
+	public function setProviderPaths($providerPaths) {
+		$this->providerPaths = $providerPaths;
+	}
+
+	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
@@ -207,7 +226,10 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	 */
 	protected function expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional) {
 		$extensionKey = $this->controllerContext->getRequest()->getControllerExtensionKey();
-		$configurations = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
+		$configurations = $this->getProviderPaths();
+		if (TRUE === empty($configurations)) {
+			$configurations = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
+		}
 		$pathOverlayConfigurations = $this->buildPathOverlayConfigurations($configurations);
 		$paths = parent::expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional);
 		foreach ($pathOverlayConfigurations as $overlayPaths) {
