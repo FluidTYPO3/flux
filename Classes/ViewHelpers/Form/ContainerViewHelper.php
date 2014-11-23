@@ -63,9 +63,7 @@ class ContainerViewHelper extends AbstractFieldViewHelper {
 	 */
 	public function render() {
 		/** @var Container $container */
-		$container = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Container');
-		$container->setName($this->arguments['name']);
-		$container->setLabel($this->arguments['label']);
+		$container = $this->getForm()->createContainer('Container', $this->arguments['name'], $this->arguments['label']);
 		$container->setVariables($this->arguments['variables']);
 		$existingContainer = $this->getContainer();
 		$existingContainer->add($container);

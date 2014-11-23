@@ -54,9 +54,7 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 	 */
 	public function render() {
 		/** @var Section $section */
-		$section = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Section');
-		$section->setName($this->arguments['name']);
-		$section->setLabel($this->arguments['label']);
+		$section = $this->getForm()->createContainer('Section', $this->arguments['name'], $this->arguments['label']);
 		$section->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();
 		$container->add($section);
