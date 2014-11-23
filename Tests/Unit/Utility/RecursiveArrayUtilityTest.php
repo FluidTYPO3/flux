@@ -92,4 +92,29 @@ class RecursiveArrayUtilityTest extends AbstractTestCase {
 		$this->assertSame($expected, $product);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canOperateMergeRecursiveOverruleFunction() {
+		$array1 = array(
+			'foo' => array(
+				'bar' => TRUE
+			)
+		);
+		$array2 = array(
+			'foo' => array(
+				'foo' => TRUE,
+				'bar' => FALSE
+			)
+		);
+		$expected = array(
+			'foo' => array(
+				'bar' => FALSE,
+				'foo' => TRUE
+			)
+		);
+		$product = RecursiveArrayUtility::mergeRecursiveOverrule($array1, $array2);
+		$this->assertSame($expected, $product);
+	}
+
 }

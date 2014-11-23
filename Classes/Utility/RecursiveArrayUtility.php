@@ -24,6 +24,8 @@ namespace FluidTYPO3\Flux\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\ArrayUtility;
+
 /**
  * RecursiveArray Utility
  *
@@ -81,6 +83,19 @@ class RecursiveArrayUtility {
 			}
 		}
 		return $array1;
+	}
+
+	/**
+	 * @param array $firstArray First array
+	 * @param array $secondArray Second array, overruling the first array
+	 * @param boolean $notAddKeys If set, keys that are NOT found in $firstArray will not be set. Thus only existing value can/will be overruled from second array.
+	 * @param boolean $includeEmptyValues If set, values from $secondArray will overrule if they are empty or zero. Default: TRUE
+	 * @param boolean $enableUnsetFeature If set, special values "__UNSET" can be used in the second array in order to unset array keys in the resulting array.
+	 * @return array Resulting array where $secondArray values has overruled $firstArray values
+	 */
+	static public function mergeRecursiveOverrule(array $firstArray, array $secondArray, $notAddKeys = FALSE, $includeEmptyValues = TRUE, $enableUnsetFeature = TRUE) {
+		ArrayUtility::mergeRecursiveWithOverrule($firstArray, $secondArray, !$notAddKeys, $includeEmptyValues, $enableUnsetFeature);
+		return $firstArray;
 	}
 
 }
