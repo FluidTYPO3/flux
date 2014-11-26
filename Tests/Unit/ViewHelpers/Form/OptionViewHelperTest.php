@@ -29,6 +29,6 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 /**
  * @package Flux
  */
-class IconViewHelperTest extends AbstractFormViewHelperTestCase {
+class OptionViewHelperTest extends AbstractFormViewHelperTestCase {
 
 }
