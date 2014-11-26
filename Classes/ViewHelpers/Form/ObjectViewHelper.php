@@ -57,9 +57,7 @@ class ObjectViewHelper extends AbstractFormViewHelper {
 	 */
 	public function render() {
 		/** @var ObjectComponent $object */
-		$object = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Object');
-		$object->setName($this->arguments['name']);
-		$object->setLabel($this->arguments['label']);
+		$object = $this->getForm()->createContainer('Object', $this->arguments['name'], $this->arguments['label']);
 		$object->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();
 		$container->add($object);

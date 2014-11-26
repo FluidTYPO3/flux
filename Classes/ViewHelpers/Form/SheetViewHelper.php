@@ -66,9 +66,7 @@ class SheetViewHelper extends AbstractFormViewHelper {
 			$this->setContainer($sheet);
 		} else {
 			/** @var Sheet $sheet */
-			$sheet = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Sheet');
-			$sheet->setName($this->arguments['name']);
-			$sheet->setLabel($this->arguments['label']);
+			$sheet = $this->getForm()->createContainer('Sheet', $this->arguments['name'], $this->arguments['label']);
 			$sheet->setVariables($this->arguments['variables']);
 			$sheet->setDescription($this->arguments['description']);
 			$sheet->setShortDescription($this->arguments['shortDescription']);
