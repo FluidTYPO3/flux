@@ -197,6 +197,7 @@ class FluxService implements SingletonInterface {
 		if (0 < count($variables)) {
 			$exposedView->assignMultiple($variables);
 		}
+		$exposedView->setProviderPaths($paths);
 		if (TRUE === isset($paths['layoutRootPath']) && FALSE === empty($paths['layoutRootPath'])) {
 			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
 		}
