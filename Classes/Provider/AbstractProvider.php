@@ -311,10 +311,10 @@ class AbstractProvider implements ProviderInterface {
 		// and must not be processed by the configuration service.
 		if (FALSE === is_array($row[$fieldName])) {
 			$recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
-			$variables = GeneralUtility::array_merge_recursive_overrule($variables, $recordVariables);
+			$variables = RecursiveArrayUtility::mergeRecursiveOverrule($variables, $recordVariables);
 		}
 
-		$variables = GeneralUtility::array_merge_recursive_overrule($this->templateVariables, $variables);
+		$variables = RecursiveArrayUtility::mergeRecursiveOverrule($this->templateVariables, $variables);
 
 		return $variables;
 	}
