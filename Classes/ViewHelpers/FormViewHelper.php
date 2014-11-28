@@ -40,20 +40,22 @@ class FormViewHelper extends AbstractFormViewHelper {
 	 */
 	public function initializeArguments() {
 		$this->registerArgument('id', 'string', 'Identifier of this Flexible Content Element, [a-z0-9\-] allowed', TRUE);
-		$this->registerArgument('label', 'string', 'Label for the FlexForm, can be LLL: value. Optional - if not specified, Flux ' .
+		$this->registerArgument('label', 'string', 'Label for the form, can be LLL: value. Optional - if not specified, Flux ' .
 			'tries to detect an LLL label named "flux.fluxFormId", in scope of extension rendering the Flux form.', FALSE, NULL);
-		$this->registerArgument('description', 'string', 'Short description of this content element', FALSE, NULL);
-		$this->registerArgument('icon', 'string', 'DEPRECATED: Use `options="{icon: \'iconreference\'}"`. Optional icon file to use when displaying this content element in the new content element wizard', FALSE, '../typo3conf/ext/flux/Resources/Public/Icons/Plugin.png');
+		$this->registerArgument('description', 'string', 'Short description of the purpose/function of this form', FALSE, NULL);
+		$this->registerArgument('icon', 'string', 'DEPRECATED: Use `options="{icon: \'iconreference\'}"` or the `flux:form .option.icon` ViewHelper', FALSE, NULL);
 		$this->registerArgument('mergeValues', 'boolean', 'DEPRECATED AND IGNORED. To cause value merging, simly prefix your field names with the table name, e.g. ' .
-			'"tt_content.header" will overwrite the "header" column in the record with the FlexForm field value when saving the record.', FALSE, FALSE);
-		$this->registerArgument('enabled', 'boolean', 'If FALSE, makes the FCE inactive', FALSE, TRUE);
-		$this->registerArgument('wizardTab', 'string', 'DEPRECATED: Use `options="{group: \'GroupName\'}`. Optional tab name (usually extension key) in which to place the content element in the new content element wizard', FALSE, 'FCE');
+			'`tt_content.header` will overwrite the "header" column in the record with the FlexForm field value when saving the record if the record belongs in table `tt_content`.', FALSE, FALSE);
+		$this->registerArgument('enabled', 'boolean', 'If FALSE, features which use this form can elect to skip it. Respect for this flag depends on the feature using the form.', FALSE, TRUE);
+		$this->registerArgument('wizardTab', 'string', 'DEPRECATED: Use `options="{group: \'GroupName\'}` or the `flux:form.option.group` ViewHelper');
 		$this->registerArgument('compact', 'boolean', 'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES ' .
 			'AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
-		$this->registerArgument('options', 'array', 'Custom options to be assigned to Form object - valid values depends on the context. See docs of extension in which you use this feature.');
+		$this->registerArgument('options', 'array', 'Custom options to be assigned to Form object - valid values depends on the. See docs of extension ' .
+			'in which you use this feature. Can also be set using `flux:form.option` as child of `flux:form`.');
 		$this->registerArgument('localLanguageFileRelativePath', 'string', 'Relative (from extension) path to locallang file containing labels for the LLL values used in this form.', FALSE, Form::DEFAULT_LANGUAGEFILE);
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context which is otherwise automatically detected.');
 	}
 
 	/**
@@ -71,7 +73,9 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$form->setDescription($this->arguments['description']);
 		$form->setEnabled($this->arguments['enabled']);
 		$form->setCompact($this->arguments['compact']);
-		$form->setExtensionName($this->controllerContext->getRequest()->getControllerExtensionName());
+		$extensionContext = $this->controllerContext->getRequest()->getControllerExtensionName();
+		$extensionName = (TRUE === $this->hasArgument('extensionName') ? $this->arguments['extensionName'] : $extensionContext);
+		$form->setExtensionName($extensionName);
 		$form->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
 		$form->setVariables((array) $this->arguments['variables']);
 		$form->setOptions((array) $this->arguments['options']);
