@@ -285,9 +285,9 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		}
 		$paths = array_reverse($paths);
 		$paths[] = array(
-			'templateRootPath' => $this->getTemplateRootPath(),
-			'partialRootPath' => $this->getPartialRootPath(),
-			'layoutRootPath' => $this->getLayoutRootPath()
+			'templateRootPath' => TRUE === method_exists($this, 'getTemplateRootPath') ? $this->getTemplateRootPath() : reset($this->getTemplateRootPaths()),
+			'partialRootPath' => TRUE === method_exists($this, 'getTemplateRootPath') ? $this->getPartialRootPath() : reset($this->getPartialRootPaths()),
+			'layoutRootPath' => TRUE === method_exists($this, 'getTemplateRootPath') ? $this->getLayoutRootPath() : reset($this->getLayoutRootPaths())
 		);
 		$paths = $this->trimPathStringRecursive($paths);
 		return $paths;
