@@ -93,7 +93,7 @@ class RecursiveArrayUtility {
 	 * @param boolean $enableUnsetFeature If set, special values "__UNSET" can be used in the second array in order to unset array keys in the resulting array.
 	 * @return array Resulting array where $secondArray values has overruled $firstArray values
 	 */
-	static public function mergeRecursiveOverrule(array $firstArray, array $secondArray, $notAddKeys = FALSE, $includeEmptyValues = TRUE, $enableUnsetFeature = TRUE) {
+	public static function mergeRecursiveOverrule(array $firstArray, array $secondArray, $notAddKeys = FALSE, $includeEmptyValues = TRUE, $enableUnsetFeature = TRUE) {
 		ArrayUtility::mergeRecursiveWithOverrule($firstArray, $secondArray, !$notAddKeys, $includeEmptyValues, $enableUnsetFeature);
 		return $firstArray;
 	}
