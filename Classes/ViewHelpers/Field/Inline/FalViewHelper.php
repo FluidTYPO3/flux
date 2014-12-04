@@ -75,6 +75,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 
 		$this->registerArgument('allowedExtensions', 'string', 'Allowed File Extensions .', FALSE, $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']);
 		$this->registerArgument('disallowedExtensions', 'string', 'Disallowed File Extensions .', FALSE, '');
+		$this->registerArgument('createNewRelationLinkTitle', 'string', 'Override label of "Create new relation" button.', FALSE, Fal::DEFAULT_CREATE_NEW_RELATION_LINK_TITLE);
 	}
 
 	/**
@@ -83,6 +84,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 	public function getComponent() {
 		$allowedExtensions = $this->arguments['allowedExtensions'];
 		$disallowedExtensions = $this->arguments['disallowedExtensions'];
+		$createNewRelationLinkTitle = $this->arguments['createNewRelationLinkTitle'];
 
 		/** @var Fal $component */
 		$component = $this->getPreparedComponent('Inline/Fal');
@@ -118,6 +120,8 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 				),
 			));
 		}
+
+		$component->setCreateNewRelationLinkTitle($createNewRelationLinkTitle);
 
 		return $component;
 	}

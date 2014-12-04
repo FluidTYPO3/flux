@@ -46,6 +46,7 @@ class Fal extends AbstractInlineFormField {
 	const DEFAULT_LOCALIZATION_MODE = 'select';
 	const DEFAULT_LOCALIZE_CHILDREN_AT_PARENT_LOCALIZATION = TRUE;
 	const DEFAULT_NEW_RECORD_LINK_ADD_TITLE = TRUE;
+	const DEFAULT_CREATE_NEW_RELATION_LINK_TITLE = 'LLL:EXT:lang/locallang_core.xlf:cm.createNewRelation';
 
 	/**
 	 * @var string
@@ -160,11 +161,35 @@ class Fal extends AbstractInlineFormField {
 	protected $newRecordLinkAddTitle = self::DEFAULT_NEW_RECORD_LINK_ADD_TITLE;
 
 	/**
+	 * Label of 'create new relation' button
+	 *
+	 * @var string
+	 */
+	protected $createNewRelationLinkTitle = self::DEFAULT_CREATE_NEW_RELATION_LINK_TITLE;
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
 		$configuration = $this->prepareConfiguration('inline');
+		$configuration['appearance']['createNewRelationLinkTitle'] = $this->getCreateNewRelationLinkTitle();
 		return $configuration;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCreateNewRelationLinkTitle() {
+		return $this->createNewRelationLinkTitle;
+	}
+
+	/**
+	 * @param string $createNewRelationLinkTitle
+	 * @return Fal
+	 */
+	public function setCreateNewRelationLinkTitle($createNewRelationLinkTitle) {
+		$this->createNewRelationLinkTitle = $createNewRelationLinkTitle;
+		return $this;
 	}
 
 }
