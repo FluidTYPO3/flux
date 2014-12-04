@@ -38,6 +38,7 @@ class MultiRelation extends AbstractRelationFormField {
 	public function buildConfiguration() {
 		$configuration = $this->prepareConfiguration('group');
 		$configuration['internal_type'] = 'db';
+		$configuration['allowed'] = $this->getTable();
 		return $configuration;
 	}
 
