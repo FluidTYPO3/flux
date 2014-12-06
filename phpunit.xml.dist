@@ -1,6 +1,6 @@
-<phpunit backupGlobals="false"
+<phpunit bootstrap="TestsRewrite/bootstrap.php" 
+	backupGlobals="false"
         backupStaticAttributes="false"
-        bootstrap="../../typo3/sysext/core/Build/UnitTestsBootstrap.php"
         colors="true"
         convertErrorsToExceptions="true"
         convertWarningsToExceptions="true"
@@ -15,12 +15,12 @@
 
         <testsuites>
                 <testsuite name="EXT:flux">
-                        <directory>typo3conf/ext/flux/Tests</directory>
+                        <directory>TestsRewrite/</directory>
                 </testsuite>
         </testsuites>
 		<filter>
 				<whitelist>
-						<directory>typo3conf/ext/flux/Classes</directory>
+						<directory>Classes/</directory>
 				</whitelist>
 		</filter>
 </phpunit>
