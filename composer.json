@@ -9,7 +9,7 @@
 		"irc": "irc://irc.freenode.org/fedext",
 		"issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
 	},
-	"autoload": {
+	"autoload-dev": {
 		"psr-4": {
 			"FluidTYPO3\\Flux\\Tests\\": "TestsRewrite/",
 			"FluidTYPO3\\Flux\\": "Classes/"
