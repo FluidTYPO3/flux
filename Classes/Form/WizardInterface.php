@@ -46,15 +46,4 @@ interface WizardInterface extends FormInterface {
 	 */
 	public function getHideParent();
 
-	/**
-	 * @param FieldInterface $parent
-	 * @return WizardInterface
-	 */
-	public function setParent($parent);
-
-	/**
-	 * @return FieldInterface
-	 */
-	public function getParent();
-
 }
