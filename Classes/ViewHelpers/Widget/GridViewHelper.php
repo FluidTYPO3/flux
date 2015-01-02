@@ -24,41 +24,24 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use FluidTYPO3\Flux\ViewHelpers\Widget\Controller\GridController;
-use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
+ * DEPRECATED
  * Grid Widget for rendering a grid in previews of BE elements
  *
  * @package Flux
  * @subpackage ViewHelpers/Widget
  */
-class GridViewHelper extends AbstractWidgetViewHelper {
-
-	/**
-	 * @var GridController
-	 */
-	protected $controller;
-
-	/**
-	 * @param GridController $controller
-	 * @return void
-	 */
-	public function injectController(GridController $controller) {
-		$this->controller = $controller;
-	}
+class GridViewHelper extends AbstractViewHelper {
 
 	/**
 	 * @return string
 	 */
 	public function render() {
-		if ($this->templateVariableContainer->exists('grid')) {
-			$this->controller->setGrid($this->templateVariableContainer->get('grid'));
-		}
-		if ($this->templateVariableContainer->exists('row')) {
-			$this->controller->setRow($this->templateVariableContainer->get('row'));
-		}
-		return $this->initiateSubRequest();
+		GeneralUtility::logDeprecatedFunction();
+		return '';
 	}
 
 }
