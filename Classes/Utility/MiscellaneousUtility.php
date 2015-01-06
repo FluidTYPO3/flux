@@ -46,8 +46,7 @@ class MiscellaneousUtility {
 	* @return string
 	*/
 	public static function getIcon($icon) {
-		$configuration = array('class' => 't3-icon-actions t3-icon-document-new');
-		return IconUtility::getSpriteIcon($icon, $configuration);
+		return IconUtility::getSpriteIcon($icon);
 	}
 
 	/**
