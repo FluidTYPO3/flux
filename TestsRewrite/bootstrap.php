@@ -16,13 +16,18 @@ $nullCache = array(
 	'frontend' => 'TYPO3\\CMS\\Core\\Cache\\Frontend\\VariableFrontend',
 	'backend' => 'TYPO3\\CMS\\Core\\Cache\\Backend\\NullBackend'
 );
+$nullPhpCache = $nullCache;
+$nullPhpCache['frontend'] = 'TYPO3\\CMS\\Core\\Cache\\Frontend\\PhpFrontend';
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'] = array(
+	'cache_core' => $nullPhpCache,
 	'extbase_object' => $nullCache,
 	'extbase_reflection' => $nullCache,
-	'l10n' => $nullCache
+	'l10n' => $nullCache,
+	'fluid_template' => $nullPhpCache
 );
 
 \TYPO3\CMS\Core\Core\Bootstrap::getInstance()
 	->baseSetup('typo3/')
 	->initializeClassLoader()
-	->initializeCachingFramework();
+	->initializeCachingFramework()
+	->initializePackageManagement('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyPackageManager');

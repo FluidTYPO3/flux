@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Container;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,36 +27,6 @@ namespace FluidTYPO3\Flux\Form\Container;
 /**
  * @package Flux
  */
-class RowTest extends AbstractContainerTest {
-
-	/**
-	 * @test
-	 */
-	public function canUseGetColumnsMethod() {
-		/** @var Row $instance */
-		$instance = $this->createInstance();
-		$this->performTestBuild($instance);
-		$this->assertEmpty($instance->getColumns());
-	}
-
-	/**
-	 * Override: this Component does not support LLL rewriting
-	 * and must skip this test which it otherwise inherits
-	 *
-	 * @disabledtest
-	 */
-	public function canAutoWriteLabel() {
-
-	}
-
-	/**
-	 * Override: this Component does not support LLL rewriting
-	 * and must skip this test which it otherwise inherits
-	 *
-	 * @disabledtest
-	 */
-	public function canUseShorthandLanguageLabel() {
-
-	}
+class ContainerTest extends AbstractContainerTest {
 
 }

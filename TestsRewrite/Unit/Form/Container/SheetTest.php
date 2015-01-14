@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Container;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,8 +25,23 @@ namespace FluidTYPO3\Flux\Form\Container;
  * ************************************************************* */
 
 /**
+ * author Claus Due <claus@namelesscoder.net>
  * @package Flux
  */
-class ContainerTest extends AbstractContainerTest {
+class SheetTest extends AbstractContainerTest {
+
+	/**
+	 * @test
+	 */
+	public function testDescriptionPropertyWorks() {
+		$this->assertGetterAndSetterWorks('description', 'foobardescription', 'foobardescription', TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testShortDescriptionPropertyWorks() {
+		$this->assertGetterAndSetterWorks('shortDescription', 'foobarshortdescription', 'foobarshortdescription', TRUE);
+	}
 
 }

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,13 +24,14 @@ namespace FluidTYPO3\Flux;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\Form\Container\AbstractContainerTest;
 use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
 /**
  * @package Flux
  */
-class GridTest extends AbstractTestCase {
+class GridTest extends AbstractContainerTest {
 
 	/**
 	 * @param string $gridName
@@ -95,6 +96,16 @@ class GridTest extends AbstractTestCase {
 		$grid = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_COLLIDINGGRID);
 		$this->assertIsValidAndWorkingGridObject($grid);
 		$this->assertSame(2, count($grid->getRows()));
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseGetRowsMethod() {
+		/** @var Grid $instance */
+		$instance = $this->createInstance();
+		$this->performTestBuild($instance);
+		$this->assertEmpty($instance->getRows());
 	}
 
 }

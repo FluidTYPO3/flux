@@ -38,17 +38,17 @@ use TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase;
  */
 abstract class AbstractTestCase extends BaseTestCase {
 
-	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
-	const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/WithoutForm.html';
-	const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Sheets.html';
-	const FIXTURE_TEMPLATE_COMPACTED = 'EXT:flux/Tests/Fixtures/Templates/CompactToggledOn.html';
-	const FIXTURE_TEMPLATE_USESPARTIAL = 'EXT:flux/Tests/Fixtures/Templates/UsesPartial.html';
-	const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/CustomSection.html';
-	const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/EmptyPreview.html';
-	const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/BasicGrid.html';
-	const FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/DualGrid.html';
-	const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/CollidingGrid.html';
-	const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
+	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'Tests/Fixtures/Templates/AbsolutelyMinimal.html';
+	const FIXTURE_TEMPLATE_WITHOUTFORM = 'Tests/Fixtures/Templates/WithoutForm.html';
+	const FIXTURE_TEMPLATE_SHEETS = 'Tests/Fixtures/Templates/Sheets.html';
+	const FIXTURE_TEMPLATE_COMPACTED = 'Tests/Fixtures/Templates/CompactToggledOn.html';
+	const FIXTURE_TEMPLATE_USESPARTIAL = 'Tests/Fixtures/Templates/UsesPartial.html';
+	const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'Tests/Fixtures/Templates/CustomSection.html';
+	const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'Tests/Fixtures/Templates/EmptyPreview.html';
+	const FIXTURE_TEMPLATE_BASICGRID = 'Tests/Fixtures/Templates/BasicGrid.html';
+	const FIXTURE_TEMPLATE_DUALGRID = 'Tests/Fixtures/Templates/DualGrid.html';
+	const FIXTURE_TEMPLATE_COLLIDINGGRID = 'Tests/Fixtures/Templates/CollidingGrid.html';
+	const FIXTURE_TYPOSCRIPT_DIR = 'Tests/Fixtures/Data/TypoScript';
 
 	/**
 	 * @param string $name
@@ -189,16 +189,17 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @return string
 	 */
 	protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath) {
-		return GeneralUtility::getFileAbsFileName($shorthandTemplatePath);
+		return realpath(dirname(__FILE__) . '/../../' . $shorthandTemplatePath);
 	}
 
 	/**
+	 * @param array $methods
 	 * @return FluxService
 	 */
-	protected function createFluxServiceInstance() {
+	protected function createFluxServiceInstance($methods = array('dummy')) {
 		/** @var FluxService $fluxService */
-		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array(), array(), '', FALSE);
-		ObjectAccess::setProperty($fluxService, 'silent', TRUE, TRUE);
+		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', $methods, array(), '', FALSE);
+		$fluxService->injectObjectManager($this->objectManager);
 		return $fluxService;
 	}
 

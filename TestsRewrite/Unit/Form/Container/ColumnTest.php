@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Container;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 /***************************************************************
  *  Copyright notice
  *

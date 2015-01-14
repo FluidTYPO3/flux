@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form;
+namespace FluidTYPO3\Flux\Tests\Unit\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +25,7 @@ namespace FluidTYPO3\Flux\Form;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -40,7 +41,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	protected $chainProperties = array('name' => 'test', 'label' => 'Test field');
 
 	/**
-	 * @return \FluidTYPO3\Flux\Form\FormInterface
+	 * @return FormInterface
 	 */
 	protected function createInstance() {
 		$className = $this->getObjectClassName();
@@ -106,17 +107,18 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	public function canGenerateLocalisableLabel() {
 		$instance = $this->createInstance();
 		$instance->setLabel(NULL);
-		if (FALSE === $instance instanceof Form) {
+		$instance->setExtensionName('Flux');
+		if (TRUE === $instance instanceof Form) {
+			$instance->setName('testFormId');
+			$instance->setExtensionName('Flux');
+		} else {
 			/** @var Form $form */
-			$instance->setName('test');
+			$instance->setName('testFormId');
 			$form = Form::create(array(
-				'name' => 'testFormId',
+				'name' => 'test',
 				'extensionName' => 'flux'
 			));
 			$form->add($instance);
-		} else {
-			$instance->setName('testFormId');
-			$instance->setExtensionKey('flux');
 		}
 		$label = $instance->getLabel();
 		$this->assertContains('testFormId', $label);
@@ -129,6 +131,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	protected function getObjectClassName() {
 		$class = get_class($this);
 		$class = substr($class, 0, -4);
+		$class = str_replace('\\Tests\\Unit', '', $class);
 		return $class;
 	}
 
@@ -227,7 +230,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 */
 	public function canUseShorthandLanguageLabel() {
 		$className = $this->getObjectClassName();
@@ -241,13 +244,13 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 * @dataProvider getLabelTranslationTestValues
 	 * @param string $input
 	 * @param string $extensionKey
 	 * @param string $expectedOutput
 	 */
-	public function testTranslateLabelReference($input, $extensionKey, $expectedOutput) {
+	public function canTranslateLabelReference($input, $extensionKey, $expectedOutput) {
 		$mock = $this->getMock($this->createInstanceClassName());
 		$result = $this->callInaccessibleMethod($mock, 'translateLabelReference', $input, $extensionKey);
 		$this->assertEquals($expectedOutput, $result);

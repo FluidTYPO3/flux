@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Container;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +23,8 @@ namespace FluidTYPO3\Flux\Form\Container;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+
+use FluidTYPO3\Flux\Form\Container\Section;
 
 /**
  * @package Flux
