@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux;
+namespace FluidTYPO3\Flux\Tests\Unit;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,7 +25,10 @@ namespace FluidTYPO3\Flux;
  * ************************************************************* */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -115,7 +118,7 @@ class FormTest extends AbstractTestCase {
 		$form = $this->getDummyFormFromTemplate();
 		$icon = 'EXT:flux/ext_icon.gif';
 		$form->setIcon($icon);
-		$this->assertSame(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($icon), $form->getIcon());
+		$this->assertSame(GeneralUtility::getFileAbsFileName($icon), $form->getIcon());
 	}
 
 	/**
@@ -226,7 +229,7 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function canRemoveBadFieldByInstanceWithoutErrorAndReturnFalse() {
 		$form = $this->getEmptyDummyForm();
-		$field = \FluidTYPO3\Flux\Form\Field\Input::create(array('type' => 'Input', 'name' => 'badname'));
+		$field = Input::create(array('type' => 'Input', 'name' => 'badname'));
 		$child = $form->last()->remove($field);
 		$this->assertFalse($child);
 	}
@@ -348,7 +351,7 @@ class FormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canSetAndGetOutlet() {
-		/** @var \FluidTYPO3\Flux\Outlet\StandardOutlet $outlet */
+		/** @var StandardOutlet $outlet */
 		$outlet = $this->getMock('FluidTYPO3\Flux\Outlet\StandardOutlet');
 		$form = Form::create();
 		$form->setOutlet($outlet);

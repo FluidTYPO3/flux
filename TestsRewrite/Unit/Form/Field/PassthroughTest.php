@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -25,10 +25,9 @@ namespace FluidTYPO3\Flux\Form\Field;
  * ************************************************************* */
 
 /**
- * author Claus Due <claus@namelesscoder.net>
  * @package Flux
  */
-class FlexTest extends AbstractFieldTest {
+class PassthroughTest extends AbstractFieldTest {
 
 	/**
 	 * @var array

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +27,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 /**
  * @package Flux
  */
-class CustomTest extends AbstractFieldTest {
+class InputTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -35,26 +35,32 @@ class CustomTest extends AbstractFieldTest {
 	protected $chainProperties = array(
 		'name' => 'test',
 		'label' => 'Test field',
-		'arguments' => array(
-			'foo' => 'bar'
-		)
+		'enable' => TRUE,
+		'maxCharacters' => 30,
+		'maximum' => 10,
+		'minimum' => 0,
+		'validate' => 'trim,int',
+		'default' => 'test',
+		'requestUpdate' => TRUE,
 	);
 
 	/**
 	 * @test
 	 */
-	public function canUseClosure() {
-		$self = $this;
-		$arguments = array(
-			'closure' => function($parameters) use ($self) {
-				return 'Hello world';
-			}
-		);
-		$instance = $this->canChainAllChainableSetters($arguments);
-		$closure = $instance->getClosure();
-		$this->assertSame($arguments['closure'], $closure);
-		$output = $closure($arguments);
-		$this->assertNotEmpty($output);
+	public function canUseRequiredProperty() {
+		$instance = $this->canChainAllChainableSetters();
+		$instance->setRequired(TRUE);
+		$this->assertEquals('trim,int,required', $instance->getValidate());
+	}
+
+	/**
+	 * @test
+	 */
+	public function canUseRequiredPropertyThroughValidateProperty() {
+		$instance = $this->canChainAllChainableSetters();
+		$instance->setValidate(NULL);
+		$instance->setRequired(TRUE);
+		$this->assertEquals('required', $instance->getValidate());
 	}
 
 }

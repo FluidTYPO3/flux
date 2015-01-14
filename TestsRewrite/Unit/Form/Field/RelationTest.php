@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +27,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 /**
  * @package Flux
  */
-class PassthroughTest extends AbstractFieldTest {
+class RelationTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -35,6 +35,11 @@ class PassthroughTest extends AbstractFieldTest {
 	protected $chainProperties = array(
 		'name' => 'test',
 		'label' => 'Test field',
+		'table' => 'pages',
+		'foreignLabel' => 'uid',
+		'filter' => array(
+			'test' => 'test'
+		)
 	);
 
 }

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +27,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 /**
  * @package Flux
  */
-class TreeTest extends AbstractFieldTest {
+class userFunctionTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -35,8 +35,8 @@ class TreeTest extends AbstractFieldTest {
 	protected $chainProperties = array(
 		'name' => 'test',
 		'label' => 'Test field',
-		'table' => 'pages',
-		'parentField' => 'pid',
+		'function' => 'FluidTYPO3\Flux\UserFunction\NoFields->renderField',
+		'arguments' => array(1, 2),
 	);
 
 }

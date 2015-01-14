@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +27,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 /**
  * @package Flux
  */
-class InputTest extends AbstractFieldTest {
+class CheckboxTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
@@ -36,31 +36,8 @@ class InputTest extends AbstractFieldTest {
 		'name' => 'test',
 		'label' => 'Test field',
 		'enable' => TRUE,
-		'maxCharacters' => 30,
-		'maximum' => 10,
-		'minimum' => 0,
-		'validate' => 'trim,int',
-		'default' => 'test',
+		'default' => 1,
 		'requestUpdate' => TRUE,
 	);
-
-	/**
-	 * @test
-	 */
-	public function canUseRequiredProperty() {
-		$instance = $this->canChainAllChainableSetters();
-		$instance->setRequired(TRUE);
-		$this->assertEquals('trim,int,required', $instance->getValidate());
-	}
-
-	/**
-	 * @test
-	 */
-	public function canUseRequiredPropertyThroughValidateProperty() {
-		$instance = $this->canChainAllChainableSetters();
-		$instance->setValidate(NULL);
-		$instance->setRequired(TRUE);
-		$this->assertEquals('required', $instance->getValidate());
-	}
 
 }

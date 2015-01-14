@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +26,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormField;
-use FluidTYPO3\Flux\Form\AbstractFormTest;
+use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
 /**
  * author Claus Due <claus@namelesscoder.net>
@@ -152,7 +152,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 	 */
 	public function canCreateFromSettingsUsingFullClassName() {
 		$properties = $this->chainProperties;
-		$properties['type'] = substr(get_class($this), 0, -4);
+		$properties['type'] = $this->getObjectClassName();
 		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}

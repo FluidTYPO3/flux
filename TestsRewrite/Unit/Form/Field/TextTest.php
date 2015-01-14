@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,6 +23,8 @@ namespace FluidTYPO3\Flux\Form\Field;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use FluidTYPO3\Flux\Form\FormInterface;
+use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 
 /**
  * @package Flux
@@ -78,6 +80,20 @@ class TextTest extends InputTest {
 		$instance = $this->createInstance();
 		$instance->setDefaultExtras(NULL)->setEnableRichText(TRUE);
 		$this->performTestBuild($instance);
+	}
+
+	/**
+	 * @return FormInterface
+	 */
+	protected function createInstance() {
+		$instance = parent::createInstance();
+		$mockConfigurationManager = $this->getMock(
+			'TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager',
+			array('getConfiguration')
+		);
+		$mockConfigurationManager->expects($this->any())->method('getConfiguration')->willReturn(array('foo' => 'bar'));
+		$instance->injectConfigurationManager($mockConfigurationManager);
+		return $instance;
 	}
 
 }

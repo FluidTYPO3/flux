@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\Form\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 
 /**
@@ -84,7 +85,7 @@ class SelectTest extends AbstractFieldTest {
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 */
 	public function canConsumeQueryObjectItems() {
 		$GLOBALS['TCA']['foobar']['ctrl']['label'] = 'username';

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field\Inline;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,37 +24,37 @@ namespace FluidTYPO3\Flux\Form\Field\Inline;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Form\Field\AbstractFieldTest;
-
 /**
  * @package Flux
  */
-class FalTest extends AbstractFieldTest {
+class CustomTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
 	 */
 	protected $chainProperties = array(
-		'collapseAll' => FALSE,
-		'expandSingle' => FALSE,
-		'newRecordLinkAddTitle' => FALSE,
-		'newRecordLinkPosition' => Form::POSITION_TOP,
-		'useCombination' => FALSE,
-		'useSortable' => FALSE,
-		'showPossibleLocalizationRecords' => FALSE,
-		'showRemovedLocalizationRecords' => FALSE,
-		'showAllLocalizationLink' => FALSE,
-		'showSynchronizationLink' => FALSE,
-		'enabledControls' => array(
-			Form::CONTROL_INFO => FALSE,
-			Form::CONTROL_NEW => TRUE,
-			Form::CONTROL_DRAGDROP => TRUE,
-			Form::CONTROL_SORT => TRUE,
-			Form::CONTROL_HIDE => TRUE,
-			Form::CONTROL_DELETE => FALSE,
-			Form::CONTROL_LOCALISE => FALSE,
+		'name' => 'test',
+		'label' => 'Test field',
+		'arguments' => array(
+			'foo' => 'bar'
 		)
 	);
+
+	/**
+	 * @test
+	 */
+	public function canUseClosure() {
+		$self = $this;
+		$arguments = array(
+			'closure' => function($parameters) use ($self) {
+				return 'Hello world';
+			}
+		);
+		$instance = $this->canChainAllChainableSetters($arguments);
+		$closure = $instance->getClosure();
+		$this->assertSame($arguments['closure'], $closure);
+		$output = $closure($arguments);
+		$this->assertNotEmpty($output);
+	}
 
 }

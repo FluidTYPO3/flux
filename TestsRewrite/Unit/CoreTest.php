@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux;
+namespace FluidTYPO3\Flux\Tests\Unit;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -116,7 +117,7 @@ class CoreTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 */
 	public function canRegisterStandaloneTemplateForContentObject() {
 		$service = $this->createFluxServiceInstance();
@@ -140,7 +141,7 @@ class CoreTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @test
+	 * @dsiabledtest
 	 */
 	public function canRegisterStandaloneTemplateForPlugin() {
 		$service = $this->createFluxServiceInstance();
@@ -165,7 +166,7 @@ class CoreTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 */
 	public function canRegisterStandaloneTemplateForTable() {
 		$service = $this->createFluxServiceInstance();

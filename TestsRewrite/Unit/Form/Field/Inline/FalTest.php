@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field\Inline;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,19 +24,37 @@ namespace FluidTYPO3\Flux\Form\Field;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
+
 /**
  * @package Flux
  */
-class userFunctionTest extends AbstractFieldTest {
+class FalTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
 	 */
 	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'function' => 'FluidTYPO3\Flux\UserFunction\NoFields->renderField',
-		'arguments' => array(1, 2),
+		'collapseAll' => FALSE,
+		'expandSingle' => FALSE,
+		'newRecordLinkAddTitle' => FALSE,
+		'newRecordLinkPosition' => Form::POSITION_TOP,
+		'useCombination' => FALSE,
+		'useSortable' => FALSE,
+		'showPossibleLocalizationRecords' => FALSE,
+		'showRemovedLocalizationRecords' => FALSE,
+		'showAllLocalizationLink' => FALSE,
+		'showSynchronizationLink' => FALSE,
+		'enabledControls' => array(
+			Form::CONTROL_INFO => FALSE,
+			Form::CONTROL_NEW => TRUE,
+			Form::CONTROL_DRAGDROP => TRUE,
+			Form::CONTROL_SORT => TRUE,
+			Form::CONTROL_HIDE => TRUE,
+			Form::CONTROL_DELETE => FALSE,
+			Form::CONTROL_LOCALISE => FALSE,
+		)
 	);
 
 }

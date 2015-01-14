@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /***************************************************************
  *  Copyright notice
  *
@@ -27,17 +27,14 @@ namespace FluidTYPO3\Flux\Form\Field;
 /**
  * @package Flux
  */
-class CheckboxTest extends AbstractFieldTest {
+class NoneTest extends AbstractFieldTest {
 
 	/**
 	 * @var array
 	 */
 	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'enable' => TRUE,
-		'default' => 1,
-		'requestUpdate' => TRUE,
+		'name' => 'none',
+		'size' => 10
 	);
 
 }
