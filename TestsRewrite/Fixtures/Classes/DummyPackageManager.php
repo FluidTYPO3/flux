@@ -12,6 +12,13 @@ use TYPO3\Flow\Package\PackageInterface;
 class DummyPackageManager extends FailsafePackageManager {
 
 	/**
+	 * @var array
+	 */
+	protected $packageStatesConfiguration = array(
+		'packages' => array()
+	);
+
+	/**
 	 * @param Bootstrap $bootstrap
 	 */
 	public function initialize(Bootstrap $bootstrap) {
@@ -23,7 +30,7 @@ class DummyPackageManager extends FailsafePackageManager {
 	 * @return boolean
 	 */
 	public function isPackageActive($packageKey) {
-		return 'flux' === $packageKey;
+		return ('flux' === $packageKey);
 	}
 
 	/**
@@ -31,7 +38,7 @@ class DummyPackageManager extends FailsafePackageManager {
 	 * @return boolean
 	 */
 	public function isPackageAvailable($packageKey) {
-		return 'flux' === $packageKey;
+		return ('flux' === $packageKey);
 	}
 
 	/**
@@ -40,7 +47,8 @@ class DummyPackageManager extends FailsafePackageManager {
 	 */
 	public function getPackage($packageKey) {
 		$path = realpath(dirname(__FILE__) . '/../../..') . '/';
-		return new Package($this, $packageKey, $path, $path . 'Classes/');
+		$package = new Package($this, $packageKey, $path, $path . 'Classes/');
+		return $package;
 	}
 
 }

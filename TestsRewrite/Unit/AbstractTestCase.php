@@ -166,18 +166,6 @@ abstract class AbstractTestCase extends BaseTestCase {
 	}
 
 	/**
-	 * @return void
-	 */
-	public function truncateFluidCodeCache() {
-		$files = glob(GeneralUtility::getFileAbsFileName('typo3temp/Cache/Code/fluid_template/*.php'));
-		if (TRUE === is_array($files)) {
-			foreach ($files as $file) {
-				unlink($file);
-			}
-		}
-	}
-
-	/**
 	 * @return string
 	 */
 	protected function getShorthandFixtureTemplatePathAndFilename() {
@@ -200,6 +188,8 @@ abstract class AbstractTestCase extends BaseTestCase {
 		/** @var FluxService $fluxService */
 		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', $methods, array(), '', FALSE);
 		$fluxService->injectObjectManager($this->objectManager);
+		$configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
+		$fluxService->injectConfigurationManager($configurationManager);
 		return $fluxService;
 	}
 

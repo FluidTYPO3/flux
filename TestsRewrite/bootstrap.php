@@ -25,9 +25,15 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'] = array(
 	'l10n' => $nullCache,
 	'fluid_template' => $nullPhpCache
 );
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['lang']['parser']['xlf'] = 'TYPO3\\CMS\\Core\\Localization\\Parser\\XliffParser';
 
 \TYPO3\CMS\Core\Core\Bootstrap::getInstance()
 	->baseSetup('typo3/')
 	->initializeClassLoader()
 	->initializeCachingFramework()
 	->initializePackageManagement('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyPackageManager');
+
+/** @var $extbaseObjectContainer \TYPO3\CMS\Extbase\Object\Container\Container */
+$extbaseObjectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\Container\\Container');
+$extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface', 'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyConfigurationManager');
+unset($extbaseObjectContainer);
