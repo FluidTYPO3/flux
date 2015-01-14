@@ -142,7 +142,7 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 		/** @var ControllerActions $component */
 		$component = $this->getPreparedComponent('ControllerActions');
 		$component->setItems($this->arguments['items']);
-		$component->setExtensionName($extensionName);
+		$component->setControllerExtensionName($extensionName);
 		$component->setPluginName($pluginName);
 		$component->setControllerName($controllerName);
 		$component->setActions($actions);

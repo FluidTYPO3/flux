@@ -215,7 +215,7 @@ class ControllerActions extends Select {
 	 * @param string $extensionName
 	 * @return ControllerActions
 	 */
-	public function setExtensionName($extensionName) {
+	public function setControllerExtensionName($extensionName) {
 		$this->controllerExtensionName = $extensionName;
 		return $this;
 	}
@@ -223,7 +223,7 @@ class ControllerActions extends Select {
 	/**
 	 * @return string
 	 */
-	public function getExtensionName() {
+	public function getControllerExtensionName() {
 		return $this->controllerExtensionName;
 	}
 
@@ -313,7 +313,7 @@ class ControllerActions extends Select {
 	 * @return array
 	 */
 	protected function getActionsForExtensionNameAndPluginName() {
-		$extensionName = $this->getExtensionName();
+		$extensionName = $this->getControllerExtensionName();
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
 		$pluginName = $this->getPluginName();
 		$actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'][$extensionName]['plugins'][$pluginName]['controllers'];
@@ -328,7 +328,7 @@ class ControllerActions extends Select {
 	 * @return string|NULL
 	 */
 	protected function buildExpectedAndExistingControllerClassName($controllerName) {
-		$extensionName = $this->getExtensionName();
+		$extensionName = $this->getControllerExtensionName();
 		list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
 		if (NULL !== $vendorName) {
 			$controllerClassName = $vendorName . '\\' . $extensionName . '\\Controller\\' . $controllerName . 'Controller';
@@ -351,7 +351,7 @@ class ControllerActions extends Select {
 	 */
 	protected function getLabelForControllerAction($controllerName, $actionName) {
 		$localLanguageFileRelativePath = $this->getLocalLanguageFileRelativePath();
-		$extensionName = $this->getExtensionName();
+		$extensionName = $this->getControllerExtensionName();
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$pluginName = $this->getPluginName();
 		$separator = $this->getSeparator();
