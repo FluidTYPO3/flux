@@ -269,13 +269,16 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		}
 		foreach ($overlays as $overlaySubpackageKey => $overlay) {
 			if (TRUE === isset($overlay['templateRootPath'])) {
-				$templateRootPath = GeneralUtility::getFileAbsFileName($overlay['templateRootPath']);
+				$templateRootPath = 0 === strpos($overlay['templateRootPath'], '/') ? $overlay['templateRootPath']
+					: GeneralUtility::getFileAbsFileName($overlay['templateRootPath']);
 			}
 			if (TRUE === isset($overlay['partialRootPath'])) {
-				$partialRootPath = GeneralUtility::getFileAbsFileName($overlay['partialRootPath']);
+				$partialRootPath = 0 === strpos($overlay['partialRootPath'], '/') ? $overlay['partialRootPath']
+					: GeneralUtility::getFileAbsFileName($overlay['partialRootPath']);
 			}
 			if (TRUE === isset($overlay['layoutRootPath'])) {
-				$layoutRootPath = GeneralUtility::getFileAbsFileName($overlay['layoutRootPath']);
+				$layoutRootPath = 0 === strpos($overlay['layoutRootPath'], '/') ? $overlay['layoutRootPath']
+					: GeneralUtility::getFileAbsFileName($overlay['layoutRootPath']);
 			}
 			$paths[$overlaySubpackageKey] = array(
 				'templateRootPath' => $templateRootPath,
