@@ -55,6 +55,7 @@ class ContainerViewHelper extends AbstractFieldViewHelper {
 			'"foobar" is the name of the field.', FALSE, NULL);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
@@ -64,6 +65,7 @@ class ContainerViewHelper extends AbstractFieldViewHelper {
 	public function render() {
 		/** @var Container $container */
 		$container = $this->getForm()->createContainer('Container', $this->arguments['name'], $this->arguments['label']);
+		$container->setExtensionName($this->getExtensionName());
 		$container->setVariables($this->arguments['variables']);
 		$existingContainer = $this->getContainer();
 		$existingContainer->add($container);

@@ -43,6 +43,7 @@ class RowViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('label', 'string', 'Optional label for this row - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
@@ -52,6 +53,7 @@ class RowViewHelper extends AbstractFormViewHelper {
 	public function render() {
 		$name = ('row' === $this->arguments['name'] ? uniqid('row', TRUE) : $this->arguments['name']);
 		$row = $this->getForm()->createContainer('Row', $name, $this->arguments['label']);
+		$row->setExtensionName($this->getExtensionName());
 		$row->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();
 		$container->add($row);

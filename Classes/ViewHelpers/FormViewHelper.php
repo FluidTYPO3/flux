@@ -55,7 +55,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('options', 'array', 'Custom options to be assigned to Form object - valid values depends on the. See docs of extension ' .
 			'in which you use this feature. Can also be set using `flux:form.option` as child of `flux:form`.');
 		$this->registerArgument('localLanguageFileRelativePath', 'string', 'Relative (from extension) path to locallang file containing labels for the LLL values used in this form.', FALSE, Form::DEFAULT_LANGUAGEFILE);
-		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context which is otherwise automatically detected.');
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
@@ -73,8 +73,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$form->setDescription($this->arguments['description']);
 		$form->setEnabled($this->arguments['enabled']);
 		$form->setCompact($this->arguments['compact']);
-		$extensionContext = $this->controllerContext->getRequest()->getControllerExtensionName();
-		$extensionName = (TRUE === $this->hasArgument('extensionName') ? $this->arguments['extensionName'] : $extensionContext);
+		$extensionName = $this->getExtensionName();
 		$form->setExtensionName($extensionName);
 		$form->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
 		$form->setVariables((array) $this->arguments['variables']);
@@ -86,12 +85,26 @@ class FormViewHelper extends AbstractFormViewHelper {
 			$form->setOption(Form::OPTION_GROUP, $this->arguments['wizardTab']);
 		}
 		// rendering child nodes with Form as active container
-		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, 'form', $form);
-		$this->templateVariableContainer->add('form', $form);
+		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_FORM, $form);
+		$this->templateVariableContainer->add(self::SCOPE_VARIABLE_FORM, $form);
 		$this->setContainer($container);
-		$this->renderChildren();
-		$this->viewHelperVariableContainer->remove(self::SCOPE, 'container');
-		$this->templateVariableContainer->remove('container');
+		if (FALSE === $this->hasArgument(self::SCOPE_VARIABLE_EXTENSIONNAME)) {
+			$this->renderChildren();
+		} else {
+			// render with stored extension context, backing up any stored variable from parents.
+			$extensionName = NULL;
+			if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME)) {
+				$extensionName = $this->viewHelperVariableContainer->get(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
+			}
+			$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
+			$this->renderChildren();
+			$this->viewHelperVariableContainer->remove(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
+			if (NULL !== $extensionName) {
+				$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
+			}
+		}
+		$this->viewHelperVariableContainer->remove(self::SCOPE, self::SCOPE_VARIABLE_CONTAINER);
+		$this->templateVariableContainer->remove(self::SCOPE_VARIABLE_CONTAINER);
 	}
 
 }

@@ -49,6 +49,7 @@ class GridViewHelper extends AbstractFormViewHelper {
 	 */
 	public function render() {
 		$grid = $this->getGrid($this->arguments['name']);
+		$grid->setExtensionName($this->getExtensionName());
 		$grid->setParent($this->getForm());
 		$grid->setLabel($this->arguments['label']);
 		$grid->setVariables($this->arguments['variables']);

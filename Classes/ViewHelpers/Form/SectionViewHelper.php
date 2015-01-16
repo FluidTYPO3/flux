@@ -46,6 +46,7 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 			'extension rendering the Flux form.', FALSE, NULL);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
@@ -55,6 +56,7 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 	public function render() {
 		/** @var Section $section */
 		$section = $this->getForm()->createContainer('Section', $this->arguments['name'], $this->arguments['label']);
+		$section->setExtensionName($this->getExtensionName());
 		$section->setVariables($this->arguments['variables']);
 		$container = $this->getContainer();
 		$container->add($section);

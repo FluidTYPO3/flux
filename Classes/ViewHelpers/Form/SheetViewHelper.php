@@ -50,6 +50,7 @@ class SheetViewHelper extends AbstractFormViewHelper {
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 		$this->registerArgument('description', 'string', 'Optional string or LLL reference with a desription of the purpose of the sheet', FALSE, NULL);
 		$this->registerArgument('shortDescription', 'string', 'Optional shorter version of description of purpose of the sheet, LLL reference supported', FALSE, NULL);
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
@@ -62,11 +63,13 @@ class SheetViewHelper extends AbstractFormViewHelper {
 			$sheet = $form->get($this->arguments['name']);
 			// Note: this next line will -override- any variables set in any existing sheet of that name. This
 			// is expected behavior but it also affects previously added sheets.
+			$sheet->setExtensionName($this->getExtensionName());
 			$sheet->setVariables($this->arguments['variables']);
 			$this->setContainer($sheet);
 		} else {
 			/** @var Sheet $sheet */
 			$sheet = $this->getForm()->createContainer('Sheet', $this->arguments['name'], $this->arguments['label']);
+			$sheet->setExtensionName($this->getExtensionName());
 			$sheet->setVariables($this->arguments['variables']);
 			$sheet->setDescription($this->arguments['description']);
 			$sheet->setShortDescription($this->arguments['shortDescription']);

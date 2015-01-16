@@ -49,6 +49,7 @@ class ColumnViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template. ' .
 			'Can also be set and/or overridden in tag content using <flux:form.variable />', FALSE, array());
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
@@ -57,6 +58,7 @@ class ColumnViewHelper extends AbstractFormViewHelper {
 	public function render() {
 		/** @var Column $column */
 		$column = $this->getForm()->createContainer('Column', $this->arguments['name'], $this->arguments['label']);
+		$column->setExtensionName($this->getExtensionName());
 		$column->setColspan($this->arguments['colspan']);
 		$column->setRowspan($this->arguments['rowspan']);
 		$column->setStyle($this->arguments['style']);

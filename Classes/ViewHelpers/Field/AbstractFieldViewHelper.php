@@ -57,6 +57,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('clear', 'boolean', 'If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value', FALSE, FALSE);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
@@ -65,6 +66,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 	 */
 	protected function getPreparedComponent($type) {
 		$component = $this->getForm()->createField($type, $this->arguments['name'], $this->arguments['label']);
+		$component->setExtensionName($this->getExtensionName());
 		$component->setDefault($this->arguments['default']);
 		$component->setRequired($this->arguments['required']);
 		$component->setExclude($this->arguments['exclude']);

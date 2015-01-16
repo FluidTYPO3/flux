@@ -82,6 +82,7 @@ class ContentViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('label', 'string', 'Label for content area, can be LLL: value. Optional - if not specified, ' .
 			'Flux tries to detect an LLL label named "flux.fluxFormId.columns.foobar" based on column name, in scope of ' .
 			'extension rendering the Flux form.', FALSE, NULL);
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
@@ -94,6 +95,7 @@ class ContentViewHelper extends AbstractFormViewHelper {
 			// get the current Grid and check for existence of one row and one column, if missing then create them:
 			$grid = $this->getGrid('grid');
 			if (0 === count($grid->getRows())) {
+				$grid->setExtensionName($this->getExtensionName());
 				$row = $grid->createContainer('Row', 'row');
 				$column = $row->createContainer('Column', 'column');
 				$column->setName($this->arguments['name']);
