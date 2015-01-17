@@ -93,7 +93,6 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	 * @return NULL
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem) {
-		$drawItem = TRUE;
 		$fieldName = NULL; // every provider for tt_content will be asked to get a preview
 		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
 			$itemContent = $this->createShortcutIcon($row) . $itemContent;
