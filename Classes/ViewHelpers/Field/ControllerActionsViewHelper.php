@@ -100,7 +100,7 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 		parent::initializeArguments();
 		$this->overrideArgument('items', 'mixed', 'Optional, full list of items to display - note: if used, this overrides any automatic option filling!', FALSE, NULL);
 		$this->overrideArgument('name', 'string', 'Name of the field', FALSE, 'switchableControllerActions');
-		$this->registerArgument('extensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension');
+		$this->registerArgument('controllerExtensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension');
 		$this->registerArgument('pluginName', 'string', 'Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName');
 		$this->registerArgument('controllerName', 'string', 'Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied', FALSE, NULL);
 		$this->registerArgument('actions', 'array', 'Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)', FALSE, array());
@@ -117,7 +117,7 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 	 * @throws \RuntimeException
 	 */
 	public function getComponent() {
-		$extensionName = $this->arguments['extensionName'];
+		$extensionName = $this->arguments['controllerExtensionName'];
 		$pluginName = $this->arguments['pluginName'];
 		$actions = $this->arguments['actions'];
 		$controllerName = $this->arguments['controllerName'];
@@ -141,6 +141,7 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 		}
 		/** @var ControllerActions $component */
 		$component = $this->getPreparedComponent('ControllerActions');
+		$component->setExtensionName($this->getExtensionName());
 		$component->setItems($this->arguments['items']);
 		$component->setControllerExtensionName($extensionName);
 		$component->setPluginName($pluginName);
