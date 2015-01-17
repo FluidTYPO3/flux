@@ -26,7 +26,13 @@ class DummyConfigurationManager extends BackendConfigurationManager implements C
 	 * @return array
 	 */
 	public function getConfiguration($type, $extensionName = NULL, $pluginName = NULL) {
-		return array();
+		return array(
+			'plugin.' => array(
+				'tx_flux.' => array(
+					'view.' => array()
+				)
+			)
+		);
 	}
 
 	/**

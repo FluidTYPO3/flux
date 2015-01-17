@@ -21,6 +21,10 @@ $nullPhpCache['frontend'] = 'TYPO3\\CMS\\Core\\Cache\\Frontend\\PhpFrontend';
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'] = array(
 	'cache_core' => $nullPhpCache,
 	'cache_pages' => $nullCache,
+	'cache_hash' => $nullCache,
+	'extbase_datamapfactory_datamap' => $nullCache,
+	'extbase_typo3dbbackend_tablecolumns' => $nullCache,
+	'extbase_typo3dbbackend_queries' => $nullCache,
 	'extbase_object' => $nullCache,
 	'extbase_reflection' => $nullCache,
 	'l10n' => $nullCache,
@@ -39,4 +43,15 @@ $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash'] = array();
 /** @var $extbaseObjectContainer \TYPO3\CMS\Extbase\Object\Container\Container */
 $extbaseObjectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\Container\\Container');
 $extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface', 'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyConfigurationManager');
+$extbaseObjectContainer->registerImplementation(
+	'TYPO3\\CMS\\Extbase\\Persistence\\PersistenceManagerInterface',
+	'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyPersistenceManager'
+);
+$extbaseObjectContainer->registerImplementation(
+	'TYPO3\\CMS\\Extbase\\Persistence\\Generic\\BackendInterface',
+	'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyPersistenceBackend'
+);
 unset($extbaseObjectContainer);
+
+class_alias('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\ContentController', 'FluidTYPO3\\Flux\\Controller\\ContentController');
+class_alias('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\ContentController', 'Tx_Flux_Controller_ContentController');

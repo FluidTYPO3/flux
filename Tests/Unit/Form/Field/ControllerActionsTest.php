@@ -50,14 +50,6 @@ class ControllerActionsTest extends AbstractFieldTest {
 	);
 
 	/**
-	 * @return void
-	 */
-	public static function setUpBeforeClass() {
-		class_alias('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\ContentController', 'FluidTYPO3\\Flux\\Controller\\ContentController');
-		class_alias('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\ContentController', 'Tx_Flux_Controller_ContentController');
-	}
-
-	/**
 	 * @test
 	 */
 	public function canUseRawItems() {

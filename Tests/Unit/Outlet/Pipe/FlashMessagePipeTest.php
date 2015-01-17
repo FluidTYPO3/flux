@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
+namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,49 +24,53 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 
 /**
  * @package Flux
  */
-class ContentController extends AbstractFluxController {
+class FlashMessagePipeTest extends AbstractPipeTestCase {
 
 	/**
 	 * @return void
 	 */
-	public function initializeProvider() {
-
+	public function setUp() {
+		$GLOBALS['BE_USER'] = $this->getMock('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication');
 	}
 
 	/**
 	 * @return void
 	 */
-	public function initializeOverriddenSettings() {
-		$this->settings = RecursiveArrayUtility::merge($this->settings, $this->data['settings']);
+	public function tearDown() {
+		unset($GLOBALS['BE_USER']);
 	}
 
 	/**
-	 * Fake Action
-	 *
-	 * @return void
+	 * @test
 	 */
-	public function fakeAction() {
+	public function canGetAndSetSeverity() {
+		$this->assertGetterAndSetterWorks('severity', 4, 4, TRUE);
 	}
 
 	/**
-	 * @return void
+	 * @test
 	 */
-	public function fakeWithoutDescriptionAction() {
+	public function canGetAndSetTitle() {
+		$this->assertGetterAndSetterWorks('title', 'test', 'test', TRUE);
 	}
 
 	/**
-	 * Fake Action
-	 *
-	 * @param string $required
-	 * @return void
+	 * @test
 	 */
-	public function fakeWithRequiredArgumentAction($required) {
+	public function canGetAndSetMessage() {
+		$this->assertGetterAndSetterWorks('message', 'test', 'test', TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetAndSetStoreInSession() {
+		$this->assertGetterAndSetterWorks('storeInSession', TRUE, TRUE, TRUE);
 	}
 
 }

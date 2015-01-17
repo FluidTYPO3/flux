@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
+namespace FluidTYPO3\Flux\Tests\Unit\Service;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,49 +24,22 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
-
 /**
  * @package Flux
  */
-class ContentController extends AbstractFluxController {
+class WorkspacesAwareRecordServiceTest extends RecordServiceTest {
 
 	/**
-	 * @return void
+	 * @test
 	 */
-	public function initializeProvider() {
-
-	}
-
-	/**
-	 * @return void
-	 */
-	public function initializeOverriddenSettings() {
-		$this->settings = RecursiveArrayUtility::merge($this->settings, $this->data['settings']);
-	}
-
-	/**
-	 * Fake Action
-	 *
-	 * @return void
-	 */
-	public function fakeAction() {
-	}
-
-	/**
-	 * @return void
-	 */
-	public function fakeWithoutDescriptionAction() {
-	}
-
-	/**
-	 * Fake Action
-	 *
-	 * @param string $required
-	 * @return void
-	 */
-	public function fakeWithRequiredArgumentAction($required) {
+	public function overlayRecordsCallsExpectedMethodSequence() {
+		$mock = $this->getMock($this->createInstanceClassName(), array('hasWorkspacesSupport', 'overlayRecord'));
+		$mock->expects($this->once())->method('hasWorkspacesSupport')->will($this->returnValue(TRUE));
+		$mock->expects($this->exactly(2))->method('overlayRecord')->will($this->returnValue(array('foo')));
+		$records = array(array(), array());
+		$expected = array(array('foo'), array('foo'));
+		$result = $this->callInaccessibleMethod($mock, 'overlayRecords', 'table', $records);
+		$this->assertEquals($expected, $result);
 	}
 
 }

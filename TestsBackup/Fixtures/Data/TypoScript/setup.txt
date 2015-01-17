@@ -1,1 +1,0 @@
-plugin.tx_flux.settings.dummy = {$plugin.tx_flux.settings.dummy}
