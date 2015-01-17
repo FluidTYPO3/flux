@@ -77,6 +77,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase {
 	 */
 	protected function getViewHelperClassName() {
 		$class = get_class($this);
+		$class = str_replace('Tests\\Unit\\', '', $class);
 		return substr($class, 0, -4);
 	}
 

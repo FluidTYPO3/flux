@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Content;
+namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Content;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,6 +24,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\ViewHelpers\Content\RenderViewHelper;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
@@ -39,7 +40,9 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase {
 	 */
 	protected function setUp() {
 		parent::setUp();
-		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', FALSE);
+		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
 	}
 
 	/**

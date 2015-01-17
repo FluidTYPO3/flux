@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Tests\Unit\Backend;
+namespace FluidTYPO3\Flux\Backend;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,7 +24,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Backend\DynamicFlexForm;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -61,13 +60,24 @@ class DynamicFlexFormTest extends AbstractTestCase {
 	 * @return void
 	 */
 	protected function canExecuteDataStructurePostProcessHookInternal($fieldName = 'pi_flexform', $table = 'tt_content') {
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Backend\\DynamicFlexForm', array(), array(), '', FALSE);
+		$instance = $this->getInstance();
 		$dataStructure = array();
 		$config = array();
 		$row = array();
 		$instance->getFlexFormDS_postProcessDS($dataStructure, $config, $row, $table, $fieldName);
 		$isArrayConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
 		$this->assertThat($dataStructure, $isArrayConstraint);
+	}
+
+	/**
+	 * @return DynamicFlexForm
+	 */
+	protected function getInstance() {
+		/** @var ObjectManagerInterface $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		/** @var DynamicFlexForm $instance */
+		$instance = $objectManager->get('FluidTYPO3\Flux\Backend\DynamicFlexForm');
+		return $instance;
 	}
 
 }

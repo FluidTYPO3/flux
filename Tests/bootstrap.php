@@ -16,13 +16,27 @@ $nullCache = array(
 	'frontend' => 'TYPO3\\CMS\\Core\\Cache\\Frontend\\VariableFrontend',
 	'backend' => 'TYPO3\\CMS\\Core\\Cache\\Backend\\NullBackend'
 );
+$nullPhpCache = $nullCache;
+$nullPhpCache['frontend'] = 'TYPO3\\CMS\\Core\\Cache\\Frontend\\PhpFrontend';
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'] = array(
+	'cache_core' => $nullPhpCache,
+	'cache_pages' => $nullCache,
 	'extbase_object' => $nullCache,
 	'extbase_reflection' => $nullCache,
-	'l10n' => $nullCache
+	'l10n' => $nullCache,
+	'fluid_template' => $nullPhpCache
 );
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['lang']['parser']['xlf'] = 'TYPO3\\CMS\\Core\\Localization\\Parser\\XliffParser';
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['trustedHostsPattern'] = '.?';
+$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash'] = array();
 
 \TYPO3\CMS\Core\Core\Bootstrap::getInstance()
 	->baseSetup('typo3/')
 	->initializeClassLoader()
-	->initializeCachingFramework();
+	->initializeCachingFramework()
+	->initializePackageManagement('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyPackageManager');
+
+/** @var $extbaseObjectContainer \TYPO3\CMS\Extbase\Object\Container\Container */
+$extbaseObjectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\Container\\Container');
+$extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface', 'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyConfigurationManager');
+unset($extbaseObjectContainer);

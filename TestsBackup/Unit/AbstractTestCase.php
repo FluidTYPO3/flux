@@ -33,22 +33,31 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase;
 
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Records.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/ContentController.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/DummyConfigurationProvider.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/DummyModel.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/DummyRepository.php');
+require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/InvalidConfigurationProvider.php');
+
+
 /**
  * @package Flux
  */
 abstract class AbstractTestCase extends BaseTestCase {
 
-	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'Tests/Fixtures/Templates/AbsolutelyMinimal.html';
-	const FIXTURE_TEMPLATE_WITHOUTFORM = 'Tests/Fixtures/Templates/WithoutForm.html';
-	const FIXTURE_TEMPLATE_SHEETS = 'Tests/Fixtures/Templates/Sheets.html';
-	const FIXTURE_TEMPLATE_COMPACTED = 'Tests/Fixtures/Templates/CompactToggledOn.html';
-	const FIXTURE_TEMPLATE_USESPARTIAL = 'Tests/Fixtures/Templates/UsesPartial.html';
-	const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'Tests/Fixtures/Templates/CustomSection.html';
-	const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'Tests/Fixtures/Templates/EmptyPreview.html';
-	const FIXTURE_TEMPLATE_BASICGRID = 'Tests/Fixtures/Templates/BasicGrid.html';
-	const FIXTURE_TEMPLATE_DUALGRID = 'Tests/Fixtures/Templates/DualGrid.html';
-	const FIXTURE_TEMPLATE_COLLIDINGGRID = 'Tests/Fixtures/Templates/CollidingGrid.html';
-	const FIXTURE_TYPOSCRIPT_DIR = 'Tests/Fixtures/Data/TypoScript';
+	const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
+	const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/WithoutForm.html';
+	const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Sheets.html';
+	const FIXTURE_TEMPLATE_COMPACTED = 'EXT:flux/Tests/Fixtures/Templates/CompactToggledOn.html';
+	const FIXTURE_TEMPLATE_USESPARTIAL = 'EXT:flux/Tests/Fixtures/Templates/UsesPartial.html';
+	const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/CustomSection.html';
+	const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/EmptyPreview.html';
+	const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/BasicGrid.html';
+	const FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/DualGrid.html';
+	const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/CollidingGrid.html';
+	const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
 	/**
 	 * @param string $name
@@ -166,6 +175,18 @@ abstract class AbstractTestCase extends BaseTestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function truncateFluidCodeCache() {
+		$files = glob(GeneralUtility::getFileAbsFileName('typo3temp/Cache/Code/fluid_template/*.php'));
+		if (TRUE === is_array($files)) {
+			foreach ($files as $file) {
+				unlink($file);
+			}
+		}
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function getShorthandFixtureTemplatePathAndFilename() {
@@ -177,19 +198,16 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @return string
 	 */
 	protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath) {
-		return realpath(dirname(__FILE__) . '/../../' . $shorthandTemplatePath);
+		return GeneralUtility::getFileAbsFileName($shorthandTemplatePath);
 	}
 
 	/**
-	 * @param array $methods
 	 * @return FluxService
 	 */
-	protected function createFluxServiceInstance($methods = array('dummy')) {
+	protected function createFluxServiceInstance() {
 		/** @var FluxService $fluxService */
-		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', $methods, array(), '', FALSE);
-		$fluxService->injectObjectManager($this->objectManager);
-		$configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
-		$fluxService->injectConfigurationManager($configurationManager);
+		$fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+		ObjectAccess::setProperty($fluxService, 'silent', TRUE, TRUE);
 		return $fluxService;
 	}
 
@@ -197,7 +215,7 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @return object
 	 */
 	protected function createInstanceClassName() {
-		return str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
+		return substr(get_class($this), 0, -4);
 	}
 
 	/**

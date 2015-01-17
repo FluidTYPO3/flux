@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
+namespace FluidTYPO3\Flux\Controller;
 /***************************************************************
  *  Copyright notice
  *
@@ -24,20 +24,10 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use FluidTYPO3\Flux\Controller\AbstractFluxController;
-
 /**
  * @package Flux
  */
 class ContentController extends AbstractFluxController {
-
-	public function initializeProvider() {
-
-	}
-
-	public function initializeOverriddenSettings() {
-
-	}
 
 	/**
 	 * Fake Action
