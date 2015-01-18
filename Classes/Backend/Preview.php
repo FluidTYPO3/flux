@@ -17,6 +17,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 
 /**
  * Fluid Template preview renderer
@@ -47,12 +48,22 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	protected $recordService;
 
 	/**
+	 * @var array
+	 */
+	public $itemLabels = array();
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
 		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
 		$this->recordService = $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService');
+		$this->itemLabels = array();
+		foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
+			$this->itemLabels[$name] = $this->getLanguageService()->sL($val['label']);
+		}
+
 	}
 
 	/**
@@ -99,6 +110,14 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 				break;
 			}
 		}
+		$footerContentArray = array();
+		$this->getProcessedValue('tt_content', 'starttime,endtime,fe_group,spaceBefore,spaceAfter', $row, $footerContentArray);
+		if (0 < count($footerContentArray)) {
+			$footerContent = '<div class="t3-page-ce-info">'. implode('<br />', $footerContentArray) . '</div>';
+		}
+		if (FALSE === empty($footerContent)) {
+			$itemContent .= '<div class="t3-page-ce-footer">' . $footerContent . '</div>';
+		}
 		$this->attachAssets();
 		return NULL;
 	}
@@ -138,6 +157,36 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 			$doc->getPageRenderer()->addJsFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/js/fluxCollapse.js');
 			self::$assetsIncluded = TRUE;
 		}
+	}
+
+	/**
+	 * Creates processed values for all field names in $fieldList based on values from $row array.
+	 * The result is 'returned' through $info which is passed as a reference
+	 *
+	 * @param string $table Table name
+	 * @param string $fieldList Comma separated list of fields.
+	 * @param array $row Record from which to take values for processing.
+	 * @param array $info Array to which the processed values are added.
+	 * @return void
+	 * @todo Define visibility
+	 */
+	public function getProcessedValue($table, $fieldList, array $row, array &$info) {
+		// Splitting values from $fieldList
+		$fieldArr = explode(',', $fieldList);
+		// Traverse fields from $fieldList
+		foreach ($fieldArr as $field) {
+			if ($row[$field]) {
+				$info[] = '<strong>' . htmlspecialchars($this->itemLabels[$field]) . '</strong> '
+					. htmlspecialchars(BackendUtility::getProcessedValue($table, $field, $row[$field]));
+			}
+		}
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Lang\LanguageService
+	 */
+	protected function getLanguageService() {
+		return $GLOBALS['LANG'];
 	}
 
 }
