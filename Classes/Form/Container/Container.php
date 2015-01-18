@@ -51,7 +51,7 @@ class Container extends AbstractFormContainer implements ContainerInterface, Fie
 	 * @return FieldInterface[]
 	 */
 	public function getFields() {
-		return $this->children;
+		return (array) iterator_to_array($this->children);
 	}
 
 }
