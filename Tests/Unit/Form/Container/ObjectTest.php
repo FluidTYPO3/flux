@@ -24,9 +24,20 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use FluidTYPO3\Flux\Form\Container\Object;
+
 /**
  * @package Flux
  */
 class ObjectTest extends AbstractContainerTest {
+
+	/**
+	 * @test
+	 */
+	public function getFieldsGetsFields() {
+		$container = Object::create(array('name' => 'test'));
+		$container->createField('Input', 'test');
+		$this->assertCount(1, $container->getFields());
+	}
 
 }
