@@ -300,7 +300,7 @@ CONTENT;
 		}
 
 		$element = $this->drawElement($record, $dblist);
-		if (0 === (int) $dblist->tt_contentConfig['languageMode']) {
+		if (0 === (integer) $dblist->tt_contentConfig['languageMode']) {
 			$element = '<div class="t3-page-ce-dragitem">' . $element . '</div>';
 		}
 
