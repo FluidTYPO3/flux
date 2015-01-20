@@ -102,6 +102,8 @@ class PreviewView {
 			$previewContent = $gridContent . $previewContent;
 		}
 
+		$previewContent = trim($previewContent);
+
 		return $previewContent;
 	}
 
