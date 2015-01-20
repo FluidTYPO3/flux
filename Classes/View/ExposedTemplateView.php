@@ -45,6 +45,11 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	protected $providerPaths = array();
 
 	/**
+	 * @var array
+	 */
+	protected $renderedSections = array();
+
+	/**
 	 * @return array
 	 */
 	public function getProviderPaths() {
@@ -105,6 +110,9 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	 * @throws \RuntimeException
 	 */
 	protected function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL) {
+		if (TRUE === isset($this->renderedSections[$sectionName])) {
+			return $this->renderedSections[$sectionName]->get($viewHelperClassName, $name);
+		}
 		if (FALSE === $this->controllerContext instanceof ControllerContext) {
 			throw new \RuntimeException('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
 		}
@@ -112,16 +120,18 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		$this->templateParser->setConfiguration($this->buildParserConfiguration());
 		$parsedTemplate = $this->getParsedTemplate();
 		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
+		$viewHelperVariableContainer = $this->baseRenderingContext->getViewHelperVariableContainer();
 		if (FALSE === empty($sectionName)) {
 			$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
 		} else {
 			$this->render();
 		}
 		$this->stopRendering();
-		if (FALSE === $this->baseRenderingContext->getViewHelperVariableContainer()->exists($viewHelperClassName, $name)) {
+		if (FALSE === $viewHelperVariableContainer->exists($viewHelperClassName, $name)) {
 			return NULL;
 		}
-		$stored = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
+		$this->renderedSections[$sectionName] = $viewHelperVariableContainer;
+		$stored = $viewHelperVariableContainer->get($viewHelperClassName, $name);
 		$templateIdentityForLog = NULL !== $this->templateSource ? 'source code with hash value ' . sha1($this->templateSource) : $this->getTemplatePathAndFilename();
 		$this->configurationService->message('Flux View ' . get_class($this) . ' is able to read stored configuration from ' .
 			$templateIdentityForLog, GeneralUtility::SYSLOG_SEVERITY_INFO);
