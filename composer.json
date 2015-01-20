@@ -20,7 +20,8 @@
 	            "vendor/typo3/cms/typo3/sysext/core",
 	            "vendor/typo3/cms/typo3/sysext/backend",
 	            "vendor/typo3/cms/typo3/sysext/frontend",
-	            "vendor/typo3/cms/typo3/sysext/recordlist"
+	            "vendor/typo3/cms/typo3/sysext/recordlist",
+	            "vendor/typo3/cms/typo3/sysext/lang"
 	       	]
 	},
 	"suggest": {
