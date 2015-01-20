@@ -310,6 +310,10 @@ class AbstractProvider implements ProviderInterface {
 		if (NULL !== $this->form) {
 			return $this->form;
 		}
+		$cacheKey = $this->getCacheKeyForStoredVariable($row, 'form');
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
+		}
 		$formClassName = $this->resolveFormClassName($row);
 		if (NULL !== $formClassName) {
 			$form = call_user_func_array(array($formClassName, 'create'), array($row));
@@ -334,6 +338,7 @@ class AbstractProvider implements ProviderInterface {
 		}
 
 		$form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
+		self::$cache[$cacheKey] = $form;
 		return $form;
 	}
 
@@ -345,6 +350,10 @@ class AbstractProvider implements ProviderInterface {
 		if (NULL !== $this->grid) {
 			return $this->grid;
 		}
+		$cacheKey = $this->getCacheKeyForStoredVariable($row, 'grid');
+		if (TRUE === isset(self::$cache[$cacheKey])) {
+			return self::$cache[$cacheKey];
+		}
 		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 		$section = $this->getConfigurationSectionName($row);
 		$gridName = 'grid';
@@ -353,6 +362,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$variables = $this->getViewVariables($row);
 		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
+		self::$cache[$cacheKey] = $grid;
 		return $grid;
 	}
 
@@ -849,6 +859,18 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	protected function getCacheKeyForMergedConfiguration(array $tree) {
 		return 'merged_' . md5(json_encode($tree));
+	}
+
+	/**
+	 * @param array $row
+	 * @param string $variable
+	 * @return string
+	 */
+	protected function getCacheKeyForStoredVariable(array $row, $variable) {
+		$table = $this->getTableName($row);
+		$field = $this->getFieldName($row);
+		$uid = (TRUE === isset($row['uid']) ? $row['uid'] : uniqid());
+		return $table . md5($row[$field]) . $uid . $variable . get_class($this);
 	}
 
 	/**
