@@ -100,8 +100,8 @@ class GetViewHelper extends AbstractViewHelper {
 		// The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.
 		// Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the localized version or default version.
 		$conditions = "((tx_flux_column = '" . $area . ':' . $id . "')
-			OR (tx_flux_parent = '" . $id . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $id . "')))
-			AND deleted = 0 AND hidden = 0";
+			OR (tx_flux_parent = '" . $id . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $id . "')))" .
+			$GLOBALS['TSFE']->cObj->enableFields('tt_content');
 		$rows = $this->recordService->get('tt_content', '*', $conditions, 'uid', $order, $offset . ',' . $limit);
 
 		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);
