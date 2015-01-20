@@ -45,7 +45,7 @@ class DynamicFlexFormTest extends AbstractTestCase {
 	 * @return void
 	 */
 	protected function canExecuteDataStructurePostProcessHookInternal($fieldName = 'pi_flexform', $table = 'tt_content') {
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Backend\\DynamicFlexForm', array(), array(), '', FALSE);
+		$instance = new DynamicFlexForm();
 		$dataStructure = array();
 		$config = array();
 		$row = array();
