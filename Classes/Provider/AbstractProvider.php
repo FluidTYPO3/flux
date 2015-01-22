@@ -870,7 +870,7 @@ class AbstractProvider implements ProviderInterface {
 		$table = $this->getTableName($row);
 		$field = $this->getFieldName($row);
 		$uid = (TRUE === isset($row['uid']) ? $row['uid'] : uniqid());
-		return $table . md5($row[$field]) . $uid . $variable . get_class($this);
+		return $table . md5(serialize($row[$field])) . $uid . $variable . get_class($this);
 	}
 
 	/**
