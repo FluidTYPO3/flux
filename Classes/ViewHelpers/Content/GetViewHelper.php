@@ -99,8 +99,7 @@ class GetViewHelper extends AbstractViewHelper {
 		// Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and colummn.
 		// The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.
 		// Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the localized version or default version.
-		$conditions = "((tx_flux_column = '" . $area . ':' . $id . "')
-			OR (tx_flux_parent = '" . $id . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $id . "')))" .
+		$conditions = "(tx_flux_parent = '" . $id . "' AND tx_flux_column = '" . $area . "' AND pid = '" . $record['pid'] . "')" .
 			$GLOBALS['TSFE']->cObj->enableFields('tt_content');
 		$rows = $this->recordService->get('tt_content', '*', $conditions, 'uid', $order, $offset . ',' . $limit);
 
