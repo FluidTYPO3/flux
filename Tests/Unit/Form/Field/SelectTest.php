@@ -69,7 +69,7 @@ class SelectTest extends AbstractFieldTest {
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function canConsumeQueryObjectItems() {
 		$GLOBALS['TCA']['foobar']['ctrl']['label'] = 'username';

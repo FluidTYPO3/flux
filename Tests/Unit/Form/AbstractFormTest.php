@@ -214,7 +214,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function canUseShorthandLanguageLabel() {
 		$className = $this->getObjectClassName();

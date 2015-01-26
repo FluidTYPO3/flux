@@ -88,22 +88,6 @@ class ResolveUtilityTest extends AbstractTestCase {
 	/**
 	 * @disabledtest
 	 */
-	public function canDetectWidgetTemplatePathAndFilenameAndTrimsTrailingSlash() {
-		$templateRootPath = ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/');
-		$expectedDefault = $templateRootPath . 'ViewHelpers/Widget/Grid/Index.html';
-		$expectedWithGridelementsVersionTwo = $templateRootPath . 'ViewHelpers/Widget/Grid/GridElements.html';
-		$utility = new ResolveUtility();
-		ObjectAccess::setProperty($utility, 'initialized', TRUE, TRUE);
-		$this->assertSame($expectedDefault, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
-		ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', TRUE, TRUE);
-		$this->assertSame($expectedWithGridelementsVersionTwo, $utility::resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath));
-		ObjectAccess::setProperty($utility, 'hasGridElementsVersionTwo', FALSE, TRUE);
-		ObjectAccess::setProperty($utility, 'initialized', FALSE, TRUE);
-	}
-
-	/**
-	 * @disabledtest
-	 */
 	public function canDetectCurrentPageRecord() {
 		$expected = reset($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', 'pid=0'));
 		$GLOBALS['TSFE'] = new \stdClass();
@@ -112,23 +96,6 @@ class ResolveUtilityTest extends AbstractTestCase {
 		$result = ResolveUtility::resolveCurrentPageRecord();
 		$this->assertSame($result, $expected);
 		unset($GLOBALS['TSFE']);
-	}
-
-	/**
-	 * @disabledtest
-	 */
-	public function resolvePossibleOverlayTemplateFileDetectsOverlayFile() {
-		$overlays = array(
-			array('templateRootPath' => 'EXT:flux/Resources/Private/Templates/SomeFolder/'),
-			array('templateRootPath' => 'EXT:flux/Resources/Private/Templates/'),
-			array('templateRootPath' => 'EXT:flux/Resources/Private/Templates/ViewHelpers/Widget/')
-		);
-		$controller = 'Grid';
-		$action = 'index';
-		$format = 'html';
-		$result = ResolveUtility::resolvePossibleOverlayTemplateFile($overlays, $controller, $action, $format);
-		$expected = GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Private/Templates/ViewHelpers/Widget/Grid/Index.html');
-		$this->assertEquals($expected, $result);
 	}
 
 }

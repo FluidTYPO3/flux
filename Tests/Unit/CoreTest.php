@@ -125,7 +125,7 @@ class CoreTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @dsiabledtest
+	 * @disabledtest
 	 */
 	public function canRegisterStandaloneTemplateForPlugin() {
 		$service = $this->createFluxServiceInstance();
