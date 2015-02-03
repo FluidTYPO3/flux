@@ -163,8 +163,8 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canGetTypoScriptSubConfigurationWithNonexistingExtensionNameAndReturnEmptyArray() {
 		$service = $this->createFluxServiceInstance();
-		$config = $service->getTypoScriptSubConfiguration('doesnotexist', 'view', 'flux');
-		$this->assertIsArray($config);
+		$config = $service->getTypoScriptSubConfiguration('settings', 'view', 'flux');
+		$this->assertNull($config);
 	}
 
 	/**
