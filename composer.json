@@ -31,20 +31,6 @@
 		"fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
 	},
     "require-dev": {
-        "typo3/cms": "6.2.7",
         "fluidtypo3/development": "*"
-    },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "typo3/cms",
-                "version": "6.2.7",
-                "dist": {
-                    "url": "https://github.com/TYPO3/TYPO3.CMS/archive/6.2.7.zip",
-                    "type": "zip"
-                }
-            }
-        }
-    ]
+    }
 }
