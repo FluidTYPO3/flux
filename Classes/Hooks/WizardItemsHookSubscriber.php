@@ -89,27 +89,27 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		// Detect what was clicked in order to create the new content element; decide restrictions
 		// based on this.
 		$defaultValues = $this->getDefaultValues();
-		$relativeRecordUid = 0;
+		$parentRecordUid = 0;
 		$fluxAreaName = NULL;
 		if (0 > $parentObject->uid_pid) {
 			// pasting after another element means we should try to resolve the Flux content relation
 			// from that element instead of GET parameters (clicked: "create new" icon after other element)
-			$relativeRecordUid = abs($parentObject->uid_pid);
-			$relativeRecord = $this->recordService->getSingle('tt_content', '*', $relativeRecordUid);
-			$fluxAreaName = $relativeRecord['tx_flux_column'];
+			$relativeRecord = $this->recordService->getSingle('tt_content', '*', abs($parentObject->uid_pid));
+			$parentRecordUid = (integer) $relativeRecord['tx_flux_parent'];
+			$fluxAreaName = (string) $relativeRecord['tx_flux_column'];
 		} elseif (TRUE === isset($defaultValues['tx_flux_column'])) {
 			// attempt to read the target Flux content area from GET parameters (clicked: "create new" icon
 			// in top of nested Flux content area
-			$fluxAreaName = $defaultValues['tx_flux_column'];
-			$relativeRecordUid = $defaultValues['tx_flux_parent'];
+			$fluxAreaName = (string) $defaultValues['tx_flux_column'];
+			$parentRecordUid = (integer) $defaultValues['tx_flux_parent'];
 		}
 		// if these variables now indicate that we are inserting content elements into a Flux-enabled content
 		// area inside another content element, attempt to read allowed/denied content types from the
 		// Grid returned by the Provider that applies to the parent element's type and configuration
 		// (admitted, that's quite a mouthful - but it's not that different from reading the values from
 		// a page template like above; it's the same principle).
-		if (0 < $relativeRecordUid && FALSE === empty($fluxAreaName)) {
-			list ($whitelist, $blacklist) = $this->readWhitelistAndBlacklistFromColumn($relativeRecordUid, $fluxAreaName, $whitelist, $blacklist);
+		if (0 < $parentRecordUid && FALSE === empty($fluxAreaName)) {
+			list ($whitelist, $blacklist) = $this->readWhitelistAndBlacklistFromColumn($parentRecordUid, $fluxAreaName, $whitelist, $blacklist);
 		}
 		$items = $this->applyDefaultValues($items, $defaultValues);
 		// White/blacklist filtering. If whitelist contains elements, filter the list

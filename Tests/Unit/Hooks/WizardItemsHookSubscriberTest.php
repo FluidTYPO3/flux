@@ -47,11 +47,11 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$provider1->setTemplateVariables(array());
 		$provider1->setGrid($grid);
 		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
-		$provider2->expects($this->exactly(2))->method('getGrid')->will($this->returnValue(NULL));
+		$provider2->expects($this->exactly(1))->method('getGrid')->will($this->returnValue(NULL));
 		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
-		$configurationService->expects($this->exactly(2))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider1, $provider2)));
+		$configurationService->expects($this->exactly(1))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider1, $provider2)));
 		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', array('getSingle'));
-		$recordService->expects($this->exactly(3))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
+		$recordService->expects($this->exactly(2))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
 		$instance->injectConfigurationService($configurationService);
 		$instance->injectRecordService($recordService);
 		$instance->manipulateWizardItems($items, $controller);
