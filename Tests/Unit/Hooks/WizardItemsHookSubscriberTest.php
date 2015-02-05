@@ -50,7 +50,7 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$provider2->expects($this->exactly(1))->method('getGrid')->will($this->returnValue(NULL));
 		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
 		$configurationService->expects($this->exactly(1))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider1, $provider2)));
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', array('getSingle'));
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
 		$recordService->expects($this->exactly(2))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
 		$instance->injectConfigurationService($configurationService);
 		$instance->injectRecordService($recordService);
@@ -132,13 +132,18 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$instance = $this->getMock(
 			$this->createInstanceClassName(),
 			array(
-				'getDefaultValues', 'readWhitelistAndBlacklistFromPageColumn', 'readWhitelistAndBlacklistFromColumn',
+				'getDefaultValues', 'getWhiteAndBlackListsFromPageAndContentColumn',
 				'applyDefaultValues', 'applyWhitelist', 'applyBlacklist', 'trimItems'
 			)
 		);
+		$GLOBALS['TYPO3_DB'] = $this->getMock(
+			'TYPO3\\CMS\\Core\\Database\\DatabaseConnection',
+			array('exec_SELECTgetSingleRow'),
+			array(), '', FALSE
+		);
+		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetSingleRow')->willReturn(NULL);
 		$lists = array(array(), array());
-		$instance->expects($this->once())->method('readWhitelistAndBlacklistFromPageColumn')->will($this->returnValue($lists));
-		$instance->expects($this->once())->method('readWhitelistAndBlacklistFromColumn')->will($this->returnValue($lists));
+		$instance->expects($this->once())->method('getWhiteAndBlackListsFromPageAndContentColumn')->will($this->returnValue($lists));
 		$instance->expects($this->once())->method('applyDefaultValues')->will($this->returnValue($items));
 		$instance->expects($this->once())->method('applyWhitelist')->will($this->returnValue($items));
 		$instance->expects($this->once())->method('applyBlacklist')->will($this->returnValue($items));
