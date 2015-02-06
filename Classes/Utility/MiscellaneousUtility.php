@@ -60,13 +60,12 @@ class MiscellaneousUtility {
 			$extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());
 			$fullTemplatePathAndName = $form->getOption(Form::OPTION_TEMPLATEFILE);
 
-			$templatePathParts = explode('/', substr($fullTemplatePathAndName, 0, strpos($fullTemplatePathAndName, '.')));
-			$templateName = array_pop($templatePathParts);
+			$templatePathParts = explode('/', $fullTemplatePathAndName);
+			$templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
 			$controllerName = array_pop($templatePathParts);
 
 			$positionOfResourceInTemplatePath = strpos($fullTemplatePathAndName, 'Resources/Private/Templates/');
-			$iconPathAndName = substr($fullTemplatePathAndName, 0, $positionOfResourceInTemplatePath) . 'Resources/Public/Icons/' . $controllerName . '/' . $templateName;
-
+			$iconPathAndName = ExtensionManagementUtility::extPath($extensionKey, 'Resources/Public/Icons/' . $controllerName . '/' . $templateName);
 			foreach (self::$allowedIconTypes as $iconType) {
 				$potentialIcon = $iconPathAndName . '.' . $iconType;
 				if (is_file($potentialIcon)) {

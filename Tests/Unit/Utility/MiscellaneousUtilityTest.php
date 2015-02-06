@@ -50,7 +50,7 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 	 */
 	protected function getFormOptionsFixture() {
 		$formOptionsData = array(
-			'extensionName' => 'mockextension',
+			'extensionName' => 'flux',
 			'iconOption' => 'Icons/Mock/Fixture.gif',
 		);
 		return $formOptionsData;
@@ -142,7 +142,7 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 	 */
 	protected function getMockExtension() {
 		$structure = array(
-			'mockextension' => array(
+			'flux' => array(
 				'Resources' => array(
 					'Private' => array(
 						'Templates' => array(
