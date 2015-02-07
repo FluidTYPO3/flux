@@ -9,10 +9,14 @@
 		"irc": "irc://irc.freenode.org/fedext",
 		"issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
 	},
+	"autoload": {
+		"psr-4": {
+			"FluidTYPO3\\Flux\\": "Classes/"
+		}
+	},
 	"autoload-dev": {
 		"psr-4": {
-			"FluidTYPO3\\Flux\\Tests\\": "Tests/",
-			"FluidTYPO3\\Flux\\": "Classes/"
+			"FluidTYPO3\\Flux\\Tests\\": "Tests/"
 		},
 	        "classmap": [
 	            "vendor/typo3/cms/typo3/sysext/extbase",
