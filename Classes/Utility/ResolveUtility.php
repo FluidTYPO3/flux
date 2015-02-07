@@ -114,7 +114,8 @@ class ResolveUtility {
 		$controllerActionPath = self::convertAllPathSegmentsToUpperCamelCase($controllerAction);
 		$templatePathAndFilename = $templateRootPath . $controllerActionPath . '.' . $format;
 		$overlayTemplateFileName = self::resolvePossibleOverlayTemplateFile($paths['overlays'], $controllerName, $controllerAction, $format);
-		return GeneralUtility::getFileAbsFileName(NULL !== $overlayTemplateFileName ? $overlayTemplateFileName : $templatePathAndFilename);
+		$templateFile = NULL !== $overlayTemplateFileName ? $overlayTemplateFileName : $templatePathAndFilename;
+		return ('/' !== $templateFile{0} ? GeneralUtility::getFileAbsFileName($templateFile) : $templateFile);
 	}
 
 	/**
