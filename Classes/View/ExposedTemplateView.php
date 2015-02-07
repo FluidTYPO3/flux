@@ -72,6 +72,16 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	}
 
 	/**
+	 * @param TemplatePaths $templatePaths
+	 * @return void
+	 */
+	public function setTemplatePaths(TemplatePaths $templatePaths) {
+		$this->setTemplateRootPaths($templatePaths->getTemplateRootPaths());
+		$this->setLayoutRootPaths($templatePaths->getLayoutRootPaths());
+		$this->setPartialRootPaths($templatePaths->getPartialRootPaths());
+	}
+
+	/**
 	 * @param string $sectionName
 	 * @param string $formName
 	 * @return Form|NULL
@@ -172,6 +182,38 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	}
 
 	/**
+	 * @param string $templateSource
+	 * @return void
+	 */
+	public function setTemplateSource($templateSource) {
+		$this->templateSource = $templateSource;
+	}
+
+	/**
+	 * @param string $actionName
+	 * @return string
+	 */
+	protected function getTemplateSource($actionName = NULL) {
+		if (NULL !== $this->templateSource) {
+			return $this->templateSource;
+		}
+		return parent::getTemplateSource($actionName);
+	}
+
+	/**
+	 * We use a checksum of the template source as the template identifier
+	 *
+	 * @param string $actionName
+	 * @return string
+	 */
+	protected function getTemplateIdentifier($actionName = NULL) {
+		$hasMethodOnParent = TRUE === method_exists(get_parent_class($this), __FUNCTION__);
+		$templateFileExists = TRUE === file_exists($this->templatePathAndFilename);
+
+		return TRUE === $hasMethodOnParent && TRUE === $templateFileExists ? parent::getTemplateIdentifier($actionName) : 'viewhelpertest_' . sha1($this->templateSource);
+	}
+
+	/**
 	 * @param string $actionName
 	 * @return string
 	 */
@@ -192,130 +234,14 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		}
 		return parent::getTemplatePathAndFilename($actionName);
 	}
-
 	/**
-	 * @param string $templateSource
-	 * @return void
-	 */
-	public function setTemplateSource($templateSource) {
-		$this->templateSource = $templateSource;
-	}
-
-	/**
-	 * @param string $actionName
-	 * @return string
-	 */
-	protected function getTemplateSource($actionName = NULL) {
-		if (NULL !== $this->templateSource) {
-			return $this->templateSource;
-		}
-		return parent::getTemplateSource($actionName);
-	}
-
-	/**
-	 * @param string $pattern Pattern to be resolved
-	 * @param boolean $bubbleControllerAndSubpackage if TRUE, then we successively split off parts from "@controller" and "@subpackage" until both are empty.
-	 * @param boolean $formatIsOptional if TRUE, then half of the resulting strings will have ."@format" stripped off, and the other half will have it.
-	 * @return array unix style path
-	 */
-	protected function expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional) {
-		$extensionKey = $this->controllerContext->getRequest()->getControllerExtensionKey();
-		$configurations = $this->getProviderPaths();
-		if (TRUE === empty($configurations)) {
-			$configurations = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
-		}
-		$pathOverlayConfigurations = $this->buildPathOverlayConfigurations($configurations);
-		$paths = parent::expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional);
-		foreach ($pathOverlayConfigurations as $overlayPaths) {
-			if (FALSE === empty($overlayPaths['templateRootPath'])) {
-				$templateRootPath = $overlayPaths['templateRootPath'];
-				$this->setTemplateRootPath($templateRootPath);
-			}
-			if (FALSE === empty($overlayPaths['partialRootPath'])) {
-				$partialRootPath = $overlayPaths['partialRootPath'];
-				$this->setPartialRootPath($partialRootPath);
-			}
-			if (FALSE === empty($overlayPaths['layoutRootPath'])) {
-				$layoutRootPath = $overlayPaths['layoutRootPath'];
-				$this->setLayoutRootPath($layoutRootPath);
-			}
-			$subset = parent::expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional);
-			$paths = array_merge($paths, $subset);
-		}
-		$paths = array_unique($paths);
-		$paths = array_reverse($paths);
-		$paths = $this->trimPathStringRecursive($paths);
-		return $paths;
-	}
-
-	/**
-	 * @param array $configuration
-	 * @return array
-	 */
-	protected function buildPathOverlayConfigurations($configuration) {
-		$templateRootPath = NULL;
-		$partialRootPath = NULL;
-		$layoutRootPath = NULL;
-		$overlays = array();
-		$paths = array();
-		if (TRUE === isset($configuration['overlays'])) {
-			$overlays = $configuration['overlays'];
-		}
-		foreach ($overlays as $overlaySubpackageKey => $overlay) {
-			if (TRUE === isset($overlay['templateRootPath'])) {
-				$templateRootPath = 0 === strpos($overlay['templateRootPath'], '/') ? $overlay['templateRootPath']
-					: GeneralUtility::getFileAbsFileName($overlay['templateRootPath']);
-			}
-			if (TRUE === isset($overlay['partialRootPath'])) {
-				$partialRootPath = 0 === strpos($overlay['partialRootPath'], '/') ? $overlay['partialRootPath']
-					: GeneralUtility::getFileAbsFileName($overlay['partialRootPath']);
-			}
-			if (TRUE === isset($overlay['layoutRootPath'])) {
-				$layoutRootPath = 0 === strpos($overlay['layoutRootPath'], '/') ? $overlay['layoutRootPath']
-					: GeneralUtility::getFileAbsFileName($overlay['layoutRootPath']);
-			}
-			$paths[$overlaySubpackageKey] = array(
-				'templateRootPath' => $templateRootPath,
-				'partialRootPath' => $partialRootPath,
-				'layoutRootPath' => $layoutRootPath
-			);
-		}
-		$paths = array_reverse($paths);
-		$paths[] = array(
-			'templateRootPath' => TRUE === method_exists($this, 'getTemplateRootPaths') ? reset($this->getTemplateRootPaths()) : $this->getTemplateRootPath(),
-			'partialRootPath' => TRUE === method_exists($this, 'getTemplateRootPaths') ? reset($this->getPartialRootPaths()) : $this->getPartialRootPath(),
-			'layoutRootPath' => TRUE === method_exists($this, 'getTemplateRootPaths') ? reset($this->getLayoutRootPaths()) : $this->getLayoutRootPath()
-		);
-		$paths = $this->trimPathStringRecursive($paths);
-		return $paths;
-	}
-
-	/**
-	 * @param mixed $stringOrArray
-	 * @return string
-	 */
-	private function trimPathStringRecursive($stringOrArray) {
-		if (TRUE === is_array($stringOrArray)) {
-			foreach ($stringOrArray as $key => $value) {
-				$stringOrArray[$key] = $this->trimPathStringRecursive($value);
-			}
-			return $stringOrArray;
-		}
-		$value = rtrim(str_replace('//', '/', $stringOrArray), '/');
-		return $value;
-	}
-
-	/**
-	 * We use a checksum of the template source as the template identifier
+	 * Wrapper method to make the static call to GeneralUtility mockable in tests
 	 *
-	 * @param string $actionName
-	 * @return string
+	 * @param string $pathAndFilename
+	 *
+	 * @return string absolute pathAndFilename
 	 */
-	protected function getTemplateIdentifier($actionName = NULL) {
-		$hasMethodOnParent = TRUE === method_exists(get_parent_class($this), __FUNCTION__);
-		$templateFileExists = TRUE === file_exists($this->templatePathAndFilename);
-
-		return TRUE === $hasMethodOnParent && TRUE === $templateFileExists ? parent::getTemplateIdentifier($actionName) : 'viewhelpertest_' . sha1($this->templateSource);
+	protected function resolveFileNamePath($pathAndFilename) {
+		return '/' !== $pathAndFilename{0} ? GeneralUtility::getFileAbsFileName($pathAndFilename) : $pathAndFilename;
 	}
-
 }

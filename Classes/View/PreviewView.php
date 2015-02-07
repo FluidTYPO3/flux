@@ -177,7 +177,11 @@ class PreviewView {
 			$variables['label'] = $label;
 		}
 
-		$view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, self::CONTROLLER_NAME, $paths, $variables);
+		$templatePaths = new TemplatePaths($paths);
+		$viewContext = new ViewContext(NULL, $extensionKey, self::CONTROLLER_NAME);
+		$viewContext->setTemplatePaths($templatePaths);
+		$viewContext->setVariables($variables);
+		$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
 		$view->setTemplateSource($templateSource);
 
 		$existingContentObject = $this->configurationManager->getContentObject();

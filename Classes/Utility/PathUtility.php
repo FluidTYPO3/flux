@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\View\TemplatePaths;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -20,7 +21,15 @@ class PathUtility {
 	/**
 	 * @var array
 	 */
-	private static $knownPathNames = array('templateRootPath', 'layoutRootPath', 'partialRootPath');
+	private static $knownPathNames = array(
+		TemplatePaths::CONFIG_OVERLAYS,
+		TemplatePaths::CONFIG_TEMPLATEROOTPATH,
+		TemplatePaths::CONFIG_TEMPLATEROOTPATHS,
+		TemplatePaths::CONFIG_LAYOUTROOTPATH,
+		TemplatePaths::CONFIG_LAYOUTROOTPATHS,
+		TemplatePaths::CONFIG_PARTIALROOTPATH,
+		TemplatePaths::CONFIG_PARTIALROOTPATHS
+	);
 
 	/**
 	 * Translates an array of paths or single path into absolute paths/path
@@ -30,7 +39,7 @@ class PathUtility {
 	 */
 	public static function translatePath($path) {
 		if (is_array($path) == FALSE) {
-			return GeneralUtility::getFileAbsFileName($path);
+			return 0 === strpos($path, '/') ? $path : GeneralUtility::getFileAbsFileName($path);
 		} else {
 			foreach ($path as $key => $subPath) {
 				if (TRUE === in_array($key, self::$knownPathNames)) {

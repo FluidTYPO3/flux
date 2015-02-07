@@ -12,6 +12,8 @@ use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
@@ -51,9 +53,12 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 		$service = $this->createFluxServiceInstance();
 		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
+		$viewContext->setVariables(array('record' => $record));
+		$viewContext->setSectionName('Configuration');
 		$variables = array(
 			'row' => $record,
-			'grid' => $service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', 'grid', array(), 'flux', array('record' => $record))
+			'grid' => $service->getGridFromTemplateFile($viewContext, 'grid')
 		);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
 		$preview = $view->renderStandaloneSection('Preview', $variables);
@@ -190,34 +195,14 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @test
-	 */
-	public function canBuildPathOverlayConfiguration() {
-		$overlayPaths = $this->getFixtureTemplatePaths();
-		$templatePaths = $this->getFixtureTemplatePaths();
-		$templatePaths['overlays'] = array(
-			'test' => $overlayPaths
-		);
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
-		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$overlayedPaths = $this->callInaccessibleMethod($view, 'buildPathOverlayConfigurations', $templatePaths);
-		$this->assertArrayHasKey(0, $overlayedPaths);
-		$this->assertArrayHasKey('test', $overlayedPaths);
-		$this->assertContains($templatePaths['templateRootPath'], $overlayedPaths['test']);
-		$this->assertContains($templatePaths['partialRootPath'], $overlayedPaths['test']);
-		$this->assertContains($templatePaths['layoutRootPath'], $overlayedPaths['test']);
-		$this->assertContains($templatePaths['templateRootPath'], $overlayedPaths[0]);
-		$this->assertContains($templatePaths['partialRootPath'], $overlayedPaths[0]);
-		$this->assertContains($templatePaths['layoutRootPath'], $overlayedPaths[0]);
-	}
-
-	/**
 	 * @disabledtest
 	 */
 	public function canGetTemplateByActionName() {
 		$templatePaths = $this->getFixtureTemplatePaths();
 		$service = $this->createFluxServiceInstance();
-		$view = $service->getPreparedExposedTemplateView('Flux', 'API', $templatePaths);
+		$viewContext = new ViewContext(NULL, 'Flux', 'API');
+		$viewContext->setTemplatePaths($templatePaths);
+		$view = $service->getPreparedExposedTemplateView($viewContext);
 		$controllerContext = ObjectAccess::getProperty($view, 'controllerContext', TRUE);
 		$controllerContext->getRequest()->setControllerActionName('index');
 		$controllerContext->getRequest()->setControllerName('Grid');
@@ -246,7 +231,8 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	 */
 	public function canSetAndThenGetTemplateSource() {
 		$service = $this->createFluxServiceInstance();
-		$view = $service->getPreparedExposedTemplateView('Flux', 'API');
+		$viewContext = new ViewContext(NULL, 'Flux', 'API');
+		$view = $service->getPreparedExposedTemplateView($viewContext);
 		$view->setTemplateSource('dummy-source');
 		$this->assertEquals('dummy-source', $this->callInaccessibleMethod($view, 'getTemplateSource'));
 	}
@@ -259,7 +245,9 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 		$templatePaths = $this->getFixtureTemplatePaths();
 		$this->assertFileExists($templatePathAndFilename);
 		$service = $this->createFluxServiceInstance();
-		$view = $service->getPreparedExposedTemplateView('Flux', 'API', $templatePaths);
+		$viewContext = new ViewContext(NULL, 'Flux', 'API');
+		$viewContext->setTemplatePaths(new TemplatePaths($templatePaths));
+		$view = $service->getPreparedExposedTemplateView($viewContext);
 		$view->setTemplatePathAndFilename($templatePathAndFilename);
 		return $view;
 	}

@@ -19,6 +19,8 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\PreviewView;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -330,9 +332,10 @@ class AbstractProvider implements ProviderInterface {
 			$extensionKey = $this->getExtensionKey($row);
 			$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 
-			$variables = $this->getViewVariables($row);
-			$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, $controllerName, $paths, $variables);
-
+			$templatePaths = new TemplatePaths($paths);
+			$viewContext = new ViewContext(NULL, $extensionName, $controllerName);
+			$viewContext->setTemplatePaths($templatePaths);
+			$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
 			$view->setTemplateSource($templateSource);
 			$form = $view->getForm($section, $formName);
 		}
@@ -361,7 +364,11 @@ class AbstractProvider implements ProviderInterface {
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$variables = $this->getViewVariables($row);
-		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
+		$viewContext = new ViewContext($templatePathAndFilename, $extensionName);
+		$viewContext->setTemplatePaths(new TemplatePaths($paths));
+		$viewContext->setSectionName($section);
+		$viewContext->setVariables($variables);
+		$grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
 		self::$cache[$cacheKey] = $grid;
 		return $grid;
 	}

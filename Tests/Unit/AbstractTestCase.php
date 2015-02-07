@@ -12,6 +12,8 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -143,7 +145,10 @@ abstract class AbstractTestCase extends BaseTestCase {
 		}
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($templateName);
 		$service = $this->createFluxServiceInstance();
-		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', array(), 'Flux', $variables);
+		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
+		$viewContext->setVariables($variables);
+		$viewContext->setSectionName('Configuration');
+		$form = $service->getFormFromTemplateFile($viewContext);
 		if (NULL !== $form) {
 			$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 			$this->assertIsArray($form->build());
@@ -199,7 +204,15 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 */
 	protected function performBasicTemplateReadTest($templatePathAndFilename) {
 		$service = $this->createFluxServiceInstance();
-		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$paths = array(
+			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
+			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
+			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
+		);
+		$viewContext = new ViewContext($templatePathAndFilename);
+		$viewContext->setTemplatePaths(new TemplatePaths($paths));
+		$viewContext->setSectionName('Configuration');
+		$form = $service->getFormFromTemplateFile($viewContext);
 		$this->assertIsValidAndWorkingFormObject($form);
 		return $form;
 	}
