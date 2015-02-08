@@ -186,6 +186,7 @@ abstract class AbstractFluxController extends ActionController {
 	 * @return void
 	 */
 	public function initializeView(ViewInterface $view) {
+		$this->view = $view;
 		$this->initializeProvider();
 		$this->initializeSettings();
 		$this->initializeOverriddenSettings();
