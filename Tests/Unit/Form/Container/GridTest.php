@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 use FluidTYPO3\Flux\Tests\Unit\Form\Container\AbstractContainerTest;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
+use FluidTYPO3\Flux\View\ViewContext;
 
 /**
  * @package Flux
@@ -25,7 +26,10 @@ class GridTest extends AbstractContainerTest {
 	protected function getDummyGridFromTemplate($gridName = 'grid', $template = self::FIXTURE_TEMPLATE_BASICGRID) {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($template);
 		$service = $this->createFluxServiceInstance();
-		$grid = $service->getGridFromTemplateFile($templatePathAndFilename, 'Configuration', $gridName, array(), 'flux');
+		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
+		$viewContext->setSectionName('Configuration');
+
+		$grid = $service->getGridFromTemplateFile($viewContext, $gridName);
 		return $grid;
 	}
 

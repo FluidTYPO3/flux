@@ -12,6 +12,8 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -107,7 +109,8 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canCreateExposedViewWithoutExtensionNameAndControllerName() {
 		$service = $this->createFluxServiceInstance();
-		$view = $service->getPreparedExposedTemplateView();
+		$viewContext = new ViewContext();
+		$view = $service->getPreparedExposedTemplateView($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\View\ExposedTemplateView', $view);
 	}
 
@@ -116,7 +119,8 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canCreateExposedViewWithExtensionNameWithoutControllerName() {
 		$service = $this->createFluxServiceInstance();
-		$view = $service->getPreparedExposedTemplateView('Flux');
+		$viewContext = new ViewContext(NULL, 'Flux');
+		$view = $service->getPreparedExposedTemplateView($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\View\ExposedTemplateView', $view);
 	}
 
@@ -125,7 +129,8 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canCreateExposedViewWithExtensionNameAndControllerName() {
 		$service = $this->createFluxServiceInstance();
-		$view = $service->getPreparedExposedTemplateView('Flux', 'API');
+		$viewContext = new ViewContext(NULL, 'Flux', 'API');
+		$view = $service->getPreparedExposedTemplateView($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\View\ExposedTemplateView', $view);
 	}
 
@@ -134,7 +139,8 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canCreateExposedViewWithoutExtensionNameWithControllerName() {
 		$service = $this->createFluxServiceInstance();
-		$view = $service->getPreparedExposedTemplateView(NULL, 'API');
+		$viewContext = new ViewContext(NULL, NULL, 'API');
+		$view = $service->getPreparedExposedTemplateView($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\View\ExposedTemplateView', $view);
 	}
 
@@ -178,8 +184,11 @@ class FluxServiceTest extends AbstractTestCase {
 			'partialRootPath' => 'EXT:flux/Resources/Private/Partials',
 			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
 		);
-		$form1 = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
-		$form2 = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
+		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
+		$viewContext->setSectionName('Configuration');
+		$viewContext->setTemplatePaths(new TemplatePaths($paths));
+		$form1 = $service->getFormFromTemplateFile($viewContext);
+		$form2 = $service->getFormFromTemplateFile($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form1);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form2);
 	}
@@ -190,7 +199,8 @@ class FluxServiceTest extends AbstractTestCase {
 	public function getFormReturnsNullOnInvalidFile() {
 		$templatePathAndFilename = '/void/nothing';
 		$service = $this->createFluxServiceInstance();
-		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$viewContext = new ViewContext($templatePathAndFilename);
+		$form = $service->getFormFromTemplateFile($viewContext);
 		$this->assertNull($form);
 	}
 
@@ -198,17 +208,19 @@ class FluxServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetFormWithPathsAndTriggerCache() {
-		$path = ExtensionManagementUtility::extPath('flux');
 		$templatePathAndFilename = GeneralUtility::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
 		$paths = array(
-			'templateRootPath' => $path . 'Tests/Unit/Fixtures/Templates',
-			'partialRootPath' => $path . 'Tests/Unit/Fixtures/Partials',
-			'layoutRootPath' => $path . 'Resources/Private/Layouts'
+			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
+			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
+			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
 		);
-		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
+		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
+		$viewContext->setTemplatePaths(new TemplatePaths($paths));
+		$viewContext->setSectionName('Configuration');
+		$form = $service->getFormFromTemplateFile($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
-		$readAgain = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', $paths, 'flux');
+		$readAgain = $service->getFormFromTemplateFile($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $readAgain);
 	}
 
@@ -229,7 +241,15 @@ class FluxServiceTest extends AbstractTestCase {
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'] = '1';
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_COMPACTED);
 		$service = $this->createFluxServiceInstance();
-		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$viewContext = new ViewContext($templatePathAndFilename);
+		$paths = array(
+			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
+			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
+			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
+		);
+		$viewContext->setTemplatePaths(new TemplatePaths($paths));
+		$viewContext->setSectionName('Configuration');
+		$form = $service->getFormFromTemplateFile($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 		$stored = $form->build();
 		$this->assertIsArray($stored);
@@ -261,9 +281,9 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canGetViewConfigurationForExtensionNameWhichDoesNotExistAndConstructDefaults() {
 		$expected = array(
-			'templateRootPath' => 'EXT:void/Resources/Private/Templates',
-			'partialRootPath' => 'EXT:void/Resources/Private/Partials',
-			'layoutRootPath' => 'EXT:void/Resources/Private/Layouts',
+			'templateRootPaths' => array('EXT:void/Resources/Private/Templates'),
+			'partialRootPaths' => array('EXT:void/Resources/Private/Partials'),
+			'layoutRootPaths' => array('EXT:void/Resources/Private/Layouts'),
 		);
 		$service = $this->createFluxServiceInstance();
 		$config = $service->getViewConfigurationForExtensionName('void');
@@ -277,7 +297,8 @@ class FluxServiceTest extends AbstractTestCase {
 		$badSource = '<f:layout invalid="TRUE" />';
 		$temp = tempnam($_SERVER['TEMPDIR'], 'badtemplate') . '.html';
 		// @todo: use vfs
-		$form = $this->createFluxServiceInstance()->getFormFromTemplateFile($temp);
+		$viewContext = new ViewContext($temp);
+		$form = $this->createFluxServiceInstance()->getFormFromTemplateFile($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Field\UserFunction', reset($form->getFields()));
 		$this->assertEquals('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField', reset($form->getFields())->getFunction());

@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
@@ -173,7 +174,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 		$controllerClassName = substr(get_class($this), 0, -4);
 		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController'));
 		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(FALSE));
-		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView($this->extensionName, $controllerName);
+		$viewContext = new ViewContext(NULL, $this->extensionName, $controllerName);
+		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView($viewContext);
 		ObjectAccess::setProperty($instance, 'view', $view, TRUE);
 		ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
 		$this->setExpectedException('TYPO3\CMS\Fluid\View\Exception\InvalidTemplateResourceException', NULL, 1257246929);
@@ -189,7 +191,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController', 'callSubControllerAction'));
 		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(TRUE));
 		$instance->expects($this->once())->method('callSubControllerAction');
-		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView($this->extensionName, $controllerName);
+		$viewContext = new ViewContext(NULL, $this->extensionName, $controllerName);
+		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView($viewContext);
 		ObjectAccess::setProperty($instance, 'view', $view, TRUE);
 		ObjectAccess::setProperty($instance, 'extensionName', $this->extensionName, TRUE);
 		$this->callInaccessibleMethod($instance, 'performSubRendering', $this->extensionName, $controllerName, $this->defaultAction, 'tx_flux_content');
@@ -374,7 +377,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 		$controllerName = $this->getControllerName();
 		$instance = $this->canCreateInstanceOfCustomRegisteredController();
 		class_alias('FluidTYPO3\Flux\Controller\ContentController', 'FluidTYPO3\Other\Controller\ContentController');
-		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView('FluidTYPO3.Other', $controllerName);
+		$viewContext = new ViewContext(NULL, 'FluidTYPO3.Other', $controllerName);
+		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView($viewContext);
 		list ($request, ) = $this->createDummyRequestAndResponseForFluxController();
 		ObjectAccess::setProperty($instance, 'view', $view, TRUE);
 		ObjectAccess::setProperty($instance, 'extensionName', $this->shortExtensionName, TRUE);

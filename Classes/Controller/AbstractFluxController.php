@@ -13,6 +13,8 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -165,11 +167,17 @@ abstract class AbstractFluxController extends ActionController {
 		$templatePathAndFilename = $this->provider->getTemplatePathAndFilename($row);
 		$extensionKey = $this->provider->getExtensionKey($row);
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
+		$vendorName = ExtensionNamingUtility::getVendorName($extensionKey);
 		$controller = $this->request->getControllerName();
-		$view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, $controller, $this->setup, $this->data);
+		$paths = new TemplatePaths($this->setup);
+		$viewContext = new ViewContext($templatePathAndFilename, $extensionKey, $controller);
+		$viewContext->setVariables($this->data);
+		$viewContext->setTemplatePaths($paths);
+		$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
 		$this->request->setControllerExtensionName($extensionName);
 		$this->request->setControllerActionName($controllerActionName);
+		$this->request->setControllerVendorName($vendorName);
 		$view->setControllerContext($this->controllerContext);
 		if (FALSE === empty($templatePathAndFilename)) {
 			$view->setTemplatePathAndFilename($templatePathAndFilename);
