@@ -119,11 +119,6 @@ class AbstractProvider implements ProviderInterface {
 	protected $extensionKey = NULL;
 
 	/**
-	 * @var string|NULL
-	 */
-	protected $packageName = NULL;
-
-	/**
 	 * @var integer
 	 */
 	protected $priority = 50;
@@ -931,9 +926,6 @@ class AbstractProvider implements ProviderInterface {
 	 * @return string
 	 */
 	public function getControllerPackageNameFromRecord(array $row) {
-		if (NULL !== $this->packageName) {
-			return $this->packageName;
-		}
 		$extensionKey = $this->getControllerExtensionKeyFromRecord($row);
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$vendor = ExtensionNamingUtility::getVendorName($extensionKey);
