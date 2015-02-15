@@ -135,20 +135,5 @@ class ProviderTest extends AbstractProviderTest {
 		$grid = $provider->getGrid($record);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $grid);
 	}
-	/**
-	 * @test
-	 */
-	public function getParentFieldValueLoadsRecordFromDatabaseIfRecordLacksParentFieldValue() {
-		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$row['uid'] = 2;
-		$rowWithPid = $row;
-		$rowWithPid['pid'] = 1;
-		$className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-		$instance = $this->getMock($className, array('getParentFieldName', 'getTableName', 'loadRecordFromDatabase'));
-		$instance->expects($this->once())->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($rowWithPid));
-		$instance->expects($this->once())->method('getParentFieldName')->with($row)->will($this->returnValue('pid'));
-		$result = $this->callInaccessibleMethod($instance, 'getParentFieldValue', $row);
-		$this->assertEquals($rowWithPid['pid'], $result);
-	}
 
 }
