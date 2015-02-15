@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -24,7 +25,7 @@ class TypoScriptTemplateTest extends AbstractTestCase {
 	public function canPreProcessIncludeStaticTypoScriptResources() {
 		Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
 		$function = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
-		$template = $this->objectManager->get('TYPO3\\CMS\\Core\\TypoScript\\TemplateService');
+		$template = $this->objectManager->get(TemplateService::class);
 		$parameters = array(
 			'row' => Records::$sysTemplateRoot
 		);
@@ -38,7 +39,7 @@ class TypoScriptTemplateTest extends AbstractTestCase {
 	public function leavesRecordsWhichAreNotRootsUntouched() {
 		Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
 		$function = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
-		$template = $this->objectManager->get('TYPO3\\CMS\\Core\\TypoScript\\TemplateService');
+		$template = $this->objectManager->get(TemplateService::class);
 		$parameters = array(
 			'row' => Records::$sysTemplateRoot
 		);

@@ -16,7 +16,9 @@ use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Core\Tests\UnitTestCase as BaseTestCase;
 
 /**
@@ -43,7 +45,7 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @param string $dataName
 	 */
 	public function __construct($name = NULL, array $data = array(), $dataName = '') {
-		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 		$this->objectManager = clone $objectManager;
 		parent::__construct($name, $data, $dataName);
 	}
@@ -108,9 +110,7 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @param mixed $value
 	 */
 	protected function assertIsValidAndWorkingFormObject($value) {
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $value);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $value);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\ContainerInterface', $value);
+		$this->assertInstanceOf(Form::class, $value);
 		/** @var Form $value */
 		$structure = $value->build();
 		$this->assertIsArray($structure);
@@ -128,8 +128,8 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @param mixed $value
 	 */
 	protected function assertIsValidAndWorkingGridObject($value) {
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $value);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\ContainerInterface', $value);
+		$this->assertInstanceOf(Form\Container\Grid::class, $value);
+		$this->assertInstanceOf(Form\Container\Grid::class, $value);
 		/** @var Form $value */
 		$structure = $value->build();
 		$this->assertIsArray($structure);
@@ -176,9 +176,9 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 */
 	protected function createFluxServiceInstance($methods = array('dummy')) {
 		/** @var FluxService $fluxService */
-		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', $methods, array(), '', FALSE);
+		$fluxService = $this->getMock(FluxService::class, $methods, array(), '', FALSE);
 		$fluxService->injectObjectManager($this->objectManager);
-		$configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
+		$configurationManager = $this->objectManager->get(ConfigurationManagerInterface::class);
 		$fluxService->injectConfigurationManager($configurationManager);
 		return $fluxService;
 	}
