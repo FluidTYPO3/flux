@@ -17,7 +17,7 @@ use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase;
+use TYPO3\CMS\Core\Tests\UnitTestCase as BaseTestCase;
 
 /**
  * @package Flux

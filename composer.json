@@ -14,20 +14,6 @@
 			"FluidTYPO3\\Flux\\": "Classes/"
 		}
 	},
-	"autoload-dev": {
-		"psr-4": {
-			"FluidTYPO3\\Flux\\Tests\\": "Tests/"
-		},
-	        "classmap": [
-	            "vendor/typo3/cms/typo3/sysext/extbase",
-	            "vendor/typo3/cms/typo3/sysext/fluid",
-	            "vendor/typo3/cms/typo3/sysext/core",
-	            "vendor/typo3/cms/typo3/sysext/backend",
-	            "vendor/typo3/cms/typo3/sysext/frontend",
-	            "vendor/typo3/cms/typo3/sysext/recordlist",
-	            "vendor/typo3/cms/typo3/sysext/lang"
-	       	]
-	},
 	"suggest": {
 		"fluidtypo3/vhs": "ViewHelper library for Fluid templates.",
 		"fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid.",
