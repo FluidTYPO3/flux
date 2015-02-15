@@ -336,7 +336,6 @@ class AbstractProvider implements ProviderInterface {
 			$form = $view->getForm($section, $formName);
 		}
 
-		$form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
 		self::$cache[$cacheKey] = $form;
 		return $form;
 	}
@@ -459,25 +458,8 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	public function getFlexFormValues(array $row) {
 		$fieldName = $this->getFieldName($row);
-		$cacheKey = 'values_' . md5(json_encode($row) . $fieldName);
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
 		$form = $this->getForm($row);
-		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, NULL, NULL);
-		$tree = $this->getInheritanceTree($row);
-		if (0 === count($tree)) {
-			self::$cache[$cacheKey] = $immediateConfiguration;
-			return (array) $immediateConfiguration;
-		}
-		$inheritedConfiguration = $this->getMergedConfiguration($tree);
-		if (0 === count($immediateConfiguration)) {
-			self::$cache[$cacheKey] = $inheritedConfiguration;
-			return (array) $inheritedConfiguration;
-		}
-		$merged = RecursiveArrayUtility::merge($inheritedConfiguration, $immediateConfiguration);
-		self::$cache[$cacheKey] = $merged;
-		return $merged;
+		return $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, NULL, NULL);
 	}
 
 	/**
@@ -602,8 +584,7 @@ class AbstractProvider implements ProviderInterface {
 					} else {
 						$clearFieldName = $sheetFieldName . '_clear';
 						$clearFieldValue = (boolean) (TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) ? $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] : 0);
-						$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
-						$shouldClearField = (0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] || (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']));
+						$shouldClearField = (0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF']);
 						if (TRUE === $shouldClearField || TRUE === $clearFieldValue) {
 							array_push($removals, $sheetFieldName);
 						}
@@ -685,25 +666,6 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * Gets an inheritance tree (ordered parent -> ... -> this record)
-	 * of record arrays containing raw values.
-	 *
-	 * @param array $row
-	 * @return array
-	 */
-	public function getInheritanceTree(array $row) {
-		$cacheKey = 'tree_' . $row['uid'];
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
-		self::$cache[$cacheKey] = array();
-		if (NULL !== $this->getFieldName($row)) {
-			self::$cache[$cacheKey] = $this->loadRecordTreeFromDatabase($row);
-		}
-		return self::$cache[$cacheKey];
-	}
-
-	/**
 	 * @return PreviewView
 	 */
 	protected function getPreviewView() {
@@ -731,94 +693,6 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * @param Form $form
-	 * @param array $row
-	 * @return Form
-	 */
-	protected function setDefaultValuesInFieldsWithInheritedValues(Form $form, array $row) {
-		foreach ($form->getFields() as $field) {
-			$name = $field->getName();
-			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);
-			if (NULL !== $inheritedValue && TRUE === $field instanceof FieldInterface) {
-				$field->setDefault($inheritedValue);
-			}
-		}
-		return $form;
-	}
-
-	/**
-	 * @param array $row
-	 * @param string $propertyPath
-	 * @return mixed
-	 */
-	protected function getInheritedPropertyValueByDottedPath(array $row, $propertyPath) {
-		$tree = $this->getInheritanceTree($row);
-		$inheritedConfiguration = $this->getMergedConfiguration($tree);
-		if (FALSE === strpos($propertyPath, '.')) {
-			return TRUE === isset($inheritedConfiguration[$propertyPath]) ? ObjectAccess::getProperty($inheritedConfiguration, $propertyPath) : NULL;
-		}
-		return ObjectAccess::getPropertyPath($inheritedConfiguration, $propertyPath);
-	}
-
-	/**
-	 * @param array $tree
-	 * @param string $cacheKey Overrides the cache key
-	 * @param boolean $mergeToCache Merges the configuration of $tree to the current $cacheKey
-	 * @return array
-	 */
-	protected function getMergedConfiguration(array $tree, $cacheKey = NULL, $mergeToCache = FALSE) {
-		if (NULL === $cacheKey) {
-			$cacheKey = $this->getCacheKeyForMergedConfiguration($tree);
-		}
-		if (FALSE === $mergeToCache && TRUE === $this->hasCacheForMergedConfiguration($cacheKey)) {
-			return self::$cache[$cacheKey];
-		}
-		$data = array();
-		foreach ($tree as $branch) {
-			$form = $this->getForm($branch);
-			if (NULL === $form) {
-				self::$cache[$cacheKey] = $data;
-				return $data;
-			}
-			$fields = $form->getFields();
-			$values = $this->getFlexFormValues($branch);
-			foreach ($fields as $field) {
-				$values = $this->unsetInheritedValues($field, $values);
-			}
-			$data = RecursiveArrayUtility::merge($data, $values);
-		}
-		if (TRUE === $mergeToCache && TRUE === $this->hasCacheForMergedConfiguration($cacheKey)) {
-			$data = RecursiveArrayUtility::merge(self::$cache[$cacheKey], $data);
-		}
-		self::$cache[$cacheKey] = $data;
-		return $data;
-	}
-
-	/**
-	 * @param FormInterface $field
-	 * @param array $values
-	 * @return array
-	 */
-	protected function unsetInheritedValues(FormInterface $field, $values) {
-		$name = $field->getName();
-		$inherit = (boolean) $field->getInherit();
-		$inheritEmpty = (boolean) $field->getInheritEmpty();
-		$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
-		if (FALSE === $inherit || (TRUE === $inheritEmpty && TRUE === $empty)) {
-			unset($values[$name]);
-		}
-		return $values;
-	}
-
-	/**
-	 * @param array $tree
-	 * @return string
-	 */
-	protected function getCacheKeyForMergedConfiguration(array $tree) {
-		return 'merged_' . md5(json_encode($tree));
-	}
-
-	/**
 	 * @param array $row
 	 * @param string $variable
 	 * @return string
@@ -828,26 +702,6 @@ class AbstractProvider implements ProviderInterface {
 		$field = $this->getFieldName($row);
 		$uid = (TRUE === isset($row['uid']) ? $row['uid'] : uniqid());
 		return $table . $this->getListType() . $this->getContentObjectType() . md5(serialize($row[$field])) . $uid . $variable . get_class($this);
-	}
-
-	/**
-	 * @param string $cacheKey
-	 * @return boolean
-	 */
-	protected function hasCacheForMergedConfiguration($cacheKey) {
-		return TRUE === isset(self::$cache[$cacheKey]);
-	}
-
-	/**
-	 * @param array $row
-	 * @return mixed
-	 */
-	protected function getParentFieldValue(array $row) {
-		$parentFieldName = $this->getParentFieldName($row);
-		if (NULL !== $parentFieldName && FALSE === isset($row[$parentFieldName])) {
-			$row = $this->loadRecordFromDatabase($row['uid']);
-		}
-		return $row[$parentFieldName];
 	}
 
 	/**
@@ -995,25 +849,6 @@ class AbstractProvider implements ProviderInterface {
 		$uid = intval($uid);
 		$tableName = $this->tableName;
 		return $this->recordService->getSingle($tableName, '*', $uid);
-	}
-
-	/**
-	 * @param array $record
-	 * @return array
-	 */
-	protected function loadRecordTreeFromDatabase($record) {
-		$parentFieldName = $this->getParentFieldName($record);
-		if (FALSE === isset($record[$parentFieldName])) {
-			$record[$parentFieldName] = $this->getParentFieldValue($record);
-		}
-		$records = array();
-		while ($record[$parentFieldName] > 0) {
-			$record = $this->loadRecordFromDatabase($record[$parentFieldName]);
-			$parentFieldName = $this->getParentFieldName($record);
-			array_push($records, $record);
-		}
-		$records = array_reverse($records);
-		return $records;
 	}
 
 	/**

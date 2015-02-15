@@ -377,15 +377,6 @@ interface ProviderInterface {
 	public function getControllerActionReferenceFromRecord(array $row);
 
 	/**
-	 * Gets an inheritance tree (ordered parent -> ... -> this record)
-	 * of record arrays containing raw values.
-	 *
-	 * @param array $row
-	 * @return array
-	 */
-	public function getInheritanceTree(array $row);
-
-	/**
 	 * @param Form $form
 	 */
 	public function setForm(Form $form);
