@@ -31,6 +31,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class ContentIconHookSubscriber
@@ -53,11 +54,27 @@ class ContentIconHookSubscriber {
 	protected $cache;
 
 	/**
+	 * @param ObjectManagerInterface $objectManager
+	 * @return void
+	 */
+	public function injectObjectManager(ObjectManagerInterface $objectManager) {
+		$this->objectManager = $objectManager;
+	}
+
+	/**
+	 * @param FluxService $fluxService
+	 * @return void
+	 */
+	public function injectFluxService(FluxService $fluxService) {
+		$this->fluxService = $fluxService;
+	}
+
+	/**
 	 * Construct
 	 */
 	public function __construct() {
-		$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		$this->fluxService = $this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService');
+		$this->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
+		$this->injectFluxService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
 		$this->cache = $this->objectManager->get('TYPO3\\CMS\\Core\\Cache\\CacheManager', $this->objectManager)->getCache('flux');
 	}
 
