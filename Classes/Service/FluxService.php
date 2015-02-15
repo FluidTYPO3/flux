@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Service;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
@@ -87,6 +88,11 @@ class FluxService implements SingletonInterface {
 	protected $reflectionService;
 
 	/**
+	 * @var ProviderResolver
+	 */
+	protected $providerResolver;
+
+	/**
 	 * @param ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
@@ -108,6 +114,14 @@ class FluxService implements SingletonInterface {
 	 */
 	public function injectReflectionService(ReflectionService $reflectionService) {
 		$this->reflectionService = $reflectionService;
+	}
+
+	/**
+	 * @param ProviderResolver $providerResolver
+	 * @return void
+	 */
+	public function injectProviderResolver(ProviderResolver $providerResolver) {
+		$this->providerResolver = $providerResolver;
 	}
 
 	/**
@@ -343,7 +357,7 @@ class FluxService implements SingletonInterface {
 	 * @return ProviderInterface|NULL
 	 */
 	public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
-		return $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->resolvePrimaryConfigurationProvider($table, $fieldName, $row, $extensionKey);
+		return $this->providerResolver->resolvePrimaryConfigurationProvider($table, $fieldName, $row, $extensionKey);
 	}
 
 	/**
@@ -357,7 +371,7 @@ class FluxService implements SingletonInterface {
 	 * @return ProviderInterface[]
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
-		return $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
+		return $this->providerResolver->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
 	}
 
 	/**

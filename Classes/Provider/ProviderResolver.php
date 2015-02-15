@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Provider;
  */
 
 use FluidTYPO3\Flux\Core;
-use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -21,12 +21,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  *
  * @package FluidTYPO3\Flux
  */
-class ProviderResolver {
-
-	/**
-	 * @var FluxService
-	 */
-	protected $configurationService;
+class ProviderResolver implements SingletonInterface {
 
 	/**
 	 * @var ConfigurationManagerInterface
@@ -37,14 +32,6 @@ class ProviderResolver {
 	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
-
-	/**
-	 * @param FluxService $configurationService
-	 * @return void
-	 */
-	public function injectConfigurationService(FluxService $configurationService) {
-		$this->configurationService = $configurationService;
-	}
 
 	/**
 	 * @param ConfigurationManagerInterface $configurationManager

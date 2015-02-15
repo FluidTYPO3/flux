@@ -78,19 +78,6 @@ class FluxServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function throwsExceptionWhenResolvingInvalidConfigurationProviderInstances() {
-		$instance = $this->createInstance();
-		$record = array('test' => 'test');
-		Core::registerConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
-		$this->setExpectedException('RuntimeException', NULL, 1327173536);
-		$instance->flushCache();
-		$instance->resolveConfigurationProviders('tt_content', 'pi_flexform', $record);
-		Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
-	}
-
-	/**
-	 * @test
-	 */
 	public function canInstantiateFluxService() {
 		$service = $this->createFluxServiceInstance();
 		$this->assertInstanceOf('FluidTYPO3\Flux\Service\FluxService', $service);
@@ -149,17 +136,7 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canResolvePrimaryConfigurationProviderWithEmptyArray() {
 		$service = $this->createFluxServiceInstance();
-		$result = $service->resolvePrimaryConfigurationProvider('tt_content', NULL);
-		$this->assertNull($result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canResolveConfigurationProvidersWithEmptyArrayAndTriggerCache() {
-		$service = $this->createFluxServiceInstance();
-		$result = $service->resolvePrimaryConfigurationProvider('tt_content', NULL);
-		$this->assertNull($result);
+		$service->injectProviderResolver($this->objectManager->get('FluidTYPO3\\Flux\\Provider\\ProviderResolver'));
 		$result = $service->resolvePrimaryConfigurationProvider('tt_content', NULL);
 		$this->assertNull($result);
 	}

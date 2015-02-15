@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  */
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 
 /**
@@ -87,29 +88,35 @@ class ProviderTest extends AbstractProviderTest {
 	 * @test
 	 */
 	public function canReturnExtensionKey() {
-		Core::registerConfigurationProvider('FluidTYPO3\\Flux\\Provider\\ContentProvider');
 		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$service = $this->createFluxServiceInstance();
-		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
-		$this->assertInstanceOf('FluidTYPO3\Flux\Provider\ProviderInterface', $provider);
-		$extensionKey = $provider->getExtensionKey($record);
+		$provider = new Provider();
+		$provider->setExtensionKey('test');
+		$resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', array('resolvePrimaryConfigurationProvider'));
+		$resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+		$service->injectProviderResolver($resolver);
+		$result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
+		$this->assertSame($provider, $result);
+		$extensionKey = $result->getExtensionKey($record);
 		$this->assertNotEmpty($extensionKey);
 		$this->assertRegExp('/[a-z_]+/', $extensionKey);
-		Core::unregisterConfigurationProvider('FluidTYPO3\\Flux\\Provider\\ContentProvider');
 	}
 
 	/**
 	 * @test
 	 */
 	public function canReturnPathSetByRecordWithoutParentAndWithoutChildren() {
-		Core::registerConfigurationProvider('FluidTYPO3\\Flux\\Provider\\ContentProvider');
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$service = $this->createFluxServiceInstance();
-		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Provider\ProviderInterface', $provider);
-		$paths = $provider->getTemplatePaths($row);
+		$provider = new Provider();
+		$provider->setTemplatePaths(array());
+		$resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', array('resolvePrimaryConfigurationProvider'));
+		$resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+		$service->injectProviderResolver($resolver);
+		$result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);
+		$this->assertSame($result, $provider);
+		$paths = $result->getTemplatePaths($row);
 		$this->assertIsArray($paths);
-		Core::unregisterConfigurationProvider('FluidTYPO3\\Flux\\Provider\\ContentProvider');
 	}
 
 	/**
