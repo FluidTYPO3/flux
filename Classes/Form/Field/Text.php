@@ -57,7 +57,7 @@ class Text extends Input implements FieldInterface {
 
 	/**
 	 * @param integer $columns
-	 * @return \FluidTYPO3\Flux\Form\Field\Text
+	 * @return Text
 	 */
 	public function setColumns($columns) {
 		$this->columns = $columns;
