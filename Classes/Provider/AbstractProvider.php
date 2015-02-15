@@ -249,7 +249,7 @@ class AbstractProvider implements ProviderInterface {
 		$matchesTableName = ($providerTableName === $table || NULL === $table);
 		$matchesFieldName = ($providerFieldName === $field || NULL === $field);
 		$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
-		$isFullMatch = (($matchesExtensionKey && $matchesTableName && $matchesFieldName) && ($matchesContentType || $matchesPluginType));
+		$isFullMatch = $matchesExtensionKey && $matchesTableName && $matchesFieldName && $matchesContentType && $matchesPluginType;
 		$isFallbackMatch = ($matchesTableName && $matchesFieldName && $rowIsEmpty);
 		return ($isFullMatch || $isFallbackMatch);
 	}
