@@ -21,6 +21,7 @@ use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -345,8 +346,6 @@ CONTENT;
 	 * @return string
 	 */
 	protected function drawNewIcon(array $row, Column $column, $after = 0) {
-		$returnUri = rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI'));
-
 		$columnName = $column->getName();
 		if (FALSE === empty($columnName) && FALSE === empty($after)) {
 			$after = '-' . $after;
@@ -355,13 +354,29 @@ CONTENT;
 		}
 
 		$icon = MiscellaneousUtility::getIcon('actions-document-new');
-		$uri = 'db_new_content_el.php?id=' . $row['pid'] .
-			'&uid_pid=' . $after .
-			'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
-			'&sys_language_uid=' . $row['sys_language_uid'] .
-			'&defVals[tt_content][tx_flux_parent]=' . $row['uid'] .
-			'&defVals[tt_content][tx_flux_column]=' . $columnName .
-			'&returnUrl=' . $returnUri;
+
+		// TYPO3 CMS 7.1.0 removed deprecated entry points
+		if (0 <= version_compare(VersionNumberUtility::getNumericTypo3Version(), '7.1.0')) {
+			$returnUri = str_replace('/' . TYPO3_mainDir, '', GeneralUtility::getIndpEnv('REQUEST_URI'));
+			$uri = BackendUtility::getModuleUrl('new_content_element', array(
+				'id' => $row['pid'],
+				'uid_pid' => $after,
+				'colPos' => ContentService::COLPOS_FLUXCONTENT,
+				'sys_language_uid' => $row['sys_language_uid'],
+				'defVals[tt_content][tx_flux_parent]' => $row['uid'],
+				'defVals[tt_content][tx_flux_column]' => $columnName,
+				'returnUrl' => $returnUri
+			));
+		} else {
+			$returnUri = rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI'));
+			$uri = 'db_new_content_el.php?id=' . $row['pid'] .
+				'&uid_pid=' . $after .
+				'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
+				'&sys_language_uid=' . $row['sys_language_uid'] .
+				'&defVals[tt_content][tx_flux_parent]=' . $row['uid'] .
+				'&defVals[tt_content][tx_flux_column]=' . $columnName .
+				'&returnUrl=' . $returnUri;
+		}
 		$title = LocalizationUtility::translate('new', 'Flux');
 
 		return MiscellaneousUtility::wrapLink($icon, $uri, $title);
