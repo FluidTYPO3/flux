@@ -931,7 +931,16 @@ class AbstractProvider implements ProviderInterface {
 	 * @return string
 	 */
 	public function getControllerPackageNameFromRecord(array $row) {
-		return $this->packageName;
+		if (NULL !== $this->packageName) {
+			return $this->packageName;
+		}
+		$extensionKey = $this->getControllerExtensionKeyFromRecord($row);
+		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
+		$vendor = ExtensionNamingUtility::getVendorName($extensionKey);
+		if (NULL !== $vendor) {
+			return $vendor . '.' . $extensionName;
+		}
+		return $extensionName;
 	}
 
 	/**
