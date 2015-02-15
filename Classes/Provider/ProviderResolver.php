@@ -24,6 +24,11 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 class ProviderResolver implements SingletonInterface {
 
 	/**
+	 * @var array
+	 */
+	protected $providers = NULL;
+
+	/**
 	 * @var ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
@@ -68,7 +73,7 @@ class ProviderResolver implements SingletonInterface {
 		$providerWithTopPriority = NULL;
 		foreach ($providers as $provider) {
 			if ($provider->getPriority($row) >= $priority) {
-				$providerWithTopPriority = $provider;
+				$providerWithTopPriority = &$provider;
 			}
 		}
 		return $providerWithTopPriority;
@@ -87,19 +92,9 @@ class ProviderResolver implements SingletonInterface {
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		$row = FALSE === is_array($row) ? array() : $row;
-		$providers = Core::getRegisteredFlexFormProviders();
-		$typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
-		$providers = array_merge($providers, $typoScriptConfigurationProviders);
+		$providers = $this->getAllRegisteredProviderInstances();
 		$prioritizedProviders = array();
-		foreach ($providers as $providerClassNameOrInstance) {
-			if (TRUE === is_object($providerClassNameOrInstance)) {
-				$provider = &$providerClassNameOrInstance;
-			} else {
-				$provider = $this->objectManager->get($providerClassNameOrInstance);
-			}
-			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($providerClassNameOrInstance))) {
-				throw new \RuntimeException(is_object($providerClassNameOrInstance) ? get_class($providerClassNameOrInstance) : $providerClassNameOrInstance . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
-			}
+		foreach ($providers as $provider) {
 			if (TRUE === $provider->trigger($row, $table, $fieldName, $extensionKey)) {
 				$priority = $provider->getPriority($row);
 				if (FALSE === is_array($prioritizedProviders[$priority])) {
@@ -140,6 +135,47 @@ class ProviderResolver implements SingletonInterface {
 			$providers[$name] = $provider;
 		}
 		return $providers;
+	}
+
+	/**
+	 * @return ProviderInterface[]
+	 */
+	protected function getAllRegisteredProviderInstances() {
+		if (NULL === $this->providers) {
+			$providers = $this->loadCoreRegisteredProviders();
+			$typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
+			$providers = array_merge($providers, $typoScriptConfigurationProviders);
+			$this->providers = $this->validateAndInstantiateProviders($providers);
+		}
+		return $this->providers;
+	}
+
+	/**
+	 * @param array $providers
+	 * @return ProviderInterface[]
+	 */
+	protected function validateAndInstantiateProviders(array $providers) {
+		$instances = array();
+		foreach ($providers as $providerClassNameOrInstance) {
+			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($provider))) {
+				$className = is_object($providerClassNameOrInstance)? get_class($provider) : $provider;
+				throw new \RuntimeException($className . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
+			}
+			if (TRUE === is_object($providerClassNameOrInstance)) {
+				$provider = &$providerClassNameOrInstance;
+			} else {
+				$provider = $this->objectManager->get($providerClassNameOrInstance);
+			}
+			$instances[] = $provider;
+		}
+		return $instances;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function loadCoreRegisteredProviders() {
+		return Core::getRegisteredFlexFormProviders();
 	}
 
 }
