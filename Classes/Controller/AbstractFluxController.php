@@ -116,6 +116,7 @@ abstract class AbstractFluxController extends ActionController {
 	protected function initializeOverriddenSettings() {
 		$row = $this->getRecord();
 		$extensionKey = $this->provider->getExtensionKey($row);
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		if (TRUE === isset($this->data['settings']) && TRUE === is_array($this->data['settings'])) {
 			// a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
 			// as well as the internal $this->settings array as per expected Extbase behavior.
