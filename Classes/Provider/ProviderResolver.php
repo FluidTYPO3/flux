@@ -157,8 +157,8 @@ class ProviderResolver implements SingletonInterface {
 	protected function validateAndInstantiateProviders(array $providers) {
 		$instances = array();
 		foreach ($providers as $providerClassNameOrInstance) {
-			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($provider))) {
-				$className = is_object($providerClassNameOrInstance)? get_class($provider) : $provider;
+			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($providerClassNameOrInstance))) {
+				$className = is_object($providerClassNameOrInstance)? get_class($providerClassNameOrInstance) : $providerClassNameOrInstance;
 				throw new \RuntimeException($className . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
 			}
 			if (TRUE === is_object($providerClassNameOrInstance)) {
