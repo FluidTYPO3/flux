@@ -104,7 +104,9 @@ class ContentIconHookSubscriber {
 					// filter 3: a Provider must be resolved for the record.
 					if (NULL !== $provider) {
 						$form = $provider->getForm((array) $record);
-						$icon = MiscellaneousUtility::getIconForTemplate($form);
+						if (NULL !== $form) {
+							$icon = MiscellaneousUtility::getIconForTemplate($form);
+						}
 						if (FALSE === empty($icon)) {
 							$iconFileReference = '../../../' . $icon;
 							$label = trim($form->getLabel());
