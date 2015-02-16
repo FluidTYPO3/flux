@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
 use FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\Domain\Model\Dummy;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -23,7 +24,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canLoadProcessorAsUserObject() {
-		$object = GeneralUtility::getUserObj('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
+		$object = GeneralUtility::getUserObj(TableConfigurationPostProcessor::class);
 		$object->processData();
 	}
 
@@ -38,7 +39,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 		$form->createField('Input', $field);
 		$form->setOption('labels', array('title'));
 		Core::registerFormForTable($table, $form);
-		$object = GeneralUtility::getUserObj('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
+		$object = GeneralUtility::getUserObj(TableConfigurationPostProcessor::class);
 		$object->processData();
 		$this->assertArrayHasKey($table, $GLOBALS['TCA']);
 		$this->assertArrayHasKey($field, $GLOBALS['TCA'][$table]['columns']);
@@ -52,9 +53,8 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canCreateFluxFormFromClassName() {
-		$class = 'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\Domain\\Model\\Dummy';
-		$object = GeneralUtility::getUserObj('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
-		$form = $object->generateFormInstanceFromClassName($class, 'tt_content');
+		$object = GeneralUtility::getUserObj(TableConfigurationPostProcessor::class);
+		$form = $object->generateFormInstanceFromClassName(Dummy::class, 'tt_content');
 		$this->assertIsValidAndWorkingFormObject($form);
 		$this->callInaccessibleMethod($object, 'processFormForTable', 'void', $form);
 		$this->assertIsArray($GLOBALS['TCA']['void']);
@@ -64,11 +64,10 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function triggersDomainModelAnalysisWhenFormsAreRegistered() {
-		$class = 'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\Domain\\Model\\Dummy';
 		$form = Form::create();
 		$form->setExtensionName('FluidTYPO3.Flux');
-		Core::registerAutoFormForModelObjectClassName($class);
-		$object = GeneralUtility::getUserObj('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
+		Core::registerAutoFormForModelObjectClassName(Dummy::class);
+		$object = GeneralUtility::getUserObj(TableConfigurationPostProcessor::class);
 		$object->processData();
 		Core::registerFormForModelObjectClassName($class, $form);
 		$object->processData();
@@ -79,7 +78,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	 */
 	public function canExtensionNameFromLegacyModelClassName() {
 		$class = 'Tx_Flux_Domain_Model_Dummy';
-		$object = GeneralUtility::getUserObj('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
+		$object = GeneralUtility::getUserObj(TableConfigurationPostProcessor::class);
 		$extensionName = $this->callInaccessibleMethod($object, 'getExtensionNameFromModelClassName', $class);
 		$this->assertEquals('Flux', $extensionName);
 	}
@@ -89,7 +88,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	 */
 	public function canExtensionNameFromNameSpacedClassName() {
 		$class = 'Flux\Domain\Model\Dummy';
-		$object = GeneralUtility::getUserObj('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
+		$object = GeneralUtility::getUserObj(TableConfigurationPostProcessor::class);
 		$extensionName = $this->callInaccessibleMethod($object, 'getExtensionNameFromModelClassName', $class, 'void');
 		$this->assertEquals('Flux', $extensionName);
 	}
@@ -99,7 +98,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 	 */
 	public function canExtensionNameFromNameSpacedClassNameWithVendor() {
 		$class = 'FluidTYPO3\Flux\Domain\Model\Dummy';
-		$object = GeneralUtility::getUserObj('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
+		$object = GeneralUtility::getUserObj(TableConfigurationPostProcessor::class);
 		$extensionName = $this->callInaccessibleMethod($object, 'getExtensionNameFromModelClassName', $class, 'void');
 		$this->assertEquals('FluidTYPO3.Flux', $extensionName);
 	}

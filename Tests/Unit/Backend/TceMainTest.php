@@ -8,10 +8,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Backend\TceMain;
+use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Dbal\Database\DatabaseConnection;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -23,7 +28,7 @@ class TceMainTest extends AbstractTestCase {
 	 * @return void
 	 */
 	public function setUp() {
-		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetSingleRow'), array(), '', FALSE);
+		$GLOBALS['TYPO3_DB'] = $this->getMock(DatabaseConnection::class, array('exec_SELECTgetSingleRow'), array(), '', FALSE);
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(FALSE);
 		$GLOBALS['TCA'] = array(
 			'tt_content' => array(
@@ -39,8 +44,8 @@ class TceMainTest extends AbstractTestCase {
 	 */
 	public function canExecuteClearAllCacheCommandAndPassToProvidersForEveryTcaTable() {
 		$instance = $this->getInstance();
-		$mockedFluxService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
-		$mockedProvider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('clearCacheCommand'));
+		$mockedFluxService = $this->getMock(FluxService::class, array('resolveConfigurationProviders'));
+		$mockedProvider = $this->getMock(Provider::class, array('clearCacheCommand'));
 		$expectedExecutions = count($GLOBALS['TCA']);
 		$mockedProvider->expects($this->exactly($expectedExecutions))->method('clearCacheCommand')->with('all');
 		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array($mockedProvider)));
@@ -53,7 +58,7 @@ class TceMainTest extends AbstractTestCase {
 	 */
 	public function canExecuteClearAllCacheCommandTwiceWithoutDoubleCalling() {
 		$instance = $this->getInstance();
-		$mockedFluxService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
+		$mockedFluxService = $this->getMock(FluxService::class, array('resolveConfigurationProviders'));
 		$mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array()));
 		ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, TRUE);
 		$instance->clearCacheCommand('all');
@@ -170,18 +175,18 @@ class TceMainTest extends AbstractTestCase {
 	 */
 	protected function getCallerInstance() {
 		/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $tceMainParent */
-		$tceMainParent = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
+		$tceMainParent = GeneralUtility::makeInstance(DataHandler::class);
 		return $tceMainParent;
 	}
 
 	/**
-	 * @return \FluidTYPO3\Flux\Backend\TceMain
+	 * @return TceMain
 	 */
 	protected function getInstance() {
-		/** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-		/** @var \FluidTYPO3\Flux\Backend\TceMain $tceMainInstance */
-		$tceMainInstance = $objectManager->get('FluidTYPO3\Flux\Backend\TceMain');
+		/** @var ObjectManager $objectManager */
+		$objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+		/** @var TceMain $tceMainInstance */
+		$tceMainInstance = $objectManager->get(TceMain::class);
 		ObjectAccess::setProperty($tceMainInstance, 'cachesCleared', FALSE, TRUE);
 		return $tceMainInstance;
 	}
@@ -193,7 +198,7 @@ class TceMainTest extends AbstractTestCase {
 		$exception = new \RuntimeException();
 		$mock = $this->getMock($this->createInstanceClassName(), array('detectUniqueProviders'));
 		$mock->expects($this->once())->method('detectUniqueProviders')->will($this->throwException($exception));
-		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('debug'));
+		$configurationService = $this->getMock(FluxService::class, array('debug'));
 		$configurationService->expects($this->once())->method('debug')->with($exception);
 		$handler = new DataHandler();
 		$record = array();
@@ -237,11 +242,11 @@ class TceMainTest extends AbstractTestCase {
 	 */
 	public function detectUniqueProvidersReturnsExpectedValue() {
 		$mock = $this->getMock($this->createInstanceClassName());
-		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider');
-		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider');
-		$provider3 = $this->getMock('FluidTYPO3\\Flux\\Provider');
+		$provider1 = $this->getMock(Provider::class);
+		$provider2 = $this->getMock(Provider::class);
+		$provider3 = $this->getMock(Provider::class);
 		$provider4 = $provider1;
-		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+		$configurationService = $this->getMock(FluxService::class, array('resolveConfigurationProviders'));
 		$configurationService->expects($this->at(0))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider1)));
 		$configurationService->expects($this->at(1))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider2)));
 		$configurationService->expects($this->at(2))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider3)));

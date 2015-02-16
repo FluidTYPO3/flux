@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
@@ -27,7 +28,7 @@ class FormTest extends AbstractTestCase {
 	 */
 	protected function getEmptyDummyForm() {
 		/** @var Form $form */
-		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+		$form = $this->objectManager->get(Form::class);
 		return $form;
 	}
 
@@ -161,7 +162,7 @@ class FormTest extends AbstractTestCase {
 		$object->add($objectField);
 		$section->add($object);
 		$form->add($section);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $object->getRoot());
+		$this->assertInstanceOf(Form::class, $object->getRoot());
 		$this->assertNotEmpty($form->get('options')->getLabel());
 		$this->assertNotEmpty($form->get('test', TRUE)->getLabel());
 		$this->assertNotEmpty($form->get('object', TRUE)->getLabel());
@@ -283,7 +284,7 @@ class FormTest extends AbstractTestCase {
 			'label' => 'Test field'
 		);
 		$instance = Form::create($properties);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $instance);
+		$this->assertInstanceOf(Form::class, $instance);
 	}
 
 	/**
@@ -303,7 +304,7 @@ class FormTest extends AbstractTestCase {
 			)
 		);
 		$instance = Form::create($properties);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $instance);
+		$this->assertInstanceOf(Form::class, $instance);
 	}
 
 	/**
@@ -344,7 +345,7 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function canSetAndGetOutlet() {
 		/** @var StandardOutlet $outlet */
-		$outlet = $this->getMock('FluidTYPO3\Flux\Outlet\StandardOutlet');
+		$outlet = $this->getMock(StandardOutlet::class);
 		$form = Form::create();
 		$form->setOutlet($outlet);
 		$this->assertSame($outlet, $form->getOutlet());
@@ -354,9 +355,9 @@ class FormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function dispatchesDebugMessageOnProblematicId() {
-		$service = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('message'));
+		$service = $this->getMock(FluxService::class, array('message'));
 		$service->expects($this->once())->method('message');
-		$instance = $this->objectManager->get('FluidTYPO3\Flux\Form');
+		$instance = $this->objectManager->get(Form::class);
 		ObjectAccess::setProperty($instance, 'configurationService', $service, TRUE);
 		$instance->setId('I-am-not-valid');
 	}

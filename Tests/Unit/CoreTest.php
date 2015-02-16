@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\PathUtility;
@@ -81,7 +82,7 @@ class CoreTest extends AbstractTestCase {
 	 */
 	public function canRegisterProviderInstance() {
 		/** @var \FluidTYPO3\Flux\Provider\ProviderInterface $provider */
-		$provider = $this->objectManager->get('FluidTYPO3\Flux\Provider\Provider');
+		$provider = $this->objectManager->get(Provider::class);
 		Core::registerConfigurationProvider($provider);
 		$registered = Core::getRegisteredFlexFormProviders();
 		$this->assertContains($provider, $registered);
@@ -91,13 +92,12 @@ class CoreTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canRegisterAndUnregisterProviderClassName() {
-		$providerClassName = 'FluidTYPO3\Flux\Provider\Provider';
-		Core::registerConfigurationProvider($providerClassName);
+		Core::registerConfigurationProvider(Provider::class);
 		$registered = Core::getRegisteredFlexFormProviders();
-		$this->assertContains($providerClassName, $registered);
-		Core::unregisterConfigurationProvider($providerClassName);
+		$this->assertContains(Provider::class, $registered);
+		Core::unregisterConfigurationProvider(Provider::class);
 		$registered = Core::getRegisteredFlexFormProviders();
-		$this->assertNotContains($providerClassName, $registered);
+		$this->assertNotContains(Provider::class, $registered);
 	}
 
 	/**
@@ -134,7 +134,6 @@ class CoreTest extends AbstractTestCase {
 		$extensionKey = 'more_fake';
 		$pluginType = 'void';
 		$fieldName = NULL;
-		$providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
 		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$record['list_type'] = $pluginType;
@@ -143,7 +142,7 @@ class CoreTest extends AbstractTestCase {
 		Core::registerFluidFlexFormPlugin($extensionKey, $pluginType, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
 		$detectedProvider = $service->resolvePrimaryConfigurationProvider('tt_content', $fieldName, $record, $extensionKey);
-		$this->assertInstanceOf($providerClassName, $detectedProvider);
+		$this->assertInstanceOf(Provider::class, $detectedProvider);
 		$this->assertSame($extensionKey, $detectedProvider->getExtensionKey($record));
 		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
 		$this->assertSame(PathUtility::translatePath($paths), $detectedProvider->getTemplatePaths($record));
@@ -158,7 +157,6 @@ class CoreTest extends AbstractTestCase {
 		$paths = array('templateRootPath' => 'EXT:flux/Resources/Private/Templates');
 		$table = 'fake';
 		$fieldName = NULL;
-		$providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
 		$relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
 		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
@@ -166,7 +164,7 @@ class CoreTest extends AbstractTestCase {
 		Core::registerFluidFlexFormTable($table, $fieldName, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
 		$detectedProvider = $service->resolvePrimaryConfigurationProvider($table, $fieldName, $record);
-		$this->assertInstanceOf($providerClassName, $detectedProvider);
+		$this->assertInstanceOf(Provider::class, $detectedProvider);
 		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
 		$this->assertSame(PathUtility::translatePath($paths), $detectedProvider->getTemplatePaths($record));
 	}

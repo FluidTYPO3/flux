@@ -9,8 +9,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  */
 
 use FluidTYPO3\Flux\Backend\AreaListItemsProcessor;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class AreaListItemsProcessorTest
@@ -22,9 +27,9 @@ class AreaListItemsProcessorTest extends AbstractTestCase {
 	 */
 	public function constructorSetsInternalAttributes() {
 		$instance = new AreaListItemsProcessor();
-		$this->assertAttributeInstanceOf('TYPO3\\CMS\\Extbase\\Object\\ObjectManager', 'objectManager', $instance);
-		$this->assertAttributeInstanceOf('FluidTYPO3\\Flux\\Service\\FluxService', 'fluxService', $instance);
-		$this->assertAttributeInstanceOf('FluidTYPO3\\Flux\\Service\\RecordService', 'recordService', $instance);
+		$this->assertAttributeInstanceOf(ObjectManagerInterface::class, 'objectManager', $instance);
+		$this->assertAttributeInstanceOf(FluxService::class, 'fluxService', $instance);
+		$this->assertAttributeInstanceOf(RecordService::class, 'recordService', $instance);
 	}
 
 	/**
@@ -78,21 +83,21 @@ class AreaListItemsProcessorTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function getContentAreasDefinedInContentElementCallsExpectedMethods() {
-		$grid = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Grid', array('build'));
+		$grid = $this->getMock(Grid::class, array('build'));
 		$grid->expects($this->once())->method('build')->willReturn(array('rows' => array(array('columns' => array(array(
 			'label' => 'column-label',
 			'name' => 'column'
 		))))));
-		$mock = $this->getMock('FluidTYPO3\\Flux\\Backend\\AreaListItemsProcessor', array('dummy'), array(), '', FALSE);
-		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
+		$mock = $this->getMock(AreaListItemsProcessor::class, array('dummy'), array(), '', FALSE);
+		$provider1 = $this->getMock(Provider::class, array('getGrid'));
 		$provider1->expects($this->once())->method('getGrid')->willReturn(NULL);
-		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
+		$provider2 = $this->getMock(Provider::class, array('getGrid'));
 		$provider2->expects($this->once())->method('getGrid')->willReturn($grid);
 
 		$providers = array($provider1, $provider2);
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', array('getSingle'));
+		$recordService = $this->getMock(RecordService::class, array('getSingle'));
 		$recordService->expects($this->once())->method('getSingle')->will($this->returnValue(array('foo' => 'bar')));
-		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+		$fluxService = $this->getMock(FluxService::class, array('resolveConfigurationProviders'));
 		$fluxService->expects($this->once())->method('resolveConfigurationProviders')->willReturn($providers);
 		ObjectAccess::setProperty($mock, 'fluxService', $fluxService, TRUE);
 		ObjectAccess::setProperty($mock, 'recordService', $recordService, TRUE);
