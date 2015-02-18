@@ -329,12 +329,15 @@ CONTENT;
 	 * @return string
 	 */
 	protected function drawElement(array $row, PageLayoutView $dblist) {
+		$footerRenderMethod = new \ReflectionMethod($dblist, 'tt_content_drawFooter');
+		$footerRenderMethod->setAccessible(TRUE);
 		$space = 0;
 		$disableMoveAndNewButtons = FALSE;
 		$langMode = $dblist->tt_contentConfig['languageMode'];
 		$dragDropEnabled = FALSE;
 		$rendered = $dblist->tt_content_drawHeader($row, $space, $disableMoveAndNewButtons, $langMode, $dragDropEnabled);
 		$rendered .= '<div class="t3-page-ce-body-inner">' . $dblist->tt_content_drawItem($row) . '</div>';
+		$rendered .= $footerRenderMethod->invokeArgs($dblist, array($row));
 		$rendered .= '</div>';
 		return $rendered;
 	}
@@ -507,7 +510,6 @@ CONTENT;
 	 */
 	protected function getInitializePageLayoutView(array $row) {
 		$pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $row['pid']);
-		// note: the following chained makeInstance is not an error; it is there to make the ViewHelper work on TYPO3 6.0
 		/** @var $dblist PageLayoutView */
 		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
@@ -519,11 +521,15 @@ CONTENT;
 		$dblist->ext_CALC_PERMS = $this->getBackendUser()->calcPerms($pageRecord);
 		$dblist->id = $row['pid'];
 		$dblist->nextThree = 1;
+		$dblist->table = 'tt_content';
+		$dblist->tableList = 'tt_content';
+		$dblist->currentTable = 'tt_content';
 		$dblist->tt_contentConfig['showCommands'] = 1;
 		$dblist->tt_contentConfig['showInfo'] = 1;
 		$dblist->tt_contentConfig['single'] = 0;
 		$dblist->CType_labels = array();
 		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";
+		$dblist->initializeLanguages();
 		foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
 			$dblist->CType_labels[$val[1]] = $this->getLanguageService()->sL($val[0]);
 		}
