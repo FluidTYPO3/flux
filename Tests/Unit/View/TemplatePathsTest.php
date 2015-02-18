@@ -156,4 +156,21 @@ class TemplatePathsTest extends BaseTestCase {
 		$this->assertEquals(array($file), $files);
 	}
 
+	/**
+	 * @return void
+	 */
+	public function testToArray() {
+		$instance = new TemplatePaths();
+		$instance->setTemplateRootPaths(array('1'));
+		$instance->setLayoutRootPaths(array('2'));
+		$instance->setPartialRootPaths(array('3'));
+		$result = $instance->toArray();
+		$expected = array(
+			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array(1),
+			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array(2),
+			TemplatePaths::CONFIG_PARTIALROOTPATHS => array(3)
+		);
+		$this->assertEquals($expected, $result);
+	}
+
 }

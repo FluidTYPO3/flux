@@ -276,6 +276,17 @@ class TemplatePaths {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function toArray() {
+		return array(
+			self::CONFIG_TEMPLATEROOTPATHS => $this->getTemplateRootPaths(),
+			self::CONFIG_LAYOUTROOTPATHS => $this->getLayoutRootPaths(),
+			self::CONFIG_PARTIALROOTPATHS => $this->getPartialRootPaths()
+		);
+	}
+
+	/**
 	 * Guarantees that $reference is turned into a
 	 * correct, absolute path. The input can be a
 	 * relative path or a FILE: or EXT: reference
