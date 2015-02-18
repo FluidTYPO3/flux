@@ -60,24 +60,6 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * Note: This Provider will -always- trigger on tt_content list_type records (plugin)
-	 * but has the lowest possible (0) priority, ensuring that any
-	 * Provider which wants to take over, can do so.
-	 *
-	 * @param array $row
-	 * @param string $table
-	 * @param string $field
-	 * @param string $extensionKey
-	 * @return boolean
-	 */
-	public function trigger(array $row, $table, $field, $extensionKey = NULL) {
-		if ($table === $this->tableName && FALSE === empty($row['list_type'])) {
-			return TRUE;
-		}
-		return parent::trigger($row, $table, $field, $extensionKey);
-	}
-
-	/**
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row

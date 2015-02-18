@@ -36,6 +36,8 @@ class AbstractProvider implements ProviderInterface {
 
 	const FORM_CLASS_PATTERN = '%s\\Form\\%s\\%sForm';
 
+	const CONTENT_OBJECT_TYPE_LIST = 'list';
+
 	/**
 	 * @var array
 	 */
@@ -243,13 +245,14 @@ class AbstractProvider implements ProviderInterface {
 		$providerExtensionKey = $this->extensionKey;
 		$contentObjectType = $this->contentObjectType;
 		$listType = $this->listType;
+		$rowContainsPlugin = (FALSE === empty($row['CType']) && self::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
 		$rowIsEmpty = (0 === count($row));
 		$matchesContentType = ((TRUE === empty($contentObjectType) && TRUE === empty($row['CType'])) || (FALSE === empty($row['CType']) && $row['CType'] === $contentObjectType));
 		$matchesPluginType = ((TRUE === empty($listType) && TRUE === empty($row['list_type'])) || (FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
 		$matchesTableName = ($providerTableName === $table || NULL === $table);
 		$matchesFieldName = ($providerFieldName === $field || NULL === $field);
 		$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
-		$isFullMatch = $matchesExtensionKey && $matchesTableName && $matchesFieldName && $matchesContentType && $matchesPluginType;
+		$isFullMatch = $matchesExtensionKey && $matchesTableName && $matchesFieldName && ($matchesContentType || ($rowContainsPlugin && $matchesPluginType));
 		$isFallbackMatch = ($matchesTableName && $matchesFieldName && $rowIsEmpty);
 		return ($isFullMatch || $isFallbackMatch);
 	}
