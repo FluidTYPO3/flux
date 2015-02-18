@@ -2,6 +2,7 @@
 td.spacer { width: 8px !important; max-width: 8px !important; height: 8px; }
 .toggle-content { cursor: pointer; float: right; margin-top: -15px; }
 .flux-grid { width: 100%; }
+.flux-grid td { vertical-align: top; }
 .flux-grid-hidden { display: none; }
 .t3-page-ce .toggle-content { visibility: hidden; }
 .t3-page-ce:hover .toggle-content { visibility: visible; }
