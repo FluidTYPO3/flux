@@ -166,6 +166,44 @@ class TemplatePaths {
 	}
 
 	/**
+	 * @param string $controllerName
+	 * @param string $format
+	 * @return array
+	 */
+	public function resolveAvailableTemplateFiles($controllerName, $format = self::DEFAULT_FORMAT) {
+		return $this->resolveFilesInFolders($this->templateRootPaths, $format);
+	}
+
+	/**
+	 * @param string $format
+	 * @return array
+	 */
+	public function resolveAvailablePartialFiles($format = self::DEFAULT_FORMAT) {
+		return $this->resolveFilesInFolders($this->partialRootPaths, $format);
+	}
+
+	/**
+	 * @param string $format
+	 * @return array
+	 */
+	public function resolveAvailableLayoutFiles($format = self::DEFAULT_FORMAT) {
+		return $this->resolveFilesInFolders($this->layoutRootPaths, $format);
+	}
+
+	/**
+	 * @param array $folders
+	 * @param string $format
+	 * @return array
+	 */
+	protected function resolveFilesInFolders(array $folders, $format) {
+		$files = array();
+		foreach ($folders as $folder) {
+			$files = array_merge($files, GeneralUtility::getAllFilesAndFoldersInPath(array(), $folder, $format));
+		}
+		return array_values($files);
+	}
+
+	/**
 	 * Fills path arrays based on a traditional
 	 * TypoScript array which may contain one or
 	 * more of the supported structures, in order

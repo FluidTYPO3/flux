@@ -124,4 +124,36 @@ class TemplatePathsTest extends BaseTestCase {
 		$this->assertNull($result);
 	}
 
+	/**
+	 * @dataProvider getResolveFilesMethodTestValues
+	 * @param string $method
+	 */
+	public function testResolveFilesMethodCallsResolveFilesInFolders($method) {
+		$instance = $this->getMock('FluidTYPO3\\Flux\\View\\TemplatePaths', array('resolveFilesInFolders'));
+		$instance->expects($this->once())->method('resolveFilesInFolders')->with($this->anything(), 'format');
+		$instance->$method('format', 'format');
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getResolveFilesMethodTestValues() {
+		return array(
+			array('resolveAvailableTemplateFiles'),
+			array('resolveAvailablePartialFiles'),
+			array('resolveAvailableLayoutFiles')
+		);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testResolveFilesInFolders() {
+		$instance = new TemplatePaths();
+		$folder = GeneralUtility::getFileAbsFileName('EXT:flux/Tests/Fixtures/Partials/');
+		$file = GeneralUtility::getFileAbsFileName('EXT:flux/Tests/Fixtures/Partials/FormComponents.html');
+		$files = $this->callInaccessibleMethod($instance, 'resolveFilesInFolders', array($folder), TemplatePaths::DEFAULT_FORMAT);
+		$this->assertEquals(array($file), $files);
+	}
+
 }
