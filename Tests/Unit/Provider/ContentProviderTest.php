@@ -187,12 +187,8 @@ class ContentProviderTest extends AbstractProviderTest {
 	public function getTriggerTestValues() {
 		return array(
 			array(array(), 'not_tt_content', 'pi_flexform', NULL, FALSE),
-			array(array('list_type' => 'any', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', NULL, FALSE),
-			array(array('list_type' => 'any', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', 'flux', FALSE),
-			// triggers on record having list_type and CType, default field name and any combo of ext key
-			array(array('list_type' => 'any', 'CType' => 'any'), 'tt_content', 'pi_flexform', NULL, TRUE),
-			array(array('list_type' => 'any', 'CType' => 'any'), 'tt_content', 'pi_flexform', 'fluidpages', TRUE),
-			array(array('list_type' => 'any', 'CType' => 'any'), 'tt_content', 'pi_flexform', 'flux', TRUE),
+			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', NULL, FALSE),
+			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', 'flux', FALSE)
 		);
 	}
 
