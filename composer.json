@@ -3,24 +3,30 @@
     "description": "The flux package from FluidTYPO3",
     "type": "typo3-cms-extension",
     "version": "7.2.0",
-	"homepage": "http://fluidtypo3.org",
-	"license": "GPL-2.0+",
-	"support": {
-		"irc": "irc://irc.freenode.org/fedext",
-		"issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
-	},
-	"autoload": {
-		"psr-4": {
-			"FluidTYPO3\\Flux\\": "Classes/"
-		}
-	},
-	"suggest": {
-		"fluidtypo3/vhs": "ViewHelper library for Fluid templates.",
-		"fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid.",
-		"fluidtypo3/fluidcontent": "Gives the ability to render Content Templates with pure fluid.",
-		"fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
-	},
+    "homepage": "http://fluidtypo3.org",
+    "license": "GPL-2.0+",
+    "support": {
+        "irc": "irc://irc.freenode.org/fedext",
+        "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
+    },
+    "autoload": {
+        "psr-4": {
+            "FluidTYPO3\\Flux\\": "Classes/"
+        }
+    },
+    "suggest": {
+        "fluidtypo3/vhs": "ViewHelper library for Fluid templates.",
+        "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid.",
+        "fluidtypo3/fluidcontent": "Gives the ability to render Content Templates with pure fluid.",
+        "fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
+    },
     "require-dev": {
         "fluidtypo3/development": "*"
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/TYPO3/TYPO3.CMS"
+        }
+    ]
 }
