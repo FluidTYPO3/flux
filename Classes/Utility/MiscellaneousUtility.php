@@ -25,7 +25,7 @@ class MiscellaneousUtility {
 	 */
 	private static $allowedIconTypes = array('png', 'gif');
 
-    /**
+	/**
 	* @param string $icon
 	* @return string
 	*/
