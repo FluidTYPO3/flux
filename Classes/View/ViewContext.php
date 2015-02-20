@@ -153,8 +153,7 @@ class ViewContext {
 	}
 
 	/**
-	 * @param TemplatePaths $paths
-	 * @return void
+	 * @param TemplatePaths $templatePaths
 	 */
 	public function setTemplatePaths(TemplatePaths $templatePaths) {
 		$this->templatePaths = $templatePaths;

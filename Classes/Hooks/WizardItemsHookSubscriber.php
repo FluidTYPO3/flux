@@ -162,6 +162,8 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 	/**
 	 * @param array $providers
 	 * @param array $record
+	 * @param array $whitelist
+	 * @param array $blacklist
 	 * @param integer $columnPosition
 	 * @param string $fluxAreaName
 	 */
