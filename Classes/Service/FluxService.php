@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
-use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;

@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\View;
  */
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use FluidTYPO3\Flux\View\TemplatePaths;
 
 /**
  * Class ViewContext
