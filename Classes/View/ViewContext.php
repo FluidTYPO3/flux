@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\View;
  */
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use FluidTYPO3\Flux\View\TemplatePaths;
 
 /**
  * Class ViewContext
@@ -154,8 +153,7 @@ class ViewContext {
 	}
 
 	/**
-	 * @param TemplatePaths $paths
-	 * @return void
+	 * @param TemplatePaths $templatePaths
 	 */
 	public function setTemplatePaths(TemplatePaths $templatePaths) {
 		$this->templatePaths = $templatePaths;

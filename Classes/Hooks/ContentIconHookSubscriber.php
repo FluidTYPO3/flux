@@ -32,6 +32,7 @@ use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 
 /**
  * Class ContentIconHookSubscriber

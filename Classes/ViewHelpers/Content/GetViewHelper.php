@@ -96,7 +96,7 @@ class GetViewHelper extends AbstractViewHelper {
 		$offset = intval($this->arguments['offset']);
 		$sortDirection = $this->arguments['sortDirection'];
 		$order .= ' ' . $sortDirection;
-		// Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and colummn.
+		// Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and column.
 		// The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.
 		// Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the localized version or default version.
 		$conditions = "(tx_flux_parent = '" . $id . "' AND tx_flux_column = '" . $area . "' AND pid = '" . $record['pid'] . "')" .

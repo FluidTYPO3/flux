@@ -10,8 +10,6 @@ namespace FluidTYPO3\Flux\Provider;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Form\FieldInterface;
-use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;

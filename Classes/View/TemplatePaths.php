@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\View;
  * LICENSE.md file that was distributed with this source code.
  */
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use FluidTYPO3\Flux\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
