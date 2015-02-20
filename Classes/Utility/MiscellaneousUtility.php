@@ -64,7 +64,6 @@ class MiscellaneousUtility {
 			$templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
 			$controllerName = array_pop($templatePathParts);
 
-			$positionOfResourceInTemplatePath = strpos($fullTemplatePathAndName, 'Resources/Private/Templates/');
 			$iconPathAndName = ExtensionManagementUtility::extPath($extensionKey, 'Resources/Public/Icons/' . $controllerName . '/' . $templateName);
 			foreach (self::$allowedIconTypes as $iconType) {
 				$potentialIcon = $iconPathAndName . '.' . $iconType;
