@@ -115,7 +115,8 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'field' => 'pi_flexform',
 			'record' => Records::$contentRecordIsParentAndHasChildren
 		);
-		$this->executeViewHelper($arguments);
+		$result = $this->executeViewHelper($arguments);
+		$this->assertIsArray($result);
 	}
 
 	/**
@@ -193,7 +194,8 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$record = array();
 		$field = NULL;
 		ObjectAccess::setProperty($mock, 'configurationService', $configurationService, TRUE);
-		$this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
+		$result = $this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
+		$this->assertNull($result);
 	}
 
 }

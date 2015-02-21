@@ -88,7 +88,8 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canFlushCache() {
 		$service = $this->createFluxServiceInstance();
-		$service->flushCache();
+		$result = $service->flushCache();
+		$this->assertNull($result);
 	}
 
 	/**

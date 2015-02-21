@@ -144,19 +144,6 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function ifObjectIsFieldContainerItSupportsFetchingFields() {
-		$instance = $this->createInstance();
-		if (TRUE === $instance instanceof FieldContainerInterface) {
-			$field = $instance->createField('Input', 'test');
-			$instance->add($field);
-			$fields = $instance->getFields();
-			$this->assertNotEmpty($fields, 'The class ' . $this->getObjectClassName() . ' does not appear to support the required FieldContainerInterface implementation');
-		}
-	}
-
-	/**
-	 * @test
-	 */
 	public function returnsNameInsteadOfEmptyLabelWhenFormsExtensionKeyAndLabelAreBothEmpty() {
 		$name = TRUE === isset($this->chainProperties['name']) ? $this->chainProperties['name'] : 'test';
 		$instance = $this->createInstance();
@@ -172,7 +159,10 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	public function canCallAllGetterCounterpartsForChainableSetters() {
 		$instance = $this->createInstance();
 		foreach ($this->chainProperties as $propertyName => $propertValue) {
-			ObjectAccess::getProperty($instance, $propertyName);
+			$setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
+			$instance->$setterMethodName($propertValue);
+			$result = ObjectAccess::getProperty($instance, $propertyName);
+			$this->assertEquals($propertValue, $result);
 		}
 	}
 

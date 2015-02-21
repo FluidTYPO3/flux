@@ -40,7 +40,8 @@ class PreviewTest extends AbstractTestCase {
 	public function canExecuteRenderer() {
 		$caller = $this->objectManager->get('TYPO3\CMS\Backend\View\PageLayoutView');
 		$function = 'FluidTYPO3\Flux\Backend\Preview';
-		$this->callUserFunction($function, $caller);
+		$result = $this->callUserFunction($function, $caller);
+		$this->assertEmpty($result);
 	}
 
 	/**
@@ -65,7 +66,8 @@ class PreviewTest extends AbstractTestCase {
 	public function canGetPageTitleAndPidFromContentUid() {
 		$className = 'FluidTYPO3\Flux\Backend\Preview';
 		$instance = $this->getMock($className);
-		$this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
+		$result = $this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
+		$this->assertEmpty($result);
 	}
 
 	/**

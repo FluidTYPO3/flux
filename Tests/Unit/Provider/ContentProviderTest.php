@@ -27,7 +27,8 @@ class ContentProviderTest extends AbstractProviderTest {
 		$provider = $this->getConfigurationProviderInstance();
 		/** @var DataHandler $tceMain */
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$provider->postProcessDatabaseOperation('new', $row['uid'], $row, $tceMain);
+		$result = $provider->postProcessDatabaseOperation('new', $row['uid'], $row, $tceMain);
+		$this->assertEmpty($result);
 	}
 
 	/**
@@ -43,7 +44,8 @@ class ContentProviderTest extends AbstractProviderTest {
 		$contentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('updateRecordInDatabase'));
 		$contentService->expects($this->once())->method('updateRecordInDatabase');
 		ObjectAccess::setProperty($provider, 'contentService', $contentService, TRUE);
-		$provider->postProcessCommand('move', 0, $row, $relativeUid, $tceMain);
+		$result = $provider->postProcessCommand('move', 0, $row, $relativeUid, $tceMain);
+		$this->assertEmpty($result);
 	}
 
 	/**
@@ -59,11 +61,31 @@ class ContentProviderTest extends AbstractProviderTest {
 	/**
 	 * @test
 	 */
+	public function canGetControllerExtensionKey() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$result = $provider->getControllerExtensionKeyFromRecord($record);
+		$this->assertEquals('flux', $result);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canGetTableName() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$tableName = $provider->getTableName($record);
 		$this->assertSame('tt_content', $tableName);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetFieldName() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$result = $provider->getFieldName($record);
+		$this->assertEquals('pi_flexform', $result);
 	}
 
 	/**

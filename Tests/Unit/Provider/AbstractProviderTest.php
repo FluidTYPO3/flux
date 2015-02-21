@@ -71,7 +71,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canCallResetMethod() {
 		$provider = $this->createInstance();
-		$provider->reset();
+		$result = $provider->reset();
+		$this->assertNull($result);
 	}
 
 	/**
@@ -114,6 +115,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$form = $provider->getForm($record);
 		if ($form) {
 			$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
+		} else {
+			$this->assertNull($form);
 		}
 	}
 
@@ -235,7 +238,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canGetControllerExtensionKey() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$provider->getControllerExtensionKeyFromRecord($record);
+		$result = $provider->getControllerExtensionKeyFromRecord($record);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -244,7 +248,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canGetControllerActionName() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$provider->getControllerActionFromRecord($record);
+		$result = $provider->getControllerActionFromRecord($record);
+		$this->assertNotEmpty($result);
 	}
 
 	/**
@@ -253,7 +258,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canGetControllerActionReferenceName() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$provider->getControllerActionReferenceFromRecord($record);
+		$result = $provider->getControllerActionReferenceFromRecord($record);
+		$this->assertNotEmpty($result);
 	}
 
 	/**
@@ -272,7 +278,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canGetFieldName() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$provider->getFieldName($record);
+		$result = $provider->getFieldName($record);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -281,7 +288,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canGetTemplateFilePathAndFilename() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$provider->getTemplatePathAndFilename($record);
+		$templatePathAndFilename = $provider->getTemplatePathAndFilename($record);
+		$this->assertEmpty($result);
 	}
 
 	/**
@@ -292,7 +300,9 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$record = $this->getBasicRecord();
 		$dataStructure = array();
 		$config = array();
-		$provider->postProcessDataStructure($record, $dataStructure, $config);
+		$result = $provider->postProcessDataStructure($record, $dataStructure, $config);
+		$this->assertNull($result);
+		$this->assertIsArray($config);
 	}
 
 	/**
@@ -368,7 +378,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$fieldName = NULL;
 		$provider->setFieldName(NULL);
 		$parentInstance->datamap[$tableName][$id] = $record;
-		$provider->postProcessRecord('update', $id, $record, $parentInstance);
+		$result = $provider->postProcessRecord('update', $id, $record, $parentInstance);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -554,7 +565,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$record = $this->getBasicRecord();
 		$relativeTo = 1;
 		$reference = new DataHandler();
-		$provider->preProcessCommand($command, $id, $record, $relativeTo, $reference);
+		$result = $provider->preProcessCommand($command, $id, $record, $relativeTo, $reference);
+		$this->assertNull($result);
 	}
 
 	/**

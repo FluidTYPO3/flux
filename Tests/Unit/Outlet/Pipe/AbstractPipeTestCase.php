@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  */
 
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
@@ -18,7 +19,7 @@ abstract class AbstractPipeTestCase extends AbstractTestCase {
 	/**
 	 * @var array
 	 */
-	protected $defaultData = array('test' => 'test');
+	protected $defaultData = array();
 
 	/**
 	 * @test
@@ -52,7 +53,12 @@ abstract class AbstractPipeTestCase extends AbstractTestCase {
 	 * @test
 	 */
 	public function canLoadSettings() {
-		$this->createInstance()->loadSettings($this->defaultData);
+		$instance = $this->createInstance();
+		$instance->loadSettings($this->defaultData);
+		foreach ($this->defaultData as $propertyName => $propertyValue) {
+			$result = ObjectAccess::getProperty($instance, $propertyName, TRUE);
+			$this->assertEquals($propertyValue, $result);
+		}
 	}
 
 }

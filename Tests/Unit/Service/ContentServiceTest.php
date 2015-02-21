@@ -53,7 +53,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$row = array('uid' => -1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
-		$mock->initializeRecord('NEW12345', $row, $tceMain);
+		$result = $mock->initializeRecord('NEW12345', $row, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -102,7 +103,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$tceMain = new DataHandler();
 		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
 		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($copiedRow['uid'])->will($this->returnValue($copiedRow));
-		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -137,7 +139,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
 		$tceMain->cmdmap = $cmdMap;
 		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($copiedRow));
-		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -156,7 +159,8 @@ class ContentServiceTest extends AbstractTestCase {
 		);
 		$tceMain = new DataHandler();
 		$mock->expects($this->never())->method('loadRecordFromDatabase');
-		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -175,7 +179,8 @@ class ContentServiceTest extends AbstractTestCase {
 		);
 		$tceMain = new DataHandler();
 		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
-		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -297,7 +302,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$mock->expects($this->any())->method('updateMovePlaceholder');
 		$dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
 		$dataHandler->expects($this->any())->method('resorting');
-		$mock->moveRecord($row, $relativeTo, $parameters, $dataHandler);
+		$result = $mock->moveRecord($row, $relativeTo, $parameters, $dataHandler);
+		$this->assertNull($result);
 	}
 
 	/**

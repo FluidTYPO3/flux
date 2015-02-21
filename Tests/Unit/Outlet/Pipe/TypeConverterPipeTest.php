@@ -16,6 +16,13 @@ use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 class TypeConverterPipeTest extends AbstractPipeTestCase {
 
 	/**
+	 * @var array
+	 */
+	protected $defaultData = array(
+		'targetType' => 'float',
+	);
+
+	/**
 	 * @test
 	 */
 	public function canConductData() {

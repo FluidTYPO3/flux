@@ -23,7 +23,8 @@ class ContainerViewHelperTest extends AbstractViewHelperTestCase {
 			'name' => 'test',
 			'label' => 'Test container'
 		);
-		$this->executeViewHelper($arguments);
+		$result = $this->executeViewHelper($arguments);
+		$this->assertEmpty(trim($result));
 	}
 
 }

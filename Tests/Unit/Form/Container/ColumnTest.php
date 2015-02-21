@@ -13,4 +13,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  */
 class ColumnTest extends AbstractContainerTest {
 
+	/**
+	 * @var array
+	 */
+	protected $chainProperties = array(
+		'name' => 'test',
+		'columnPosition' => 1
+	);
+
 }

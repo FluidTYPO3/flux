@@ -15,6 +15,13 @@ use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
  */
 class FlashMessagePipeTest extends AbstractPipeTestCase {
 
+	protected $defaultData = array(
+		'severity' => 0,
+		'title' => 'test',
+		'message' => 'test2',
+		'storeInSession' => FALSE
+	);
+
 	/**
 	 * @return void
 	 */

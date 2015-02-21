@@ -19,6 +19,15 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 class ControllerPipeTest extends AbstractPipeTestCase {
 
 	/**
+	 * @var array
+	 */
+	protected $defaultData = array(
+		'action' => 'test',
+		'controller' => 'test2',
+		'extensionName' => 'test3'
+	);
+
+	/**
 	 * @test
 	 */
 	public function canConductData() {
@@ -26,7 +35,8 @@ class ControllerPipeTest extends AbstractPipeTestCase {
 		$instance->setExtensionName('Flux');
 		$instance->setController('Fake');
 		$instance->setAction('render');
-		$this->performControllerExcecution($instance, 'Tx_Flux_Controller_FakeController');
+		$result = $this->performControllerExcecution($instance, 'Tx_Flux_Controller_FakeController');
+		$this->assertNotEmpty($result);
 	}
 
 	/**
@@ -37,13 +47,14 @@ class ControllerPipeTest extends AbstractPipeTestCase {
 		$instance->setExtensionName('FluidTYPO3.Flux');
 		$instance->setController('Vendor');
 		$instance->setAction('render');
-		$this->performControllerExcecution($instance, 'Tx_Flux_Controller_VendorController');
+		$result = $this->performControllerExcecution($instance, 'Tx_Flux_Controller_VendorController');
+		$this->assertNotEmpty($result);
 	}
 
 	/**
 	 * @param ControllerPipe $instance
 	 * @param string $controllerClassName
-	 * @return void
+	 * @return mixed
 	 */
 	protected function performControllerExcecution(ControllerPipe $instance, $controllerClassName) {
 		$controllerMock = $this->getMockForAbstractClass('FluidTYPO3\Flux\Controller\AbstractFluxController', array(), $controllerClassName, TRUE, TRUE, TRUE,
@@ -80,9 +91,7 @@ class ControllerPipeTest extends AbstractPipeTestCase {
 		$objectManagerMock->expects($this->at(1))->method('get')->with('TYPO3\CMS\Extbase\Mvc\Web\Response')->will($this->returnValue($response));
 		$objectManagerMock->expects($this->at(2))->method('get')->with('TYPO3\CMS\Extbase\Mvc\Dispatcher')->will($this->returnValue($dispatcherMock));
 		ObjectAccess::setProperty($instance, 'objectManager', $objectManagerMock, TRUE);
-		$output = $instance->conduct($this->defaultData);
-		$this->assertNotEmpty($output);
-
+		return $instance->conduct($this->defaultData);
 	}
 
 	/**
