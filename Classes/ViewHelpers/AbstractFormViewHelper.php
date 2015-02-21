@@ -29,33 +29,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 	const SCOPE_VARIABLE_CONTAINER = 'container';
 	const SCOPE_VARIABLE_GRIDS = 'grids';
 
-
-	/**
-	 * @var FluxService
-	 */
-	protected $configurationService;
-
-	/**
-	 * @var ObjectManagerInterface
-	 */
-	protected $objectManager;
-
-	/**
-	 * @param FluxService $configurationService
-	 * @return void
-	 */
-	public function injectConfigurationService(FluxService $configurationService) {
-		$this->configurationService = $configurationService;
-	}
-
-	/**
-	 * @param ObjectManagerInterface $objectManager
-	 * @return void
-	 */
-	public function injectObjectManager(ObjectManagerInterface $objectManager) {
-		$this->objectManager = $objectManager;
-	}
-
 	/**
 	 * @return void
 	 */
@@ -104,7 +77,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 		} elseif (TRUE === $this->templateVariableContainer->exists(self::SCOPE_VARIABLE_FORM)) {
 			$form = $this->templateVariableContainer->get(self::SCOPE_VARIABLE_FORM);
 		} else {
-			$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+			$form = Form::create();
 			$this->viewHelperVariableContainer->add(self::SCOPE, self::SCOPE_VARIABLE_FORM, $form);
 		}
 		return $form;

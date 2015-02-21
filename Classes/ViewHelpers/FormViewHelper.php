@@ -47,8 +47,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 	 * @return void
 	 */
 	public function render() {
-		/** @var Form $form */
-		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+		$form = Form::create();
 		$container = $form->last();
 		// configure Form instance
 		$form->setId($this->arguments['id']);

@@ -41,8 +41,8 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper {
 	 * @return WizardInterface
 	 */
 	protected function getPreparedComponent($type) {
-		/** @var WizardInterface $component */
-		$component = $this->objectManager->get('FluidTYPO3\Flux\Form\Wizard\\' . $type);
+		$name = (TRUE === isset($this->arguments['name']) ? $this->arguments['name'] : 'wizard');
+		$component = $this->getContainer()->createWizard($type, $name);
 		$component->setExtensionName($this->getExtensionName());
 		$component->setHideParent($this->arguments['hideParent']);
 		$component->setLabel($this->arguments['label']);
