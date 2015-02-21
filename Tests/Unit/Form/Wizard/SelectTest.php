@@ -20,7 +20,6 @@ class SelectTest extends AbstractWizardTest {
 	 */
 	protected $chainProperties = array(
 		'name' => 'test',
-		'label' => 'Test field',
 		'hideParent' => FALSE,
 		'mode' => 'append',
 		'items' => array('dummy' => 'Value', 'dummy2' => 'Value 2')

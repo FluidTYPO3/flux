@@ -41,11 +41,6 @@ abstract class AbstractFormComponent implements FormInterface {
 	protected $configurationService;
 
 	/**
-	 * @var ConfigurationManagerInterface
-	 */
-	protected $configurationManager;
-
-	/**
 	 * @var string
 	 */
 	protected $name;
@@ -110,14 +105,6 @@ abstract class AbstractFormComponent implements FormInterface {
 	 */
 	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
-	}
-
-	/**
-	 * @param ConfigurationManagerInterface $configurationManager
-	 * @return void
-	 */
-	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
-		$this->configurationManager = $configurationManager;
 	}
 
 	/**

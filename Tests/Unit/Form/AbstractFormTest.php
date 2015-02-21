@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -30,6 +31,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	protected function createInstance() {
 		$className = $this->getObjectClassName();
 		$instance = $this->objectManager->get($className);
+		$instance->injectConfigurationService($this->getConfigurationServiceMock());
 		return $instance;
 	}
 
@@ -137,7 +139,6 @@ abstract class AbstractFormTest extends AbstractTestCase {
 				$instance = $chained;
 			}
 		}
-		$this->performTestBuild($instance);
 		return $instance;
 	}
 
@@ -151,7 +152,6 @@ abstract class AbstractFormTest extends AbstractTestCase {
 			$instance->add($field);
 			$fields = $instance->getFields();
 			$this->assertNotEmpty($fields, 'The class ' . $this->getObjectClassName() . ' does not appear to support the required FieldContainerInterface implementation');
-			$this->performTestBuild($instance);
 		}
 	}
 
@@ -159,17 +159,12 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function returnsNameInsteadOfEmptyLabelWhenFormsExtensionKeyAndLabelAreBothEmpty() {
+		$name = TRUE === isset($this->chainProperties['name']) ? $this->chainProperties['name'] : 'test';
 		$instance = $this->createInstance();
-		if (FALSE === $instance instanceof Form && TRUE === $instance instanceof FieldInterface) {
-			/** @var Form $form */
-			$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
-			$form->setExtensionName(NULL);
-			$form->add($instance);
-		}
-		$instance->setName('test');
+		$instance->setExtensionName(NULL);
+		$instance->setName($name);
 		$instance->setLabel(NULL);
-		$this->performTestBuild($instance);
-
+		$this->assertEquals($name, $instance->getLabel());
 	}
 
 	/**
@@ -180,14 +175,13 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		foreach ($this->chainProperties as $propertyName => $propertValue) {
 			ObjectAccess::getProperty($instance, $propertyName);
 		}
-		$this->performTestBuild($instance);
 	}
 
 	/**
-	 * @param \FluidTYPO3\Flux\Form\FieldInterface
+	 * @param Form\FormInterface $instance
 	 * @return array
 	 */
-	protected function performTestBuild($instance) {
+	protected function performTestBuild(FormInterface $instance) {
 		$configuration = $instance->build();
 		$this->assertIsArray($configuration);
 		return $configuration;
@@ -250,6 +244,15 @@ abstract class AbstractFormTest extends AbstractTestCase {
 			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', NULL, 'Content Container'),
 			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', 'flux', 'Content Container'),
 		);
+	}
+
+	/**
+	 * @return \PHPUnit_Framework_MockObject_MockObject|FluxService
+	 */
+	protected function getConfigurationServiceMock() {
+		$mockConfigurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getAllTypoScript'));
+		$mockConfigurationService->expects($this->any())->method('getAllTypoScript')->willReturn(array('foo' => 'bar'));
+		return $mockConfigurationService;
 	}
 
 }

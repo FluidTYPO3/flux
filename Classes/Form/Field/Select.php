@@ -125,11 +125,11 @@ class Select extends AbstractMultiValueFormField {
 	 * @return string
 	 */
 	protected function getLabelPropertyName($table, $type) {
-		$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		if (TRUE === isset($typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'])) {
-			$mapping = $typoScript['config.']['tx_extbase.']['persistence.']['classes.'][$type . '.'];
-			if (TRUE === isset($mapping['mapping.']['tableName'])) {
-				$table = $mapping['mapping.']['tableName'];
+		$typoScript = $this->configurationService->getAllTypoScript();
+		if (TRUE === isset($typoScript['config']['tx_extbase']['persistence']['classes'][$type])) {
+			$mapping = $typoScript['config']['tx_extbase']['persistence']['classes'][$type];
+			if (TRUE === isset($mapping['mapping']['tableName'])) {
+				$table = $mapping['mapping']['tableName'];
 			}
 		}
 		$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];

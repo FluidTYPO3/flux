@@ -92,7 +92,6 @@ class GridTest extends AbstractContainerTest {
 	public function canUseGetRowsMethod() {
 		/** @var Grid $instance */
 		$instance = $this->createInstance();
-		$this->performTestBuild($instance);
 		$this->assertEmpty($instance->getRows());
 	}
 

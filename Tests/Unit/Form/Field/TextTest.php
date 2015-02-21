@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  */
 
 use FluidTYPO3\Flux\Form\FormInterface;
+use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 
 /**
@@ -42,7 +43,6 @@ class TextTest extends InputTest {
 		$chained = $instance->setEnableRichText(TRUE);
 		$this->assertSame($instance, $chained);
 		$this->assertTrue($instance->getEnableRichText());
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -54,7 +54,6 @@ class TextTest extends InputTest {
 		$chained = $instance->setDefaultExtras('void');
 		$this->assertSame($instance, $chained);
 		$this->assertSame('void', $instance->getDefaultExtras());
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -65,20 +64,6 @@ class TextTest extends InputTest {
 		$instance = $this->createInstance();
 		$instance->setDefaultExtras(NULL)->setEnableRichText(TRUE);
 		$this->performTestBuild($instance);
-	}
-
-	/**
-	 * @return FormInterface
-	 */
-	protected function createInstance() {
-		$instance = parent::createInstance();
-		$mockConfigurationManager = $this->getMock(
-			'TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager',
-			array('getConfiguration')
-		);
-		$mockConfigurationManager->expects($this->any())->method('getConfiguration')->willReturn(array('foo' => 'bar'));
-		$instance->injectConfigurationManager($mockConfigurationManager);
-		return $instance;
 	}
 
 }

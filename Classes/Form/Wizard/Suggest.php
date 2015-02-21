@@ -120,8 +120,7 @@ class Suggest extends AbstractWizard {
 	 * @return string
 	 */
 	public function getName() {
-		$table = $this->getTable();
-		$name = $this->name . $table;
+		$name = $this->name;
 		return $name;
 	}
 

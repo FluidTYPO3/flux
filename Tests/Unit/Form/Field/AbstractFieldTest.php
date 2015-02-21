@@ -30,7 +30,6 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$instance = $this->canChainAllChainableSetters();
 		$this->assertFalse($instance->setInheritEmpty(FALSE)->getInheritEmpty());
 		$this->assertTrue($instance->setInheritEmpty(TRUE)->getInheritEmpty());
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -40,7 +39,6 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$instance = $this->canChainAllChainableSetters();
 		$this->assertFalse($instance->setInherit(FALSE)->getInherit());
 		$this->assertTrue($instance->setInherit(TRUE)->getInherit());
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -50,7 +48,6 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$instance = $this->canChainAllChainableSetters();
 		$this->assertFalse($instance->setClearable(FALSE)->getClearable());
 		$this->assertTrue($instance->setClearable(TRUE)->getClearable());
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -73,7 +70,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 		$form->add($instance);
 		$form->setExtensionName(NULL);
-		$this->performTestBuild($form);
+		$this->assertEmpty($form->getLabel());
 	}
 
 	/**
@@ -85,7 +82,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 		$form->add($instance);
 		$form->setExtensionName('void');
-		$this->performTestBuild($form);
+		$this->assertEmpty($form->getLabel());
 	}
 
 	/**

@@ -51,6 +51,11 @@ class FluxService implements SingletonInterface {
 	/**
 	 * @var array
 	 */
+	protected static $typoScript = array();
+
+	/**
+	 * @var array
+	 */
 	protected static $friendlySeverities = array(
 		GeneralUtility::SYSLOG_SEVERITY_INFO,
 		GeneralUtility::SYSLOG_SEVERITY_NOTICE,
@@ -309,6 +314,17 @@ class FluxService implements SingletonInterface {
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey, 'module');
 		return $configuration;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAllTypoScript() {
+		if (0 === count(self::$typoScript)) {
+			self::$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			self::$typoScript = GeneralUtility::removeDotsFromTS(self::$typoScript);
+		}
+		return self::$typoScript;
 	}
 
 	/**

@@ -26,7 +26,6 @@ class SuggestTest extends AbstractWizardTest {
 		$storagePageUidsArray = GeneralUtility::trimExplode(',', $storagePageUidsCommaSeparated);
 		$wizard->setStoragePageUids($storagePageUidsCommaSeparated);
 		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
-		$this->performTestBuild($wizard);
 	}
 
 	/**
@@ -39,7 +38,6 @@ class SuggestTest extends AbstractWizardTest {
 		$storagePageUidsArray = GeneralUtility::trimExplode(',', $storagePageUidsCommaSeparated);
 		$wizard->setStoragePageUids($storagePageUidsArray);
 		$this->assertSame($storagePageUidsArray, $wizard->getStoragePageUids());
-		$this->performTestBuild($wizard);
 	}
 
 }

@@ -19,7 +19,6 @@ class RowTest extends AbstractContainerTest {
 	public function canUseGetColumnsMethod() {
 		/** @var Row $instance */
 		$instance = $this->createInstance();
-		$this->performTestBuild($instance);
 		$this->assertEmpty($instance->getColumns());
 	}
 
