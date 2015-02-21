@@ -90,24 +90,22 @@ class ContentIconHookSubscriber {
 		if (NULL === $record && 0 < $uid) {
 			$record = BackendUtility::getRecord($table, $uid);
 		}
-		 // filter 1: record must be associated, hook must be called from valid class
-		if (NULL !== $record || NULL !== $caller) {
+		$cacheIdentity = $table . $uid . sha1(serialize($record));
+		// filter 1: icon must not already be cached and both record and caller must be provided.
+		if (TRUE === $this->cache->has($cacheIdentity)) {
+			return $this->cache->get($cacheIdentity);
+		} elseif (NULL !== $record || NULL !== $caller) {
 			$field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
-			 // filter 2: table must have one field defined as "flex" and record must include it.
+			// filter 2: table must have one field defined as "flex" and record must include it.
 			if (NULL !== $field && TRUE === isset($record[$field])) {
-				$cacheIdentity = $table . $uid . $field . sha1(serialize($record));
 				// we check the cache here because at this point, the cache key is decidedly
 				// unique and we have not yet consulted the (potentially costly) Provider.
-				if (TRUE === $this->cache->has($cacheIdentity)) {
-					$icon = $this->cache->get($cacheIdentity);
-				} else {
-					$provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
-					// filter 3: a Provider must be resolved for the record.
-					if (NULL !== $provider) {
-						$form = $provider->getForm((array) $record);
-						if (NULL !== $form) {
-							$icon = MiscellaneousUtility::getIconForTemplate($form);
-						}
+				$provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
+				// filter 3: a Provider must be resolved for the record.
+				if (NULL !== $provider) {
+					$form = $provider->getForm((array) $record);
+					if (NULL !== $form) {
+						$icon = MiscellaneousUtility::getIconForTemplate($form);
 						if (FALSE === empty($icon)) {
 							$iconFileReference = '../../../' . $icon;
 							$label = trim($form->getLabel());
@@ -117,10 +115,10 @@ class ContentIconHookSubscriber {
 								style="float: left; vertical-align: bottom; margin-top: 2px;">' . $icon . '</span>';
 						}
 					}
-					$this->cache->set($cacheIdentity, $icon);
 				}
 			}
 		}
+		$this->cache->set($cacheIdentity, $icon);
 		return $icon;
 	}
 
