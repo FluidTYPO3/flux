@@ -108,11 +108,11 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 */
 	public function initializeObject() {
 		/** @var Form\Container\Sheet $defaultSheet */
-		$defaultSheet = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Sheet');
+		$defaultSheet = $this->getObjectManager()->get('FluidTYPO3\Flux\Form\Container\Sheet');
 		$defaultSheet->setName('options');
 		$defaultSheet->setLabel('LLL:EXT:flux/' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
 		$this->add($defaultSheet);
-		$this->outlet = $this->objectManager->get('FluidTYPO3\Flux\Outlet\StandardOutlet');
+		$this->outlet = $this->getObjectManager()->get('FluidTYPO3\Flux\Outlet\StandardOutlet');
 	}
 
 	/**
@@ -296,7 +296,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$allowed = 'a-z0-9_';
 		$pattern = '/[^' . $allowed . ']+/i';
 		if (preg_match($pattern, $id)) {
-			$this->configurationService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
+			$this->getConfigurationService()->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
 				are: "' . $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent
 				you from utilising some features, fx automatic LLL reference building, but is not fatal', GeneralUtility::SYSLOG_SEVERITY_NOTICE);
 		}

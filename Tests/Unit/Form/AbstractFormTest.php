@@ -31,7 +31,6 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	protected function createInstance() {
 		$className = $this->getObjectClassName();
 		$instance = $this->objectManager->get($className);
-		$instance->injectConfigurationService($this->getConfigurationServiceMock());
 		return $instance;
 	}
 
@@ -244,15 +243,6 @@ abstract class AbstractFormTest extends AbstractTestCase {
 			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', NULL, 'Content Container'),
 			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', 'flux', 'Content Container'),
 		);
-	}
-
-	/**
-	 * @return \PHPUnit_Framework_MockObject_MockObject|FluxService
-	 */
-	protected function getConfigurationServiceMock() {
-		$mockConfigurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getAllTypoScript'));
-		$mockConfigurationService->expects($this->any())->method('getAllTypoScript')->willReturn(array('foo' => 'bar'));
-		return $mockConfigurationService;
 	}
 
 }

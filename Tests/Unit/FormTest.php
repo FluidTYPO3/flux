@@ -356,8 +356,8 @@ class FormTest extends AbstractTestCase {
 	public function dispatchesDebugMessageOnProblematicId() {
 		$service = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('message'));
 		$service->expects($this->once())->method('message');
-		$instance = $this->objectManager->get('FluidTYPO3\Flux\Form');
-		ObjectAccess::setProperty($instance, 'configurationService', $service, TRUE);
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Form', array('getConfigurationService'));
+		$instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
 		$instance->setId('I-am-not-valid');
 	}
 

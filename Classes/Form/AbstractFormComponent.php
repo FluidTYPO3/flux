@@ -31,16 +31,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 abstract class AbstractFormComponent implements FormInterface {
 
 	/**
-	 * @var ObjectManagerInterface
-	 */
-	protected $objectManager;
-
-	/**
-	 * @var FluxService
-	 */
-	protected $configurationService;
-
-	/**
 	 * @var string
 	 */
 	protected $name;
@@ -92,22 +82,6 @@ abstract class AbstractFormComponent implements FormInterface {
 	protected $inheritEmpty = FALSE;
 
 	/**
-	 * @param ObjectManagerInterface $objectManager
-	 * @return void
-	 */
-	public function injectObjectManager(ObjectManagerInterface $objectManager) {
-		$this->objectManager = $objectManager;
-	}
-
-	/**
-	 * @param FluxService $configurationService
-	 * @return void
-	 */
-	public function injectConfigurationService(FluxService $configurationService) {
-		$this->configurationService = $configurationService;
-	}
-
-	/**
 	 * @param array $settings
 	 * @return FormInterface
 	 */
@@ -156,7 +130,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	public function createField($type, $name, $label = NULL) {
 		/** @var FieldInterface $component */
 		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Field');
-		$component = $this->objectManager->get($className);
+		$component = $this->getObjectManager()->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -173,7 +147,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	public function createContainer($type, $name, $label = NULL) {
 		/** @var ContainerInterface $component */
 		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Container');
-		$component = $this->objectManager->get($className);
+		$component = $this->getObjectManager()->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -190,7 +164,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	public function createWizard($type, $name, $label = NULL) {
 		/** @var WizardInterface $component */
 		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Wizard');
-		$component = $this->objectManager->get($className);
+		$component = $this->getObjectManager()->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -462,6 +436,20 @@ abstract class AbstractFormComponent implements FormInterface {
 	 */
 	public function getInheritEmpty() {
 		return (boolean) $this->inheritEmpty;
+	}
+
+	/**
+	 * @return ObjectManagerInterface
+	 */
+	protected function getObjectManager() {
+		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+	}
+
+	/**
+	 * @return FluxService
+	 */
+	protected function getConfigurationService() {
+		return $this->getObjectManager()->get('FluidTYPO3\\Flux\\Service\\FluxService');
 	}
 
 }

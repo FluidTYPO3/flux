@@ -93,12 +93,12 @@ class SelectTest extends AbstractFieldTest {
 	public function getLabelPropertyNameTranslatesTableNameFromObjectTypeRespectingTableMapping() {
 		$table = 'foo';
 		$type = 'bar';
-		$instance = $this->objectManager->get($this->createInstanceClassName());
 		$fixture = array('config' => array('tx_extbase' => array('persistence' => array('classes' =>
 			array($type => array('mapping' => array('tableName' => $table . 'suffix')))))));
 		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getAllTypoScript'));
 		$service->expects($this->once())->method('getAllTypoScript')->willReturn($fixture);
-		$instance->injectConfigurationService($service);
+		$instance = $this->getMock($this->createInstanceClassName(), array('getConfigurationService'));
+		$instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
 		$GLOBALS['TCA'][$table . 'suffix']['ctrl']['label'] = $table . 'label';
 		$propertyName = $this->callInaccessibleMethod($instance, 'getLabelPropertyName', $table, $type);
 		$this->assertEquals($table . 'label', $propertyName);
