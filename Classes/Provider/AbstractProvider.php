@@ -322,8 +322,9 @@ class AbstractProvider implements ProviderInterface {
 				// Early return: no template file, no source - NULL expected.
 				return NULL;
 			}
+			$class = get_class($this);
+			$controllerName = substr(substr($class, strrpos($class, '\\')), -8);
 			$section = $this->getConfigurationSectionName($row);
-			$controllerName = 'Flux';
 			$formName = 'form';
 			$paths = $this->getTemplatePaths($row);
 			$extensionKey = $this->getExtensionKey($row);
@@ -353,6 +354,8 @@ class AbstractProvider implements ProviderInterface {
 		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
+		$class = get_class($this);
+		$controllerName = substr(substr($class, strrpos($class, '\\') + 1), 0, -8);
 		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 		$section = $this->getConfigurationSectionName($row);
 		$gridName = 'grid';
@@ -360,7 +363,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionKey = $this->getExtensionKey($row);
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$variables = $this->getViewVariables($row);
-		$viewContext = new ViewContext($templatePathAndFilename, $extensionName);
+		$viewContext = new ViewContext($templatePathAndFilename, $extensionName, $controllerName);
 		$viewContext->setTemplatePaths(new TemplatePaths($paths));
 		$viewContext->setSectionName($section);
 		$viewContext->setVariables($variables);
