@@ -186,4 +186,23 @@ interface FormInterface {
 	 */
 	public function getInheritEmpty();
 
+	/**
+	 * Modifies the current Form Component by changing any properties
+	 * that were passed in $structure. If a component supports special
+	 * indices in $structure (for example a "fields" property) then
+	 * that component may specify its own `modify()` method and manually
+	 * process each of the specially supported keywords.
+	 *
+	 * For example, the AbstractFormContainer supports passing "fields"
+	 * and each field is then attempted fetched from children. If not
+	 * found, it is created (and the structure passed to the `create()`
+	 * function which uses the same structure syntax). If it already
+	 * exists, the `modify()` method is called on that object to trigger
+	 * the recursive modification of all child components.
+	 *
+	 * @param array $structure
+	 * @return FormInterface
+	 */
+	public function modify(array $structure);
+
 }

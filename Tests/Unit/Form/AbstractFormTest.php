@@ -23,7 +23,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array('name' => 'test', 'label' => 'Test field');
+	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => TRUE);
 
 	/**
 	 * @return FormInterface
@@ -233,6 +233,17 @@ abstract class AbstractFormTest extends AbstractTestCase {
 			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', NULL, 'Content Container'),
 			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', 'flux', 'Content Container'),
 		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canModifyProperties() {
+		$mock = $this->getMock($this->createInstanceClassName(), array('dummy'));
+		$properties = array('enabled' => FALSE);
+		$mock->modify($properties);
+		$result = $mock->getEnabled();
+		$this->assertFalse($result);
 	}
 
 }
