@@ -56,6 +56,15 @@ class ExtensionNamingUtility {
 
 	/**
 	 * @param string $qualifiedExtensionName
+	 * @return string
+	 */
+	public static function getExtensionSignature($qualifiedExtensionName) {
+		$extensionKey = self::getExtensionKey($qualifiedExtensionName);
+		return str_replace('_', '', $extensionKey);
+	}
+
+	/**
+	 * @param string $qualifiedExtensionName
 	 * @return array
 	 */
 	public static function getVendorNameAndExtensionKey($qualifiedExtensionName) {
