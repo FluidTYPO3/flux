@@ -135,24 +135,9 @@ class AbstractProvider implements ProviderInterface {
 	protected $grid = NULL;
 
 	/**
-	 * @var ObjectManagerInterface
-	 */
-	protected $objectManager;
-
-	/**
-	 * @var ConfigurationManagerInterface
-	 */
-	protected $configurationManager;
-
-	/**
 	 * @var FluxService
 	 */
 	protected $configurationService;
-
-	/**
-	 * @var ContentService
-	 */
-	protected $contentService;
 
 	/**
 	 * @var WorkspacesAwareRecordService
@@ -160,35 +145,11 @@ class AbstractProvider implements ProviderInterface {
 	protected $recordService;
 
 	/**
-	 * @param ObjectManagerInterface $objectManager
-	 * @return void
-	 */
-	public function injectObjectManager(ObjectManagerInterface $objectManager) {
-		$this->objectManager = $objectManager;
-	}
-
-	/**
-	 * @param ConfigurationManagerInterface $configurationManager
-	 * @return void
-	 */
-	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
-		$this->configurationManager = $configurationManager;
-	}
-
-	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
-	}
-
-	/**
-	 * @param ContentService $contentService
-	 * @return void
-	 */
-	public function injectContentService(ContentService $contentService) {
-		$this->contentService = $contentService;
 	}
 
 	/**
@@ -280,14 +241,10 @@ class AbstractProvider implements ProviderInterface {
 	protected function getViewVariables(array $row) {
 		$extensionKey = $this->getExtensionKey($row);
 		$fieldName = $this->getFieldName($row);
-		$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		$signature = str_replace('_', '', $extensionKey);
 		$variables = array(
 			'record' => $row,
+			'settings' => $this->configurationService->getSettingsForExtensionName($extensionKey)
 		);
-		if (TRUE === isset($typoScript['plugin.']['tx_' . $signature . '.']['settings.'])) {
-			$variables['settings'] = GeneralUtility::removeDotsFromTS($typoScript['plugin.']['tx_' . $signature . '.']['settings.']);
-		}
 
 		// Special case: when saving a new record variable $row[$fieldName] is already an array
 		// and must not be processed by the configuration service.
@@ -310,36 +267,32 @@ class AbstractProvider implements ProviderInterface {
 			return $this->form;
 		}
 		$cacheKey = $this->getCacheKeyForStoredVariable($row, 'form');
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
-		$formClassName = $this->resolveFormClassName($row);
-		if (NULL !== $formClassName) {
-			$form = call_user_func_array(array($formClassName, 'create'), array($row));
-		} else {
-			$templateSource = $this->getTemplateSource($row);
-			if (NULL === $templateSource) {
-				// Early return: no template file, no source - NULL expected.
-				return NULL;
+		if (FALSE === isset(self::$cache[$cacheKey])) {
+			$formClassName = $this->resolveFormClassName($row);
+			if (NULL !== $formClassName) {
+				$form = call_user_func_array(array($formClassName, 'create'), array($row));
+			} else {
+				$templateSource = $this->getTemplateSource($row);
+				if (NULL !== $templateSource) {
+					$class = get_class($this);
+					$controllerName = substr(substr($class, strrpos($class, '\\')), -8);
+					$section = $this->getConfigurationSectionName($row);
+					$formName = 'form';
+					$paths = $this->getTemplatePaths($row);
+					$extensionKey = $this->getExtensionKey($row);
+					$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
+
+					$templatePaths = new TemplatePaths($paths);
+					$viewContext = new ViewContext(NULL, $extensionName, $controllerName);
+					$viewContext->setTemplatePaths($templatePaths);
+					$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
+					$view->setTemplateSource($templateSource);
+					$form = $view->getForm($section, $formName);
+				}
 			}
-			$class = get_class($this);
-			$controllerName = substr(substr($class, strrpos($class, '\\')), -8);
-			$section = $this->getConfigurationSectionName($row);
-			$formName = 'form';
-			$paths = $this->getTemplatePaths($row);
-			$extensionKey = $this->getExtensionKey($row);
-			$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
-
-			$templatePaths = new TemplatePaths($paths);
-			$viewContext = new ViewContext(NULL, $extensionName, $controllerName);
-			$viewContext->setTemplatePaths($templatePaths);
-			$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
-			$view->setTemplateSource($templateSource);
-			$form = $view->getForm($section, $formName);
+			self::$cache[$cacheKey] = $form;
 		}
-
-		self::$cache[$cacheKey] = $form;
-		return $form;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -351,25 +304,24 @@ class AbstractProvider implements ProviderInterface {
 			return $this->grid;
 		}
 		$cacheKey = $this->getCacheKeyForStoredVariable($row, 'grid');
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
+		if (FALSE === isset(self::$cache[$cacheKey])) {
+			$class = get_class($this);
+			$controllerName = substr(substr($class, strrpos($class, '\\') + 1), 0, -8);
+			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+			$section = $this->getConfigurationSectionName($row);
+			$gridName = 'grid';
+			$paths = $this->getTemplatePaths($row);
+			$extensionKey = $this->getExtensionKey($row);
+			$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
+			$variables = $this->getViewVariables($row);
+			$viewContext = new ViewContext($templatePathAndFilename, $extensionName, $controllerName);
+			$viewContext->setTemplatePaths(new TemplatePaths($paths));
+			$viewContext->setSectionName($section);
+			$viewContext->setVariables($variables);
+			$grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
+			self::$cache[$cacheKey] = $grid;
 		}
-		$class = get_class($this);
-		$controllerName = substr(substr($class, strrpos($class, '\\') + 1), 0, -8);
-		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		$section = $this->getConfigurationSectionName($row);
-		$gridName = 'grid';
-		$paths = $this->getTemplatePaths($row);
-		$extensionKey = $this->getExtensionKey($row);
-		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
-		$variables = $this->getViewVariables($row);
-		$viewContext = new ViewContext($templatePathAndFilename, $extensionName, $controllerName);
-		$viewContext->setTemplatePaths(new TemplatePaths($paths));
-		$viewContext->setSectionName($section);
-		$viewContext->setVariables($variables);
-		$grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
-		self::$cache[$cacheKey] = $grid;
-		return $grid;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -573,10 +525,13 @@ class AbstractProvider implements ProviderInterface {
 		if ('update' === $operation) {
 			$record = $reference->datamap[$this->tableName][$id];
 			$fieldName = $this->getFieldName((array) $record);
-			if (NULL === $fieldName) {
-				return;
-			}
-			if (FALSE === isset($row[$fieldName]) || FALSE === isset($record[$fieldName]['data']) || FALSE === is_array($record[$fieldName]['data'])) {
+			$dontProcess = (
+				NULL === $fieldName
+				|| FALSE === isset($row[$fieldName])
+				|| FALSE === isset($record[$fieldName]['data'])
+				|| FALSE === is_array($record[$fieldName]['data'])
+			);
+			if (TRUE === $dontProcess) {
 				return;
 			}
 			$data = $record[$fieldName]['data'];
@@ -673,7 +628,7 @@ class AbstractProvider implements ProviderInterface {
 	 * @return PreviewView
 	 */
 	protected function getPreviewView() {
-		return $this->objectManager->get('FluidTYPO3\\Flux\\View\\PreviewView');
+		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get('FluidTYPO3\\Flux\\View\\PreviewView');
 	}
 
 	/**
@@ -742,10 +697,7 @@ class AbstractProvider implements ProviderInterface {
 		$extensionKey = $this->getControllerExtensionKeyFromRecord($row);
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$vendor = ExtensionNamingUtility::getVendorName($extensionKey);
-		if (NULL !== $vendor) {
-			return $vendor . '.' . $extensionName;
-		}
-		return $extensionName;
+		return NULL !== $vendor ? $vendor . '.' . $extensionName : $extensionName;
 	}
 
 	/**

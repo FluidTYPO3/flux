@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Service\ContentService;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -43,6 +44,19 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @var string
 	 */
 	protected $fieldName = 'pi_flexform';
+
+	/**
+	 * @var ContentService
+	 */
+	protected $contentService;
+
+	/**
+	 * @param ContentService $contentService
+	 * @return void
+	 */
+	public function injectContentService(ContentService $contentService) {
+		$this->contentService = $contentService;
+	}
 
 	/**
 	 * Note: This Provider will -always- trigger on tt_content list_type records (plugin)
