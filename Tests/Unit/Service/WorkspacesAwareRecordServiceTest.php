@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+
 /**
  * @package Flux
  */
@@ -24,6 +26,15 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest {
 		$expected = array(array('foo'), array('foo'));
 		$result = $this->callInaccessibleMethod($mock, 'overlayRecords', 'table', $records);
 		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getWorkspaceVersionOfRecordOrRecordItselfReturnsSelf() {
+		$instance = new WorkspacesAwareRecordService();
+		$result = $this->callInaccessibleMethod($instance, 'getWorkspaceVersionOfRecordOrRecordItself', 'void', array('uid' => 1));
+		$this->assertEquals(array('uid' => 1), $result);
 	}
 
 }

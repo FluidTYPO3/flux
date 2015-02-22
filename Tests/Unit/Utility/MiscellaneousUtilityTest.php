@@ -68,38 +68,44 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function canCreateIconWithUrl() {
+		$GLOBALS['BE_USER'] = $this->getMock('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication');
 		$clipBoardData = $this->getClipBoardDataFixture();
 		ClipBoardUtility::setClipBoardData($clipBoardData);
 		$iconWithUrl = ClipBoardUtility::createIconWithUrl('1-2-3');
 		$this->assertNotEmpty($iconWithUrl);
 		ClipBoardUtility::clearClipBoardData();
+		unset($GLOBALS['BE_USER']);
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function canCreateIconWithUrlAsReference() {
+		$GLOBALS['BE_USER'] = $this->getMock('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication');
 		$clipBoardData = $this->getClipBoardDataFixture();
 		$clipBoardData['normal']['mode'] = 'reference';
 		ClipBoardUtility::setClipBoardData($clipBoardData);
 		$iconWithUrl = ClipBoardUtility::createIconWithUrl('1-2-3', TRUE);
 		$this->assertNotEmpty($iconWithUrl);
 		ClipBoardUtility::clearClipBoardData();
+		unset($GLOBALS['BE_USER']);
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function canCreateIconWithUrlAsReferenceReturnsEmptyStringIfModeIsCut() {
+		$GLOBALS['BE_USER'] = $this->getMock('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication');
 		$clipBoardData = $this->getClipBoardDataFixture();
 		ClipBoardUtility::setClipBoardData($clipBoardData);
 		$iconWithUrl = ClipBoardUtility::createIconWithUrl('1-2-3', TRUE);
 		$this->assertIsString($iconWithUrl);
 		$this->assertEmpty($iconWithUrl);
 		ClipBoardUtility::clearClipBoardData();
+		unset($GLOBALS['BE_USER']);
 	}
 
 	/**

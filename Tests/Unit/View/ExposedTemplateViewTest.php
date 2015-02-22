@@ -46,42 +46,6 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @disabledtest
-	 */
-	public function canRenderPreviewSectionWithGrid() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
-		$service = $this->createFluxServiceInstance();
-		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
-		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
-		$viewContext->setVariables(array('record' => $record));
-		$viewContext->setSectionName('Configuration');
-		$variables = array(
-			'row' => $record,
-			'grid' => $service->getGridFromTemplateFile($viewContext, 'grid')
-		);
-		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$preview = $view->renderStandaloneSection('Preview', $variables);
-		$preview = trim($preview);
-		$this->assertNotEmpty($preview);
-		$this->assertStringStartsWith('<', $preview);
-		$this->assertStringEndsWith('>', $preview);
-		$this->assertContains('flux-grid', $preview); // the class targeted in CSS selectors must be applied at least once
-		$this->assertContains('content-grid', $preview); // the ID of the Grid must exist
-		$this->assertNotContains('Duplicate variable declarations!', $preview); // the ever-so-dreaded error when variables collide
-		$this->assertGreaterThanOrEqual(1000, strlen($preview)); // If Grid template contains (moderately) few characters, assume error
-	}
-
-	/**
-	 * @disabledtest
-	 */
-	public function canRenderPreviewSectionWithCollapsedGrid() {
-		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$_COOKIE['fluxCollapseStates'] = urlencode(json_encode(array($record['uid'])));
-		$this->canRenderPreviewSectionWithGrid();
-	}
-
-	/**
 	 * @test
 	 */
 	public function canRenderCustomSection() {
@@ -93,7 +57,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function canRenderRaw() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_CUSTOM_SECTION);
@@ -106,7 +70,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function canRenderWithDisabledCompiler() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_CUSTOM_SECTION);
@@ -132,7 +96,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function renderingTemplateTwiceTriggersTemplateCompilerSaving() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
@@ -155,6 +119,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	 * @disabledtest
 	 */
 	public function throwsParserExceptionIfTemplateSourceContainsErrors() {
+		// @TODO: use vfs
 		$validTemplatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$validTemplateSource = file_get_contents($validTemplatePathAndFilename);
 		$invalidTemplateSource = $validTemplateSource . LF . LF . '</f:section>' . LF;
@@ -166,7 +131,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function canGetStoredVariableWithoutConfigurationSectionName() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
@@ -175,39 +140,19 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @disabledtest
-	 */
-	public function canGetStoredVariableImmediatelyAfterRemovingCachedFiles() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
-		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper', 'storage');
-	}
-
-
-	/**
-	 * @disabledtest
-	 */
-	public function canGetStoredVariableImmediatelyAfterRemovingCachedFilesWhenCompilerIsDisabled() {
-		$backup = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['disableCompiler'];
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['disableCompiler'] = 1;
-		$this->canGetStoredVariableImmediatelyAfterRemovingCachedFiles();
-		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['disableCompiler'] = $backup;
-	}
-
-	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function canGetTemplateByActionName() {
 		$templatePaths = $this->getFixtureTemplatePaths();
 		$service = $this->createFluxServiceInstance();
-		$viewContext = new ViewContext(NULL, 'Flux', 'API');
-		$viewContext->setTemplatePaths($templatePaths);
+		$viewContext = new ViewContext(NULL, 'Flux', 'Content');
+		$viewContext->setTemplatePaths(new TemplatePaths($templatePaths));
 		$view = $service->getPreparedExposedTemplateView($viewContext);
 		$controllerContext = ObjectAccess::getProperty($view, 'controllerContext', TRUE);
-		$controllerContext->getRequest()->setControllerActionName('index');
-		$controllerContext->getRequest()->setControllerName('Grid');
+		$controllerContext->getRequest()->setControllerActionName('dummy');
+		$controllerContext->getRequest()->setControllerName('Content');
 		$view->setControllerContext($controllerContext);
-		$output = $view->getTemplatePathAndFilename('index');
+		$output = $view->getTemplatePathAndFilename('dummy');
 		$this->assertNotEmpty($output);
 		$this->assertFileExists($output);
 	}
