@@ -23,7 +23,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class FluxServiceTest extends AbstractTestCase {
 
 	/**
-	 * Teardown
+	 * Setup
 	 */
 	public function setup() {
 		$providers = Core::getRegisteredFlexFormProviders();
@@ -69,8 +69,8 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function dispatchesMessageOnInvalidPathsReturned() {
 		$className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-		$instance = $this->getMock($className, array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptSubConfiguration'));
-		$instance->expects($this->once())->method('getTypoScriptSubConfiguration')->will($this->returnValue(NULL));
+		$instance = $this->getMock($className, array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptByPath'));
+		$instance->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue(NULL));
 		$instance->expects($this->once())->method('getDefaultViewConfigurationForExtensionKey')->will($this->returnValue(NULL));
 		$instance->getViewConfigurationForExtensionName('Flux');
 	}
@@ -140,15 +140,6 @@ class FluxServiceTest extends AbstractTestCase {
 		$service->injectProviderResolver($this->objectManager->get('FluidTYPO3\\Flux\\Provider\\ProviderResolver'));
 		$result = $service->resolvePrimaryConfigurationProvider('tt_content', NULL);
 		$this->assertNull($result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canGetTypoScriptSubConfigurationWithNonexistingExtensionNameAndReturnEmptyArray() {
-		$service = $this->createFluxServiceInstance();
-		$config = $service->getTypoScriptSubConfiguration('settings', 'view', 'flux');
-		$this->assertNull($config);
 	}
 
 	/**
@@ -251,7 +242,7 @@ class FluxServiceTest extends AbstractTestCase {
 	public function canGetBackendViewConfigurationForExtensionName() {
 		$service = $this->createFluxServiceInstance();
 		$config = $service->getBackendViewConfigurationForExtensionName('noname');
-		$this->assertNull($config);
+		$this->assertEmpty($config);
 	}
 
 	/**
@@ -259,9 +250,9 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canGetViewConfigurationForExtensionNameWhichDoesNotExistAndConstructDefaults() {
 		$expected = array(
-			'templateRootPaths' => array('EXT:void/Resources/Private/Templates'),
-			'partialRootPaths' => array('EXT:void/Resources/Private/Partials'),
-			'layoutRootPaths' => array('EXT:void/Resources/Private/Layouts'),
+			'templateRootPaths' => array('EXT:void/Resources/Private/Templates/'),
+			'partialRootPaths' => array('EXT:void/Resources/Private/Partials/'),
+			'layoutRootPaths' => array('EXT:void/Resources/Private/Layouts/'),
 		);
 		$service = $this->createFluxServiceInstance();
 		$config = $service->getViewConfigurationForExtensionName('void');

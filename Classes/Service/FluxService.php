@@ -282,41 +282,71 @@ class FluxService implements SingletonInterface {
 	 * @return array
 	 */
 	protected function getDefaultViewConfigurationForExtensionKey($extensionKey) {
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		return array(
-			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Templates'),
-			TemplatePaths::CONFIG_PARTIALROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Partials'),
-			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Layouts'),
+			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Templates/'),
+			TemplatePaths::CONFIG_PARTIALROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Partials/'),
+			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Layouts/'),
 		);
 	}
 
 	/**
+	 * Returns the plugin.tx_extsignature.view array,
+	 * or a default set of paths if that array is not
+	 * defined in TypoScript.
+	 *
 	 * @param string $extensionName
 	 * @return array|NULL
 	 */
 	public function getViewConfigurationForExtensionName($extensionName) {
-		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-		$configuration = (array) $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey);
+		$signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
+		$configuration = (array) $this->getTypoScriptByPath('plugin.tx_' . $signature . '.view');
 		if (0 === count($configuration)) {
-			$configuration = $this->getDefaultViewConfigurationForExtensionKey($extensionKey);
-		}
-		if (FALSE === is_array($configuration)) {
-			$this->message('Template paths resolved for "' . $extensionName . '" was not an array.', GeneralUtility::SYSLOG_SEVERITY_WARNING);
-			$configuration = NULL;
+			$configuration = $this->getDefaultViewConfigurationForExtensionKey($extensionName);
 		}
 		return $configuration;
 	}
 
 	/**
+	 * Returns the module.tx_extsignature.view array.
+	 * Accepts any input extension name type.
+	 *
 	 * @param string $extensionName
 	 * @return array|NULL
 	 */
 	public function getBackendViewConfigurationForExtensionName($extensionName) {
-		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey, 'module');
-		return $configuration;
+		$signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
+		return $this->getTypoScriptByPath('module.tx_' . $signature . '.view');
 	}
 
 	/**
+	 * Returns the plugin.tx_extsignature.settings array.
+	 * Accepts any input extension name type.
+	 *
+	 * @param string $extensionName
+	 * @return array
+	 */
+	public function getSettingsForExtensionName($extensionName) {
+		$signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
+		return (array) $this->getTypoScriptByPath('plugin.tx_' . $signature . '.settings');
+	}
+
+	/**
+	 * Gets the value/array from global TypoScript by
+	 * dotted path expression.
+	 *
+	 * @param string $path
+	 * @return array
+	 */
+	public function getTypoScriptByPath($path) {
+		$typoScript = $this->getAllTypoScript();
+		return (array) ObjectAccess::getPropertyPath($typoScript, $path);
+	}
+
+	/**
+	 * Returns the complete, global TypoScript array
+	 * defined in TYPO3.
+	 *
 	 * @return array
 	 */
 	public function getAllTypoScript() {
@@ -325,40 +355,6 @@ class FluxService implements SingletonInterface {
 			self::$typoScript = GeneralUtility::removeDotsFromTS(self::$typoScript);
 		}
 		return self::$typoScript;
-	}
-
-	/**
-	 * Gets an array of TypoScript configuration from below plugin.tx_fed -
-	 * if $extensionName is set in parameters it is used to indicate which sub-
-	 * section of the result to return.
-	 *
-	 * @param string $extensionName
-	 * @param string $memberName
-	 * @param string $containerExtensionScope If TypoScript is not located under plugin.tx_fed, change the tx_<scope> part by specifying this argument
-	 * @param string $superScope Either "plugin" or "module", depending on the root scope
-	 * @return array
-	 */
-	public function getTypoScriptSubConfiguration($extensionName, $memberName, $containerExtensionScope = 'fed', $superScope = 'plugin') {
-		$containerExtensionScope = str_replace('_', '', $containerExtensionScope);
-		$cacheKey = $extensionName . $memberName . $containerExtensionScope;
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
-		$config = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		if (FALSE === isset($config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'])) {
-			return NULL;
-		}
-		$config = $config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
-		$config = GeneralUtility::removeDotsFromTS($config);
-		if ($extensionName) {
-			$config = $config[$extensionName];
-		}
-		if (FALSE === is_array($config)) {
-			$config = array();
-		}
-		$config = PathUtility::translatePath($config);
-		self::$cache[$cacheKey] = $config;
-		return $config;
 	}
 
 	/**

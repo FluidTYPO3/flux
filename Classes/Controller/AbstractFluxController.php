@@ -126,8 +126,7 @@ abstract class AbstractFluxController extends ActionController {
 			// an override shared by all Flux enabled controllers: setting plugin.tx_EXTKEY.settings.useTypoScript = 1
 			// will read the "settings" array from that location instead - thus excluding variables from the flexform
 			// which are still available as $this->data but no longer available automatically in the template.
-			$extensionSignature = str_replace('_', '', $extensionKey);
-			$this->settings = $this->configurationService->getTypoScriptSubConfiguration(NULL, 'settings', $extensionSignature);
+			$this->settings = $this->configurationService->getSettingsForExtensionName($extensionKey);
 		}
 	}
 
