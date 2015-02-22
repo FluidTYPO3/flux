@@ -8,35 +8,50 @@ namespace FluidTYPO3\Flux\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Dynamic FlexForm insertion hook class
  *
- * @copyright Copyright belongs to the respective authors
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @package Flux
  * @subpackage Backend
  */
 class DynamicFlexForm {
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var \FluidTYPO3\Flux\Service\FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
+
+	/**
+	 * @param ObjectManagerInterface $objectManager
+	 * @return void
+	 */
+	public function injectObjectManager(ObjectManagerInterface $objectManager) {
+		$this->objectManager = $objectManager;
+	}
+
+	/**
+	 * @param FluxService $service
+	 * @return void
+	 */
+	public function injectConfigurationService(FluxService $service) {
+		$this->configurationService = $service;
+	}
 
 	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-		$this->configurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
-		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+		$this->injectObjectManager(GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager'));
+		$this->injectConfigurationService($this->objectManager->get('FluidTYPO3\Flux\Service\FluxService'));
 	}
 
 	/**

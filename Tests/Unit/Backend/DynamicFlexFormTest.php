@@ -45,10 +45,19 @@ class DynamicFlexFormTest extends AbstractTestCase {
 	 * @return void
 	 */
 	protected function canExecuteDataStructurePostProcessHookInternal($fieldName = 'pi_flexform', $table = 'tt_content') {
-		$instance = new DynamicFlexForm();
 		$dataStructure = array();
 		$config = array();
 		$row = array();
+		$instance = new DynamicFlexForm();
+		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('postProcessDataStructure'));
+		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('postProcessDataStructure'));
+		$provider1->expects($this->once())->method('postProcessDataStructure');
+		$provider2->expects($this->once())->method('postProcessDataStructure');
+		$providers = array($provider1, $provider2);
+		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+		$service->expects($this->once())->method('resolveConfigurationProviders')
+			->with($table, $fieldName, $row)->willReturn($providers);
+		$instance->injectConfigurationService($service);
 		$instance->getFlexFormDS_postProcessDS($dataStructure, $config, $row, $table, $fieldName);
 		$isArrayConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
 		$this->assertThat($dataStructure, $isArrayConstraint);
