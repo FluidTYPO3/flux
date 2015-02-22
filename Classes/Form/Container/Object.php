@@ -27,7 +27,7 @@ class Object extends AbstractFormContainer implements ContainerInterface, FieldC
 		$structureArray = array(
 			'title' => $label,
 			'type' => 'array',
-			'el' => $this->buildChildren()
+			'el' => $this->buildChildren($this->children)
 		);
 		$structureArray['tx_templavoila'] = array('title' => $structureArray['title']); // patch: TYPO3 core legacy required for section objects.
 		return $structureArray;

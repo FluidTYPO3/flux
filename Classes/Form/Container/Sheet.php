@@ -73,7 +73,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 					'sheetShortDescr' => $this->getShortDescription()
 				),
 				'type' => 'array',
-				'el' => $this->buildChildren()
+				'el' => $this->buildChildren($this->children)
 			)
 		);
 		return $sheetStructArray;

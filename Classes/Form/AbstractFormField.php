@@ -197,7 +197,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 			$fieldStructureArray['TCEforms']['defaultExtras'] = $configuration['defaultExtras'];
 			unset($fieldStructureArray['TCEforms']['config']['defaultExtras']);
 		}
-		$wizards = $this->buildChildren();
+		$wizards = $this->buildChildren($this->wizards);
 		if (TRUE === $this->getClearable()) {
 			array_push($wizards, array(
 				'type' => 'userFunc',
@@ -212,20 +212,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 			$fieldStructureArray['TCEforms']['onChange'] = 'reload';
 		}
 		return $fieldStructureArray;
-	}
-
-	/**
-	 * @return array
-	 */
-	protected function buildChildren() {
-		$structure = array();
-		/** @var FormInterface[] $children */
-		$children = $this->wizards;
-		foreach ($children as $child) {
-			$name = $child->getName();
-			$structure[$name] = $child->build();
-		}
-		return $structure;
 	}
 
 	/**

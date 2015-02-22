@@ -30,6 +30,17 @@ interface FormInterface {
 	public function getName();
 
 	/**
+	 * @return boolean
+	 */
+	public function getEnabled();
+
+	/**
+	 * @param boolean $enabled
+	 * @return FormInterface
+	 */
+	public function setEnabled($enabled);
+
+	/**
 	 * @param string $label
 	 */
 	public function setLabel($label);

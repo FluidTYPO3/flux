@@ -162,20 +162,6 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	}
 
 	/**
-	 * @return array
-	 */
-	protected function buildChildren() {
-		$structure = array();
-		/** @var FormInterface[] $children */
-		$children = $this->children;
-		foreach ($children as $child) {
-			$name = $child->getName();
-			$structure[$name] = $child->build();
-		}
-		return $structure;
-	}
-
-	/**
 	 * @return boolean
 	 */
 	public function hasChildren() {

@@ -36,6 +36,11 @@ abstract class AbstractFormComponent implements FormInterface {
 	protected $name;
 
 	/**
+	 * @var boolean
+	 */
+	protected $enabled = TRUE;
+
+	/**
 	 * @var string
 	 */
 	protected $label = NULL;
@@ -186,6 +191,22 @@ abstract class AbstractFormComponent implements FormInterface {
 	 */
 	public function getName() {
 		return $this->name;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getEnabled() {
+		return $this->enabled;
+	}
+
+	/**
+	 * @param boolean $enabled
+	 * @return Form\FormInterface
+	 */
+	public function setEnabled($enabled) {
+		$this->enabled = $enabled;
+		return $this;
 	}
 
 	/**
@@ -450,6 +471,21 @@ abstract class AbstractFormComponent implements FormInterface {
 	 */
 	protected function getConfigurationService() {
 		return $this->getObjectManager()->get('FluidTYPO3\\Flux\\Service\\FluxService');
+	}
+
+	/**
+	 * @param FormInterface[] $children
+	 * @return array
+	 */
+	protected function buildChildren(\SplObjectStorage $children) {
+		$structure = array();
+		foreach ($children as $child) {
+			if (TRUE === (boolean) $child->getEnabled()) {
+				$name = $child->getName();
+				$structure[$name] = $child->build();
+			}
+		}
+		return $structure;
 	}
 
 }

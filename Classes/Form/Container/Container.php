@@ -26,7 +26,7 @@ class Container extends AbstractFormContainer implements ContainerInterface, Fie
 		$structureArray = array(
 			'type' => 'array',
 			'title' => $this->getLabel(),
-			'el' => $this->buildChildren()
+			'el' => $this->buildChildren($this->children)
 		);
 		return $structureArray;
 	}

@@ -42,13 +42,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	const DEFAULT_LANGUAGEFILE = '/Resources/Private/Language/locallang.xlf';
 
 	/**
-	 * if FALSE, disables this form.
-	 *
-	 * @var boolean
-	 */
-	protected $enabled = TRUE;
-
-	/**
 	 * Machine-readable, lowerCamelCase ID of this form. DOM compatible.
 	 *
 	 * @var string
@@ -160,7 +153,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 			$dataStructArray['meta'] = array('langDisable' => 1);
 			unset($dataStructArray['ROOT']['TCEforms']);
 		} elseif (0 < count($sheets)) {
-			$dataStructArray['sheets'] = $copy->buildChildren();
+			$dataStructArray['sheets'] = $copy->buildChildren($this->children);
 		} else {
 			$dataStructArray['ROOT'] = array(
 				'type' => 'array',
@@ -212,22 +205,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 */
 	public function getCompact() {
 		return $this->compact;
-	}
-
-	/**
-	 * @param boolean $enabled
-	 * @return Form\FormInterface
-	 */
-	public function setEnabled($enabled) {
-		$this->enabled = $enabled;
-		return $this;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getEnabled() {
-		return $this->enabled;
 	}
 
 	/**

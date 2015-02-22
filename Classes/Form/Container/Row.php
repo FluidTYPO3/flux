@@ -24,7 +24,7 @@ class Row extends AbstractFormContainer implements ContainerInterface {
 		$structure = array(
 			'name' => $this->getName(),
 			'label' => $this->getLabel(),
-			'columns' => $this->buildChildren()
+			'columns' => $this->buildChildren($this->children)
 		);
 		return $structure;
 	}
