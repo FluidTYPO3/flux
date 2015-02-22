@@ -22,11 +22,6 @@ use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager as CoreBackendCo
 class BackendConfigurationManager extends CoreBackendConfigurationManager implements SingletonInterface {
 
 	/**
-	 * @var integer
-	 */
-	protected $currentPageUid = 0;
-
-	/**
 	 * @var RecordService
 	 */
 	protected $recordService;
@@ -44,7 +39,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 * @return void
 	 */
 	public function setCurrentPageId($currentPageId) {
-		$this->currentPageUid = $currentPageId;
+		$this->currentPageId = $currentPageId;
 	}
 
 	/**
@@ -57,14 +52,14 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 * @return integer
 	 */
 	public function getCurrentPageId() {
-		if (0 < $this->currentPageUid) {
-			return $this->currentPageUid;
+		if (0 < $this->currentPageId) {
+			return $this->currentPageId;
 		}
 		$pageUids = $this->getPrioritizedPageUids();
-		while (TRUE === empty($this->currentPageUid) && 0 < count($pageUids)) {
-			$this->currentPageUid = array_shift($pageUids);
+		while (TRUE === empty($this->currentPageId) && 0 < count($pageUids)) {
+			$this->currentPageId = array_shift($pageUids);
 		};
-		return $this->currentPageUid;
+		return $this->currentPageId;
 	}
 
 	/**
