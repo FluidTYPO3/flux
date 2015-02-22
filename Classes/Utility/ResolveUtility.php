@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Core;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -17,6 +19,53 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @subpackage Utility
  */
 class ResolveUtility {
+
+	/**
+	 * Resolves a list (array) of class names (not instances) of
+	 * all classes in files in the specified sub-namespace of the
+	 * specified package name. Does not attempt to load the class.
+	 * Does not work recursively.
+	 *
+	 * @param string $packageName
+	 * @param string $subNamespace
+	 * @return array
+	 */
+	public static function resolveClassNamesInPackageSubNamespace($packageName, $subNamespace) {
+		$classNames = array();
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($packageName);
+		$prefix = str_replace('.', '\\', $packageName);
+		$suffix = TRUE === empty($subNamespace) ? '' : str_replace('/', '\\', $subNamespace) . '\\';
+		$folder = ExtensionManagementUtility::extPath($extensionKey, 'Classes/' . $subNamespace);
+		$files = GeneralUtility::getFilesInDir($folder, 'php');
+		if (TRUE === is_array($files)) {
+			foreach ($files as $file) {
+				$classNames[] = $prefix . '\\' . $suffix . pathinfo($file, PATHINFO_FILENAME);
+			}
+		}
+		return $classNames;
+	}
+
+	/**
+	 * Resolves a list (array) of instances of Form implementations
+	 * from the provided package names, or all package names if empty.
+	 *
+	 * @param array $packageNames
+	 * @return Form[]
+	 */
+	public static function resolveDomainFormClassInstancesFromPackages(array $packageNames = NULL) {
+		$packageNames = NULL === $packageNames ? Core::getRegisteredPackagesForAutoForms() : $packageNames;
+		$models = (array) Core::getRegisteredFormsForModelObjectClasses();
+		foreach ($packageNames as $packageName) {
+			$classNames = self::resolveClassNamesInPackageSubNamespace($packageName, 'Domain/Form');
+			foreach ($classNames as $formClassName) {
+				$fullTableName = self::resolveDatabaseTableName($modelClassName);
+				$models[$modelClassName] = $formClassName::create();
+				$models[$modelClassName]->setName($fullTableName);
+				$models[$modelClassName]->setExtensionName($packageName);
+			}
+		}
+		return $models;
+	}
 
 	/**
 	 * @param string $extensionKey
@@ -64,6 +113,29 @@ class ResolveUtility {
 		$pathSegments = array_map('ucfirst', $pathSegments);
 		$path = implode('/', $pathSegments);
 		return $path;
+	}
+
+	/**
+	 * Resolve the table name for the given class name
+	 *
+	 * @param string $className
+	 * @return string The table name
+	 */
+	public static function resolveDatabaseTableName($className) {
+		$className = ltrim($className, '\\');
+		if (strpos($className, '\\') !== FALSE) {
+			$classNameParts = explode('\\', $className, 6);
+			// Skip vendor and product name for core classes
+			if (strpos($className, 'TYPO3\\CMS\\') === 0) {
+				$classPartsToSkip = 2;
+			} else {
+				$classPartsToSkip = 1;
+			}
+			$tableName = 'tx_' . strtolower(implode('_', array_slice($classNameParts, $classPartsToSkip)));
+		} else {
+			$tableName = strtolower($className);
+		}
+		return $tableName;
 	}
 
 	/**

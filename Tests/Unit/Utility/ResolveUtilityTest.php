@@ -22,6 +22,14 @@ class ResolveUtilityTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function resolvesClassNamesInSubNamespaceOfPackage() {
+		$result = ResolveUtility::resolveClassNamesInPackageSubNamespace('FluidTYPO3.Flux', '');
+		$this->assertEquals(array('FluidTYPO3\\Flux\\Core', 'FluidTYPO3\\Flux\\Form'), $result);
+	}
+
+	/**
+	 * @test
+	 */
 	public function returnsClassIfClassExists() {
 		$className = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->objectManager->get($className);
@@ -83,6 +91,29 @@ class ResolveUtilityTest extends AbstractTestCase {
 	public function canDetectRequestArgumentsBasedOnPluginSignature() {
 		$result = ResolveUtility::resolveOverriddenFluxControllerActionNameFromRequestParameters('tx_void_fake');
 		$this->assertNull($result);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider getClassToTableTestValues
+	 * @param string $class
+	 * @param string $expectedTable
+	 */
+	public function testResolveTableName($class, $expectedTable) {
+		$result = ResolveUtility::resolveDatabaseTableName($class);
+		$this->assertEquals($expectedTable, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getClassToTableTestValues() {
+		return array(
+			array('syslog', 'syslog'),
+			array('FluidTYPO3\\Flux\\Domain\\Model\\ObjectName', 'tx_flux_domain_model_objectname'),
+			array('TYPO3\\CMS\\Extbase\\Domain\\Model\\ObjectName', 'tx_extbase_domain_model_objectname'),
+			array('Tx_Flux_Domain_Model_ObjectName', 'tx_flux_domain_model_objectname'),
+		);
 	}
 
 }

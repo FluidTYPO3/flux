@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -57,30 +58,13 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 */
 	protected function generateTableConfigurationForProviderForms() {
 		$forms = Core::getRegisteredFormsForTables();
-		$models = Core::getRegisteredFormsForModelObjectClasses();
-		$packages = array_keys(Core::getRegisteredPackagesForAutoForms());
-		foreach ($packages as $packageName) {
-			list ($vendorName, $extensionName) = explode('.', $packageName);
-			$namespace = $vendorName . '\\' . $extensionName . '\\Domain\\';
-			$extensionKey = ExtensionNamingUtility::getExtensionKey($packageName);
-			$folder = ExtensionManagementUtility::extPath($extensionKey, 'Classes/Domain/Form/');
-			$files = glob($folder . '*Form.php');
-			$files = FALSE === $files ? array() : $files;
-			foreach ($files as $fileName) {
-				$basename = pathinfo($fileName, PATHINFO_FILENAME);
-				$formClassName = $namespace . 'Form\\' . $basename;
-				$modelClassName = $namespace . 'Model\\' . substr($basename, 0, -4);
-				$fullTableName = $this->resolveTableName($modelClassName);
-				$models[$modelClassName] = $formClassName::create();
-				$models[$modelClassName]->setName($fullTableName);
-				$models[$modelClassName]->setExtensionName($packageName);
-			}
-		}
+		$packages = $this->getInstalledFluxPackages();
+		$models = ResolveUtility::resolveDomainFormClassInstancesFromPackages($packages);
 		foreach ($forms as $fullTableName => $form) {
 			$this->processFormForTable($fullTableName, $form);
 		}
 		foreach ($models as $modelClassName => $form) {
-			$fullTableName = $this->resolveTableName($modelClassName);
+			$fullTableName = ResolveUtility::resolveDatabaseTableName($modelClassName);
 			if (NULL === $form) {
 				$form = $this->generateFormInstanceFromClassName($modelClassName, $fullTableName);
 			}
@@ -89,7 +73,13 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 			}
 			$this->processFormForTable($fullTableName, $form);
 		}
+	}
 
+	/**
+	 * @return array
+	 */
+	protected function getInstalledFluxPackages() {
+		return array_keys(Core::getRegisteredPackagesForAutoForms());
 	}
 
 	/**
@@ -239,29 +229,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 			}
 		}
 		return implode(', ', $parts);
-	}
-
-	/**
-	 * Resolve the table name for the given class name
-	 *
-	 * @param string $className
-	 * @return string The table name
-	 */
-	protected function resolveTableName($className) {
-		$className = ltrim($className, '\\');
-		if (strpos($className, '\\') !== FALSE) {
-			$classNameParts = explode('\\', $className, 6);
-			// Skip vendor and product name for core classes
-			if (strpos($className, 'TYPO3\\CMS\\') === 0) {
-				$classPartsToSkip = 2;
-			} else {
-				$classPartsToSkip = 1;
-			}
-			$tableName = 'tx_' . strtolower(implode('_', array_slice($classNameParts, $classPartsToSkip)));
-		} else {
-			$tableName = strtolower($className);
-		}
-		return $tableName;
 	}
 
 }
