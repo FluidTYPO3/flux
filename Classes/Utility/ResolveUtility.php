@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -18,32 +17,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @subpackage Utility
  */
 class ResolveUtility {
-
-	/**
-	 * @var boolean
-	 */
-	protected static $initialized = FALSE;
-
-	/**
-	 * @var boolean
-	 */
-	protected static $hasGridElementsVersionTwo = FALSE;
-
-	/**
-	 * @var WorkspacesAwareRecordService
-	 */
-	protected static $recordService;
-
-	/**
-	 * @return void
-	 */
-	private static function initialize() {
-		if (FALSE === self::$initialized) {
-			self::$hasGridElementsVersionTwo = VersionUtility::assertExtensionVersionIsAtLeastVersion('gridelements', 2);
-			self::$recordService = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('FluidTYPO3\Flux\Service\WorkspacesAwareRecordService');
-		}
-		self::$initialized = TRUE;
-	}
 
 	/**
 	 * @param string $extensionKey
@@ -83,15 +56,6 @@ class ResolveUtility {
 	}
 
 	/**
-	 * @return array
-	 */
-	public static function resolveCurrentPageRecord() {
-		self::initialize();
-		$recordUid = (integer) (TRUE === isset($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->id : GeneralUtility::_GET('id');
-		return self::$recordService->getSingle('pages', '*', $recordUid);
-	}
-
-	/**
 	 * @param string $path
 	 * @return string
 	 */
@@ -100,63 +64,6 @@ class ResolveUtility {
 		$pathSegments = array_map('ucfirst', $pathSegments);
 		$path = implode('/', $pathSegments);
 		return $path;
-	}
-
-	/**
-	 * @param array $paths
-	 * @param string $controllerName
-	 * @param string $controllerAction
-	 * @param string $format
-	 * @return string
-	 */
-	public static function resolveTemplatePathAndFilenameByPathAndControllerNameAndActionAndFormat(array $paths, $controllerName, $controllerAction, $format = 'html') {
-		$templateRootPath = rtrim($paths['templateRootPath'], '/') . '/' . $controllerName . '/';
-		$controllerActionPath = self::convertAllPathSegmentsToUpperCamelCase($controllerAction);
-		$templatePathAndFilename = $templateRootPath . $controllerActionPath . '.' . $format;
-		$overlayTemplateFileName = self::resolvePossibleOverlayTemplateFile($paths['overlays'], $controllerName, $controllerAction, $format);
-		$templateFile = NULL !== $overlayTemplateFileName ? $overlayTemplateFileName : $templatePathAndFilename;
-		return ('/' !== $templateFile{0} ? GeneralUtility::getFileAbsFileName($templateFile) : $templateFile);
-	}
-
-	/**
-	 * @param array|NULL $overlays
-	 * @param string $controllerName
-	 * @param string $controllerActionName
-	 * @param string $format
-	 * @return null|string
-	 */
-	public static function resolvePossibleOverlayTemplateFile($overlays, $controllerName, $controllerActionName, $format = 'html') {
-		$templatePathAndFilename = NULL;
-		if (TRUE === is_array($overlays)) {
-			$controllerActionPath = self::convertAllPathSegmentsToUpperCamelCase($controllerActionName);
-			foreach ($overlays as $possibleOverlayPaths) {
-				if (TRUE === isset($possibleOverlayPaths['templateRootPath'])) {
-					$overlayTemplateRootPath = $possibleOverlayPaths['templateRootPath'];
-					$overlayTemplateRootPath = rtrim($overlayTemplateRootPath, '/') . '/' . $controllerName . '/';
-					$possibleOverlayFile = GeneralUtility::getFileAbsFileName($overlayTemplateRootPath . $controllerActionPath . '.' . $format);
-					if (TRUE === file_exists($possibleOverlayFile)) {
-						$templatePathAndFilename = $possibleOverlayFile;
-						break;
-					}
-				}
-			}
-		}
-		return $templatePathAndFilename;
-	}
-
-	/**
-	 * @param string $templateRootPath
-	 * @return string
-	 */
-	public static function resolveWidgetTemplateFileBasedOnTemplateRootPathAndEnvironment($templateRootPath) {
-		self::initialize();
-		$templateRootPath = rtrim($templateRootPath, '/');
-		$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/Index.html';
-		if (TRUE === self::$hasGridElementsVersionTwo) {
-			$templatePathAndFilename = $templateRootPath . '/ViewHelpers/Widget/Grid/GridElements.html';
-		}
-		$templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
-		return $templatePathAndFilename;
 	}
 
 	/**

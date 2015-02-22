@@ -20,7 +20,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 class ResolveUtilityTest extends AbstractTestCase {
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function returnsClassIfClassExists() {
 		$className = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
@@ -83,19 +83,6 @@ class ResolveUtilityTest extends AbstractTestCase {
 	public function canDetectRequestArgumentsBasedOnPluginSignature() {
 		$result = ResolveUtility::resolveOverriddenFluxControllerActionNameFromRequestParameters('tx_void_fake');
 		$this->assertNull($result);
-	}
-
-	/**
-	 * @disabledtest
-	 */
-	public function canDetectCurrentPageRecord() {
-		$expected = reset($GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'pages', 'pid=0'));
-		$GLOBALS['TSFE'] = new \stdClass();
-		$GLOBALS['TSFE']->page = $expected;
-		$GLOBALS['TSFE']->id = $expected['uid'];
-		$result = ResolveUtility::resolveCurrentPageRecord();
-		$this->assertSame($result, $expected);
-		unset($GLOBALS['TSFE']);
 	}
 
 }
