@@ -61,6 +61,11 @@ class FluxServiceTest extends AbstractTestCase {
 				'foo', 'ASC',
 				array('a2' => array('foo' => 'a'), 'a1' => array('foo' => 'b')),
 			),
+			array(
+				array('a1' => array('foo' => 'b'), 'a2' => array('foo' => 'a')),
+				'foo', 'DESC',
+				array('a1' => array('foo' => 'b'), 'a2' => array('foo' => 'a')),
+			),
 		);
 	}
 
@@ -257,6 +262,18 @@ class FluxServiceTest extends AbstractTestCase {
 		$service = $this->createFluxServiceInstance();
 		$config = $service->getViewConfigurationForExtensionName('void');
 		$this->assertSame($expected, $config);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testGetSettingsForExtensionName() {
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getTypoScriptByPath'));
+		$instance->expects($this->once())->method('getTypoScriptByPath')
+			->with('plugin.tx_underscore.settings')
+			->willReturn(array('test' => 'test'));
+		$result = $instance->getSettingsForExtensionName('under_score');
+		$this->assertEquals(array('test' => 'test'), $result);
 	}
 
 	/**

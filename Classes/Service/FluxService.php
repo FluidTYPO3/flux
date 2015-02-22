@@ -220,20 +220,19 @@ class FluxService implements SingletonInterface {
 		$extensionName = $viewContext->getExtensionName();
 		$variableCheck = json_encode($variables);
 		$cacheKey = md5($templatePathAndFilename . $formName . $extensionName . $section . $variableCheck);
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
-		try {
-			$exposedView = $this->getPreparedExposedTemplateView($viewContext);
-			self::$cache[$cacheKey] = $exposedView->getForm($section, $formName);
-		} catch (\RuntimeException $error) {
-			$this->debug($error);
-			/** @var Form $form */
-			self::$cache[$cacheKey] = $this->objectManager->get('FluidTYPO3\Flux\Form');
-			self::$cache[$cacheKey]->createField('UserFunction', 'error')
-				->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField')
-				->setArguments(array($error)
-			);
+		if (FALSE === isset(self::$cache[$cacheKey])) {
+			try {
+				$exposedView = $this->getPreparedExposedTemplateView($viewContext);
+				self::$cache[$cacheKey] = $exposedView->getForm($section, $formName);
+			} catch (\RuntimeException $error) {
+				$this->debug($error);
+				/** @var Form $form */
+				self::$cache[$cacheKey] = $this->objectManager->get('FluidTYPO3\Flux\Form');
+				self::$cache[$cacheKey]->createField('UserFunction', 'error')
+					->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField')
+					->setArguments(array($error)
+				);
+			}
 		}
 		return self::$cache[$cacheKey];
 	}
@@ -408,7 +407,8 @@ class FluxService implements SingletonInterface {
 		if (TRUE === empty($valuePointer)) {
 			$valuePointer = 'vDEF';
 		}
-		$settings = $this->objectManager->get('TYPO3\CMS\Extbase\Service\FlexFormService')->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
+		$settings = $this->objectManager->get('TYPO3\CMS\Extbase\Service\FlexFormService')
+			->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
 		if (NULL !== $form) {
 			/** @var FormDataTransformer $transformer */
 			$transformer = $this->objectManager->get('FluidTYPO3\Flux\Transformation\FormDataTransformer');
