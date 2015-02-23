@@ -9,8 +9,11 @@ namespace FluidTYPO3\Flux\Backend;
  */
 
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * @package Flux
@@ -19,17 +22,17 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class TceMain {
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+	 * @var ObjectManagerInterface
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var \FluidTYPO3\Flux\Service\FluxService
+	 * @var FluxService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @var \FluidTYPO3\Flux\Service\RecordService
+	 * @var RecordService
 	 */
 	protected $recordService;
 
@@ -39,12 +42,36 @@ class TceMain {
 	static private $cachesCleared = FALSE;
 
 	/**
+	 * @param ObjectManagerInterface $objectManager
+	 * @return void
+	 */
+	public function injectObjectManager(ObjectManagerInterface $objectManager) {
+		$this->objectManager = $objectManager;
+	}
+
+	/**
+	 * @param FluxService $configurationService
+	 * @return void
+	 */
+	public function injectConfigurationService(FluxService $configurationService) {
+		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param RecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(RecordService $recordService) {
+		$this->recordService = $recordService;
+	}
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		$this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
-		$this->recordService = $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService');
+		$this->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
+		$this->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\FluxService'));
+		$this->injectRecordService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\RecordService'));
 	}
 
 	/**
@@ -133,14 +160,14 @@ class TceMain {
 			$record = $this->ensureRecordDataIsLoaded($table, $id, $record);
 			$arguments['row'] = &$record;
 			$arguments[] = &$reference;
-			$detectedProviders = $this->detectUniqueProviders($table, $record);
+			$detectedProviders = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
 			foreach ($detectedProviders as $provider) {
 				if (TRUE === $provider->shouldCall($methodName, $id)) {
-					call_user_func_array(array($provider, $methodName), $arguments);
+					call_user_func_array(array($provider, $methodName), array_values($arguments));
 					$provider->trackMethodCall($methodName, $id);
 				}
 			}
-		} catch (\Exception $error) {
+		} catch (\RuntimeException $error) {
 			$this->configurationService->debug($error);
 		}
 		return $record;
@@ -159,31 +186,6 @@ class TceMain {
 			$record = TRUE === is_array($loadedRecord) ? $loadedRecord : $record;
 		}
 		return $record;
-	}
-
-	/**
-	 * @param string $table
-	 * @param array $record
-	 * @return ProviderInterface[]
-	 */
-	protected function detectUniqueProviders($table, array $record) {
-		// check for a registered generic ConfigurationProvider for $table
-		/** @var ProviderInterface[] $detectedProviders */
-		$detectedProviders = array();
-		$providers = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
-		foreach ($providers as $provider) {
-			$class = get_class($provider);
-			$detectedProviders[$class] = $provider;
-		}
-		// check each field for a registered ConfigurationProvider
-		foreach ($record as $fieldName => $unusedValue) {
-			$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $record);
-			foreach ($providers as $provider) {
-				$class = get_class($provider);
-				$detectedProviders[$class] = $provider;
-			}
-		}
-		return $detectedProviders;
 	}
 
 	/**
