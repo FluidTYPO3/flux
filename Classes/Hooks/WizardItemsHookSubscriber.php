@@ -135,11 +135,11 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 			$parentRecord = $this->recordService->getSingle('tt_content', '*', abs($relativeUid));
 			$fluxAreaName = (string) $parentRecord['tx_flux_column'];
 			$parentRecordUid = (integer) $parentRecord['tx_flux_parent'];
-		} elseif (TRUE === isset($defaultValues['tt_content']['tx_flux_column'])) {
+		} elseif (TRUE === isset($defaultValues['tx_flux_column'])) {
 			// attempt to read the target Flux content area from GET parameters (clicked: "create new" icon
 			// in top of nested Flux content area
-			$fluxAreaName = (string) $defaultValues['tt_content']['tx_flux_column'];
-			$parentRecordUid = (integer) $defaultValues['tt_content']['tx_flux_parent'];
+			$fluxAreaName = (string) $defaultValues['tx_flux_column'];
+			$parentRecordUid = (integer) $defaultValues['tx_flux_parent'];
 		}
 		// if these variables now indicate that we are inserting content elements into a Flux-enabled content
 		// area inside another content element, attempt to read allowed/denied content types from the
