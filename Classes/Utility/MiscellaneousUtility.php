@@ -50,7 +50,7 @@ class MiscellaneousUtility {
 	 *   EXT:$extensionKey/Resources/Public/Icons/$controllerName/$templateName.(png|gif)
 	 *
 	 * @param Form $form
-	 * @return string|FALSE
+	 * @return string|NULL
 	 */
 	public static function getIconForTemplate(Form $form) {
 		if (TRUE === $form->hasOption(Form::OPTION_ICON)) {
@@ -73,7 +73,7 @@ class MiscellaneousUtility {
 				}
 			}
 		}
-		return FALSE;
+		return NULL;
 	}
 
 	public static function cleanFlexFormXml($xml, array $removals = array()) {

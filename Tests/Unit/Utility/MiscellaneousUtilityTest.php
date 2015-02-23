@@ -131,7 +131,7 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 		$form->setOption($form::OPTION_TEMPLATEFILE, $mockExtensionUrl . '/' . $formOptionsFixture['extensionName'] . '/Resources/Private/Templates/Content/TestFalse.html');
 		$form->setExtensionName($formOptionsFixture['extensionName']);
 		$icon = MiscellaneousUtility::getIconForTemplate($form);
-		$this->assertFalse($icon);
+		$this->assertNull($icon);
 	}
 
 	/**
@@ -140,7 +140,7 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 	public function returnFalseResultIfNoTemplateAndNoIconOptionIsSet() {
 		$form = $this->getFormInstance();
 		$icon = MiscellaneousUtility::getIconForTemplate($form);
-		$this->assertFalse($icon);
+		$this->assertNull($icon);
 	}
 
 	/**
