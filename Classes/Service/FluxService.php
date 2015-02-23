@@ -423,7 +423,7 @@ class FluxService implements SingletonInterface {
 	 * @param integer $depth
 	 * @return void
 	 */
-	public function debug($instance, $plainText = FALSE, $depth = 2) {
+	public function debug($instance, $plainText = TRUE, $depth = 2) {
 		$text = DebuggerUtility::var_dump($instance, NULL, $depth, $plainText, FALSE, TRUE);
 		GeneralUtility::devLog('Flux variable dump: ' . gettype($instance), 'flux', GeneralUtility::SYSLOG_SEVERITY_INFO, $text);
 	}
