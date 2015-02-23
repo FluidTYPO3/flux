@@ -8,10 +8,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Backend\TceMain;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -176,22 +178,21 @@ class TceMainTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @return \TYPO3\CMS\Core\DataHandling\DataHandler
+	 * @return DataHandler
 	 */
 	protected function getCallerInstance() {
-		/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $tceMainParent */
+		/** @var DataHandler $tceMainParent */
 		$tceMainParent = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		return $tceMainParent;
 	}
 
 	/**
-	 * @return \FluidTYPO3\Flux\Backend\TceMain
+	 * @return TceMain
 	 */
 	protected function getInstance() {
-		/** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
+		/** @var ObjectManager $objectManager */
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-		/** @var \FluidTYPO3\Flux\Backend\TceMain $tceMainInstance */
-		$tceMainInstance = $objectManager->get('FluidTYPO3\Flux\Backend\TceMain');
+		$tceMainInstance = new TceMain();
 		ObjectAccess::setProperty($tceMainInstance, 'cachesCleared', FALSE, TRUE);
 		return $tceMainInstance;
 	}
@@ -201,18 +202,39 @@ class TceMainTest extends AbstractTestCase {
 	 */
 	public function executeConfigurationProviderMethodDebugsOnException() {
 		$exception = new \RuntimeException();
-		$mock = $this->getMock($this->createInstanceClassName(), array('detectUniqueProviders'));
-		$mock->expects($this->once())->method('detectUniqueProviders')->will($this->throwException($exception));
-		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('debug'));
+		$mock = new TceMain();
+		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('debug', 'resolveConfigurationProviders'));
 		$configurationService->expects($this->once())->method('debug')->with($exception);
+		$configurationService->expects($this->once())->method('resolveConfigurationProviders')->will($this->throwException($exception));
 		$handler = new DataHandler();
 		$record = array();
 		$parameters = array();
 		$handler->substNEWwithIDs['NEW123'] = 123;
-		ObjectAccess::setProperty($mock, 'configurationService', $configurationService, TRUE);
+		$mock->injectConfigurationService($configurationService);
 		$result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod',
 			'method', 'tt_content', 'NEW123', $record, $parameters, $handler);
 		$this->assertEmpty($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function executeConfigurationProviderMethodCallsMethodOnProvidersAndTracksExecution() {
+		$command = 'postProcessDatabaseOperation';
+		$mock = $this->getMock($this->createInstanceClassName(), array('resolveRecordUid', 'ensureRecordDataIsLoaded'));
+		$mock->expects($this->once())->method('resolveRecordUid')->willReturn(1);
+		$mock->expects($this->once())->method('ensureRecordDataISLoaded')->willReturnArgument(2);
+		$caller = $this->getCallerInstance();
+		$row = array('uid' => 1);
+		$arguments = array('status' => $command, 'id' => 1, 'row' => $row);
+		$provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array($command));
+		$provider->expects($this->exactly(1))->method($command);
+		$providers = array($provider, $provider);
+		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+		$configurationService->expects($this->once())->method('resolveConfigurationProviders')->willReturn($providers);
+		$mock->injectConfigurationService($configurationService);
+		$result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, $row, $arguments, $caller);
+		$this->assertEquals($row, $result);
 	}
 
 	/**
@@ -223,7 +245,7 @@ class TceMainTest extends AbstractTestCase {
 	 * @param integer $expectedOutput
 	 */
 	public function testResolveRecordUid($input, $handlerInput, $expectedOutput) {
-		$instance = $this->getMock($this->createInstanceClassName());
+		$instance = $this->getMock($this->createInstanceClassName(), array('dummy'), array(), '', TRUE);
 		$dataHandler = new DataHandler();
 		if (NULL !== $handlerInput) {
 			$dataHandler->substNEWwithIDs[$input] = $handlerInput;
@@ -241,27 +263,6 @@ class TceMainTest extends AbstractTestCase {
 			array('NEW123', '123', 123),
 			array('', NULL, 0)
 		);
-	}
-
-	/**
-	 * @test
-	 */
-	public function detectUniqueProvidersReturnsExpectedValue() {
-		$mock = $this->getMock($this->createInstanceClassName());
-		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider');
-		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider');
-		$provider3 = $this->getMock('FluidTYPO3\\Flux\\Provider');
-		$provider4 = $provider1;
-		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
-		$configurationService->expects($this->at(0))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider1)));
-		$configurationService->expects($this->at(1))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider2)));
-		$configurationService->expects($this->at(2))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider3)));
-		$configurationService->expects($this->at(3))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider4)));
-		ObjectAccess::setProperty($mock, 'configurationService', $configurationService, TRUE);
-		$record = array('foo' => 'bar', 'baz' => 'oof', 'x' => 'y');
-		$result = $this->callInaccessibleMethod($mock, 'detectUniqueProviders', 'table', $record);
-		$expected = array(get_class($provider1) => $provider1, get_class($provider2) => $provider2, get_class($provider3) => $provider3);
-		$this->assertEquals($expected, $result);
 	}
 
 }

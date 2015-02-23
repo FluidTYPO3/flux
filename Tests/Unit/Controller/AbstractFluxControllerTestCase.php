@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
@@ -264,6 +265,80 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 		ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
 		ObjectAccess::setProperty($instance, 'configurationManager', $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface'), TRUE);
 		$this->callInaccessibleMethod($instance, 'initializeSettings');
+	}
+
+	/**
+	 * @dataProvider getInitializeOverriddenSettingsTestValues
+	 * @param array $data
+	 * @param array $settings
+	 */
+	public function testInitializeOverriddenSettings(array $data, array $settings) {
+		$record = array('uid' => 1);
+		$provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getExtensionKey'));
+		$provider->expects($this->once())->method('getExtensionKey')->with($record);
+		$mock = $this->getMockForAbstractClass(
+			'FluidTYPO3\\Flux\\Controller\\AbstractFluxController', array(), '', FALSE, FALSE, FALSE,
+			array('getRecord')
+		);
+		$mock->expects($this->once())->method('getRecord')->willReturn($record);
+		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getSettingsForExtensionName'));
+		if (TRUE === (boolean) $data['settings']['useTypoScript'] || TRUE === (boolean) $settings['useTypoScript']) {
+			$service->expects($this->once())->method('getSettingsForExtensionName');
+		} else {
+			$service->expects($this->never())->method('getSettingsForExtensionName');
+		}
+		$mock->injectConfigurationService($service);
+		ObjectAccess::setProperty($mock, 'data', $data, TRUE);
+		ObjectAccess::setProperty($mock, 'settings', $settings, TRUE);
+		ObjectAccess::setProperty($mock, 'provider', $provider, TRUE);
+		$this->callInaccessibleMethod($mock, 'initializeOverriddenSettings');
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getInitializeOverriddenSettingsTestValues() {
+		return array(
+			array(array('settings' => array()), array(), array()),
+			array(array('settings' => array()), array('useTypoScript' => 1)),
+			array(array('settings' => array('useTypoScript' => 1)), array()),
+		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testInitializeProvider() {
+		$provider = new Provider();
+		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolvePrimaryConfigurationProvider'));
+		$service->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+		$mock = $this->getMockForAbstractClass(
+			'FluidTYPO3\\Flux\\Controller\\AbstractFluxController', array(), '', FALSE, FALSE, FALSE,
+			array('getRecord', 'getFluxTableName', 'getFluxRecordField')
+		);
+		$mock->expects($this->once())->method('getRecord')->willReturn(array());
+		$mock->expects($this->once())->method('getFluxTableName')->willReturn('table');
+		$mock->expects($this->once())->method('getFluxRecordField')->willReturn('field');
+		$mock->injectConfigurationService($service);
+		$this->callInaccessibleMethod($mock, 'initializeProvider');
+	}
+
+	/**
+	 * @test
+	 */
+	public function testInitializeProviderThrowsExceptionIfNoProviderResolved() {
+		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolvePrimaryConfigurationProvider'));
+		$service->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn(NULL);
+		$mock = $this->getMockForAbstractClass(
+			'FluidTYPO3\\Flux\\Controller\\AbstractFluxController', array(), '', FALSE, FALSE, FALSE,
+			array('getRecord', 'getFluxTableName', 'getFluxRecordField')
+		);
+		$mock->expects($this->once())->method('getRecord')->willReturn(array());
+		$mock->expects($this->once())->method('getFluxTableName')->willReturn('table');
+		$mock->expects($this->once())->method('getFluxRecordField')->willReturn('field');
+		$mock->injectConfigurationService($service);
+		$this->setExpectedException('RuntimeException');
+		$this->callInaccessibleMethod($mock, 'initializeProvider');
 	}
 
 	/**
