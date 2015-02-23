@@ -91,8 +91,8 @@ class ContentIconHookSubscriber {
 		$cacheIdentity = $table . $uid . sha1(serialize($record));
 		// filter 1: icon must not already be cached and both record and caller must be provided.
 		if (TRUE === $this->cache->has($cacheIdentity)) {
-			return $this->cache->get($cacheIdentity);
-		} elseif (NULL !== $record || NULL !== $caller) {
+			$icon = $this->cache->get($cacheIdentity);
+		} elseif (NULL !== $record && NULL !== $caller) {
 			$field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
 			// filter 2: table must have one field defined as "flex" and record must include it.
 			if (NULL !== $field && TRUE === isset($record[$field])) {
