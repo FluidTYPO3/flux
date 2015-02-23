@@ -87,9 +87,7 @@ class ContentIconHookSubscriber {
 	public function addSubIcon(array $parameters, $caller = NULL) {
 		list ($table, $uid, $record) = $parameters;
 		$icon = NULL;
-		if (NULL === $record && 0 < $uid) {
-			$record = BackendUtility::getRecord($table, $uid);
-		}
+		$record = NULL === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
 		$cacheIdentity = $table . $uid . sha1(serialize($record));
 		// filter 1: icon must not already be cached and both record and caller must be provided.
 		if (TRUE === $this->cache->has($cacheIdentity)) {
@@ -106,7 +104,7 @@ class ContentIconHookSubscriber {
 					$form = $provider->getForm((array) $record);
 					if (NULL !== $form) {
 						$icon = MiscellaneousUtility::getIconForTemplate($form);
-						if (FALSE === empty($icon)) {
+						if (NULL !== $icon) {
 							$iconFileReference = '../../../' . $icon;
 							$label = trim($form->getLabel());
 							$icon = '<img width="16" height="16" src="' . $iconFileReference . '" alt="' . $label . '"
@@ -117,8 +115,8 @@ class ContentIconHookSubscriber {
 					}
 				}
 			}
+			$this->cache->set($cacheIdentity, $icon);
 		}
-		$this->cache->set($cacheIdentity, $icon);
 		return $icon;
 	}
 
