@@ -149,7 +149,7 @@ class ControllerActions extends Select {
 
 	/**
 	 * @param array $actions
-	 * @return \FluidTYPO3\Flux\Form\Field\ControllerActions
+	 * @return ControllerActions
 	 */
 	public function setActions($actions) {
 		$this->actions = $actions;

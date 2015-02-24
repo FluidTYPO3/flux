@@ -59,11 +59,23 @@ class TextTest extends InputTest {
 	/**
 	 * @test
 	 */
-	public function canBuildConfigurationWithEnableWithTextWithoutDefaultExtras() {
+	public function canBuildConfigurationWithoutDefaultExtrasWithEnableRichText() {
 		/** @var Text $instance */
 		$instance = $this->createInstance();
 		$instance->setDefaultExtras(NULL)->setEnableRichText(TRUE);
-		$this->performTestBuild($instance);
+		$result = $this->performTestBuild($instance);
+		$this->assertArrayHasKey('defaultExtras', $result['TCEforms']['config']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canBuildConfigurationWithDefaultExtras() {
+		/** @var Text $instance */
+		$instance = $this->createInstance();
+		$instance->setDefaultExtras('richtext[*]');
+		$result = $this->performTestBuild($instance);
+		$this->assertNotEmpty($result['TCEforms']['defaultExtras']);
 	}
 
 }

@@ -193,9 +193,26 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$providers = array();
 		$record = array();
 		$field = NULL;
-		ObjectAccess::setProperty($mock, 'configurationService', $configurationService, TRUE);
+		$mock->injectConfigurationService($configurationService);
 		$result = $this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
 		$this->assertNull($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function readDataArrayFromProvidersOrUsingDefaultMethodUsesProvidersToReadData() {
+		$mock = $this->createInstance();
+		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getFlexFormValues'));
+		$provider1->expects($this->once())->method('getFlexFormValues')->willReturn(array('foo' => array('bar' => 'test')));
+		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getFlexFormValues'));
+		$provider2->expects($this->once())->method('getFlexFormValues')
+			->willReturn(array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test'));
+		$providers = array($provider1, $provider2);
+		$record = Records::$contentRecordIsParentAndHasChildren;
+		$field = 'pi_flexform';
+		$result = $this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
+		$this->assertEquals(array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test'), $result);
 	}
 
 }

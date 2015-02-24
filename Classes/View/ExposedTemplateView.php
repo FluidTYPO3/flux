@@ -36,39 +36,15 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	protected $configurationService;
 
 	/**
-	 * @var string
-	 */
-	protected $templateSource = NULL;
-
-	/**
-	 * @var array
-	 */
-	protected $providerPaths = array();
-
-	/**
 	 * @var array
 	 */
 	protected $renderedSections = array();
 
 	/**
-	 * @return array
-	 */
-	public function getProviderPaths() {
-		return $this->providerPaths;
-	}
-
-	/**
-	 * @param array $providerPaths
-	 */
-	public function setProviderPaths($providerPaths) {
-		$this->providerPaths = $providerPaths;
-	}
-
-	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectDebugService(FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
@@ -92,10 +68,10 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		$form = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, $formName, $sectionName);
 		if (NULL !== $form && TRUE === isset($this->templatePathAndFilename)) {
 			$form->setOption(Form::OPTION_TEMPLATEFILE, $this->templatePathAndFilename);
+			$signature = ExtensionNamingUtility::getExtensionSignature($this->controllerContext->getRequest()->getControllerExtensionName());
+			$overrides = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_' . $signature . '.forms.' . $form->getName());
+			$form->modify($overrides);
 		}
-		$signature = ExtensionNamingUtility::getExtensionSignature($this->controllerContext->getRequest()->getControllerExtensionName());
-		$overrides = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_' . $signature . '.forms.' . $form->getName());
-		$form->modify($overrides);
 		return $form;
 	}
 
@@ -136,7 +112,7 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
 		$viewHelperVariableContainer = $this->baseRenderingContext->getViewHelperVariableContainer();
 		if (FALSE === empty($sectionName)) {
-			$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
+			$this->renderStandaloneSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
 		} else {
 			$this->render();
 		}
@@ -147,8 +123,6 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		$this->renderedSections[$sectionName] = $viewHelperVariableContainer;
 		$stored = $viewHelperVariableContainer->get($viewHelperClassName, $name);
 		$templateIdentityForLog = NULL !== $this->templateSource ? 'source code with hash value ' . sha1($this->templateSource) : $this->getTemplatePathAndFilename();
-		$this->configurationService->message('Flux View ' . get_class($this) . ' is able to read stored configuration from ' .
-			$templateIdentityForLog, GeneralUtility::SYSLOG_SEVERITY_INFO);
 		return $stored;
 	}
 
@@ -158,9 +132,7 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	public function getParsedTemplate() {
 		$templateIdentifier = $this->getTemplateIdentifier();
 		$source = $this->getTemplateSource();
-		if (FALSE === isset($this->templateCompiler) || 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['disableCompiler']) {
-			$parsedTemplate = $this->templateParser->parse($source);
-		} elseif (TRUE === $this->templateCompiler->has($templateIdentifier)) {
+		if (TRUE === $this->templateCompiler->has($templateIdentifier)) {
 			$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
 		} else {
 			$parsedTemplate = $this->templateParser->parse($source);
@@ -172,8 +144,19 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	}
 
 	/**
+	 * Public-access wrapper for parent's method.
+	 *
+	 * @param string $actionName
+	 * @return string
+	 */
+	public function getTemplatePathAndFilename($actionName = NULL) {
+		return parent::getTemplatePathAndFilename($actionName);
+	}
+
+	/**
 	 * Renders a section from the specified template w/o requring a call to the
 	 * main render() method - allows for cherry-picking sections to render.
+	 *
 	 * @param string $sectionName
 	 * @param array $variables
 	 * @param boolean $optional
@@ -183,64 +166,11 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		$content = NULL;
 		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
-		$content = $this->renderSection($sectionName, $variables, $optional);
+		$content = parent::renderSection($sectionName, $variables, $optional);
 		$this->stopRendering();
 		return $content;
 	}
 
-	/**
-	 * @param string $templateSource
-	 * @return void
-	 */
-	public function setTemplateSource($templateSource) {
-		$this->templateSource = $templateSource;
-	}
-
-	/**
-	 * @param string $actionName
-	 * @return string
-	 */
-	protected function getTemplateSource($actionName = NULL) {
-		if (NULL !== $this->templateSource) {
-			return $this->templateSource;
-		}
-		return parent::getTemplateSource($actionName);
-	}
-
-	/**
-	 * We use a checksum of the template source as the template identifier
-	 *
-	 * @param string $actionName
-	 * @return string
-	 */
-	protected function getTemplateIdentifier($actionName = NULL) {
-		$hasMethodOnParent = TRUE === method_exists(get_parent_class($this), __FUNCTION__);
-		$templateFileExists = TRUE === file_exists($this->templatePathAndFilename);
-
-		return TRUE === $hasMethodOnParent && TRUE === $templateFileExists ? parent::getTemplateIdentifier($actionName) : 'viewhelpertest_' . sha1($this->templateSource);
-	}
-
-	/**
-	 * @param string $actionName
-	 * @return string
-	 */
-	public function getTemplatePathAndFilename($actionName = NULL) {
-		if (NULL !== $this->templatePathAndFilename) {
-			return $this->templatePathAndFilename;
-		}
-		if (TRUE === empty($actionName)) {
-			$actionName = $this->controllerContext->getRequest()->getControllerActionName();
-		}
-		$actionName = ResolveUtility::convertAllPathSegmentsToUpperCamelCase($actionName);
-		$paths = $this->expandGenericPathPattern($this->templatePathAndFilenamePattern, FALSE, FALSE);
-		foreach ($paths as &$templatePathAndFilename) {
-			$templatePathAndFilename = str_replace('@action', $actionName, $templatePathAndFilename);
-			if (TRUE === file_exists($templatePathAndFilename)) {
-				return $templatePathAndFilename;
-			}
-		}
-		return parent::getTemplatePathAndFilename($actionName);
-	}
 	/**
 	 * Wrapper method to make the static call to GeneralUtility mockable in tests
 	 *

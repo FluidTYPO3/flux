@@ -94,26 +94,6 @@ interface ProviderInterface {
 	public function getTemplatePathAndFilename(array $row);
 
 	/**
-	 * Get the source of the template to be rendered. Allows implementers
-	 * to return a template source rather than a template filename - and
-	 * to return Form and Grid instances from, for example, PHP objects
-	 * instead of from a template file.
-	 *
-	 * If implemented, getForm() and getGrid() should both be implemented
-	 * in ways which either uses a default template file or somehow else
-	 * returns instances of Form and Grid instead of reading from template.
-	 *
-	 * The returned template source may, but is not required to, contain
-	 * a `flux:form` definition and `Configuration` section but if none
-	 * is contained, you *must* override getForm() and getGrid() if you
-	 * require any other value than NULL returned from either method.
-	 *
-	 * @param array $row
-	 * @return string|NULL
-	 */
-	public function getTemplateSource(array $row);
-
-	/**
 	 * Get an array of variables that should be used when rendering the
 	 * FlexForm configuration
 	 *

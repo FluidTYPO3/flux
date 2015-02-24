@@ -145,13 +145,20 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * @return string
+	 */
+	protected function getRawPostData() {
+		return file_get_contents('php://input');
+	}
+
+	/**
 	 * @return array|NULL
 	 */
 	protected function getMoveData() {
 		$return = NULL;
-		$rawPostData = file_get_contents('php://input');
+		$rawPostData = $this->getRawPostData();
 		if (FALSE === empty($rawPostData)) {
-			$request = json_decode($rawPostData, TRUE);
+			$request = (array) json_decode($rawPostData, TRUE);
 			$hasRequestData = TRUE === isset($request['method']) && TRUE === isset($request['data']);
 			$isMoveMethod = 'moveContentElement' === $request['method'];
 			$return = (TRUE === $hasRequestData && TRUE === $isMoveMethod) ? $request['data'] : NULL;
