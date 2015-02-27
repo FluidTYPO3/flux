@@ -160,6 +160,9 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 			$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
 		} else {
 			$parsedTemplate = $this->templateParser->parse($source);
+			if (TRUE === $parsedTemplate->isCompilable()) {
+				$this->templateCompiler->store($templateIdentifier, $parsedTemplate);
+			}
 		}
 		return $parsedTemplate;
 	}
