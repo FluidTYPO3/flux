@@ -121,6 +121,12 @@ class MiscellaneousUtility {
 				$containerNode->appendChild($idNode);
 			}
 		}
+		// Remove all sheets that no longer contain any fields.
+		foreach ($dom->getElementsByTagName('sheet') as $sheetNode) {
+			if (0 === $sheetNode->getElementsByTagName('field')->length) {
+				$sheetNode->parentNode->removeChild($sheetNode);
+			}
+		}
 		$xml = $dom->saveXML();
 		// hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
 		$xml = str_replace('<field index=""></field>', '', $xml);
