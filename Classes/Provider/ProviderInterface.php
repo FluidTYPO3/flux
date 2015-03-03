@@ -257,9 +257,10 @@ interface ProviderInterface {
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
 	 * @param array $row the record data, by reference. Changing fields' values changes the record's values just before saving
 	 * @param DataHandler $reference A reference to the \TYPO3\CMS\Core\DataHandling\DataHandler object that is currently saving the record
+	 * @param array $removals Allows overridden methods to pass an additional array of field names to remove from the stored Flux value
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference);
+	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = array());
 
 	/**
 	 * Post-process database operation for the table that this ConfigurationProvider

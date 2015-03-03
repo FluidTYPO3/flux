@@ -78,11 +78,12 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @param integer $id
 	 * @param array $row
 	 * @param DataHandler $reference
+	 * @param array $removals Allows overridden methods to pass an additional array of field names to remove from the stored Flux value
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference) {
+	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = array()) {
 		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
-			parent::postProcessRecord($operation, $id, $row, $reference);
+			parent::postProcessRecord($operation, $id, $row, $reference, $removals);
 			$parameters = GeneralUtility::_GET();
 			$this->contentService->affectRecordByRequestParameters($id, $row, $parameters, $reference);
 			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
