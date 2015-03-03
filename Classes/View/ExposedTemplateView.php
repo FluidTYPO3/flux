@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\View;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -92,6 +93,9 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		if (NULL !== $form && TRUE === isset($this->templatePathAndFilename)) {
 			$form->setOption(Form::OPTION_TEMPLATEFILE, $this->templatePathAndFilename);
 		}
+		$signature = ExtensionNamingUtility::getExtensionSignature($this->controllerContext->getRequest()->getControllerExtensionName());
+		$overrides = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_' . $signature . '.forms.' . $form->getName());
+		$form->modify($overrides);
 		return $form;
 	}
 

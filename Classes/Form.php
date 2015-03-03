@@ -389,4 +389,24 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		return $this->outlet;
 	}
 
+	/**
+	 * @param array $structure
+	 * @return ContainerInterface
+	 */
+	public function modify(array $structure) {
+		if (TRUE === isset($structure['sheets'])) {
+			foreach ((array) $structure['sheets'] as $index => $sheetData) {
+				$sheetName = TRUE === isset($sheetData['name']) ? $sheetData['name'] : $index;
+				// check if field already exists - if it does, modify it. If it does not, create it.
+				if (TRUE === $this->has($sheetName)) {
+					$sheet = $this->get($sheetName);
+				} else {
+					$sheet = $this->createContainer('Sheet', $sheetName);
+				}
+				$sheet->modify($sheetData);
+			}
+		}
+		return parent::modify($structure);
+	}
+
 }

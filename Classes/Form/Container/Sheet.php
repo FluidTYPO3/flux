@@ -99,14 +99,16 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 	public function getFields() {
 		$fields = array();
 		foreach ($this->children as $child) {
-			$isSectionOrContainer = (TRUE === $child instanceof Section || TRUE === $child instanceof Container);
-			$isFieldEmulatorAndHasChildren = ($isSectionOrContainer && TRUE === $child->hasChildren());
-			$isActualField = (TRUE === $child instanceof FieldInterface);
-			$isNotInsideObject = (FALSE === $child->isChildOfType('Object'));
-			$isNotInsideContainer = (FALSE === $child->isChildOfType('Container'));
-			if (TRUE === $isFieldEmulatorAndHasChildren || (TRUE === $isActualField && TRUE === $isNotInsideObject && TRUE === $isNotInsideContainer)) {
-				$name = $child->getName();
-				$fields[$name] = $child;
+			if (TRUE === $child->getEnabled()) {
+				$isSectionOrContainer = (TRUE === $child instanceof Section || TRUE === $child instanceof Container);
+				$isFieldEmulatorAndHasChildren = ($isSectionOrContainer && TRUE === $child->hasChildren());
+				$isActualField = (TRUE === $child instanceof FieldInterface);
+				$isNotInsideObject = (FALSE === $child->isChildOfType('Object'));
+				$isNotInsideContainer = (FALSE === $child->isChildOfType('Container'));
+				if (TRUE === $isFieldEmulatorAndHasChildren || (TRUE === $isActualField && TRUE === $isNotInsideObject && TRUE === $isNotInsideContainer)) {
+					$name = $child->getName();
+					$fields[$name] = $child;
+				}
 			}
 		}
 		return $fields;

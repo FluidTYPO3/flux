@@ -394,4 +394,25 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 		return 0 < $this->wizards->count();
 	}
 
+	/**
+	 * @param array $structure
+	 * @return ContainerInterface
+	 */
+	public function modify(array $structure) {
+		if (TRUE === isset($structure['wizards'])) {
+			foreach ((array) $structure['wizards'] as $index => $wizardData) {
+				$wizardName = TRUE === isset($wizardData['name']) ? $wizardData['name'] : $index;
+				// check if field already exists - if it does, modify it. If it does not, create it.
+				if (TRUE === $this->has($wizardName)) {
+					$field = $this->get($wizardName);
+				} else {
+					$wizardType = TRUE === isset($wizardData['type']) ? $wizardData['type'] : 'None';
+					$field = $this->createField($wizardType, $wizardName);
+				}
+				$field->modify($wizardData);
+			}
+		}
+		return parent::modify($structure);
+	}
+
 }

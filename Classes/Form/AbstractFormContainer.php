@@ -184,4 +184,25 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 		return $this->transform;
 	}
 
+	/**
+	 * @param array $structure
+	 * @return ContainerInterface
+	 */
+	public function modify(array $structure) {
+		if (TRUE === isset($structure['fields'])) {
+			foreach ((array) $structure['fields'] as $index => $fieldData) {
+				$fieldName = TRUE === isset($fieldData['name']) ? $fieldData['name'] : $index;
+				// check if field already exists - if it does, modify it. If it does not, create it.
+				if (TRUE === $this->has($fieldName)) {
+					$field = $this->get($fieldName);
+				} else {
+					$fieldType = TRUE === isset($fieldData['type']) ? $fieldData['type'] : 'None';
+					$field = $this->createField($fieldType, $fieldName);
+				}
+				$field->modify($fieldData);
+			}
+		}
+		return parent::modify($structure);
+	}
+
 }

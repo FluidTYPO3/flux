@@ -197,7 +197,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return boolean
 	 */
 	public function getEnabled() {
-		return $this->enabled;
+		return (boolean) $this->enabled;
 	}
 
 	/**
@@ -205,7 +205,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return Form\FormInterface
 	 */
 	public function setEnabled($enabled) {
-		$this->enabled = $enabled;
+		$this->enabled = (boolean) $enabled;
 		return $this;
 	}
 
