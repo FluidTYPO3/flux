@@ -154,6 +154,7 @@ class TemplatePaths {
 	 * @api
 	 */
 	public function resolveTemplateFileForControllerAndActionAndFormat($controller, $action, $format = self::DEFAULT_FORMAT) {
+		$action = ucfirst($action);
 		foreach (array_reverse($this->templateRootPaths) as $templateRootPath) {
 			$candidate = $templateRootPath . $controller . '/' . $action . '.' . $format;
 			$candidate = $this->ensureAbsolutePath($candidate);
