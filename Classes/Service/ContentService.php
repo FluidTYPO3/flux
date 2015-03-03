@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -195,7 +196,12 @@ class ContentService implements SingletonInterface {
 		// the $relativeTo variable was passed by EXT:gridelements in which case
 		// it is invalid (not a negative/positive integer but a string).
 		if (FALSE === strpos($relativeTo, 'x')) {
-			if (0 <= (integer) $relativeTo && FALSE === empty($parameters[1])) {
+			if (0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD > $relativeTo) {
+				// Fake relative to value - we can get the target from a session variable
+				list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
+				$row['tx_flux_parent'] = $parent;
+				$row['tx_flux_column'] = $column;
+			} elseif (0 <= (integer) $relativeTo && FALSE === empty($parameters[1])) {
 				list($prefix, $column, $prefix2, , , $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
 				$relativeUid = (integer) $relativeUid;
 				if ('colpos' === $prefix && 'page' === $prefix2) {
@@ -219,6 +225,15 @@ class ContentService implements SingletonInterface {
 		}
 		$this->updateRecordInDatabase($row);
 		$this->updateMovePlaceholder($row);
+	}
+
+	/**
+	 * @param integer $relativeTo
+	 * @return array
+	 */
+	protected function getTargetAreaStoredInSession($relativeTo) {
+		'' !== session_id() ?  : session_start();
+		return $_SESSION['target' . $relativeTo];
 	}
 
 	/**

@@ -20,10 +20,25 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
  */
 class MiscellaneousUtility {
 
+	/** Overhead used by unique integer generation. Allows 10 billion records before collision */
+	const UNIQUE_INTEGER_OVERHEAD = 10000000000;
+
 	/**
 	 * @var array
 	 */
 	private static $allowedIconTypes = array('png', 'gif');
+
+	/**
+	 * @param integer $contentElementUid
+	 * @param string $areaName
+	 * @return integer
+	 */
+	public static function generateUniqueIntegerForFluxArea($contentElementUid, $areaName) {
+		$integers = array_map('ord', str_split($areaName));
+		$integers[] = $contentElementUid;
+		$integers[] = self::UNIQUE_INTEGER_OVERHEAD;
+		return 0 - array_sum($integers);
+	}
 
 	/**
 	* @param string $icon

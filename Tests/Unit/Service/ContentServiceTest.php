@@ -61,7 +61,7 @@ class ContentServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function moveRecordWithNegativeRelativeToValueLoadsRelativeRecordFromDatabaseAndCopiesValuesToRecordAndSetsColumnPositionAndUpdatesRelativeToValue() {
-		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase', 'getTargetAreaStoredInSession');
 		$mock = $this->createMock($methods);
 		$row = array(
 			'pid' => 1
@@ -296,7 +296,7 @@ class ContentServiceTest extends AbstractTestCase {
 
 		);
 		$mock = $this->getMock($this->createInstanceClassName(),
-			array('loadRecordFromDatabase', 'updateRecordInDatabase', 'updateMovePlaceholder'));
+			array('loadRecordFromDatabase', 'updateRecordInDatabase', 'updateMovePlaceholder', 'getTargetAreaStoredInSession'));
 		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
 		$mock->expects($this->any())->method('updateRecordInDatabase');
 		$mock->expects($this->any())->method('updateMovePlaceholder');

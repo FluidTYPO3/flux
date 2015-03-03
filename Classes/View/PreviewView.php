@@ -19,13 +19,17 @@ use FluidTYPO3\Flux\Utility\ClipBoardUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * @package Flux
@@ -158,11 +162,7 @@ class PreviewView {
 	 * @return string
 	 */
 	protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = NULL) {
-		$templateSource = $provider->getTemplateSource($row);
-		if (TRUE === empty($templateSource)) {
-			return NULL;
-		}
-
+		$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
 		$extensionKey = $provider->getExtensionKey($row);
 		$paths = $provider->getTemplatePaths($row);
 
@@ -179,17 +179,16 @@ class PreviewView {
 		}
 
 		$templatePaths = new TemplatePaths($paths);
-		$viewContext = new ViewContext(NULL, $extensionKey, self::CONTROLLER_NAME);
+		$viewContext = new ViewContext($templatePathAndFilename, $extensionKey, self::CONTROLLER_NAME);
 		$viewContext->setTemplatePaths($templatePaths);
 		$viewContext->setVariables($variables);
 		$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
-		$view->setTemplateSource($templateSource);
 
 		$existingContentObject = $this->configurationManager->getContentObject();
 		$contentObject = new ContentObjectRenderer();
 		$contentObject->start($row, $provider->getTableName($row));
 		$this->configurationManager->setContentObject($contentObject);
-		$previewContent = $view->renderStandaloneSection(self::PREVIEW_SECTION, $variables);
+		$previewContent = $view->renderStandaloneSection(self::PREVIEW_SECTION, $variables, TRUE);
 		$this->configurationManager->setContentObject($existingContentObject);
 		$previewContent = trim($previewContent);
 
@@ -204,17 +203,16 @@ class PreviewView {
 	 */
 	protected function renderGrid(ProviderInterface $provider, array $row, Form $form) {
 		$grid = $provider->getGrid($row);
-		if (FALSE === $grid->hasChildren()) {
-			return '';
-		}
-		$workspaceVersionOfRow = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $row['uid']);
-		$content = $this->drawGrid($workspaceVersionOfRow, $grid, $form);
+		$content = '';
+		if (TRUE === $grid->hasChildren()) {
+			$workspaceVersionOfRow = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $row['uid']);
+			$content = $this->drawGrid($workspaceVersionOfRow, $grid, $form);
 
-		$options = $this->getPreviewOptions($form);
-		if (TRUE === $this->getOptionToggle($options)) {
-			$content = $this->drawGridToggle($workspaceVersionOfRow, $content);
+			$options = $this->getPreviewOptions($form);
+			if (TRUE === $this->getOptionToggle($options)) {
+				$content = $this->drawGridToggle($workspaceVersionOfRow, $content);
+			}
 		}
-
 		return $content;
 	}
 
@@ -225,12 +223,10 @@ class PreviewView {
 	 * @return string
 	 */
 	protected function drawGrid(array $row, Grid $grid, Form $form) {
-		$collapsedClass = '';
 		$options = $this->getPreviewOptions($form);
-		if (TRUE === $this->getOptionToggle($options) && TRUE === $this->isRowCollapsed($row)) {
-			$collapsedClass = ' flux-grid-hidden';
-		}
-
+		$canToggle = $this->getOptionToggle($options);
+		$isCollapsed = $this->isRowCollapsed($row);
+		$collapsedClass = TRUE === $canToggle && TRUE === $isCollapsed ? ' flux-grid-hidden' : '';
 		$gridRows = $grid->getRows();
 		$content = '';
 		foreach ($gridRows as $gridRow) {
@@ -259,7 +255,7 @@ CONTENT;
 	protected function drawGridColumn(array $row, Column $column) {
 		$colPosFluxContent = ContentService::COLPOS_FLUXCONTENT;
 
-		$dblist = $this->getInitializePageLayoutView($row);
+		$dblist = $this->getInitializedPageLayoutView($row);
 		$this->configurePageLayoutViewForLanguageMode($dblist);
 		$records = $this->getRecords($dblist, $row, $column->getName());
 
@@ -268,14 +264,17 @@ CONTENT;
 			$content .= $this->drawRecord($row, $column, $record, $dblist);
 		}
 
+		$id = 'colpos-' . $colPosFluxContent . '-page-' . $row['pid'] . '--top-' . $row['uid'] . '-' . $column->getName();
+		$target = $this->registerTargetContentAreaInSession($row['uid'], $column->getName());
+
 		return <<<CONTENT
 		<td colspan="{$column->getColspan()}" rowspan="{$column->getRowspan()}" style="{$column->getStyle()}">
 			<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
 				<div>{$column->getLabel()}</div>
 			</div>
 			<div class="fce-container t3-page-ce-wrapper">
-				<div class="t3-page-ce">
-					<div class="t3-page-ce-dropzone" id="colpos-$colPosFluxContent-page-{$row['pid']}--top-{$row['uid']}-{$column->getName()}" style="height: 16px;">
+				<div class="t3-page-ce ui-draggable" data-page="{$target}">
+					<div class="t3-page-ce-dropzone ui-droppable" id="{$id}" style="min-height: 16px;">
 						<div class="t3-page-ce-wrapper-new-ce">
 							{$this->drawNewIcon($row, $column)}
 							{$this->drawPasteIcon($row, $column)}
@@ -290,6 +289,20 @@ CONTENT;
 	}
 
 	/**
+	 * @param integer $contentElementUid
+	 * @param string $areaName
+	 * @return integer
+	 */
+	protected function registerTargetContentAreaInSession($contentElementUid, $areaName) {
+		if ('' === session_id()) {
+			session_start();
+		}
+		$integer = MiscellaneousUtility::generateUniqueIntegerForFluxArea($contentElementUid, $areaName);
+		$_SESSION['target' . $integer] = array($contentElementUid, $areaName);
+		return $integer;
+	}
+
+	/**
 	 * @param array $row
 	 * @param Column $column
 	 * @param array $record
@@ -298,21 +311,16 @@ CONTENT;
 	 */
 	protected function drawRecord(array $row, Column $column, array $record, PageLayoutView $dblist) {
 		$colPosFluxContent = ContentService::COLPOS_FLUXCONTENT;
-
-		$disabledClass = '';
-		if (FALSE === empty($record['isDisabled'])) {
-			$disabledClass = ' t3-page-ce-hidden';
-		}
-
+		$disabledClass = FALSE === empty($record['isDisabled']) ? ' t3-page-ce-hidden' : '';
 		$element = $this->drawElement($record, $dblist);
 		if (0 === (integer) $dblist->tt_contentConfig['languageMode']) {
 			$element = '<div class="t3-page-ce-dragitem">' . $element . '</div>';
 		}
 
 		return <<<CONTENT
-		<div class="t3-page-ce$disabledClass {$record['_CSSCLASS']}" id="element-tt_content-{$record['uid']}">
+		<div class="t3-page-ce$disabledClass {$record['_CSSCLASS']} ui-draggable" id="element-tt_content-{$record['uid']}" data-table="tt_content" data-uid="{$record['uid']}">
 			$element
-			<div class="t3-page-ce-dropzone" id="colpos-$colPosFluxContent-page-{$row['pid']}-{$row['uid']}-after-{$record['uid']}" style="height: 16px;">
+			<div class="t3-page-ce-dropzone ui-droppable" id="colpos-$colPosFluxContent-page-{$row['pid']}-{$row['uid']}-after-{$record['uid']}" style="min-height: 16px;">
 				<div class="t3-page-ce-wrapper-new-ce">
 					{$this->drawNewIcon($row, $column, $record['uid'])}
 					{$this->drawPasteIcon($row, $column, FALSE, $record)}
@@ -350,39 +358,64 @@ CONTENT;
 	 */
 	protected function drawNewIcon(array $row, Column $column, $after = 0) {
 		$columnName = $column->getName();
-		if (FALSE === empty($columnName) && FALSE === empty($after)) {
-			$after = '-' . $after;
-		} else {
-			$after = $row['pid'];
-		}
+		$after = (FALSE === empty($columnName) && FALSE === empty($after)) ? '-' . $after : $row['pid'];
+		$icon = IconUtility::getSpriteIcon('actions-document-new');
+		$legacy = $this->isLegacyCoreVersion();
+		$uri = (FALSE === $legacy ? $this->getNewLink($row, $after, $columnName) : $this->getNewLinkLegacy($row, $after, $columnName));
+		$title = $this->getLanguageService()->getLL('newRecordHere');
+		$inner = $this->getLanguageService()->getLL('content');
+		$link = '<a href="#" onclick="window.location.href=\'' . htmlspecialchars($uri) . '\'" title="' . $title .
+			'" class="btn btn-default btn-sm">' . $icon . ' ' . $inner . '</a>';
+		return $link;
+	}
 
-		$icon = MiscellaneousUtility::getIcon('actions-document-new');
+	/**
+	 * @return boolean
+	 */
+	protected function isLegacyCoreVersion() {
+		return (FALSE === version_compare(VersionNumberUtility::getNumericTypo3Version(), '7.1.0', '>='));
+	}
 
-		// TYPO3 CMS 7.1.0 removed deprecated entry points
-		if (0 <= version_compare(VersionNumberUtility::getNumericTypo3Version(), '7.1.0')) {
-			$returnUri = str_replace('/' . TYPO3_mainDir, '', GeneralUtility::getIndpEnv('REQUEST_URI'));
-			$uri = BackendUtility::getModuleUrl('new_content_element', array(
-				'id' => $row['pid'],
-				'uid_pid' => $after,
-				'colPos' => ContentService::COLPOS_FLUXCONTENT,
-				'sys_language_uid' => $row['sys_language_uid'],
-				'defVals[tt_content][tx_flux_parent]' => $row['uid'],
-				'defVals[tt_content][tx_flux_column]' => $columnName,
-				'returnUrl' => $returnUri
-			));
-		} else {
-			$returnUri = rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI'));
-			$uri = 'db_new_content_el.php?id=' . $row['pid'] .
-				'&uid_pid=' . $after .
-				'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
-				'&sys_language_uid=' . $row['sys_language_uid'] .
-				'&defVals[tt_content][tx_flux_parent]=' . $row['uid'] .
-				'&defVals[tt_content][tx_flux_column]=' . $columnName .
-				'&returnUrl=' . $returnUri;
-		}
-		$title = LocalizationUtility::translate('new', 'Flux');
+	/**
+	 * Generate a link valid on TYPO3 7.0+
+	 *
+	 * @param array $row
+	 * @param integer $after
+	 * @param string $columnName
+	 * @return string
+	 */
+	protected function getNewLink(array $row, $after, $columnName) {
+		$returnUri = str_replace('/' . TYPO3_mainDir, '', GeneralUtility::getIndpEnv('REQUEST_URI'));
+		$uri = BackendUtility::getModuleUrl('new_content_element', array(
+			'id' => $row['pid'],
+			'uid_pid' => $after,
+			'colPos' => ContentService::COLPOS_FLUXCONTENT,
+			'sys_language_uid' => $row['sys_language_uid'],
+			'defVals[tt_content][tx_flux_parent]' => $row['uid'],
+			'defVals[tt_content][tx_flux_column]' => $columnName,
+			'returnUrl' => $returnUri
+		));
+		return $uri;
+	}
 
-		return MiscellaneousUtility::wrapLink($icon, $uri, $title);
+	/**
+	 * Generate a link valid on TYPO3 6.2
+	 *
+	 * @param array $row
+	 * @param integer $after
+	 * @param string $columnName
+	 * @return string
+	 */
+	protected function getNewLinkLegacy(array $row, $after, $columnName) {
+		$returnUri = rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI'));
+		$uri = 'db_new_content_el.php?id=' . $row['pid'] .
+			'&uid_pid=' . $after .
+			'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
+			'&sys_language_uid=' . $row['sys_language_uid'] .
+			'&defVals[tt_content][tx_flux_parent]=' . $row['uid'] .
+			'&defVals[tt_content][tx_flux_column]=' . $columnName .
+			'&returnUrl=' . $returnUri;
+		return $uri;
 	}
 
 	/**
@@ -393,12 +426,7 @@ CONTENT;
 	 * @return string
 	 */
 	protected function drawPasteIcon(array $row, Column $column, $reference = FALSE, array $relativeTo = array()) {
-		if (TRUE === $reference) {
-			$command = 'reference';
-		} else {
-			$command = 'paste';
-		}
-
+		$command = TRUE === $reference ? 'reference' : 'paste';
 		$relativeUid = TRUE === isset($relativeTo['uid']) ? $relativeTo['uid'] : 0;
 		$relativeTo = $row['pid'] . '-' . $command . '-' . $relativeUid . '-' . $row['uid'];
 		if (FALSE === empty($area)) {
@@ -430,12 +458,20 @@ CONTENT;
 	 * @return string
 	 */
 	protected function isRowCollapsed(array $row) {
-		if (FALSE === isset($_COOKIE['fluxCollapseStates'])) {
-			return FALSE;
+		$collapsed = FALSE;
+		$cookie = $this->getCookie();
+		if (NULL !== $_COOKIE) {
+			$cookie = json_decode(urldecode($cookie));
+			$collapsed = in_array($row['uid'], (array) $cookie);
 		}
+		return $collapsed;
+	}
 
-		$cookie = json_decode(urldecode($_COOKIE['fluxCollapseStates']));
-		return in_array($row['uid'], $cookie);
+	/**
+	 * @return string|NULL
+	 */
+	protected function getCookie() {
+		return TRUE === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : NULL;
 	}
 
 	/**
@@ -508,7 +544,7 @@ CONTENT;
 	 * @param array $row
 	 * @return PageLayoutView
 	 */
-	protected function getInitializePageLayoutView(array $row) {
+	protected function getInitializedPageLayoutView(array $row) {
 		$pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $row['pid']);
 		/** @var $dblist PageLayoutView */
 		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
@@ -527,6 +563,7 @@ CONTENT;
 		$dblist->tt_contentConfig['showCommands'] = 1;
 		$dblist->tt_contentConfig['showInfo'] = 1;
 		$dblist->tt_contentConfig['single'] = 0;
+		$dblist->tt_contentConfig['activeCols'] .= ',' . ContentService::COLPOS_FLUXCONTENT;
 		$dblist->CType_labels = array();
 		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";
 		$dblist->initializeLanguages();
@@ -565,26 +602,24 @@ CONTENT;
 	}
 
 	/**
-	 * @return \TYPO3\CMS\Core\Database\DatabaseConnection
+	 * @return DatabaseConnection
 	 */
 	protected function getDatabaseConnection() {
 		return $GLOBALS['TYPO3_DB'];
 	}
 
 	/**
-	 * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+	 * @return BackendUserAuthentication
 	 */
 	protected function getBackendUser() {
 		return $GLOBALS['BE_USER'];
 	}
 
 	/**
-	 * @return \TYPO3\CMS\Lang\LanguageService
+	 * @return LanguageService
 	 */
 	protected function getLanguageService() {
 		return $GLOBALS['LANG'];
 	}
 
 }
-
-?>

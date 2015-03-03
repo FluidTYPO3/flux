@@ -63,48 +63,45 @@ class PreviewViewTest extends AbstractTestCase {
 		$provider->setForm($form);
 		$provider->setTemplatePaths(array());
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
-		$preview = $provider->getPreview(Records::$contentRecordIsParentAndHasChildren);
+		$previewView = $this->getMock($this->createInstanceClassName(), array('registerTargetContentAreaInSession'));
+		$previewView->expects($this->any())->method('registerTargetContentAreaInSession');
+		$previewView->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
+		$previewView->injectConfigurationManager($this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager'));
+		$previewView->injectWorkspacesAwareRecordService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService'));
+		$preview = $previewView->getPreview($provider, Records::$contentRecordIsParentAndHasChildren);
 		$this->$finalAssertionMethod($preview);
 	}
 
 	/**
-	 * @param array $preview
+	 * @param string $preview
 	 * @return void
 	 */
-	protected function assertPreviewIsEmpty(array $preview) {
-		$this->assertNull($preview[0]);
-		$this->assertEquals('Preview text', $preview[1]);
-		$this->assertFalse($preview[2]);
+	protected function assertPreviewIsEmpty($preview) {
+		$this->assertEquals('Preview text', $preview);
 	}
 
 	/**
-	 * @param array $preview
+	 * @param string $preview
 	 * @return void
 	 */
-	protected function assertPreviewComesAfterGrid(array $preview) {
-		$this->assertNull($preview[0]);
-		$this->assertStringStartsNotWith('Preview text', $preview[1]);
-		$this->assertFalse($preview[2]);
+	protected function assertPreviewComesAfterGrid($preview) {
+		$this->assertStringStartsNotWith('Preview text', $preview);
 	}
 
 	/**
-	 * @param array $preview
+	 * @param string $preview
 	 * @return void
 	 */
-	protected function assertPreviewComesBeforeGrid(array $preview) {
-		$this->assertNull($preview[0]);
-		$this->assertStringStartsWith('Preview text', $preview[1]);
-		$this->assertFalse($preview[2]);
+	protected function assertPreviewComesBeforeGrid($preview) {
+		$this->assertStringStartsWith('Preview text', $preview);
 	}
 
 	/**
-	 * @param array $preview
+	 * @param string $preview
 	 * @return void
 	 */
-	protected function assertPreviewContainsToggle(array $preview) {
-		$this->assertNull($preview[0]);
-		$this->assertStringStartsWith('<div class="grid-visibility-toggle">', $preview[1]);
-		$this->assertFalse($preview[2]);
+	protected function assertPreviewContainsToggle($preview) {
+		$this->assertStringStartsWith('<div class="grid-visibility-toggle">', $preview);
 	}
 
 	/**
