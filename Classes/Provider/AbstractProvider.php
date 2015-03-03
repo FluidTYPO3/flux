@@ -285,6 +285,8 @@ class AbstractProvider implements ProviderInterface {
 					$templatePaths = new TemplatePaths($paths);
 					$viewContext = new ViewContext(NULL, $extensionName, $controllerName);
 					$viewContext->setTemplatePaths($templatePaths);
+					$variables = $this->getViewVariables($row);
+					$viewContext->setVariables($variables);
 					$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
 					$view->setTemplateSource($templateSource);
 					$form = $view->getForm($section, $formName);
