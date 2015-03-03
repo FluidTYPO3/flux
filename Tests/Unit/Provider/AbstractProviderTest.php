@@ -133,6 +133,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canGetForm() {
 		$provider = $this->getConfigurationProviderInstance();
+		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
 		$record = $this->getBasicRecord();
 		$form = $provider->getForm($record);
 		if ($form) {

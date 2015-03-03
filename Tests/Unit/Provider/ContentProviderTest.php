@@ -214,4 +214,30 @@ class ContentProviderTest extends AbstractProviderTest {
 		);
 	}
 
+	/**
+	 * @test
+	 * @dataProvider getMoveDataTestvalues
+	 * @param mixed $postData
+	 * @param string|NULL $expected
+	 */
+	public function getMoveDataReturnsExpectedValues($postData, $expected) {
+		$instance = $this->getMock($this->createInstanceClassName(), array('getRawPostData'));
+		$instance->expects($this->once())->method('getRawPostData')->willReturn($postData);
+		$result = $this->callInaccessibleMethod($instance, 'getMoveData');
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getMoveDataTestvalues() {
+		return array(
+			array(NULL, NULL),
+			array('{}', NULL),
+			array('{"method": "test"}', NULL),
+			array('{"method": "test", "data": []}', NULL),
+			array('{"method": "moveContentElement", "data": "test"}', 'test'),
+		);
+	}
+
 }

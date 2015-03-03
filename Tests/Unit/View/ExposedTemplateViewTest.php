@@ -102,8 +102,9 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
 		$view->render();
-		$view->getForm();
-		$view->getForm();
+		$form1 = $view->getForm();
+		$form2 = $view->getForm();
+		$this->assertSame($form1, $form2);
 	}
 
 	/**
@@ -136,7 +137,8 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	public function canGetStoredVariableWithoutConfigurationSectionName() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper', 'storage');
+		$result = $this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper', 'storage');
+		$this->assertEmpty($result);
 	}
 
 	/**
@@ -172,28 +174,15 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @test
-	 */
-	public function canSetAndThenGetTemplateSource() {
-		$service = $this->createFluxServiceInstance();
-		$viewContext = new ViewContext(NULL, 'Flux', 'API');
-		$view = $service->getPreparedExposedTemplateView($viewContext);
-		$view->setTemplateSource('dummy-source');
-		$this->assertEquals('dummy-source', $this->callInaccessibleMethod($view, 'getTemplateSource'));
-	}
-
-	/**
 	 * @param $templatePathAndFilename
 	 * @return ExposedTemplateView
 	 */
 	protected function getPreparedViewWithTemplateFile($templatePathAndFilename) {
 		$templatePaths = $this->getFixtureTemplatePaths();
-		$this->assertFileExists($templatePathAndFilename);
 		$service = $this->createFluxServiceInstance();
-		$viewContext = new ViewContext(NULL, 'Flux', 'API');
+		$viewContext = new ViewContext($templatePathAndFilename, 'Flux', 'API');
 		$viewContext->setTemplatePaths(new TemplatePaths($templatePaths));
 		$view = $service->getPreparedExposedTemplateView($viewContext);
-		$view->setTemplatePathAndFilename($templatePathAndFilename);
 		return $view;
 	}
 

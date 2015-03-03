@@ -204,9 +204,9 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 	 */
 	public function canInitializeView() {
 		$controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('setTemplatePathAndFilename'), array(), '', FALSE);
+		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('dummy'), array(), '', FALSE);
 		ObjectAccess::setProperty($view, 'objectManager', $this->objectManager, TRUE);
-		$provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getTemplateFilename'));
+		$provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getTemplatePathAndFilename'));
 		$instance = $this->getAccessibleMock($controllerClassName,
 			array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables'));
 		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getPreparedExposedTemplateView'));
@@ -352,8 +352,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 		$provider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('getExtensionKey', 'getTemplatePathAndFilename'));
 		$provider->expects($this->once())->method('getExtensionKey')->with($row)->will($this->returnValue($this->extensionKey));
 		$provider->expects($this->once())->method('getTemplatePathAndFilename')->with($row)->will($this->returnValue('/dev/null'));
-		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('setTemplatePathAndFilename'));
-		$view->expects($this->once())->method('setTemplatePathAndFilename')->with('/dev/null');
+		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('dummy'));
 		$configurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('getPreparedExposedTemplateView'));
 		$configurationService->expects($this->once())->method('getPreparedExposedTemplateView')->will($this->returnValue($view));
 		$request = $this->getMock('TYPO3\CMS\Extbase\Mvc\Web\Request', array('getControllerName'));

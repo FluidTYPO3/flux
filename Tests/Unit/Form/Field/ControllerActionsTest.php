@@ -346,4 +346,19 @@ class ControllerActionsTest extends AbstractFieldTest {
 		$this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux', $label);
 	}
 
+	/**
+	 * @test
+	 */
+	public function getActionsForExtensionNameAndPluginNameReturnsExpectedArray() {
+		$instance = $this->createInstance();
+		$instance->setControllerExtensionName('Extension');
+		$instance->setPluginName('Plugin');
+		$actions = array('Controller' => array('actions' => array('action1', 'action2')));
+		$expected = array('Controller' => array('action1', 'action2'));
+		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']['Extension']['plugins']['Plugin']['controllers'] = $actions;
+		$result = $this->callInaccessibleMethod($instance, 'getActionsForExtensionNameAndPluginName');
+		$this->assertEquals($expected, $result);
+		unset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']);
+	}
+
 }

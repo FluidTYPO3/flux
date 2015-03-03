@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\PreviewView;
+use TYPO3\CMS\Backend\View\PageLayoutView;
 
 /**
  * @package Flux
@@ -39,12 +40,26 @@ class PreviewViewTest extends AbstractTestCase {
 				'columns' => array(
 					'CType' => array(
 						'config' => array(
-							'items' => array()
+							'items' => array(
+								'foo'
+							)
 						)
 					)
 				)
 			)
 		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function returnsDefaultsWithoutForm() {
+		$instance = $this->createInstance();
+		$result = $this->callInaccessibleMethod($instance, 'getPreviewOptions');
+		$this->assertEquals(array(
+			PreviewView::OPTION_MODE => PreviewView::MODE_APPEND,
+			PreviewView::OPTION_TOGGLE => TRUE,
+		), $result);
 	}
 
 	/**
@@ -114,6 +129,22 @@ class PreviewViewTest extends AbstractTestCase {
 			array(array(PreviewView::OPTION_MODE => PreviewView::MODE_APPEND, PreviewView::OPTION_TOGGLE => FALSE), 'assertPreviewComesBeforeGrid'),
 			array(array(PreviewView::OPTION_MODE => PreviewView::MODE_PREPEND, PreviewView::OPTION_TOGGLE => TRUE), 'assertPreviewContainsToggle')
 		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function configurePageLayoutViewForLanguageModeSetsSpecialVariablesInLanguageMode() {
+		$languageService = $this->getMock('TYPO3\\CMS\\Lang\\LanguageService', array('getLL'));
+		$languageService->expects($this->once())->method('getLL');
+		$view = $this->getMock('TYPO3\\CMS\\Backend\\View\\PageLayoutView', array('initializeLanguages'));
+		$view->expects($this->once())->method('initializeLanguages');
+		$instance = $this->getMock($this->createInstanceClassName(), array('getPageModuleSettings', 'getLanguageService'));
+		$instance->expects($this->once())->method('getPageModuleSettings')->willReturn(array('function' => 2));
+		$instance->expects($this->once())->method('getLanguageService')->willReturn($languageService);
+		$result = $this->callInaccessibleMethod($instance, 'configurePageLayoutViewForLanguageMode', $view);
+		$this->assertSame($view, $result);
+		$this->assertEquals(1, $result->tt_contentConfig['languageMode']);
 	}
 
 }

@@ -266,29 +266,27 @@ class AbstractProvider implements ProviderInterface {
 		if (NULL !== $this->form) {
 			return $this->form;
 		}
-		$cacheKey = $this->getCacheKeyForStoredVariable($row, 'form');
+		$formName = 'form';
+		$cacheKey = $this->getCacheKeyForStoredVariable($row, $formName);
 		if (FALSE === isset(self::$cache[$cacheKey])) {
 			$formClassName = $this->resolveFormClassName($row);
 			if (NULL !== $formClassName) {
 				$form = call_user_func_array(array($formClassName, 'create'), array($row));
 			} else {
-				$templateSource = $this->getTemplateSource($row);
-				if (NULL !== $templateSource) {
+				$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+				if (NULL !== $templatePathAndFilename) {
 					$class = get_class($this);
 					$controllerName = substr(substr($class, strrpos($class, '\\')), -8);
 					$section = $this->getConfigurationSectionName($row);
-					$formName = 'form';
 					$paths = $this->getTemplatePaths($row);
 					$extensionKey = $this->getExtensionKey($row);
 					$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
-
 					$templatePaths = new TemplatePaths($paths);
-					$viewContext = new ViewContext(NULL, $extensionName, $controllerName);
+					$viewContext = new ViewContext($templatePathAndFilename, $extensionName, $controllerName);
 					$viewContext->setTemplatePaths($templatePaths);
 					$variables = $this->getViewVariables($row);
 					$viewContext->setVariables($variables);
 					$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
-					$view->setTemplateSource($templateSource);
 					$form = $view->getForm($section, $formName);
 				}
 			}
@@ -390,20 +388,6 @@ class AbstractProvider implements ProviderInterface {
 			return GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
 		}
 		return $this->templatePathAndFilename;
-	}
-
-	/**
-	 * Get the source of the template to be rendered. Default implementation
-	 * returns the source of whichever filename is returned from the Provider.
-	 * Overriding this method in other implementations allows the Provider
-	 * to operate without a template file.
-	 *
-	 * @param array $row
-	 * @return string|NULL
-	 */
-	public function getTemplateSource(array $row) {
-		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		return TRUE === file_exists($templatePathAndFilename) ? file_get_contents($templatePathAndFilename) : NULL;
 	}
 
 	/**

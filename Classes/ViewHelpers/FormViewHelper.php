@@ -47,6 +47,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 	 * @return void
 	 */
 	public function render() {
+		$extensionName = $this->getExtensionName();
 		$form = Form::create();
 		$container = $form->last();
 		// configure Form instance
@@ -56,7 +57,6 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$form->setDescription($this->arguments['description']);
 		$form->setEnabled($this->arguments['enabled']);
 		$form->setCompact($this->arguments['compact']);
-		$extensionName = $this->getExtensionName();
 		$form->setExtensionName($extensionName);
 		$form->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
 		$form->setVariables((array) $this->arguments['variables']);
@@ -67,25 +67,16 @@ class FormViewHelper extends AbstractFormViewHelper {
 		if (FALSE === $form->hasOption(Form::OPTION_GROUP)) {
 			$form->setOption(Form::OPTION_GROUP, $this->arguments['wizardTab']);
 		}
-		// rendering child nodes with Form as active container
+
+		// rendering child nodes with Form's last sheet as active container
 		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_FORM, $form);
+		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
 		$this->templateVariableContainer->add(self::SCOPE_VARIABLE_FORM, $form);
+
 		$this->setContainer($container);
-		if (FALSE === $this->hasArgument(self::SCOPE_VARIABLE_EXTENSIONNAME)) {
-			$this->renderChildren();
-		} else {
-			// render with stored extension context, backing up any stored variable from parents.
-			$extensionName = NULL;
-			if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME)) {
-				$extensionName = $this->viewHelperVariableContainer->get(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
-			}
-			$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
-			$this->renderChildren();
-			$this->viewHelperVariableContainer->remove(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
-			if (NULL !== $extensionName) {
-				$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
-			}
-		}
+		$this->renderChildren();
+
+		$this->viewHelperVariableContainer->remove(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
 		$this->viewHelperVariableContainer->remove(self::SCOPE, self::SCOPE_VARIABLE_CONTAINER);
 		$this->templateVariableContainer->remove(self::SCOPE_VARIABLE_CONTAINER);
 	}

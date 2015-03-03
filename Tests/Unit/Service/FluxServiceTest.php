@@ -11,9 +11,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -277,17 +280,74 @@ class FluxServiceTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @disabledtest
+	 * @test
 	 */
 	public function templateWithErrorReturnsFormWithErrorReporter() {
-		$badSource = '<f:layout invalid="TRUE" />';
-		$temp = tempnam($_SERVER['TEMPDIR'], 'badtemplate') . '.html';
-		// @todo: use vfs
-		$viewContext = new ViewContext($temp);
-		$form = $this->createFluxServiceInstance()->getFormFromTemplateFile($viewContext);
+		$viewContext = new ViewContext($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getPreparedExposedTemplateView'));
+		$instance->expects($this->once())->method('getPreparedExposedTemplateView')->willThrowException(new \RuntimeException());
+		$instance->injectObjectManager($this->objectManager);
+		$form = $instance->getFormFromTemplateFile($viewContext);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Field\UserFunction', reset($form->getFields()));
 		$this->assertEquals('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField', reset($form->getFields())->getFunction());
+	}
+
+	/**
+	 * @test
+	 */
+	public function createFlashMessageCreatesFlashMessage() {
+		$instance = $this->createInstance();
+		$result = $this->callInaccessibleMethod($instance, 'createFlashMessage', 'Message', 'Title', 2);
+		$this->assertAttributeEquals('Message', 'message', $result);
+		$this->assertAttributeEquals('Title', 'title', $result);
+		$this->assertAttributeEquals(2, 'severity', $result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function messageIgnoresRepeatedMessages() {
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('createFlashMessage'));
+		$instance->expects($this->once())->method('createFlashMessage')->willReturn(new FlashMessage('Test', 'Test', 2));
+		$instance->message('Test', 'Test', 2);
+		$instance->message('Test', 'Test', 2);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testDebug() {
+		$exception = new \RuntimeException('Test');
+		$instance = $this->createInstance();
+		$result = $instance->debug($exception);
+		$this->assertNull($result);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider getConvertFlexFormContentToArrayTestValues
+	 * @param string $flexFormContent
+	 * @param Form|NULL $form
+	 * @param string|NULL $languagePointer
+	 * @param string|NULL $valuePointer
+	 * @param array $expected
+	 */
+	public function testConvertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer, $expected) {
+		$instance = $this->createInstance();
+		$result = $instance->convertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer);
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getConvertFlexFormContentToArrayTestValues() {
+		return array(
+			array('', NULL, '', '', array()),
+			array('', Form::create(), '', '', array()),
+			array(Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD, Form::create(), '', '', array('settings' => array('input' => 0)))
+		);
 	}
 
 }

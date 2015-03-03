@@ -36,22 +36,10 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 		$component = $this->getComponent();
 		$container = $this->getContainer();
 		$container->add($component);
+		// rendering child nodes with Form's last sheet as active container
+		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
 		$this->setContainer($component);
-		if (FALSE === $this->hasArgument(self::SCOPE_VARIABLE_EXTENSIONNAME)) {
-			$this->renderChildren();
-		} else {
-			// render with stored extension context, backing up any stored variable from parents.
-			$extensionName = NULL;
-			if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME)) {
-				$extensionName = $this->viewHelperVariableContainer->get(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
-			}
-			$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
-			$this->renderChildren();
-			$this->viewHelperVariableContainer->remove(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
-			if (NULL !== $extensionName) {
-				$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
-			}
-		}
+		$this->renderChildren();
 		$this->setContainer($container);
 	}
 

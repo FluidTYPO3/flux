@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -106,7 +107,7 @@ class DataViewHelper extends AbstractViewHelper {
 			$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field]);
 		} else {
 			$dataArray = array();
-			/** @var \FluidTYPO3\Flux\Provider\ProviderInterface $provider */
+			/** @var ProviderInterface $provider */
 			foreach ($providers as $provider) {
 				$data = (array) $provider->getFlexFormValues($record);
 				$dataArray = RecursiveArrayUtility::merge($dataArray, $data);

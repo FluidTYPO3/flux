@@ -178,13 +178,6 @@ abstract class AbstractFluxController extends ActionController {
 		$this->request->setControllerExtensionName($extensionName);
 		$this->request->setControllerActionName($controllerActionName);
 		$this->request->setControllerVendorName($vendorName);
-		$view->setControllerContext($this->controllerContext);
-		if (FALSE === empty($templatePathAndFilename)) {
-			$view->setTemplatePathAndFilename($templatePathAndFilename);
-		} elseif (TRUE === method_exists($view, 'setTemplateSource')) {
-			$templateSource = $this->provider->getTemplateSource($row);
-			$view->setTemplateSource($templateSource);
-		}
 		$this->view = $view;
 	}
 

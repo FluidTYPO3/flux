@@ -9,9 +9,9 @@ namespace FluidTYPO3\Flux\Provider;
  */
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
@@ -29,9 +29,9 @@ class ProviderResolver implements SingletonInterface {
 	protected $providers = NULL;
 
 	/**
-	 * @var ConfigurationManagerInterface
+	 * @var FluxService
 	 */
-	protected $configurationManager;
+	protected $configurationService;
 
 	/**
 	 * @var ObjectManagerInterface
@@ -39,11 +39,11 @@ class ProviderResolver implements SingletonInterface {
 	protected $objectManager;
 
 	/**
-	 * @param ConfigurationManagerInterface $configurationManager
+	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
-		$this->configurationManager = $configurationManager;
+	public function injectConfigurationService(FluxService $configurationService) {
+		$this->configurationService = $configurationService;
 	}
 
 	/**
@@ -117,11 +117,7 @@ class ProviderResolver implements SingletonInterface {
 	 * @return ProviderInterface[]
 	 */
 	public function loadTypoScriptConfigurationProviderInstances() {
-		$typoScriptSettings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		if (FALSE === isset($typoScriptSettings['plugin.']['tx_flux.']['providers.'])) {
-			return array();
-		}
-		$providerConfigurations = GeneralUtility::removeDotsFromTS($typoScriptSettings['plugin.']['tx_flux.']['providers.']);
+		$providerConfigurations = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_flux.providers');
 		$providers = array();
 		foreach ($providerConfigurations as $name => $providerSettings) {
 			$className = 'FluidTYPO3\Flux\Provider\Provider';
@@ -156,15 +152,15 @@ class ProviderResolver implements SingletonInterface {
 	 */
 	protected function validateAndInstantiateProviders(array $providers) {
 		$instances = array();
-		foreach ($providers as $providerClassNameOrInstance) {
-			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($providerClassNameOrInstance))) {
-				$className = is_object($providerClassNameOrInstance)? get_class($providerClassNameOrInstance) : $providerClassNameOrInstance;
+		foreach ($providers as $classNameOrInstance) {
+			if (FALSE === in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($classNameOrInstance))) {
+				$className = is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance;
 				throw new \RuntimeException($className . ' must implement ProviderInterfaces from Flux/Provider', 1327173536);
 			}
-			if (TRUE === is_object($providerClassNameOrInstance)) {
-				$provider = &$providerClassNameOrInstance;
+			if (TRUE === is_object($classNameOrInstance)) {
+				$provider = $classNameOrInstance;
 			} else {
-				$provider = $this->objectManager->get($providerClassNameOrInstance);
+				$provider = $this->objectManager->get($classNameOrInstance);
 			}
 			$instances[] = $provider;
 		}

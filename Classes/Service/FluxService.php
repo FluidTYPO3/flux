@@ -32,6 +32,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 
 /**
  * Flux FlexForm integration Service
@@ -195,11 +196,13 @@ class FluxService implements SingletonInterface {
 		$context->setUriBuilder($uriBuilder);
 		$context->setRequest($request);
 		$context->setResponse($response);
+		/** @var $renderingContext RenderingContext */
+		$renderingContext = $this->objectManager->get('TYPO3\\CMS\\Fluid\\Core\\Rendering\\RenderingContext');
+		$renderingContext->setControllerContext($context);
 		/** @var $exposedView ExposedTemplateView */
 		$exposedView = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
-		$exposedView->setControllerContext($context);
+		$exposedView->setRenderingContext($renderingContext);
 		$exposedView->assignMultiple($variables);
-		$exposedView->setProviderPaths($paths);
 		$exposedView->setTemplatePaths($viewContext->getTemplatePaths());
 		$exposedView->setTemplatePathAndFilename($viewContext->getTemplatePathAndFilename());
 		return $exposedView;
@@ -432,7 +435,7 @@ class FluxService implements SingletonInterface {
 	 * @param string $message
 	 * @param integer $severity
 	 * @param string $title
-	 * @return NULL
+	 * @return void
 	 */
 	public function message($message, $severity = GeneralUtility::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
 		$hash = $message . $severity;
@@ -440,16 +443,14 @@ class FluxService implements SingletonInterface {
 		$alreadySent = TRUE === isset($this->sentDebugMessages[$hash]);
 		$shouldExcludedFriendlySeverities = 2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$isExcludedSeverity = (TRUE === $shouldExcludedFriendlySeverities && TRUE === in_array($severity, self::$friendlySeverities));
-		if (TRUE === $disabledDebugMode || TRUE === $alreadySent || TRUE === $isExcludedSeverity) {
-			return NULL;
+		if (FALSE === $disabledDebugMode && FALSE === $alreadySent && FALSE === $isExcludedSeverity) {
+			$isAjaxCall = (boolean) 0 < GeneralUtility::_GET('ajaxCall');
+			$flashMessage = $this->createFlashMessage($message, $title, $severity);
+			$flashMessage->setStoreInSession($isAjaxCall);
+			$flashMessageQueue = new FlashMessageQueue('flux');
+			$flashMessageQueue->addMessage($flashMessage);
+			$this->sentDebugMessages[$hash] = TRUE;
 		}
-		$isAjaxCall = (boolean) 0 < GeneralUtility::_GET('ajaxCall');
-		$flashMessage = new FlashMessage($message, $title, $severity);
-		$flashMessage->setStoreInSession($isAjaxCall);
-		$flashMessageQueue = new FlashMessageQueue('flux');
-		$flashMessageQueue->addMessage($flashMessage);
-		$this->sentDebugMessages[$hash] = TRUE;
-		return NULL;
 	}
 
 	/**
@@ -457,6 +458,16 @@ class FluxService implements SingletonInterface {
 	 */
 	public function flushCache() {
 		self::$cache = array();
+	}
+
+	/**
+	 * @param string $message
+	 * @param string $title
+	 * @param integer $severity
+	 * @return FlashMessage
+	 */
+	protected function createFlashMessage($message, $title, $severity) {
+		return new FlashMessage($message, $title, $severity);
 	}
 
 }
