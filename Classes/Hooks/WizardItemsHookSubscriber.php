@@ -129,6 +129,7 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		// Detect what was clicked in order to create the new content element; decide restrictions
 		// based on this.
 		$defaultValues = $this->getDefaultValues();
+		$parentRecordUid = 0;
 		if (0 > $relativeUid) {
 			// pasting after another element means we should try to resolve the Flux content relation
 			// from that element instead of GET parameters (clicked: "create new" icon after other element)
@@ -146,7 +147,7 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		// Grid returned by the Provider that applies to the parent element's type and configuration
 		// (admitted, that's quite a mouthful - but it's not that different from reading the values from
 		// a page template like above; it's the same principle).
-		if (isset($parentRecordUid) && 0 < $parentRecordUid && FALSE === empty($fluxAreaName)) {
+		if (0 < $parentRecordUid && FALSE === empty($fluxAreaName)) {
 			$parentRecord = (array) $this->recordService->getSingle('tt_content', '*', $parentRecordUid);
 			$contentProviders = $this->configurationService->resolveConfigurationProviders('tt_content', NULL, $parentRecord);
 			$this->appendToWhiteAndBlacklistFromProviders($contentProviders, $parentRecord, $whitelist, $blacklist, NULL, $fluxAreaName);
