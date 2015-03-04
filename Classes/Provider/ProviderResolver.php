@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Provider;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
