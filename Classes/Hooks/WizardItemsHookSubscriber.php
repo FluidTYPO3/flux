@@ -146,7 +146,7 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		// Grid returned by the Provider that applies to the parent element's type and configuration
 		// (admitted, that's quite a mouthful - but it's not that different from reading the values from
 		// a page template like above; it's the same principle).
-		if (0 < $parentRecordUid && FALSE === empty($fluxAreaName)) {
+		if (isset($parentRecordUid) && 0 < $parentRecordUid && FALSE === empty($fluxAreaName)) {
 			$parentRecord = (array) $this->recordService->getSingle('tt_content', '*', $parentRecordUid);
 			$contentProviders = $this->configurationService->resolveConfigurationProviders('tt_content', NULL, $parentRecord);
 			$this->appendToWhiteAndBlacklistFromProviders($contentProviders, $parentRecord, $whitelist, $blacklist, NULL, $fluxAreaName);
