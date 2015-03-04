@@ -511,6 +511,7 @@ class AbstractProvider implements ProviderInterface {
 	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = array()) {
 		if ('update' === $operation) {
 			$record = $reference->datamap[$this->tableName][$id];
+			$stored = $this->recordService->getSingle($this->tableName, '*', $id);
 			$fieldName = $this->getFieldName((array) $record);
 			$dontProcess = (
 				NULL === $fieldName
@@ -536,8 +537,9 @@ class AbstractProvider implements ProviderInterface {
 					}
 				}
 			}
-			$row[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($row[$fieldName], $removals);
+			$row[$fieldName] = $stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($row[$fieldName], $removals);
 			$reference->datamap[$this->tableName][$id][$fieldName] = $row[$fieldName];
+			$this->recordService->update($this->tableName, $stored);
 		}
 	}
 
@@ -803,7 +805,7 @@ class AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function trackMethodCall($methodName, $id) {
-		self::trackMethodCallWithClassName(get_class($this), $methodName, $id);
+		self::trackMethodCallWithClassName(get_called_class(), $methodName, $id);
 	}
 
 	/**

@@ -57,9 +57,13 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function prunesEmptyFieldNodesOnRecordSave() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$row['pi_flexform'] = Xml::EXPECTING_FLUX_PRUNING;
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle', 'update'));
+		$recordService->expects($this->once())->method('getSingle')->willReturn($row);
+		$recordService->expects($this->once())->method('update');
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setFieldName('pi_flexform');
 		$provider->setTableName('tt_content');
+		$provider->injectRecordService($recordService);
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tceMain->datamap['tt_content'][$row['uid']]['pi_flexform']['data'] = array();
 		$provider->postProcessRecord('update', $row['uid'], $row, $tceMain);
@@ -349,6 +353,10 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canPostProcessRecord() {
 		$provider = $this->getConfigurationProviderInstance();
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle', 'update'));
+		$recordService->expects($this->once())->method('getSingle')->willReturn($row);
+		$recordService->expects($this->once())->method('update');
+		$provider->injectRecordService($recordService);
 		$record = $this->getBasicRecord();
 		$parentInstance = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$record['test'] = 'test';
@@ -389,6 +397,9 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canPostProcessRecordWithNullFieldName() {
 		$provider = $this->getConfigurationProviderInstance();
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+		$recordService->expects($this->any())->method('getSingle')->willReturn($row);
+		$provider->injectRecordService($recordService);
 		$record = $this->getBasicRecord();
 		$parentInstance = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$record['test'] = 'test';
