@@ -35,7 +35,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 		$container = $this->getContainer();
 		$container->add($component);
 		// rendering child nodes with Form's last sheet as active container
-		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
+		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, NULL);
 		$this->setContainer($component);
 		$this->renderChildren();
 		$this->setContainer($container);
