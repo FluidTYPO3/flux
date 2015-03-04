@@ -122,7 +122,6 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		}
 		$this->renderedSections[$sectionName] = $viewHelperVariableContainer;
 		$stored = $viewHelperVariableContainer->get($viewHelperClassName, $name);
-		$templateIdentityForLog = NULL !== $this->templateSource ? 'source code with hash value ' . sha1($this->templateSource) : $this->getTemplatePathAndFilename();
 		return $stored;
 	}
 
