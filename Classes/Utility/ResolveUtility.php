@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -58,10 +59,10 @@ class ResolveUtility {
 		foreach ($packageNames as $packageName) {
 			$classNames = self::resolveClassNamesInPackageSubNamespace($packageName, 'Domain/Form');
 			foreach ($classNames as $formClassName) {
-				$fullTableName = self::resolveDatabaseTableName($modelClassName);
-				$models[$modelClassName] = $formClassName::create();
-				$models[$modelClassName]->setName($fullTableName);
-				$models[$modelClassName]->setExtensionName($packageName);
+				$fullTableName = self::resolveDatabaseTableName($formClassName);
+				$models[$formClassName] = $formClassName::create();
+				$models[$formClassName]->setName($fullTableName);
+				$models[$formClassName]->setExtensionName($packageName);
 			}
 		}
 		return $models;
