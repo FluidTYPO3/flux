@@ -231,6 +231,51 @@
             "time": "2014-08-11 04:32:36"
         },
         {
+            "name": "helhum/class-alias-loader",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/helhum/class-alias-loader.git",
+                "reference": "14073641d8d7859d08311bfcc3a5c19f3a40a6a3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/helhum/class-alias-loader/zipball/14073641d8d7859d08311bfcc3a5c19f3a40a6a3",
+                "reference": "14073641d8d7859d08311bfcc3a5c19f3a40a6a3",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Helhum\\ClassAliasLoader\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Helmut Hummel",
+                    "email": "info@helhum.io"
+                }
+            ],
+            "description": "Amends the composer class loader to support class aliases to provide backwards compatibility for packages",
+            "homepage": "http://github.com/helhum/class-alias-loader",
+            "keywords": [
+                "alias",
+                "autoloader",
+                "classloader",
+                "composer"
+            ],
+            "time": "2015-02-02 18:32:18"
+        },
+        {
             "name": "mikey179/vfsStream",
             "version": "v1.3.0",
             "source": {
@@ -270,16 +315,16 @@
         },
         {
             "name": "namelesscoder/typo3-repository-client",
-            "version": "1.0.2",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NamelessCoder/typo3-repository-client.git",
-                "reference": "65f5827b73ea5a82b0a7c306c5a0dda5095a0e31"
+                "reference": "f099dc8c6f5a0c899498d8f92a95e0808badb689"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NamelessCoder/typo3-repository-client/zipball/65f5827b73ea5a82b0a7c306c5a0dda5095a0e31",
-                "reference": "65f5827b73ea5a82b0a7c306c5a0dda5095a0e31",
+                "url": "https://api.github.com/repos/NamelessCoder/typo3-repository-client/zipball/f099dc8c6f5a0c899498d8f92a95e0808badb689",
+                "reference": "f099dc8c6f5a0c899498d8f92a95e0808badb689",
                 "shasum": ""
             },
             "require-dev": {
@@ -295,9 +340,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "NamelessCoder\\TYPO3RepositoryClient\\Tests\\Fixtures\\": "tests/fixtures/NamelessCoder/TYPO3RepositoryClient/",
-                    "NamelessCoder\\TYPO3RepositoryClient\\Tests\\Unit\\": "tests/unit/NamelessCoder/TYPO3RepositoryClient/",
-                    "NamelessCoder\\TYPO3RepositoryClient\\": "src/NamelessCoder/TYPO3RepositoryClient/"
+                    "NamelessCoder\\TYPO3RepositoryClient\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -311,7 +354,7 @@
                 }
             ],
             "description": "Client for interacting with the official TYPO3 Extension Repository (TER). Contains API and CLI scripts.",
-            "time": "2014-12-08 00:41:33"
+            "time": "2015-03-03 20:20:31"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1114,20 +1157,21 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "b301c98f19414d836fdaa678648745fcca5aeb4f"
+                "reference": "5046b0e01c416fc2b06df961d0673c85bcdc896c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/b301c98f19414d836fdaa678648745fcca5aeb4f",
-                "reference": "b301c98f19414d836fdaa678648745fcca5aeb4f",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/5046b0e01c416fc2b06df961d0673c85bcdc896c",
+                "reference": "5046b0e01c416fc2b06df961d0673c85bcdc896c",
                 "shasum": ""
             },
             "require": {
                 "ext-tokenizer": "*",
+                "ext-xmlwriter": "*",
                 "php": ">=5.1.2"
             },
             "bin": [
@@ -1135,6 +1179,11 @@
                 "scripts/phpcbf"
             ],
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "classmap": [
                     "CodeSniffer.php",
@@ -1178,7 +1227,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2015-01-21 22:44:05"
+            "time": "2015-03-04 02:07:03"
         },
         {
             "name": "symfony/config",
@@ -1486,16 +1535,16 @@
         },
         {
             "name": "typo3/cms",
-            "version": "6.2.9",
+            "version": "6.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3/TYPO3.CMS.git",
-                "reference": "177cd38666bb4e7a026c60cdeda252596bf2c587"
+                "reference": "b3201dd1e9ffd33dbd55912626d6de248e8d5696"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/TYPO3.CMS/zipball/177cd38666bb4e7a026c60cdeda252596bf2c587",
-                "reference": "177cd38666bb4e7a026c60cdeda252596bf2c587",
+                "url": "https://api.github.com/repos/TYPO3/TYPO3.CMS/zipball/b3201dd1e9ffd33dbd55912626d6de248e8d5696",
+                "reference": "b3201dd1e9ffd33dbd55912626d6de248e8d5696",
                 "shasum": ""
             },
             "require": {
@@ -1503,6 +1552,7 @@
                 "ext-pcre": "*",
                 "ext-session": "*",
                 "ext-xml": "*",
+                "helhum/class-alias-loader": "1.0.*@dev",
                 "php": ">=5.3.7",
                 "typo3/cms-composer-installers": "1.1.*@dev"
             },
@@ -1580,7 +1630,75 @@
             "extra": {
                 "branch-alias": {
                     "dev-TYPO3_6-2": "6.2.x-dev"
+                },
+                "autoload-case-sensitivity": false,
+                "class-alias-maps": [
+                    "typo3/sysext/backend/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/core/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/cshmanual/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/extbase/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/extensionmanager/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/fluid/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/frontend/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/install/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/lang/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/recordlist/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/saltedpasswords/Migrations/Code/ClassAliasMap.php",
+                    "typo3/sysext/sv/Migrations/Code/ClassAliasMap.php"
+                ]
+            },
+            "autoload": {
+                "psr-0": {
+                    "TYPO3\\Flow\\": "typo3/sysext/core/Resources/PHP/TYPO3.Flow/Classes/"
+                },
+                "psr-4": {
+                    "Psr\\Log\\": "typo3/contrib/Psr/Log/",
+                    "TYPO3\\CMS\\Backend\\": "typo3/sysext/backend/Classes/",
+                    "TYPO3\\CMS\\Core\\": "typo3/sysext/core/Classes/",
+                    "TYPO3\\CMS\\Cshmanual\\": "typo3/sysext/cshmanual/Classes/",
+                    "TYPO3\\CMS\\Extbase\\": "typo3/sysext/extbase/Classes/",
+                    "TYPO3\\CMS\\Extensionmanager\\": "typo3/sysext/extensionmanager/Classes/",
+                    "TYPO3\\CMS\\Fluid\\": "typo3/sysext/fluid/Classes/",
+                    "TYPO3\\CMS\\Frontend\\": "typo3/sysext/frontend/Classes/",
+                    "TYPO3\\CMS\\Install\\": "typo3/sysext/install/Classes/",
+                    "TYPO3\\CMS\\Lang\\": "typo3/sysext/lang/Classes/",
+                    "TYPO3\\CMS\\Recordlist\\": "typo3/sysext/recordlist/Classes/",
+                    "TYPO3\\CMS\\Saltedpasswords\\": "typo3/sysext/saltedpasswords/Classes/",
+                    "TYPO3\\CMS\\Sv\\": "typo3/sysext/sv/Classes/"
                 }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "TYPO3\\CMS\\Backend\\Tests\\": "typo3/sysext/backend/Tests/",
+                    "TYPO3\\CMS\\Belog\\Tests\\": "typo3/sysext/belog/Tests/",
+                    "TYPO3\\CMS\\Beuser\\Tests\\": "typo3/sysext/beuser/Tests/",
+                    "TYPO3\\CMS\\Core\\Tests\\": "typo3/sysext/core/Tests/",
+                    "TYPO3\\CMS\\Dbal\\Tests\\": "typo3/sysext/dbal/Tests/",
+                    "TYPO3\\CMS\\Documentation\\Tests\\": "typo3/sysext/documentation/Tests/",
+                    "TYPO3\\CMS\\Extbase\\Tests\\": "typo3/sysext/extbase/Tests/",
+                    "TYPO3\\CMS\\Extensionmanager\\Tests\\": "typo3/sysext/extensionmanager/Tests/",
+                    "TYPO3\\CMS\\Felogin\\Tests\\": "typo3/sysext/felogin/Tests/",
+                    "TYPO3\\CMS\\Fluid\\Tests\\": "typo3/sysext/fluid/Tests/",
+                    "TYPO3\\CMS\\Form\\Tests\\": "typo3/sysext/form/Tests/",
+                    "TYPO3\\CMS\\Frontend\\Tests\\": "typo3/sysext/frontend/Tests/",
+                    "TYPO3\\CMS\\Impexp\\Tests\\": "typo3/sysext/impexp/Tests/",
+                    "TYPO3\\CMS\\IndexedSearch\\Tests\\": "typo3/sysext/indexed_search/Tests/",
+                    "TYPO3\\CMS\\Install\\Tests\\": "typo3/sysext/install/Tests/",
+                    "TYPO3\\CMS\\Lang\\Tests\\": "typo3/sysext/lang/Tests/",
+                    "TYPO3\\CMS\\Lowlevel\\Tests\\": "typo3/sysext/lowlevel/Tests/",
+                    "TYPO3\\CMS\\Recordlist\\Tests\\": "typo3/sysext/recordlist/Tests/",
+                    "TYPO3\\CMS\\Reports\\Tests\\": "typo3/sysext/reports/Tests/",
+                    "TYPO3\\CMS\\Rsaauth\\Tests\\": "typo3/sysext/rsaauth/Tests/",
+                    "TYPO3\\CMS\\Saltedpasswords\\Tests\\": "typo3/sysext/saltedpasswords/Tests/",
+                    "TYPO3\\CMS\\Scheduler\\Tests\\": "typo3/sysext/scheduler/Tests/",
+                    "TYPO3\\CMS\\Sv\\Tests\\": "typo3/sysext/sv/Tests/",
+                    "TYPO3\\CMS\\Workspaces\\Tests\\": "typo3/sysext/workspaces/Tests/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "Helhum\\ClassAliasLoader\\Composer\\ClassAliasGenerator::generateAliasMap"
+                ]
             },
             "license": [
                 "GPL-2.0+"
@@ -1610,9 +1728,9 @@
                 "issues": "http://forge.typo3.org",
                 "irc": "irc://irc.freenode.net/#typo3-cms",
                 "news": "nntp://lists.typo3.org",
-                "source": "https://github.com/TYPO3/TYPO3.CMS/tree/TYPO3_6-2-9"
+                "source": "https://github.com/TYPO3/TYPO3.CMS/tree/TYPO3_6-2-10"
             },
-            "time": "2014-12-10 10:17:30"
+            "time": "2015-02-26 17:50:53"
         }
     ],
     "aliases": [],
