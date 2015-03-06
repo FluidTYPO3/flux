@@ -57,4 +57,8 @@ now uses much more of the TYPO3 core's code to do the job especially concerning 
   - https://fluidtypo3.org/viewhelpers/flux/master/Form/Option/GroupViewHelper.html
   - https://fluidtypo3.org/viewhelpers/flux/master/Form/Option/IconViewHelper.html
   
-
+- [All Flux ViewHelpers can now use the `extensionName` argument to switch context](https://github.com/FluidTYPO3/flux/commit/a9ec0b14c54f770f47b0cb30e6992090fa0684e1)
+  - You can set this attribute in for example an overridden partial template containing Flux components.
+  - Overriding the `extensionName` makes LLL values and other automatically resolved values be resolved from that extension.
+  - The original `extensionName` argument on `flux:field.controllerActions` has been renamed to `controllerExtensionName` because of this. 
+  - [Background info](https://github.com/FluidTYPO3/flux/issues/722)
