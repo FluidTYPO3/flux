@@ -11,6 +11,10 @@ bottlenecks, and to make the Flux API simpler and more consistent to use. A lot 
 existing support for template paths has been improved, bringing it completely into sync with the TYPO3 core. Overall, Flux
 now uses much more of the TYPO3 core's code to do the job especially concerning the View aspect.
 
+- Full TYPO3 7.1.0 support.
+
+- Full TYPO3 6.2.0 support (including new composer autoloader feature).
+
 - :exclamation: Legacy namespace support completely removed
   - It is no longer possible to use any of Flux classes by their legacy names. Switch to the proper vendor and namespace.
 
