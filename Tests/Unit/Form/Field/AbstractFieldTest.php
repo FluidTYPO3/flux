@@ -175,4 +175,26 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$this->assertNotEmpty($result['TCEforms']['config']['wizards']);
 	}
 
+	/**
+	 * @test
+	 */
+	public function modifyCreatesWizards() {
+		$form = Form::create();
+		$field = $form->createField('Input', 'testfield');
+		$this->assertFalse($field->has('test'));
+		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'test', 'label' => 'Test'))));
+		$this->assertTrue($field->has('test'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyModifiesWizards() {
+		$form = Form::create();
+		$field = $form->createField('Input', 'testfield');
+		$wizard = $field->createWizard('Add', 'test', 'Original label');
+		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'test', 'label' => 'Test'))));
+		$this->assertEquals('Test', $wizard->getLabel());
+	}
+
 }

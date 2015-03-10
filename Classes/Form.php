@@ -403,6 +403,12 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 * @return ContainerInterface
 	 */
 	public function modify(array $structure) {
+		if (TRUE === isset($structure['options']) && TRUE === is_array($structure['options'])) {
+			foreach ($structure['options'] as $name => $value) {
+				$this->setOption($name, $value);
+			}
+			unset($structure['options']);
+		}
 		if (TRUE === isset($structure['sheets'])) {
 			foreach ((array) $structure['sheets'] as $index => $sheetData) {
 				$sheetName = TRUE === isset($sheetData['name']) ? $sheetData['name'] : $index;

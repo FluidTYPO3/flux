@@ -361,4 +361,42 @@ class FormTest extends AbstractTestCase {
 		$instance->setId('I-am-not-valid');
 	}
 
+	/**
+	 * @test
+	 */
+	public function modifySetsProperty() {
+		$form = Form::create();
+		$form->modify(array('name' => 'test'));
+		$this->assertEquals('test', $form->getName());
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifySetsOptions() {
+		$form = Form::create();
+		$form->modify(array('options' => array('test' => 'testvalue')));
+		$this->assertEquals('testvalue', $form->getOption('test'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyCreatesSheets() {
+		$form = Form::create();
+		$form->modify(array('sheets' => array('test' => array('name' => 'test', 'label' => 'Test'))));
+		$sheets = $form->getSheets(TRUE);
+		$this->assertArrayHasKey('test', $sheets);
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyModifiesSheets() {
+		$form = Form::create();
+		$form->modify(array('sheets' => array('options' => array('label' => 'Test'))));
+		$sheets = $form->getSheets(TRUE);
+		$this->assertEquals('Test', reset($sheets)->getLabel());
+	}
+
 }

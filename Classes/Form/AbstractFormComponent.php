@@ -477,6 +477,12 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return FormInterface
 	 */
 	public function modify(array $structure) {
+		if (TRUE === isset($structure['options']) && TRUE === is_array($structure['options'])) {
+			foreach ($structure['options'] as $name => $value) {
+				$this->setVariable($name, $value);
+			}
+			unset($structure['options']);
+		}
 		foreach ($structure as $propertyName => $propertyValue) {
 			$setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
 			if (TRUE === method_exists($this, $setterMethodName)) {

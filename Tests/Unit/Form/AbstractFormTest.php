@@ -246,4 +246,16 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		$this->assertFalse($result);
 	}
 
+	/**
+	 * @test
+	 */
+	public function canModifyVariablesSelectively() {
+		$mock = $this->getMock($this->createInstanceClassName(), array('dummy'));
+		$mock->setVariables(array('foo' => 'baz', 'abc' => 'xyz'));
+		$properties = array('options' => array('foo' => 'bar'));
+		$mock->modify($properties);
+		$this->assertEquals('bar', $mock->getVariable('foo'));
+		$this->assertEquals('xyz', $mock->getVariable('abc'));
+	}
+
 }

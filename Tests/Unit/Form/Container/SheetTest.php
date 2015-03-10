@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
+
 /**
  * author Claus Due <claus@namelesscoder.net>
  * @package Flux
@@ -26,6 +28,29 @@ class SheetTest extends AbstractContainerTest {
 	 */
 	public function testShortDescriptionPropertyWorks() {
 		$this->assertGetterAndSetterWorks('shortDescription', 'foobarshortdescription', 'foobarshortdescription', TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyCreatesFields() {
+		$form = Form::create();
+		$sheet = $form->createContainer('Sheet', 'testsheet');
+		$form->modify(array('fields' => array('test' => array('name' => 'test', 'label' => 'Test', 'type' => 'Input'))));
+		$fields  = $sheet->getFields();
+		$this->assertArrayHasKey('test', $fields);
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyModifiesFields() {
+		$form = Form::create();
+		$sheet = $form->createContainer('Sheet', 'testsheet');
+		$field = $sheet->createField('Input', 'testfield', 'Testfield');
+		$sheet->modify(array('fields' => array('testfield' => array('label' => 'Test'))));
+		$fields = $sheet->getFields();
+		$this->assertEquals('Test', reset($fields)->getLabel());
 	}
 
 }
