@@ -251,12 +251,12 @@ class TemplatePaths {
 		// sort and unique, ensuring that the keys used in TypoScript become
 		// the dictated order of paths. The lower the number, the lower the
 		// path's priority is.
-		ksort($templateRootPaths, SORT_NUMERIC);
-		ksort($layoutRootPaths, SORT_NUMERIC);
-		ksort($partialRootPaths, SORT_NUMERIC);
-		$templateRootPaths = array_unique($templateRootPaths);
-		$partialRootPaths = array_unique($partialRootPaths);
-		$layoutRootPaths = array_unique($layoutRootPaths);
+		krsort($templateRootPaths, SORT_NUMERIC);
+		krsort($layoutRootPaths, SORT_NUMERIC);
+		krsort($partialRootPaths, SORT_NUMERIC);
+		$templateRootPaths = array_values(array_unique($templateRootPaths));
+		$partialRootPaths = array_values(array_unique($partialRootPaths));
+		$layoutRootPaths = array_values(array_unique($layoutRootPaths));
 		$this->setTemplateRootPaths($templateRootPaths);
 		$this->setLayoutRootPaths($layoutRootPaths);
 		$this->setPartialRootPaths($partialRootPaths);
