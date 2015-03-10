@@ -248,6 +248,12 @@ class TemplatePaths {
 				$partialRootPaths = array_merge($partialRootPaths, $overlayPartials);
 			}
 		}
+		// sort and unique, ensuring that the keys used in TypoScript become
+		// the dictated order of paths. The lower the number, the lower the
+		// path's priority is.
+		ksort($templateRootPaths, SORT_NUMERIC);
+		ksort($layoutRootPaths, SORT_NUMERIC);
+		ksort($partialRootPaths, SORT_NUMERIC);
 		$templateRootPaths = array_unique($templateRootPaths);
 		$partialRootPaths = array_unique($partialRootPaths);
 		$layoutRootPaths = array_unique($layoutRootPaths);
@@ -308,6 +314,14 @@ class TemplatePaths {
 	}
 
 	/**
+	 * @param string $path
+	 * @return string
+	 */
+	protected function ensureSuffixedPath($path) {
+		return rtrim($path, '/') . '/';
+	}
+
+	/**
 	 * Extract an array of three arrays of paths, one
 	 * for each of the types of Fluid file resources.
 	 * Accepts one or both of the singular and plural
@@ -352,14 +366,6 @@ class TemplatePaths {
 		$pathCollections = array($templateRootPaths, $layoutRootPaths, $partialRootPaths);
 		$pathCollections = $this->ensureAbsolutePath($pathCollections);
 		return $pathCollections;
-	}
-
-	/**
-	 * @param string $path
-	 * @return string
-	 */
-	protected function ensureSuffixedPath($path) {
-		return rtrim($path, '/') . '/';
 	}
 
 }
