@@ -416,7 +416,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 					$field = $this->get($wizardName);
 				} else {
 					$wizardType = TRUE === isset($wizardData['type']) ? $wizardData['type'] : 'None';
-					$field = $this->createField($wizardType, $wizardName);
+					$field = $this->createWizard($wizardType, $wizardName);
 				}
 				$field->modify($wizardData);
 			}
