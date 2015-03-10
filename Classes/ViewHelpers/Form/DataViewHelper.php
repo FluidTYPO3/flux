@@ -104,7 +104,9 @@ class DataViewHelper extends AbstractViewHelper {
 	 */
 	protected function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field) {
 		if (0 === count($providers)) {
-			$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field]);
+			$lang = $this->getCurrentLanguageName();
+			$pointer = $this->getCurrentValuePointerName();
+			$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field], NULL, $lang, $pointer);
 		} else {
 			$dataArray = array();
 			/** @var ProviderInterface $provider */
@@ -114,6 +116,33 @@ class DataViewHelper extends AbstractViewHelper {
 			}
 		}
 		return $dataArray;
+	}
+
+	/**
+	 * Gets the current language name as string, in a format that is
+	 * compatible with language pointers in a flexform. Usually this
+	 * implies values like "en", "de" etc.
+	 *
+	 * Return NULL when language is site default language.
+	 *
+	 * @return string|NULL
+	 */
+	protected function getCurrentLanguageName() {
+		$language = $GLOBALS['TSFE']->lang;
+		if (TRUE === empty($language) || 'default' === $language) {
+			$language = NULL;
+		}
+		return $language;
+	}
+
+	/**
+	 * Gets the pointer name to use whne retrieving values from a
+	 * flexform source. Return NULL when pointer is default.
+	 *
+	 * @return string|NULL
+	 */
+	protected function getCurrentValuePointerName() {
+		return $this->getCurrentLanguageName();
 	}
 
 }

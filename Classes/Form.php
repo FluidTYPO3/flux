@@ -19,6 +19,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface {
 
+	const OPTION_TRANSLATION = 'translation';
 	const OPTION_GROUP = 'group';
 	const OPTION_ICON = 'icon';
 	const OPTION_TCA_LABELS = 'labels';
@@ -28,6 +29,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	const OPTION_TCA_DELETE = 'delete';
 	const OPTION_TCA_FEGROUP = 'frontendUserGroup';
 	const OPTION_TEMPLATEFILE = 'templateFile';
+	const TRANSLATION_DISABLED = 'disabled';
+	const TRANSLATION_SEPARATE = 'separate';
+	const TRANSLATION_INHERIT = 'inherit';
 	const POSITION_TOP = 'top';
 	const POSITION_BOTTOM = 'bottom';
 	const POSITION_BOTH = 'both';
@@ -134,9 +138,14 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 * @return array
 	 */
 	public function build() {
+		$translateOption = $this->getOption(self::OPTION_TRANSLATION);
+		$translateOption = TRUE === empty($translateOption) ? self::TRANSLATION_DISABLED : $translateOption;
+		$disableLocalisation = self::TRANSLATION_DISABLED === $translateOption ? 1 : 0;
+		$inheritLocalisation = self::TRANSLATION_INHERIT === $translateOption ? 1 : 0;
 		$dataStructArray = array(
 			'meta' => array(
-				'langDisable' => 1
+				'langDisable' => $disableLocalisation,
+				'langChildren' => $inheritLocalisation
 			),
 		);
 		$copy = clone $this;
@@ -150,7 +159,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$compactConfigurationToggleOn = 0 < $copy->getCompact();
 		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets)) {
 			$dataStructArray = $copy->last()->build();
-			$dataStructArray['meta'] = array('langDisable' => 1);
+			$dataStructArray['meta'] = array('langDisable' => $disableLocalisation);
 			unset($dataStructArray['ROOT']['TCEforms']);
 		} elseif (0 < count($sheets)) {
 			$dataStructArray['sheets'] = $copy->buildChildren($this->children);

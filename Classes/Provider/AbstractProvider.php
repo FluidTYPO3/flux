@@ -247,9 +247,13 @@ class AbstractProvider implements ProviderInterface {
 		);
 
 		// Special case: when saving a new record variable $row[$fieldName] is already an array
-		// and must not be processed by the configuration service.
+		// and must not be processed by the configuration service. This has limited support from
+		// Flux (essentially: no Form instance which means no inheritance, transformation or
+		// form options can be dependended upon at this stage).
+		$lang = $this->getCurrentLanguageName();
+		$value = $this->getCurrentValuePointerName();
 		if (FALSE === is_array($row[$fieldName])) {
-			$recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+			$recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], NULL, $lang, $value);
 			$variables = RecursiveArrayUtility::mergeRecursiveOverrule($variables, $recordVariables);
 		}
 
@@ -401,7 +405,36 @@ class AbstractProvider implements ProviderInterface {
 	public function getFlexFormValues(array $row) {
 		$fieldName = $this->getFieldName($row);
 		$form = $this->getForm($row);
-		return $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, NULL, NULL);
+		$languageName = $this->getCurrentLanguageName();
+		$valuePointer = $this->getCurrentValuePointerName();
+		return $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, $languageName, $valuePointer);
+	}
+
+	/**
+	 * Gets the current language name as string, in a format that is
+	 * compatible with language pointers in a flexform. Usually this
+	 * implies values like "en", "de" etc.
+	 *
+	 * Return NULL when language is site default language.
+	 *
+	 * @return string|NULL
+	 */
+	protected function getCurrentLanguageName() {
+		$language = $GLOBALS['TSFE']->lang;
+		if (TRUE === empty($language) || 'default' === $language) {
+			$language = NULL;
+		}
+		return $language;
+	}
+
+	/**
+	 * Gets the pointer name to use whne retrieving values from a
+	 * flexform source. Return NULL when pointer is default.
+	 *
+	 * @return string|NULL
+	 */
+	protected function getCurrentValuePointerName() {
+		return $this->getCurrentLanguageName();
 	}
 
 	/**

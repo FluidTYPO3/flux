@@ -404,10 +404,11 @@ class FluxService implements SingletonInterface {
 		if (TRUE === empty($flexFormContent)) {
 			return array();
 		}
-		if (TRUE === empty($languagePointer)) {
+		$formTranslationDisabled = (NULL !== $form && FALSE === (boolean) $form->getOption(Form::OPTION_TRANSLATION));
+		if (TRUE === empty($languagePointer) || TRUE === $formTranslationDisabled) {
 			$languagePointer = 'lDEF';
 		}
-		if (TRUE === empty($valuePointer)) {
+		if (TRUE === empty($valuePointer) || TRUE === $formTranslationDisabled) {
 			$valuePointer = 'vDEF';
 		}
 		$settings = $this->objectManager->get('TYPO3\CMS\Extbase\Service\FlexFormService')
