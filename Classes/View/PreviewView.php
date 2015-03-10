@@ -289,27 +289,13 @@ CONTENT;
 	}
 
 	/**
-	 * @param integer $contentElementUid
-	 * @param string $areaName
-	 * @return integer
-	 */
-	protected function registerTargetContentAreaInSession($contentElementUid, $areaName) {
-		if ('' === session_id()) {
-			session_start();
-		}
-		$integer = MiscellaneousUtility::generateUniqueIntegerForFluxArea($contentElementUid, $areaName);
-		$_SESSION['target' . $integer] = array($contentElementUid, $areaName);
-		return $integer;
-	}
-
-	/**
-	 * @param array $row
+	 * @param array $parentRow
 	 * @param Column $column
 	 * @param array $record
 	 * @param PageLayoutView $dblist
 	 * @return string
 	 */
-	protected function drawRecord(array $row, Column $column, array $record, PageLayoutView $dblist) {
+	protected function drawRecord(array $parentRow, Column $column, array $record, PageLayoutView $dblist) {
 		$colPosFluxContent = ContentService::COLPOS_FLUXCONTENT;
 		$disabledClass = FALSE === empty($record['isDisabled']) ? ' t3-page-ce-hidden' : '';
 		$element = $this->drawElement($record, $dblist);
@@ -320,11 +306,13 @@ CONTENT;
 		return <<<CONTENT
 		<div class="t3-page-ce$disabledClass {$record['_CSSCLASS']} ui-draggable" id="element-tt_content-{$record['uid']}" data-table="tt_content" data-uid="{$record['uid']}">
 			$element
-			<div class="t3-page-ce-dropzone ui-droppable" id="colpos-$colPosFluxContent-page-{$row['pid']}-{$row['uid']}-after-{$record['uid']}" style="min-height: 16px;">
+			<div class="t3-page-ce-dropzone ui-droppable"
+				 id="colpos-$colPosFluxContent-page-{$parentRow['pid']}-{$parentRow['uid']}-after-{$record['uid']}"
+				 style="min-height: 16px;">
 				<div class="t3-page-ce-wrapper-new-ce">
-					{$this->drawNewIcon($row, $column, $record['uid'])}
-					{$this->drawPasteIcon($row, $column, FALSE, $record)}
-					{$this->drawPasteIcon($row, $column, TRUE, $record)}
+					{$this->drawNewIcon($parentRow, $column, $record['uid'])}
+					{$this->drawPasteIcon($parentRow, $column, FALSE, $record)}
+					{$this->drawPasteIcon($parentRow, $column, TRUE, $record)}
 				</div>
 			</div>
 		</div>
@@ -428,10 +416,8 @@ CONTENT;
 	protected function drawPasteIcon(array $row, Column $column, $reference = FALSE, array $relativeTo = array()) {
 		$command = TRUE === $reference ? 'reference' : 'paste';
 		$relativeUid = TRUE === isset($relativeTo['uid']) ? $relativeTo['uid'] : 0;
-		$relativeTo = $row['pid'] . '-' . $command . '-' . $relativeUid . '-' . $row['uid'];
-		if (FALSE === empty($area)) {
-			$relativeTo .= '-' . $column->getName();
-		}
+		$relativeTo = $row['pid'] . '-' . $command . '-' . $relativeUid . '-' .
+			$row['uid'] . (FALSE === empty($area) ? '-' . $column->getName() : '');
 		return ClipBoardUtility::createIconWithUrl($relativeTo, $reference);
 	}
 
@@ -534,13 +520,6 @@ CONTENT;
 	}
 
 	/**
-	 * @return integer
-	 */
-	protected function getActiveWorkspaceId() {
-		return (integer) (TRUE === isset($GLOBALS['BE_USER']->workspace) ? $GLOBALS['BE_USER']->workspace : 0);
-	}
-
-	/**
 	 * @param array $row
 	 * @return PageLayoutView
 	 */
@@ -595,6 +574,7 @@ CONTENT;
 	}
 
 	/**
+	 * @codeCoverageIgnore
 	 * @return array
 	 */
 	protected function getPageModuleSettings() {
@@ -602,6 +582,7 @@ CONTENT;
 	}
 
 	/**
+	 * @codeCoverageIgnore
 	 * @return DatabaseConnection
 	 */
 	protected function getDatabaseConnection() {
@@ -609,6 +590,7 @@ CONTENT;
 	}
 
 	/**
+	 * @codeCoverageIgnore
 	 * @return BackendUserAuthentication
 	 */
 	protected function getBackendUser() {
@@ -616,10 +598,34 @@ CONTENT;
 	}
 
 	/**
+	 * @codeCoverageIgnore
 	 * @return LanguageService
 	 */
 	protected function getLanguageService() {
 		return $GLOBALS['LANG'];
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 * @return integer
+	 */
+	protected function getActiveWorkspaceId() {
+		return (integer) (TRUE === isset($GLOBALS['BE_USER']->workspace) ? $GLOBALS['BE_USER']->workspace : 0);
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 * @param integer $contentElementUid
+	 * @param string $areaName
+	 * @return integer
+	 */
+	protected function registerTargetContentAreaInSession($contentElementUid, $areaName) {
+		if ('' === session_id()) {
+			session_start();
+		}
+		$integer = MiscellaneousUtility::generateUniqueIntegerForFluxArea($contentElementUid, $areaName);
+		$_SESSION['target' . $integer] = array($contentElementUid, $areaName);
+		return $integer;
 	}
 
 }

@@ -124,11 +124,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	 * @return boolean
 	 */
 	public function has($childOrChildName) {
-		if (TRUE === $childOrChildName instanceof FormInterface) {
-			$name = $childOrChildName->getName();
-		} else {
-			$name = $childOrChildName;
-		}
+		$name = (TRUE === $childOrChildName instanceof FormInterface) ? $childOrChildName->getName() : $childOrChildName;
 		return (FALSE !== $this->get($name));
 	}
 

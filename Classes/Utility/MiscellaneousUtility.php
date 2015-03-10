@@ -91,6 +91,14 @@ class MiscellaneousUtility {
 		return NULL;
 	}
 
+	/**
+	 * Cleans flex form XML, removing any field nodes identified
+	 * in $removals and trimming the result to avoid empty containers.
+	 *
+	 * @param string $xml
+	 * @param array $removals
+	 * @return string
+	 */
 	public static function cleanFlexFormXml($xml, array $removals = array()) {
 		$dom = new \DOMDocument();
 		$dom->loadXML($xml);

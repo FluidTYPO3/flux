@@ -228,15 +228,6 @@ class ContentService implements SingletonInterface {
 	}
 
 	/**
-	 * @param integer $relativeTo
-	 * @return array
-	 */
-	protected function getTargetAreaStoredInSession($relativeTo) {
-		'' !== session_id() ?  : session_start();
-		return $_SESSION['target' . $relativeTo];
-	}
-
-	/**
 	 * @param array $row
 	 * @return void
 	 */
@@ -346,6 +337,16 @@ class ContentService implements SingletonInterface {
 			$placeholder['tx_flux_column'] = $row['tx_flux_column'];
 			$this->updateRecordInDatabase($placeholder, $row['t3ver_oid']);
 		}
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 * @param integer $relativeTo
+	 * @return array
+	 */
+	protected function getTargetAreaStoredInSession($relativeTo) {
+		'' !== session_id() ?  : session_start();
+		return $_SESSION['target' . $relativeTo];
 	}
 
 }
