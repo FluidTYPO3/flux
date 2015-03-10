@@ -156,6 +156,15 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	}
 
 	/**
+	 * @param mixed $childOrChildName
+	 * @return boolean
+	 */
+	public function has($childOrChildName) {
+		$name = (TRUE === $childOrChildName instanceof FormInterface) ? $childOrChildName->getName() : $childOrChildName;
+		return (FALSE !== $this->get($name));
+	}
+
+	/**
 	 * @param string $wizardName
 	 * @return WizardInterface|FALSE
 	 */
