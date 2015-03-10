@@ -8,11 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\View;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Backend\Preview;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\PreviewView;
 use TYPO3\CMS\Backend\View\PageLayoutView;
+use TYPO3\CMS\Core\Versioning\VersionState;
 
 /**
  * @package Flux
@@ -27,7 +29,8 @@ class PreviewViewTest extends AbstractTestCase {
 			'TYPO3\\CMS\\Core\\Database\\DatabaseConnection',
 			array('exec_SELECTgetSingleRow', 'exec_SELECTgetRows', 'exec_SELECT_queryArray', 'fetch_assoc')
 		);
-		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetSingleRow')->willReturn(Records::$contentRecordWithoutParentAndWithoutChildren);
+		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetSingleRow')
+			->willReturn(Records::$contentRecordWithoutParentAndWithoutChildren);
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECT_queryArray')->willReturn($GLOBALS['TYPO3_DB']);
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('fetch_assoc')->willReturn(array());
@@ -47,6 +50,122 @@ class PreviewViewTest extends AbstractTestCase {
 					)
 				)
 			)
+		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testGetOptionModeReturnsDefaultIfNoValidOptionsFound() {
+		$instance = $this->createInstance();
+		$options = array(PreviewView::OPTION_MODE => 'someinvalidvalue');
+		$result = $this->callInaccessibleMethod($instance, 'getOptionMode', $options);
+		$this->assertEquals(PreviewView::MODE_APPEND, $result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testDrawRecordDrawsEachRecord() {
+		$column = new Form\Container\Column();
+		$column->setLabel('test');
+		$record = array();
+		$instance = $this->getMock(
+			$this->createInstanceClassName(),
+			array(
+				'getRecords',
+				'drawRecord',
+				'registerTargetContentAreaInSession',
+				'drawNewIcon',
+				'drawPasteIcon',
+				'getInitializedPageLayoutView'
+			)
+		);
+		$instance->expects($this->once())->method('getRecords')->willReturn(array(array('foo' => 'bar'), array('bar' => 'foo')));
+		$instance->expects($this->exactly(2))->method('drawRecord');
+		$instance->expects($this->once())->method('getInitializedPageLayoutView')->willReturn(new PageLayoutView());
+		$instance->expects($this->once())->method('drawNewIcon');
+		$instance->expects($this->exactly(2))->method('drawPasteIcon');
+		$instance->expects($this->once())->method('registerTargetContentAreaInSession');
+		$result = $this->callInaccessibleMethod($instance, 'drawGridColumn', $record, $column);
+		$this->assertNotEmpty($result);
+	}
+
+	/**
+	 * @dataProvider getWorkspaceVersionOfRecordOrRecordItselfTestValues
+	 * @param array $record
+	 * @param $workspaceId
+	 * @param array $expected
+	 */
+	public function testGetWorkspaceVersionOfRecordOrRecordItself(array $record, $workspaceId, array $expected) {
+		$instance = $this->getMock($this->createInstanceClassName(), array('getActiveWorkspaceId'));
+		$instance->expects($this->once())->method('getActiveWorkspaceId')->willReturn($workspaceId);
+		$result = $this->callInaccessibleMethod($instance, 'getWorkspaceVersionOfRecordOrRecordItself', $record);
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getWorkspaceVersionOfRecordOrRecordItselfTestValues() {
+		return array(
+			array(array(), 0, array()),
+			array(array(), 1, array())
+		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testDrawRecord() {
+		$parentRow = array('bar' => 'foo');
+		$record = array('foo' => 'bar');
+		$column = new Form\Container\Column();
+		$view = $this->getMock('TYPO3\\CMS\\Backend\\View\\PageLayoutView', array('tt_content_drawHeader'));
+		$view->expects($this->any())->method('tt_content_drawHeader')
+			->with($record, $this->anything(), $this->anything(), $this->anything());
+		$instance = $this->createInstance();
+		$result = $this->callInaccessibleMethod($instance, 'drawRecord', $parentRow, $column, $record, $view);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testGetNewLink() {
+		$instance = $this->createInstance();
+		$result = $this->callInaccessibleMethod($instance, 'getNewLink', array(), 123, 'myareaname');
+		$this->assertContains('123', $result);
+		$this->assertContains('myareaname', $result);
+	}
+
+	/**
+	 * @dataProvider getProcessRecordOverlaysTestValues
+	 * @param array $input
+	 * @param array $expected
+	 */
+	public function testProcessRecordOverlays(array $input, array $expected) {
+		$instance = $this->getMock($this->createInstanceClassName(), array('getWorkspaceVersionOfRecordOrRecordItself'));
+		$instance->expects($this->any())->method('getWorkspaceVersionOfRecordOrRecordItself')->willReturnArgument(0);
+		$view = new PageLayoutView();
+		$result = $this->callInaccessibleMethod($instance, 'processRecordOverlays', $input, $view);
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getProcessRecordOverlaysTestValues() {
+		return array(
+			array(array(), array()),
+			array(array(array('foo' => 'bar')), array(array('foo' => 'bar', 'isDisabled' => FALSE))),
+			array(
+				array(array('t3ver_state' => VersionState::MOVE_PLACEHOLDER)),
+				array(array('t3ver_state' => VersionState::MOVE_PLACEHOLDER, 'isDisabled' => FALSE))
+			),
+			array(
+				array(array('t3ver_state' => VersionState::DELETE_PLACEHOLDER)),
+				array()
+			),
 		);
 	}
 
@@ -81,8 +200,12 @@ class PreviewViewTest extends AbstractTestCase {
 		$previewView = $this->getMock($this->createInstanceClassName(), array('registerTargetContentAreaInSession'));
 		$previewView->expects($this->any())->method('registerTargetContentAreaInSession');
 		$previewView->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
-		$previewView->injectConfigurationManager($this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager'));
-		$previewView->injectWorkspacesAwareRecordService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService'));
+		$previewView->injectConfigurationManager(
+			$this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager')
+		);
+		$previewView->injectWorkspacesAwareRecordService(
+			$this->objectManager->get('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')
+		);
 		$preview = $previewView->getPreview($provider, Records::$contentRecordIsParentAndHasChildren);
 		$this->$finalAssertionMethod($preview);
 	}
@@ -124,10 +247,22 @@ class PreviewViewTest extends AbstractTestCase {
 	 */
 	public function getPreviewTestOptions() {
 		return array(
-			array(array(PreviewView::OPTION_MODE => PreviewView::MODE_NONE, PreviewView::OPTION_TOGGLE => FALSE), 'assertPreviewIsEmpty'),
-			array(array(PreviewView::OPTION_MODE => PreviewView::MODE_PREPEND, PreviewView::OPTION_TOGGLE => FALSE), 'assertPreviewComesAfterGrid'),
-			array(array(PreviewView::OPTION_MODE => PreviewView::MODE_APPEND, PreviewView::OPTION_TOGGLE => FALSE), 'assertPreviewComesBeforeGrid'),
-			array(array(PreviewView::OPTION_MODE => PreviewView::MODE_PREPEND, PreviewView::OPTION_TOGGLE => TRUE), 'assertPreviewContainsToggle')
+			array(
+				array(PreviewView::OPTION_MODE => PreviewView::MODE_NONE, PreviewView::OPTION_TOGGLE => FALSE),
+				'assertPreviewIsEmpty'
+			),
+			array(
+				array(PreviewView::OPTION_MODE => PreviewView::MODE_PREPEND, PreviewView::OPTION_TOGGLE => FALSE),
+				'assertPreviewComesAfterGrid'
+			),
+			array(
+				array(PreviewView::OPTION_MODE => PreviewView::MODE_APPEND, PreviewView::OPTION_TOGGLE => FALSE),
+				'assertPreviewComesBeforeGrid'
+			),
+			array(
+				array(PreviewView::OPTION_MODE => PreviewView::MODE_PREPEND, PreviewView::OPTION_TOGGLE => TRUE),
+				'assertPreviewContainsToggle'
+			)
 		);
 	}
 

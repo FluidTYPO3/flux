@@ -54,6 +54,29 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function getPreviewViewReturnsPreviewViewInstance() {
+		$instance = $this->createInstance();
+		$result = $this->callInaccessibleMethod($instance, 'getPreviewView');
+		$this->assertInstanceOf('FluidTYPO3\\Flux\\View\\PreviewView', $result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function getPreviewUsesPreviewView() {
+		$instance = $this->getMockForAbstractClass(
+			$this->createInstanceClassName(), array(), '', FALSE, TRUE, FALSE, array('getPreviewView')
+		);
+		$preview = $this->getMock('FluidTYPO3\\Flux\\View\\PreviewView', array('getPreview'));
+		$preview->expects($this->once())->method('getPreview')->willReturn('previewcontent');
+		$instance->expects($this->once())->method('getPreviewView')->willReturn($preview);
+		$result = $instance->getPreview(array());
+		$this->assertEquals(array(NULL, 'previewcontent', FALSE), $result);
+	}
+
+	/**
+	 * @test
+	 */
 	public function prunesEmptyFieldNodesOnRecordSave() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$row['pi_flexform'] = Xml::EXPECTING_FLUX_PRUNING;

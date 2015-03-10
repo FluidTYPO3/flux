@@ -27,6 +27,20 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function getParsedTemplateReturnsCompiledTemplateIfFound() {
+		$instance = $this->getMock($this->createInstanceClassName(), array('getTemplateIdentifier'));
+		$instance->expects($this->once())->method('getTemplateIdentifier');
+		$compiler = $this->getMock('TYPO3\\CMS\\Fluid\\Core\\Compiler\\TemplateCompiler', array('has', 'get'));
+		$compiler->expects($this->once())->method('has')->willReturn(TRUE);
+		$compiler->expects($this->once())->method('get')->willReturn('foobar');
+		ObjectAccess::setProperty($instance, 'templateCompiler', $compiler, TRUE);
+		$result = $this->callInaccessibleMethod($instance, 'getParsedTemplate');
+		$this->assertEquals('foobar', $result);
+	}
+
+	/**
+	 * @test
+	 */
 	public function previewSectionIsOptional() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);

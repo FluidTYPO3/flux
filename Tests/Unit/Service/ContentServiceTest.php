@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -314,6 +315,7 @@ class ContentServiceTest extends AbstractTestCase {
 			array(array('', 'prefix-column-prefix2-unused-unused-top-1-area'), 1),
 			array(array('', 'prefix-column-prefix2-unused-unused-top-1-area'), -1),
 			array(array('', 'colpos-column-page-unused-unused-top-1-area'), 1),
+			array(array('', 'colpos-column-page-unused-unused-top-1-area'), 0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD - 1),
 		);
 	}
 

@@ -116,4 +116,24 @@ class ResolveUtilityTest extends AbstractTestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider getConvertAllPathSegmentsToUpperCamelCaseTestValues
+	 * @param string $input
+	 * @param string $expected
+	 */
+	public function testConvertAllPathSegmentsToUpperCamelCase($input, $expected) {
+		$result = ResolveUtility::convertAllPathSegmentsToUpperCamelCase($input);
+		$this->assertEquals($expected, $result);
+	}
+
+	public function getConvertAllPathSegmentsToUpperCamelCaseTestValues() {
+		return array(
+			array('', ''),
+			array('Foo', 'Foo'),
+			array('Foo/Bar', 'Foo/Bar'),
+			array('foo', 'Foo'),
+			array('foo/bar', 'Foo/Bar'),
+		);
+	}
+
 }

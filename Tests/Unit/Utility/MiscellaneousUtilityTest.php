@@ -144,6 +144,29 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 	}
 
 	/**
+	 * @dataProvider getGenerateUniqueIntegerForFluxAreaTestValues
+	 * @param integer $uid
+	 * @param string $name
+	 * @param integer $expected
+	 */
+	public function testGenerateUniqueIntegerForFluxArea($uid, $name, $expected) {
+		$result = MiscellaneousUtility::generateUniqueIntegerForFluxArea($uid, $name);
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getGenerateUniqueIntegerForFluxAreaTestValues() {
+		return array(
+			array(1, 'test', -10000000449),
+			array(321, 'foobar', -10000000954),
+			array(8, 'xyzbazbar', -10000000997),
+			array(123, 'verylongstringverylongstringverylongstring', -10000004770)
+		);
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function getMockExtension() {
@@ -173,4 +196,5 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 
 		return $vfsUrl;
 	}
+
 }
