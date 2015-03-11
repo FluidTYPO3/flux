@@ -25,7 +25,7 @@ $form->createField('Input', 'myField', 'My special field');
 
 In plain arrays (to allow sources like JSON):
 
-```
+```php
 $json = '{name: "myform", fields: [{"name": "myField", "type": "Input"}]}';
 $asArray = json_decode($json, JSON_OBJECT_AS_ARRAY);
 $form = \FluidTYPO3\Flux\Form::create($asArray);
