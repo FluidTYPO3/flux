@@ -72,10 +72,10 @@ Flux feature highlights
 Known issues
 ------------
 
-* Keep In mind to have you PHP configured correctly to accept a fairly large number of input fields. When nesting
-  sections / objects the number of fields submitted, rises drastically. The php.ini configuration setting to think about, is
-  ``max_input_vars``. If this number is too small, the TYPO3 Backend (effectively PHP) will decline the submission of the
-  Backend Form and will die with an "Invalid CSRF Token" message.
+* Keep In mind to have your PHP/HTTP configured correctly to accept a fairly large number of input fields. When nesting
+  sections / objects the number of fields submitted, rises drastically. The `php.ini` configuration setting to think about is
+  `max_input_vars`. If this number is too small then the TYPO3 Backend (being PHP) will decline the submission of the
+  backend editing form and will exit with an "Invalid CSRF Token" message because of incomplete (truncated) `POST` data.
 
 Documentation
 -------------
