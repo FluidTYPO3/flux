@@ -29,6 +29,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	const OPTION_TCA_DELETE = 'delete';
 	const OPTION_TCA_FEGROUP = 'frontendUserGroup';
 	const OPTION_TEMPLATEFILE = 'templateFile';
+	const OPTION_RECORD = 'record';
+	const OPTION_RECORD_FIELD = 'recordField';
+	const OPTION_RECORD_TABLE = 'recordTable';
 	const TRANSLATION_DISABLED = 'disabled';
 	const TRANSLATION_SEPARATE = 'separate';
 	const TRANSLATION_INHERIT = 'inherit';
