@@ -18596,6 +18596,582 @@ default="NULL" php:type="string">
 </xsd:attribute>
 </xsd:complexType>
 </xsd:element>
+<xsd:element name="pipe.controller">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Controller Action Outlet Pipe ViewHelper
+
+Adds a ControllerPipe to the Form's Outlet.]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="action" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Action to call on the controller, minus the "Action" suffix]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="controller" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Class name of controller to call. If empty, uses current controller]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="extensionName"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Extension name of controller to call. If empty, uses current extension name]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.controller">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Controller Action Outlet Pipe ViewHelper
+
+Adds a ControllerPipe to the Form's Outlet.]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="action" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Action to call on the controller, minus the "Action" suffix]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="controller" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Class name of controller to call. If empty, uses current controller]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="extensionName"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Extension name of controller to call. If empty, uses current extension name]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.controller">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Controller Action Outlet Pipe ViewHelper
+
+Adds a ControllerPipe to the Form's Outlet.]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="action" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Action to call on the controller, minus the "Action" suffix]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="controller" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Class name of controller to call. If empty, uses current controller]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="extensionName"
+default="NULL" php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Extension name of controller to call. If empty, uses current extension name]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.email">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Email Outlet Pipe ViewHelper
+
+Adds an EmailPipe to the Form's Outlet]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="body" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message body. Can also be inserted as tag content]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="subject" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message subject]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="recipient" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message recipient address or name+address as "Name <add@ress>"]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="sender" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message sender address or name+address as "Name <add@ress>"]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.email">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Email Outlet Pipe ViewHelper
+
+Adds an EmailPipe to the Form's Outlet]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="body" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message body. Can also be inserted as tag content]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="subject" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message subject]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="recipient" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message recipient address or name+address as "Name <add@ress>"]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="sender" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message sender address or name+address as "Name <add@ress>"]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.email">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Email Outlet Pipe ViewHelper
+
+Adds an EmailPipe to the Form's Outlet]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="body" default="NULL"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message body. Can also be inserted as tag content]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="subject" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message subject]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="recipient" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message recipient address or name+address as "Name <add@ress>"]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="sender" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Message sender address or name+address as "Name <add@ress>"]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.flashMessage">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlashMessage Outlet Pipe ViewHelper
+
+Adds a FlashMessagePipe to the Form's Outlet]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="message" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlashMessage message body]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="title" default="'Message'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlashMessage title to use]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="severity" default="0"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Severity level, as integer]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="storeInSession"
+default="true" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Store message in sesssion. If FALSE, message only lives in POST. Default TRUE.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.flashMessage">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlashMessage Outlet Pipe ViewHelper
+
+Adds a FlashMessagePipe to the Form's Outlet]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="message" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlashMessage message body]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="title" default="'Message'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlashMessage title to use]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="severity" default="0"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Severity level, as integer]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="storeInSession"
+default="true" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Store message in sesssion. If FALSE, message only lives in POST. Default TRUE.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.flashMessage">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlashMessage Outlet Pipe ViewHelper
+
+Adds a FlashMessagePipe to the Form's Outlet]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="message" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlashMessage message body]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="title" default="'Message'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[FlashMessage title to use]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:integer" name="severity" default="0"
+php:type="integer">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Severity level, as integer]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:boolean" name="storeInSession"
+default="true" php:type="boolean">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Store message in sesssion. If FALSE, message only lives in POST. Default TRUE.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.typeConverter">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Type Converter Outlet Pipe ViewHelper
+
+Adds a TypeConverterPipe to the Form's Outlet.]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="targetType" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Target type (class name, integer, array, etc.)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:mixed" name="typeConverter" default="NULL"
+php:type="mixed" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Class or instance of type converter. Can be a short name of a system type converter, minus "Converter" suffix, e.g. PersistentObject, Array etc.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.typeConverter">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Type Converter Outlet Pipe ViewHelper
+
+Adds a TypeConverterPipe to the Form's Outlet.]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="targetType" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Target type (class name, integer, array, etc.)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:mixed" name="typeConverter" default="NULL"
+php:type="mixed" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Class or instance of type converter. Can be a short name of a system type converter, minus "Converter" suffix, e.g. PersistentObject, Array etc.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="pipe.typeConverter">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Type Converter Outlet Pipe ViewHelper
+
+Adds a TypeConverterPipe to the Form's Outlet.]]>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexType mixed="true">
+<xsd:sequence>
+<xsd:any minOccurs="0" maxOccurs="1" />
+</xsd:sequence>
+<xsd:attribute type="xsd:string" name="direction" default="'out'"
+php:type="string">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:string" name="targetType" default="NULL"
+php:type="string" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Target type (class name, integer, array, etc.)]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+<xsd:attribute type="xsd:mixed" name="typeConverter" default="NULL"
+php:type="mixed" use="required">
+<xsd:annotation>
+<xsd:documentation>
+<![CDATA[Class or instance of type converter. Can be a short name of a system type converter, minus "Converter" suffix, e.g. PersistentObject, Array etc.]]>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:complexType>
+</xsd:element>
 <xsd:element name="variable">
 <xsd:annotation>
 <xsd:documentation>
