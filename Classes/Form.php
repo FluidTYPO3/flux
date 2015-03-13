@@ -86,24 +86,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	protected $outlet;
 
 	/**
-	 * @param array $settings
-	 * @return Form
-	 */
-	public static function create(array $settings = array()) {
-		$form = parent::create($settings);
-		if (TRUE === isset($settings['sheets'])) {
-			foreach ($settings['sheets'] as $sheetName => $sheetSettings) {
-				if (FALSE === isset($sheetSettings['name'])) {
-					$sheetSettings['name'] = $sheetName;
-				}
-				$sheet = Form\Container\Sheet::create($sheetSettings);
-				$form->add($sheet);
-			}
-		}
-		return $form;
-	}
-
-	/**
 	 * @return void
 	 */
 	public function initializeObject() {

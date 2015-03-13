@@ -96,23 +96,7 @@ abstract class AbstractFormComponent implements FormInterface {
 		$className = get_called_class();
 		/** @var FormInterface $object */
 		$object = $objectManager->get($className);
-		foreach ($settings as $settingName => $settingValue) {
-			$setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
-			if (TRUE === method_exists($object, $setterMethodName)) {
-				ObjectAccess::setProperty($object, $settingName, $settingValue);
-			}
-		}
-		if (TRUE === $object instanceof FieldContainerInterface && TRUE === isset($settings['fields'])) {
-			/** @var FieldContainerInterface $object */
-			foreach ($settings['fields'] as $fieldName => $fieldSettings) {
-				if (FALSE === isset($fieldSettings['name'])) {
-					$fieldSettings['name'] = $fieldName;
-				}
-				$field = AbstractFormField::create($fieldSettings);
-				$object->add($field);
-			}
-		}
-		return $object;
+		return $object->modify($settings);
 	}
 
 	/**
