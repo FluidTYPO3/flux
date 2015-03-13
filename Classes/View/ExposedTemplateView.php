@@ -12,7 +12,6 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
@@ -122,7 +121,6 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		}
 		$this->renderedSections[$sectionName] = $viewHelperVariableContainer;
 		$stored = $viewHelperVariableContainer->get($viewHelperClassName, $name);
-		$templateIdentityForLog = NULL !== $this->templateSource ? 'source code with hash value ' . sha1($this->templateSource) : $this->getTemplatePathAndFilename();
 		return $stored;
 	}
 

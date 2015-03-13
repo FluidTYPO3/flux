@@ -129,6 +129,7 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		// Detect what was clicked in order to create the new content element; decide restrictions
 		// based on this.
 		$defaultValues = $this->getDefaultValues();
+		$parentRecordUid = 0;
 		if (0 > $relativeUid) {
 			// pasting after another element means we should try to resolve the Flux content relation
 			// from that element instead of GET parameters (clicked: "create new" icon after other element)

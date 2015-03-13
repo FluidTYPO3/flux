@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
