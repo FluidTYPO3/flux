@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  */
 
 use TYPO3\CMS\Backend\Form\FormEngine;
+use TYPO3\CMS\Backend\Template\DocumentTemplate;
 use TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper as FluidFormViewHelper;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Form;
@@ -44,10 +45,21 @@ class RenderViewHelper extends FluidFormViewHelper {
 		$record = $form->getOption(Form::OPTION_RECORD);
 		$table = $form->getOption(Form::OPTION_RECORD_TABLE);
 		$field = $form->getOption(Form::OPTION_RECORD_FIELD);
+		$this->ensureBackendDocumentExists();
 		$formHandler = $this->getFormEngine();
 		return $formHandler->printNeededJSFunctions_top() .
 			$formHandler->getSoloField($table, $record, $field) .
 			$formHandler->printNeededJSFunctions();
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 * @return void
+	 */
+	protected function ensureBackendDocumentExists() {
+		if (FALSE === isset($GLOBALS['SOBE'])) {
+			$GLOBALS['SOBE'] = (object) array('doc' => new DocumentTemplate());
+		}
 	}
 
 	/**
