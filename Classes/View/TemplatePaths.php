@@ -255,9 +255,6 @@ class TemplatePaths {
 		// sort and unique, ensuring that the keys used in TypoScript become
 		// the dictated order of paths. The lower the number, the lower the
 		// path's priority is.
-		krsort($templateRootPaths, SORT_NUMERIC);
-		krsort($layoutRootPaths, SORT_NUMERIC);
-		krsort($partialRootPaths, SORT_NUMERIC);
 		$templateRootPaths = array_values(array_unique($templateRootPaths));
 		$partialRootPaths = array_values(array_unique($partialRootPaths));
 		$layoutRootPaths = array_values(array_unique($layoutRootPaths));
@@ -353,12 +350,15 @@ class TemplatePaths {
 		}
 		// second recorded: the modern plural paths configurations
 		if (TRUE === isset($paths[self::CONFIG_TEMPLATEROOTPATHS])) {
+			ksort($paths[self::CONFIG_TEMPLATEROOTPATHS],SORT_NUMERIC);
 			$templateRootPaths = array_merge($templateRootPaths, array_values((array) $paths[self::CONFIG_TEMPLATEROOTPATHS]));
 		}
 		if (TRUE === isset($paths[self::CONFIG_LAYOUTROOTPATHS])) {
+			ksort($paths[self::CONFIG_LAYOUTROOTPATHS],SORT_NUMERIC);
 			$layoutRootPaths = array_merge($layoutRootPaths, array_values((array) $paths[self::CONFIG_LAYOUTROOTPATHS]));
 		}
 		if (TRUE === isset($paths[self::CONFIG_PARTIALROOTPATHS])) {
+			ksort($paths[self::CONFIG_PARTIALROOTPATHS],SORT_NUMERIC);
 			$partialRootPaths = array_merge($partialRootPaths, array_values((array) $paths[self::CONFIG_PARTIALROOTPATHS]));
 		}
 		$templateRootPaths = array_map(array($this, 'ensureSuffixedPath'), $templateRootPaths);
