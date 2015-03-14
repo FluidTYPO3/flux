@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Utility;
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * MiscellaneousUtility Utility
@@ -74,19 +75,15 @@ class MiscellaneousUtility {
 		if (TRUE === $form->hasOption(Form::OPTION_TEMPLATEFILE)) {
 			$extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());
 			$fullTemplatePathAndName = $form->getOption(Form::OPTION_TEMPLATEFILE);
-
 			$templatePathParts = explode('/', $fullTemplatePathAndName);
 			$templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
 			$controllerName = array_pop($templatePathParts);
-
-			$iconPathAndName = ExtensionManagementUtility::extPath($extensionKey, 'Resources/Public/Icons/' . $controllerName . '/' . $templateName);
-			foreach (self::$allowedIconTypes as $iconType) {
-				$potentialIcon = $iconPathAndName . '.' . $iconType;
-				if (is_file($potentialIcon)) {
-					$positionOfResourceInIconPath = strpos($potentialIcon, 'Resources/Public/Icons/');
-					return '../' . ExtensionManagementUtility::siteRelPath($extensionKey) . substr($potentialIcon, $positionOfResourceInIconPath);
-				}
-			}
+			$allowedExtensions = implode(',', self::$allowedIconTypes);
+			$iconFolder = ExtensionManagementUtility::extPath($extensionKey, 'Resources/Public/Icons/' . $controllerName . '/');
+			$iconPathAndName = $iconFolder . $templateName;
+			$iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
+			$filesInFolder = (TRUE === is_dir($iconFolder) ? glob($iconMatchPattern, GLOB_BRACE) : array());
+			return (TRUE === is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : NULL);
 		}
 		return NULL;
 	}
