@@ -155,7 +155,7 @@ class TemplatePaths {
 	 */
 	public function resolveTemplateFileForControllerAndActionAndFormat($controller, $action, $format = self::DEFAULT_FORMAT) {
 		$action = ucfirst($action);
-		foreach ($this->templateRootPaths as $templateRootPath) {
+		foreach ($this->getTemplateRootPaths() as $templateRootPath) {
 			$candidate = $templateRootPath . $controller . '/' . $action . '.' . $format;
 			$candidate = $this->ensureAbsolutePath($candidate);
 			if (TRUE === file_exists($candidate)) {
@@ -183,7 +183,7 @@ class TemplatePaths {
 	 * @return array
 	 */
 	public function resolveAvailablePartialFiles($format = self::DEFAULT_FORMAT) {
-		return $this->resolveFilesInFolders($this->partialRootPaths, $format);
+		return $this->resolveFilesInFolders($this->getPartialRootPaths(), $format);
 	}
 
 	/**
@@ -191,7 +191,7 @@ class TemplatePaths {
 	 * @return array
 	 */
 	public function resolveAvailableLayoutFiles($format = self::DEFAULT_FORMAT) {
-		return $this->resolveFilesInFolders($this->layoutRootPaths, $format);
+		return $this->resolveFilesInFolders($this->getLayoutRootPaths(), $format);
 	}
 
 	/**
