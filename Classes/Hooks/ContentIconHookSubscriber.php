@@ -87,35 +87,37 @@ class ContentIconHookSubscriber {
 	public function addSubIcon(array $parameters, $caller = NULL) {
 		list ($table, $uid, $record) = $parameters;
 		$icon = NULL;
-		$record = NULL === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
-		$cacheIdentity = $table . $uid . sha1(serialize($record));
-		// filter 1: icon must not already be cached and both record and caller must be provided.
-		if (TRUE === $this->cache->has($cacheIdentity)) {
-			$icon = $this->cache->get($cacheIdentity);
-		} elseif (NULL !== $record && NULL !== $caller) {
-			$field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
-			// filter 2: table must have one field defined as "flex" and record must include it.
-			if (NULL !== $field && TRUE === isset($record[$field])) {
-				// we check the cache here because at this point, the cache key is decidedly
-				// unique and we have not yet consulted the (potentially costly) Provider.
-				$provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
-				// filter 3: a Provider must be resolved for the record.
-				if (NULL !== $provider) {
-					$form = $provider->getForm((array) $record);
-					if (NULL !== $form) {
-						$icon = MiscellaneousUtility::getIconForTemplate($form);
-						if (NULL !== $icon) {
-							$iconFileReference = '../../../' . $icon;
-							$label = trim($form->getLabel());
-							$icon = '<img width="16" height="16" src="' . $iconFileReference . '" alt="' . $label . '"
-								title="' . $label . '" class="" />';
-							$icon = '<span class="t3-icon t3-icon-empty t3-icon-empty-empty"
-								style="float: left; vertical-align: bottom; margin-top: 2px;">' . $icon . '</span>';
+		if (NULL !== $caller) {
+			$record = NULL === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
+			$cacheIdentity = $table . $uid . sha1(serialize($record));
+			// filter 1: icon must not already be cached and both record and caller must be provided.
+			if (TRUE === $this->cache->has($cacheIdentity)) {
+				$icon = $this->cache->get($cacheIdentity);
+			} elseif (NULL !== $record) {
+				$field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
+				// filter 2: table must have one field defined as "flex" and record must include it.
+				if (NULL !== $field && TRUE === isset($record[$field])) {
+					// we check the cache here because at this point, the cache key is decidedly
+					// unique and we have not yet consulted the (potentially costly) Provider.
+					$provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
+					// filter 3: a Provider must be resolved for the record.
+					if (NULL !== $provider) {
+						$form = $provider->getForm((array) $record);
+						if (NULL !== $form) {
+							$icon = MiscellaneousUtility::getIconForTemplate($form);
+							if (NULL !== $icon) {
+								$iconFileReference = '../../../' . $icon;
+								$label = trim($form->getLabel());
+								$icon = '<img width="16" height="16" src="' . $iconFileReference . '" alt="' . $label . '"
+									title="' . $label . '" class="" />';
+								$icon = '<span class="t3-icon t3-icon-empty t3-icon-empty-empty"
+									style="float: left; vertical-align: bottom; margin-top: 2px;">' . $icon . '</span>';
+							}
 						}
 					}
 				}
+				$this->cache->set($cacheIdentity, $icon);
 			}
-			$this->cache->set($cacheIdentity, $icon);
 		}
 		return $icon;
 	}

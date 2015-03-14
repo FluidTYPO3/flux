@@ -40,7 +40,7 @@ class ContentIconHookSubscriberTest extends UnitTestCase {
 		$cache->expects($this->once())->method('get')->willReturn('icon');
 		$instance = new ContentIconHookSubscriber();
 		ObjectAccess::setProperty($instance, 'cache', $cache, TRUE);
-		$result = $instance->addSubIcon(array());
+		$result = $instance->addSubIcon(array(), new PageLayoutView());
 		$this->assertEquals('icon', $result);
 	}
 
