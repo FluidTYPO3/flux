@@ -128,8 +128,9 @@ class TemplatePathsTest extends BaseTestCase {
 	 * @dataProvider getResolveFilesMethodTestValues
 	 * @param string $method
 	 */
-	public function testResolveFilesMethodCallsResolveFilesInFolders($method) {
+	public function testResolveFilesMethodCallsResolveFilesInFolders($method, $pathsMethod) {
 		$instance = $this->getMock('FluidTYPO3\\Flux\\View\\TemplatePaths', array('resolveFilesInFolders'));
+		$instance->$pathsMethod(array('foo'));
 		$instance->expects($this->once())->method('resolveFilesInFolders')->with($this->anything(), 'format');
 		$instance->$method('format', 'format');
 	}
@@ -139,9 +140,9 @@ class TemplatePathsTest extends BaseTestCase {
 	 */
 	public function getResolveFilesMethodTestValues() {
 		return array(
-			array('resolveAvailableTemplateFiles'),
-			array('resolveAvailablePartialFiles'),
-			array('resolveAvailableLayoutFiles')
+			array('resolveAvailableTemplateFiles', 'setTemplateRootPaths'),
+			array('resolveAvailablePartialFiles', 'setPartialRootPaths'),
+			array('resolveAvailableLayoutFiles', 'setLayoutRootPaths')
 		);
 	}
 
