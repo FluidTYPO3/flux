@@ -37,6 +37,7 @@ class Xml {
                 <field index=""></field>
             </language>
         </sheet>
+        <sheet index="second"></sheet>
     </data>
 </T3FlexForms>';
 
