@@ -192,6 +192,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 		$instance = $this->getMock($controllerClassName, array('hasSubControllerActionOnForeignController', 'callSubControllerAction'));
 		$instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(TRUE));
 		$instance->expects($this->once())->method('callSubControllerAction');
+		$instance->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
 		$viewContext = new ViewContext(NULL, $this->extensionName, $controllerName);
 		$view = $this->createFluxServiceInstance()->getPreparedExposedTemplateView($viewContext);
 		ObjectAccess::setProperty($instance, 'view', $view, TRUE);
@@ -394,6 +395,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 		$controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
 		$instance = $this->getMock($controllerClassName, array('callSubControllerAction'));
 		$instance->expects($this->never())->method('callSubControllerAction');
+		$instance->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
 		$view = $this->getMock('FluidTYPO3\Flux\View\ExposedTemplateView', array('render'));
 		$view->expects($this->once())->method('render')->will($this->returnValue('test'));
 		ObjectAccess::setProperty($instance, 'extensionName', $this->shortExtensionName, TRUE);

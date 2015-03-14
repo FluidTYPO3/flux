@@ -8,11 +8,11 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Form\FormEngine;
 use TYPO3\CMS\Backend\Template\DocumentTemplate;
 use TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper as FluidFormViewHelper;
-use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Form;
 
 /**
  * ## Main form rendering ViewHelper

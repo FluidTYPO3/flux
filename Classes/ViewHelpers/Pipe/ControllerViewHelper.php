@@ -8,8 +8,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
+use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 
 /**
  * Controller Action Outlet Pipe ViewHelper

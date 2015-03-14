@@ -8,9 +8,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 
 /**
  * Email Outlet Pipe ViewHelper

@@ -30,15 +30,6 @@ class ContentControllerTest extends AbstractFluxControllerTestCase {
 	}
 
 	/**
-	 * @test
-	 */
-	public function canDetectPresenceOfRegisteredCustomControllerForContent() {
-		$this->performDummyRegistration();
-		$hasController = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
-		$this->assertTrue(class_exists($hasController));
-	}
-
-	/**
 	 * @return AbstractFluxController
 	 */
 	protected function createAndTestDummyControllerInstance() {

@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
@@ -57,14 +58,15 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 * @return void
 	 */
 	protected function generateTableConfigurationForProviderForms() {
+		$resolver = new Resolver();
 		$forms = Core::getRegisteredFormsForTables();
 		$packages = $this->getInstalledFluxPackages();
-		$models = ResolveUtility::resolveDomainFormClassInstancesFromPackages($packages);
+		$models = $resolver->resolveDomainFormClassInstancesFromPackages($packages);
 		foreach ($forms as $fullTableName => $form) {
 			$this->processFormForTable($fullTableName, $form);
 		}
 		foreach ($models as $modelClassName => $form) {
-			$fullTableName = ResolveUtility::resolveDatabaseTableName($modelClassName);
+			$fullTableName = $resolver->resolveDatabaseTableName($modelClassName);
 			if (NULL === $form) {
 				$form = $this->generateFormInstanceFromClassName($modelClassName, $fullTableName);
 			}

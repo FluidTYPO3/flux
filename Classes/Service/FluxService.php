@@ -10,11 +10,11 @@ namespace FluidTYPO3\Flux\Service;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
@@ -385,6 +385,13 @@ class FluxService implements SingletonInterface {
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
 		return $this->providerResolver->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
+	}
+
+	/**
+	 * @return Resolver
+	 */
+	public function getResolver() {
+		return new Resolver();
 	}
 
 	/**

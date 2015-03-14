@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Utility;
+namespace FluidTYPO3\Flux\Helper;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -9,16 +9,57 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * ResolveUtility utility
- *
- * @package Flux
- * @subpackage Utility
+ * Class Resolver
  */
-class ResolveUtility {
+class Resolver {
+
+	/**
+	 * @param string $extensionKey
+	 * @param string $action
+	 * @param string $controllerObjectShortName
+	 * @param boolean $failHardClass
+	 * @param boolean $failHardAction
+	 * @throws \RuntimeException
+	 * @return string|NULL
+	 */
+	public function resolveFluxControllerClassNameByExtensionKeyAndAction(
+		$extensionKey,
+		$action,
+		$controllerObjectShortName,
+		$failHardClass = FALSE,
+		$failHardAction = FALSE
+	) {
+		$potentialControllerClassName = $this->buildControllerClassNameFromExtensionKeyAndControllerType(
+			$extensionKey,
+			$controllerObjectShortName
+		);
+		if (FALSE === class_exists($potentialControllerClassName)) {
+			if (TRUE === $failHardClass) {
+				throw new \RuntimeException(
+					'Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' .
+					var_export($extensionKey, TRUE) . ' but the resulting class name was not found.',
+					1364498093
+				);
+			}
+			return NULL;
+		}
+		if (FALSE === method_exists($potentialControllerClassName, $action . 'Action')) {
+			if (TRUE === $failHardAction) {
+				throw new \RuntimeException(
+					'Class ' . $potentialControllerClassName . ' does not contain a method named ' . $action . 'Action',
+					1364498223
+				);
+			}
+			return NULL;
+		}
+		return $potentialControllerClassName;
+	}
 
 	/**
 	 * Resolves a list (array) of class names (not instances) of
@@ -31,7 +72,7 @@ class ResolveUtility {
 	 * @param string|NULL $requiredSuffix If specified, class name must use this suffix
 	 * @return array
 	 */
-	public static function resolveClassNamesInPackageSubNamespace($packageName, $subNamespace, $requiredSuffix = NULL) {
+	public function resolveClassNamesInPackageSubNamespace($packageName, $subNamespace, $requiredSuffix = NULL) {
 		$classNames = array();
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($packageName);
 		$prefix = str_replace('.', '\\', $packageName);
@@ -57,16 +98,16 @@ class ResolveUtility {
 	 * @param array $packageNames
 	 * @return Form[]
 	 */
-	public static function resolveDomainFormClassInstancesFromPackages(array $packageNames = NULL) {
+	public function resolveDomainFormClassInstancesFromPackages(array $packageNames = NULL) {
 		$packageNames = NULL === $packageNames ? Core::getRegisteredPackagesForAutoForms() : $packageNames;
 		$models = (array) Core::getRegisteredFormsForModelObjectClasses();
 		foreach ($packageNames as $packageName) {
-			$classNames = self::resolveClassNamesInPackageSubNamespace($packageName, 'Domain/Form', 'Form');
+			$classNames = $this->resolveClassNamesInPackageSubNamespace($packageName, 'Domain/Form', 'Form');
 			foreach ($classNames as $formClassName) {
 				// convert form class name to model class name by convention
 				$modelClassName = str_replace('\\Domain\\Form\\', '\\Domain\\Model\\', $formClassName);
 				$modelClassName = substr($modelClassName, 0, -4);
-				$fullTableName = self::resolveDatabaseTableName($modelClassName);
+				$fullTableName = $this->resolveDatabaseTableName($modelClassName);
 				$models[$modelClassName] = $formClassName::create();
 				$models[$modelClassName]->setName($fullTableName);
 				$models[$modelClassName]->setExtensionName($packageName);
@@ -76,60 +117,12 @@ class ResolveUtility {
 	}
 
 	/**
-	 * @param string $extensionKey
-	 * @param string $action
-	 * @param string $controllerObjectShortName
-	 * @param boolean $failHardClass
-	 * @param boolean $failHardAction
-	 * @throws \RuntimeException
-	 * @return string|NULL
-	 */
-	public static function resolveFluxControllerClassNameByExtensionKeyAndAction($extensionKey, $action, $controllerObjectShortName, $failHardClass = FALSE, $failHardAction = FALSE) {
-		$potentialControllerClassName = self::buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerObjectShortName);
-		if (FALSE === class_exists($potentialControllerClassName)) {
-			if (TRUE === $failHardClass) {
-				throw new \RuntimeException('Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' . var_export($extensionKey, TRUE) .
-				' but the resulting class name was not found.', 1364498093);
-			}
-			return NULL;
-		}
-		if (FALSE === method_exists($potentialControllerClassName, $action . 'Action')) {
-			if (TRUE === $failHardAction) {
-				throw new \RuntimeException('Class ' . $potentialControllerClassName . ' does not contain a method named ' . $action . 'Action', 1364498223);
-			}
-			return NULL;
-		}
-		return $potentialControllerClassName;
-	}
-
-	/**
-	 * @param string $pluginSignature
-	 * @return string|NULL
-	 */
-	public static function resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature) {
-		$requestParameters = (array) GeneralUtility::_GET($pluginSignature);
-		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : NULL;
-		return $overriddenControllerActionName;
-	}
-
-	/**
-	 * @param string $path
-	 * @return string
-	 */
-	public static function convertAllPathSegmentsToUpperCamelCase($path) {
-		$pathSegments = explode('/', $path);
-		$pathSegments = array_map('ucfirst', $pathSegments);
-		$path = implode('/', $pathSegments);
-		return $path;
-	}
-
-	/**
 	 * Resolve the table name for the given class name
 	 *
 	 * @param string $className
 	 * @return string The table name
 	 */
-	public static function resolveDatabaseTableName($className) {
+	public function resolveDatabaseTableName($className) {
 		$className = ltrim($className, '\\');
 		if (strpos($className, '\\') !== FALSE) {
 			$classNameParts = explode('\\', $className, 6);

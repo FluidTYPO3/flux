@@ -127,20 +127,9 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		$pageProviders = $this->configurationService->resolveConfigurationProviders('pages', NULL, $pageRecord);
 		$this->appendToWhiteAndBlacklistFromProviders($pageProviders, $pageRecord, $whitelist, $blacklist, $columnPosition);
 		// Detect what was clicked in order to create the new content element; decide restrictions
-		// based on this.
-		$defaultValues = $this->getDefaultValues();
-		if (0 > $relativeUid) {
-			// pasting after another element means we should try to resolve the Flux content relation
-			// from that element instead of GET parameters (clicked: "create new" icon after other element)
-			$parentRecord = $this->recordService->getSingle('tt_content', '*', abs($relativeUid));
-			$fluxAreaName = (string) $parentRecord['tx_flux_column'];
-			$parentRecordUid = (integer) $parentRecord['tx_flux_parent'];
-		} elseif (TRUE === isset($defaultValues['tx_flux_column'])) {
-			// attempt to read the target Flux content area from GET parameters (clicked: "create new" icon
-			// in top of nested Flux content area
-			$fluxAreaName = (string) $defaultValues['tx_flux_column'];
-			$parentRecordUid = (integer) $defaultValues['tx_flux_parent'];
-		}
+		// based on this. Returned parent UID and area name is either non-zero and string, or zero
+		// and NULL when record is NOT inserted as child.
+		list ($parentRecordUid, $fluxAreaName) = $this->getAreaNameAndParentFromRelativeRecordOrDefaults($relativeUid);
 		// if these variables now indicate that we are inserting content elements into a Flux-enabled content
 		// area inside another content element, attempt to read allowed/denied content types from the
 		// Grid returned by the Provider that applies to the parent element's type and configuration
@@ -157,6 +146,29 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		$whitelist = array_unique($whitelist);
 		$blacklist = array_unique($blacklist);
 		return array($whitelist, $blacklist);
+	}
+
+	/**
+	 * @param integer $relativeUid
+	 * @return array
+	 */
+	protected function getAreaNameAndParentFromRelativeRecordOrDefaults($relativeUid) {
+		$fluxAreaName = NULL;
+		$parentRecordUid = 0;
+		$defaultValues = $this->getDefaultValues();
+		if (0 > $relativeUid) {
+			// pasting after another element means we should try to resolve the Flux content relation
+			// from that element instead of GET parameters (clicked: "create new" icon after other element)
+			$parentRecord = $this->recordService->getSingle('tt_content', '*', abs($relativeUid));
+			$fluxAreaName = (string) $parentRecord['tx_flux_column'];
+			$parentRecordUid = (integer) $parentRecord['tx_flux_parent'];
+		} elseif (TRUE === isset($defaultValues['tx_flux_column'])) {
+			// attempt to read the target Flux content area from GET parameters (clicked: "create new" icon
+			// in top of nested Flux content area
+			$fluxAreaName = (string) $defaultValues['tx_flux_column'];
+			$parentRecordUid = (integer) $defaultValues['tx_flux_parent'];
+		}
+		return array($parentRecordUid, $fluxAreaName);
 	}
 
 	/**

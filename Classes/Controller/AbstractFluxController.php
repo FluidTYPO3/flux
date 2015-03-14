@@ -210,11 +210,21 @@ abstract class AbstractFluxController extends ActionController {
 		$extensionSignature = ExtensionNamingUtility::getExtensionSignature($extensionKey);
 		$pluginSignature = 'tx_' . $extensionSignature . '_' . $this->request->getPluginName();
 		$controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
-		$requestActionName = ResolveUtility::resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature);
+		$requestActionName = $this->resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature);
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);
 		$actualActionName = NULL !== $requestActionName ? $requestActionName : $controllerActionName;
 		$controllerName = $this->request->getControllerName();
 		return $this->performSubRendering($controllerExtensionKey, $controllerName, $actualActionName, $pluginSignature);
+	}
+
+	/**
+	 * @param string $pluginSignature
+	 * @return string|NULL
+	 */
+	protected function resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature) {
+		$requestParameters = (array) GeneralUtility::_GET($pluginSignature);
+		$overriddenControllerActionName = TRUE === isset($requestParameters['action']) ? $requestParameters['action'] : NULL;
+		return $overriddenControllerActionName;
 	}
 
 	/**
@@ -227,7 +237,8 @@ abstract class AbstractFluxController extends ActionController {
 	protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature) {
 		$shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
 		if (TRUE === $shouldRelay) {
-			$foreignControllerClass = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction(
+			$foreignControllerClass = $this->configurationService
+				->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndAction(
 				$extensionName, $actionName, $controllerName
 			);
 			$extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
@@ -243,9 +254,8 @@ abstract class AbstractFluxController extends ActionController {
 	 * @return boolean
 	 */
 	protected function hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName) {
-		$potentialControllerClassName = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction(
-			$extensionName, $actionName, $controllerName
-		);
+		$potentialControllerClassName = $this->configurationService
+			->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndAction($extensionName, $actionName, $controllerName);
 		$isForeign = $extensionName !== $this->extensionName;
 		$isValidController = class_exists($potentialControllerClassName);
 		return (TRUE === $isForeign && TRUE === $isValidController);

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Tests\Unit\Utility;
+namespace FluidTYPO3\Flux\Tests\Unit\Helpers;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -8,8 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -17,13 +17,14 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 /**
  * @package Flux
  */
-class ResolveUtilityTest extends AbstractTestCase {
+class ResolverTest extends AbstractTestCase {
 
 	/**
 	 * @test
 	 */
 	public function resolvesClassNamesInSubNamespaceOfPackage() {
-		$result = ResolveUtility::resolveClassNamesInPackageSubNamespace('FluidTYPO3.Flux', '');
+		$resolver = new Resolver();
+		$result = $resolver->resolveClassNamesInPackageSubNamespace('FluidTYPO3.Flux', '');
 		$this->assertEquals(array('FluidTYPO3\\Flux\\Core', 'FluidTYPO3\\Flux\\Form'), $result);
 	}
 
@@ -31,7 +32,8 @@ class ResolveUtilityTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function returnsClassIfClassExists() {
-		$className = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+		$resolver = new Resolver();
+		$className = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
 		$instance = $this->objectManager->get($className);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Controller\AbstractFluxController', $instance);
 	}
@@ -40,7 +42,8 @@ class ResolveUtilityTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function returnsNullIfControllerClassNameDoesNotExist() {
-		$result = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void');
+		$resolver = new Resolver();
+		$result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void');
 		$this->assertNull($result);
 	}
 
@@ -48,7 +51,8 @@ class ResolveUtilityTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function returnsNullIfControllerActionDoesNotExist() {
-		$result = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content');
+		$resolver = new Resolver();
+		$result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content');
 		$this->assertNull($result);
 	}
 
@@ -56,24 +60,27 @@ class ResolveUtilityTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function throwsExceptionForClassIfSetToHardFail() {
+		$resolver = new Resolver();
 		$this->setExpectedException('RuntimeException', NULL, 1364498093);
-		ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void', TRUE);
+		$resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void', TRUE);
 	}
 
 	/**
 	 * @test
 	 */
 	public function throwsExceptionForActionIfSetToHardFail() {
+		$resolver = new Resolver();
 		$this->setExpectedException('RuntimeException', NULL, 1364498223);
-		ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content', FALSE, TRUE);
+		$resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content', FALSE, TRUE);
 	}
 
 	/**
 	 * @test
 	 */
 	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassExists() {
+		$resolver = new Resolver();
 		class_alias('FluidTYPO3\Flux\Controller\AbstractFluxController', 'Void\NoName\Controller\FakeController');
-		$result = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Fake');
+		$result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Fake');
 		$this->assertSame('Void\NoName\Controller\FakeController', $result);
 	}
 
@@ -81,15 +88,8 @@ class ResolveUtilityTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassDoesNotExist() {
-		$result = ResolveUtility::resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Void');
-		$this->assertNull($result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canDetectRequestArgumentsBasedOnPluginSignature() {
-		$result = ResolveUtility::resolveOverriddenFluxControllerActionNameFromRequestParameters('tx_void_fake');
+		$resolver = new Resolver();
+		$result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Void');
 		$this->assertNull($result);
 	}
 
@@ -100,7 +100,8 @@ class ResolveUtilityTest extends AbstractTestCase {
 	 * @param string $expectedTable
 	 */
 	public function testResolveTableName($class, $expectedTable) {
-		$result = ResolveUtility::resolveDatabaseTableName($class);
+		$resolver = new Resolver();
+		$result = $resolver->resolveDatabaseTableName($class);
 		$this->assertEquals($expectedTable, $result);
 	}
 
@@ -113,26 +114,6 @@ class ResolveUtilityTest extends AbstractTestCase {
 			array('FluidTYPO3\\Flux\\Domain\\Model\\ObjectName', 'tx_flux_domain_model_objectname'),
 			array('TYPO3\\CMS\\Extbase\\Domain\\Model\\ObjectName', 'tx_extbase_domain_model_objectname'),
 			array('Tx_Flux_Domain_Model_ObjectName', 'tx_flux_domain_model_objectname'),
-		);
-	}
-
-	/**
-	 * @dataProvider getConvertAllPathSegmentsToUpperCamelCaseTestValues
-	 * @param string $input
-	 * @param string $expected
-	 */
-	public function testConvertAllPathSegmentsToUpperCamelCase($input, $expected) {
-		$result = ResolveUtility::convertAllPathSegmentsToUpperCamelCase($input);
-		$this->assertEquals($expected, $result);
-	}
-
-	public function getConvertAllPathSegmentsToUpperCamelCaseTestValues() {
-		return array(
-			array('', ''),
-			array('Foo', 'Foo'),
-			array('Foo/Bar', 'Foo/Bar'),
-			array('foo', 'Foo'),
-			array('foo/bar', 'Foo/Bar'),
 		);
 	}
 
