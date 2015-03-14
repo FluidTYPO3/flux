@@ -28,9 +28,10 @@ class ResolveUtility {
 	 *
 	 * @param string $packageName
 	 * @param string $subNamespace
+	 * @param string|NULL $requiredSuffix If specified, class name must use this suffix
 	 * @return array
 	 */
-	public static function resolveClassNamesInPackageSubNamespace($packageName, $subNamespace) {
+	public static function resolveClassNamesInPackageSubNamespace($packageName, $subNamespace, $requiredSuffix = NULL) {
 		$classNames = array();
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($packageName);
 		$prefix = str_replace('.', '\\', $packageName);
@@ -39,7 +40,11 @@ class ResolveUtility {
 		$files = GeneralUtility::getFilesInDir($folder, 'php');
 		if (TRUE === is_array($files)) {
 			foreach ($files as $file) {
-				$classNames[] = $prefix . '\\' . $suffix . pathinfo($file, PATHINFO_FILENAME);
+				$filename = pathinfo($file, PATHINFO_FILENAME);
+				// include if no required suffix is given or string ends with suffix
+				if (NULL === $requiredSuffix || 1 === preg_match('/' . $requiredSuffix . '$/', $filename)) {
+					$classNames[] = $prefix . '\\' . $suffix . $filename;
+				}
 			}
 		}
 		return $classNames;
@@ -56,8 +61,11 @@ class ResolveUtility {
 		$packageNames = NULL === $packageNames ? Core::getRegisteredPackagesForAutoForms() : $packageNames;
 		$models = (array) Core::getRegisteredFormsForModelObjectClasses();
 		foreach ($packageNames as $packageName) {
-			$classNames = self::resolveClassNamesInPackageSubNamespace($packageName, 'Domain/Form');
+			$classNames = self::resolveClassNamesInPackageSubNamespace($packageName, 'Domain/Form', 'Form');
 			foreach ($classNames as $formClassName) {
+				// convert form class name to model class name by convention
+				$modelClassName = str_replace('\\Domain\\Form\\', '\\Domain\\Model\\', $formClassName);
+				$modelClassName = substr($modelClassName, 0, -4);
 				$fullTableName = self::resolveDatabaseTableName($modelClassName);
 				$models[$modelClassName] = $formClassName::create();
 				$models[$modelClassName]->setName($fullTableName);
