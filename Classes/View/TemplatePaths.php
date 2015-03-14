@@ -155,7 +155,7 @@ class TemplatePaths {
 	 */
 	public function resolveTemplateFileForControllerAndActionAndFormat($controller, $action, $format = self::DEFAULT_FORMAT) {
 		$action = ucfirst($action);
-		foreach (array_reverse($this->templateRootPaths) as $templateRootPath) {
+		foreach ($this->templateRootPaths as $templateRootPath) {
 			$candidate = $templateRootPath . $controller . '/' . $action . '.' . $format;
 			$candidate = $this->ensureAbsolutePath($candidate);
 			if (TRUE === file_exists($candidate)) {
@@ -244,23 +244,6 @@ class TemplatePaths {
 	 */
 	public function fillFromTypoScriptArray(array $paths) {
 		list ($templateRootPaths, $layoutRootPaths, $partialRootPaths) = $this->extractPathArrays($paths);
-		if (TRUE === isset($paths[self::CONFIG_OVERLAYS])) {
-			foreach ($paths[self::CONFIG_OVERLAYS] as $overlayGroup) {
-				list ($overlayTemplates, $overlayLayouts, $overlayPartials) = $this->extractPathArrays($overlayGroup);
-				$templateRootPaths = array_merge($templateRootPaths, $overlayTemplates);
-				$layoutRootPaths = array_merge($layoutRootPaths, $overlayLayouts);
-				$partialRootPaths = array_merge($partialRootPaths, $overlayPartials);
-			}
-		}
-		// sort and unique, ensuring that the keys used in TypoScript become
-		// the dictated order of paths. The lower the number, the lower the
-		// path's priority is.
-		krsort($templateRootPaths, SORT_NUMERIC);
-		krsort($layoutRootPaths, SORT_NUMERIC);
-		krsort($partialRootPaths, SORT_NUMERIC);
-		$templateRootPaths = array_values(array_unique($templateRootPaths));
-		$partialRootPaths = array_values(array_unique($partialRootPaths));
-		$layoutRootPaths = array_values(array_unique($layoutRootPaths));
 		$this->setTemplateRootPaths($templateRootPaths);
 		$this->setLayoutRootPaths($layoutRootPaths);
 		$this->setPartialRootPaths($partialRootPaths);
@@ -334,6 +317,12 @@ class TemplatePaths {
 	 * the singular and plural entries with the singular
 	 * entries being recorded first and plurals second.
 	 *
+	 * Sorts the passed paths by index in array, in
+	 * reverse, so that the base View class will iterate
+	 * the array in the right order when resolving files.
+	 *
+	 * Adds legacy singular name as last option, if set.
+	 *
 	 * @param array $paths
 	 * @return array
 	 */
@@ -341,7 +330,32 @@ class TemplatePaths {
 		$templateRootPaths = array();
 		$layoutRootPaths = array();
 		$partialRootPaths = array();
-		// first recorded: the legacy singular paths configuration
+		// first recorded: the modern plural paths configurations:
+		// checked as first candidates; sorted reverse by key to
+		// check the path with the highest number first.
+		if (TRUE === isset($paths[self::CONFIG_TEMPLATEROOTPATHS]) && TRUE === is_array($paths[self::CONFIG_TEMPLATEROOTPATHS])) {
+			krsort($paths[self::CONFIG_TEMPLATEROOTPATHS], SORT_NUMERIC);
+			$templateRootPaths = array_merge($templateRootPaths, array_values($paths[self::CONFIG_TEMPLATEROOTPATHS]));
+		}
+		if (TRUE === isset($paths[self::CONFIG_LAYOUTROOTPATHS]) && TRUE === is_array($paths[self::CONFIG_LAYOUTROOTPATHS])) {
+			krsort($paths[self::CONFIG_LAYOUTROOTPATHS], SORT_NUMERIC);
+			$layoutRootPaths = array_merge($layoutRootPaths, array_values($paths[self::CONFIG_LAYOUTROOTPATHS]));
+		}
+		if (TRUE === isset($paths[self::CONFIG_PARTIALROOTPATHS]) && TRUE === is_array($paths[self::CONFIG_PARTIALROOTPATHS])) {
+			krsort($paths[self::CONFIG_PARTIALROOTPATHS], SORT_NUMERIC);
+			$partialRootPaths = array_merge($partialRootPaths, array_values($paths[self::CONFIG_PARTIALROOTPATHS]));
+		}
+		// second recorded: the legacy "overlays." configurations
+		// by recursive call to extraction method:
+		if (TRUE === isset($paths[self::CONFIG_OVERLAYS])) {
+			foreach ($paths[self::CONFIG_OVERLAYS] as $overlayGroup) {
+				list ($overlayTemplates, $overlayLayouts, $overlayPartials) = $this->extractPathArrays($overlayGroup);
+				$templateRootPaths = array_merge($templateRootPaths, $overlayTemplates);
+				$layoutRootPaths = array_merge($layoutRootPaths, $overlayLayouts);
+				$partialRootPaths = array_merge($partialRootPaths, $overlayPartials);
+			}
+		}
+		// last appended if set: the legacy singular paths configuration
 		if (TRUE === isset($paths[self::CONFIG_TEMPLATEROOTPATH])) {
 			$templateRootPaths[] = $paths[self::CONFIG_TEMPLATEROOTPATH];
 		}
@@ -351,22 +365,16 @@ class TemplatePaths {
 		if (TRUE === isset($paths[self::CONFIG_PARTIALROOTPATH])) {
 			$partialRootPaths[] = $paths[self::CONFIG_PARTIALROOTPATH];
 		}
-		// second recorded: the modern plural paths configurations
-		if (TRUE === isset($paths[self::CONFIG_TEMPLATEROOTPATHS])) {
-			$templateRootPaths = array_merge($templateRootPaths, array_values((array) $paths[self::CONFIG_TEMPLATEROOTPATHS]));
-		}
-		if (TRUE === isset($paths[self::CONFIG_LAYOUTROOTPATHS])) {
-			$layoutRootPaths = array_merge($layoutRootPaths, array_values((array) $paths[self::CONFIG_LAYOUTROOTPATHS]));
-		}
-		if (TRUE === isset($paths[self::CONFIG_PARTIALROOTPATHS])) {
-			$partialRootPaths = array_merge($partialRootPaths, array_values((array) $paths[self::CONFIG_PARTIALROOTPATHS]));
-		}
+		// make sure every path is suffixed by a trailing slash:
 		$templateRootPaths = array_map(array($this, 'ensureSuffixedPath'), $templateRootPaths);
 		$layoutRootPaths = array_map(array($this, 'ensureSuffixedPath'), $layoutRootPaths);
 		$partialRootPaths = array_map(array($this, 'ensureSuffixedPath'), $partialRootPaths);
 		$templateRootPaths = array_unique($templateRootPaths);
 		$partialRootPaths = array_unique($partialRootPaths);
 		$layoutRootPaths = array_unique($layoutRootPaths);
+		$templateRootPaths = array_values($templateRootPaths);
+		$layoutRootPaths = array_values($layoutRootPaths);
+		$partialRootPaths = array_values($partialRootPaths);
 		$pathCollections = array($templateRootPaths, $layoutRootPaths, $partialRootPaths);
 		$pathCollections = $this->ensureAbsolutePath($pathCollections);
 		return $pathCollections;
