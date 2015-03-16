@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\ViewHelpers\Content\GetViewHelper;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -32,6 +33,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase {
 		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
 		$GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
 		$GLOBALS['TSFE']->sys_page = new PageRepository();
+		$GLOBALS['TT'] = new NullTimeTracker();
 		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', FALSE);
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
 		$GLOBALS['TCA']['tt_content']['ctrl'] = array();
