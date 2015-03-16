@@ -126,6 +126,7 @@ class PreviewViewTest extends AbstractTestCase {
 			->with($record, $this->anything(), $this->anything(), $this->anything());
 		$instance = $this->createInstance();
 		$result = $this->callInaccessibleMethod($instance, 'drawRecord', $parentRow, $column, $record, $view);
+		$this->assertNotEmpty($result);
 	}
 
 	/**
