@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Helpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -18,6 +19,19 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  * @package Flux
  */
 class ResolverTest extends AbstractTestCase {
+
+	/**
+	 * @test
+	 */
+	public function testResolveDomainFormClassInstancesFromPackages() {
+		$modelClassName = 'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\Domain\\Model\\Dummy';
+		Core::registerAutoFormForModelObjectClassName($modelClassName);
+		$classNames = array('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\Domain\\Form\\DummyForm');
+		$resolver = $this->getMock('FluidTYPO3\\Flux\\Helper\\Resolver', array('resolveClassNamesInPackageSubNamespace'));
+		$resolver->expects($this->once())->method('resolveClassNamesInPackageSubNamespace')->willReturn($classNames);
+		$result = $resolver->resolveDomainFormClassInstancesFromPackages(array('foobar'));
+		$this->assertInstanceOf($classNames[0], $result[$modelClassName]);
+	}
 
 	/**
 	 * @test

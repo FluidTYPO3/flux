@@ -91,15 +91,14 @@ class FormDataTransformer {
 	protected function getObjectOfType($dataType, $uids) {
 		$identifiers = TRUE === is_array($uids) ? $uids : GeneralUtility::trimExplode(',', trim($uids, ','), TRUE);
 		$identifiers = array_map('intval', $identifiers);
-		$isModel = (FALSE !== strpos($dataType, '_Domain_Model_') || FALSE !== strpos($dataType, '\\Domain\\Model\\'));
+		$isModel = $this->isDomainModelClassName($dataType);
 		list ($container, $object) = FALSE !== strpos($dataType, '<') ? explode('<', trim($dataType, '>')) : array(NULL, $dataType);
-		$repositoryClassName = str_replace('_Domain_Model_', '_Domain_Repository_', str_replace('\\Domain\\Model\\', '\\Domain\\Repository\\', $object)) . 'Repository';
+		$repositoryClassName = $this->resolveRepositoryClassName($object);
 		// Fast decisions
 		if (TRUE === $isModel && NULL === $container) {
 			if (TRUE === class_exists($repositoryClassName)) {
 				$repository = $this->objectManager->get($repositoryClassName);
-				$uid = array_pop($identifiers);
-				return $repository->findByUid($uid);
+				return reset($this->loadObjectsFromRepository($repository, $identifiers));
 			}
 		} elseif (TRUE === class_exists($dataType)) {
 			// using constructor value to support objects like DateTime
@@ -117,6 +116,22 @@ class FormDataTransformer {
 			}
 		}
 		return $uids;
+	}
+
+	/**
+	 * @param string $object
+	 * @return string
+	 */
+	protected function resolveRepositoryClassName($object) {
+		return str_replace('\\Domain\\Model\\', '\\Domain\\Repository\\', $object) . 'Repository';
+	}
+
+	/**
+	 * @param string $dataType
+	 * @return boolean
+	 */
+	protected function isDomainModelClassName($dataType) {
+		return (FALSE !== strpos($dataType, '\\Domain\\Model\\'));
 	}
 
 	/**

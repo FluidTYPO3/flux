@@ -28,8 +28,13 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 	 * @param array $expectedList
 	 */
 	public function processesWizardItems($items, $whitelist, $blacklist, $expectedList) {
-		$instance = $this->createInstance();
-		$emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'name');
+		$instance = $this->getMock(
+			'FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber',
+			array('getAreaNameAndParentFromRelativeRecordOrDefaults')
+		);
+		$instance->expects($this->once())->method('getAreaNameAndParentFromRelativeRecordOrDefaults')
+			->willReturn(array(1, 'area'));
+		$emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'area');
 		$controller = new NewContentElementController();
 		$controller->colPos = 0;
 		$controller->uid_pid = -1;
@@ -37,7 +42,7 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$row = new Row();
 		$column = new Column();
 		$column->setColumnPosition(0);
-		$column->setName('name');
+		$column->setName('area');
 		$column->setVariable('allowedContentTypes', $whitelist);
 		$column->setVariable('deniedContentTypes', $blacklist);
 		$row->add($column);
@@ -47,9 +52,10 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$provider1->setTemplateVariables(array());
 		$provider1->setGrid($grid);
 		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
-		$provider2->expects($this->exactly(1))->method('getGrid')->will($this->returnValue(NULL));
+		$provider2->expects($this->exactly(2))->method('getGrid')->will($this->returnValue(NULL));
 		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
-		$configurationService->expects($this->exactly(1))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider1, $provider2)));
+		$configurationService->expects($this->exactly(2))->method('resolveConfigurationProviders')
+			->will($this->returnValue(array($provider1, $provider2)));
 		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
 		$recordService->expects($this->exactly(2))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
 		$instance->injectConfigurationService($configurationService);
@@ -152,6 +158,34 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$controller = new NewContentElementController();
 		$instance->manipulateWizardItems($items, $controller);
 		$this->assertNotEmpty($items);
+	}
+
+	/**
+	 * @dataProvider getAreaNameAndParentFromRelativeRecordOrDefaults
+	 * @param integer $relativeUid
+	 * @param array $expected
+	 */
+	public function testGetAreaNameAndParentFromRelativeRecordOrDefaults($relativeUid, array $expected) {
+		$defaults = array('tx_flux_column' => 'defaultarea', 'tx_flux_parent' => 999);
+		$inRecord = array('tx_flux_column' => 'recordarea', 'tx_flux_parent' => 111);
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+		$recordService->expects($this->any())->method('getSingle')->willReturn($inRecord);
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber', array('getDefaultValues'));
+		$instance->expects($this->once())->method('getDefaultValues')->willReturn($defaults);
+		$instance->injectRecordService($recordService);
+		$result = $this->callInaccessibleMethod($instance, 'getAreaNameAndParentFromRelativeRecordOrDefaults', $relativeUid);
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAreaNameAndParentFromRelativeRecordOrDefaults() {
+		return array(
+			array(0, array(999, 'defaultarea')),
+			array(1, array(999, 'defaultarea')),
+			array(-1, array(111, 'recordarea'))
+		);
 	}
 
 }

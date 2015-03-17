@@ -27,7 +27,9 @@ class FormDataTransformerTest extends AbstractTestCase {
 	 * @param mixed $expected
 	 */
 	public function testTransformation($value, $transformation, $expected) {
-		$instance = $this->createInstance();
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Transformation\\FormDataTransformer', array('loadObjectsFromRepository'));
+		$instance->expects($this->any())->method('loadObjectsFromRepository')->willReturn(array());
+		$instance->injectObjectManager($this->objectManager);
 		$form = Form::create();
 		$form->createField('Input', 'field')->setTransform($transformation);
 		$transformed = $instance->transformAccordingToConfiguration(array('field' => $value), $form);
@@ -43,11 +45,11 @@ class FormDataTransformerTest extends AbstractTestCase {
 			array('0', 'integer', 0),
 			array('0.12', 'float', 0.12),
 			array('1,2,3', 'array', array(1, 2, 3)),
-			array(date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))),
-			//array('99999', 'TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser', NULL),
-			//array('99998,99999', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<\\TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser>', NULL),
-			//array('99998,99999', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<\\Invalid>', NULL),
 			array('123,321', 'InvalidClass', '123'),
+			array(date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))),
+			array('1', 'TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser', NULL),
+			array('1,2', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser>', NULL),
+			array('1,2', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<\\Invalid>', NULL),
 		);
 	}
 
