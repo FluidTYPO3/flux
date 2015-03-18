@@ -1,28 +1,12 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Form;
-/***************************************************************
- *  Copyright notice
+namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
@@ -34,6 +18,38 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 class DataViewHelperTest extends AbstractViewHelperTestCase {
 
 	/**
+	 * @return void
+	 */
+	public static function setUpBeforeClass() {
+		$GLOBALS['TCA'] = array(
+			'tt_content' => array(
+				'columns' => array(
+					'pi_flexform' => array()
+				)
+			),
+			'be_users' => array(
+				'columns' => array(
+					'username' => array()
+				)
+			),
+		);
+	}
+
+	/**
+	 * @return void
+	 */
+	public static function tearDownAfterClass() {
+		unset($GLOBALS['TCA']);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function tearDown() {
+		unset($GLOBALS['TYPO3_DB']);
+	}
+
+	/**
 	 * @test
 	 */
 	public function failsWithInvalidTable() {
@@ -43,12 +59,10 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'uid' => 1
 		);
 		$viewHelper = $this->buildViewHelperInstance($arguments);
-		$backup = $GLOBALS['TYPO3_DB'];
 		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
 		$GLOBALS['TYPO3_DB']->expects($this->never())->method('exec_SELECTgetSingleRow');
 		$output = $viewHelper->initializeArgumentsAndRender();
 		$this->assertEquals('Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.', $output);
-		$GLOBALS['TYPO3_DB'] = $backup;
 	}
 
 	/**
@@ -59,6 +73,8 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'table' => 'tt_content',
 			'field' => 'pi_flexform',
 		);
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+		$GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
 		$output = $this->executeViewHelper($arguments);
 		$this->assertEquals('Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.', $output);
 	}
@@ -85,6 +101,8 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'field' => 'pi_flexform',
 			'uid' => 1
 		);
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+		$GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
 		$this->executeViewHelper($arguments);
 	}
 
@@ -97,7 +115,8 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'field' => 'pi_flexform',
 			'record' => Records::$contentRecordIsParentAndHasChildren
 		);
-		$this->executeViewHelper($arguments);
+		$result = $this->executeViewHelper($arguments);
+		$this->assertIsArray($result);
 	}
 
 	/**
@@ -174,8 +193,26 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$providers = array();
 		$record = array();
 		$field = NULL;
-		ObjectAccess::setProperty($mock, 'configurationService', $configurationService, TRUE);
-		$this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
+		$mock->injectConfigurationService($configurationService);
+		$result = $this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
+		$this->assertNull($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function readDataArrayFromProvidersOrUsingDefaultMethodUsesProvidersToReadData() {
+		$mock = $this->createInstance();
+		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getFlexFormValues'));
+		$provider1->expects($this->once())->method('getFlexFormValues')->willReturn(array('foo' => array('bar' => 'test')));
+		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getFlexFormValues'));
+		$provider2->expects($this->once())->method('getFlexFormValues')
+			->willReturn(array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test'));
+		$providers = array($provider1, $provider2);
+		$record = Records::$contentRecordIsParentAndHasChildren;
+		$field = 'pi_flexform';
+		$result = $this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
+		$this->assertEquals(array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test'), $result);
 	}
 
 }

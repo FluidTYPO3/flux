@@ -1,29 +1,14 @@
 <?php
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Björn Fromme <fromme@dreipunktnull.com>, dreipunktnull
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -119,15 +104,45 @@ class DataViewHelper extends AbstractViewHelper {
 	 */
 	protected function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field) {
 		if (0 === count($providers)) {
-			$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field]);
+			$lang = $this->getCurrentLanguageName();
+			$pointer = $this->getCurrentValuePointerName();
+			$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field], NULL, $lang, $pointer);
 		} else {
 			$dataArray = array();
+			/** @var ProviderInterface $provider */
 			foreach ($providers as $provider) {
 				$data = (array) $provider->getFlexFormValues($record);
 				$dataArray = RecursiveArrayUtility::merge($dataArray, $data);
 			}
 		}
 		return $dataArray;
+	}
+
+	/**
+	 * Gets the current language name as string, in a format that is
+	 * compatible with language pointers in a flexform. Usually this
+	 * implies values like "en", "de" etc.
+	 *
+	 * Return NULL when language is site default language.
+	 *
+	 * @return string|NULL
+	 */
+	protected function getCurrentLanguageName() {
+		$language = $GLOBALS['TSFE']->lang;
+		if (TRUE === empty($language) || 'default' === $language) {
+			$language = NULL;
+		}
+		return $language;
+	}
+
+	/**
+	 * Gets the pointer name to use whne retrieving values from a
+	 * flexform source. Return NULL when pointer is default.
+	 *
+	 * @return string|NULL
+	 */
+	protected function getCurrentValuePointerName() {
+		return $this->getCurrentLanguageName();
 	}
 
 }

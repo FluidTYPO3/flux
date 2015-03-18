@@ -1,29 +1,14 @@
 <?php
-namespace FluidTYPO3\Flux;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+namespace FluidTYPO3\Flux\Tests\Unit;
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -121,7 +106,7 @@ class CoreTest extends AbstractTestCase {
 	public function canRegisterStandaloneTemplateForContentObject() {
 		$service = $this->createFluxServiceInstance();
 		$variables = array('test' => 'test');
-		$paths = array('templateRootPath' => 'EXT:flux/Resources/Private/Templates');
+		$paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
 		$extensionKey = 'fake';
 		$contentObjectType = 'void';
 		$providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
@@ -130,13 +115,9 @@ class CoreTest extends AbstractTestCase {
 		$record['CType'] = $contentObjectType;
 		$absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
 		$configurationSectionName = 'Configuration';
-		Core::registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $relativeTemplatePathAndFilename,
+		$result = Core::registerFluidFlexFormContentObject($extensionKey, $contentObjectType, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
-		$detectedProvider = $service->resolvePrimaryConfigurationProvider('tt_content', NULL, $record, $extensionKey);
-		$this->assertInstanceOf($providerClassName, $detectedProvider);
-		$this->assertSame($extensionKey, $detectedProvider->getExtensionKey($record));
-		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
-		$this->assertSame(PathUtility::translatePath($paths), $detectedProvider->getTemplatePaths($record));
+		$this->assertNull($result);
 	}
 
 	/**
@@ -145,7 +126,7 @@ class CoreTest extends AbstractTestCase {
 	public function canRegisterStandaloneTemplateForPlugin() {
 		$service = $this->createFluxServiceInstance();
 		$variables = array('test' => 'test');
-		$paths = array('templateRootPath' => 'EXT:flux/Resources/Private/Templates');
+		$paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
 		$extensionKey = 'more_fake';
 		$pluginType = 'void';
 		$fieldName = NULL;
@@ -155,13 +136,9 @@ class CoreTest extends AbstractTestCase {
 		$record['list_type'] = $pluginType;
 		$absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
 		$configurationSectionName = 'Configuration';
-		Core::registerFluidFlexFormPlugin($extensionKey, $pluginType, $relativeTemplatePathAndFilename,
+		$result = Core::registerFluidFlexFormPlugin($extensionKey, $pluginType, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
-		$detectedProvider = $service->resolvePrimaryConfigurationProvider('tt_content', $fieldName, $record, $extensionKey);
-		$this->assertInstanceOf($providerClassName, $detectedProvider);
-		$this->assertSame($extensionKey, $detectedProvider->getExtensionKey($record));
-		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
-		$this->assertSame(PathUtility::translatePath($paths), $detectedProvider->getTemplatePaths($record));
+		$this->assertNull($result);
 	}
 
 	/**
@@ -170,7 +147,7 @@ class CoreTest extends AbstractTestCase {
 	public function canRegisterStandaloneTemplateForTable() {
 		$service = $this->createFluxServiceInstance();
 		$variables = array('test' => 'test');
-		$paths = array('templateRootPath' => 'EXT:flux/Resources/Private/Templates');
+		$paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
 		$table = 'fake';
 		$fieldName = NULL;
 		$providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
@@ -178,12 +155,9 @@ class CoreTest extends AbstractTestCase {
 		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
 		$configurationSectionName = 'Configuration';
-		Core::registerFluidFlexFormTable($table, $fieldName, $relativeTemplatePathAndFilename,
+		$result = Core::registerFluidFlexFormTable($table, $fieldName, $relativeTemplatePathAndFilename,
 			$variables, $configurationSectionName, $paths);
-		$detectedProvider = $service->resolvePrimaryConfigurationProvider($table, $fieldName, $record);
-		$this->assertInstanceOf($providerClassName, $detectedProvider);
-		$this->assertSame($absoluteTemplatePathAndFilename, $detectedProvider->getTemplatePathAndFilename($record));
-		$this->assertSame(PathUtility::translatePath($paths), $detectedProvider->getTemplatePaths($record));
+		$this->assertNull($result);
 	}
 
 	/**
@@ -270,6 +244,28 @@ class CoreTest extends AbstractTestCase {
 		$this->assertArrayHasKey($fakePackage, Core::getRegisteredPackagesForAutoForms());
 		Core::unregisterFluxDomainFormPackage($fakePackage);
 		$this->assertArrayNotHasKey($fakePackage, Core::getRegisteredPackagesForAutoForms());
+	}
+
+	/**
+	 * @test
+	 */
+	public function registerFormForModelObjectClassNameSetsExtensionNameFromExtensionKeyGlobal() {
+		$GLOBALS['_EXTKEY'] = 'test';
+		$form = $this->getMock('FluidTYPO3\\Flux\\Form', array('setExtensionName'));
+		$form->expects($this->once())->method('setExtensionName')->with('Test');
+		Core::registerFormForModelObjectClassName('FooBar', $form);
+		unset($GLOBALS['_EXTKEY']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function registerFormForTableSetsExtensionNameFromExtensionKeyGlobal() {
+		$GLOBALS['_EXTKEY'] = 'test';
+		$form = $this->getMock('FluidTYPO3\\Flux\\Form', array('setExtensionName'));
+		$form->expects($this->once())->method('setExtensionName')->with('Test');
+		Core::registerFormForTable('foobar', $form);
+		unset($GLOBALS['_EXTKEY']);
 	}
 
 }

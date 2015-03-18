@@ -1,31 +1,17 @@
 <?php
-namespace FluidTYPO3\Flux\Service;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+namespace FluidTYPO3\Flux\Tests\Unit\Service;
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -40,6 +26,7 @@ class ContentServiceTest extends AbstractTestCase {
 	 */
 	protected function createInstance() {
 		$class = substr(get_class($this), 0, -4);
+		$class = str_replace('Tests\\Unit\\', '', $class);
 		$instance = $this->objectManager->get($class);
 		return $instance;
 	}
@@ -67,14 +54,15 @@ class ContentServiceTest extends AbstractTestCase {
 		$row = array('uid' => -1);
 		$tceMain = $this->getMock('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$tceMain->substNEWwithIDs = array('NEW12345' => -1);
-		$mock->initializeRecord('NEW12345', $row, $tceMain);
+		$result = $mock->initializeRecord('NEW12345', $row, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
 	 * @test
 	 */
 	public function moveRecordWithNegativeRelativeToValueLoadsRelativeRecordFromDatabaseAndCopiesValuesToRecordAndSetsColumnPositionAndUpdatesRelativeToValue() {
-		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase', 'getTargetAreaStoredInSession');
 		$mock = $this->createMock($methods);
 		$row = array(
 			'pid' => 1
@@ -116,7 +104,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$tceMain = new DataHandler();
 		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
 		$mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($copiedRow['uid'])->will($this->returnValue($copiedRow));
-		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -151,7 +140,8 @@ class ContentServiceTest extends AbstractTestCase {
 		$tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
 		$tceMain->cmdmap = $cmdMap;
 		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($copiedRow));
-		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -170,7 +160,8 @@ class ContentServiceTest extends AbstractTestCase {
 		);
 		$tceMain = new DataHandler();
 		$mock->expects($this->never())->method('loadRecordFromDatabase');
-		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -189,7 +180,8 @@ class ContentServiceTest extends AbstractTestCase {
 		);
 		$tceMain = new DataHandler();
 		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
-		$mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -305,13 +297,14 @@ class ContentServiceTest extends AbstractTestCase {
 
 		);
 		$mock = $this->getMock($this->createInstanceClassName(),
-			array('loadRecordFromDatabase', 'updateRecordInDatabase', 'updateMovePlaceholder'));
+			array('loadRecordFromDatabase', 'updateRecordInDatabase', 'updateMovePlaceholder', 'getTargetAreaStoredInSession'));
 		$mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
 		$mock->expects($this->any())->method('updateRecordInDatabase');
 		$mock->expects($this->any())->method('updateMovePlaceholder');
 		$dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
 		$dataHandler->expects($this->any())->method('resorting');
-		$mock->moveRecord($row, $relativeTo, $parameters, $dataHandler);
+		$result = $mock->moveRecord($row, $relativeTo, $parameters, $dataHandler);
+		$this->assertNull($result);
 	}
 
 	/**
@@ -322,6 +315,7 @@ class ContentServiceTest extends AbstractTestCase {
 			array(array('', 'prefix-column-prefix2-unused-unused-top-1-area'), 1),
 			array(array('', 'prefix-column-prefix2-unused-unused-top-1-area'), -1),
 			array(array('', 'colpos-column-page-unused-unused-top-1-area'), 1),
+			array(array('', 'colpos-column-page-unused-unused-top-1-area'), 0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD - 1),
 		);
 	}
 
@@ -331,6 +325,7 @@ class ContentServiceTest extends AbstractTestCase {
 	 */
 	protected function createMock($functions = array()) {
 		$class = substr(get_class($this), 0, -4);
+		$class = str_replace('Tests\\Unit\\', '', $class);
 		$mock = $this->getMock($class, $functions);
 		return $mock;
 	}

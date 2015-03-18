@@ -1,28 +1,14 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Container;
-/***************************************************************
- *  Copyright notice
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Form;
 
 /**
  * author Claus Due <claus@namelesscoder.net>
@@ -42,6 +28,29 @@ class SheetTest extends AbstractContainerTest {
 	 */
 	public function testShortDescriptionPropertyWorks() {
 		$this->assertGetterAndSetterWorks('shortDescription', 'foobarshortdescription', 'foobarshortdescription', TRUE);
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyCreatesFields() {
+		$form = Form::create();
+		$sheet = $form->createContainer('Sheet', 'testsheet');
+		$form->modify(array('fields' => array('test' => array('name' => 'test', 'label' => 'Test', 'type' => 'Input'))));
+		$fields  = $sheet->getFields();
+		$this->assertArrayHasKey('test', $fields);
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyModifiesFields() {
+		$form = Form::create();
+		$sheet = $form->createContainer('Sheet', 'testsheet');
+		$field = $sheet->createField('Input', 'testfield', 'Testfield');
+		$sheet->modify(array('fields' => array('testfield' => array('label' => 'Test'))));
+		$fields = $sheet->getFields();
+		$this->assertEquals('Test', reset($fields)->getLabel());
 	}
 
 }

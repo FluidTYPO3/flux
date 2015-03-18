@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux;
-/*****************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Outlet\OutletInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -35,6 +19,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface {
 
+	const OPTION_TRANSLATION = 'translation';
 	const OPTION_GROUP = 'group';
 	const OPTION_ICON = 'icon';
 	const OPTION_TCA_LABELS = 'labels';
@@ -43,6 +28,13 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	const OPTION_TCA_END = 'end';
 	const OPTION_TCA_DELETE = 'delete';
 	const OPTION_TCA_FEGROUP = 'frontendUserGroup';
+	const OPTION_TEMPLATEFILE = 'templateFile';
+	const OPTION_RECORD = 'record';
+	const OPTION_RECORD_FIELD = 'recordField';
+	const OPTION_RECORD_TABLE = 'recordTable';
+	const TRANSLATION_DISABLED = 'disabled';
+	const TRANSLATION_SEPARATE = 'separate';
+	const TRANSLATION_INHERIT = 'inherit';
 	const POSITION_TOP = 'top';
 	const POSITION_BOTTOM = 'bottom';
 	const POSITION_BOTH = 'both';
@@ -55,13 +47,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	const CONTROL_DELETE = 'delete';
 	const CONTROL_LOCALISE = 'localize';
 	const DEFAULT_LANGUAGEFILE = '/Resources/Private/Language/locallang.xlf';
-
-	/**
-	 * if FALSE, disables this form.
-	 *
-	 * @var boolean
-	 */
-	protected $enabled = TRUE;
 
 	/**
 	 * Machine-readable, lowerCamelCase ID of this form. DOM compatible.
@@ -101,33 +86,15 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	protected $outlet;
 
 	/**
-	 * @param array $settings
-	 * @return Form
-	 */
-	public static function create(array $settings = array()) {
-		$form = parent::create($settings);
-		if (TRUE === isset($settings['sheets'])) {
-			foreach ($settings['sheets'] as $sheetName => $sheetSettings) {
-				if (FALSE === isset($sheetSettings['name'])) {
-					$sheetSettings['name'] = $sheetName;
-				}
-				$sheet = Form\Container\Sheet::create($sheetSettings);
-				$form->add($sheet);
-			}
-		}
-		return $form;
-	}
-
-	/**
 	 * @return void
 	 */
 	public function initializeObject() {
 		/** @var Form\Container\Sheet $defaultSheet */
-		$defaultSheet = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Sheet');
+		$defaultSheet = $this->getObjectManager()->get('FluidTYPO3\Flux\Form\Container\Sheet');
 		$defaultSheet->setName('options');
-		$defaultSheet->setLabel(LocalizationUtility::translate('tt_content.tx_flux_options', 'Flux'));
+		$defaultSheet->setLabel('LLL:EXT:flux/' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
 		$this->add($defaultSheet);
-		$this->outlet = $this->objectManager->get('FluidTYPO3\Flux\Outlet\StandardOutlet');
+		$this->outlet = $this->getObjectManager()->get('FluidTYPO3\Flux\Outlet\StandardOutlet');
 	}
 
 	/**
@@ -156,9 +123,14 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 * @return array
 	 */
 	public function build() {
+		$translateOption = $this->getOption(self::OPTION_TRANSLATION);
+		$translateOption = TRUE === empty($translateOption) ? self::TRANSLATION_DISABLED : $translateOption;
+		$disableLocalisation = self::TRANSLATION_DISABLED === $translateOption ? 1 : 0;
+		$inheritLocalisation = self::TRANSLATION_INHERIT === $translateOption ? 1 : 0;
 		$dataStructArray = array(
 			'meta' => array(
-				'langDisable' => 1
+				'langDisable' => $disableLocalisation,
+				'langChildren' => $inheritLocalisation
 			),
 		);
 		$copy = clone $this;
@@ -172,10 +144,10 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$compactConfigurationToggleOn = 0 < $copy->getCompact();
 		if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets)) {
 			$dataStructArray = $copy->last()->build();
-			$dataStructArray['meta'] = array('langDisable' => 1);
+			$dataStructArray['meta'] = array('langDisable' => $disableLocalisation);
 			unset($dataStructArray['ROOT']['TCEforms']);
 		} elseif (0 < count($sheets)) {
-			$dataStructArray['sheets'] = $copy->buildChildren();
+			$dataStructArray['sheets'] = $copy->buildChildren($this->children);
 		} else {
 			$dataStructArray['ROOT'] = array(
 				'type' => 'array',
@@ -227,22 +199,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 */
 	public function getCompact() {
 		return $this->compact;
-	}
-
-	/**
-	 * @param boolean $enabled
-	 * @return Form\FormInterface
-	 */
-	public function setEnabled($enabled) {
-		$this->enabled = $enabled;
-		return $this;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getEnabled() {
-		return $this->enabled;
 	}
 
 	/**
@@ -311,7 +267,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$allowed = 'a-z0-9_';
 		$pattern = '/[^' . $allowed . ']+/i';
 		if (preg_match($pattern, $id)) {
-			$this->configurationService->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
+			$this->getConfigurationService()->message('Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters
 				are: "' . $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent
 				you from utilising some features, fx automatic LLL reference building, but is not fatal', GeneralUtility::SYSLOG_SEVERITY_NOTICE);
 		}
@@ -392,6 +348,14 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	}
 
 	/**
+	 * @param string $name
+	 * @return boolean
+	 */
+	public function hasOption($name) {
+		return TRUE === isset($this->options[$name]);
+	}
+
+	/**
 	 * @return boolean
 	 */
 	public function hasChildren() {
@@ -417,6 +381,32 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	 */
 	public function getOutlet() {
 		return $this->outlet;
+	}
+
+	/**
+	 * @param array $structure
+	 * @return ContainerInterface
+	 */
+	public function modify(array $structure) {
+		if (TRUE === isset($structure['options']) && TRUE === is_array($structure['options'])) {
+			foreach ($structure['options'] as $name => $value) {
+				$this->setOption($name, $value);
+			}
+			unset($structure['options']);
+		}
+		if (TRUE === isset($structure['sheets'])) {
+			foreach ((array) $structure['sheets'] as $index => $sheetData) {
+				$sheetName = TRUE === isset($sheetData['name']) ? $sheetData['name'] : $index;
+				// check if field already exists - if it does, modify it. If it does not, create it.
+				if (TRUE === $this->has($sheetName)) {
+					$sheet = $this->get($sheetName);
+				} else {
+					$sheet = $this->createContainer('Sheet', $sheetName);
+				}
+				$sheet->modify($sheetData);
+			}
+		}
+		return parent::modify($structure);
 	}
 
 }

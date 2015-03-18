@@ -1,37 +1,23 @@
 <?php
 namespace FluidTYPO3\Flux\Service;
-/***************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use FluidTYPO3\Flux\Utility\PathUtility;
-use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -46,6 +32,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 
 /**
  * Flux FlexForm integration Service
@@ -61,6 +48,11 @@ class FluxService implements SingletonInterface {
 	 * @var array
 	 */
 	protected static $cache = array();
+
+	/**
+	 * @var array
+	 */
+	protected static $typoScript = array();
 
 	/**
 	 * @var array
@@ -101,6 +93,11 @@ class FluxService implements SingletonInterface {
 	protected $reflectionService;
 
 	/**
+	 * @var ProviderResolver
+	 */
+	protected $providerResolver;
+
+	/**
 	 * @param ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
@@ -122,6 +119,14 @@ class FluxService implements SingletonInterface {
 	 */
 	public function injectReflectionService(ReflectionService $reflectionService) {
 		$this->reflectionService = $reflectionService;
+	}
+
+	/**
+	 * @param ProviderResolver $providerResolver
+	 * @return void
+	 */
+	public function injectProviderResolver(ProviderResolver $providerResolver) {
+		$this->providerResolver = $providerResolver;
 	}
 
 	/**
@@ -157,16 +162,15 @@ class FluxService implements SingletonInterface {
 	}
 
 	/**
-	 * @param string $qualifiedExtensionName
-	 * @param string $controllerName
-	 * @param array $paths
-	 * @param array $variables
+	 * @param ViewContext $viewContext
 	 * @return ExposedTemplateView
 	 */
-	public function getPreparedExposedTemplateView($qualifiedExtensionName = NULL, $controllerName = NULL, $paths = array(), $variables = array()) {
-		$qualifiedExtensionName = GeneralUtility::camelCaseToLowerCaseUnderscored($qualifiedExtensionName);
-		$extensionKey = ExtensionNamingUtility::getExtensionKey($qualifiedExtensionName);
-		$vendorName = ExtensionNamingUtility::getVendorName($qualifiedExtensionName);
+	public function getPreparedExposedTemplateView(ViewContext $viewContext) {
+		$vendorName = $viewContext->getVendorName();
+		$extensionKey = $viewContext->getExtensionKey();
+		$qualifiedExtensionName = $viewContext->getExtensionName();
+		$controllerName = $viewContext->getControllerName();
+		$variables = $viewContext->getVariables();
 		if (NULL === $qualifiedExtensionName || FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
 			// Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
 			$qualifiedExtensionName = 'Flux';
@@ -184,6 +188,7 @@ class FluxService implements SingletonInterface {
 		$request->setControllerExtensionName($extensionName);
 		$request->setControllerName($controllerName);
 		$request->setControllerVendorName($vendorName);
+		$request->setFormat($viewContext->getFormat());
 		$request->setDispatched(TRUE);
 		/** @var $uriBuilder UriBuilder */
 		$uriBuilder = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');
@@ -191,54 +196,46 @@ class FluxService implements SingletonInterface {
 		$context->setUriBuilder($uriBuilder);
 		$context->setRequest($request);
 		$context->setResponse($response);
+		/** @var $renderingContext RenderingContext */
+		$renderingContext = $this->objectManager->get('TYPO3\\CMS\\Fluid\\Core\\Rendering\\RenderingContext');
+		$renderingContext->setControllerContext($context);
 		/** @var $exposedView ExposedTemplateView */
 		$exposedView = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
-		$exposedView->setControllerContext($context);
-		if (0 < count($variables)) {
-			$exposedView->assignMultiple($variables);
-		}
-		if (TRUE === isset($paths['layoutRootPath']) && FALSE === empty($paths['layoutRootPath'])) {
-			$exposedView->setLayoutRootPath($paths['layoutRootPath']);
-		}
-		if (TRUE === isset($paths['partialRootPath']) && FALSE === empty($paths['partialRootPath'])) {
-			$exposedView->setPartialRootPath($paths['partialRootPath']);
-		}
-		if (TRUE === isset($paths['templateRootPath']) && FALSE === empty($paths['templateRootPath'])) {
-			$exposedView->setTemplateRootPath($paths['templateRootPath']);
-		}
+		$exposedView->setRenderingContext($renderingContext);
+		$exposedView->assignMultiple($variables);
+		$exposedView->setTemplatePaths($viewContext->getTemplatePaths());
+		$exposedView->setTemplatePathAndFilename($viewContext->getTemplatePathAndFilename());
 		return $exposedView;
 	}
 
 	/**
-	 * @param string $templatePathAndFilename
-	 * @param string $section
+	 * @param ViewContext $viewContext
 	 * @param string $formName
-	 * @param array $paths
-	 * @param string $extensionName
-	 * @param array $variables
 	 * @return Form|NULL
 	 */
-	public function getFormFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $formName = 'form', $paths = array(), $extensionName = NULL, $variables = array()) {
+	public function getFormFromTemplateFile(ViewContext $viewContext, $formName = 'form') {
+		$templatePathAndFilename = $viewContext->getTemplatePathAndFilename();
 		if (FALSE === file_exists($templatePathAndFilename)) {
 			return NULL;
 		}
+		$section = $viewContext->getSectionName();
+		$variables = $viewContext->getVariables();
+		$extensionName = $viewContext->getExtensionName();
 		$variableCheck = json_encode($variables);
-		$cacheKey = md5($templatePathAndFilename . $formName . $extensionName . implode('', $paths) . $section . $variableCheck);
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
-		try {
-			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
-			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
-			self::$cache[$cacheKey] = $exposedView->getForm($section, $formName);
-		} catch (\Exception $error) {
-			$this->debug($error);
-			/** @var Form $form */
-			self::$cache[$cacheKey] = $this->objectManager->get('FluidTYPO3\Flux\Form');
-			self::$cache[$cacheKey]->createField('UserFunction', 'error')
-				->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField')
-				->setArguments(array($error)
-			);
+		$cacheKey = md5($templatePathAndFilename . $formName . $extensionName . $section . $variableCheck);
+		if (FALSE === isset(self::$cache[$cacheKey])) {
+			try {
+				$exposedView = $this->getPreparedExposedTemplateView($viewContext);
+				self::$cache[$cacheKey] = $exposedView->getForm($section, $formName);
+			} catch (\RuntimeException $error) {
+				$this->debug($error);
+				/** @var Form $form */
+				self::$cache[$cacheKey] = $this->objectManager->get('FluidTYPO3\Flux\Form');
+				self::$cache[$cacheKey]->createField('UserFunction', 'error')
+					->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField')
+					->setArguments(array($error)
+				);
+			}
 		}
 		return self::$cache[$cacheKey];
 	}
@@ -257,18 +254,16 @@ class FluxService implements SingletonInterface {
 	 * purpose. You can even read the Grid from - for example - the currently
 	 * selected page template to know exactly how the BackendLayout looks.
 	 *
-	 * @param string $templatePathAndFilename
-	 * @param string $section
+	 * @param ViewContext $viewContext
 	 * @param string $gridName
-	 * @param array $paths
-	 * @param string $extensionName
-	 * @param array $variables
 	 * @return Grid|NULL
 	 */
-	public function getGridFromTemplateFile($templatePathAndFilename, $section = 'Configuration', $gridName = 'grid', array $paths = array(), $extensionName = NULL, array $variables = array()) {
+	public function getGridFromTemplateFile(ViewContext $viewContext, $gridName = 'grid') {
+		$templatePathAndFilename = $viewContext->getTemplatePathAndFilename();
+		$section = $viewContext->getSectionName();
 		$grid = NULL;
 		if (TRUE === file_exists($templatePathAndFilename)) {
-			$exposedView = $this->getPreparedExposedTemplateView($extensionName, 'Flux', $paths, $variables);
+			$exposedView = $this->getPreparedExposedTemplateView($viewContext);
 			$exposedView->setTemplatePathAndFilename($templatePathAndFilename);
 			$grid = $exposedView->getGrid($section, $gridName);
 		}
@@ -289,71 +284,79 @@ class FluxService implements SingletonInterface {
 	 * @return array
 	 */
 	protected function getDefaultViewConfigurationForExtensionKey($extensionKey) {
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		return array(
-			'templateRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Templates',
-			'partialRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Partials',
-			'layoutRootPath' => 'EXT:' . $extensionKey . '/Resources/Private/Layouts',
+			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Templates/'),
+			TemplatePaths::CONFIG_PARTIALROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Partials/'),
+			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Layouts/'),
 		);
 	}
 
 	/**
+	 * Returns the plugin.tx_extsignature.view array,
+	 * or a default set of paths if that array is not
+	 * defined in TypoScript.
+	 *
 	 * @param string $extensionName
 	 * @return array|NULL
 	 */
 	public function getViewConfigurationForExtensionName($extensionName) {
-		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-		$configuration = $this->getDefaultViewConfigurationForExtensionKey($extensionKey);
-		$subConfiguration = (array) $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey);
-		$configuration = RecursiveArrayUtility::merge($configuration, $subConfiguration);
-		if (FALSE === is_array($configuration)) {
-			$this->message('Template paths resolved for "' . $extensionName . '" was not an array.', GeneralUtility::SYSLOG_SEVERITY_WARNING);
-			$configuration = NULL;
+		$signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
+		$configuration = (array) $this->getTypoScriptByPath('plugin.tx_' . $signature . '.view');
+		if (0 === count($configuration)) {
+			$configuration = $this->getDefaultViewConfigurationForExtensionKey($extensionName);
 		}
 		return $configuration;
 	}
 
 	/**
+	 * Returns the module.tx_extsignature.view array.
+	 * Accepts any input extension name type.
+	 *
 	 * @param string $extensionName
 	 * @return array|NULL
 	 */
 	public function getBackendViewConfigurationForExtensionName($extensionName) {
-		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-		$configuration = $this->getTypoScriptSubConfiguration(NULL, 'view', $extensionKey, 'module');
-		return $configuration;
+		$signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
+		return $this->getTypoScriptByPath('module.tx_' . $signature . '.view');
 	}
 
 	/**
-	 * Gets an array of TypoScript configuration from below plugin.tx_fed -
-	 * if $extensionName is set in parameters it is used to indicate which sub-
-	 * section of the result to return.
+	 * Returns the plugin.tx_extsignature.settings array.
+	 * Accepts any input extension name type.
 	 *
 	 * @param string $extensionName
-	 * @param string $memberName
-	 * @param string $containerExtensionScope If TypoScript is not located under plugin.tx_fed, change the tx_<scope> part by specifying this argument
-	 * @param string $superScope Either "plugin" or "module", depending on the root scope
 	 * @return array
 	 */
-	public function getTypoScriptSubConfiguration($extensionName, $memberName, $containerExtensionScope = 'fed', $superScope = 'plugin') {
-		$containerExtensionScope = str_replace('_', '', $containerExtensionScope);
-		$cacheKey = $extensionName . $memberName . $containerExtensionScope;
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
+	public function getSettingsForExtensionName($extensionName) {
+		$signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
+		return (array) $this->getTypoScriptByPath('plugin.tx_' . $signature . '.settings');
+	}
+
+	/**
+	 * Gets the value/array from global TypoScript by
+	 * dotted path expression.
+	 *
+	 * @param string $path
+	 * @return array
+	 */
+	public function getTypoScriptByPath($path) {
+		$typoScript = $this->getAllTypoScript();
+		return (array) ObjectAccess::getPropertyPath($typoScript, $path);
+	}
+
+	/**
+	 * Returns the complete, global TypoScript array
+	 * defined in TYPO3.
+	 *
+	 * @return array
+	 */
+	public function getAllTypoScript() {
+		if (0 === count(self::$typoScript)) {
+			self::$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			self::$typoScript = GeneralUtility::removeDotsFromTS(self::$typoScript);
 		}
-		$config = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		if (FALSE === isset($config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'])) {
-			return NULL;
-		}
-		$config = $config[$superScope . '.']['tx_' . $containerExtensionScope . '.'][$memberName . '.'];
-		$config = GeneralUtility::removeDotsFromTS($config);
-		if ($extensionName) {
-			$config = $config[$extensionName];
-		}
-		if (FALSE === is_array($config)) {
-			$config = array();
-		}
-		$config = PathUtility::translatePath($config);
-		self::$cache[$cacheKey] = $config;
-		return $config;
+		return self::$typoScript;
 	}
 
 	/**
@@ -367,7 +370,7 @@ class FluxService implements SingletonInterface {
 	 * @return ProviderInterface|NULL
 	 */
 	public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
-		return $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->resolvePrimaryConfigurationProvider($table, $fieldName, $row, $extensionKey);
+		return $this->providerResolver->resolvePrimaryConfigurationProvider($table, $fieldName, $row, $extensionKey);
 	}
 
 	/**
@@ -381,7 +384,14 @@ class FluxService implements SingletonInterface {
 	 * @return ProviderInterface[]
 	 */
 	public function resolveConfigurationProviders($table, $fieldName, array $row = NULL, $extensionKey = NULL) {
-		return $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver')->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
+		return $this->providerResolver->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
+	}
+
+	/**
+	 * @return Resolver
+	 */
+	public function getResolver() {
+		return new Resolver();
 	}
 
 	/**
@@ -401,13 +411,15 @@ class FluxService implements SingletonInterface {
 		if (TRUE === empty($flexFormContent)) {
 			return array();
 		}
-		if (TRUE === empty($languagePointer)) {
+		$formTranslationDisabled = (NULL !== $form && FALSE === (boolean) $form->getOption(Form::OPTION_TRANSLATION));
+		if (TRUE === empty($languagePointer) || TRUE === $formTranslationDisabled) {
 			$languagePointer = 'lDEF';
 		}
-		if (TRUE === empty($valuePointer)) {
+		if (TRUE === empty($valuePointer) || TRUE === $formTranslationDisabled) {
 			$valuePointer = 'vDEF';
 		}
-		$settings = $this->objectManager->get('TYPO3\CMS\Extbase\Service\FlexFormService')->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
+		$settings = $this->objectManager->get('TYPO3\CMS\Extbase\Service\FlexFormService')
+			->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
 		if (NULL !== $form) {
 			/** @var FormDataTransformer $transformer */
 			$transformer = $this->objectManager->get('FluidTYPO3\Flux\Transformation\FormDataTransformer');
@@ -422,7 +434,7 @@ class FluxService implements SingletonInterface {
 	 * @param integer $depth
 	 * @return void
 	 */
-	public function debug($instance, $plainText = FALSE, $depth = 2) {
+	public function debug($instance, $plainText = TRUE, $depth = 2) {
 		$text = DebuggerUtility::var_dump($instance, NULL, $depth, $plainText, FALSE, TRUE);
 		GeneralUtility::devLog('Flux variable dump: ' . gettype($instance), 'flux', GeneralUtility::SYSLOG_SEVERITY_INFO, $text);
 	}
@@ -431,7 +443,7 @@ class FluxService implements SingletonInterface {
 	 * @param string $message
 	 * @param integer $severity
 	 * @param string $title
-	 * @return NULL
+	 * @return void
 	 */
 	public function message($message, $severity = GeneralUtility::SYSLOG_SEVERITY_INFO, $title = 'Flux Debug') {
 		$hash = $message . $severity;
@@ -439,16 +451,14 @@ class FluxService implements SingletonInterface {
 		$alreadySent = TRUE === isset($this->sentDebugMessages[$hash]);
 		$shouldExcludedFriendlySeverities = 2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$isExcludedSeverity = (TRUE === $shouldExcludedFriendlySeverities && TRUE === in_array($severity, self::$friendlySeverities));
-		if (TRUE === $disabledDebugMode || TRUE === $alreadySent || TRUE === $isExcludedSeverity) {
-			return NULL;
+		if (FALSE === $disabledDebugMode && FALSE === $alreadySent && FALSE === $isExcludedSeverity) {
+			$isAjaxCall = (boolean) 0 < GeneralUtility::_GET('ajaxCall');
+			$flashMessage = $this->createFlashMessage($message, $title, $severity);
+			$flashMessage->setStoreInSession($isAjaxCall);
+			$flashMessageQueue = new FlashMessageQueue('flux');
+			$flashMessageQueue->addMessage($flashMessage);
+			$this->sentDebugMessages[$hash] = TRUE;
 		}
-		$isAjaxCall = (boolean) 0 < GeneralUtility::_GET('ajaxCall');
-		$flashMessage = new FlashMessage($message, $title, $severity);
-		$flashMessage->setStoreInSession($isAjaxCall);
-		$flashMessageQueue = new FlashMessageQueue('flux');
-		$flashMessageQueue->addMessage($flashMessage);
-		$this->sentDebugMessages[$hash] = TRUE;
-		return NULL;
 	}
 
 	/**
@@ -456,6 +466,16 @@ class FluxService implements SingletonInterface {
 	 */
 	public function flushCache() {
 		self::$cache = array();
+	}
+
+	/**
+	 * @param string $message
+	 * @param string $title
+	 * @param integer $severity
+	 * @return FlashMessage
+	 */
+	protected function createFlashMessage($message, $title, $severity) {
+		return new FlashMessage($message, $title, $severity);
 	}
 
 }

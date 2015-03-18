@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
-/***************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
@@ -50,6 +34,7 @@ class SheetViewHelper extends AbstractFormViewHelper {
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 		$this->registerArgument('description', 'string', 'Optional string or LLL reference with a desription of the purpose of the sheet', FALSE, NULL);
 		$this->registerArgument('shortDescription', 'string', 'Optional shorter version of description of purpose of the sheet, LLL reference supported', FALSE, NULL);
+		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
@@ -62,13 +47,13 @@ class SheetViewHelper extends AbstractFormViewHelper {
 			$sheet = $form->get($this->arguments['name']);
 			// Note: this next line will -override- any variables set in any existing sheet of that name. This
 			// is expected behavior but it also affects previously added sheets.
+			$sheet->setExtensionName($this->getExtensionName());
 			$sheet->setVariables($this->arguments['variables']);
 			$this->setContainer($sheet);
 		} else {
 			/** @var Sheet $sheet */
-			$sheet = $this->objectManager->get('FluidTYPO3\Flux\Form\Container\Sheet');
-			$sheet->setName($this->arguments['name']);
-			$sheet->setLabel($this->arguments['label']);
+			$sheet = $this->getForm()->createContainer('Sheet', $this->arguments['name'], $this->arguments['label']);
+			$sheet->setExtensionName($this->getExtensionName());
 			$sheet->setVariables($this->arguments['variables']);
 			$sheet->setDescription($this->arguments['description']);
 			$sheet->setShortDescription($this->arguments['shortDescription']);

@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
-/***************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form\Field\ControllerActions;
 use TYPO3\CMS\Extbase\Mvc\Request;
@@ -100,7 +84,7 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 		parent::initializeArguments();
 		$this->overrideArgument('items', 'mixed', 'Optional, full list of items to display - note: if used, this overrides any automatic option filling!', FALSE, NULL);
 		$this->overrideArgument('name', 'string', 'Name of the field', FALSE, 'switchableControllerActions');
-		$this->registerArgument('extensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension');
+		$this->registerArgument('controllerExtensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension');
 		$this->registerArgument('pluginName', 'string', 'Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName');
 		$this->registerArgument('controllerName', 'string', 'Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied', FALSE, NULL);
 		$this->registerArgument('actions', 'array', 'Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)', FALSE, array());
@@ -117,7 +101,7 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 	 * @throws \RuntimeException
 	 */
 	public function getComponent() {
-		$extensionName = $this->arguments['extensionName'];
+		$extensionName = $this->arguments['controllerExtensionName'];
 		$pluginName = $this->arguments['pluginName'];
 		$actions = $this->arguments['actions'];
 		$controllerName = $this->arguments['controllerName'];
@@ -141,8 +125,9 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 		}
 		/** @var ControllerActions $component */
 		$component = $this->getPreparedComponent('ControllerActions');
+		$component->setExtensionName($this->getExtensionName());
 		$component->setItems($this->arguments['items']);
-		$component->setExtensionName($extensionName);
+		$component->setControllerExtensionName($extensionName);
 		$component->setPluginName($pluginName);
 		$component->setControllerName($controllerName);
 		$component->setActions($actions);

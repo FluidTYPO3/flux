@@ -1,46 +1,23 @@
 <?php
 namespace FluidTYPO3\Flux\Tests\Unit;
-/***************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase;
-
-require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Xml.php');
-require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Data/Records.php');
-require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/ContentController.php');
-require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/DummyConfigurationProvider.php');
-require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/DummyModel.php');
-require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/DummyRepository.php');
-require_once ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Classes/InvalidConfigurationProvider.php');
-
+use TYPO3\CMS\Core\Tests\UnitTestCase as BaseTestCase;
 
 /**
  * @package Flux
@@ -54,6 +31,7 @@ abstract class AbstractTestCase extends BaseTestCase {
 	const FIXTURE_TEMPLATE_USESPARTIAL = 'EXT:flux/Tests/Fixtures/Templates/UsesPartial.html';
 	const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/CustomSection.html';
 	const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/EmptyPreview.html';
+	const FIXTURE_TEMPLATE_PREVIEW = 'EXT:flux/Tests/Fixtures/Templates/Preview.html';
 	const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/BasicGrid.html';
 	const FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/DualGrid.html';
 	const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/CollidingGrid.html';
@@ -167,22 +145,13 @@ abstract class AbstractTestCase extends BaseTestCase {
 		}
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($templateName);
 		$service = $this->createFluxServiceInstance();
-		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', array(), 'Flux', $variables);
+		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
+		$viewContext->setVariables($variables);
+		$viewContext->setSectionName('Configuration');
+		$form = $service->getFormFromTemplateFile($viewContext);
 		if (NULL !== $form) {
 			$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 			$this->assertIsArray($form->build());
-		}
-	}
-
-	/**
-	 * @return void
-	 */
-	public function truncateFluidCodeCache() {
-		$files = glob(GeneralUtility::getFileAbsFileName('typo3temp/Cache/Code/fluid_template/*.php'));
-		if (TRUE === is_array($files)) {
-			foreach ($files as $file) {
-				unlink($file);
-			}
 		}
 	}
 
@@ -202,12 +171,15 @@ abstract class AbstractTestCase extends BaseTestCase {
 	}
 
 	/**
+	 * @param array $methods
 	 * @return FluxService
 	 */
-	protected function createFluxServiceInstance() {
+	protected function createFluxServiceInstance($methods = array('dummy')) {
 		/** @var FluxService $fluxService */
-		$fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
-		ObjectAccess::setProperty($fluxService, 'silent', TRUE, TRUE);
+		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', $methods, array(), '', FALSE);
+		$fluxService->injectObjectManager($this->objectManager);
+		$configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
+		$fluxService->injectConfigurationManager($configurationManager);
 		return $fluxService;
 	}
 
@@ -215,7 +187,7 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @return object
 	 */
 	protected function createInstanceClassName() {
-		return substr(get_class($this), 0, -4);
+		return str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
 	}
 
 	/**
@@ -232,7 +204,15 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 */
 	protected function performBasicTemplateReadTest($templatePathAndFilename) {
 		$service = $this->createFluxServiceInstance();
-		$form = $service->getFormFromTemplateFile($templatePathAndFilename);
+		$paths = array(
+			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
+			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
+			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
+		);
+		$viewContext = new ViewContext($templatePathAndFilename);
+		$viewContext->setTemplatePaths(new TemplatePaths($paths));
+		$viewContext->setSectionName('Configuration');
+		$form = $service->getFormFromTemplateFile($viewContext);
 		$this->assertIsValidAndWorkingFormObject($form);
 		return $form;
 	}

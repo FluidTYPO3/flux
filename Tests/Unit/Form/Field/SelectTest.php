@@ -1,29 +1,15 @@
 <?php
 namespace FluidTYPO3\Flux\Form\Field;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 
 /**
@@ -40,7 +26,6 @@ class SelectTest extends AbstractFieldTest {
 		'itemListStyle' => 'color: red',
 		'selectedListStyle' => 'color: blue',
 		'emptyOption' => TRUE,
-		'items' => '1,2,3',
 		'minItems' => 1,
 		'maxItems' => 3,
 		'requestUpdate' => TRUE,
@@ -54,7 +39,6 @@ class SelectTest extends AbstractFieldTest {
 		$instance = $this->createInstance();
 		$instance->setItems('1,2');
 		$this->assertSame(2, count($instance->getItems()));
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -65,7 +49,6 @@ class SelectTest extends AbstractFieldTest {
 		$instance = $this->createInstance();
 		$instance->setItems(array(1, 2));
 		$this->assertSame(2, count($instance->getItems()));
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -80,7 +63,6 @@ class SelectTest extends AbstractFieldTest {
 		);
 		$instance->setItems($items);
 		$this->assertSame(2, count($instance->getItems()));
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -99,7 +81,6 @@ class SelectTest extends AbstractFieldTest {
 		$instance->setItems($query);
 		$result = $instance->getItems();
 		$this->assertIsArray($result);
-		$this->performTestBuild($instance);
 		$this->assertEquals(array(
 			array('user1', NULL), array('user2', NULL)
 		), $result);
@@ -109,14 +90,14 @@ class SelectTest extends AbstractFieldTest {
 	 * @test
 	 */
 	public function getLabelPropertyNameTranslatesTableNameFromObjectTypeRespectingTableMapping() {
-		$instance = $this->objectManager->get($this->createInstanceClassName());
-		$configurationManager = $this->getMock('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager', array('getConfiguration'));
-		$instance->injectConfigurationManager($configurationManager);
 		$table = 'foo';
 		$type = 'bar';
-		$fixture = array('config.' => array('tx_extbase.' => array('persistence.' => array('classes.' =>
-			array($type . '.' => array('mapping.' => array('tableName' => $table . 'suffix')))))));
-		$configurationManager->expects($this->once())->method('getConfiguration')->will($this->returnValue($fixture));
+		$fixture = array('config' => array('tx_extbase' => array('persistence' => array('classes' =>
+			array($type => array('mapping' => array('tableName' => $table . 'suffix')))))));
+		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getAllTypoScript'));
+		$service->expects($this->once())->method('getAllTypoScript')->willReturn($fixture);
+		$instance = $this->getMock($this->createInstanceClassName(), array('getConfigurationService'));
+		$instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
 		$GLOBALS['TCA'][$table . 'suffix']['ctrl']['label'] = $table . 'label';
 		$propertyName = $this->callInaccessibleMethod($instance, 'getLabelPropertyName', $table, $type);
 		$this->assertEquals($table . 'label', $propertyName);

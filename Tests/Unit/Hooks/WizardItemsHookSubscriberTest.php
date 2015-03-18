@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\Hooks;
-/***************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
@@ -44,8 +28,13 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 	 * @param array $expectedList
 	 */
 	public function processesWizardItems($items, $whitelist, $blacklist, $expectedList) {
-		$instance = $this->createInstance();
-		$emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'name');
+		$instance = $this->getMock(
+			'FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber',
+			array('getAreaNameAndParentFromRelativeRecordOrDefaults')
+		);
+		$instance->expects($this->once())->method('getAreaNameAndParentFromRelativeRecordOrDefaults')
+			->willReturn(array(1, 'area'));
+		$emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'area');
 		$controller = new NewContentElementController();
 		$controller->colPos = 0;
 		$controller->uid_pid = -1;
@@ -53,7 +42,7 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$row = new Row();
 		$column = new Column();
 		$column->setColumnPosition(0);
-		$column->setName('name');
+		$column->setName('area');
 		$column->setVariable('allowedContentTypes', $whitelist);
 		$column->setVariable('deniedContentTypes', $blacklist);
 		$row->add($column);
@@ -65,9 +54,10 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
 		$provider2->expects($this->exactly(2))->method('getGrid')->will($this->returnValue(NULL));
 		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
-		$configurationService->expects($this->exactly(2))->method('resolveConfigurationProviders')->will($this->returnValue(array($provider1, $provider2)));
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', array('getSingle'));
-		$recordService->expects($this->exactly(3))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
+		$configurationService->expects($this->exactly(2))->method('resolveConfigurationProviders')
+			->will($this->returnValue(array($provider1, $provider2)));
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+		$recordService->expects($this->exactly(2))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
 		$instance->injectConfigurationService($configurationService);
 		$instance->injectRecordService($recordService);
 		$instance->manipulateWizardItems($items, $controller);
@@ -148,13 +138,18 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$instance = $this->getMock(
 			$this->createInstanceClassName(),
 			array(
-				'getDefaultValues', 'readWhitelistAndBlacklistFromPageColumn', 'readWhitelistAndBlacklistFromColumn',
+				'getDefaultValues', 'getWhiteAndBlackListsFromPageAndContentColumn',
 				'applyDefaultValues', 'applyWhitelist', 'applyBlacklist', 'trimItems'
 			)
 		);
+		$GLOBALS['TYPO3_DB'] = $this->getMock(
+			'TYPO3\\CMS\\Core\\Database\\DatabaseConnection',
+			array('exec_SELECTgetSingleRow'),
+			array(), '', FALSE
+		);
+		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetSingleRow')->willReturn(NULL);
 		$lists = array(array(), array());
-		$instance->expects($this->once())->method('readWhitelistAndBlacklistFromPageColumn')->will($this->returnValue($lists));
-		$instance->expects($this->once())->method('readWhitelistAndBlacklistFromColumn')->will($this->returnValue($lists));
+		$instance->expects($this->once())->method('getWhiteAndBlackListsFromPageAndContentColumn')->will($this->returnValue($lists));
 		$instance->expects($this->once())->method('applyDefaultValues')->will($this->returnValue($items));
 		$instance->expects($this->once())->method('applyWhitelist')->will($this->returnValue($items));
 		$instance->expects($this->once())->method('applyBlacklist')->will($this->returnValue($items));
@@ -163,6 +158,34 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$controller = new NewContentElementController();
 		$instance->manipulateWizardItems($items, $controller);
 		$this->assertNotEmpty($items);
+	}
+
+	/**
+	 * @dataProvider getAreaNameAndParentFromRelativeRecordOrDefaults
+	 * @param integer $relativeUid
+	 * @param array $expected
+	 */
+	public function testGetAreaNameAndParentFromRelativeRecordOrDefaults($relativeUid, array $expected) {
+		$defaults = array('tx_flux_column' => 'defaultarea', 'tx_flux_parent' => 999);
+		$inRecord = array('tx_flux_column' => 'recordarea', 'tx_flux_parent' => 111);
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+		$recordService->expects($this->any())->method('getSingle')->willReturn($inRecord);
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber', array('getDefaultValues'));
+		$instance->expects($this->once())->method('getDefaultValues')->willReturn($defaults);
+		$instance->injectRecordService($recordService);
+		$result = $this->callInaccessibleMethod($instance, 'getAreaNameAndParentFromRelativeRecordOrDefaults', $relativeUid);
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAreaNameAndParentFromRelativeRecordOrDefaults() {
+		return array(
+			array(0, array(999, 'defaultarea')),
+			array(1, array(999, 'defaultarea')),
+			array(-1, array(111, 'recordarea'))
+		);
 	}
 
 }

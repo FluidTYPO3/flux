@@ -1,29 +1,15 @@
 <?php
-namespace FluidTYPO3\Flux\Provider;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+namespace FluidTYPO3\Flux\Tests\Unit\Provider;
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 
 /**
@@ -104,9 +90,14 @@ class ProviderTest extends AbstractProviderTest {
 	public function canReturnExtensionKey() {
 		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$service = $this->createFluxServiceInstance();
-		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
-		$this->assertInstanceOf('FluidTYPO3\Flux\Provider\ProviderInterface', $provider);
-		$extensionKey = $provider->getExtensionKey($record);
+		$provider = new Provider();
+		$provider->setExtensionKey('test');
+		$resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', array('resolvePrimaryConfigurationProvider'));
+		$resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+		$service->injectProviderResolver($resolver);
+		$result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
+		$this->assertSame($provider, $result);
+		$extensionKey = $result->getExtensionKey($record);
 		$this->assertNotEmpty($extensionKey);
 		$this->assertRegExp('/[a-z_]+/', $extensionKey);
 	}
@@ -117,9 +108,14 @@ class ProviderTest extends AbstractProviderTest {
 	public function canReturnPathSetByRecordWithoutParentAndWithoutChildren() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$service = $this->createFluxServiceInstance();
-		$provider = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Provider\ProviderInterface', $provider);
-		$paths = $provider->getTemplatePaths($row);
+		$provider = new Provider();
+		$provider->setTemplatePaths(array());
+		$resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', array('resolvePrimaryConfigurationProvider'));
+		$resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+		$service->injectProviderResolver($resolver);
+		$result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);
+		$this->assertSame($result, $provider);
+		$paths = $result->getTemplatePaths($row);
 		$this->assertIsArray($paths);
 	}
 
@@ -145,21 +141,6 @@ class ProviderTest extends AbstractProviderTest {
 		$provider->loadSettings($this->definition);
 		$grid = $provider->getGrid($record);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $grid);
-	}
-	/**
-	 * @test
-	 */
-	public function getParentFieldValueLoadsRecordFromDatabaseIfRecordLacksParentFieldValue() {
-		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$row['uid'] = 2;
-		$rowWithPid = $row;
-		$rowWithPid['pid'] = 1;
-		$className = substr(get_class($this), 0, -4);
-		$instance = $this->getMock($className, array('getParentFieldName', 'getTableName', 'loadRecordFromDatabase'));
-		$instance->expects($this->once())->method('loadRecordFromDatabase')->with($row['uid'])->will($this->returnValue($rowWithPid));
-		$instance->expects($this->once())->method('getParentFieldName')->with($row)->will($this->returnValue('pid'));
-		$result = $this->callInaccessibleMethod($instance, 'getParentFieldValue', $row);
-		$this->assertEquals($rowWithPid['pid'], $result);
 	}
 
 }

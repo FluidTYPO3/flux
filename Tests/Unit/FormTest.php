@@ -1,31 +1,20 @@
 <?php
-namespace FluidTYPO3\Flux;
-/***************************************************************
- *  Copyright notice
+namespace FluidTYPO3\Flux\Tests\Unit;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -49,7 +38,9 @@ class FormTest extends AbstractTestCase {
 	protected function getDummyFormFromTemplate($template = self::FIXTURE_TEMPLATE_BASICGRID) {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($template);
 		$service = $this->createFluxServiceInstance();
-		$form = $service->getFormFromTemplateFile($templatePathAndFilename, 'Configuration', 'form', array(), 'flux');
+		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
+		$viewContext->setSectionName('Configuration');
+		$form = $service->getFormFromTemplateFile($viewContext);
 		return $form;
 	}
 
@@ -115,7 +106,7 @@ class FormTest extends AbstractTestCase {
 		$form = $this->getDummyFormFromTemplate();
 		$icon = 'EXT:flux/ext_icon.gif';
 		$form->setIcon($icon);
-		$this->assertSame(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($icon), $form->getIcon());
+		$this->assertSame(GeneralUtility::getFileAbsFileName($icon), $form->getIcon());
 	}
 
 	/**
@@ -226,7 +217,7 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function canRemoveBadFieldByInstanceWithoutErrorAndReturnFalse() {
 		$form = $this->getEmptyDummyForm();
-		$field = \FluidTYPO3\Flux\Form\Field\Input::create(array('type' => 'Input', 'name' => 'badname'));
+		$field = Input::create(array('type' => 'Input', 'name' => 'badname'));
 		$child = $form->last()->remove($field);
 		$this->assertFalse($child);
 	}
@@ -272,10 +263,14 @@ class FormTest extends AbstractTestCase {
 		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_USESPARTIAL);
 		$service = $this->createFluxServiceInstance();
 		$paths = array(
-			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates',
-			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials'
+			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
+			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
+			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
 		);
-		$form = $service->getFormFromTemplateFile($template, 'Configuration', 'form', $paths);
+		$viewContext = new ViewContext($template);
+		$viewContext->setTemplatePaths(new TemplatePaths($paths));
+		$viewContext->setSectionName('Configuration');
+		$form = $service->getFormFromTemplateFile($viewContext);
 		$this->assertIsValidAndWorkingFormObject($form);
 	}
 
@@ -348,7 +343,7 @@ class FormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canSetAndGetOutlet() {
-		/** @var \FluidTYPO3\Flux\Outlet\StandardOutlet $outlet */
+		/** @var StandardOutlet $outlet */
 		$outlet = $this->getMock('FluidTYPO3\Flux\Outlet\StandardOutlet');
 		$form = Form::create();
 		$form->setOutlet($outlet);
@@ -361,9 +356,47 @@ class FormTest extends AbstractTestCase {
 	public function dispatchesDebugMessageOnProblematicId() {
 		$service = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('message'));
 		$service->expects($this->once())->method('message');
-		$instance = $this->objectManager->get('FluidTYPO3\Flux\Form');
-		ObjectAccess::setProperty($instance, 'configurationService', $service, TRUE);
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Form', array('getConfigurationService'));
+		$instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
 		$instance->setId('I-am-not-valid');
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifySetsProperty() {
+		$form = Form::create();
+		$form->modify(array('name' => 'test'));
+		$this->assertEquals('test', $form->getName());
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifySetsOptions() {
+		$form = Form::create();
+		$form->modify(array('options' => array('test' => 'testvalue')));
+		$this->assertEquals('testvalue', $form->getOption('test'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyCreatesSheets() {
+		$form = Form::create();
+		$form->modify(array('sheets' => array('test' => array('name' => 'test', 'label' => 'Test'))));
+		$sheets = $form->getSheets(TRUE);
+		$this->assertArrayHasKey('test', $sheets);
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyModifiesSheets() {
+		$form = Form::create();
+		$form->modify(array('sheets' => array('options' => array('label' => 'Test'))));
+		$sheets = $form->getSheets(TRUE);
+		$this->assertEquals('Test', reset($sheets)->getLabel());
 	}
 
 }

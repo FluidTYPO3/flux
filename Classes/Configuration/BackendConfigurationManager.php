@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\Configuration;
-/***************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -36,11 +20,6 @@ use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager as CoreBackendCo
  * @subpackage Configuraion
  */
 class BackendConfigurationManager extends CoreBackendConfigurationManager implements SingletonInterface {
-
-	/**
-	 * @var integer
-	 */
-	protected $currentPageUid = 0;
 
 	/**
 	 * @var RecordService
@@ -60,7 +39,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 * @return void
 	 */
 	public function setCurrentPageId($currentPageId) {
-		$this->currentPageUid = $currentPageId;
+		$this->currentPageId = $currentPageId;
 	}
 
 	/**
@@ -73,14 +52,14 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 * @return integer
 	 */
 	public function getCurrentPageId() {
-		if (0 < $this->currentPageUid) {
-			return $this->currentPageUid;
+		if (0 < $this->currentPageId) {
+			return $this->currentPageId;
 		}
 		$pageUids = $this->getPrioritizedPageUids();
-		while (TRUE === empty($this->currentPageUid) && 0 < count($pageUids)) {
-			$this->currentPageUid = array_shift($pageUids);
+		while (TRUE === empty($this->currentPageId) && 0 < count($pageUids)) {
+			$this->currentPageId = array_shift($pageUids);
 		};
-		return $this->currentPageUid;
+		return $this->currentPageId;
 	}
 
 	/**
@@ -164,7 +143,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 */
 	protected function getEditArgumentValuePair() {
 		$editArgument = GeneralUtility::_GET('edit');
-		return TRIE === is_array($editArgument) ? $editArgument : array(array());
+		return TRUE === is_array($editArgument) ? $editArgument : array(array());
 	}
 
 	/**

@@ -1,28 +1,16 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
-/***************************************************************
- *  Copyright notice
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Form\FormInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 
 /**
  * @package Flux
@@ -55,7 +43,6 @@ class TextTest extends InputTest {
 		$chained = $instance->setEnableRichText(TRUE);
 		$this->assertSame($instance, $chained);
 		$this->assertTrue($instance->getEnableRichText());
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -67,17 +54,28 @@ class TextTest extends InputTest {
 		$chained = $instance->setDefaultExtras('void');
 		$this->assertSame($instance, $chained);
 		$this->assertSame('void', $instance->getDefaultExtras());
-		$this->performTestBuild($instance);
 	}
 
 	/**
 	 * @test
 	 */
-	public function canBuildConfigurationWithEnableWithTextWithoutDefaultExtras() {
+	public function canBuildConfigurationWithoutDefaultExtrasWithEnableRichText() {
 		/** @var Text $instance */
 		$instance = $this->createInstance();
 		$instance->setDefaultExtras(NULL)->setEnableRichText(TRUE);
-		$this->performTestBuild($instance);
+		$result = $this->performTestBuild($instance);
+		$this->assertArrayHasKey('defaultExtras', $result['TCEforms']['config']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canBuildConfigurationWithDefaultExtras() {
+		/** @var Text $instance */
+		$instance = $this->createInstance();
+		$instance->setDefaultExtras('richtext[*]');
+		$result = $this->performTestBuild($instance);
+		$this->assertNotEmpty($result['TCEforms']['defaultExtras']);
 	}
 
 }

@@ -1,46 +1,26 @@
 <?php
 namespace FluidTYPO3\Flux\Provider;
-/*****************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Form\FieldInterface;
-use FluidTYPO3\Flux\Form\FormInterface;
-use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use FluidTYPO3\Flux\View\PreviewView;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * @package Flux
@@ -49,6 +29,8 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 class AbstractProvider implements ProviderInterface {
 
 	const FORM_CLASS_PATTERN = '%s\\Form\\%s\\%sForm';
+
+	const CONTENT_OBJECT_TYPE_LIST = 'list';
 
 	/**
 	 * @var array
@@ -134,11 +116,6 @@ class AbstractProvider implements ProviderInterface {
 	protected $extensionKey = NULL;
 
 	/**
-	 * @var string|NULL
-	 */
-	protected $packageName = NULL;
-
-	/**
 	 * @var integer
 	 */
 	protected $priority = 50;
@@ -154,24 +131,9 @@ class AbstractProvider implements ProviderInterface {
 	protected $grid = NULL;
 
 	/**
-	 * @var ObjectManagerInterface
-	 */
-	protected $objectManager;
-
-	/**
-	 * @var ConfigurationManagerInterface
-	 */
-	protected $configurationManager;
-
-	/**
 	 * @var FluxService
 	 */
 	protected $configurationService;
-
-	/**
-	 * @var ContentService
-	 */
-	protected $contentService;
 
 	/**
 	 * @var WorkspacesAwareRecordService
@@ -179,35 +141,11 @@ class AbstractProvider implements ProviderInterface {
 	protected $recordService;
 
 	/**
-	 * @param ObjectManagerInterface $objectManager
-	 * @return void
-	 */
-	public function injectObjectManager(ObjectManagerInterface $objectManager) {
-		$this->objectManager = $objectManager;
-	}
-
-	/**
-	 * @param ConfigurationManagerInterface $configurationManager
-	 * @return void
-	 */
-	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
-		$this->configurationManager = $configurationManager;
-	}
-
-	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
-	}
-
-	/**
-	 * @param ContentService $contentService
-	 * @return void
-	 */
-	public function injectContentService(ContentService $contentService) {
-		$this->contentService = $contentService;
 	}
 
 	/**
@@ -262,13 +200,14 @@ class AbstractProvider implements ProviderInterface {
 		$providerExtensionKey = $this->extensionKey;
 		$contentObjectType = $this->contentObjectType;
 		$listType = $this->listType;
+		$rowContainsPlugin = (FALSE === empty($row['CType']) && self::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
 		$rowIsEmpty = (0 === count($row));
 		$matchesContentType = ((TRUE === empty($contentObjectType) && TRUE === empty($row['CType'])) || (FALSE === empty($row['CType']) && $row['CType'] === $contentObjectType));
 		$matchesPluginType = ((TRUE === empty($listType) && TRUE === empty($row['list_type'])) || (FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
 		$matchesTableName = ($providerTableName === $table || NULL === $table);
 		$matchesFieldName = ($providerFieldName === $field || NULL === $field);
 		$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
-		$isFullMatch = (($matchesExtensionKey && $matchesTableName && $matchesFieldName) && ($matchesContentType || $matchesPluginType));
+		$isFullMatch = $matchesExtensionKey && $matchesTableName && $matchesFieldName && ($matchesContentType || ($rowContainsPlugin && $matchesPluginType));
 		$isFallbackMatch = ($matchesTableName && $matchesFieldName && $rowIsEmpty);
 		return ($isFullMatch || $isFallbackMatch);
 	}
@@ -298,23 +237,23 @@ class AbstractProvider implements ProviderInterface {
 	protected function getViewVariables(array $row) {
 		$extensionKey = $this->getExtensionKey($row);
 		$fieldName = $this->getFieldName($row);
-		$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		$signature = str_replace('_', '', $extensionKey);
 		$variables = array(
 			'record' => $row,
+			'settings' => $this->configurationService->getSettingsForExtensionName($extensionKey)
 		);
-		if (TRUE === isset($typoScript['plugin.']['tx_' . $signature . '.']['settings.'])) {
-			$variables['settings'] = GeneralUtility::removeDotsFromTS($typoScript['plugin.']['tx_' . $signature . '.']['settings.']);
-		}
 
 		// Special case: when saving a new record variable $row[$fieldName] is already an array
-		// and must not be processed by the configuration service.
+		// and must not be processed by the configuration service. This has limited support from
+		// Flux (essentially: no Form instance which means no inheritance, transformation or
+		// form options can be dependended upon at this stage).
+		$lang = $this->getCurrentLanguageName();
+		$value = $this->getCurrentValuePointerName();
 		if (FALSE === is_array($row[$fieldName])) {
-			$recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
-			$variables = GeneralUtility::array_merge_recursive_overrule($variables, $recordVariables);
+			$recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], NULL, $lang, $value);
+			$variables = RecursiveArrayUtility::mergeRecursiveOverrule($variables, $recordVariables);
 		}
 
-		$variables = GeneralUtility::array_merge_recursive_overrule($this->templateVariables, $variables);
+		$variables = RecursiveArrayUtility::mergeRecursiveOverrule($this->templateVariables, $variables);
 
 		return $variables;
 	}
@@ -327,31 +266,38 @@ class AbstractProvider implements ProviderInterface {
 		if (NULL !== $this->form) {
 			return $this->form;
 		}
-		$formClassName = $this->resolveFormClassName($row);
-		if (NULL !== $formClassName) {
-			$form = call_user_func_array(array($formClassName, 'create'), array($row));
-		} else {
-			$templateSource = $this->getTemplateSource($row);
-			if (NULL === $templateSource) {
-				// Early return: no template file, no source - NULL expected.
-				return NULL;
+		$formName = 'form';
+		$cacheKey = $this->getCacheKeyForStoredVariable($row, $formName);
+		if (FALSE === isset(self::$cache[$cacheKey])) {
+			$formClassName = $this->resolveFormClassName($row);
+			if (NULL !== $formClassName) {
+				$form = call_user_func_array(array($formClassName, 'create'), array($row));
+			} else {
+				$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+				if (NULL !== $templatePathAndFilename) {
+					$class = get_class($this);
+					$controllerName = substr(substr($class, strrpos($class, '\\')), -8);
+					$section = $this->getConfigurationSectionName($row);
+					$paths = $this->getTemplatePaths($row);
+					$extensionKey = $this->getExtensionKey($row);
+					$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
+					$templatePaths = new TemplatePaths($paths);
+					$viewContext = new ViewContext($templatePathAndFilename, $extensionName, $controllerName);
+					$viewContext->setTemplatePaths($templatePaths);
+					$variables = $this->getViewVariables($row);
+					$viewContext->setVariables($variables);
+					$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
+					$form = $view->getForm($section, $formName);
+				}
 			}
-			$section = $this->getConfigurationSectionName($row);
-			$controllerName = 'Flux';
-			$formName = 'form';
-			$paths = $this->getTemplatePaths($row);
-			$extensionKey = $this->getExtensionKey($row);
-			$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
-
-			$variables = $this->getViewVariables($row);
-			$view = $this->configurationService->getPreparedExposedTemplateView($extensionName, $controllerName, $paths, $variables);
-
-			$view->setTemplateSource($templateSource);
-			$form = $view->getForm($section, $formName);
+			if (NULL !== $form) {
+				$form->setOption(Form::OPTION_RECORD, $row);
+				$form->setOption(Form::OPTION_RECORD_TABLE, $this->getTableName($row));
+				$form->setOption(Form::OPTION_RECORD_FIELD, $this->getFieldName($row));
+			}
+			self::$cache[$cacheKey] = $form;
 		}
-
-		$form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
-		return $form;
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -362,15 +308,25 @@ class AbstractProvider implements ProviderInterface {
 		if (NULL !== $this->grid) {
 			return $this->grid;
 		}
-		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		$section = $this->getConfigurationSectionName($row);
-		$gridName = 'grid';
-		$paths = $this->getTemplatePaths($row);
-		$extensionKey = $this->getExtensionKey($row);
-		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
-		$variables = $this->getViewVariables($row);
-		$grid = $this->configurationService->getGridFromTemplateFile($templatePathAndFilename, $section, $gridName, $paths, $extensionName, $variables);
-		return $grid;
+		$cacheKey = $this->getCacheKeyForStoredVariable($row, 'grid');
+		if (FALSE === isset(self::$cache[$cacheKey])) {
+			$class = get_class($this);
+			$controllerName = substr(substr($class, strrpos($class, '\\') + 1), 0, -8);
+			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
+			$section = $this->getConfigurationSectionName($row);
+			$gridName = 'grid';
+			$paths = $this->getTemplatePaths($row);
+			$extensionKey = $this->getExtensionKey($row);
+			$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
+			$variables = $this->getViewVariables($row);
+			$viewContext = new ViewContext($templatePathAndFilename, $extensionName, $controllerName);
+			$viewContext->setTemplatePaths(new TemplatePaths($paths));
+			$viewContext->setSectionName($section);
+			$viewContext->setVariables($variables);
+			$grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
+			self::$cache[$cacheKey] = $grid;
+		}
+		return self::$cache[$cacheKey];
 	}
 
 	/**
@@ -440,20 +396,6 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * Get the source of the template to be rendered. Default implementation
-	 * returns the source of whichever filename is returned from the Provider.
-	 * Overriding this method in other implementations allows the Provider
-	 * to operate without a template file.
-	 *
-	 * @param array $row
-	 * @return string|NULL
-	 */
-	public function getTemplateSource(array $row) {
-		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		return TRUE === file_exists($templatePathAndFilename) ? file_get_contents($templatePathAndFilename) : NULL;
-	}
-
-	/**
 	 * Converts the contents of the provided row's Flux-enabled field,
 	 * at the same time running through the inheritance tree generated
 	 * by getInheritanceTree() in order to apply inherited values.
@@ -463,25 +405,37 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	public function getFlexFormValues(array $row) {
 		$fieldName = $this->getFieldName($row);
-		$cacheKey = 'values_' . md5(json_encode($row) . $fieldName);
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
 		$form = $this->getForm($row);
-		$immediateConfiguration = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, NULL, NULL);
-		$tree = $this->getInheritanceTree($row);
-		if (0 === count($tree)) {
-			self::$cache[$cacheKey] = $immediateConfiguration;
-			return (array) $immediateConfiguration;
+		$languageName = $this->getCurrentLanguageName();
+		$valuePointer = $this->getCurrentValuePointerName();
+		return $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, $languageName, $valuePointer);
+	}
+
+	/**
+	 * Gets the current language name as string, in a format that is
+	 * compatible with language pointers in a flexform. Usually this
+	 * implies values like "en", "de" etc.
+	 *
+	 * Return NULL when language is site default language.
+	 *
+	 * @return string|NULL
+	 */
+	protected function getCurrentLanguageName() {
+		$language = $GLOBALS['TSFE']->lang;
+		if (TRUE === empty($language) || 'default' === $language) {
+			$language = NULL;
 		}
-		$inheritedConfiguration = $this->getMergedConfiguration($tree);
-		if (0 === count($immediateConfiguration)) {
-			self::$cache[$cacheKey] = $inheritedConfiguration;
-			return (array) $inheritedConfiguration;
-		}
-		$merged = RecursiveArrayUtility::merge($inheritedConfiguration, $immediateConfiguration);
-		self::$cache[$cacheKey] = $merged;
-		return $merged;
+		return $language;
+	}
+
+	/**
+	 * Gets the pointer name to use whne retrieving values from a
+	 * flexform source. Return NULL when pointer is default.
+	 *
+	 * @return string|NULL
+	 */
+	protected function getCurrentValuePointerName() {
+		return $this->getCurrentLanguageName();
 	}
 
 	/**
@@ -585,20 +539,24 @@ class AbstractProvider implements ProviderInterface {
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
 	 * @param array $row the record data, by reference. Changing fields' values changes the record's values just before saving
 	 * @param DataHandler $reference A reference to the \TYPO3\CMS\Core\DataHandling\DataHandler object that is currently saving the record
+	 * @param array $removals Allows overridden methods to pass an additional array of field names to remove from the stored Flux value
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference) {
+	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = array()) {
 		if ('update' === $operation) {
 			$record = $reference->datamap[$this->tableName][$id];
+			$stored = $this->recordService->getSingle($this->tableName, '*', $record['uid']);
 			$fieldName = $this->getFieldName((array) $record);
-			if (NULL === $fieldName) {
-				return;
-			}
-			if (FALSE === isset($row[$fieldName]) || FALSE === isset($record[$fieldName]['data']) || FALSE === is_array($record[$fieldName]['data'])) {
+			$dontProcess = (
+				NULL === $fieldName
+				|| FALSE === isset($row[$fieldName])
+				|| FALSE === isset($record[$fieldName]['data'])
+				|| FALSE === is_array($record[$fieldName]['data'])
+			);
+			if (TRUE === $dontProcess) {
 				return;
 			}
 			$data = $record[$fieldName]['data'];
-			$removals = array();
 			foreach ($data as $sheetName => $sheetFields) {
 				foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
 					if ('_clear' === substr($sheetFieldName, -6)) {
@@ -606,62 +564,16 @@ class AbstractProvider implements ProviderInterface {
 					} else {
 						$clearFieldName = $sheetFieldName . '_clear';
 						$clearFieldValue = (boolean) (TRUE === isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) ? $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] : 0);
-						$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $sheetFieldName);
-						$shouldClearField = (0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF'] || (NULL !== $inheritedValue && $inheritedValue == $fieldDefinition['vDEF']));
+						$shouldClearField = (0 < $data[$sheetName]['lDEF'][$clearFieldName]['vDEF']);
 						if (TRUE === $shouldClearField || TRUE === $clearFieldValue) {
 							array_push($removals, $sheetFieldName);
 						}
 					}
 				}
 			}
-			$dom = new \DOMDocument();
-			$dom->loadXML($row[$fieldName]);
-			$dom->preserveWhiteSpace = FALSE;
-			$dom->formatOutput = TRUE;
-			foreach ($dom->getElementsByTagName('field') as $fieldNode) {
-				/** @var \DOMElement $fieldNode */
-				if (TRUE === in_array($fieldNode->getAttribute('index'), $removals)) {
-					$fieldNode->parentNode->removeChild($fieldNode);
-				}
-			}
-			// Assign a hidden ID to all container-type nodes, making the value available in templates etc.
-			foreach ($dom->getElementsByTagName('el') as $containerNode) {
-				/** @var \DOMElement $containerNode */
-				$hasIdNode = FALSE;
-				if (0 < $containerNode->attributes->length) {
-					// skip <el> tags reserved for other purposes by attributes; only allow pure <el> tags.
-					continue;
-				}
-				foreach ($containerNode->childNodes as $fieldNodeInContainer) {
-					/** @var \DOMElement $fieldNodeInContainer */
-					if (FALSE === $fieldNodeInContainer instanceof \DOMElement) {
-						continue;
-					}
-					$isFieldNode = ('field' === $fieldNodeInContainer->tagName);
-					$isIdField = ('id' === $fieldNodeInContainer->getAttribute('index'));
-					if ($isFieldNode && $isIdField) {
-						$hasIdNode = TRUE;
-						break;
-					}
-				}
-				if (FALSE === $hasIdNode) {
-					$idNode = $dom->createElement('field');
-					$idIndexAttribute = $dom->createAttribute('index');
-					$idIndexAttribute->nodeValue = 'id';
-					$idNode->appendChild($idIndexAttribute);
-					$valueNode = $dom->createElement('value');
-					$valueIndexAttribute = $dom->createAttribute('index');
-					$valueIndexAttribute->nodeValue = 'vDEF';
-					$valueNode->appendChild($valueIndexAttribute);
-					$valueNode->nodeValue = sha1(uniqid('container_', TRUE));
-					$idNode->appendChild($valueNode);
-					$containerNode->appendChild($idNode);
-				}
-			}
-			$row[$fieldName] = $dom->saveXML();
-			// hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
-			$row[$fieldName] = str_replace('<field index=""></field>', '', $row[$fieldName]);
+			$row[$fieldName] = $stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($row[$fieldName], $removals);
 			$reference->datamap[$this->tableName][$id][$fieldName] = $row[$fieldName];
+			$this->recordService->update($this->tableName, $stored);
 		}
 	}
 
@@ -735,22 +647,10 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * Gets an inheritance tree (ordered parent -> ... -> this record)
-	 * of record arrays containing raw values.
-	 *
-	 * @param array $row
-	 * @return array
+	 * @return PreviewView
 	 */
-	public function getInheritanceTree(array $row) {
-		$cacheKey = 'tree_' . $row['uid'];
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
-		}
-		self::$cache[$cacheKey] = array();
-		if (NULL !== $this->getFieldName($row)) {
-			self::$cache[$cacheKey] = $this->loadRecordTreeFromDatabase($row);
-		}
-		return self::$cache[$cacheKey];
+	protected function getPreviewView() {
+		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get('FluidTYPO3\\Flux\\View\\PreviewView');
 	}
 
 	/**
@@ -769,142 +669,20 @@ class AbstractProvider implements ProviderInterface {
 	 * @return array
 	 */
 	public function getPreview(array $row) {
-		$templateSource = $this->getTemplateSource($row);
-		if (TRUE === empty($templateSource)) {
-			return array(NULL, NULL, TRUE);
-		}
-		$extensionKey = $this->getExtensionKey($row);
-		$flexformVariables = $this->getFlexFormValues($row);
-		$templateVariables = $this->getTemplateVariables($row);
-		$variables = RecursiveArrayUtility::merge($templateVariables, $flexformVariables);
-		$paths = $this->getTemplatePaths($row);
-		$form = $this->getForm($row);
-		$formLabel = $form->getLabel();
-		$label = LocalizationUtility::translate($formLabel, $extensionKey);
-		$variables['label'] = $label;
-		$variables['row'] = $row;
-		$variables['record'] = $row;
-
-		$view = $this->configurationService->getPreparedExposedTemplateView($extensionKey, 'Content', $paths, $variables);
-		$view->setTemplateSource($templateSource);
-
-		$existingContentObject = $this->configurationManager->getContentObject();
-		$contentObject = new ContentObjectRenderer();
-		$contentObject->start($row, $this->getTableName($row));
-		$this->configurationManager->setContentObject($contentObject);
-		$previewContent = $view->renderStandaloneSection('Preview', $variables);
-		$this->configurationManager->setContentObject($existingContentObject);
-		$previewContent = trim($previewContent);
-		$headerContent = NULL;
-		return array($headerContent, $previewContent, empty($previewContent));
-	}
-
-	/**
-	 * @param Form $form
-	 * @param array $row
-	 * @return Form
-	 */
-	protected function setDefaultValuesInFieldsWithInheritedValues(Form $form, array $row) {
-		foreach ($form->getFields() as $field) {
-			$name = $field->getName();
-			$inheritedValue = $this->getInheritedPropertyValueByDottedPath($row, $name);
-			if (NULL !== $inheritedValue && TRUE === $field instanceof FieldInterface) {
-				$field->setDefault($inheritedValue);
-			}
-		}
-		return $form;
+		$previewContent = $this->getPreviewView()->getPreview($this, $row);
+		return array(NULL, $previewContent, empty($previewContent));
 	}
 
 	/**
 	 * @param array $row
-	 * @param string $propertyPath
-	 * @return mixed
-	 */
-	protected function getInheritedPropertyValueByDottedPath(array $row, $propertyPath) {
-		$tree = $this->getInheritanceTree($row);
-		$inheritedConfiguration = $this->getMergedConfiguration($tree);
-		if (FALSE === strpos($propertyPath, '.')) {
-			return TRUE === isset($inheritedConfiguration[$propertyPath]) ? ObjectAccess::getProperty($inheritedConfiguration, $propertyPath) : NULL;
-		}
-		return ObjectAccess::getPropertyPath($inheritedConfiguration, $propertyPath);
-	}
-
-	/**
-	 * @param array $tree
-	 * @param string $cacheKey Overrides the cache key
-	 * @param boolean $mergeToCache Merges the configuration of $tree to the current $cacheKey
-	 * @return array
-	 */
-	protected function getMergedConfiguration(array $tree, $cacheKey = NULL, $mergeToCache = FALSE) {
-		if (NULL === $cacheKey) {
-			$cacheKey = $this->getCacheKeyForMergedConfiguration($tree);
-		}
-		if (FALSE === $mergeToCache && TRUE === $this->hasCacheForMergedConfiguration($cacheKey)) {
-			return self::$cache[$cacheKey];
-		}
-		$data = array();
-		foreach ($tree as $branch) {
-			$form = $this->getForm($branch);
-			if (NULL === $form) {
-				self::$cache[$cacheKey] = $data;
-				return $data;
-			}
-			$fields = $form->getFields();
-			$values = $this->getFlexFormValues($branch);
-			foreach ($fields as $field) {
-				$values = $this->unsetInheritedValues($field, $values);
-			}
-			$data = RecursiveArrayUtility::merge($data, $values);
-		}
-		if (TRUE === $mergeToCache && TRUE === $this->hasCacheForMergedConfiguration($cacheKey)) {
-			$data = RecursiveArrayUtility::merge(self::$cache[$cacheKey], $data);
-		}
-		self::$cache[$cacheKey] = $data;
-		return $data;
-	}
-
-	/**
-	 * @param FormInterface $field
-	 * @param array $values
-	 * @return array
-	 */
-	protected function unsetInheritedValues(FormInterface $field, $values) {
-		$name = $field->getName();
-		$inherit = (boolean) $field->getInherit();
-		$inheritEmpty = (boolean) $field->getInheritEmpty();
-		$empty = (TRUE === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
-		if (FALSE === $inherit || (TRUE === $inheritEmpty && TRUE === $empty)) {
-			unset($values[$name]);
-		}
-		return $values;
-	}
-
-	/**
-	 * @param array $tree
+	 * @param string $variable
 	 * @return string
 	 */
-	protected function getCacheKeyForMergedConfiguration(array $tree) {
-		return 'merged_' . md5(json_encode($tree));
-	}
-
-	/**
-	 * @param string $cacheKey
-	 * @return boolean
-	 */
-	protected function hasCacheForMergedConfiguration($cacheKey) {
-		return TRUE === isset(self::$cache[$cacheKey]);
-	}
-
-	/**
-	 * @param array $row
-	 * @return mixed
-	 */
-	protected function getParentFieldValue(array $row) {
-		$parentFieldName = $this->getParentFieldName($row);
-		if (NULL !== $parentFieldName && FALSE === isset($row[$parentFieldName])) {
-			$row = $this->loadRecordFromDatabase($row['uid']);
-		}
-		return $row[$parentFieldName];
+	protected function getCacheKeyForStoredVariable(array $row, $variable) {
+		$table = $this->getTableName($row);
+		$field = $this->getFieldName($row);
+		$uid = (TRUE === isset($row['uid']) ? $row['uid'] : uniqid());
+		return $table . $this->getListType() . $this->getContentObjectType() . md5(serialize($row[$field])) . $uid . $variable . get_class($this);
 	}
 
 	/**
@@ -938,7 +716,10 @@ class AbstractProvider implements ProviderInterface {
 	 * @return string
 	 */
 	public function getControllerPackageNameFromRecord(array $row) {
-		return $this->packageName;
+		$extensionKey = $this->getControllerExtensionKeyFromRecord($row);
+		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
+		$vendor = ExtensionNamingUtility::getVendorName($extensionKey);
+		return NULL !== $vendor ? $vendor . '.' . $extensionName : $extensionName;
 	}
 
 	/**
@@ -1049,25 +830,6 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * @param array $record
-	 * @return array
-	 */
-	protected function loadRecordTreeFromDatabase($record) {
-		$parentFieldName = $this->getParentFieldName($record);
-		if (FALSE === isset($record[$parentFieldName])) {
-			$record[$parentFieldName] = $this->getParentFieldValue($record);
-		}
-		$records = array();
-		while ($record[$parentFieldName] > 0) {
-			$record = $this->loadRecordFromDatabase($record[$parentFieldName]);
-			$parentFieldName = $this->getParentFieldName($record);
-			array_push($records, $record);
-		}
-		$records = array_reverse($records);
-		return $records;
-	}
-
-	/**
 	 * Use by TceMain to track method calls to providers for a certain $id.
 	 * Every provider should only be called once per method / $id.
 	 * When TceMain has called the provider it will call this method afterwards.
@@ -1077,7 +839,7 @@ class AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function trackMethodCall($methodName, $id) {
-		self::trackMethodCallWithClassName(get_class($this), $methodName, $id);
+		self::trackMethodCallWithClassName(get_called_class(), $methodName, $id);
 	}
 
 	/**
