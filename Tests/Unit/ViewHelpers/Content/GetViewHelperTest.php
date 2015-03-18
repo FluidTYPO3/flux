@@ -1,33 +1,24 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers\Content;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Content;
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Form\Container\Object;
+use FluidTYPO3\Flux\ViewHelpers\Content\GetViewHelper;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
  * @package Flux
@@ -39,7 +30,13 @@ class GetViewHelperTest extends AbstractViewHelperTestCase {
 	 */
 	protected function setUp() {
 		parent::setUp();
-		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 1, 0);
+		$GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
+		$GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
+		$GLOBALS['TSFE']->sys_page = new PageRepository();
+		$GLOBALS['TT'] = new NullTimeTracker();
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', FALSE);
+		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
+		$GLOBALS['TCA']['tt_content']['ctrl'] = array();
 	}
 
 	/**
@@ -150,8 +147,13 @@ class GetViewHelperTest extends AbstractViewHelperTestCase {
 	 * @test
 	 */
 	public function canProcessRecords() {
-		$GLOBALS['TSFE']->sys_page = $this->getAccessibleMock('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
+		$configurationManager = $this->getMock('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager', array('getContentObject'));
+		$contentObject = $this->getMock('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer', array('RECORDS'));
+		$contentObject->expects($this->any())->method('RECORDS');
+		$configurationManager->expects($this->any())->method('getContentObject')->willReturn($contentObject);
+		$GLOBALS['TSFE']->sys_page = $this->getMock('TYPO3\\CMS\\Frontend\\Page\\PageRepository', array('dummy'), array(), '', FALSE);
 		$instance = $this->createInstance();
+		$instance->injectConfigurationManager($configurationManager);
 		$records = array(
 			array('uid' => 0),
 			array('uid' => 99999999999),

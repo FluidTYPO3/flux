@@ -15,8 +15,8 @@ $EM_CONF[$_EXTKEY] = array(
 	'description' => 'Backend form and frontend content rendering assistance API with focus on productivity.',
 	'category' => 'misc',
 	'shy' => 0,
-	'version' => '7.1.2',
-	'dependencies' => 'cms,extbase,fluid',
+	'version' => '7.2.0',
+	'dependencies' => 'cms',
 	'conflicts' => '',
 	'priority' => 'top',
 	'loadOrder' => '',
@@ -34,10 +34,8 @@ $EM_CONF[$_EXTKEY] = array(
 	'CGLcompliance_note' => '',
 	'constraints' => array(
 		'depends' => array(
-			'typo3' => '6.1.0-6.3.99',
-			'cms' => '',
-			'extbase' => '',
-			'fluid' => '',
+			'typo3' => '6.2.0-7.1.99',
+			'cms' => ''
 		),
 		'conflicts' => array(
 		),

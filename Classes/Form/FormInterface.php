@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\Form;
-/*****************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 /**
  * @package Flux
@@ -44,6 +28,17 @@ interface FormInterface {
 	 * @return string
 	 */
 	public function getName();
+
+	/**
+	 * @return boolean
+	 */
+	public function getEnabled();
+
+	/**
+	 * @param boolean $enabled
+	 * @return FormInterface
+	 */
+	public function setEnabled($enabled);
 
 	/**
 	 * @param string $label
@@ -190,5 +185,24 @@ interface FormInterface {
 	 * @return boolean
 	 */
 	public function getInheritEmpty();
+
+	/**
+	 * Modifies the current Form Component by changing any properties
+	 * that were passed in $structure. If a component supports special
+	 * indices in $structure (for example a "fields" property) then
+	 * that component may specify its own `modify()` method and manually
+	 * process each of the specially supported keywords.
+	 *
+	 * For example, the AbstractFormContainer supports passing "fields"
+	 * and each field is then attempted fetched from children. If not
+	 * found, it is created (and the structure passed to the `create()`
+	 * function which uses the same structure syntax). If it already
+	 * exists, the `modify()` method is called on that object to trigger
+	 * the recursive modification of all child components.
+	 *
+	 * @param array $structure
+	 * @return FormInterface
+	 */
+	public function modify(array $structure);
 
 }

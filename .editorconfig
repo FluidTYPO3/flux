@@ -2,25 +2,23 @@
 
 # top-most EditorConfig file
 root = true
+charset = utf-8
+
+# Get rid of whitespace to avoid diffs with a bunch of EOL changes
+trim_trailing_whitespace = true
 
 [*]
-indent_style = tab
 end_of_line = lf
 insert_final_newline = true
 
-[*.js]
-indent_size = 2
-
-[*.php]
+[*.{php,html,js,css}]
 indent_size = 4
+indent_style = tab
 
-[*.html]
-indent_size = 4
-
-[{*.txt,*.md}]
-indent_style = space
+[*.{json,yml,txt,md,sql}]
 indent_size = 2
-
-[{composer.json,.travis.yml}]
 indent_style = space
+
+[*.{xml,xlf,xsd}]
 indent_size = 2
+indent_style = tab

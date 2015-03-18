@@ -1,30 +1,16 @@
 <?php
 namespace FluidTYPO3\Flux\Utility;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Backend\Utility\IconUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * MiscellaneousUtility Utility
@@ -34,13 +20,32 @@ use TYPO3\CMS\Backend\Utility\IconUtility;
  */
 class MiscellaneousUtility {
 
+	/** Overhead used by unique integer generation. Allows 10 billion records before collision */
+	const UNIQUE_INTEGER_OVERHEAD = 10000000000;
+
+	/**
+	 * @var array
+	 */
+	private static $allowedIconTypes = array('png', 'gif');
+
+	/**
+	 * @param integer $contentElementUid
+	 * @param string $areaName
+	 * @return integer
+	 */
+	public static function generateUniqueIntegerForFluxArea($contentElementUid, $areaName) {
+		$integers = array_map('ord', str_split($areaName));
+		$integers[] = $contentElementUid;
+		$integers[] = self::UNIQUE_INTEGER_OVERHEAD;
+		return 0 - array_sum($integers);
+	}
+
 	/**
 	* @param string $icon
 	* @return string
 	*/
 	public static function getIcon($icon) {
-		$configuration = array('class' => 't3-icon-actions t3-icon-document-new');
-		return IconUtility::getSpriteIcon($icon, $configuration);
+		return IconUtility::getSpriteIcon($icon);
 	}
 
 	/**
@@ -51,6 +56,100 @@ class MiscellaneousUtility {
 	*/
 	public static function wrapLink($inner, $uri, $title) {
 		return '<a href="#" onclick="window.location.href=\'' . htmlspecialchars($uri) . '\'" title="' . $title . '">' . $inner . '</a>';
+	}
+
+	/**
+	 * Returns the icon for a template
+	 * - checks and returns if manually set as option or
+	 * - checks and returns Icon if it exists by convention in
+	 *   EXT:$extensionKey/Resources/Public/Icons/$controllerName/$templateName.(png|gif)
+	 *
+	 * @param Form $form
+	 * @return string|NULL
+	 */
+	public static function getIconForTemplate(Form $form) {
+		if (TRUE === $form->hasOption(Form::OPTION_ICON)) {
+			return $form->getOption(Form::OPTION_ICON);
+		}
+		if (TRUE === $form->hasOption(Form::OPTION_TEMPLATEFILE)) {
+			$extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());
+			$fullTemplatePathAndName = $form->getOption(Form::OPTION_TEMPLATEFILE);
+			$templatePathParts = explode('/', $fullTemplatePathAndName);
+			$templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
+			$controllerName = array_pop($templatePathParts);
+			$allowedExtensions = implode(',', self::$allowedIconTypes);
+			$iconFolder = ExtensionManagementUtility::extPath($extensionKey, 'Resources/Public/Icons/' . $controllerName . '/');
+			$iconPathAndName = $iconFolder . $templateName;
+			$iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
+			$filesInFolder = (TRUE === is_dir($iconFolder) ? glob($iconMatchPattern, GLOB_BRACE) : array());
+			return (TRUE === is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : NULL);
+		}
+		return NULL;
+	}
+
+	/**
+	 * Cleans flex form XML, removing any field nodes identified
+	 * in $removals and trimming the result to avoid empty containers.
+	 *
+	 * @param string $xml
+	 * @param array $removals
+	 * @return string
+	 */
+	public static function cleanFlexFormXml($xml, array $removals = array()) {
+		$dom = new \DOMDocument();
+		$dom->loadXML($xml);
+		$dom->preserveWhiteSpace = FALSE;
+		$dom->formatOutput = TRUE;
+		foreach ($dom->getElementsByTagName('field') as $fieldNode) {
+			/** @var \DOMElement $fieldNode */
+			if (TRUE === in_array($fieldNode->getAttribute('index'), $removals)) {
+				$fieldNode->parentNode->removeChild($fieldNode);
+			}
+		}
+		// Assign a hidden ID to all container-type nodes, making the value available in templates etc.
+		foreach ($dom->getElementsByTagName('el') as $containerNode) {
+			/** @var \DOMElement $containerNode */
+			$hasIdNode = FALSE;
+			if (0 < $containerNode->attributes->length) {
+				// skip <el> tags reserved for other purposes by attributes; only allow pure <el> tags.
+				continue;
+			}
+			foreach ($containerNode->childNodes as $fieldNodeInContainer) {
+				/** @var \DOMElement $fieldNodeInContainer */
+				if (FALSE === $fieldNodeInContainer instanceof \DOMElement) {
+					continue;
+				}
+				$isFieldNode = ('field' === $fieldNodeInContainer->tagName);
+				$isIdField = ('id' === $fieldNodeInContainer->getAttribute('index'));
+				if ($isFieldNode && $isIdField) {
+					$hasIdNode = TRUE;
+					break;
+				}
+			}
+			if (FALSE === $hasIdNode) {
+				$idNode = $dom->createElement('field');
+				$idIndexAttribute = $dom->createAttribute('index');
+				$idIndexAttribute->nodeValue = 'id';
+				$idNode->appendChild($idIndexAttribute);
+				$valueNode = $dom->createElement('value');
+				$valueIndexAttribute = $dom->createAttribute('index');
+				$valueIndexAttribute->nodeValue = 'vDEF';
+				$valueNode->appendChild($valueIndexAttribute);
+				$valueNode->nodeValue = sha1(uniqid('container_', TRUE));
+				$idNode->appendChild($valueNode);
+				$containerNode->appendChild($idNode);
+			}
+		}
+		// Remove all sheets that no longer contain any fields.
+		foreach ($dom->getElementsByTagName('sheet') as $sheetNode) {
+			if (0 === $sheetNode->getElementsByTagName('field')->length) {
+				$sheetNode->parentNode->removeChild($sheetNode);
+			}
+		}
+		$xml = $dom->saveXML();
+		// hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
+		$xml = str_replace('<field index=""></field>', '', $xml);
+		return $xml;
 	}
 
 }

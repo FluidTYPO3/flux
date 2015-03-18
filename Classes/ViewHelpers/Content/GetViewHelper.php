@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\ViewHelpers\Content;
-/***************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -112,12 +96,11 @@ class GetViewHelper extends AbstractViewHelper {
 		$offset = intval($this->arguments['offset']);
 		$sortDirection = $this->arguments['sortDirection'];
 		$order .= ' ' . $sortDirection;
-		// Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and colummn.
+		// Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and column.
 		// The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.
 		// Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the localized version or default version.
-		$conditions = "((tx_flux_column = '" . $area . ':' . $id . "')
-			OR (tx_flux_parent = '" . $id . "' AND (tx_flux_column = '" . $area . "' OR tx_flux_column = '" . $area . ':' . $id . "')))
-			AND deleted = 0 AND hidden = 0";
+		$conditions = "(tx_flux_parent = '" . $id . "' AND tx_flux_column = '" . $area . "' AND pid = '" . $record['pid'] . "')" .
+			$GLOBALS['TSFE']->cObj->enableFields('tt_content');
 		$rows = $this->recordService->get('tt_content', '*', $conditions, 'uid', $order, $offset . ',' . $limit);
 
 		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);

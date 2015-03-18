@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\Provider;
-/*****************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
@@ -108,26 +92,6 @@ interface ProviderInterface {
 	 * @return string|NULL
 	 */
 	public function getTemplatePathAndFilename(array $row);
-
-	/**
-	 * Get the source of the template to be rendered. Allows implementers
-	 * to return a template source rather than a template filename - and
-	 * to return Form and Grid instances from, for example, PHP objects
-	 * instead of from a template file.
-	 *
-	 * If implemented, getForm() and getGrid() should both be implemented
-	 * in ways which either uses a default template file or somehow else
-	 * returns instances of Form and Grid instead of reading from template.
-	 *
-	 * The returned template source may, but is not required to, contain
-	 * a `flux:form` definition and `Configuration` section but if none
-	 * is contained, you *must* override getForm() and getGrid() if you
-	 * require any other value than NULL returned from either method.
-	 *
-	 * @param array $row
-	 * @return string|NULL
-	 */
-	public function getTemplateSource(array $row);
 
 	/**
 	 * Get an array of variables that should be used when rendering the
@@ -293,9 +257,10 @@ interface ProviderInterface {
 	 * @param integer $id The ID of the current record (which is sometimes now included in $row
 	 * @param array $row the record data, by reference. Changing fields' values changes the record's values just before saving
 	 * @param DataHandler $reference A reference to the \TYPO3\CMS\Core\DataHandling\DataHandler object that is currently saving the record
+	 * @param array $removals Allows overridden methods to pass an additional array of field names to remove from the stored Flux value
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference);
+	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = array());
 
 	/**
 	 * Post-process database operation for the table that this ConfigurationProvider
@@ -391,15 +356,6 @@ interface ProviderInterface {
 	 * @return string
 	 */
 	public function getControllerActionReferenceFromRecord(array $row);
-
-	/**
-	 * Gets an inheritance tree (ordered parent -> ... -> this record)
-	 * of record arrays containing raw values.
-	 *
-	 * @param array $row
-	 * @return array
-	 */
-	public function getInheritanceTree(array $row);
 
 	/**
 	 * @param Form $form

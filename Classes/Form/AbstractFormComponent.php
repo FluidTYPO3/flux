@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\Form;
-/*****************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
@@ -35,7 +19,6 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -47,24 +30,14 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 abstract class AbstractFormComponent implements FormInterface {
 
 	/**
-	 * @var ObjectManagerInterface
-	 */
-	protected $objectManager;
-
-	/**
-	 * @var FluxService
-	 */
-	protected $configurationService;
-
-	/**
-	 * @var ConfigurationManagerInterface
-	 */
-	protected $configurationManager;
-
-	/**
 	 * @var string
 	 */
 	protected $name;
+
+	/**
+	 * @var boolean
+	 */
+	protected $enabled = TRUE;
 
 	/**
 	 * @var string
@@ -113,30 +86,6 @@ abstract class AbstractFormComponent implements FormInterface {
 	protected $inheritEmpty = FALSE;
 
 	/**
-	 * @param ObjectManagerInterface $objectManager
-	 * @return void
-	 */
-	public function injectObjectManager(ObjectManagerInterface $objectManager) {
-		$this->objectManager = $objectManager;
-	}
-
-	/**
-	 * @param FluxService $configurationService
-	 * @return void
-	 */
-	public function injectConfigurationService(FluxService $configurationService) {
-		$this->configurationService = $configurationService;
-	}
-
-	/**
-	 * @param ConfigurationManagerInterface $configurationManager
-	 * @return void
-	 */
-	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
-		$this->configurationManager = $configurationManager;
-	}
-
-	/**
 	 * @param array $settings
 	 * @return FormInterface
 	 */
@@ -146,23 +95,7 @@ abstract class AbstractFormComponent implements FormInterface {
 		$className = get_called_class();
 		/** @var FormInterface $object */
 		$object = $objectManager->get($className);
-		foreach ($settings as $settingName => $settingValue) {
-			$setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
-			if (TRUE === method_exists($object, $setterMethodName)) {
-				ObjectAccess::setProperty($object, $settingName, $settingValue);
-			}
-		}
-		if (TRUE === $object instanceof FieldContainerInterface && TRUE === isset($settings['fields'])) {
-			/** @var FieldContainerInterface $object */
-			foreach ($settings['fields'] as $fieldName => $fieldSettings) {
-				if (FALSE === isset($fieldSettings['name'])) {
-					$fieldSettings['name'] = $fieldName;
-				}
-				$field = AbstractFormField::create($fieldSettings);
-				$object->add($field);
-			}
-		}
-		return $object;
+		return $object->modify($settings);
 	}
 
 	/**
@@ -185,7 +118,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	public function createField($type, $name, $label = NULL) {
 		/** @var FieldInterface $component */
 		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Field');
-		$component = $this->objectManager->get($className);
+		$component = $this->getObjectManager()->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -202,7 +135,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	public function createContainer($type, $name, $label = NULL) {
 		/** @var ContainerInterface $component */
 		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Container');
-		$component = $this->objectManager->get($className);
+		$component = $this->getObjectManager()->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -219,7 +152,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	public function createWizard($type, $name, $label = NULL) {
 		/** @var WizardInterface $component */
 		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Wizard');
-		$component = $this->objectManager->get($className);
+		$component = $this->getObjectManager()->get($className);
 		$component->setName($name);
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
@@ -241,6 +174,22 @@ abstract class AbstractFormComponent implements FormInterface {
 	 */
 	public function getName() {
 		return $this->name;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getEnabled() {
+		return (boolean) $this->enabled;
+	}
+
+	/**
+	 * @param boolean $enabled
+	 * @return Form\FormInterface
+	 */
+	public function setEnabled($enabled) {
+		$this->enabled = (boolean) $enabled;
+		return $this;
 	}
 
 	/**
@@ -491,6 +440,68 @@ abstract class AbstractFormComponent implements FormInterface {
 	 */
 	public function getInheritEmpty() {
 		return (boolean) $this->inheritEmpty;
+	}
+
+	/**
+	 * Modifies the current Form Component by changing any properties
+	 * that were passed in $structure. If a component supports special
+	 * indices in $structure (for example a "fields" property) then
+	 * that component may specify its own `modify()` method and manually
+	 * process each of the specially supported keywords.
+	 *
+	 * For example, the AbstractFormContainer supports passing "fields"
+	 * and each field is then attempted fetched from children. If not
+	 * found, it is created (and the structure passed to the `create()`
+	 * function which uses the same structure syntax). If it already
+	 * exists, the `modify()` method is called on that object to trigger
+	 * the recursive modification of all child components.
+	 *
+	 * @param array $structure
+	 * @return FormInterface
+	 */
+	public function modify(array $structure) {
+		if (TRUE === isset($structure['options']) && TRUE === is_array($structure['options'])) {
+			foreach ($structure['options'] as $name => $value) {
+				$this->setVariable($name, $value);
+			}
+			unset($structure['options']);
+		}
+		foreach ($structure as $propertyName => $propertyValue) {
+			$setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
+			if (TRUE === method_exists($this, $setterMethodName)) {
+				ObjectAccess::setProperty($this, $propertyName, $propertyValue);
+			}
+		}
+		return $this;
+	}
+
+	/**
+	 * @return ObjectManagerInterface
+	 */
+	protected function getObjectManager() {
+		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+	}
+
+	/**
+	 * @return FluxService
+	 */
+	protected function getConfigurationService() {
+		return $this->getObjectManager()->get('FluidTYPO3\\Flux\\Service\\FluxService');
+	}
+
+	/**
+	 * @param FormInterface[] $children
+	 * @return array
+	 */
+	protected function buildChildren(\SplObjectStorage $children) {
+		$structure = array();
+		foreach ($children as $child) {
+			if (TRUE === (boolean) $child->getEnabled()) {
+				$name = $child->getName();
+				$structure[$name] = $child->build();
+			}
+		}
+		return $structure;
 	}
 
 }

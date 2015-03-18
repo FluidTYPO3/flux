@@ -1,29 +1,14 @@
 <?php
 namespace FluidTYPO3\Flux\Provider;
-/*****************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Service\ContentService;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -61,6 +46,19 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	protected $fieldName = 'pi_flexform';
 
 	/**
+	 * @var ContentService
+	 */
+	protected $contentService;
+
+	/**
+	 * @param ContentService $contentService
+	 * @return void
+	 */
+	public function injectContentService(ContentService $contentService) {
+		$this->contentService = $contentService;
+	}
+
+	/**
 	 * Note: This Provider will -always- trigger on tt_content list_type records (plugin)
 	 * but has the lowest possible (0) priority, ensuring that any
 	 * Provider which wants to take over, can do so.
@@ -76,33 +74,16 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * Note: This Provider will -always- trigger on tt_content list_type records (plugin)
-	 * but has the lowest possible (0) priority, ensuring that any
-	 * Provider which wants to take over, can do so.
-	 *
-	 * @param array $row
-	 * @param string $table
-	 * @param string $field
-	 * @param string $extensionKey
-	 * @return boolean
-	 */
-	public function trigger(array $row, $table, $field, $extensionKey = NULL) {
-		if ($table === $this->tableName && FALSE === empty($row['list_type'])) {
-			return TRUE;
-		}
-		return parent::trigger($row, $table, $field, $extensionKey);
-	}
-
-	/**
 	 * @param string $operation
 	 * @param integer $id
 	 * @param array $row
 	 * @param DataHandler $reference
+	 * @param array $removals Allows overridden methods to pass an additional array of field names to remove from the stored Flux value
 	 * @return void
 	 */
-	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference) {
+	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = array()) {
 		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
-			parent::postProcessRecord($operation, $id, $row, $reference);
+			parent::postProcessRecord($operation, $id, $row, $reference, $removals);
 			$parameters = GeneralUtility::_GET();
 			$this->contentService->affectRecordByRequestParameters($id, $row, $parameters, $reference);
 			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
@@ -165,13 +146,20 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * @return string
+	 */
+	protected function getRawPostData() {
+		return file_get_contents('php://input');
+	}
+
+	/**
 	 * @return array|NULL
 	 */
 	protected function getMoveData() {
 		$return = NULL;
-		$rawPostData = file_get_contents('php://input');
+		$rawPostData = $this->getRawPostData();
 		if (FALSE === empty($rawPostData)) {
-			$request = json_decode($rawPostData, TRUE);
+			$request = (array) json_decode($rawPostData, TRUE);
 			$hasRequestData = TRUE === isset($request['method']) && TRUE === isset($request['data']);
 			$isMoveMethod = 'moveContentElement' === $request['method'];
 			$return = (TRUE === $hasRequestData && TRUE === $isMoveMethod) ? $request['data'] : NULL;

@@ -1,29 +1,14 @@
 <?php
-namespace FluidTYPO3\Flux\Provider;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+namespace FluidTYPO3\Flux\Tests\Unit\Provider;
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -42,7 +27,8 @@ class ContentProviderTest extends AbstractProviderTest {
 		$provider = $this->getConfigurationProviderInstance();
 		/** @var DataHandler $tceMain */
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$provider->postProcessDatabaseOperation('new', $row['uid'], $row, $tceMain);
+		$result = $provider->postProcessDatabaseOperation('new', $row['uid'], $row, $tceMain);
+		$this->assertEmpty($result);
 	}
 
 	/**
@@ -58,7 +44,8 @@ class ContentProviderTest extends AbstractProviderTest {
 		$contentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('updateRecordInDatabase'));
 		$contentService->expects($this->once())->method('updateRecordInDatabase');
 		ObjectAccess::setProperty($provider, 'contentService', $contentService, TRUE);
-		$provider->postProcessCommand('move', 0, $row, $relativeUid, $tceMain);
+		$result = $provider->postProcessCommand('move', 0, $row, $relativeUid, $tceMain);
+		$this->assertEmpty($result);
 	}
 
 	/**
@@ -74,11 +61,31 @@ class ContentProviderTest extends AbstractProviderTest {
 	/**
 	 * @test
 	 */
+	public function canGetControllerExtensionKey() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$result = $provider->getControllerExtensionKeyFromRecord($record);
+		$this->assertEquals('flux', $result);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canGetTableName() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
 		$tableName = $provider->getTableName($record);
 		$this->assertSame('tt_content', $tableName);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canGetFieldName() {
+		$provider = $this->getConfigurationProviderInstance();
+		$record = $this->getBasicRecord();
+		$result = $provider->getFieldName($record);
+		$this->assertEquals('pi_flexform', $result);
 	}
 
 	/**
@@ -94,7 +101,7 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @test
 	 */
 	public function postProcessCommandCallsExpectedMethodToMoveRecord() {
-		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand'));
+		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getCallbackCommand'));
 		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('move' => 1)));
 		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
 		$mockContentService->expects($this->once())->method('moveRecord');
@@ -113,7 +120,7 @@ class ContentProviderTest extends AbstractProviderTest {
 	 */
 	public function postProcessCommandCallsExpectedMethodToCopyRecord() {
 		$record = $this->getBasicRecord();
-		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand'));
+		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getCallbackCommand'));
 		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('paste' => 1)));
 		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
 		$mockContentService->expects($this->once())->method('pasteAfter');
@@ -131,7 +138,7 @@ class ContentProviderTest extends AbstractProviderTest {
 	 */
 	public function postProcessCommandCallsExpectedMethodToPasteRecord() {
 		$record = $this->getBasicRecord();
-		$mock = $this->getMock(substr(get_class($this), 0, -4), array('getCallbackCommand'));
+		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getCallbackCommand'));
 		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('paste' => 1)));
 		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
 		$mockContentService->expects($this->once())->method('pasteAfter');
@@ -202,12 +209,34 @@ class ContentProviderTest extends AbstractProviderTest {
 	public function getTriggerTestValues() {
 		return array(
 			array(array(), 'not_tt_content', 'pi_flexform', NULL, FALSE),
-			array(array('list_type' => 'any', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', NULL, FALSE),
-			array(array('list_type' => 'any', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', 'flux', FALSE),
-			// triggers on record having list_type and CType, default field name and any combo of ext key
-			array(array('list_type' => 'any', 'CType' => 'any'), 'tt_content', 'pi_flexform', NULL, TRUE),
-			array(array('list_type' => 'any', 'CType' => 'any'), 'tt_content', 'pi_flexform', 'fluidpages', TRUE),
-			array(array('list_type' => 'any', 'CType' => 'any'), 'tt_content', 'pi_flexform', 'flux', TRUE),
+			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', NULL, FALSE),
+			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', 'flux', FALSE)
+		);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider getMoveDataTestvalues
+	 * @param mixed $postData
+	 * @param string|NULL $expected
+	 */
+	public function getMoveDataReturnsExpectedValues($postData, $expected) {
+		$instance = $this->getMock($this->createInstanceClassName(), array('getRawPostData'));
+		$instance->expects($this->once())->method('getRawPostData')->willReturn($postData);
+		$result = $this->callInaccessibleMethod($instance, 'getMoveData');
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getMoveDataTestvalues() {
+		return array(
+			array(NULL, NULL),
+			array('{}', NULL),
+			array('{"method": "test"}', NULL),
+			array('{"method": "test", "data": []}', NULL),
+			array('{"method": "moveContentElement", "data": "test"}', 'test'),
 		);
 	}
 

@@ -1,28 +1,12 @@
 <?php
-namespace FluidTYPO3\Flux\Backend;
-/***************************************************************
- *  Copyright notice
+namespace FluidTYPO3\Flux\Tests\Unit\Backend;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
@@ -39,7 +23,9 @@ class PreviewTest extends AbstractTestCase {
 	/**
 	 * Setup
 	 */
-	public function setup() {
+	public function setUp() {
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', FALSE);
+		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
 		$tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
 		foreach ($tempFiles as $tempFile) {
 			if (TRUE === file_exists($tempFile)) {
@@ -53,8 +39,9 @@ class PreviewTest extends AbstractTestCase {
 	 */
 	public function canExecuteRenderer() {
 		$caller = $this->objectManager->get('TYPO3\CMS\Backend\View\PageLayoutView');
-		$function = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'];
-		$this->callUserFunction($function, $caller);
+		$function = 'FluidTYPO3\Flux\Backend\Preview';
+		$result = $this->callUserFunction($function, $caller);
+		$this->assertEmpty($result);
 	}
 
 	/**
@@ -79,7 +66,8 @@ class PreviewTest extends AbstractTestCase {
 	public function canGetPageTitleAndPidFromContentUid() {
 		$className = 'FluidTYPO3\Flux\Backend\Preview';
 		$instance = $this->getMock($className);
-		$this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
+		$result = $this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
+		$this->assertEmpty($result);
 	}
 
 	/**

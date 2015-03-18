@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\Form\Field\Inline;
-/*****************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractInlineFormField;
@@ -46,6 +30,7 @@ class Fal extends AbstractInlineFormField {
 	const DEFAULT_LOCALIZATION_MODE = 'select';
 	const DEFAULT_LOCALIZE_CHILDREN_AT_PARENT_LOCALIZATION = TRUE;
 	const DEFAULT_NEW_RECORD_LINK_ADD_TITLE = TRUE;
+	const DEFAULT_CREATE_NEW_RELATION_LINK_TITLE = 'LLL:EXT:lang/locallang_core.xlf:cm.createNewRelation';
 
 	/**
 	 * @var string
@@ -160,11 +145,35 @@ class Fal extends AbstractInlineFormField {
 	protected $newRecordLinkAddTitle = self::DEFAULT_NEW_RECORD_LINK_ADD_TITLE;
 
 	/**
+	 * Label of 'create new relation' button
+	 *
+	 * @var string
+	 */
+	protected $createNewRelationLinkTitle = self::DEFAULT_CREATE_NEW_RELATION_LINK_TITLE;
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
 		$configuration = $this->prepareConfiguration('inline');
+		$configuration['appearance']['createNewRelationLinkTitle'] = $this->getCreateNewRelationLinkTitle();
 		return $configuration;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCreateNewRelationLinkTitle() {
+		return $this->createNewRelationLinkTitle;
+	}
+
+	/**
+	 * @param string $createNewRelationLinkTitle
+	 * @return Fal
+	 */
+	public function setCreateNewRelationLinkTitle($createNewRelationLinkTitle) {
+		$this->createNewRelationLinkTitle = $createNewRelationLinkTitle;
+		return $this;
 	}
 
 }

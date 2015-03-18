@@ -1,32 +1,16 @@
 <?php
-namespace FluidTYPO3\Flux\Form\Field;
-/***************************************************************
- *  Copyright notice
+namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormField;
-use FluidTYPO3\Flux\Form\AbstractFormTest;
+use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
 /**
  * author Claus Due <claus@namelesscoder.net>
@@ -46,7 +30,6 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$instance = $this->canChainAllChainableSetters();
 		$this->assertFalse($instance->setInheritEmpty(FALSE)->getInheritEmpty());
 		$this->assertTrue($instance->setInheritEmpty(TRUE)->getInheritEmpty());
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -56,7 +39,6 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$instance = $this->canChainAllChainableSetters();
 		$this->assertFalse($instance->setInherit(FALSE)->getInherit());
 		$this->assertTrue($instance->setInherit(TRUE)->getInherit());
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -66,7 +48,6 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$instance = $this->canChainAllChainableSetters();
 		$this->assertFalse($instance->setClearable(FALSE)->getClearable());
 		$this->assertTrue($instance->setClearable(TRUE)->getClearable());
-		$this->performTestBuild($instance);
 	}
 
 	/**
@@ -89,7 +70,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 		$form->add($instance);
 		$form->setExtensionName(NULL);
-		$this->performTestBuild($form);
+		$this->assertEmpty($form->getLabel());
 	}
 
 	/**
@@ -101,7 +82,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
 		$form->add($instance);
 		$form->setExtensionName('void');
-		$this->performTestBuild($form);
+		$this->assertEmpty($form->getLabel());
 	}
 
 	/**
@@ -152,7 +133,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 	 */
 	public function canCreateFromSettingsUsingFullClassName() {
 		$properties = $this->chainProperties;
-		$properties['type'] = substr(get_class($this), 0, -4);
+		$properties['type'] = $this->getObjectClassName();
 		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}
@@ -182,6 +163,38 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$parent->add($instance);
 		$output = $instance->getLabel();
 		$this->assertContains('parent.child', $output);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canBuildWithClearableFlag() {
+		$instance = $this->createInstance();
+		$instance->setClearable(TRUE);
+		$result = $this->performTestBuild($instance);
+		$this->assertNotEmpty($result['TCEforms']['config']['wizards']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyCreatesWizards() {
+		$form = Form::create();
+		$field = $form->createField('Input', 'testfield');
+		$this->assertFalse($field->has('test'));
+		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'test', 'label' => 'Test'))));
+		$this->assertTrue($field->has('test'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function modifyModifiesWizards() {
+		$form = Form::create();
+		$field = $form->createField('Input', 'testfield');
+		$wizard = $field->createWizard('Add', 'test', 'Original label');
+		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'test', 'label' => 'Test'))));
+		$this->assertEquals('Test', $wizard->getLabel());
 	}
 
 }

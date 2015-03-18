@@ -1,32 +1,17 @@
 <?php
 namespace FluidTYPO3\Flux\View;
-/***************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -51,16 +36,26 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	protected $configurationService;
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $templateSource = NULL;
+	protected $renderedSections = array();
 
 	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
-	public function injectDebugService(FluxService $configurationService) {
+	public function injectConfigurationService(FluxService $configurationService) {
 		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param TemplatePaths $templatePaths
+	 * @return void
+	 */
+	public function setTemplatePaths(TemplatePaths $templatePaths) {
+		$this->setTemplateRootPaths($templatePaths->getTemplateRootPaths());
+		$this->setLayoutRootPaths($templatePaths->getLayoutRootPaths());
+		$this->setPartialRootPaths($templatePaths->getPartialRootPaths());
 	}
 
 	/**
@@ -71,6 +66,12 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	public function getForm($sectionName = 'Configuration', $formName = 'form') {
 		/** @var Form $form */
 		$form = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, $formName, $sectionName);
+		if (NULL !== $form && TRUE === isset($this->templatePathAndFilename)) {
+			$form->setOption(Form::OPTION_TEMPLATEFILE, $this->templatePathAndFilename);
+			$signature = ExtensionNamingUtility::getExtensionSignature($this->controllerContext->getRequest()->getControllerExtensionName());
+			$overrides = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_' . $signature . '.forms.' . $form->getName());
+			$form->modify($overrides);
+		}
 		return $form;
 	}
 
@@ -99,6 +100,9 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	 * @throws \RuntimeException
 	 */
 	protected function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL) {
+		if (TRUE === isset($this->renderedSections[$sectionName])) {
+			return $this->renderedSections[$sectionName]->get($viewHelperClassName, $name);
+		}
 		if (FALSE === $this->controllerContext instanceof ControllerContext) {
 			throw new \RuntimeException('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
 		}
@@ -106,19 +110,19 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		$this->templateParser->setConfiguration($this->buildParserConfiguration());
 		$parsedTemplate = $this->getParsedTemplate();
 		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
+		$viewHelperVariableContainer = $this->baseRenderingContext->getViewHelperVariableContainer();
 		if (FALSE === empty($sectionName)) {
-			$this->renderSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
+			$this->renderStandaloneSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
 		} else {
 			$this->render();
 		}
 		$this->stopRendering();
-		if (FALSE === $this->baseRenderingContext->getViewHelperVariableContainer()->exists($viewHelperClassName, $name)) {
+		if (FALSE === $viewHelperVariableContainer->exists($viewHelperClassName, $name)) {
 			return NULL;
 		}
-		$stored = $this->baseRenderingContext->getViewHelperVariableContainer()->get($viewHelperClassName, $name);
+		$this->renderedSections[$sectionName] = $viewHelperVariableContainer;
+		$stored = $viewHelperVariableContainer->get($viewHelperClassName, $name);
 		$templateIdentityForLog = NULL !== $this->templateSource ? 'source code with hash value ' . sha1($this->templateSource) : $this->getTemplatePathAndFilename();
-		$this->configurationService->message('Flux View ' . get_class($this) . ' is able to read stored configuration from ' .
-			$templateIdentityForLog, GeneralUtility::SYSLOG_SEVERITY_INFO);
 		return $stored;
 	}
 
@@ -127,20 +131,32 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	 */
 	public function getParsedTemplate() {
 		$templateIdentifier = $this->getTemplateIdentifier();
-		$source = $this->getTemplateSource();
-		if (FALSE === isset($this->templateCompiler) || 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['disableCompiler']) {
-			$parsedTemplate = $this->templateParser->parse($source);
-		} elseif (TRUE === $this->templateCompiler->has($templateIdentifier)) {
+		if (TRUE === $this->templateCompiler->has($templateIdentifier)) {
 			$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
 		} else {
+			$source = $this->getTemplateSource();
 			$parsedTemplate = $this->templateParser->parse($source);
+			if (TRUE === $parsedTemplate->isCompilable()) {
+				$this->templateCompiler->store($templateIdentifier, $parsedTemplate);
+			}
 		}
 		return $parsedTemplate;
 	}
 
 	/**
+	 * Public-access wrapper for parent's method.
+	 *
+	 * @param string $actionName
+	 * @return string
+	 */
+	public function getTemplatePathAndFilename($actionName = NULL) {
+		return parent::getTemplatePathAndFilename($actionName);
+	}
+
+	/**
 	 * Renders a section from the specified template w/o requring a call to the
 	 * main render() method - allows for cherry-picking sections to render.
+	 *
 	 * @param string $sectionName
 	 * @param array $variables
 	 * @param boolean $optional
@@ -150,150 +166,19 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 		$content = NULL;
 		$this->baseRenderingContext->setControllerContext($this->controllerContext);
 		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
-		$content = $this->renderSection($sectionName, $variables, $optional);
+		$content = parent::renderSection($sectionName, $variables, $optional);
 		$this->stopRendering();
 		return $content;
 	}
 
 	/**
-	 * @param string $actionName
-	 * @return string
-	 */
-	public function getTemplatePathAndFilename($actionName = NULL) {
-		if (NULL !== $this->templatePathAndFilename) {
-			return $this->templatePathAndFilename;
-		}
-		if (TRUE === empty($actionName)) {
-			$actionName = $this->controllerContext->getRequest()->getControllerActionName();
-		}
-		$actionName = ResolveUtility::convertAllPathSegmentsToUpperCamelCase($actionName);
-		$paths = $this->expandGenericPathPattern($this->templatePathAndFilenamePattern, FALSE, FALSE);
-		foreach ($paths as &$templatePathAndFilename) {
-			$templatePathAndFilename = str_replace('@action', $actionName, $templatePathAndFilename);
-			if (TRUE === file_exists($templatePathAndFilename)) {
-				return $templatePathAndFilename;
-			}
-		}
-		return parent::getTemplatePathAndFilename($actionName);
-	}
-
-	/**
-	 * @param string $templateSource
-	 * @return void
-	 */
-	public function setTemplateSource($templateSource) {
-		$this->templateSource = $templateSource;
-	}
-
-	/**
-	 * @param string $actionName
-	 * @return string
-	 */
-	protected function getTemplateSource($actionName = NULL) {
-		if (NULL !== $this->templateSource) {
-			return $this->templateSource;
-		}
-		return parent::getTemplateSource($actionName);
-	}
-
-	/**
-	 * @param string $pattern Pattern to be resolved
-	 * @param boolean $bubbleControllerAndSubpackage if TRUE, then we successively split off parts from "@controller" and "@subpackage" until both are empty.
-	 * @param boolean $formatIsOptional if TRUE, then half of the resulting strings will have ."@format" stripped off, and the other half will have it.
-	 * @return array unix style path
-	 */
-	protected function expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional) {
-		$extensionKey = $this->controllerContext->getRequest()->getControllerExtensionKey();
-		$configurations = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
-		$pathOverlayConfigurations = $this->buildPathOverlayConfigurations($configurations);
-		$paths = parent::expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional);
-		foreach ($pathOverlayConfigurations as $overlayPaths) {
-			if (FALSE === empty($overlayPaths['templateRootPath'])) {
-				$templateRootPath = $overlayPaths['templateRootPath'];
-				$this->setTemplateRootPath($templateRootPath);
-			}
-			if (FALSE === empty($overlayPaths['partialRootPath'])) {
-				$partialRootPath = $overlayPaths['partialRootPath'];
-				$this->setPartialRootPath($partialRootPath);
-			}
-			if (FALSE === empty($overlayPaths['layoutRootPath'])) {
-				$layoutRootPath = $overlayPaths['layoutRootPath'];
-				$this->setLayoutRootPath($layoutRootPath);
-			}
-			$subset = parent::expandGenericPathPattern($pattern, $bubbleControllerAndSubpackage, $formatIsOptional);
-			$paths = array_merge($paths, $subset);
-		}
-		$paths = array_unique($paths);
-		$paths = array_reverse($paths);
-		$paths = $this->trimPathStringRecursive($paths);
-		return $paths;
-	}
-
-	/**
-	 * @param array $configuration
-	 * @return array
-	 */
-	protected function buildPathOverlayConfigurations($configuration) {
-		$templateRootPath = NULL;
-		$partialRootPath = NULL;
-		$layoutRootPath = NULL;
-		$overlays = array();
-		$paths = array();
-		if (TRUE === isset($configuration['overlays'])) {
-			$overlays = $configuration['overlays'];
-		}
-		foreach ($overlays as $overlaySubpackageKey => $overlay) {
-			if (TRUE === isset($overlay['templateRootPath'])) {
-				$templateRootPath = GeneralUtility::getFileAbsFileName($overlay['templateRootPath']);
-			}
-			if (TRUE === isset($overlay['partialRootPath'])) {
-				$partialRootPath = GeneralUtility::getFileAbsFileName($overlay['partialRootPath']);
-			}
-			if (TRUE === isset($overlay['layoutRootPath'])) {
-				$layoutRootPath = GeneralUtility::getFileAbsFileName($overlay['layoutRootPath']);
-			}
-			$paths[$overlaySubpackageKey] = array(
-				'templateRootPath' => $templateRootPath,
-				'partialRootPath' => $partialRootPath,
-				'layoutRootPath' => $layoutRootPath
-			);
-		}
-		$paths = array_reverse($paths);
-		$paths[] = array(
-			'templateRootPath' => $this->getTemplateRootPath(),
-			'partialRootPath' => $this->getPartialRootPath(),
-			'layoutRootPath' => $this->getLayoutRootPath()
-		);
-		$paths = $this->trimPathStringRecursive($paths);
-		return $paths;
-	}
-
-	/**
-	 * @param mixed $stringOrArray
-	 * @return string
-	 */
-	private function trimPathStringRecursive($stringOrArray) {
-		if (TRUE === is_array($stringOrArray)) {
-			foreach ($stringOrArray as $key => $value) {
-				$stringOrArray[$key] = $this->trimPathStringRecursive($value);
-			}
-			return $stringOrArray;
-		}
-		$value = rtrim(str_replace('//', '/', $stringOrArray), '/');
-		return $value;
-	}
-
-	/**
-	 * We use a checksum of the template source as the template identifier
+	 * Wrapper method to make the static call to GeneralUtility mockable in tests
 	 *
-	 * @param string $actionName
-	 * @return string
+	 * @param string $pathAndFilename
+	 *
+	 * @return string absolute pathAndFilename
 	 */
-	protected function getTemplateIdentifier($actionName = NULL) {
-		$hasMethodOnParent = TRUE === method_exists(get_parent_class($this), __FUNCTION__);
-		$templateFileExists = TRUE === file_exists($this->templatePathAndFilename);
-
-		return TRUE === $hasMethodOnParent && TRUE === $templateFileExists ? parent::getTemplateIdentifier($actionName) : 'viewhelpertest_' . sha1($this->templateSource);
+	protected function resolveFileNamePath($pathAndFilename) {
+		return '/' !== $pathAndFilename{0} ? GeneralUtility::getFileAbsFileName($pathAndFilename) : $pathAndFilename;
 	}
-
 }

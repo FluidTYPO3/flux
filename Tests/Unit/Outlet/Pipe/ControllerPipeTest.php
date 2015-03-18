@@ -1,29 +1,14 @@
 <?php
-namespace FluidTYPO3\Flux\Outlet\Pipe;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
 use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 use TYPO3\CMS\Extbase\Mvc\Controller\Argument;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -34,6 +19,15 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 class ControllerPipeTest extends AbstractPipeTestCase {
 
 	/**
+	 * @var array
+	 */
+	protected $defaultData = array(
+		'action' => 'test',
+		'controller' => 'test2',
+		'extensionName' => 'test3'
+	);
+
+	/**
 	 * @test
 	 */
 	public function canConductData() {
@@ -41,7 +35,8 @@ class ControllerPipeTest extends AbstractPipeTestCase {
 		$instance->setExtensionName('Flux');
 		$instance->setController('Fake');
 		$instance->setAction('render');
-		$this->performControllerExcecution($instance, 'Tx_Flux_Controller_FakeController');
+		$result = $this->performControllerExcecution($instance, 'Tx_Flux_Controller_FakeController');
+		$this->assertNotEmpty($result);
 	}
 
 	/**
@@ -52,13 +47,14 @@ class ControllerPipeTest extends AbstractPipeTestCase {
 		$instance->setExtensionName('FluidTYPO3.Flux');
 		$instance->setController('Vendor');
 		$instance->setAction('render');
-		$this->performControllerExcecution($instance, 'Tx_Flux_Controller_VendorController');
+		$result = $this->performControllerExcecution($instance, 'Tx_Flux_Controller_VendorController');
+		$this->assertNotEmpty($result);
 	}
 
 	/**
 	 * @param ControllerPipe $instance
 	 * @param string $controllerClassName
-	 * @return void
+	 * @return mixed
 	 */
 	protected function performControllerExcecution(ControllerPipe $instance, $controllerClassName) {
 		$controllerMock = $this->getMockForAbstractClass('FluidTYPO3\Flux\Controller\AbstractFluxController', array(), $controllerClassName, TRUE, TRUE, TRUE,
@@ -95,9 +91,7 @@ class ControllerPipeTest extends AbstractPipeTestCase {
 		$objectManagerMock->expects($this->at(1))->method('get')->with('TYPO3\CMS\Extbase\Mvc\Web\Response')->will($this->returnValue($response));
 		$objectManagerMock->expects($this->at(2))->method('get')->with('TYPO3\CMS\Extbase\Mvc\Dispatcher')->will($this->returnValue($dispatcherMock));
 		ObjectAccess::setProperty($instance, 'objectManager', $objectManagerMock, TRUE);
-		$output = $instance->conduct($this->defaultData);
-		$this->assertNotEmpty($output);
-
+		return $instance->conduct($this->defaultData);
 	}
 
 	/**

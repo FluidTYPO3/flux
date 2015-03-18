@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\Transformation;
-/***************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
@@ -107,15 +91,14 @@ class FormDataTransformer {
 	protected function getObjectOfType($dataType, $uids) {
 		$identifiers = TRUE === is_array($uids) ? $uids : GeneralUtility::trimExplode(',', trim($uids, ','), TRUE);
 		$identifiers = array_map('intval', $identifiers);
-		$isModel = (FALSE !== strpos($dataType, '_Domain_Model_') || FALSE !== strpos($dataType, '\\Domain\\Model\\'));
+		$isModel = $this->isDomainModelClassName($dataType);
 		list ($container, $object) = FALSE !== strpos($dataType, '<') ? explode('<', trim($dataType, '>')) : array(NULL, $dataType);
-		$repositoryClassName = str_replace('_Domain_Model_', '_Domain_Repository_', str_replace('\\Domain\\Model\\', '\\Domain\\Repository\\', $object)) . 'Repository';
+		$repositoryClassName = $this->resolveRepositoryClassName($object);
 		// Fast decisions
 		if (TRUE === $isModel && NULL === $container) {
 			if (TRUE === class_exists($repositoryClassName)) {
 				$repository = $this->objectManager->get($repositoryClassName);
-				$uid = array_pop($identifiers);
-				return $repository->findByUid($uid);
+				return reset($this->loadObjectsFromRepository($repository, $identifiers));
 			}
 		} elseif (TRUE === class_exists($dataType)) {
 			// using constructor value to support objects like DateTime
@@ -133,6 +116,22 @@ class FormDataTransformer {
 			}
 		}
 		return $uids;
+	}
+
+	/**
+	 * @param string $object
+	 * @return string
+	 */
+	protected function resolveRepositoryClassName($object) {
+		return str_replace('\\Domain\\Model\\', '\\Domain\\Repository\\', $object) . 'Repository';
+	}
+
+	/**
+	 * @param string $dataType
+	 * @return boolean
+	 */
+	protected function isDomainModelClassName($dataType) {
+		return (FALSE !== strpos($dataType, '\\Domain\\Model\\'));
 	}
 
 	/**

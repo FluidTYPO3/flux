@@ -1,30 +1,16 @@
 <?php
-namespace FluidTYPO3\Flux\Form;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+namespace FluidTYPO3\Flux\Tests\Unit\Form;
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -37,10 +23,10 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array('name' => 'test', 'label' => 'Test field');
+	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => TRUE);
 
 	/**
-	 * @return \FluidTYPO3\Flux\Form\FormInterface
+	 * @return FormInterface
 	 */
 	protected function createInstance() {
 		$className = $this->getObjectClassName();
@@ -106,17 +92,18 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	public function canGenerateLocalisableLabel() {
 		$instance = $this->createInstance();
 		$instance->setLabel(NULL);
-		if (FALSE === $instance instanceof Form) {
+		$instance->setExtensionName('Flux');
+		if (TRUE === $instance instanceof Form) {
+			$instance->setName('testFormId');
+			$instance->setExtensionName('Flux');
+		} else {
 			/** @var Form $form */
-			$instance->setName('test');
+			$instance->setName('testFormId');
 			$form = Form::create(array(
-				'name' => 'testFormId',
+				'name' => 'test',
 				'extensionName' => 'flux'
 			));
 			$form->add($instance);
-		} else {
-			$instance->setName('testFormId');
-			$instance->setExtensionKey('flux');
 		}
 		$label = $instance->getLabel();
 		$this->assertContains('testFormId', $label);
@@ -129,6 +116,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	protected function getObjectClassName() {
 		$class = get_class($this);
 		$class = substr($class, 0, -4);
+		$class = str_replace('\\Tests\\Unit', '', $class);
 		return $class;
 	}
 
@@ -150,39 +138,19 @@ abstract class AbstractFormTest extends AbstractTestCase {
 				$instance = $chained;
 			}
 		}
-		$this->performTestBuild($instance);
 		return $instance;
 	}
 
 	/**
 	 * @test
 	 */
-	public function ifObjectIsFieldContainerItSupportsFetchingFields() {
-		$instance = $this->createInstance();
-		if (TRUE === $instance instanceof FieldContainerInterface) {
-			$field = $instance->createField('Input', 'test');
-			$instance->add($field);
-			$fields = $instance->getFields();
-			$this->assertNotEmpty($fields, 'The class ' . $this->getObjectClassName() . ' does not appear to support the required FieldContainerInterface implementation');
-			$this->performTestBuild($instance);
-		}
-	}
-
-	/**
-	 * @test
-	 */
 	public function returnsNameInsteadOfEmptyLabelWhenFormsExtensionKeyAndLabelAreBothEmpty() {
+		$name = TRUE === isset($this->chainProperties['name']) ? $this->chainProperties['name'] : 'test';
 		$instance = $this->createInstance();
-		if (FALSE === $instance instanceof Form && TRUE === $instance instanceof FieldInterface) {
-			/** @var Form $form */
-			$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
-			$form->setExtensionName(NULL);
-			$form->add($instance);
-		}
-		$instance->setName('test');
+		$instance->setExtensionName(NULL);
+		$instance->setName($name);
 		$instance->setLabel(NULL);
-		$this->performTestBuild($instance);
-
+		$this->assertEquals($name, $instance->getLabel());
 	}
 
 	/**
@@ -191,16 +159,18 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	public function canCallAllGetterCounterpartsForChainableSetters() {
 		$instance = $this->createInstance();
 		foreach ($this->chainProperties as $propertyName => $propertValue) {
-			ObjectAccess::getProperty($instance, $propertyName);
+			$setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
+			$instance->$setterMethodName($propertValue);
+			$result = ObjectAccess::getProperty($instance, $propertyName);
+			$this->assertEquals($propertValue, $result);
 		}
-		$this->performTestBuild($instance);
 	}
 
 	/**
-	 * @param \FluidTYPO3\Flux\Form\FieldInterface
+	 * @param Form\FormInterface $instance
 	 * @return array
 	 */
-	protected function performTestBuild($instance) {
+	protected function performTestBuild(FormInterface $instance) {
 		$configuration = $instance->build();
 		$this->assertIsArray($configuration);
 		return $configuration;
@@ -241,13 +211,13 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @test
+	 * @disabledtest
 	 * @dataProvider getLabelTranslationTestValues
 	 * @param string $input
 	 * @param string $extensionKey
 	 * @param string $expectedOutput
 	 */
-	public function testTranslateLabelReference($input, $extensionKey, $expectedOutput) {
+	public function canTranslateLabelReference($input, $extensionKey, $expectedOutput) {
 		$mock = $this->getMock($this->createInstanceClassName());
 		$result = $this->callInaccessibleMethod($mock, 'translateLabelReference', $input, $extensionKey);
 		$this->assertEquals($expectedOutput, $result);
@@ -263,6 +233,29 @@ abstract class AbstractFormTest extends AbstractTestCase {
 			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', NULL, 'Content Container'),
 			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', 'flux', 'Content Container'),
 		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canModifyProperties() {
+		$mock = $this->getMock($this->createInstanceClassName(), array('dummy'));
+		$properties = array('enabled' => FALSE);
+		$mock->modify($properties);
+		$result = $mock->getEnabled();
+		$this->assertFalse($result);
+	}
+
+	/**
+	 * @test
+	 */
+	public function canModifyVariablesSelectively() {
+		$mock = $this->getMock($this->createInstanceClassName(), array('dummy'));
+		$mock->setVariables(array('foo' => 'baz', 'abc' => 'xyz'));
+		$properties = array('options' => array('foo' => 'bar'));
+		$mock->modify($properties);
+		$this->assertEquals('bar', $mock->getVariable('foo'));
+		$this->assertEquals('xyz', $mock->getVariable('abc'));
 	}
 
 }

@@ -1,28 +1,12 @@
 <?php
 namespace FluidTYPO3\Flux\Form;
-/*****************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 /**
  * @package Flux
@@ -140,11 +124,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	 * @return boolean
 	 */
 	public function has($childOrChildName) {
-		if (TRUE === $childOrChildName instanceof FormInterface) {
-			$name = $childOrChildName->getName();
-		} else {
-			$name = $childOrChildName;
-		}
+		$name = (TRUE === $childOrChildName instanceof FormInterface) ? $childOrChildName->getName() : $childOrChildName;
 		return (FALSE !== $this->get($name));
 	}
 
@@ -178,20 +158,6 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	}
 
 	/**
-	 * @return array
-	 */
-	protected function buildChildren() {
-		$structure = array();
-		/** @var FormInterface[] $children */
-		$children = $this->children;
-		foreach ($children as $child) {
-			$name = $child->getName();
-			$structure[$name] = $child->build();
-		}
-		return $structure;
-	}
-
-	/**
 	 * @return boolean
 	 */
 	public function hasChildren() {
@@ -212,6 +178,27 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	 */
 	public function getTransform() {
 		return $this->transform;
+	}
+
+	/**
+	 * @param array $structure
+	 * @return ContainerInterface
+	 */
+	public function modify(array $structure) {
+		if (TRUE === isset($structure['fields'])) {
+			foreach ((array) $structure['fields'] as $index => $fieldData) {
+				$fieldName = TRUE === isset($fieldData['name']) ? $fieldData['name'] : $index;
+				// check if field already exists - if it does, modify it. If it does not, create it.
+				if (TRUE === $this->has($fieldName)) {
+					$field = $this->get($fieldName);
+				} else {
+					$fieldType = TRUE === isset($fieldData['type']) ? $fieldData['type'] : 'None';
+					$field = $this->createField($fieldType, $fieldName);
+				}
+				$field->modify($fieldData);
+			}
+		}
+		return parent::modify($structure);
 	}
 
 }
