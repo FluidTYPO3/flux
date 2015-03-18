@@ -10,9 +10,9 @@ matrix:
     - php: 5.4
       env: TYPO3="6.2.*" CHECKSTYLE="YES"
     - php: 5.5
-      env: TYPO3="7.1.*"
-    - php: 5.6
       env: TYPO3="7.1.*" COVERAGE="YES
+    - php: 5.6
+      env: TYPO3="7.1.*"
     - php: 7
       env: TYPO3="7.1.*"
     - php: hhvm
