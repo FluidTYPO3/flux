@@ -1,0 +1,26 @@
+language: php
+
+matrix:
+  allow_failures:
+    - php: 7
+      env: TYPO3="7.1.*"
+    - php: 5.6
+      env: TYPO3="7.1.*" COVERAGE="YES"
+  include:
+    - php: 5.4
+      env: TYPO3="6.2.*"
+    - php: 5.5
+      env: TYPO3="7.1.*"
+    - php: 5.6
+      env: TYPO3="7.1.*" CHECKSTYLE="YES"
+    - php: hhvm
+      env: TYPO3="7.1.*"
+
+before_script:
+  - composer require typo3/cms:$TYPO3
+
+install:
+  - composer install
+
+script:
+  - ./vendor/bin/ci-runner
