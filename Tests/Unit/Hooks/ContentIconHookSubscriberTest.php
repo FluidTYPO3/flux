@@ -26,7 +26,8 @@ class ContentIconHookSubscriberTest extends UnitTestCase {
 	 * @return void
 	 */
 	public function testPerformsInjections() {
-		$instance = GeneralUtility::makeInstance(ObjectManager::class)->get('FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber');
+		$instance = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+			->get('FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber');
 		$this->assertAttributeInstanceOf('FluidTYPO3\\Flux\\Service\\FluxService', 'fluxService', $instance);
 		$this->assertAttributeInstanceOf('TYPO3\\CMS\\Extbase\\Object\\ObjectManagerInterface', 'objectManager', $instance);
 	}
