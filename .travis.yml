@@ -18,7 +18,7 @@ matrix:
     - php: hhvm
       env: TYPO3="7.1.*"
 
-before_script:
+before_install:
   - composer require typo3/cms:$TYPO3
 
 install:
