@@ -16,12 +16,12 @@ $EM_CONF[$_EXTKEY] = array(
 	'category' => 'misc',
 	'shy' => 0,
 	'version' => '7.2.0',
-	'dependencies' => 'cms,extbase,fluid',
+	'dependencies' => 'cms',
 	'conflicts' => '',
 	'priority' => 'top',
 	'loadOrder' => '',
 	'module' => '',
-	'state' => 'beta',
+	'state' => 'stable',
 	'uploadfolder' => 0,
 	'createDirs' => '',
 	'modify_tables' => '',
@@ -34,10 +34,8 @@ $EM_CONF[$_EXTKEY] = array(
 	'CGLcompliance_note' => '',
 	'constraints' => array(
 		'depends' => array(
-			'typo3' => '6.2.0-6.3.99',
-			'cms' => '',
-			'extbase' => '',
-			'fluid' => '',
+			'typo3' => '6.2.0-7.1.99',
+			'cms' => ''
 		),
 		'conflicts' => array(
 		),
