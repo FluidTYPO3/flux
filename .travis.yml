@@ -19,10 +19,10 @@ matrix:
       env: TYPO3="7.1.*"
 
 before_install:
-  - composer require typo3/cms:$TYPO3
+  - composer require typo3/cms:$TYPO3 --prefer-dist
 
 install:
-  - composer install
+  - composer install --prefer-dist
 
 script:
   - ./vendor/bin/ci-runner
