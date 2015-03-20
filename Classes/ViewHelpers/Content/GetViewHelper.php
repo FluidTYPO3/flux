@@ -141,7 +141,7 @@ class GetViewHelper extends AbstractViewHelper {
 				'source' => $row['uid'],
 				'dontCheckPid' => 1
 			);
-			array_push($elements, $this->configurationManager->getContentObject()->RECORDS($conf));
+			array_push($elements, $this->configurationManager->getContentObject()->cObjGetSingle('RECORDS', $conf));
 		}
 		return $elements;
 	}
