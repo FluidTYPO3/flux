@@ -148,8 +148,8 @@ class GetViewHelperTest extends AbstractViewHelperTestCase {
 	 */
 	public function canProcessRecords() {
 		$configurationManager = $this->getMock('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager', array('getContentObject'));
-		$contentObject = $this->getMock('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer', array('RECORDS'));
-		$contentObject->expects($this->any())->method('RECORDS');
+		$contentObject = $this->getMock('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer', array('cObjGetSingle'));
+		$contentObject->expects($this->any())->method('cObjGetSingle');
 		$configurationManager->expects($this->any())->method('getContentObject')->willReturn($contentObject);
 		$GLOBALS['TSFE']->sys_page = $this->getMock('TYPO3\\CMS\\Frontend\\Page\\PageRepository', array('dummy'), array(), '', FALSE);
 		$instance = $this->createInstance();
