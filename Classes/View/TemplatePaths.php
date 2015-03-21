@@ -171,7 +171,7 @@ class TemplatePaths {
 	 * @return array
 	 */
 	public function resolveAvailableTemplateFiles($controllerName, $format = self::DEFAULT_FORMAT) {
-		return $this->resolveFilesInFolders($controllerName, $this->getTemplateRootPaths(), $format);
+		return $this->resolveFilesInFolders($this->getTemplateRootPaths(), $format, $controllerName);
 	}
 
 	/**
@@ -196,10 +196,12 @@ class TemplatePaths {
 	 * @param string $format
 	 * @return array
 	 */
-	protected function resolveFilesInFolders($controllerName, array $folders, $format) {
+	protected function resolveFilesInFolders(array $folders, $format, $controllerName = '') {
+		if($controllerName !== '')
+			$controllerName .= '/';
 		$files = array();
 		foreach ($folders as $folder) {
-			$files = array_merge($files, GeneralUtility::getAllFilesAndFoldersInPath(array(), $folder. $controllerName . '/', $format));
+			$files = array_merge($files, GeneralUtility::getAllFilesAndFoldersInPath(array(), $folder . $controllerName , $format));
 		}
 		return array_values($files);
 	}
