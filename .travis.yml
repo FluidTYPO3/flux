@@ -21,7 +21,6 @@ matrix:
     - php: "hhvm"
       env: TYPO3="7.1.*"
 
-
 cache:
   directories:
     - vendor
