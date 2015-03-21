@@ -199,7 +199,7 @@ class TemplatePaths {
 	protected function resolveFilesInFolders(array $folders, $format, $controllerName = '') {
 		$files = array();
 		foreach ($folders as $folder) {
-			$files = array_merge($files, GeneralUtility::getAllFilesAndFoldersInPath(array(), $folder . $controllerName , $format));
+			$files = array_merge($files, GeneralUtility::getAllFilesAndFoldersInPath(array(), $folder . $controllerName, $format));
 		}
 		return array_values($files);
 	}
