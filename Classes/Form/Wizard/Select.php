@@ -32,9 +32,11 @@ class Select extends AbstractWizard {
 	protected $icon = 'list.gif';
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $script = 'wizard_list.php';
+	protected $module = array(
+		'name' => 'wizard_list'
+	);
 
 	/**
 	 * @var string

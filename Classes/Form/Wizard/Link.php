@@ -35,11 +35,6 @@ class Link extends AbstractWizard {
 	/**
 	 * @var string
 	 */
-	protected $script = 'wizard_add.php';
-
-	/**
-	 * @var string
-	 */
 	protected $activeTab = 'file';
 
 	/**
@@ -72,14 +67,21 @@ class Link extends AbstractWizard {
 	 */
 	public function buildConfiguration() {
 		$structure = array(
-			'script' => 'browse_links.php?mode=wizard&act=' . $this->getActiveTab(),
 			'JSopenParams' => 'height=' . $this->getHeight() . ',width=' . $this->getWidth() . ',status=0,menubar=0,scrollbars=1',
 			'params' => array(
 				'blindLinkOptions' => implode(',', $this->getBlindLinkOptions()),
 				'blindLinkFields' => implode(',', $this->getBlindLinkFields()),
 				'allowedExtensions' => implode(',', $this->getAllowedExtensions()),
+				'module' => array(
+					'name' => 'wizard_element_browser',
+					'urlParameters' => array(
+						'mode' => 'wizard',
+						'act' => $this->getActiveTab()
+					)
+				)
 			)
 		);
+
 		return $structure;
 	}
 

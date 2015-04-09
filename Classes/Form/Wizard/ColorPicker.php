@@ -32,9 +32,11 @@ class ColorPicker extends AbstractWizard {
 	protected $icon = 'EXT:flux/Resources/Public/Icons/ColorWheel.png';
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $script = 'wizard_colorpicker.php';
+	protected $module = array(
+		'name' => 'wizard_colorpicker',
+	);
 
 	/**
 	 * @var string
@@ -58,7 +60,6 @@ class ColorPicker extends AbstractWizard {
 		$configuration = array(
 			'type' => 'colorbox',
 			'title' => $this->getLabel(),
-			'script' => $this->script,
 			'hideParent' => intval($this->getHideParent()),
 			'dim' => $this->getDimensions(),
 			'exampleImg' => $this->getIcon(),

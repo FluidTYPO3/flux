@@ -32,9 +32,11 @@ class Edit extends AbstractWizard {
 	protected $icon = 'edit2.gif';
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $script = 'wizard_edit.php';
+	protected $module = array(
+		'name' => 'wizard_edit'
+	);
 
 	/**
 	 * @var boolean
@@ -59,7 +61,6 @@ class Edit extends AbstractWizard {
 			'type' => 'popup',
 			'title' => $this->getLabel(),
 			'icon' => $this->icon,
-			'script' => $this->script,
 			'popup_onlyOpenIfSelected' => intval($this->getOpenOnlyIfSelected()),
 			'JSopenParams' => 'height=' . $this->getHeight() . ',width=' . $this->getWidth() . ',status=0,menubar=0,scrollbars=1'
 		);

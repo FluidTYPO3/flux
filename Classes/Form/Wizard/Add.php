@@ -32,9 +32,11 @@ class Add extends AbstractWizard {
 	protected $icon = 'add.gif';
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $script = 'wizard_add.php';
+	protected $module = array(
+		'name' => 'wizard_add'
+	);
 
 	/**
 	 * @var string
@@ -56,9 +58,11 @@ class Add extends AbstractWizard {
 	 */
 	public function buildConfiguration() {
 		$configuration = array(
-			'table' => $this->getTable(),
-			'pid' => $this->getStoragePageUid(),
-			'setValue' => intval($this->getSetValue())
+			'params' => array(
+				'table'=> $this->getTable(),
+				'pid' => $this->getStoragePageUid(),
+				'setValue' => intval($this->getSetValue())
+			)
 		);
 		return $configuration;
 	}
