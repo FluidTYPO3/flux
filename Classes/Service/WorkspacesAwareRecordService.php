@@ -88,8 +88,11 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
 	 * @return array|boolean
 	 */
 	protected function getWorkspaceVersionOfRecordOrRecordItself($table, $record) {
-		$copy = $record;
-		BackendUtility::workspaceOL($table, $copy);
+		$copy = FALSE;
+		if (NULL !== $GLOBALS['BE_USER']) {
+			$copy = $record;
+			BackendUtility::workspaceOL($table, $copy);
+		}
 		return $copy === FALSE ? $record : $copy;
 	}
 
@@ -98,7 +101,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
 	 * @return boolean
 	 */
 	protected function hasWorkspacesSupport($table) {
-		return BackendUtility::isTableWorkspaceEnabled($table);
+		return (NULL !== $GLOBALS['BE_USER'] && BackendUtility::isTableWorkspaceEnabled($table));
 	}
 
 }
