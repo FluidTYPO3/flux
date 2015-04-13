@@ -181,9 +181,9 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 	public function modifyCreatesWizards() {
 		$form = Form::create();
 		$field = $form->createField('Input', 'testfield');
-		$this->assertFalse($field->has('test'));
-		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'test', 'label' => 'Test'))));
-		$this->assertTrue($field->has('test'));
+		$this->assertFalse($field->has('add'));
+		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
+		$this->assertTrue($field->has('add'));
 	}
 
 	/**
@@ -192,8 +192,8 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 	public function modifyModifiesWizards() {
 		$form = Form::create();
 		$field = $form->createField('Input', 'testfield');
-		$wizard = $field->createWizard('Add', 'test', 'Original label');
-		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'test', 'label' => 'Test'))));
+		$wizard = $field->createWizard('Add', 'add', 'Original label');
+		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
 		$this->assertEquals('Test', $wizard->getLabel());
 	}
 
