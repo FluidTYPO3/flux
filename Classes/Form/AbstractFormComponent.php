@@ -63,7 +63,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	/**
 	 * @var string
 	 */
-	protected $extensionName = 'FluidTYPO3.Flux';
+	protected $extensionName = '';
 
 	/**
 	 * @var ContainerInterface
@@ -261,12 +261,17 @@ abstract class AbstractFormComponent implements FormInterface {
 		}
 		$name = $this->getName();
 		$root = $this->getRoot();
+		$extensionName = $this->extensionName;
 		if (FALSE === $root instanceof Form) {
 			$id = 'form';
-			$extensionName = $this->extensionName;
 		} else {
 			$id = $root->getName();
-			$extensionName = $root->getExtensionName();
+			if (TRUE === empty($extensionName)) {
+				$extensionName = $root->getExtensionName();
+			}
+		}
+		if (TRUE === empty($extensionName)) {
+			return $name;
 		}
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		if (FALSE === empty($label)) {
