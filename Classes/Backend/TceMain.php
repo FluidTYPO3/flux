@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Backend;
  */
 
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -35,6 +36,11 @@ class TceMain {
 	 * @var RecordService
 	 */
 	protected $recordService;
+
+	/**
+	 * @var ContentService
+	 */
+	protected $contentService;
 
 	/**
 	 * @var boolean
@@ -66,12 +72,21 @@ class TceMain {
 	}
 
 	/**
+	 * @param ContentService $contentService
+	 * @return void
+	 */
+	public function injectContentService(ContentService $contentService) {
+		$this->contentService = $contentService;
+	}
+
+	/**
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
 		$this->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
 		$this->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\FluxService'));
 		$this->injectRecordService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\RecordService'));
+		$this->injectContentService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\ContentService'));
 	}
 
 	/**
@@ -138,6 +153,9 @@ class TceMain {
 	 * @return void
 	 */
 	public function processDatamap_afterDatabaseOperations($status, $table, $id, &$fieldArray, &$reference) {
+		if ('new' === $status && 'tt_content' === $table) {
+			$this->contentService->initializeRecord($id, $fieldArray, $reference);
+		}
 		$arguments = array('status' => $status, 'id' => $id, 'row' => &$fieldArray);
 		$fieldArray = $this->executeConfigurationProviderMethod('postProcessDatabaseOperation',
 			$table, $id, $fieldArray, $arguments, $reference);

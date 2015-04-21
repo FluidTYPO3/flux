@@ -265,4 +265,18 @@ class TceMainTest extends AbstractTestCase {
 		);
 	}
 
+	/**
+	 * @test
+	 */
+	public function postProcessDatabaseOperationWithNewStatusAndContentTableCallsInitializeRecord() {
+		$contentService = $this->getMock('FluidTYPO3\\Flux\\Service\\ContentService', array('initializeRecord'));
+		$contentService->expects($this->once())->method('initializeRecord');
+		/** @var DataHandler $tceMain */
+		$tceMain = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+		$instance = $this->getMock($this->createInstanceClassName(), array('executeConfigurationProviderMethod'), array(), '', TRUE);
+		$instance->injectContentService($contentService);
+		$row = array();
+		$instance->processDatamap_afterDatabaseOperations('new', 'tt_content', 1, $row, $tceMain);
+	}
+
 }

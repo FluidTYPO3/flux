@@ -91,23 +91,6 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	}
 
 	/**
-	 * @param string $status
-	 * @param integer $id
-	 * @param array $row
-	 * @param DataHandler $reference
-	 * @return void
-	 */
-	public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference) {
-		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
-			parent::postProcessDatabaseOperation($status, $id, $row, $reference);
-			if ($status === 'new') {
-				$this->contentService->initializeRecord($id, $row, $reference);
-			}
-			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
-		}
-	}
-
-	/**
 	 * Post-process a command executed on a record form the table this ConfigurationProvider
 	 * is attached to.
 	 *
