@@ -25,6 +25,7 @@ $autoloader->addPsr4('TYPO3\\CMS\\Lang\\', __DIR__ . '/../vendor/typo3/cms/typo3
 	'l10n' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 	'fluid_template' => \FluidTYPO3\Development\Bootstrap::CACHE_PHP_NULL,
 	'cache_core' => \FluidTYPO3\Development\Bootstrap::CACHE_PHP_NULL,
+	'cache_runtime' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 	'extbase_object' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 	'extbase_datamapfactory_datamap' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 	'extbase_typo3dbbackend_tablecolumns' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
