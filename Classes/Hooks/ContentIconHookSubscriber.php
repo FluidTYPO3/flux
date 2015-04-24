@@ -106,9 +106,8 @@ class ContentIconHookSubscriber {
 						if (NULL !== $form) {
 							$icon = MiscellaneousUtility::getIconForTemplate($form);
 							if (NULL !== $icon) {
-								$iconFileReference = '../../../' . $icon;
 								$label = trim($form->getLabel());
-								$icon = '<img width="16" height="16" src="' . $iconFileReference . '" alt="' . $label . '"
+								$icon = '<img width="16" height="16" src="' . $icon . '" alt="' . $label . '"
 									title="' . $label . '" class="" />';
 								$icon = '<span class="t3-icon t3-icon-empty t3-icon-empty-empty"
 									style="float: left; vertical-align: bottom; margin-top: 2px;">' . $icon . '</span>';
