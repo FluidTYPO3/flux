@@ -156,6 +156,7 @@ abstract class AbstractFormComponent implements FormInterface {
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
 		$component->setDisableLocalLanguageLabels($this->getDisableLocalLanguageLabels());
+		$component->setExtensionName($this->getExtensionName());
 		return $component;
 	}
 
