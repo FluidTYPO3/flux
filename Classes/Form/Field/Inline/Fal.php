@@ -156,6 +156,7 @@ class Fal extends AbstractInlineFormField {
 	 */
 	public function buildConfiguration() {
 		$configuration = $this->prepareConfiguration('inline');
+		unset($configuration['foreign_field']);
 		$configuration['appearance']['createNewRelationLinkTitle'] = $this->getCreateNewRelationLinkTitle();
 		return $configuration;
 	}

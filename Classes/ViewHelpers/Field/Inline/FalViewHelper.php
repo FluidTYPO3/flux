@@ -74,7 +74,8 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 		$component = $this->getPreparedComponent('Inline/Fal');
 		if (FALSE === is_array($this->arguments['foreignMatchFields'])) {
 			$component->setForeignMatchFields(array(
-				'fieldname' => $this->arguments['name']
+				// @todo: Retrieve this dynamically
+				'fieldname' => 'pi_flexform'
 			));
 		}
 		$component->setForeignSelectorFieldTcaOverride(array(
