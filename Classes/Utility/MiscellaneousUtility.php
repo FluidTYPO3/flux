@@ -146,6 +146,11 @@ class MiscellaneousUtility {
 				$sheetNode->parentNode->removeChild($sheetNode);
 			}
 		}
+		// Remove eventually empty data node
+		$dataNode = $dom->getElementsByTagName('data')->item(0);
+		if (0 === $dataNode->getElementsByTagName('sheet')->length) {
+			$dataNode->parentNode->removeChild($dataNode);
+		}
 		$xml = $dom->saveXML();
 		// hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
 		$xml = str_replace('<field index=""></field>', '', $xml);
