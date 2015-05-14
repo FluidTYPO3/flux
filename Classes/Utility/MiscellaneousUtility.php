@@ -79,10 +79,13 @@ class MiscellaneousUtility {
 			$controllerName = array_pop($templatePathParts);
 			$allowedExtensions = implode(',', self::$allowedIconTypes);
 			$iconFolder = ExtensionManagementUtility::extPath($extensionKey, 'Resources/Public/Icons/' . $controllerName . '/');
+			$iconRelFolder = ExtensionManagementUtility::extRelPath($extensionKey) . 'Resources/Public/Icons/' . $controllerName . '/';
 			$iconPathAndName = $iconFolder . $templateName;
 			$iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
 			$filesInFolder = (TRUE === is_dir($iconFolder) ? glob($iconMatchPattern, GLOB_BRACE) : array());
-			return (TRUE === is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : NULL);
+			$iconFile = (TRUE === is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : NULL);
+			$iconRelPathAndFilename = (FALSE === is_null($iconFile)) ? $iconRelFolder . str_replace($iconFolder, '', $iconFile) : NULL;
+			return $iconRelPathAndFilename;
 		}
 		return NULL;
 	}
