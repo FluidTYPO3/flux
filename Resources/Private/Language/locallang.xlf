@@ -69,6 +69,15 @@
 			<trans-unit id="paste_reference">
 				<source>Paste as reference in this position</source>
 			</trans-unit>
+			<trans-unit id="error.flashMessage.paste.title">
+				<source>Fluid TYPO3 (tx_flux):</source>
+			</trans-unit>
+			<trans-unit id="error.flashMessage.paste.nesting_loop">
+				<source>A Element can not be pasted into itself! It has been instead inserted on the page.</source>
+			</trans-unit>
+			<trans-unit id="error.flashMessage.paste_reference.nesting_loop">
+				<source>A Element can not contain a reference to itself! The reference has been instead inserted on the page.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

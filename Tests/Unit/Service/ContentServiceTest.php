@@ -13,13 +13,20 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
  */
 class ContentServiceTest extends AbstractTestCase {
+
+	/**
+	 * @var \TYPO3\CMS\Core\Messaging\FlashMessageService $mockFlashMessageService
+	 */
+	protected $mockFlashMessageService;
 
 	/**
 	 * @return ContentService
@@ -320,6 +327,99 @@ class ContentServiceTest extends AbstractTestCase {
 			array(array('', 'colpos-column-page-unused-unused-top-1-area'), 1),
 			array(array('', 'colpos-column-page-unused-unused-top-1-area'), 0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD - 1),
 		);
+	}
+
+	/**
+	 * @param array $methods
+	 *
+	 * @return ContentService
+	 */
+	protected function createMockContentServiceWithMockFlashMessageService($methods = array('dummy')) {
+		/** @var $mockContentService \FluidTYPO3\Flux\Service\ContentService */
+		$mockContentService = $this->createMock($methods);
+		/** @var $mockFlashMessageQueue \TYPO3\CMS\Core\Messaging\FlashMessageQueue */
+		$mockFlashMessageQueue = $this->getMock('TYPO3\CMS\Core\Messaging\FlashMessageQueue', array('getUserByContext'), array('core.template.flashMessages'));
+		$frontendUser = $this->getMock('TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication', array('dummy'));
+		$mockFlashMessageQueue->expects($this->any())->method('getUserByContext')->will($this->returnValue($frontendUser));
+		/** @var $mockFlashMessageService \TYPO3\CMS\Core\Messaging\FlashMessageService */
+		$this->mockFlashMessageService = $this->getMock('TYPO3\CMS\Core\Messaging\FlashMessageService', array('getMessageQueueByIdentifier'));
+		$this->mockFlashMessageService->expects($this->any())
+			->method('getMessageQueueByIdentifier')
+			->will(
+				$this->returnValue($mockFlashMessageQueue)
+		);
+		$mockContentService->injectFlashMessageService($this->mockFlashMessageService);
+		return $mockContentService;
+	}
+
+	/**
+	 * @test
+	 */
+	public function testEnqueueFlashErrorMessage() {
+		$mockContentService = $this->createMockContentServiceWithMockFlashMessageService();
+		$this->callInaccessibleMethod($mockContentService, 'enqueueFlashErrorMessage', 'Sample Error Message');
+		$this->assertEquals($this->getLastFlashMessage()->getMessage(), 'Sample Error Message');
+	}
+
+	/**
+	 * @test
+	 */
+	public function abortPasteAfterReferenceAndNotifyIfInfiniteNesting() {
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+		$mockContentService = $this->createMockContentServiceWithMockFlashMessageService($methods);
+		$command = 'move';
+		$row = array(
+			'uid' => 55
+		);
+		$parameters = array(
+			1,
+			'1-reference-2-55-area-1',
+		);
+		$tceMain = new DataHandler();
+		$mockContentService->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
+		$mockContentService->expects($this->never())->method('updateRecordInDatabase');
+		$result = $mockContentService->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
+		$this->assertEquals(
+			$this->getLastFlashMessage()->getMessage(),
+			LocalizationUtility::translate('error.flashMessage.paste_reference.nesting_loop', 'Flux')
+		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function abortPasteAfterAndNotifyIfInfiniteNesting() {
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+		$mockContentService = $this->createMockContentServiceWithMockFlashMessageService($methods);
+		$command = 'move';
+		$row = array(
+			'uid' => 55
+		);
+		$parameters = array(
+			1,
+			'1-move-2-55-area-1',
+		);
+		$tceMain = new DataHandler();
+		$mockContentService->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
+		$mockContentService->expects($this->never())->method('updateRecordInDatabase');
+		$result = $mockContentService->pasteAfter($command, $row, $parameters, $tceMain);
+		$this->assertNull($result);
+		$this->assertEquals(
+			$this->getLastFlashMessage()->getMessage(),
+			LocalizationUtility::translate('error.flashMessage.paste.nesting_loop', 'Flux')
+		);
+	}
+
+	/**
+	 * @return mixed|FlashMessage
+	 */
+	protected function getLastFlashMessage() {
+		/** @var $mockDefaultFlashMessageQueue \TYPO3\CMS\Core\Messaging\FlashMessageQueue */
+		$mockDefaultFlashMessageQueue = $this->mockFlashMessageService->getMessageQueueByIdentifier();
+		$lastMessage = array_pop($mockDefaultFlashMessageQueue->getAllMessages());
+		/** @var $lastMessage \TYPO3\CMS\Core\Messaging\FlashMessage */
+		return $lastMessage;
 	}
 
 	/**
