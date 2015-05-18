@@ -203,7 +203,7 @@ class AbstractProvider implements ProviderInterface {
 		$rowContainsPlugin = (FALSE === empty($row['CType']) && self::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
 		$rowIsEmpty = (0 === count($row));
 		$matchesContentType = ((TRUE === empty($contentObjectType) && TRUE === empty($row['CType'])) || (FALSE === empty($row['CType']) && $row['CType'] === $contentObjectType));
-		$matchesPluginType = ((TRUE === empty($listType) && TRUE === empty($row['list_type'])) || (FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
+		$matchesPluginType = ((FALSE === empty($row['list_type']) && $row['list_type'] === $listType));
 		$matchesTableName = ($providerTableName === $table || NULL === $table);
 		$matchesFieldName = ($providerFieldName === $field || NULL === $field);
 		$matchesExtensionKey = ($providerExtensionKey === $extensionKey || NULL === $extensionKey);
@@ -650,7 +650,7 @@ class AbstractProvider implements ProviderInterface {
 	 * @return PreviewView
 	 */
 	protected function getPreviewView() {
-		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get('FluidTYPO3\\Flux\\View\\PreviewView');
+		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get( 'FluidTYPO3\\Flux\\View\\PreviewView' . $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['fluxVersionClassPostfix']);
 	}
 
 	/**

@@ -267,51 +267,25 @@ CONTENT;
 		$id = 'colpos-' . $colPosFluxContent . '-page-' . $row['pid'] . '--top-' . $row['uid'] . '-' . $column->getName();
 		$target = $this->registerTargetContentAreaInSession($row['uid'], $column->getName());
 
-		if ((float) substr(TYPO3_version, 0, 3) > 7.1) {
-			$content =<<< CONTENT
-
-				<td colspan="{$column->getColspan()}" rowspan="{$column->getRowspan()}" style="{$column->getStyle()}">
-					<div data-colpos="{$colPosFluxContent}" class="t3js-sortable t3js-sortable-lang t3js-sortable-lang-{$dblist->tt_contentConfig['sys_language_uid']} t3-page-ce-wrapper ui-sortable" data-language-uid="{$dblist->tt_contentConfig['sys_language_uid']}">
-						<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
-							<div>{$column->getLabel()}</div>
+		return <<<CONTENT
+		<td colspan="{$column->getColspan()}" rowspan="{$column->getRowspan()}" style="{$column->getStyle()}">
+			<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
+				<div>{$column->getLabel()}</div>
+			</div>
+			<div class="fce-container t3-page-ce-wrapper">
+				<div class="t3-page-ce ui-draggable" data-page="{$target}">
+					<div class="t3-page-ce-dropzone ui-droppable" id="{$id}" style="min-height: 16px;">
+						<div class="t3-page-ce-wrapper-new-ce">
+							{$this->drawNewIcon($row, $column)}
+							{$this->drawPasteIcon($row, $column)}
+							{$this->drawPasteIcon($row, $column, TRUE)}
 						</div>
-						<div class="t3-page-ce t3js-page-ce" data-page="{$target}">
-							<div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="{$id}" style="display: block;">
-	                            {$this->drawNewIcon($row, $column)}
-								{$this->drawPasteIcon($row, $column)}
-								{$this->drawPasteIcon($row, $column, TRUE)}
-							</div>
-							<div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available" ></div>
-						</div>
-						$content
 					</div>
-				</td>
-
+				</div>
+				$content
+			</div>
+		</td>
 CONTENT;
-		} else {
-			$content =<<<CONTENT
-
-				<td colspan="{$column->getColspan()}" rowspan="{$column->getRowspan()}" style="{$column->getStyle()}">
-					<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
-						<div>{$column->getLabel()}</div>
-					</div>
-					<div class="fce-container t3-page-ce-wrapper">
-						<div class="t3-page-ce ui-draggable" data-page="{$target}">
-							<div class="t3-page-ce-dropzone ui-droppable" id="{$id}" style="min-height: 16px;">
-								<div class="t3-page-ce-wrapper-new-ce">
-									{$this->drawNewIcon($row, $column)}
-									{$this->drawPasteIcon($row, $column)}
-									{$this->drawPasteIcon($row, $column, TRUE)}
-								</div>
-							</div>
-						</div>
-						$content
-					</div>
-				</td>
-
-CONTENT;
-		}
-		return $content;
 	}
 
 	/**
@@ -329,39 +303,20 @@ CONTENT;
 			$element = '<div class="t3-page-ce-dragitem">' . $element . '</div>';
 		}
 
-		if ((float) substr(TYPO3_version, 0, 3) > 7.1) {
-			$content =<<<CONTENT
-
-				<div class="t3-page-ce$disabledClass {$record['_CSSCLASS']} t3js-page-ce t3js-page-ce-sortable" id="element-tt_content-{$record['uid']}" data-table="tt_content" data-uid="{$record['uid']}">
-					$element
-					<div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="colpos-{$colPosFluxContent}-page-{$parentRow['pid']}-{$parentRow['uid']}-after-{$record['uid']}" style="display: block;">
-						{$this->drawNewIcon($parentRow, $column, $record['uid'])}
-						{$this->drawPasteIcon($parentRow, $column, FALSE, $record)}
-						{$this->drawPasteIcon($parentRow, $column, TRUE, $record)}
-					</div>
-					<div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available"></div>
+		return <<<CONTENT
+		<div class="t3-page-ce$disabledClass {$record['_CSSCLASS']} ui-draggable" id="element-tt_content-{$record['uid']}" data-table="tt_content" data-uid="{$record['uid']}">
+			$element
+			<div class="t3-page-ce-dropzone ui-droppable"
+				 id="colpos-$colPosFluxContent-page-{$parentRow['pid']}-{$parentRow['uid']}-after-{$record['uid']}"
+				 style="min-height: 16px;">
+				<div class="t3-page-ce-wrapper-new-ce">
+					{$this->drawNewIcon($parentRow, $column, $record['uid'])}
+					{$this->drawPasteIcon($parentRow, $column, FALSE, $record)}
+					{$this->drawPasteIcon($parentRow, $column, TRUE, $record)}
 				</div>
-
+			</div>
+		</div>
 CONTENT;
-			} else {
-			$content =<<<CONTENT
-
-				<div class="t3-page-ce$disabledClass {$record['_CSSCLASS']} ui-draggable" id="element-tt_content-{$record['uid']}" data-table="tt_content" data-uid="{$record['uid']}">
-					$element
-					<div class="t3-page-ce-dropzone ui-droppable"
-						 id="colpos-$colPosFluxContent-page-{$parentRow['pid']}-{$parentRow['uid']}-after-{$record['uid']}"
-						 style="min-height: 16px;">
-						<div class="t3-page-ce-wrapper-new-ce">
-							{$this->drawNewIcon($parentRow, $column, $record['uid'])}
-							{$this->drawPasteIcon($parentRow, $column, FALSE, $record)}
-							{$this->drawPasteIcon($parentRow, $column, TRUE, $record)}
-						</div>
-					</div>
-				</div>
-
-CONTENT;
-			}
-		return $content;
 	}
 
 	/**

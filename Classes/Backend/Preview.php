@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
-use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -134,34 +133,9 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 		if (FALSE === self::$assetsIncluded) {
 			$doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 			$doc->backPath = $GLOBALS['BACK_PATH'];
-			/** @var PageRenderer $pageRenderer */
-			$pageRenderer = $doc->getPageRenderer();
-			$pageRenderer->addCssFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css');
 
-			if ((float) substr(TYPO3_version, 0, 3) > 7.1) {
-				// /typo3/sysext/backend/Resources/Public/JavaScript/LayoutModule/DragDrop.js
-				// is not the perfect solution for Flux Grids!
-				// an adapted version of DragDrop.js is used - Resources/Public/js/VersionSevenPointTwo/DragDrop.js
-				// Also fluxCollapse.js is updated.
-				$fullJsPath = 'EXT:flux/Resources/Public/js/VersionSevenPointTwo/';
-				$fullJsPath = GeneralUtility::getFileAbsFileName($fullJsPath);
-				$fullJsPath = \TYPO3\CMS\Core\Utility\PathUtility::getRelativePath(PATH_typo3, $fullJsPath);
-
-				// requirejs
-				$configuration = array(
-					'paths' => array(
-						'FluidTypo3/Flux/DragDrop'     => $fullJsPath . 'DragDrop',
-					),
-				);
-
-				// This is necessary for fluxCollapse.js
-			    $pageRenderer->loadExtJS();
-
-				$pageRenderer->addRequireJsConfiguration($configuration);
-				$pageRenderer->loadRequireJsModule('FluidTypo3/Flux/DragDrop');
-			}
-
-			$pageRenderer->addJsFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/js/fluxCollapse.js');
+			$doc->getPageRenderer()->addCssFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css');
+			$doc->getPageRenderer()->addJsFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/js/fluxCollapse.js');
 			self::$assetsIncluded = TRUE;
 		}
 	}
