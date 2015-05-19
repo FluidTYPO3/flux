@@ -331,6 +331,10 @@ CONTENT;
 		$disableMoveAndNewButtons = FALSE;
 		$langMode = $dblist->tt_contentConfig['languageMode'];
 		$dragDropEnabled = FALSE;
+		
+		// Necessary for edit button in workspace.
+		$dblist->tt_contentData['nextThree'][$row['uid']] = $row['uid'];
+		
 		$rendered = $dblist->tt_content_drawHeader($row, $space, $disableMoveAndNewButtons, $langMode, $dragDropEnabled);
 		$rendered .= '<div class="t3-page-ce-body-inner">' . $dblist->tt_content_drawItem($row) . '</div>';
 		$rendered .= $footerRenderMethod->invokeArgs($dblist, array($row));
