@@ -116,14 +116,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return FieldInterface
 	 */
 	public function createField($type, $name, $label = NULL) {
-		/** @var FieldInterface $component */
-		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Field');
-		$component = $this->getObjectManager()->get($className);
-		$component->setName($name);
-		$component->setLabel($label);
-		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
-		$component->setDisableLocalLanguageLabels($this->getDisableLocalLanguageLabels());
-		return $component;
+		return $this->createComponent('FluidTYPO3\Flux\Form\Field', $type, $name, $label);
 	}
 
 	/**
@@ -133,14 +126,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return ContainerInterface
 	 */
 	public function createContainer($type, $name, $label = NULL) {
-		/** @var ContainerInterface $component */
-		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Container');
-		$component = $this->getObjectManager()->get($className);
-		$component->setName($name);
-		$component->setLabel($label);
-		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
-		$component->setDisableLocalLanguageLabels($this->getDisableLocalLanguageLabels());
-		return $component;
+		return $this->createComponent('FluidTYPO3\Flux\Form\Container', $type, $name, $label);
 	}
 
 	/**
@@ -150,13 +136,27 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return WizardInterface
 	 */
 	public function createWizard($type, $name, $label = NULL) {
-		/** @var WizardInterface $component */
-		$className = $this->createComponentClassName($type, 'FluidTYPO3\Flux\Form\Wizard');
+		return $this->createComponent('FluidTYPO3\Flux\Form\Wizard', $type, $name, $label);
+	}
+
+	/**
+	 * @param string $namespace
+	 * @param string $type
+	 * @param string $name
+	 * @param string|NULL $label
+	 * @return FormInterface
+	 */
+	public function createComponent($namespace, $type, $name, $label = NULL) {
+		/** @var FormInterface $component */
+		$className = $this->createComponentClassName($type, $namespace);
 		$component = $this->getObjectManager()->get($className);
-		$component->setName($name);
+		if (NULL === $component->getName()) {
+			$component->setName($name);
+		}
 		$component->setLabel($label);
 		$component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
 		$component->setDisableLocalLanguageLabels($this->getDisableLocalLanguageLabels());
+		$component->setExtensionName($this->getExtensionName());
 		return $component;
 	}
 
@@ -262,12 +262,11 @@ abstract class AbstractFormComponent implements FormInterface {
 		}
 		$name = $this->getName();
 		$root = $this->getRoot();
+		$extensionName = $this->extensionName;
 		if (FALSE === $root instanceof Form) {
 			$id = 'form';
-			$extensionName = $this->extensionName;
 		} else {
 			$id = $root->getName();
-			$extensionName = $root->getExtensionName();
 		}
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 		if (FALSE === empty($label)) {

@@ -1,10 +1,25 @@
 # Flux Change log
 
-7.2.0 - upcoming (documentation for this version may be not up to date yet)
-------------------
+7.2.1 - Upcoming
+-----------------
 
-General notes for 7.2.0
-=======================
+- Bugfixes for moving of records when using `css_styled_content` and Flux.
+  - https://github.com/FluidTYPO3/flux/commit/5296b426cce2ce92f7eb7c2d77792425d3c284ad
+
+- Bugfixes for behavior or localisation (translated record would remain in original position).
+  - https://github.com/FluidTYPO3/flux/commit/7a541dd5777a2db7a11347034a438594ecf3e0f0
+
+- Bugfix for resolving of active page UID in environments with multiple root TypoScript templates.
+  - https://github.com/FluidTYPO3/flux/commit/d7d62803f40d96a36ce8098d21d350da723fff82
+
+- Bugfix for PHP error when viewing uncached frontend without an active backend user login.
+  - https://github.com/FluidTYPO3/flux/commit/1ed3939e8b534d256c5d335e4e31a407f08cd9be
+
+- A deprecated Wizard configuration has been corrected, restoring operability on TYPO3 7.1 and above.
+  - https://github.com/FluidTYPO3/flux/commit/3f6512e9904b9ff1c9a8df0d4ad2dc55294540a3
+
+7.2.0 - 2015-03-18
+------------------
 
 Flux has undergone a lot of maintenance work and optimisations. The main goal has been to increase performance and remove
 bottlenecks, and to make the Flux API simpler and more consistent to use. A lot of legacy support has been removed and the
@@ -50,15 +65,15 @@ now uses much more of the TYPO3 core's code to do the job especially concerning 
 - [The `multiRelation` field type was added](https://github.com/FluidTYPO3/flux/commit/f25c708bd0b55a15319a8dc365672be68845e002)
   - The field type that creates the `group` TCEforms field type was added.
   - https://fluidtypo3.org/viewhelpers/flux/master/Field/MultiRelationViewHelper.html
-  
+
 - [Additional ViewHelpers added to define Form options](https://github.com/FluidTYPO3/flux/commit/1a8e2698940e49609efa31ab73045cee1750f8f6)
   - Rather than using the `options` property on `flux:form`, a set of `flux:form.option` and `flux:form.option.*` ViewHelpers are added.
   - https://fluidtypo3.org/viewhelpers/flux/master/Form/OptionViewHelper.html
   - https://fluidtypo3.org/viewhelpers/flux/master/Form/Option/GroupViewHelper.html
   - https://fluidtypo3.org/viewhelpers/flux/master/Form/Option/IconViewHelper.html
-  
+
 - [All Flux ViewHelpers can now use the `extensionName` argument to switch context](https://github.com/FluidTYPO3/flux/commit/a9ec0b14c54f770f47b0cb30e6992090fa0684e1)
   - You can set this attribute in for example an overridden partial template containing Flux components.
   - Overriding the `extensionName` makes LLL values and other automatically resolved values be resolved from that extension.
-  - The original `extensionName` argument on `flux:field.controllerActions` has been renamed to `controllerExtensionName` because of this. 
+  - The original `extensionName` argument on `flux:field.controllerActions` has been renamed to `controllerExtensionName` because of this.
   - [Background info](https://github.com/FluidTYPO3/flux/issues/722)

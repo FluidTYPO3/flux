@@ -416,8 +416,9 @@ CONTENT;
 	protected function drawPasteIcon(array $row, Column $column, $reference = FALSE, array $relativeTo = array()) {
 		$command = TRUE === $reference ? 'reference' : 'paste';
 		$relativeUid = TRUE === isset($relativeTo['uid']) ? $relativeTo['uid'] : 0;
+		$columnName = $column->getName();
 		$relativeTo = $row['pid'] . '-' . $command . '-' . $relativeUid . '-' .
-			$row['uid'] . (FALSE === empty($area) ? '-' . $column->getName() : '');
+			$row['uid'] . (FALSE === empty($columnName) ? '-' . $columnName : '');
 		return ClipBoardUtility::createIconWithUrl($relativeTo, $reference);
 	}
 

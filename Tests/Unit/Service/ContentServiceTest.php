@@ -262,6 +262,9 @@ class ContentServiceTest extends AbstractTestCase {
 	 */
 	public function testInitializeRecordByNewAndOldAndLanguageUids($newUid, $oldUid, $newLanguageUid, $expectsInitialization) {
 		$mock = $this->getMock($this->createInstanceClassName(), array('loadRecordFromDatabase', 'updateRecordInDatabase'));
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('get'));
+		$recordService->expects($this->any())->method('get')->willReturn(NULL);
+		$mock->injectWorkspacesAwareRecordService($recordService);
 		$dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
 		$row = array('pid' => 1, 'uid' => 1, 'language' => 1);
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->will($this->returnValue($row));

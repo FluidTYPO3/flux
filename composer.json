@@ -5,6 +5,7 @@
     "version": "7.2.0",
     "homepage": "http://fluidtypo3.org",
     "license": "GPL-2.0+",
+    "preferred-install": "dist",
     "support": {
         "irc": "irc://irc.freenode.org/fedext",
         "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
@@ -28,9 +29,9 @@
             "type": "package",
             "package": {
                 "name": "typo3/cms",
-                "version": "6.2.10",
+                "version": "6.2.11",
                 "dist": {
-                    "url": "https://github.com/TYPO3/TYPO3.CMS/archive/6.2.10.zip",
+                    "url": "https://github.com/TYPO3/TYPO3.CMS/archive/6.2.11.zip",
                     "type": "zip"
                 }
             }

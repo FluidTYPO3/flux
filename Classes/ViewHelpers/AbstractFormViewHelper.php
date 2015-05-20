@@ -35,10 +35,19 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 		$container = $this->getContainer();
 		$container->add($component);
 		// rendering child nodes with Form's last sheet as active container
-		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
 		$this->setContainer($component);
 		$this->renderChildren();
 		$this->setContainer($container);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function renderChildren() {
+		// Make sure the current extension name always propagates to child nodes
+		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, $this->getExtensionName());
+
+		return parent::renderChildren();
 	}
 
 	/**
@@ -51,7 +60,10 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 		if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME)) {
 			return $this->viewHelperVariableContainer->get(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
 		}
-		return $this->controllerContext->getRequest()->getControllerExtensionName();
+		if (TRUE === isset($this->controllerContext)) {
+			return $this->controllerContext->getRequest()->getControllerExtensionName();
+		}
+		return 'FluidTYPO3.Flux';
 	}
 
 	/**

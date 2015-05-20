@@ -101,7 +101,7 @@ class GetViewHelper extends AbstractViewHelper {
 		// Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the localized version or default version.
 		$conditions = "(tx_flux_parent = '" . $id . "' AND tx_flux_column = '" . $area . "' AND pid = '" . $record['pid'] . "')" .
 			$GLOBALS['TSFE']->cObj->enableFields('tt_content');
-		$rows = $this->recordService->get('tt_content', '*', $conditions, 'uid', $order, $offset . ',' . $limit);
+		$rows = $this->recordService->get('tt_content', '*', $conditions, '', $order, $offset . ',' . $limit);
 
 		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);
 		if (TRUE === empty($this->arguments['as'])) {
@@ -141,7 +141,7 @@ class GetViewHelper extends AbstractViewHelper {
 				'source' => $row['uid'],
 				'dontCheckPid' => 1
 			);
-			array_push($elements, $this->configurationManager->getContentObject()->RECORDS($conf));
+			array_push($elements, $this->configurationManager->getContentObject()->cObjGetSingle('RECORDS', $conf));
 		}
 		return $elements;
 	}

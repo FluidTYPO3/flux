@@ -37,9 +37,9 @@ abstract class AbstractWizard extends AbstractFormComponent implements WizardInt
 	protected $icon;
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $script;
+	protected $module;
 
 	/**
 	 * @return array
@@ -49,8 +49,8 @@ abstract class AbstractWizard extends AbstractFormComponent implements WizardInt
 			'type' => $this->type,
 			'title' => $this->getLabel(),
 			'icon' => $this->icon,
-			'script' => $this->script,
 			'hideParent' => intval($this->getHideParent()),
+			'module' => $this->module
 		);
 		$configuration = $this->buildConfiguration();
 		$structure = array_merge($structure, $configuration);

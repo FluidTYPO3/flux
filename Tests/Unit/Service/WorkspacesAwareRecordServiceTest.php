@@ -32,9 +32,11 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest {
 	 * @test
 	 */
 	public function getWorkspaceVersionOfRecordOrRecordItselfReturnsSelf() {
+		$GLOBALS['BE_USER'] = new \stdClass();
 		$instance = new WorkspacesAwareRecordService();
 		$result = $this->callInaccessibleMethod($instance, 'getWorkspaceVersionOfRecordOrRecordItself', 'void', array('uid' => 1));
 		$this->assertEquals(array('uid' => 1), $result);
+		unset($GLOBALS['BE_USER']);
 	}
 
 }
