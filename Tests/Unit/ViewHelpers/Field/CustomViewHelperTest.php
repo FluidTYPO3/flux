@@ -43,7 +43,8 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase {
 	 */
 	protected function executeViewHelperClosure($templateVariableContainerArguments = array()) {
 		$instance = $this->objectManager->get('FluidTYPO3\Flux\ViewHelpers\Field\CustomViewHelper');
-		$container = $this->objectManager->get('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer');
+		$renderingContext = $this->objectManager->get('TYPO3\CMS\Fluid\Core\Rendering\RenderingContext');
+		$container = $renderingContext->getTemplateVariableContainer();
 		$arguments = array(
 			'name' => 'custom'
 		);
@@ -52,11 +53,8 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase {
 		}
 		$node = new ViewHelperNode($instance, $arguments);
 		$childNode = new TextNode('Hello world!');
-		$renderingContext = $this->getAccessibleMock('TYPO3\CMS\Fluid\Core\Rendering\RenderingContext');
-		ObjectAccess::setProperty($renderingContext, 'templateVariableContainer', $container);
 		$node->addChildNode($childNode);
-		ObjectAccess::setProperty($instance, 'templateVariableContainer', $container, TRUE);
-		ObjectAccess::setProperty($instance, 'renderingContext', $renderingContext, TRUE);
+		$instance->setRenderingContext($renderingContext);
 		$instance->setViewHelperNode($node);
 		/** @var \Closure $closure */
 		$closure = $this->callInaccessibleMethod($instance, 'buildClosure');

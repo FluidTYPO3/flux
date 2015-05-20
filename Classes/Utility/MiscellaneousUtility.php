@@ -79,10 +79,13 @@ class MiscellaneousUtility {
 			$controllerName = array_pop($templatePathParts);
 			$allowedExtensions = implode(',', self::$allowedIconTypes);
 			$iconFolder = ExtensionManagementUtility::extPath($extensionKey, 'Resources/Public/Icons/' . $controllerName . '/');
+			$iconRelFolder = ExtensionManagementUtility::extRelPath($extensionKey) . 'Resources/Public/Icons/' . $controllerName . '/';
 			$iconPathAndName = $iconFolder . $templateName;
 			$iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
 			$filesInFolder = (TRUE === is_dir($iconFolder) ? glob($iconMatchPattern, GLOB_BRACE) : array());
-			return (TRUE === is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : NULL);
+			$iconFile = (TRUE === is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : NULL);
+			$iconRelPathAndFilename = (FALSE === is_null($iconFile)) ? $iconRelFolder . str_replace($iconFolder, '', $iconFile) : NULL;
+			return $iconRelPathAndFilename;
 		}
 		return NULL;
 	}
@@ -145,6 +148,11 @@ class MiscellaneousUtility {
 			if (0 === $sheetNode->getElementsByTagName('field')->length) {
 				$sheetNode->parentNode->removeChild($sheetNode);
 			}
+		}
+		// Remove eventually empty data node
+		$dataNode = $dom->getElementsByTagName('data')->item(0);
+		if (0 === $dataNode->getElementsByTagName('sheet')->length) {
+			$dataNode->parentNode->removeChild($dataNode);
 		}
 		$xml = $dom->saveXML();
 		// hack-like pruning of empty-named node inserted when removing objects from a previously populated Section

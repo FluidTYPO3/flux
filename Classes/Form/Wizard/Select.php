@@ -34,11 +34,6 @@ class Select extends AbstractWizard {
 	/**
 	 * @var string
 	 */
-	protected $script = 'wizard_list.php';
-
-	/**
-	 * @var string
-	 */
 	protected $mode = 'substitution';
 
 	/**

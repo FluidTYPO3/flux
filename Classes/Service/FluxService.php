@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
@@ -286,9 +287,9 @@ class FluxService implements SingletonInterface {
 	protected function getDefaultViewConfigurationForExtensionKey($extensionKey) {
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		return array(
-			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Templates/'),
-			TemplatePaths::CONFIG_PARTIALROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Partials/'),
-			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array('EXT:' . $extensionKey . '/Resources/Private/Layouts/'),
+			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array(10 => 'EXT:' . $extensionKey . '/Resources/Private/Templates/'),
+			TemplatePaths::CONFIG_PARTIALROOTPATHS => array(10 => 'EXT:' . $extensionKey . '/Resources/Private/Partials/'),
+			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array(10 => 'EXT:' . $extensionKey . '/Resources/Private/Layouts/'),
 		);
 	}
 
@@ -302,11 +303,9 @@ class FluxService implements SingletonInterface {
 	 */
 	public function getViewConfigurationForExtensionName($extensionName) {
 		$signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
+		$defaults = (array) $this->getDefaultViewConfigurationForExtensionKey($extensionName);
 		$configuration = (array) $this->getTypoScriptByPath('plugin.tx_' . $signature . '.view');
-		if (0 === count($configuration)) {
-			$configuration = $this->getDefaultViewConfigurationForExtensionKey($extensionName);
-		}
-		return $configuration;
+		return RecursiveArrayUtility::mergeRecursiveOverrule($defaults, $configuration);
 	}
 
 	/**
@@ -353,7 +352,7 @@ class FluxService implements SingletonInterface {
 	 */
 	public function getAllTypoScript() {
 		if (0 === count(self::$typoScript)) {
-			self::$typoScript = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			self::$typoScript = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			self::$typoScript = GeneralUtility::removeDotsFromTS(self::$typoScript);
 		}
 		return self::$typoScript;

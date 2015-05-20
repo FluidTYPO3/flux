@@ -153,21 +153,6 @@ class ContentProviderTest extends AbstractProviderTest {
 
 	/**
 	 * @test
-	 */
-	public function postProcessDatabaseOperationWithStatusNewCallsInitializeRecord() {
-		$contentService = $this->getMock('FluidTYPO3\\Flux\\Service\\ContentService', array('initializeRecord'));
-		$contentService->expects($this->once())->method('initializeRecord');
-		/** @var DataHandler $tceMain */
-		$tceMain = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
-		$row = array();
-		$mock = $this->objectManager->get($this->createInstanceClassName());
-		$mock->reset();
-		ObjectAccess::setProperty($mock, 'contentService', $contentService, TRUE);
-		$mock->postProcessDatabaseOperation('new', 1, $row, $tceMain);
-	}
-
-	/**
-	 * @test
 	 * @dataProvider getPriorityTestValues
 	 * @param array $row
 	 * @param integer $expectedPriority

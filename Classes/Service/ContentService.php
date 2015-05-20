@@ -276,10 +276,16 @@ class ContentService implements SingletonInterface {
 		if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid) {
 			$oldRecord = $this->loadRecordFromDatabase($oldUid);
 			if ($oldRecord[$languageFieldName] !== $newLanguageUid && $oldRecord['pid'] === $row['pid']) {
+				// look for the translated version of the parent record indicated
+				// in this new, translated record. Below, we adjust the parent UID
+				// so it has the UID of the translated parent if one exists.
+				$translatedParents = (array) $this->workspacesAwareRecordService->get('tt_content', 'uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'");
+				$translatedParent = reset($translatedParents);
 				$sortbyFieldName = TRUE === isset($GLOBALS['TCA']['tt_content']['ctrl']['sortby']) ?
 					$GLOBALS['TCA']['tt_content']['ctrl']['sortby'] : 'sorting';
 				$overrideValues = array(
-					$sortbyFieldName => $tceMain->resorting('tt_content', $row['pid'], $sortbyFieldName, $oldUid)
+					$sortbyFieldName => $tceMain->resorting('tt_content', $row['pid'], $sortbyFieldName, $oldUid),
+					'tx_flux_parent' => NULL !== $translatedParent ? $translatedParent['uid'] : $oldRecord['tx_flux_parent']
 				);
 				$this->updateRecordInDatabase($overrideValues, $newUid);
 			}

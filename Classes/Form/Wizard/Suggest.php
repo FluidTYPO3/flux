@@ -33,9 +33,9 @@ class Suggest extends AbstractWizard {
 	protected $icon = NULL;
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $script = NULL;
+	protected $module = NULL;
 
 	/**
 	 * @var string
