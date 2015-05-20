@@ -96,7 +96,7 @@ class MiscellaneousUtility {
 	 *
 	 * @param string $xml
 	 * @param array $removals
-	 * @return string
+	 * @return NULL|string
 	 */
 	public static function cleanFlexFormXml($xml, array $removals = array()) {
 		$dom = new \DOMDocument();
@@ -149,10 +149,10 @@ class MiscellaneousUtility {
 				$sheetNode->parentNode->removeChild($sheetNode);
 			}
 		}
-		// Remove eventually empty data node
+		// Return NULL value in case remaining flexform XML is all empty
 		$dataNode = $dom->getElementsByTagName('data')->item(0);
 		if (0 === $dataNode->getElementsByTagName('sheet')->length) {
-			$dataNode->parentNode->removeChild($dataNode);
+			return NULL;
 		}
 		$xml = $dom->saveXML();
 		// hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
