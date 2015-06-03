@@ -222,6 +222,19 @@ class PreviewViewTest extends AbstractTestCase {
 	}
 
 	/**
+	 * @test
+	 */
+	public function avoidsRenderPreviewSectionIfTemplateFileDoesNotExist() {
+		$provider = $this->objectManager->get('FluidTYPO3\\Flux\\Provider\\Provider');
+		$form = Form::create(array('name' => 'test', 'options' => array('preview' => $options)));
+		$provider->setTemplatePathAndFilename('/does/not/exist.txt');
+		$provider->setForm($form);
+		$previewView = $this->getMock($this->createInstanceClassName(), array('renderPreviewSection'));
+		$previewView->expects($this->never())->method('renderPreviewSection');
+		$previewView->getPreview($provider, Records::$contentRecordIsParentAndHasChildren);
+	}
+
+	/**
 	 * @param string $preview
 	 * @return void
 	 */
