@@ -38,12 +38,11 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 	 * @return void
 	 */
 	public function render() {
+		$container = $this->getContainer();
 		/** @var Section $section */
-		$section = $this->getForm()->createContainer('Section', $this->arguments['name'], $this->arguments['label']);
+		$section = $container->createContainer('Section', $this->arguments['name'], $this->arguments['label']);
 		$section->setExtensionName($this->getExtensionName());
 		$section->setVariables($this->arguments['variables']);
-		$container = $this->getContainer();
-		$container->add($section);
 		$this->setContainer($section);
 		$this->renderChildren();
 		$this->setContainer($container);
