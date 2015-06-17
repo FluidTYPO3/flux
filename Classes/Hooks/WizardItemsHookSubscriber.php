@@ -274,7 +274,8 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		$whitelist = array_unique($whitelist);
 		if (0 < count($whitelist)) {
 			foreach ($items as $name => $item) {
-				if (FALSE !== strpos($name, '_') && FALSE === in_array($item['tt_content_defValues']['CType'], $whitelist)) {
+				if (FALSE !== strpos($name, '_') && FALSE === in_array($item['tt_content_defValues']['CType'], $whitelist) && FALSE 
+=== in_array($name, $whitelist)) {
 					unset($items[$name]);
 				}
 			}
