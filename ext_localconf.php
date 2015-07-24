@@ -55,4 +55,6 @@ $extbaseObjectContainer->registerImplementation('TYPO3\CMS\Extbase\Configuration
 unset($extbaseObjectContainer);
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] = 'FluidTYPO3\Flux\Hooks\WizardItemsHookSubscriber';
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] = 'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] = TRUE === version_compare(TYPO3_version, '7.1', '<')
+	? 'FluidTYPO3\\Flux\\Hooks\\LegacyContentIconHookSubscriber->addSubIcon'
+	: 'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon';
