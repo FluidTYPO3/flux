@@ -287,9 +287,9 @@ class FluxService implements SingletonInterface {
 	protected function getDefaultViewConfigurationForExtensionKey($extensionKey) {
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		return array(
-			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array(10 => 'EXT:' . $extensionKey . '/Resources/Private/Templates/'),
-			TemplatePaths::CONFIG_PARTIALROOTPATHS => array(10 => 'EXT:' . $extensionKey . '/Resources/Private/Partials/'),
-			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array(10 => 'EXT:' . $extensionKey . '/Resources/Private/Layouts/'),
+			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array(0 => 'EXT:' . $extensionKey . '/Resources/Private/Templates/'),
+			TemplatePaths::CONFIG_PARTIALROOTPATHS => array(0 => 'EXT:' . $extensionKey . '/Resources/Private/Partials/'),
+			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array(0 => 'EXT:' . $extensionKey . '/Resources/Private/Layouts/'),
 		);
 	}
 
