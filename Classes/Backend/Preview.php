@@ -134,8 +134,27 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 			$doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 			$doc->backPath = $GLOBALS['BACK_PATH'];
 
-			$doc->getPageRenderer()->addCssFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css');
-			$doc->getPageRenderer()->addJsFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/js/fluxCollapse.js');
+			/** @var PageRenderer $pageRenderer */
+			$pageRenderer = $doc->getPageRenderer();
+			$pageRenderer->addCssFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css');
+
+			// /typo3/sysext/backend/Resources/Public/JavaScript/LayoutModule/DragDrop.js
+			// is not the perfect solution for Flux Grids!
+			// an adapted version of DragDrop.js is used - Resources/Public/js/VersionSevenPointTwo/DragDrop.js
+			// Also fluxCollapse.js is updated.
+			$fullJsPath = \TYPO3\CMS\Core\Utility\PathUtility::getRelativePath(PATH_typo3, GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/js/'));
+
+			// requirejs
+			$pageRenderer->addRequireJsConfiguration(array(
+				'paths' => array(
+					'FluidTypo3/Flux/DragDrop'     => $fullJsPath . 'DragDrop',
+				),
+			));
+			$pageRenderer->loadRequireJsModule('FluidTypo3/Flux/DragDrop');
+
+			// This is necessary for fluxCollapse.js
+			$pageRenderer->loadExtJS();
+			$pageRenderer->addJsFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/js/fluxCollapse.js');
 			self::$assetsIncluded = TRUE;
 		}
 	}

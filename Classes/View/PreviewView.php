@@ -46,6 +46,41 @@ class PreviewView {
 	const PREVIEW_SECTION = 'Preview';
 	const CONTROLLER_NAME = 'Content';
 
+	protected $templates = array(
+		'grid' => '<table cellspacing="0" cellpadding="0" id="content-grid-%s" class="flux-grid%s">
+						<tbody>
+							%s
+						</tbody>
+					</table>',
+		'gridColumn' => '<td colspan="%s" rowspan="%s" style="%s">
+								<div data-colpos="%s" class="t3js-sortable t3js-sortable-lang t3js-sortable-lang-%s t3-page-ce-wrapper ui-sortable" data-language-uid="%s">
+									<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
+										<div>%s</div>
+									</div>
+									<div class="t3-page-ce t3js-page-ce" data-page="%s">
+										<div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s" style="display: block;">
+										   %s
+										</div>
+										<div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available" ></div>
+									</div>
+									%s
+								</div>
+							</td>',
+		'record' => '<div class="t3-page-ce%s %s t3js-page-ce t3js-page-ce-sortable" id="element-tt_content-%s" data-table="tt_content" data-uid="%s">
+						%s
+						<div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="colpos-%s-page-%s-%s-after-%s" style="display: block;">
+							%s
+						</div>
+						<div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available"></div>
+					</div>',
+		'gridToggle' => '<div class="grid-visibility-toggle">
+							<div class="toggle-content" data-uid="%s">
+								<span class="t3-icon t3-icon-actions t3-icon-view-table-%s"></span>
+							</div>
+							%s
+						</div>'
+	);
+
 	/**
 	 * @var ConfigurationManagerInterface
 	 */
@@ -241,13 +276,7 @@ class PreviewView {
 			$content .= '</tr>';
 		}
 
-		return <<<CONTENT
-		<table cellspacing="0" cellpadding="0" id="content-grid-{$row['uid']}" class="flux-grid$collapsedClass">
-			<tbody>
-				$content
-			</tbody>
-		</table>
-CONTENT;
+		return sprintf($this->templates['grid'], $row['uid'], $collapsedClass, $content);
 	}
 
 	/**
@@ -270,25 +299,7 @@ CONTENT;
 		$id = 'colpos-' . $colPosFluxContent . '-page-' . $row['pid'] . '--top-' . $row['uid'] . '-' . $column->getName();
 		$target = $this->registerTargetContentAreaInSession($row['uid'], $column->getName());
 
-		return <<<CONTENT
-		<td colspan="{$column->getColspan()}" rowspan="{$column->getRowspan()}" style="{$column->getStyle()}">
-			<div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
-				<div>{$column->getLabel()}</div>
-			</div>
-			<div class="fce-container t3-page-ce-wrapper">
-				<div class="t3-page-ce ui-draggable" data-page="{$target}">
-					<div class="t3-page-ce-dropzone ui-droppable" id="{$id}" style="min-height: 16px;">
-						<div class="t3-page-ce-wrapper-new-ce">
-							{$this->drawNewIcon($row, $column)}
-							{$this->drawPasteIcon($row, $column)}
-							{$this->drawPasteIcon($row, $column, TRUE)}
-						</div>
-					</div>
-				</div>
-				$content
-			</div>
-		</td>
-CONTENT;
+		return $this->parseGridColumnTemplate($row, $column, $colPosFluxContent, $dblist, $target, $id, $content);
 	}
 
 	/**
@@ -306,20 +317,12 @@ CONTENT;
 			$element = '<div class="t3-page-ce-dragitem">' . $element . '</div>';
 		}
 
-		return <<<CONTENT
-		<div class="t3-page-ce$disabledClass {$record['_CSSCLASS']} ui-draggable" id="element-tt_content-{$record['uid']}" data-table="tt_content" data-uid="{$record['uid']}">
-			$element
-			<div class="t3-page-ce-dropzone ui-droppable"
-				 id="colpos-$colPosFluxContent-page-{$parentRow['pid']}-{$parentRow['uid']}-after-{$record['uid']}"
-				 style="min-height: 16px;">
-				<div class="t3-page-ce-wrapper-new-ce">
-					{$this->drawNewIcon($parentRow, $column, $record['uid'])}
-					{$this->drawPasteIcon($parentRow, $column, FALSE, $record)}
-					{$this->drawPasteIcon($parentRow, $column, TRUE, $record)}
-				</div>
-			</div>
-		</div>
-CONTENT;
+		return sprintf($this->templates['record'], $disabledClass, $record['_CSSCLASS'], $record['uid'], $record['uid'],
+			$element, $colPosFluxContent, $parentRow['pid'], $parentRow['uid'], $record['uid'],
+			$this->drawNewIcon($parentRow, $column, $record['uid']) .
+			$this->drawPasteIcon($parentRow, $column, FALSE, $record) .
+			$this->drawPasteIcon($parentRow, $column, TRUE, $record));
+
 	}
 
 	/**
@@ -432,15 +435,7 @@ CONTENT;
 	 */
 	protected function drawGridToggle(array $row, $content) {
 		$collapsedClass = TRUE === $this->isRowCollapsed($row) ? 'expand' : 'collapse';
-
-		return <<<CONTENT
-		<div class="grid-visibility-toggle">
-			<div class="toggle-content" data-uid="{$row['uid']}">
-				<span class="t3-icon t3-icon-actions t3-icon-view-table-$collapsedClass"></span>
-			</div>
-			$content
-		</div>
-CONTENT;
+		return sprintf($this->templates['gridToggle'], $row['uid'], $collapsedClass, $content);
 	}
 
 	/**
@@ -630,6 +625,33 @@ CONTENT;
 		$integer = MiscellaneousUtility::generateUniqueIntegerForFluxArea($contentElementUid, $areaName);
 		$_SESSION['target' . $integer] = array($contentElementUid, $areaName);
 		return $integer;
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 * @param array $row
+	 * @param Column $column
+	 * @param $colPosFluxContent
+	 * @param $dblist
+	 * @param $target
+	 * @param $id
+	 * @param $content
+	 * @return string
+	 */
+	protected function parseGridColumnTemplate(array $row, Column $column, $colPosFluxContent, $dblist, $target, $id, $content) {
+		return sprintf($this->templates['gridColumn'],
+			$column->getColspan(),
+			$column->getRowspan(),
+			$column->getStyle(),
+			$colPosFluxContent,
+			$dblist->tt_contentConfig['sys_language_uid'],
+			$dblist->tt_contentConfig['sys_language_uid'],
+			$column->getLabel(),
+			$target,
+			$id,
+			$this->drawNewIcon($row, $column) . $this->drawPasteIcon($row, $column) . $this->drawPasteIcon($row, $column, TRUE),
+			$content
+		);
 	}
 
 }

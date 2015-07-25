@@ -32,7 +32,10 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['move
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] = 'FluidTYPO3\Flux\Backend\TceMain->clearCacheCommand';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'] = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux'] = 'FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor';
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = 'FluidTYPO3\Flux\Backend\Preview';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] =
+	TRUE === version_compare(TYPO3_version, '7.1', '<')
+		? 'FluidTYPO3\Flux\Backend\LegacyPreview'
+		: 'FluidTYPO3\Flux\Backend\Preview';
 
 
 if (TRUE === class_exists('FluidTYPO3\Flux\Core')) {

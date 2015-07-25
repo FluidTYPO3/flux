@@ -650,7 +650,11 @@ class AbstractProvider implements ProviderInterface {
 	 * @return PreviewView
 	 */
 	protected function getPreviewView() {
-		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get('FluidTYPO3\\Flux\\View\\PreviewView');
+		$preview = TRUE === version_compare(TYPO3_version, '7.1', '<')
+			? 'FluidTYPO3\\Flux\\View\\LegacyPreviewView'
+			: 'FluidTYPO3\\Flux\\View\\PreviewView';
+
+		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get($preview);
 	}
 
 	/**
