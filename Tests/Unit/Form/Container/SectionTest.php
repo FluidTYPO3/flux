@@ -19,21 +19,21 @@ class SectionTest extends AbstractContainerTest {
 	 * @test
 	 */
 	public function canCreateFromDefinitionWithObjects() {
-		$definition = array(
+		$definition = [
 			'name' => 'test',
 			'label' => 'Test section',
-			'objects' => array(
-				'object1' => array(
+			'objects' => [
+				'object1' => [
 					'label' => 'Test object',
-					'fields' => array(
-						'foo' => array(
+					'fields' => [
+						'foo' => [
 							'type' => 'Input',
 							'label' => 'Foo input'
-						)
-					)
-				)
-			)
-		);
+						]
+					]
+				]
+			]
+		];
 		$section = Section::create($definition);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Section', $section);
 	}

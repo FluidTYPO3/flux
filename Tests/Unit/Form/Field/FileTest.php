@@ -18,7 +18,7 @@ class FileTest extends AbstractFieldTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'enable' => TRUE,
@@ -27,13 +27,13 @@ class FileTest extends AbstractFieldTest {
 		'disallowed' => 'doc,docx',
 		'uploadFolder' => '',
 		'showThumbnails' => TRUE
-	);
+	];
 
 	/**
 	 * @test
 	 */
 	public function canSetDefaultValueFromSimpleString() {
-		$instance = Form::create(array())->createField('File', 'file');
+		$instance = Form::create([])->createField('File', 'file');
 		$defaultValue = 'testfile.jpg';
 		$instance->setDefault($defaultValue);
 		$this->assertSame($defaultValue . '|' . $defaultValue, $instance->getDefault());
@@ -43,7 +43,7 @@ class FileTest extends AbstractFieldTest {
 	 * @test
 	 */
 	public function canSetDefaultValueFromAlreadyCorrectString() {
-		$instance = Form::create(array())->createField('File', 'file');
+		$instance = Form::create([])->createField('File', 'file');
 		$defaultValue = 'testfile.jpg|testfile.jpg';
 		$instance->setDefault($defaultValue);
 		$this->assertSame($defaultValue, $instance->getDefault());
@@ -53,7 +53,7 @@ class FileTest extends AbstractFieldTest {
 	 * @test
 	 */
 	public function canSetDefaultValueFromCsvOfSimpleStrings() {
-		$instance = Form::create(array())->createField('File', 'file');
+		$instance = Form::create([])->createField('File', 'file');
 		$defaultValue = 'testfile1.jpg,testfile2.jpg';
 		$expected = 'testfile1.jpg|testfile1.jpg,testfile2.jpg|testfile2.jpg';
 		$instance->setDefault($defaultValue);
@@ -64,7 +64,7 @@ class FileTest extends AbstractFieldTest {
 	 * @test
 	 */
 	public function canSetDefaultValueFromCsvfAlreadyCorrectStrings() {
-		$instance = Form::create(array())->createField('File', 'file');
+		$instance = Form::create([])->createField('File', 'file');
 		$defaultValue = 'testfile1.jpg|testfile1.jpg,testfile2.jpg|testfile2.jpg';
 		$instance->setDefault($defaultValue);
 		$this->assertSame($defaultValue, $instance->getDefault());

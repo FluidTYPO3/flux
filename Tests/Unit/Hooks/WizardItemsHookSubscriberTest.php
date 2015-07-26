@@ -30,11 +30,11 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 	public function processesWizardItems($items, $whitelist, $blacklist, $expectedList) {
 		$instance = $this->getMock(
 			'FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber',
-			array('getAreaNameAndParentFromRelativeRecordOrDefaults')
+			['getAreaNameAndParentFromRelativeRecordOrDefaults']
 		);
 		$instance->expects($this->once())->method('getAreaNameAndParentFromRelativeRecordOrDefaults')
-			->willReturn(array(1, 'area'));
-		$emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'area');
+			->willReturn([1, 'area']);
+		$emulatedPageAndContentRecord = ['uid' => 1, 'tx_flux_column' => 'area'];
 		$controller = new NewContentElementController();
 		$controller->colPos = 0;
 		$controller->uid_pid = -1;
@@ -48,15 +48,15 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$row->add($column);
 		$grid->add($row);
 		$provider1 = $this->objectManager->get('FluidTYPO3\\Flux\\Provider\\Provider');
-		$provider1->setTemplatePaths(array());
-		$provider1->setTemplateVariables(array());
+		$provider1->setTemplatePaths([]);
+		$provider1->setTemplateVariables([]);
 		$provider1->setGrid($grid);
-		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
+		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', ['getGrid']);
 		$provider2->expects($this->exactly(2))->method('getGrid')->will($this->returnValue(NULL));
-		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', ['resolveConfigurationProviders']);
 		$configurationService->expects($this->exactly(2))->method('resolveConfigurationProviders')
-			->will($this->returnValue(array($provider1, $provider2)));
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+			->will($this->returnValue([$provider1, $provider2]));
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', ['getSingle']);
 		$recordService->expects($this->exactly(2))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
 		$instance->injectConfigurationService($configurationService);
 		$instance->injectRecordService($recordService);
@@ -68,47 +68,47 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getTestElementsWhiteAndBlackListsAndExpectedList() {
-		$items = array(
-			'plugins' => array('title' => 'Nice header'),
-			'plugins_test1' => array('tt_content_defValues' => array('CType' => 'test1')),
-			'plugins_test2' => array('tt_content_defValues' => array('CType' => 'test2'))
-		);
-		return array(
-			array(
+		$items = [
+			'plugins' => ['title' => 'Nice header'],
+			'plugins_test1' => ['tt_content_defValues' => ['CType' => 'test1']],
+			'plugins_test2' => ['tt_content_defValues' => ['CType' => 'test2']]
+		];
+		return [
+			[
 				$items,
 				NULL,
 				NULL,
-				array(
-					'plugins' => array('title' => 'Nice header'),
-					'plugins_test1' => array('tt_content_defValues' => array('CType' => 'test1')),
-					'plugins_test2' => array('tt_content_defValues' => array('CType' => 'test2'))
-				),
-			),
-			array(
+				[
+					'plugins' => ['title' => 'Nice header'],
+					'plugins_test1' => ['tt_content_defValues' => ['CType' => 'test1']],
+					'plugins_test2' => ['tt_content_defValues' => ['CType' => 'test2']]
+				],
+			],
+			[
 				$items,
 				'test1',
 				NULL,
-				array(
-					'plugins' => array('title' => 'Nice header'),
-					'plugins_test1' => array('tt_content_defValues' => array('CType' => 'test1'))
-				),
-			),
-			array(
+				[
+					'plugins' => ['title' => 'Nice header'],
+					'plugins_test1' => ['tt_content_defValues' => ['CType' => 'test1']]
+				],
+			],
+			[
 				$items,
 				NULL,
 				'test1',
-				array(
-					'plugins' => array('title' => 'Nice header'),
-					'plugins_test2' => array('tt_content_defValues' => array('CType' => 'test2'))
-				),
-			),
-			array(
+				[
+					'plugins' => ['title' => 'Nice header'],
+					'plugins_test2' => ['tt_content_defValues' => ['CType' => 'test2']]
+				],
+			],
+			[
 				$items,
 				'test1',
 				'test1',
-				array(),
-			),
-		);
+				[],
+			],
+		];
 	}
 
 	/**
@@ -116,10 +116,10 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 	 */
 	public function applyDefaultValuesAppliesValues() {
 		$instance = new WizardItemsHookSubscriber();
-		$defaultValues = array('tx_flux_column' => 'foobararea', 'tx_flux_parent' => 321);
-		$items = array(
-			array('tt_content_defValues' => '', 'params' => '')
-		);
+		$defaultValues = ['tx_flux_column' => 'foobararea', 'tx_flux_parent' => 321];
+		$items = [
+			['tt_content_defValues' => '', 'params' => '']
+		];
 		$result = $this->callInaccessibleMethod($instance, 'applyDefaultValues', $items, $defaultValues);
 		$this->assertEquals($defaultValues['tx_flux_column'], $result[0]['tt_content_defValues']['tx_flux_column']);
 		$this->assertEquals($defaultValues['tx_flux_parent'], $result[0]['tt_content_defValues']['tx_flux_parent']);
@@ -131,24 +131,24 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function testManipulateWizardItemsWithDefaultValues() {
-		$defaultValues = array('tx_flux_column' => 'foobararea', 'tx_flux_parent' => 321);
-		$items = array(
-			array('tt_content_defValues' => '', 'params' => '')
-		);
+		$defaultValues = ['tx_flux_column' => 'foobararea', 'tx_flux_parent' => 321];
+		$items = [
+			['tt_content_defValues' => '', 'params' => '']
+		];
 		$instance = $this->getMock(
 			$this->createInstanceClassName(),
-			array(
+			[
 				'getDefaultValues', 'getWhiteAndBlackListsFromPageAndContentColumn',
 				'applyDefaultValues', 'applyWhitelist', 'applyBlacklist', 'trimItems'
-			)
+			]
 		);
 		$GLOBALS['TYPO3_DB'] = $this->getMock(
 			'TYPO3\\CMS\\Core\\Database\\DatabaseConnection',
-			array('exec_SELECTgetSingleRow'),
-			array(), '', FALSE
+			['exec_SELECTgetSingleRow'],
+			[], '', FALSE
 		);
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetSingleRow')->willReturn(NULL);
-		$lists = array(array(), array());
+		$lists = [[], []];
 		$instance->expects($this->once())->method('getWhiteAndBlackListsFromPageAndContentColumn')->will($this->returnValue($lists));
 		$instance->expects($this->once())->method('applyDefaultValues')->will($this->returnValue($items));
 		$instance->expects($this->once())->method('applyWhitelist')->will($this->returnValue($items));
@@ -166,11 +166,11 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 	 * @param array $expected
 	 */
 	public function testGetAreaNameAndParentFromRelativeRecordOrDefaults($relativeUid, array $expected) {
-		$defaults = array('tx_flux_column' => 'defaultarea', 'tx_flux_parent' => 999);
-		$inRecord = array('tx_flux_column' => 'recordarea', 'tx_flux_parent' => 111);
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+		$defaults = ['tx_flux_column' => 'defaultarea', 'tx_flux_parent' => 999];
+		$inRecord = ['tx_flux_column' => 'recordarea', 'tx_flux_parent' => 111];
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', ['getSingle']);
 		$recordService->expects($this->any())->method('getSingle')->willReturn($inRecord);
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber', array('getDefaultValues'));
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber', ['getDefaultValues']);
 		$instance->expects($this->once())->method('getDefaultValues')->willReturn($defaults);
 		$instance->injectRecordService($recordService);
 		$result = $this->callInaccessibleMethod($instance, 'getAreaNameAndParentFromRelativeRecordOrDefaults', $relativeUid);
@@ -181,11 +181,11 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getAreaNameAndParentFromRelativeRecordOrDefaults() {
-		return array(
-			array(0, array(999, 'defaultarea')),
-			array(1, array(999, 'defaultarea')),
-			array(-1, array(111, 'recordarea'))
-		);
+		return [
+			[0, [999, 'defaultarea']],
+			[1, [999, 'defaultarea']],
+			[-1, [111, 'recordarea']]
+		];
 	}
 
 }

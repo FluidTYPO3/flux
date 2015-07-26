@@ -35,7 +35,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('compact', 'boolean', 'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES ' .
 			'AT ALL COSTS! Toggling this option is DESTRUCTIVE to variables currently saved in the database!', FALSE, FALSE);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
-			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, []);
 		$this->registerArgument('options', 'array', 'Custom options to be assigned to Form object - valid values depends on the. See docs of extension ' .
 			'in which you use this feature. Can also be set using `flux:form.option` as child of `flux:form`.');
 		$this->registerArgument('localLanguageFileRelativePath', 'string', 'Relative (from extension) path to locallang file containing labels for the LLL values used in this form.', FALSE, Form::DEFAULT_LANGUAGEFILE);

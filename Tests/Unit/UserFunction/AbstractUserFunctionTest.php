@@ -19,7 +19,7 @@ abstract class AbstractUserFunctionTest extends AbstractTestCase {
 	/**
 	 * @var array
 	 */
-	protected $parameters = array();
+	protected $parameters = [];
 
 	/**
 	 * @var string
@@ -60,7 +60,7 @@ abstract class AbstractUserFunctionTest extends AbstractTestCase {
 	 * @return FormEngine
 	 */
 	protected function getCallerInstance() {
-		return $this->getMock('TYPO3\\CMS\\Backend\\Form\\FormEngine', array('dummy'), array(), '', FALSE);
+		return $this->getMock('TYPO3\\CMS\\Backend\\Form\\FormEngine', ['dummy'], [], '', FALSE);
 	}
 
 	/**
@@ -77,7 +77,7 @@ abstract class AbstractUserFunctionTest extends AbstractTestCase {
 	public function canCallMethodAndReceiveOutput() {
 		$reference = $this->getCallerInstance();
 		$parameters = $this->getParameters();
-		$output = call_user_func_array(array($this->getClassName(), $this->methodName), array(&$parameters, &$reference));
+		$output = call_user_func_array([$this->getClassName(), $this->methodName], [&$parameters, &$reference]);
 		if (TRUE === $this->expectsNull) {
 			$this->assertNull($output);
 		} else {

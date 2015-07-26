@@ -53,23 +53,23 @@ class FluxServiceTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getSortObjectsTestValues() {
-		return array(
-			array(
-				array(array('foo' => 'b'), array('foo' => 'a')),
+		return [
+			[
+				[['foo' => 'b'], ['foo' => 'a']],
 				'foo', 'ASC',
-				array(array('foo' => 'a'), array('foo' => 'b'))
-			),
-			array(
-				array('a1' => array('foo' => 'b'), 'a2' => array('foo' => 'a')),
+				[['foo' => 'a'], ['foo' => 'b']]
+			],
+			[
+				['a1' => ['foo' => 'b'], 'a2' => ['foo' => 'a']],
 				'foo', 'ASC',
-				array('a2' => array('foo' => 'a'), 'a1' => array('foo' => 'b')),
-			),
-			array(
-				array('a1' => array('foo' => 'b'), 'a2' => array('foo' => 'a')),
+				['a2' => ['foo' => 'a'], 'a1' => ['foo' => 'b']],
+			],
+			[
+				['a1' => ['foo' => 'b'], 'a2' => ['foo' => 'a']],
 				'foo', 'DESC',
-				array('a1' => array('foo' => 'b'), 'a2' => array('foo' => 'a')),
-			),
-		);
+				['a1' => ['foo' => 'b'], 'a2' => ['foo' => 'a']],
+			],
+		];
 	}
 
 	/**
@@ -77,7 +77,7 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function dispatchesMessageOnInvalidPathsReturned() {
 		$className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-		$instance = $this->getMock($className, array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptByPath'));
+		$instance = $this->getMock($className, ['getDefaultViewConfigurationForExtensionKey', 'getTypoScriptByPath']);
 		$instance->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue(NULL));
 		$instance->expects($this->once())->method('getDefaultViewConfigurationForExtensionKey')->will($this->returnValue(NULL));
 		$instance->getViewConfigurationForExtensionName('Flux');
@@ -156,11 +156,11 @@ class FluxServiceTest extends AbstractTestCase {
 	public function canGetFormWithPaths() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
-		$paths = array(
+		$paths = [
 			'templateRootPath' => 'EXT:flux/Resources/Private/Templates',
 			'partialRootPath' => 'EXT:flux/Resources/Private/Partials',
 			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts'
-		);
+		];
 		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
 		$viewContext->setSectionName('Configuration');
 		$viewContext->setTemplatePaths(new TemplatePaths($paths));
@@ -187,11 +187,11 @@ class FluxServiceTest extends AbstractTestCase {
 	public function canGetFormWithPathsAndTriggerCache() {
 		$templatePathAndFilename = GeneralUtility::getFileAbsFileName(self::FIXTURE_TEMPLATE_BASICGRID);
 		$service = $this->createFluxServiceInstance();
-		$paths = array(
+		$paths = [
 			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
 			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
 			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
-		);
+		];
 		$viewContext = new ViewContext($templatePathAndFilename, 'Flux');
 		$viewContext->setTemplatePaths(new TemplatePaths($paths));
 		$viewContext->setSectionName('Configuration');
@@ -219,11 +219,11 @@ class FluxServiceTest extends AbstractTestCase {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_COMPACTED);
 		$service = $this->createFluxServiceInstance();
 		$viewContext = new ViewContext($templatePathAndFilename);
-		$paths = array(
+		$paths = [
 			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
 			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
 			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
-		);
+		];
 		$viewContext->setTemplatePaths(new TemplatePaths($paths));
 		$viewContext->setSectionName('Configuration');
 		$form = $service->getFormFromTemplateFile($viewContext);
@@ -257,11 +257,11 @@ class FluxServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetViewConfigurationForExtensionNameWhichDoesNotExistAndConstructDefaults() {
-		$expected = array(
-			'templateRootPaths' => array(0 => 'EXT:void/Resources/Private/Templates/'),
-			'partialRootPaths' => array(0 => 'EXT:void/Resources/Private/Partials/'),
-			'layoutRootPaths' => array(0 => 'EXT:void/Resources/Private/Layouts/'),
-		);
+		$expected = [
+			'templateRootPaths' => [0 => 'EXT:void/Resources/Private/Templates/'],
+			'partialRootPaths' => [0 => 'EXT:void/Resources/Private/Partials/'],
+			'layoutRootPaths' => [0 => 'EXT:void/Resources/Private/Layouts/'],
+		];
 		$service = $this->createFluxServiceInstance();
 		$config = $service->getViewConfigurationForExtensionName('void');
 		$this->assertSame($expected, $config);
@@ -271,12 +271,12 @@ class FluxServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function testGetSettingsForExtensionName() {
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getTypoScriptByPath'));
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', ['getTypoScriptByPath']);
 		$instance->expects($this->once())->method('getTypoScriptByPath')
 			->with('plugin.tx_underscore.settings')
-			->willReturn(array('test' => 'test'));
+			->willReturn(['test' => 'test']);
 		$result = $instance->getSettingsForExtensionName('under_score');
-		$this->assertEquals(array('test' => 'test'), $result);
+		$this->assertEquals(['test' => 'test'], $result);
 	}
 
 	/**
@@ -284,7 +284,7 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function templateWithErrorReturnsFormWithErrorReporter() {
 		$viewContext = new ViewContext($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getPreparedExposedTemplateView'));
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', ['getPreparedExposedTemplateView']);
 		$instance->expects($this->once())->method('getPreparedExposedTemplateView')->willThrowException(new \RuntimeException());
 		$instance->injectObjectManager($this->objectManager);
 		$form = $instance->getFormFromTemplateFile($viewContext);
@@ -308,7 +308,7 @@ class FluxServiceTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function messageIgnoresRepeatedMessages() {
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('createFlashMessage'));
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', ['createFlashMessage']);
 		$instance->expects($this->once())->method('createFlashMessage')->willReturn(new FlashMessage('Test', 'Test', 2));
 		$instance->message('Test', 'Test', 2);
 		$instance->message('Test', 'Test', 2);
@@ -343,11 +343,11 @@ class FluxServiceTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getConvertFlexFormContentToArrayTestValues() {
-		return array(
-			array('', NULL, '', '', array()),
-			array('', Form::create(), '', '', array()),
-			array(Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD, Form::create(), '', '', array('settings' => array('input' => 0)))
-		);
+		return [
+			['', NULL, '', '', []],
+			['', Form::create(), '', '', []],
+			[Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD, Form::create(), '', '', ['settings' => ['input' => 0]]]
+		];
 	}
 
 }

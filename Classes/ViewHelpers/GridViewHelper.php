@@ -24,7 +24,7 @@ class GridViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('name', 'string', 'Optional name of this grid - defaults to "grid"', FALSE, 'grid');
 		$this->registerArgument('label', 'string', 'Optional label for this grid - defaults to an LLL value (reported if it is missing)', FALSE, NULL);
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
-			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
+			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, []);
 	}
 
 	/**

@@ -100,7 +100,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
 	 *
 	 * @var array
 	 */
-	protected $enabledControls = array(
+	protected $enabledControls = [
 		Form::CONTROL_INFO => FALSE,
 		Form::CONTROL_NEW => TRUE,
 		Form::CONTROL_DRAGDROP => TRUE,
@@ -108,7 +108,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
 		Form::CONTROL_HIDE => TRUE,
 		Form::CONTROL_DELETE => FALSE,
 		Form::CONTROL_LOCALISE => FALSE,
-	);
+	];
 
 	/**
 	 * Array of field=>value pairs which are always used in conditions as well as inserted into new
@@ -116,7 +116,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
 	 *
 	 * @var array
 	 */
-	protected $foreignMatchFields = array();
+	protected $foreignMatchFields = [];
 
 	/**
 	 * @var array
@@ -147,7 +147,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
 		$configuration['foreign_match_fields'] = $this->getForeignMatchFields();
 		$configuration['foreign_selector_fieldTcaOverride'] = $this->getForeignSelectorFieldTcaOverride();
 		$configuration['foreign_types'] = $this->getForeignTypes();
-		$configuration['appearance'] = array(
+		$configuration['appearance'] = [
 			'collapseAll' => $this->getCollapseAll(),
 			'expandSingle' => $this->getExpandSingle(),
 			'newRecordLinkAddTitle' => $this->getNewRecordLinkAddTitle(),
@@ -161,12 +161,12 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
 			'enabledControls' => $this->getEnabledControls(),
 			'headerThumbnail' => $this->getHeaderThumbnail(),
 			'levelLinksPosition' => $this->getLevelLinksPosition(),
-		);
-		$configuration['behaviour'] = array(
+		];
+		$configuration['behaviour'] = [
 			'localizationMode' => $this->getLocalizationMode(),
 			'localizeChildrenAtParentLocalization' => $this->getLocalizeChildrenAtParentLocalization(),
 			'disableMovingChildrenWithParent' => $this->getDisableMovingChildrenWithParent(),
-		);
+		];
 		return $configuration;
 	}
 

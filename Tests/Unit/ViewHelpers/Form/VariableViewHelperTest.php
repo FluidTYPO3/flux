@@ -19,11 +19,11 @@ class VariableViewHelperTest extends AbstractViewHelperTestCase {
 	 * @test
 	 */
 	public function addsVariableToContainer() {
-		$containerMock = $this->getMock('FluidTYPO3\Flux\Form', array('setVariable'));
+		$containerMock = $this->getMock('FluidTYPO3\Flux\Form', ['setVariable']);
 		$containerMock->expects($this->once())->method('setVariable')->with('test', 'testvalue');
-		$instance = $this->getMock($this->createInstanceClassName(), array('getContainer'));
+		$instance = $this->getMock($this->createInstanceClassName(), ['getContainer']);
 		$instance->expects($this->once())->method('getContainer')->will($this->returnValue($containerMock));
-		$instance->setArguments(array('name' => 'test', 'value' => 'testvalue'));
+		$instance->setArguments(['name' => 'test', 'value' => 'testvalue']);
 		$instance->render();
 	}
 

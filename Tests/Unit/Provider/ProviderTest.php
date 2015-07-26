@@ -20,48 +20,48 @@ class ProviderTest extends AbstractProviderTest {
 	/**
 	 * @var array
 	 */
-	protected $definition = array(
+	protected $definition = [
 		'name' => 'test',
 		'label' => 'Test provider',
 		'tableName' => 'tt_content',
 		'fieldName' => 'pi_flexform',
-		'form' => array(
-			'sheets' => array(
-				'foo' => array(
-					'fields' => array(
-						'test' => array(
+		'form' => [
+			'sheets' => [
+				'foo' => [
+					'fields' => [
+						'test' => [
 							'type' => 'Input',
-						)
-					)
-				),
-				'bar' => array(
-					'fields' => array(
-						'test2' => array(
+						]
+					]
+				],
+				'bar' => [
+					'fields' => [
+						'test2' => [
 							'type' => 'Input',
-						)
-					)
-				),
-			),
-			'fields' => array(
-				'test3' => array(
+						]
+					]
+				],
+			],
+			'fields' => [
+				'test3' => [
 					'type' => 'Input',
-				)
-			),
-		),
-		'grid' => array(
-			'rows' => array(
-				'foo' => array(
-					'columns' => array(
-						'bar' => array(
-							'areas' => array(
+				]
+			],
+		],
+		'grid' => [
+			'rows' => [
+				'foo' => [
+					'columns' => [
+						'bar' => [
+							'areas' => [
 
-							)
-						)
-					)
-				)
-			)
-		)
-	);
+							]
+						]
+					]
+				]
+			]
+		]
+	];
 
 	/**
 	 * @test
@@ -92,10 +92,10 @@ class ProviderTest extends AbstractProviderTest {
 		$service = $this->createFluxServiceInstance();
 		$provider = new Provider();
 		$provider->setExtensionKey('test');
-		$resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', array('resolvePrimaryConfigurationProvider'));
+		$resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', ['resolvePrimaryConfigurationProvider']);
 		$resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 		$service->injectProviderResolver($resolver);
-		$result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
+		$result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', [], 'flux');
 		$this->assertSame($provider, $result);
 		$extensionKey = $result->getExtensionKey($record);
 		$this->assertNotEmpty($extensionKey);
@@ -109,8 +109,8 @@ class ProviderTest extends AbstractProviderTest {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$service = $this->createFluxServiceInstance();
 		$provider = new Provider();
-		$provider->setTemplatePaths(array());
-		$resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', array('resolvePrimaryConfigurationProvider'));
+		$provider->setTemplatePaths([]);
+		$resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', ['resolvePrimaryConfigurationProvider']);
 		$resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 		$service->injectProviderResolver($resolver);
 		$result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);

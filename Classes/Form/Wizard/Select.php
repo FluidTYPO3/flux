@@ -50,10 +50,10 @@ class Select extends AbstractWizard {
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		return array(
+		return [
 			'mode' => $this->getMode(),
 			'items' => $this->getFormattedItems()
-		);
+		];
 	}
 
 	/**
@@ -65,7 +65,7 @@ class Select extends AbstractWizard {
 	protected function buildItems($itemsString) {
 		$itemsString = trim($itemsString, ',');
 		if (strpos($itemsString, ',') && strpos($itemsString, ';')) {
-			$return = array();
+			$return = [];
 			$items = explode(',', $itemsString);
 			foreach ($items as $itemPair) {
 				$item = explode(';', $itemPair);
@@ -76,7 +76,7 @@ class Select extends AbstractWizard {
 			$items = explode(',', $itemsString);
 			return array_combine($items, $items);
 		} else {
-			return array($itemsString => $itemsString);
+			return [$itemsString => $itemsString];
 		}
 	}
 

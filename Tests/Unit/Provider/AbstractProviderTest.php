@@ -65,13 +65,13 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function getPreviewUsesPreviewView() {
 		$instance = $this->getMockForAbstractClass(
-			$this->createInstanceClassName(), array(), '', FALSE, TRUE, FALSE, array('getPreviewView')
+			$this->createInstanceClassName(), [], '', FALSE, TRUE, FALSE, ['getPreviewView']
 		);
-		$preview = $this->getMock('FluidTYPO3\\Flux\\View\\PreviewView', array('getPreview'));
+		$preview = $this->getMock('FluidTYPO3\\Flux\\View\\PreviewView', ['getPreview']);
 		$preview->expects($this->once())->method('getPreview')->willReturn('previewcontent');
 		$instance->expects($this->once())->method('getPreviewView')->willReturn($preview);
-		$result = $instance->getPreview(array());
-		$this->assertEquals(array(NULL, 'previewcontent', FALSE), $result);
+		$result = $instance->getPreview([]);
+		$this->assertEquals([NULL, 'previewcontent', FALSE], $result);
 	}
 
 	/**
@@ -80,7 +80,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function prunesEmptyFieldNodesOnRecordSave() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$row['pi_flexform'] = Xml::EXPECTING_FLUX_PRUNING;
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle', 'update'));
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', ['getSingle', 'update']);
 		$recordService->expects($this->once())->method('getSingle')->willReturn($row);
 		$recordService->expects($this->once())->method('update');
 		$provider = $this->getConfigurationProviderInstance();
@@ -88,7 +88,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$provider->setTableName('tt_content');
 		$provider->injectRecordService($recordService);
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
-		$tceMain->datamap['tt_content'][$row['uid']]['pi_flexform']['data'] = array();
+		$tceMain->datamap['tt_content'][$row['uid']]['pi_flexform']['data'] = [];
 		$provider->postProcessRecord('update', $row['uid'], $row, $tceMain);
 		$this->assertNotContains('<field index=""></field>', $row['pi_flexform']);
 	}
@@ -107,7 +107,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canExecuteClearCacheCommand() {
 		$provider = $this->getConfigurationProviderInstance();
-		$return = $provider->clearCacheCommand(array('all'));
+		$return = $provider->clearCacheCommand(['all']);
 		$this->assertEmpty($return);
 	}
 
@@ -190,7 +190,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_BASICGRID);
 		$provider = $this->getConfigurationProviderInstance();
 		ObjectAccess::setProperty($provider, 'templatePathAndFilename', $templatePathAndFilename, TRUE);
-		ObjectAccess::setProperty($provider, 'templatePaths', array(), TRUE);
+		ObjectAccess::setProperty($provider, 'templatePaths', [], TRUE);
 		$record = $this->getBasicRecord();
 		$form = $provider->getGrid($record);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $form);
@@ -201,7 +201,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canGetTemplatePaths() {
 		$provider = $this->getConfigurationProviderInstance();
-		ObjectAccess::setProperty($provider, 'templatePaths', array(), TRUE);
+		ObjectAccess::setProperty($provider, 'templatePaths', [], TRUE);
 		$record = $this->getBasicRecord();
 		$paths = $provider->getTemplatePaths($record);
 		$this->assertIsArray($paths);
@@ -222,16 +222,16 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canGetFlexformValues() {
 		$record = $this->getBasicRecord();
-		$provider = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getForm'));
-		$mockConfigurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('convertFlexFormContentToArray'));
-		$mockConfigurationService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(array('test' => 'test')));
+		$provider = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), ['getForm']);
+		$mockConfigurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', ['convertFlexFormContentToArray']);
+		$mockConfigurationService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(['test' => 'test']));
 		$provider->expects($this->once())->method('getForm')->will($this->returnValue(Form::create()));
 		$provider->injectConfigurationService($mockConfigurationService);
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
 		$provider->reset();
 		$values = $provider->getFlexformValues($record);
 		$this->assertIsArray($values);
-		$this->assertEquals($values, array('test' => 'test'));
+		$this->assertEquals($values, ['test' => 'test']);
 	}
 
 	/**
@@ -239,7 +239,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canGetTemplateVariables() {
 		$provider = $this->getConfigurationProviderInstance();
-		ObjectAccess::setProperty($provider, 'templatePaths', array(), TRUE);
+		ObjectAccess::setProperty($provider, 'templatePaths', [], TRUE);
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
 		$record = $this->getBasicRecord();
 		$values = $provider->getTemplateVariables($record);
@@ -348,8 +348,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canPostProcessDataStructure() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$dataStructure = array();
-		$config = array();
+		$dataStructure = [];
+		$config = [];
 		$result = $provider->postProcessDataStructure($record, $dataStructure, $config);
 		$this->assertNull($result);
 		$this->assertIsArray($config);
@@ -362,12 +362,12 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$provider = $this->getConfigurationProviderInstance();
 		$form = Form::create();
 		$record = $this->getBasicRecord();
-		$dataStructure = array();
-		$config = array();
+		$dataStructure = [];
+		$config = [];
 		$provider->setForm($form);
 		$provider->postProcessDataStructure($record, $dataStructure, $config);
 		$this->assertIsArray($dataStructure);
-		$this->assertNotEquals(array(), $dataStructure);
+		$this->assertNotEquals([], $dataStructure);
 		$this->assertNotEmpty($dataStructure);
 	}
 
@@ -376,7 +376,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canPostProcessRecord() {
 		$provider = $this->getConfigurationProviderInstance();
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle', 'update'));
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', ['getSingle', 'update']);
 		$recordService->expects($this->once())->method('getSingle')->willReturn($row);
 		$recordService->expects($this->once())->method('update');
 		$provider->injectRecordService($recordService);
@@ -394,20 +394,20 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 			$fieldName = 'pi_flexform';
 			$provider->setFieldName($fieldName);
 		}
-		$record[$fieldName] = array(
-			'data' => array(
-				'options' => array(
-					'lDEF' => array(
-						'settings.input' => array(
+		$record[$fieldName] = [
+			'data' => [
+				'options' => [
+					'lDEF' => [
+						'settings.input' => [
 							'vDEF' => 'test'
-						),
-						'settings.input_clear' => array(
+						],
+						'settings.input_clear' => [
 							'vDEF' => 1
-						)
-					)
-				)
-			)
-		);
+						]
+					]
+				]
+			]
+		];
 		$parentInstance->datamap[$tableName][$id] = $record;
 		$record[$fieldName] = Xml::EXPECTING_FLUX_REMOVALS;
 		$provider->postProcessRecord('update', $id, $record, $parentInstance);
@@ -420,7 +420,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canPostProcessRecordWithNullFieldName() {
 		$provider = $this->getConfigurationProviderInstance();
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', ['getSingle']);
 		$recordService->expects($this->any())->method('getSingle')->willReturn($row);
 		$provider->injectRecordService($recordService);
 		$record = $this->getBasicRecord();
@@ -457,17 +457,17 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 			$provider->setFieldName($fieldName);
 		}
 		$record['header'] = 'old';
-		$record[$fieldName] = array(
-			'data' => array(
-				'options' => array(
-					'lDEF' => array(
-						$tableName . '.header' => array(
+		$record[$fieldName] = [
+			'data' => [
+				'options' => [
+					'lDEF' => [
+						$tableName . '.header' => [
 							'vDEF' => 'overridden-header'
-						)
-					)
-				)
-			)
-		);
+						]
+					]
+				]
+			]
+		];
 		$id = $record['uid'];
 		$provider->preProcessRecord($record, $id, $parentInstance);
 		$this->assertSame($record['header'], $record[$fieldName]['data']['options']['lDEF'][$tableName . '.header']['vDEF']);
@@ -477,7 +477,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canSetForm() {
-		$form = Form::create(array('name' => 'test'));
+		$form = Form::create(['name' => 'test']);
 		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setForm($form);
@@ -487,7 +487,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canSetGrid() {
-		$grid = Grid::create(array('name' => 'test'));
+		$grid = Grid::create(['name' => 'test']);
 		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
 		$provider->setGrid($grid);
@@ -529,12 +529,12 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function canSetExtensionKeyAndPassToFormThroughLoadSettings() {
 		$provider = $this->getConfigurationProviderInstance();
-		$settings = array(
+		$settings = [
 			'extensionKey' => 'my_ext',
-			'form' => array(
+			'form' => [
 				'name' => 'test'
-			)
-		);
+			]
+		];
 		$provider->loadSettings($settings);
 		$record = Records::$contentRecordIsParentAndHasChildren;
 		$this->assertSame('my_ext', $provider->getExtensionKey($record));
@@ -547,7 +547,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canSetTemplateVariables() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$variables = array('test' => 'test');
+		$variables = ['test' => 'test'];
 		$provider->setTemplateVariables($variables);
 		$this->assertArrayHasKey('test', $provider->getTemplateVariables($record));
 	}
@@ -580,9 +580,9 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canSetTemplatePaths() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
-		$templatePaths = array(
+		$templatePaths = [
 			'templateRootPath' => 'EXT:flux/Resources/Private/Templates'
-		);
+		];
 		$provider->setTemplatePaths($templatePaths);
 		$this->assertSame(PathUtility::translatePath($templatePaths), $provider->getTemplatePaths($record));
 	}
@@ -604,7 +604,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canLoadRecordFromDatabase() {
 		$backup = $GLOBALS['TYPO3_DB'];
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', ['exec_SELECTgetSingleRow']);
 		$GLOBALS['TYPO3_DB']->expects($this->atLeastOnce())->method('exec_SELECTgetSingleRow')->will($this->returnValue($row));
 		$provider = $this->getConfigurationProviderInstance();
 		$result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
@@ -630,10 +630,10 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function getFormReturnsEarlyFormInstanceIfClassDefinedAndExists() {
-		$mock = $this->getMock($this->createInstanceClassName(), array('resolveFormClassName', 'getTemplateSource'));
+		$mock = $this->getMock($this->createInstanceClassName(), ['resolveFormClassName', 'getTemplateSource']);
 		$mock->expects($this->never())->method('getTemplateSource');
 		$mock->expects($this->once())->method('resolveFormClassName')->will($this->returnValue('FluidTYPO3\\Flux\\Form'));
-		$mock->getForm(array());
+		$mock->getForm([]);
 	}
 
 }

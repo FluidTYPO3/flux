@@ -16,7 +16,7 @@ class InputTest extends AbstractFieldTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'enable' => TRUE,
@@ -26,7 +26,7 @@ class InputTest extends AbstractFieldTest {
 		'validate' => 'trim,int',
 		'default' => 'test',
 		'requestUpdate' => TRUE,
-	);
+	];
 
 	/**
 	 * @test

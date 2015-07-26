@@ -173,10 +173,10 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function canAddMultipleFieldsToContainer() {
 		$form = $this->getEmptyDummyForm();
-		$fields = array(
+		$fields = [
 			$form->createField('Input', 'test1'),
 			$form->createField('Input', 'test2'),
-		);
+		];
 		$form->addAll($fields);
 		$this->assertTrue($form->last()->has($fields[0]));
 		$this->assertTrue($form->last()->has($fields[1]));
@@ -217,7 +217,7 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function canRemoveBadFieldByInstanceWithoutErrorAndReturnFalse() {
 		$form = $this->getEmptyDummyForm();
-		$field = Input::create(array('type' => 'Input', 'name' => 'badname'));
+		$field = Input::create(['type' => 'Input', 'name' => 'badname']);
 		$child = $form->last()->remove($field);
 		$this->assertFalse($child);
 	}
@@ -262,11 +262,11 @@ class FormTest extends AbstractTestCase {
 	public function supportsFormComponentsPlacedInPartialTemplates() {
 		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_USESPARTIAL);
 		$service = $this->createFluxServiceInstance();
-		$paths = array(
+		$paths = [
 			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
 			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
 			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
-		);
+		];
 		$viewContext = new ViewContext($template);
 		$viewContext->setTemplatePaths(new TemplatePaths($paths));
 		$viewContext->setSectionName('Configuration');
@@ -278,10 +278,10 @@ class FormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canCreateFromDefinition() {
-		$properties = array(
+		$properties = [
 			'name' => 'test',
 			'label' => 'Test field'
-		);
+		];
 		$instance = Form::create($properties);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $instance);
 	}
@@ -290,18 +290,18 @@ class FormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canCreateFromDefinitionWithSheets() {
-		$properties = array(
+		$properties = [
 			'name' => 'test',
 			'label' => 'Test field',
-			'sheets' => array(
-				'sheet' => array(
-					'fields' => array()
-				),
-				'anotherSheet' => array(
-					'fields' => array()
-				),
-			)
-		);
+			'sheets' => [
+				'sheet' => [
+					'fields' => []
+				],
+				'anotherSheet' => [
+					'fields' => []
+				],
+			]
+		];
 		$instance = Form::create($properties);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $instance);
 	}
@@ -332,7 +332,7 @@ class FormTest extends AbstractTestCase {
 		$this->assertSame('testing', $instance->getOption('test'));
 		$this->assertIsArray($instance->getOptions());
 		$this->assertArrayHasKey('test', $instance->getOptions());
-		$options = array('foo' => 'bar');
+		$options = ['foo' => 'bar'];
 		$instance->setOptions($options);
 		$this->assertSame('bar', $instance->getOption('foo'));
 		$this->assertArrayHasKey('foo', $instance->getOptions());
@@ -354,9 +354,9 @@ class FormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function dispatchesDebugMessageOnProblematicId() {
-		$service = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('message'));
+		$service = $this->getMock('FluidTYPO3\Flux\Service\FluxService', ['message']);
 		$service->expects($this->once())->method('message');
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Form', array('getConfigurationService'));
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Form', ['getConfigurationService']);
 		$instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
 		$instance->setId('I-am-not-valid');
 	}
@@ -366,7 +366,7 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function modifySetsProperty() {
 		$form = Form::create();
-		$form->modify(array('name' => 'test'));
+		$form->modify(['name' => 'test']);
 		$this->assertEquals('test', $form->getName());
 	}
 
@@ -375,7 +375,7 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function modifySetsOptions() {
 		$form = Form::create();
-		$form->modify(array('options' => array('test' => 'testvalue')));
+		$form->modify(['options' => ['test' => 'testvalue']]);
 		$this->assertEquals('testvalue', $form->getOption('test'));
 	}
 
@@ -384,7 +384,7 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function modifyCreatesSheets() {
 		$form = Form::create();
-		$form->modify(array('sheets' => array('test' => array('name' => 'test', 'label' => 'Test'))));
+		$form->modify(['sheets' => ['test' => ['name' => 'test', 'label' => 'Test']]]);
 		$sheets = $form->getSheets(TRUE);
 		$this->assertArrayHasKey('test', $sheets);
 	}
@@ -394,7 +394,7 @@ class FormTest extends AbstractTestCase {
 	 */
 	public function modifyModifiesSheets() {
 		$form = Form::create();
-		$form->modify(array('sheets' => array('options' => array('label' => 'Test'))));
+		$form->modify(['sheets' => ['options' => ['label' => 'Test']]]);
 		$sheets = $form->getSheets(TRUE);
 		$this->assertEquals('Test', reset($sheets)->getLabel());
 	}

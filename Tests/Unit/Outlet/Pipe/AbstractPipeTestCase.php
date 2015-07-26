@@ -19,7 +19,7 @@ abstract class AbstractPipeTestCase extends AbstractTestCase {
 	/**
 	 * @var array
 	 */
-	protected $defaultData = array();
+	protected $defaultData = [];
 
 	/**
 	 * @test

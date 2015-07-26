@@ -64,17 +64,17 @@ class Tree extends AbstractRelationFormField {
 	public function buildConfiguration() {
 		$configuration = $this->prepareConfiguration('select');
 		$configuration['renderMode'] = 'tree';
-		$configuration['treeConfig'] = array(
+		$configuration['treeConfig'] = [
 			'parentField' => $this->getParentField(),
-			'appearance' => array (
+			'appearance' => [
 				'allowRecursiveMode' => $this->getAllowRecursiveMode(),
 				'expandAll' => $this->getExpandAll(),
 				'nonSelectableLevels' => $this->getNonSelectableLevels(),
 				'maxLevels' => $this->getMaxLevels(),
 				'showHeader' => $this->getShowHeader(),
 				'width' => $this->getWidth(),
-			),
-		);
+			],
+		];
 		return $configuration;
 	}
 

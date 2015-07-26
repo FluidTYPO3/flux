@@ -66,21 +66,21 @@ class Link extends AbstractWizard {
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		$structure = array(
+		$structure = [
 			'JSopenParams' => 'height=' . $this->getHeight() . ',width=' . $this->getWidth() . ',status=0,menubar=0,scrollbars=1',
-			'params' => array(
+			'params' => [
 				'blindLinkOptions' => implode(',', $this->getBlindLinkOptions()),
 				'blindLinkFields' => implode(',', $this->getBlindLinkFields()),
 				'allowedExtensions' => implode(',', $this->getAllowedExtensions())
-			),
-			'module' => array(
+			],
+			'module' => [
 				'name' => 'wizard_element_browser',
-				'urlParameters' => array(
+				'urlParameters' => [
 					'mode' => 'wizard',
 					'act' => $this->getActiveTab()
-				)
-			)
-		);
+				]
+			]
+		];
 
 		return $structure;
 	}

@@ -18,7 +18,7 @@ class ext_update {
 	 * @return string
 	 */
 	public function main() {
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'colPos = -42', array('colPos' => 18181));
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tt_content', 'colPos = -42', ['colPos' => 18181]);
 		$GLOBALS['TYPO3_DB']->exec_TRUNCATEquery('cf_extbase_reflection');
 		$GLOBALS['TYPO3_DB']->exec_TRUNCATEquery('cf_extbase_reflection_tags');
 		$GLOBALS['TYPO3_DB']->exec_TRUNCATEquery('cf_extbase_object');

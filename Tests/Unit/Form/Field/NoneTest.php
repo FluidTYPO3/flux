@@ -16,9 +16,9 @@ class NoneTest extends AbstractFieldTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'none',
 		'size' => 10
-	);
+	];
 
 }

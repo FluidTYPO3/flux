@@ -31,23 +31,23 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase {
 		$GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
 		$GLOBALS['TSFE']->sys_page = new PageRepository();
 		$GLOBALS['TT'] = new NullTimeTracker();
-		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', FALSE);
-		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
-		$GLOBALS['TCA']['tt_content']['ctrl'] = array();
+		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', ['exec_SELECTgetRows'], [], '', FALSE);
+		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue([]));
+		$GLOBALS['TCA']['tt_content']['ctrl'] = [];
 	}
 
 	/**
 	 * @test
 	 */
 	public function canRenderViewHelper() {
-		$arguments = array(
+		$arguments = [
 			'area' => 'void',
 			'as' => 'records',
 			'order' => 'sorting'
-		);
-		$variables = array(
+		];
+		$variables = [
 			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-		);
+		];
 		$node = new TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
@@ -57,14 +57,14 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase {
 	 * @test
 	 */
 	public function isUnaffectedByRenderArgumentBeingFalse() {
-		$arguments = array(
+		$arguments = [
 			'area' => 'void',
 			'render' => FALSE,
 			'order' => 'sorting'
-		);
-		$variables = array(
+		];
+		$variables = [
 			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-		);
+		];
 		$output = $this->executeViewHelper($arguments, $variables);
 		$this->assertIsString($output);
 	}
@@ -73,17 +73,17 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase {
 	 * @test
 	 */
 	public function canRenderViewHelperWithLoadRegister() {
-		$arguments = array(
+		$arguments = [
 			'area' => 'void',
 			'as' => 'records',
 			'order' => 'sorting',
-			'loadRegister' => array(
+			'loadRegister' => [
 				'maxImageWidth' => 300
-			)
-		);
-		$variables = array(
+			]
+		];
+		$variables = [
 			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-		);
+		];
 		$node = new TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
@@ -93,15 +93,15 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase {
 	 * @test
 	 */
 	public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup() {
-		$arguments = array(
+		$arguments = [
 			'area' => 'void',
 			'as' => 'nameTaken',
 			'order' => 'sorting'
-		);
-		$variables = array(
+		];
+		$variables = [
 			'nameTaken' => 'taken',
 			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-		);
+		];
 		$node = new TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);
@@ -111,14 +111,14 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase {
 	 * @test
 	 */
 	public function canRenderViewHelperWithNonExistingAsArgument() {
-		$arguments = array(
+		$arguments = [
 			'area' => 'void',
 			'as' => 'freevariablename',
 			'order' => 'sorting'
-		);
-		$variables = array(
+		];
+		$variables = [
 			'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-		);
+		];
 		$node = new TextNode('Hello loopy world!');
 		$output = $this->executeViewHelper($arguments, $variables, $node);
 		$this->assertSame($node->getText(), $output);

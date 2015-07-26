@@ -19,7 +19,7 @@ abstract class AbstractContainerTest extends AbstractFormTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string');
+	protected $chainProperties = ['name' => 'test', 'label' => 'Test field', 'transform' => 'string'];
 
 	/**
 	 * @return ContainerInterface
@@ -74,16 +74,16 @@ abstract class AbstractContainerTest extends AbstractFormTest {
 	 * @test
 	 */
 	public function canCreateFromDefinitionContainingFields() {
-		$properties = array($this->chainProperties);
-		$properties['fields'] = array(
-			'foo' => array(
+		$properties = [$this->chainProperties];
+		$properties['fields'] = [
+			'foo' => [
 				'type' => 'Input'
-			),
-			'bar' => array(
+			],
+			'bar' => [
 				'type' => 'Input'
-			),
-		);
-		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+			],
+		];
+		$instance = call_user_func_array([$this->getObjectClassName(), 'create'], [$properties]);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}
 

@@ -20,7 +20,7 @@ class TypeConverterViewHelperTest extends AbstractViewHelperTestCase {
 	 * @param array $arguments
 	 */
 	public function testWithArguments(array $arguments) {
-		$result = $this->executeViewHelper($arguments, array(), NULL, NULL, 'FakePlugin');
+		$result = $this->executeViewHelper($arguments, [], NULL, NULL, 'FakePlugin');
 		$this->assertNull($result);
 	}
 
@@ -28,10 +28,10 @@ class TypeConverterViewHelperTest extends AbstractViewHelperTestCase {
 	 * @return array
 	 */
 	public function getTestArguments() {
-		return array(
-			array(array('typeConverter' => 'Array')),
-			array(array('typeConverter' => 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\ArrayConverter')),
-		);
+		return [
+			[['typeConverter' => 'Array']],
+			[['typeConverter' => 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\ArrayConverter']],
+		];
 	}
 
 }

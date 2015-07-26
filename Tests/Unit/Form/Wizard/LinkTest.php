@@ -16,16 +16,16 @@ class LinkTest extends AbstractWizardTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'hideParent' => FALSE,
-		'blindLinkOptions' => array('new', 'info'),
-		'blindLinkFields' => array('title', 'uid'),
-		'allowedExtensions' => array('pdf', 'txt'),
+		'blindLinkOptions' => ['new', 'info'],
+		'blindLinkFields' => ['title', 'uid'],
+		'allowedExtensions' => ['pdf', 'txt'],
 		'height' => 400,
 		'width' => 300
-	);
+	];
 
 	/**
 	 * @test

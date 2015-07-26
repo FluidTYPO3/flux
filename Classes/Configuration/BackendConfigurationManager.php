@@ -67,13 +67,13 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 * @return array
 	 */
 	protected function getPrioritizedPageUids() {
-		return array(
+		return [
 			$this->getPageIdFromGet(),
 			$this->getPageIdFromPost(),
 			$this->getPageIdFromRecordIdentifiedInEditUrlArgument(),
 			$this->getPageIdFromContentObject(),
 			parent::getCurrentPageId(),
-		);
+		];
 	}
 
 	/**
@@ -136,7 +136,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 		// if TYPO3 wants to insert a new tt_content element after the element
 		// with uid=abs($id), translate ID.
 		$id = (integer) (0 > $id && 'tt_content' === $table) ? $id = -$id : $id;
-		return array($table, $id, $command);
+		return [$table, $id, $command];
 	}
 
 	/**
@@ -144,7 +144,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 */
 	protected function getEditArgumentValuePair() {
 		$editArgument = GeneralUtility::_GET('edit');
-		return TRUE === is_array($editArgument) ? $editArgument : array(array());
+		return TRUE === is_array($editArgument) ? $editArgument : [[]];
 	}
 
 	/**

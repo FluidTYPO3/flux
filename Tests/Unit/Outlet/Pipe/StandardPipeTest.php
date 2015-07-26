@@ -28,7 +28,7 @@ class StandardPipeTest extends AbstractPipeTestCase {
 	 * @test
 	 */
 	public function canLoadSettings() {
-		$result = $this->createInstance()->loadSettings(array());
+		$result = $this->createInstance()->loadSettings([]);
 		$this->assertEmpty($result);
 	}
 

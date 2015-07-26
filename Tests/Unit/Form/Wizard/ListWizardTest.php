@@ -16,7 +16,7 @@ class ListWizardTest extends AbstractWizardTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'hideParent' => FALSE,
@@ -24,6 +24,6 @@ class ListWizardTest extends AbstractWizardTest {
 		'height' => 600,
 		'width' => 600,
 		'storagePageUid' => 1
-	);
+	];
 
 }

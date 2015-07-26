@@ -16,12 +16,12 @@ class SliderTest extends AbstractWizardTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'hideParent' => FALSE,
 		'step' => 10,
 		'width' => 100
-	);
+	];
 
 }

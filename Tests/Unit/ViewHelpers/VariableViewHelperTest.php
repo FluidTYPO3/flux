@@ -19,8 +19,8 @@ class VariableViewHelperTest extends AbstractViewHelperTestCase {
 	 * @test
 	 */
 	public function canFetchTemplateVariable() {
-		$arguments = array('name' => 'foobar');
-		$variables = array('foobar' => 'Hello world!', 'nested' => array('nested' => 'Hello again world!'));
+		$arguments = ['name' => 'foobar'];
+		$variables = ['foobar' => 'Hello world!', 'nested' => ['nested' => 'Hello again world!']];
 		$output = $this->executeViewHelper($arguments, $variables);
 		$this->assertSame($output, $variables['foobar']);
 	}
@@ -29,8 +29,8 @@ class VariableViewHelperTest extends AbstractViewHelperTestCase {
 	 * @test
 	 */
 	public function canFetchNestedTemplateVariable() {
-		$arguments = array('name' => 'nested.nested');
-		$variables = array('nested' => array('nested' => 'Hello again world!'));
+		$arguments = ['name' => 'nested.nested'];
+		$variables = ['nested' => ['nested' => 'Hello again world!']];
 		$output = $this->executeViewHelper($arguments, $variables);
 		$this->assertSame($output, $variables['nested']['nested']);
 	}

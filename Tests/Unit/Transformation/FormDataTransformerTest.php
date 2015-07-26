@@ -27,12 +27,12 @@ class FormDataTransformerTest extends AbstractTestCase {
 	 * @param mixed $expected
 	 */
 	public function testTransformation($value, $transformation, $expected) {
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Transformation\\FormDataTransformer', array('loadObjectsFromRepository'));
-		$instance->expects($this->any())->method('loadObjectsFromRepository')->willReturn(array());
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Transformation\\FormDataTransformer', ['loadObjectsFromRepository']);
+		$instance->expects($this->any())->method('loadObjectsFromRepository')->willReturn([]);
 		$instance->injectObjectManager($this->objectManager);
 		$form = Form::create();
 		$form->createField('Input', 'field')->setTransform($transformation);
-		$transformed = $instance->transformAccordingToConfiguration(array('field' => $value), $form);
+		$transformed = $instance->transformAccordingToConfiguration(['field' => $value], $form);
 		$this->assertTrue($transformed !== $expected, 'Transformation type ' . $transformation . ' failed; values are still identical');
 	}
 
@@ -40,17 +40,17 @@ class FormDataTransformerTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getValuesAndTransformations() {
-		return array(
-			array(array('1', '2', '3'), 'integer', array(1, 2, 3)),
-			array('0', 'integer', 0),
-			array('0.12', 'float', 0.12),
-			array('1,2,3', 'array', array(1, 2, 3)),
-			array('123,321', 'InvalidClass', '123'),
-			array(date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))),
-			array('1', 'TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser', NULL),
-			array('1,2', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser>', NULL),
-			array('1,2', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<\\Invalid>', NULL),
-		);
+		return [
+			[['1', '2', '3'], 'integer', [1, 2, 3]],
+			['0', 'integer', 0],
+			['0.12', 'float', 0.12],
+			['1,2,3', 'array', [1, 2, 3]],
+			['123,321', 'InvalidClass', '123'],
+			[date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))],
+			['1', 'TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser', NULL],
+			['1,2', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser>', NULL],
+			['1,2', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<\\Invalid>', NULL],
+		];
 	}
 
 	/**
@@ -58,12 +58,12 @@ class FormDataTransformerTest extends AbstractTestCase {
 	 */
 	public function supportsFindByIdentifiers() {
 		$instance = new FormDataTransformer();
-		$identifiers = array('foobar', 'foobar2');
-		$repository = $this->getMock('TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserGroupRepository', array('findByUid'),
-			array(), '', FALSE);
+		$identifiers = ['foobar', 'foobar2'];
+		$repository = $this->getMock('TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserGroupRepository', ['findByUid'],
+			[], '', FALSE);
 		$repository->expects($this->exactly(2))->method('findByUid')->will($this->returnArgument(0));
 		$result = $this->callInaccessibleMethod($instance, 'loadObjectsFromRepository', $repository, $identifiers);
-		$this->assertEquals($result, array('foobar', 'foobar2'));
+		$this->assertEquals($result, ['foobar', 'foobar2']);
 	}
 
 }

@@ -26,10 +26,10 @@ class ResolverTest extends AbstractTestCase {
 	public function testResolveDomainFormClassInstancesFromPackages() {
 		$modelClassName = 'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\Domain\\Model\\Dummy';
 		Core::registerAutoFormForModelObjectClassName($modelClassName);
-		$classNames = array('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\Domain\\Form\\DummyForm');
-		$resolver = $this->getMock('FluidTYPO3\\Flux\\Helper\\Resolver', array('resolveClassNamesInPackageSubNamespace'));
+		$classNames = ['FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\Domain\\Form\\DummyForm'];
+		$resolver = $this->getMock('FluidTYPO3\\Flux\\Helper\\Resolver', ['resolveClassNamesInPackageSubNamespace']);
 		$resolver->expects($this->once())->method('resolveClassNamesInPackageSubNamespace')->willReturn($classNames);
-		$result = $resolver->resolveDomainFormClassInstancesFromPackages(array('foobar'));
+		$result = $resolver->resolveDomainFormClassInstancesFromPackages(['foobar']);
 		$this->assertInstanceOf($classNames[0], $result[$modelClassName]);
 	}
 
@@ -39,7 +39,7 @@ class ResolverTest extends AbstractTestCase {
 	public function resolvesClassNamesInSubNamespaceOfPackage() {
 		$resolver = new Resolver();
 		$result = $resolver->resolveClassNamesInPackageSubNamespace('FluidTYPO3.Flux', '');
-		$this->assertEquals(array('FluidTYPO3\\Flux\\Core', 'FluidTYPO3\\Flux\\Form'), $result);
+		$this->assertEquals(['FluidTYPO3\\Flux\\Core', 'FluidTYPO3\\Flux\\Form'], $result);
 	}
 
 	/**
@@ -123,12 +123,12 @@ class ResolverTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getClassToTableTestValues() {
-		return array(
-			array('syslog', 'syslog'),
-			array('FluidTYPO3\\Flux\\Domain\\Model\\ObjectName', 'tx_flux_domain_model_objectname'),
-			array('TYPO3\\CMS\\Extbase\\Domain\\Model\\ObjectName', 'tx_extbase_domain_model_objectname'),
-			array('Tx_Flux_Domain_Model_ObjectName', 'tx_flux_domain_model_objectname'),
-		);
+		return [
+			['syslog', 'syslog'],
+			['FluidTYPO3\\Flux\\Domain\\Model\\ObjectName', 'tx_flux_domain_model_objectname'],
+			['TYPO3\\CMS\\Extbase\\Domain\\Model\\ObjectName', 'tx_extbase_domain_model_objectname'],
+			['Tx_Flux_Domain_Model_ObjectName', 'tx_flux_domain_model_objectname'],
+		];
 	}
 
 }

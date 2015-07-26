@@ -21,7 +21,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enable' => TRUE);
+	protected $chainProperties = ['name' => 'test', 'label' => 'Test field', 'enable' => TRUE];
 
 	/**
 	 * @test
@@ -114,7 +114,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$properties = $this->chainProperties;
 		$class = $this->getObjectClassName();
 		$properties['type'] = implode('/', array_slice(explode('\\', $class), 4, 1));;
-		$instance = call_user_func_array(array($class, 'create'), array($properties));
+		$instance = call_user_func_array([$class, 'create'], [$properties]);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}
 
@@ -125,7 +125,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$properties = $this->chainProperties;
 		$properties['type'] = 'InvalidType';
 		$this->setExpectedException('RuntimeException', NULL, 1375373527);
-		call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+		call_user_func_array([$this->getObjectClassName(), 'create'], [$properties]);
 	}
 
 	/**
@@ -134,7 +134,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 	public function canCreateFromSettingsUsingFullClassName() {
 		$properties = $this->chainProperties;
 		$properties['type'] = $this->getObjectClassName();
-		$instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+		$instance = call_user_func_array([$this->getObjectClassName(), 'create'], [$properties]);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}
 
@@ -142,11 +142,11 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 	 * @test
 	 */
 	public function canCreateSectionUsingShortcutMethod() {
-		$definition = array(
+		$definition = [
 			'name' => 'test',
 			'label' => 'Test section',
 			'type' => 'Section'
-		);
+		];
 		$section = AbstractFormField::create($definition);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Section', $section);
 		$this->assertSame($definition['name'], $section->getName());
@@ -182,7 +182,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$form = Form::create();
 		$field = $form->createField('Input', 'testfield');
 		$this->assertFalse($field->has('add'));
-		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
+		$field->modify(['wizards' => ['test' => ['type' => 'Add', 'name' => 'add', 'label' => 'Test']]]);
 		$this->assertTrue($field->has('add'));
 	}
 
@@ -193,7 +193,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$form = Form::create();
 		$field = $form->createField('Input', 'testfield');
 		$wizard = $field->createWizard('Add', 'add', 'Original label');
-		$field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
+		$field->modify(['wizards' => ['test' => ['type' => 'Add', 'name' => 'add', 'label' => 'Test']]]);
 		$this->assertEquals('Test', $wizard->getLabel());
 	}
 

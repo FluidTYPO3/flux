@@ -97,7 +97,7 @@ class Fal extends AbstractInlineFormField {
 	 *
 	 * @var array
 	 */
-	protected $enabledControls = array(
+	protected $enabledControls = [
 		Form::CONTROL_INFO => FALSE,
 		Form::CONTROL_NEW => FALSE,
 		Form::CONTROL_DRAGDROP => TRUE,
@@ -105,16 +105,16 @@ class Fal extends AbstractInlineFormField {
 		Form::CONTROL_HIDE => TRUE,
 		Form::CONTROL_DELETE => TRUE,
 		Form::CONTROL_LOCALISE => TRUE,
-	);
+	];
 
 	/**
 	 * @var array
 	 */
-	protected $headerThumbnail = array(
+	protected $headerThumbnail = [
 		'field' => 'uid_local',
 		'width' => '64',
 		'height' => '64',
-	);
+	];
 
 	/**
 	 * @var string

@@ -19,11 +19,11 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest {
 	 * @test
 	 */
 	public function overlayRecordsCallsExpectedMethodSequence() {
-		$mock = $this->getMock($this->createInstanceClassName(), array('hasWorkspacesSupport', 'overlayRecord'));
+		$mock = $this->getMock($this->createInstanceClassName(), ['hasWorkspacesSupport', 'overlayRecord']);
 		$mock->expects($this->once())->method('hasWorkspacesSupport')->will($this->returnValue(TRUE));
-		$mock->expects($this->exactly(2))->method('overlayRecord')->will($this->returnValue(array('foo')));
-		$records = array(array(), array());
-		$expected = array(array('foo'), array('foo'));
+		$mock->expects($this->exactly(2))->method('overlayRecord')->will($this->returnValue(['foo']));
+		$records = [[], []];
+		$expected = [['foo'], ['foo']];
 		$result = $this->callInaccessibleMethod($mock, 'overlayRecords', 'table', $records);
 		$this->assertEquals($expected, $result);
 	}
@@ -34,8 +34,8 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest {
 	public function getWorkspaceVersionOfRecordOrRecordItselfReturnsSelf() {
 		$GLOBALS['BE_USER'] = new \stdClass();
 		$instance = new WorkspacesAwareRecordService();
-		$result = $this->callInaccessibleMethod($instance, 'getWorkspaceVersionOfRecordOrRecordItself', 'void', array('uid' => 1));
-		$this->assertEquals(array('uid' => 1), $result);
+		$result = $this->callInaccessibleMethod($instance, 'getWorkspaceVersionOfRecordOrRecordItself', 'void', ['uid' => 1]);
+		$this->assertEquals(['uid' => 1], $result);
 		unset($GLOBALS['BE_USER']);
 	}
 

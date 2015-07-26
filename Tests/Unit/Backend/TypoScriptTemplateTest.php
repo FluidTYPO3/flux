@@ -25,9 +25,9 @@ class TypoScriptTemplateTest extends AbstractTestCase {
 		Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
 		$function = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
 		$template = $this->objectManager->get('TYPO3\\CMS\\Core\\TypoScript\\TemplateService');
-		$parameters = array(
+		$parameters = [
 			'row' => Records::$sysTemplateRoot
-		);
+		];
 		GeneralUtility::callUserFunction($function, $parameters, $template);
 		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);
 	}
@@ -39,9 +39,9 @@ class TypoScriptTemplateTest extends AbstractTestCase {
 		Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
 		$function = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
 		$template = $this->objectManager->get('TYPO3\\CMS\\Core\\TypoScript\\TemplateService');
-		$parameters = array(
+		$parameters = [
 			'row' => Records::$sysTemplateRoot
-		);
+		];
 		$parameters['row']['root'] = 0;
 		GeneralUtility::callUserFunction($function, $parameters, $template);
 		$this->assertNotContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);

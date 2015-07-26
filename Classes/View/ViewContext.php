@@ -33,7 +33,7 @@ class ViewContext {
 	/**
 	 * @var array
 	 */
-	protected $variables = array();
+	protected $variables = [];
 
 	/**
 	 * @var TemplatePaths

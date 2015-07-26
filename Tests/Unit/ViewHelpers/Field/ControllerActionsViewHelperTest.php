@@ -19,37 +19,37 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase {
 	/**
 	 * @var array
 	 */
-	protected $defaultArguments = array(
+	protected $defaultArguments = [
 		'label' => 'Test field',
 		'controllerExtensionName' => '',
 		'pluginName' => 'Flux',
 		'controllerName' => 'Content',
-		'actions' => array(),
+		'actions' => [],
 		'disableLocalLanguageLabels' => FALSE,
-		'excludeActions' => array(),
+		'excludeActions' => [],
 		'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
 		'prefixOnRequiredArguments' => '*',
-		'subActions' => array()
-	);
+		'subActions' => []
+	];
 
 	/**
 	 * @test
 	 */
 	public function acceptsTraversableListOfActions() {
-		$array = array('foo', 'bar');
+		$array = ['foo', 'bar'];
 		$traversable = new \ArrayIterator($array);
-		$arguments = array(
+		$arguments = [
 			'label' => 'Test field',
 			'controllerExtensionName' => 'Flux',
 			'pluginName' => 'API',
 			'controllerName' => 'Flux',
 			'actions' => $traversable,
 			'disableLocalLanguageLabels' => FALSE,
-			'excludeActions' => array(),
+			'excludeActions' => [],
 			'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
 			'prefixOnRequiredArguments' => '*',
-			'subActions' => array()
-		);
+			'subActions' => []
+		];
 		$instance = $this->buildViewHelperInstance($arguments);
 		$component = $instance->getComponent();
 		$this->assertSame($array, $component->getActions());
@@ -59,19 +59,19 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase {
 	 * @test
 	 */
 	public function throwsExceptionOnInvalidExtensionPluginNameAndActionsCombination() {
-		$arguments = array(
+		$arguments = [
 			'label' => 'Test field',
 			'controllerExtensionName' => '',
 			'pluginName' => '',
 			'controllerName' => '',
-			'actions' => array(),
+			'actions' => [],
 			'disableLocalLanguageLabels' => FALSE,
-			'excludeActions' => array(),
+			'excludeActions' => [],
 			'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
 			'prefixOnRequiredArguments' => '*',
-			'subActions' => array()
-		);
-		$instance = $this->buildViewHelperInstance($arguments, array(), NULL, $arguments['extensionName'], $arguments['pluginName']);;
+			'subActions' => []
+		];
+		$instance = $this->buildViewHelperInstance($arguments, [], NULL, $arguments['extensionName'], $arguments['pluginName']);;
 		$this->setExpectedException('RuntimeException', NULL, 1346514748);
 		$instance->initializeArgumentsAndRender();
 	}
@@ -79,20 +79,20 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase {
 	 * @test
 	 */
 	public function supportsUseOfControllerAndActionSeparator() {
-		$arguments = array(
+		$arguments = [
 			'label' => 'Test field',
 			'controllerExtensionName' => 'Flux',
 			'pluginName' => 'API',
 			'controllerName' => 'Flux',
-			'actions' => array(),
+			'actions' => [],
 			'disableLocalLanguageLabels' => FALSE,
-			'excludeActions' => array(),
+			'excludeActions' => [],
 			'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
 			'prefixOnRequiredArguments' => '*',
-			'subActions' => array(),
+			'subActions' => [],
 			'separator' => ' :: '
-		);
-		$instance = $this->buildViewHelperInstance($arguments, array(), NULL, $arguments['extensionName'], $arguments['pluginName']);;
+		];
+		$instance = $this->buildViewHelperInstance($arguments, [], NULL, $arguments['extensionName'], $arguments['pluginName']);;
 		$instance->initializeArgumentsAndRender();
 		$component = $instance->getComponent();
 		$this->assertSame($arguments['separator'], $component->getSeparator());
@@ -102,18 +102,18 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase {
 	 * @test
 	 */
 	public function canGetCombinedExtensionKeyFromRequest() {
-		$arguments = array(
+		$arguments = [
 			'label' => 'Test field',
 			'pluginName' => 'API',
 			'controllerName' => 'Flux',
-			'actions' => array(),
+			'actions' => [],
 			'disableLocalLanguageLabels' => FALSE,
-			'excludeActions' => array(),
+			'excludeActions' => [],
 			'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
 			'prefixOnRequiredArguments' => '*',
-			'subActions' => array(),
+			'subActions' => [],
 			'separator' => ' :: '
-		);
+		];
 		$instance = $this->buildViewHelperInstance($arguments);
 		$request = new Request();
 		$request->setControllerExtensionName('Flux');

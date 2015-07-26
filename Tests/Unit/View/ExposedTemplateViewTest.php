@@ -28,9 +28,9 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function getParsedTemplateReturnsCompiledTemplateIfFound() {
-		$instance = $this->getMock($this->createInstanceClassName(), array('getTemplateIdentifier'));
+		$instance = $this->getMock($this->createInstanceClassName(), ['getTemplateIdentifier']);
 		$instance->expects($this->once())->method('getTemplateIdentifier');
-		$compiler = $this->getMock('TYPO3\\CMS\\Fluid\\Core\\Compiler\\TemplateCompiler', array('has', 'get'));
+		$compiler = $this->getMock('TYPO3\\CMS\\Fluid\\Core\\Compiler\\TemplateCompiler', ['has', 'get']);
 		$compiler->expects($this->once())->method('has')->willReturn(TRUE);
 		$compiler->expects($this->once())->method('get')->willReturn('foobar');
 		ObjectAccess::setProperty($instance, 'templateCompiler', $compiler, TRUE);
@@ -44,7 +44,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	public function previewSectionIsOptional() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$preview = $view->renderStandaloneSection('Preview', array(), TRUE);
+		$preview = $view->renderStandaloneSection('Preview', [], TRUE);
 		$this->assertStringMatchesFormat('', $preview);
 	}
 
@@ -54,7 +54,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	public function canRenderEmptyPreviewSection() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW_EMPTY);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$preview = $view->renderStandaloneSection('Preview', array(), TRUE);
+		$preview = $view->renderStandaloneSection('Preview', [], TRUE);
 		$preview = trim($preview);
 		$this->assertEmpty($preview);
 	}
@@ -65,7 +65,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	public function canRenderCustomSection() {
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_CUSTOM_SECTION);
 		$view = $this->getPreparedViewWithTemplateFile($templatePathAndFilename);
-		$sectionContent = $view->renderStandaloneSection('Custom', array(), TRUE);
+		$sectionContent = $view->renderStandaloneSection('Custom', [], TRUE);
 		$sectionContent = trim($sectionContent);
 		$this->assertEquals('This is a custom section. Do not change this placeholder text.', $sectionContent);
 	}
@@ -178,10 +178,10 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	 */
 	public function getTemplatePathAndFilenameCallsExpectedMethodSequenceInStandardTemplateViewMode() {
 		$request = new Request();
-		$controllerContext = $this->getMock('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerContext', array('getRequest'));
+		$controllerContext = $this->getMock('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerContext', ['getRequest']);
 		$controllerContext->expects($this->once())->method('getRequest')->will($this->returnValue($request));
-		$mock = $this->getMock($this->createInstanceClassName(), array('expandGenericPathPattern'), array(), '', FALSE);
-		$mock->expects($this->any())->method('expandGenericPathPattern')->will($this->returnValue(array('/dev/null/')));
+		$mock = $this->getMock($this->createInstanceClassName(), ['expandGenericPathPattern'], [], '', FALSE);
+		$mock->expects($this->any())->method('expandGenericPathPattern')->will($this->returnValue(['/dev/null/']));
 		$mock->setControllerContext($controllerContext);
 		$this->setExpectedException('TYPO3\\CMS\\Fluid\\View\\Exception\\InvalidTemplateResourceException');
 		$mock->getTemplatePathAndFilename();
@@ -204,11 +204,11 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	 * @return array
 	 */
 	protected function getFixtureTemplatePaths() {
-		$templatePaths = array(
+		$templatePaths = [
 			'templateRootPath' => ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Templates'),
 			'partialRootPath' => ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Partials'),
 			'layoutRootPath' => ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts')
-		);
+		];
 		return $templatePaths;
 	}
 

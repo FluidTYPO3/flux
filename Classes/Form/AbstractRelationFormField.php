@@ -30,7 +30,7 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
 	 *
 	 * @var array
 	 */
-	protected $filter = array();
+	protected $filter = [];
 
 	/**
 	 * The foreign_field is the field of the child record pointing to the

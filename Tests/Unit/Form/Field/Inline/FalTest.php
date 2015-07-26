@@ -19,7 +19,7 @@ class FalTest extends AbstractFieldTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'collapseAll' => FALSE,
 		'expandSingle' => FALSE,
 		'newRecordLinkAddTitle' => FALSE,
@@ -30,7 +30,7 @@ class FalTest extends AbstractFieldTest {
 		'showRemovedLocalizationRecords' => FALSE,
 		'showAllLocalizationLink' => FALSE,
 		'showSynchronizationLink' => FALSE,
-		'enabledControls' => array(
+		'enabledControls' => [
 			Form::CONTROL_INFO => FALSE,
 			Form::CONTROL_NEW => TRUE,
 			Form::CONTROL_DRAGDROP => TRUE,
@@ -38,7 +38,7 @@ class FalTest extends AbstractFieldTest {
 			Form::CONTROL_HIDE => TRUE,
 			Form::CONTROL_DELETE => FALSE,
 			Form::CONTROL_LOCALISE => FALSE,
-		)
-	);
+		]
+	];
 
 }

@@ -89,7 +89,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 		$form = $this->getForm();
 		if (FALSE === $this->viewHelperVariableContainer->exists(self::SCOPE, self::SCOPE_VARIABLE_GRIDS)) {
 			$grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
-			$grids = array($gridName => $grid);
+			$grids = [$gridName => $grid];
 			$this->viewHelperVariableContainer->add(self::SCOPE, self::SCOPE_VARIABLE_GRIDS, $grids);
 		} else {
 			$grids = $this->viewHelperVariableContainer->get(self::SCOPE, self::SCOPE_VARIABLE_GRIDS);

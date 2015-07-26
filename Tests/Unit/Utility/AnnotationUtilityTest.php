@@ -40,10 +40,10 @@ class AnnotationUtilityTest extends AbstractTestCase {
 	 */
 	public function canParseShortAnnotationWithoutArguments() {
 		$annotation = 'input';
-		$expected = array(
+		$expected = [
 			'type' => 'input',
-			'config' => array()
-		);
+			'config' => []
+		];
 		$result = AnnotationUtility::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
@@ -53,12 +53,12 @@ class AnnotationUtilityTest extends AbstractTestCase {
 	 */
 	public function canParseShortAnnotationWithArguments() {
 		$annotation = 'input(size: 10)';
-		$expected = array(
+		$expected = [
 			'type' => 'input',
-			'config' => array(
+			'config' => [
 				'size' => 10
-			)
-		);
+			]
+		];
 		$result = AnnotationUtility::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
@@ -68,13 +68,13 @@ class AnnotationUtilityTest extends AbstractTestCase {
 	 */
 	public function canParseLongAnnotationWithArguments() {
 		$annotation = '{flux:input(default: \'test\', float: 0.5)}';
-		$expected = array(
+		$expected = [
 			'type' => 'input',
-			'config' => array(
+			'config' => [
 				'default' => 'test',
 				'float' => 0.5
-			)
-		);
+			]
+		];
 		$result = AnnotationUtility::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
@@ -84,12 +84,12 @@ class AnnotationUtilityTest extends AbstractTestCase {
 	 */
 	public function canParseLongAnnotationWithSubArrayInArguments() {
 		$annotation = '{flux:input(dummy: {foo: 1, bar: 2})}';
-		$expected = array(
+		$expected = [
 			'type' => 'input',
-			'config' => array(
-				'dummy' => array('foo' => 1, 'bar' => 2)
-			)
-		);
+			'config' => [
+				'dummy' => ['foo' => 1, 'bar' => 2]
+			]
+		];
 		$result = AnnotationUtility::parseAnnotation($annotation);
 		$this->assertEquals($expected, $result);
 	}
@@ -108,14 +108,14 @@ class AnnotationUtilityTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canHandleArraysOfAnnotations() {
-		$annotations = array(
+		$annotations = [
 			'foo' => '',
 			'bar' => ''
-		);
-		$expected = array(
+		];
+		$expected = [
 			'foo' => TRUE,
 			'bar' => TRUE
-		);
+		];
 		$result = AnnotationUtility::parseAnnotation($annotations);
 		$this->assertEquals($expected, $result);
 	}
@@ -124,7 +124,7 @@ class AnnotationUtilityTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canHandleSingleItemArraysOfAnnotations() {
-		$annotations = array('');
+		$annotations = [''];
 		$expected = TRUE;
 		$result = AnnotationUtility::parseAnnotation($annotations);
 		$this->assertEquals($expected, $result);

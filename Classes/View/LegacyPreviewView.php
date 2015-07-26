@@ -14,7 +14,7 @@ use FluidTYPO3\Flux\Form\Container\Column;
  */
 class LegacyPreviewView extends PreviewView {
 
-    protected $templates = array(
+    protected $templates = [
         'grid' => '<table cellspacing="0" cellpadding="0" id="content-grid-%s" class="flux-grid%s">
 						<tbody>
 							%s
@@ -51,7 +51,7 @@ class LegacyPreviewView extends PreviewView {
 							</div>
 							%s
 						</div>'
-    );
+	];
 
 
     /**

@@ -23,13 +23,13 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase {
 		$form = Form::create();
 		$engine = $this->getMock(
 			'TYPO3\\CMS\\Backend\\Form\\FormEngine',
-			array('printNeededJSFunctions_top', 'getSoloField', 'printNeededJSFunctions'),
-			array(), '', FALSE
+			['printNeededJSFunctions_top', 'getSoloField', 'printNeededJSFunctions'],
+			[], '', FALSE
 		);
 		$engine->expects($this->once())->method('printNeededJSFunctions_top')->willReturn('1');
 		$engine->expects($this->once())->method('getSoloField')->willReturn('2');
 		$engine->expects($this->once())->method('printNeededJSFunctions')->willReturn('3');
-		$instance = $this->getMock($this->createInstanceClassName(), array('getFormEngine'));
+		$instance = $this->getMock($this->createInstanceClassName(), ['getFormEngine']);
 		$instance->expects($this->once())->method('getFormEngine')->willReturn($engine);
 		$result = $instance->render($form);
 		$this->assertEquals('123', $result);

@@ -35,9 +35,9 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase {
 	/**
 	 * @var array
 	 */
-	protected $defaultArguments = array(
+	protected $defaultArguments = [
 		'name' => 'test'
-	);
+	];
 
 	/**
 	 * @test
@@ -107,7 +107,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase {
 	 * @param string $pluginName
 	 * @return AbstractViewHelper
 	 */
-	protected function buildViewHelperInstance($arguments = array(), $variables = array(), $childNode = NULL, $extensionName = NULL, $pluginName = NULL) {
+	protected function buildViewHelperInstance($arguments = [], $variables = [], $childNode = NULL, $extensionName = NULL, $pluginName = NULL) {
 		$instance = $this->createInstance();
 		/** @var TemplateVariableContainer $container */
 		$container = $this->objectManager->get('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer');
@@ -149,7 +149,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase {
 		if (NULL !== $childNode) {
 			$node->addChildNode($childNode);
 			if ($instance instanceof ChildNodeAccessInterface) {
-				$instance->setChildNodes(array($childNode));
+				$instance->setChildNodes([$childNode]);
 			}
 		}
 		$instance->setViewHelperNode($node);
@@ -164,7 +164,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase {
 	 * @param string $pluginName
 	 * @return mixed|AbstractViewHelper
 	 */
-	protected function executeViewHelper($arguments = array(), $variables = array(), $childNode = NULL, $extensionName = NULL, $pluginName = NULL) {
+	protected function executeViewHelper($arguments = [], $variables = [], $childNode = NULL, $extensionName = NULL, $pluginName = NULL) {
 		$instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
 		$output = $instance->initializeArgumentsAndRender();
 		return $output;
@@ -179,7 +179,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase {
 	 * @param string $pluginName
 	 * @return mixed|AbstractViewHelper
 	 */
-	protected function executeViewHelperUsingTagContent($nodeType, $nodeValue, $arguments = array(), $variables = array(), $extensionName = NULL, $pluginName = NULL) {
+	protected function executeViewHelperUsingTagContent($nodeType, $nodeValue, $arguments = [], $variables = [], $extensionName = NULL, $pluginName = NULL) {
 		$childNode = $this->createNode($nodeType, $nodeValue);
 		$instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
 		$output = $instance->initializeArgumentsAndRender();

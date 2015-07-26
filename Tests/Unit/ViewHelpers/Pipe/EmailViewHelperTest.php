@@ -20,7 +20,7 @@ class EmailViewHelperTest extends AbstractViewHelperTestCase {
 	 * @param array $arguments
 	 */
 	public function testWithArguments(array $arguments) {
-		$result = $this->executeViewHelper($arguments, array(), NULL, NULL, 'FakePlugin');
+		$result = $this->executeViewHelper($arguments, [], NULL, NULL, 'FakePlugin');
 		$this->assertNull($result);
 	}
 
@@ -28,9 +28,9 @@ class EmailViewHelperTest extends AbstractViewHelperTestCase {
 	 * @return array
 	 */
 	public function getTestArguments() {
-		return array(
-			array(array()),
-		);
+		return [
+			[[]],
+		];
 	}
 
 }

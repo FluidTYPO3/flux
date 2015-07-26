@@ -61,26 +61,26 @@ class Select extends AbstractMultiValueFormField {
 	 * @return array
 	 */
 	public function getItems() {
-		$items = array();
+		$items = [];
 		if (TRUE === $this->items instanceof QueryInterface) {
 			$items = $this->addOptionsFromResults($this->items);
 		} elseif (TRUE === is_string($this->items)) {
 			$itemNames = GeneralUtility::trimExplode(',', $this->items);
 			foreach ($itemNames as $itemName) {
-				array_push($items, array($itemName, $itemName));
+				array_push($items, [$itemName, $itemName]);
 			}
 		} elseif (TRUE === is_array($this->items) || TRUE === $this->items instanceof \Traversable) {
 			foreach ($this->items as $itemIndex => $itemValue) {
 				if (TRUE === is_array($itemValue) || TRUE === $itemValue instanceof \ArrayObject) {
 					array_push($items, $itemValue);
 				} else {
-					array_push($items, array($itemValue, $itemIndex));
+					array_push($items, [$itemValue, $itemIndex]);
 				}
 			}
 		}
 		$emptyOption = $this->getEmptyOption();
 		if (FALSE !== $emptyOption) {
-			array_unshift($items, array('', $emptyOption));
+			array_unshift($items, ['', $emptyOption]);
 		}
 		return $items;
 	}
@@ -106,14 +106,14 @@ class Select extends AbstractMultiValueFormField {
 	 * @return array
 	 */
 	protected function addOptionsFromResults(QueryInterface $query) {
-		$items = array();
+		$items = [];
 		$results = $query->execute();
 		$type = $query->getType();
 		$table = strtolower(str_replace('\\', '_', $type));
 		$propertyName = $this->getLabelPropertyName($table, $type);
 		foreach ($results as $result) {
 			$uid = $result->getUid();
-			array_push($items, array(ObjectAccess::getProperty($result, $propertyName), $uid));
+			array_push($items, [ObjectAccess::getProperty($result, $propertyName), $uid]);
 		}
 		return $items;
 	}

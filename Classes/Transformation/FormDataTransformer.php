@@ -92,7 +92,7 @@ class FormDataTransformer {
 		$identifiers = TRUE === is_array($uids) ? $uids : GeneralUtility::trimExplode(',', trim($uids, ','), TRUE);
 		$identifiers = array_map('intval', $identifiers);
 		$isModel = $this->isDomainModelClassName($dataType);
-		list ($container, $object) = FALSE !== strpos($dataType, '<') ? explode('<', trim($dataType, '>')) : array(NULL, $dataType);
+		list ($container, $object) = FALSE !== strpos($dataType, '<') ? explode('<', trim($dataType, '>')) : [NULL, $dataType];
 		$repositoryClassName = $this->resolveRepositoryClassName($object);
 		// Fast decisions
 		if (TRUE === $isModel && NULL === $container) {
@@ -140,7 +140,7 @@ class FormDataTransformer {
 	 * @return mixed
 	 */
 	protected function loadObjectsFromRepository(RepositoryInterface $repository, array $identifiers) {
-		return array_map(array($repository, 'findByUid'), $identifiers);
+		return array_map([$repository, 'findByUid'], $identifiers);
 	}
 
 }

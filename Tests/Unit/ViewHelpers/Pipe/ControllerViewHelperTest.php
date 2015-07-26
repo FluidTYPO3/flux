@@ -20,7 +20,7 @@ class ControllerViewHelperTest extends AbstractViewHelperTestCase {
 	 * @param array $arguments
 	 */
 	public function testWithArguments(array $arguments) {
-		$result = $this->executeViewHelper($arguments, array(), NULL, NULL, 'FakePlugin');
+		$result = $this->executeViewHelper($arguments, [], NULL, NULL, 'FakePlugin');
 		$this->assertNull($result);
 	}
 
@@ -28,11 +28,11 @@ class ControllerViewHelperTest extends AbstractViewHelperTestCase {
 	 * @return array
 	 */
 	public function getTestArguments() {
-		return array(
-			array(array()),
-			array(array('controller' => 'SomeClass')),
-			array(array('controller' => 'SomeClass', 'action' => 'foobar')),
-		);
+		return [
+			[[]],
+			[['controller' => 'SomeClass']],
+			[['controller' => 'SomeClass', 'action' => 'foobar']],
+		];
 	}
 
 }

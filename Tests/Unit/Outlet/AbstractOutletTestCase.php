@@ -26,9 +26,9 @@ abstract class AbstractOutletTestCase extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetAndSetPipesIn() {
-		$pipes = array(
+		$pipes = [
 			$this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe')
-		);
+		];
 		$this->assertGetterAndSetterWorks('pipesIn', $pipes, $pipes, TRUE);
 	}
 
@@ -46,9 +46,9 @@ abstract class AbstractOutletTestCase extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetAndSetPipesOut() {
-		$pipes = array(
+		$pipes = [
 			$this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe')
-		);
+		];
 		$this->assertGetterAndSetterWorks('pipesOut', $pipes, $pipes, TRUE);
 	}
 
@@ -67,12 +67,12 @@ abstract class AbstractOutletTestCase extends AbstractTestCase {
 	 */
 	public function fillsWithDataAndConductsUsingPipes() {
 		$instance = $this->createInstance();
-		$data = array('test');
-		$pipe = $this->getMock('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe', array('conduct'));
+		$data = ['test'];
+		$pipe = $this->getMock('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe', ['conduct']);
 		$pipe->expects($this->exactly(2))->method('conduct')->with($data)->will($this->returnValue($data));
-		$pipes = array(
+		$pipes = [
 			$pipe
-		);
+		];
 		$output = $instance->setPipesIn($pipes)->setPipesOut($pipes)->fill($data)->produce();
 		$this->assertSame($data, $output);
 	}

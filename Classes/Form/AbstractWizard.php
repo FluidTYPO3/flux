@@ -45,13 +45,13 @@ abstract class AbstractWizard extends AbstractFormComponent implements WizardInt
 	 * @return array
 	 */
 	public function build() {
-		$structure = array(
+		$structure = [
 			'type' => $this->type,
 			'title' => $this->getLabel(),
 			'icon' => $this->icon,
 			'hideParent' => intval($this->getHideParent()),
 			'module' => $this->module
-		);
+		];
 		$configuration = $this->buildConfiguration();
 		$structure = array_merge($structure, $configuration);
 		return $structure;

@@ -20,7 +20,7 @@ class UserFunction extends AbstractFormField implements FieldInterface {
 	/**
 	 * @var array
 	 */
-	protected $arguments = array();
+	protected $arguments = [];
 
 	/**
 	 * @var string

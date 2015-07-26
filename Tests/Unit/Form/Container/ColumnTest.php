@@ -16,9 +16,9 @@ class ColumnTest extends AbstractContainerTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'columnPosition' => 1
-	);
+	];
 
 }

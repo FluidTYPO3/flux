@@ -16,24 +16,24 @@ class CustomTest extends AbstractFieldTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
-		'arguments' => array(
+		'arguments' => [
 			'foo' => 'bar'
-		)
-	);
+		]
+	];
 
 	/**
 	 * @test
 	 */
 	public function canUseClosure() {
 		$self = $this;
-		$arguments = array(
+		$arguments = [
 			'closure' => function($parameters) use ($self) {
 				return 'Hello world';
 			}
-		);
+		];
 		$instance = $this->canChainAllChainableSetters($arguments);
 		$closure = $instance->getClosure();
 		$this->assertSame($arguments['closure'], $closure);

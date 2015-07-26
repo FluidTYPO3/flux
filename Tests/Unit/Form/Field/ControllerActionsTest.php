@@ -19,30 +19,30 @@ class ControllerActionsTest extends AbstractFieldTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'switchableControllerActions',
 		'label' => 'Test field',
 		'enable' => TRUE,
 		'controllerExtensionName' => 'FluidTYPO3.Flux',
 		'pluginName' => 'API',
 		'controllerName' => 'Flux',
-		'actions' => array(),
+		'actions' => [],
 		'disableLocalLanguageLabels' => FALSE,
-		'excludeActions' => array(),
+		'excludeActions' => [],
 		'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang.xlf',
 		'prefixOnRequiredArguments' => '*',
-		'subActions' => array()
-	);
+		'subActions' => []
+	];
 
 	/**
 	 * @test
 	 */
 	public function canUseRawItems() {
 		$component = $this->createInstance();
-		$items = array(
-			array('foo' => 'Foo'),
-			array('bar' => 'Bar')
-		);
+		$items = [
+			['foo' => 'Foo'],
+			['bar' => 'Bar']
+		];
 		$component->setItems($items);
 		$this->assertSame($items, $component->getItems());
 	}
@@ -62,7 +62,7 @@ class ControllerActionsTest extends AbstractFieldTest {
 	 */
 	public function convertActionListToArrayReturnsSameValueIfAlreadyArray() {
 		$component = $this->createInstance();
-		$input = array();
+		$input = [];
 		$output = $this->callInaccessibleMethod($component, 'convertActionListToArray', $input);
 		$this->assertEquals($input, $output);
 	}
@@ -170,12 +170,12 @@ class ControllerActionsTest extends AbstractFieldTest {
 	 * @test
 	 */
 	public function respectsExcludedActions() {
-		$actions = array(
+		$actions = [
 			'Content' => 'render,fake'
-		);
-		$excludedActions = array(
+		];
+		$excludedActions = [
 			'Content' => 'fake',
-		);
+		];
 		/** @var ControllerActions $component */
 		$component = $this->createInstance();
 		$component->setExcludeActions($excludedActions);
@@ -191,10 +191,10 @@ class ControllerActionsTest extends AbstractFieldTest {
 	 * @test
 	 */
 	public function skipsOtherControllersInActionsIfControllerSpecifiedInBothPropertyAndActions() {
-		$actions = array(
+		$actions = [
 			'Content' => 'fake',
 			'Other' => 'fake'
-		);
+		];
 		class_alias('FluidTYPO3\Flux\Controller\ContentController', 'FluidTYPO3\Flux\Controller\OtherController');
 		/** @var ControllerActions $component */
 		$component = $this->createInstance();
@@ -211,9 +211,9 @@ class ControllerActionsTest extends AbstractFieldTest {
 	 * @test
 	 */
 	public function skipsActionsWhichDoNotHaveAssociatedControllerMethods() {
-		$actions = array(
+		$actions = [
 			'Content' => 'fake,doesNotExist'
-		);
+		];
 		/** @var ControllerActions $component */
 		$component = $this->createInstance();
 		$component->setActions($actions);
@@ -229,17 +229,17 @@ class ControllerActionsTest extends AbstractFieldTest {
 	 * @test
 	 */
 	public function supportsSubActions() {
-		$actions = array(
+		$actions = [
 			'Content' => 'fake'
-		);
-		$subActions = array(
-			'Content' => array(
+		];
+		$subActions = [
+			'Content' => [
 				'fake' => 'render'
-			)
-		);
-		$expected = array(
-			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:.content.fake', 'Content->fake;Content->render')
-		);
+			]
+		];
+		$expected = [
+			['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:.content.fake', 'Content->fake;Content->render']
+		];
 		/** @var ControllerActions $component */
 		$component = $this->createInstance();
 		$component->setActions($actions);
@@ -258,7 +258,7 @@ class ControllerActionsTest extends AbstractFieldTest {
 		$instance->setPluginName('None');
 		$instance->setControllerExtensionName('FluidTYPO3.Flux');
 		$output = $this->callInaccessibleMethod($instance, 'getActionsForExtensionNameAndPluginName');
-		$expected = array();
+		$expected = [];
 		$this->assertEquals($expected, $output);
 	}
 
@@ -268,16 +268,16 @@ class ControllerActionsTest extends AbstractFieldTest {
 	public function buildItemsForActionsSkipsNonExistingControllerNames() {
 		$instance = $this->createInstance();
 		$instance->setControllerExtensionName('FluidTYPO3.Flux');
-		$actions = array(
+		$actions = [
 			'Content' => 'render',
 			'DoesNotExist' => 'render'
-		);
-		$expected = array(
-			array(
+		];
+		$expected = [
+			[
 				'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:.content.render',
 				'Content->render'
-			)
-		);
+			]
+		];
 		$output = $this->callInaccessibleMethod($instance, 'buildItemsForActions', $actions);
 		$this->assertEquals($expected, $output);
 	}
@@ -336,10 +336,10 @@ class ControllerActionsTest extends AbstractFieldTest {
 		$instance->setExtensionName('Flux');
 		/** @var Form $form */
 		$instance->setName('testFormId');
-		$form = Form::create(array(
+		$form = Form::create([
 			'name' => 'test',
 			'extensionName' => 'flux'
-		));
+		]);
 		$form->add($instance);
 		$label = $instance->getLabel();
 		$this->assertContains('switchableControllerActions', $label);
@@ -353,8 +353,8 @@ class ControllerActionsTest extends AbstractFieldTest {
 		$instance = $this->createInstance();
 		$instance->setControllerExtensionName('Extension');
 		$instance->setPluginName('Plugin');
-		$actions = array('Controller' => array('actions' => array('action1', 'action2')));
-		$expected = array('Controller' => array('action1', 'action2'));
+		$actions = ['Controller' => ['actions' => ['action1', 'action2']]];
+		$expected = ['Controller' => ['action1', 'action2']];
 		$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']['Extension']['plugins']['Plugin']['controllers'] = $actions;
 		$result = $this->callInaccessibleMethod($instance, 'getActionsForExtensionNameAndPluginName');
 		$this->assertEquals($expected, $result);

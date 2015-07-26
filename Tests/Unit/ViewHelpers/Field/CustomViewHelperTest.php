@@ -30,9 +30,9 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase {
 	 * @test
 	 */
 	public function canGenerateAndExecuteClosureWithArgumentCollisionAndBackups() {
-		$arguments = array(
+		$arguments = [
 			'parameters' => 'Fake parameter'
-		);
+		];
 		$container = $this->executeViewHelperClosure($arguments);
 		$this->assertSame($container->get('parameters'), $arguments['parameters']);
 	}
@@ -41,13 +41,13 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase {
 	 * @param array $templateVariableContainerArguments
 	 * @return TemplateVariableContainer
 	 */
-	protected function executeViewHelperClosure($templateVariableContainerArguments = array()) {
+	protected function executeViewHelperClosure($templateVariableContainerArguments = []) {
 		$instance = $this->objectManager->get('FluidTYPO3\Flux\ViewHelpers\Field\CustomViewHelper');
 		$renderingContext = $this->objectManager->get('TYPO3\CMS\Fluid\Core\Rendering\RenderingContext');
 		$container = $renderingContext->getTemplateVariableContainer();
-		$arguments = array(
+		$arguments = [
 			'name' => 'custom'
-		);
+		];
 		foreach ($templateVariableContainerArguments as $name => $value) {
 			$container->add($name, $value);
 		}
@@ -58,10 +58,10 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase {
 		$instance->setViewHelperNode($node);
 		/** @var \Closure $closure */
 		$closure = $this->callInaccessibleMethod($instance, 'buildClosure');
-		$parameters = array(
+		$parameters = [
 			'itemFormElName' => 'test',
 			'itemFormElLabel' => 'Test label',
-		);
+		];
 		$output = $closure($parameters);
 		$this->assertNotEmpty($output);
 		$this->assertSame('Hello world!', $output);

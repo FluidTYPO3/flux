@@ -25,7 +25,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => TRUE);
+	protected $chainProperties = ['name' => 'test', 'label' => 'Test field', 'enabled' => TRUE];
 
 	/**
 	 * @return FormInterface
@@ -49,7 +49,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetAndSetVariables() {
-		$variables = array('test' => 'foobar');
+		$variables = ['test' => 'foobar'];
 		$this->assertGetterAndSetterWorks('variables', $variables, $variables, TRUE);
 	}
 
@@ -71,7 +71,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		$instance = $this->objectManager->get($className);
 		$instance->setName('test');
 		if (TRUE === $instance instanceof FieldInterface || TRUE === $instance instanceof ContainerInterface) {
-			$form = Form::create(array('extensionKey' => 'flux'));
+			$form = Form::create(['extensionKey' => 'flux']);
 			$form->add($instance);
 		}
 		$label = $instance->getLabel();
@@ -101,10 +101,10 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		} else {
 			/** @var Form $form */
 			$instance->setName('testFormId');
-			$form = Form::create(array(
+			$form = Form::create([
 				'name' => 'test',
 				'extensionName' => 'flux'
-			));
+			]);
 			$form->add($instance);
 		}
 		$label = $instance->getLabel();
@@ -134,7 +134,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		$instance = $this->createInstance();
 		foreach ($chainPropertiesAndValues as $propertyName => $propertValue) {
 			$setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
-			$chained = call_user_func_array(array($instance, $setterMethodName), array($propertValue));
+			$chained = call_user_func_array([$instance, $setterMethodName], [$propertValue]);
 			$this->assertSame($instance, $chained, 'The setter ' . $setterMethodName . ' on ' . $this->getObjectClassName() . ' does not support chaining.');
 			if ($chained === $instance) {
 				$instance = $chained;
@@ -190,11 +190,11 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canCreateFromDefinition() {
-		$properties = array($this->chainProperties);
+		$properties = [$this->chainProperties];
 		$class = $this->getObjectClassName();
 		$type = implode('/', array_slice(explode('_', substr($class, 13)), 1));
 		$properties['type'] = $type;
-		$instance = call_user_func_array(array($class, 'create'), array($properties));
+		$instance = call_user_func_array([$class, 'create'], [$properties]);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
 	}
 
@@ -203,7 +203,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	 */
 	public function canUseShorthandLanguageLabel() {
 		$className = $this->getObjectClassName();
-		$instance = $this->getMock($className, array('getExtensionKey', 'getName', 'getRoot'));
+		$instance = $this->getMock($className, ['getExtensionKey', 'getName', 'getRoot']);
 		$instance->expects($this->never())->method('getExtensionKey');
 		$instance->expects($this->once())->method('getRoot')->will($this->returnValue(NULL));
 		$instance->expects($this->once())->method('getName')->will($this->returnValue('form'));
@@ -229,20 +229,20 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getLabelTranslationTestValues() {
-		return array(
-			array('label', NULL, 'label'),
-			array('LLL:tt_content.tx_flux_container', 'flux', 'Content Container'),
-			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', NULL, 'Content Container'),
-			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', 'flux', 'Content Container'),
-		);
+		return [
+			['label', NULL, 'label'],
+			['LLL:tt_content.tx_flux_container', 'flux', 'Content Container'],
+			['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', NULL, 'Content Container'],
+			['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', 'flux', 'Content Container'],
+		];
 	}
 
 	/**
 	 * @test
 	 */
 	public function canModifyProperties() {
-		$mock = $this->getMock($this->createInstanceClassName(), array('dummy'));
-		$properties = array('enabled' => FALSE);
+		$mock = $this->getMock($this->createInstanceClassName(), ['dummy']);
+		$properties = ['enabled' => FALSE];
 		$mock->modify($properties);
 		$result = $mock->getEnabled();
 		$this->assertFalse($result);
@@ -252,9 +252,9 @@ abstract class AbstractFormTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canModifyVariablesSelectively() {
-		$mock = $this->getMock($this->createInstanceClassName(), array('dummy'));
-		$mock->setVariables(array('foo' => 'baz', 'abc' => 'xyz'));
-		$properties = array('options' => array('foo' => 'bar'));
+		$mock = $this->getMock($this->createInstanceClassName(), ['dummy']);
+		$mock->setVariables(['foo' => 'baz', 'abc' => 'xyz']);
+		$properties = ['options' => ['foo' => 'bar']];
 		$mock->modify($properties);
 		$this->assertEquals('bar', $mock->getVariable('foo'));
 		$this->assertEquals('xyz', $mock->getVariable('abc'));
