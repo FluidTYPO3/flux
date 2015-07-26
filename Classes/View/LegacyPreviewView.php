@@ -66,7 +66,7 @@ class LegacyPreviewView extends PreviewView {
      * @return string
      */
     protected function parseGridColumnTemplate(array $row, Column $column, $colPosFluxContent, $dblist, $target, $id, $content) {
-        return sprintf($this->templates['gridColumn'],
+        return sprintf($this->templates['gridColumnLegacy'],
 			$column->getColspan(),
 			$column->getRowspan(),
 			$column->getStyle(),
