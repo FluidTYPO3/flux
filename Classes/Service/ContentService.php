@@ -11,8 +11,11 @@ namespace FluidTYPO3\Flux\Service;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Flux FlexForm integration Service
@@ -37,6 +40,11 @@ class ContentService implements SingletonInterface {
 	protected $workspacesAwareRecordService;
 
 	/**
+	 * @var FlashMessageService
+	 */
+	protected $flashMessageService;
+
+	/**
 	 * @param RecordService $recordService
 	 * @return void
 	 */
@@ -50,6 +58,14 @@ class ContentService implements SingletonInterface {
 	 */
 	public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService) {
 		$this->workspacesAwareRecordService = $workspacesAwareRecordService;
+	}
+
+	/**
+	 * @param FlashMessageService $flashMessageService
+	 * @return void
+	 */
+	public function injectFlashMessageService(FlashMessageService $flashMessageService) {
+		$this->flashMessageService = $flashMessageService;
 	}
 
 	/**
@@ -90,6 +106,15 @@ class ContentService implements SingletonInterface {
 			// Parameters were passed in a hyphen-glued string, created by Flux and passed into command.
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
 			$parentUid = (integer) $parentUid;
+			if ((integer) $id === $parentUid) {
+				if ('reference' === $subCommand) {
+					$errorMessage = LocalizationUtility::translate('error.flashMessage.paste_reference.nesting_loop', 'Flux');
+				} else {
+					$errorMessage = LocalizationUtility::translate('error.flashMessage.paste.nesting_loop', 'Flux');
+				}
+				$this->enqueueFlashErrorMessage($errorMessage);
+				return;
+			}
 			$relativeUid = 0 - (integer) $relativeUid;
 			if (FALSE === empty($possibleArea)) {
 				// Flux content area detected, override colPos to virtual Flux column number.
@@ -353,6 +378,25 @@ class ContentService implements SingletonInterface {
 	protected function getTargetAreaStoredInSession($relativeTo) {
 		'' !== session_id() ?  : session_start();
 		return $_SESSION['target' . $relativeTo];
+	}
+
+	/**
+	 * @param $errorMessage String
+	 *
+	 * @throws \TYPO3\CMS\Core\Exception
+	 */
+	private function enqueueFlashErrorMessage($errorMessage) {
+		/** @var $defaultFlashMessageQueue \TYPO3\CMS\Core\Messaging\FlashMessageQueue */
+		$defaultFlashMessageQueue = $this->flashMessageService->getMessageQueueByIdentifier();
+		/** @var $errorMessage \TYPO3\CMS\Core\Messaging\FlashMessage */
+		$flashMessage = GeneralUtility::makeInstance(
+			'TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+			htmlspecialchars($errorMessage),
+			htmlspecialchars( LocalizationUtility::translate('error.flashMessage.paste.title', 'Flux') ),
+			FlashMessage::ERROR,
+			TRUE
+		);
+		$defaultFlashMessageQueue->enqueue($flashMessage);
 	}
 
 }
