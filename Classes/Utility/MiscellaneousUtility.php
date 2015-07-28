@@ -92,6 +92,22 @@ class MiscellaneousUtility {
 	}
 
 	/**
+	 * Returns a generated icon file into typo3temp/pics
+	 * @param $originalFile
+	 * @param int $width
+	 * @param int $height
+	 * @return string
+	 */
+	public static function createIcon($originalFile, $width, $height) {
+		/** @var \TYPO3\CMS\Core\Imaging\GraphicalFunctions $image */
+		$image = GeneralUtility::makeInstance('\TYPO3\CMS\Core\Imaging\GraphicalFunctions');
+		$image->absPrefix = PATH_site;
+		$image->png_truecolor = TRUE;
+		$image->init();
+		$newResource = $image->imageMagickConvert($originalFile, 'png', $width, $height, '', '', array(), TRUE);
+		return str_replace(PATH_site, '/', $newResource[3]);
+	}
+	/**
 	 * Cleans flex form XML, removing any field nodes identified
 	 * in $removals and trimming the result to avoid empty containers.
 	 *
