@@ -90,6 +90,10 @@ class ContentService implements SingletonInterface {
 			// Parameters were passed in a hyphen-glued string, created by Flux and passed into command.
 			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
 			$parentUid = (integer) $parentUid;
+			// Parent into same grid results in endless loop
+			if ('move' === $command && (integer) $id === $parentUid && (integer) $pid === (integer) $row['pid']) {
+				return;
+			}
 			$relativeUid = 0 - (integer) $relativeUid;
 			if (FALSE === empty($possibleArea)) {
 				// Flux content area detected, override colPos to virtual Flux column number.
