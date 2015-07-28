@@ -31,6 +31,8 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
 		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
+		$this->registerArgument('inherit', 'boolean', 'If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider', FALSE, FALSE);
+		$this->registerArgument('inheritEmpty', 'boolean', 'If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider', FALSE, FALSE);
 	}
 
 	/**
@@ -43,6 +45,8 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 		$section = $container->createContainer('Section', $this->arguments['name'], $this->arguments['label']);
 		$section->setExtensionName($this->getExtensionName());
 		$section->setVariables($this->arguments['variables']);
+		$section->setInherit($this->arguments['inherit']);
+		$section->setInheritEmpty($this->arguments['inheritEmpty']);
 		$this->setContainer($section);
 		$this->renderChildren();
 		$this->setContainer($container);
