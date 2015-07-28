@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Utility;
 
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Backend\Utility\IconUtility;
+use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -89,6 +90,23 @@ class MiscellaneousUtility {
 			return $iconRelPathAndFilename;
 		}
 		return NULL;
+	}
+
+	/**
+	 * Returns a generated icon file into typo3temp/pics
+	 * @param string $originalFile
+	 * @param integer $width
+	 * @param integer $height
+	 * @return string
+	 */
+	public static function createIcon($originalFile, $width, $height) {
+		/** @var GraphicalFunctions $image */
+		$image = GeneralUtility::makeInstance('TYPO3\CMS\Core\Imaging\GraphicalFunctions');
+		$image->absPrefix = PATH_site;
+		$image->png_truecolor = TRUE;
+		$image->init();
+		$newResource = $image->imageMagickConvert($originalFile, 'png', $width, $height, '', '', array(), TRUE);
+		return str_replace(PATH_site, '/', $newResource[3]);
 	}
 
 	/**
