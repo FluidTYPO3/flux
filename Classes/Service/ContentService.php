@@ -13,6 +13,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Flux FlexForm integration Service
@@ -151,6 +152,9 @@ class ContentService implements SingletonInterface {
 			if (0 > $relativeUid) {
 				$record['sorting'] = $tceMain->resorting($table, $relativeRecord['pid'], 'sorting', abs($relativeUid));
 			}
+			if($GLOBALS['BE_USER']->workspaceRec['uid'] != 0) {
+				$record['t3ver_wsid'] = $GLOBALS['BE_USER']->workspaceRec['uid'];
+			}
 			$this->updateRecordInDatabase($record);
 			$tceMain->registerDBList[$table][$record['uid']];
 		}
@@ -208,11 +212,15 @@ class ContentService implements SingletonInterface {
 			} elseif (0 <= (integer) $relativeTo && FALSE === empty($parameters[1])) {
 				list($prefix, $column, $prefix2, , , $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
 				$relativeUid = (integer) $relativeUid;
+				$relativePosition = 'top';
 				if ('colpos' === $prefix && 'page' === $prefix2) {
 					$row['colPos'] = $column;
 					if ('top' === $relativePosition && 0 < $relativeUid) {
 						$row['tx_flux_parent'] = $relativeUid;
 						$row['tx_flux_column'] = $area;
+						if($GLOBALS['BE_USER']->workspaceRec['uid'] != 0) {
+							$row['t3ver_wsid'] = $GLOBALS['BE_USER']->workspaceRec['uid'];
+						}
 					}
 				}
 			} elseif (0 > (integer) $relativeTo) {

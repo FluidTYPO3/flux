@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Provider;
 use FluidTYPO3\Flux\Service\ContentService;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * LightweightProvider for moved records
@@ -52,7 +53,27 @@ class LightweightProvider {
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference) {
 		$moveData = $this->getMoveData();
-		$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
+		if(empty($moveData) === TRUE) {
+			$callback = $this->getCallbackCommand();
+			if (TRUE === isset($callback['paste'])) {
+				$pasteCommand = $callback['paste'];
+				$parameters = explode('|', $pasteCommand);
+				$parameters[1] = 'colpos-18181-page-'.$parameters[1];
+				$moveData = $parameters;
+			}
+		}
+
+		if($command == 'copy') {
+			$callback = $this->getCallbackCommand();
+			if (TRUE === isset($callback['paste'])) {
+				$pasteCommand = $callback['paste'];
+				$parameters = explode('|', $pasteCommand);
+				$this->contentService->pasteAfter($command, $row, $parameters, $reference);
+			}
+		} else {
+			$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
+		}
+
 	}
 
 	/**

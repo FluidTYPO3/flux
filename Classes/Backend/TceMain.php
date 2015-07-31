@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * @package Flux
@@ -182,7 +183,13 @@ class TceMain {
 			if (TRUE === empty($detectedProviders) && 'move' === $arguments['command']) {
 				$detectedProviders = array($this->objectManager->get('FluidTYPO3\Flux\Provider\LightweightProvider'));
 			}
+
+			if (TRUE === empty($detectedProviders) && 'copy' === $arguments['command']) {
+				$detectedProviders = array($this->objectManager->get('FluidTYPO3\Flux\Provider\LightweightProvider'));
+			}
+
 			foreach ($detectedProviders as $provider) {
+
 				if (TRUE === $provider->shouldCall($methodName, $id)) {
 					call_user_func_array(array($provider, $methodName), array_values($arguments));
 					$provider->trackMethodCall($methodName, $id);
