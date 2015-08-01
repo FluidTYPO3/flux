@@ -13,6 +13,9 @@ namespace FluidTYPO3\Flux\Hooks;
  */
 class LegacyContentIconHookSubscriber extends ContentIconHookSubscriber {
 
+	/**
+	 * @var array
+	 */
 	protected $templates = array(
 		'iconWrapper' => '<span class="t3-icon t3-icon-empty t3-icon-empty-empty"
 								style="float: left; vertical-align: bottom; margin-top: 2px;">%s</span>'

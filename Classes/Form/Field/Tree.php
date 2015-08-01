@@ -88,8 +88,8 @@ class Tree extends AbstractRelationFormField {
 	}
 
 	/**
-	* @return string
-	*/
+	 * @return string
+	 */
 	public function getParentField() {
 		return $this->parentField;
 	}

@@ -29,6 +29,9 @@ class ContentIconHookSubscriber {
 	 */
 	protected static $assetsIncluded = FALSE;
 
+	/**
+	 * @var array
+	 */
 	protected $templates = array(
 		'iconWrapper' => '</div><span class="t3-icon t3-icon-empty t3-icon-empty-empty fluidcontent-icon">%s</span><div class="fluidcontent-hack">'
 	);

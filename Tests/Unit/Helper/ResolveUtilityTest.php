@@ -18,7 +18,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 /**
  * @package Flux
  */
-class ResolverTest extends AbstractTestCase {
+class ResolveUtilityTest extends AbstractTestCase {
 
 	/**
 	 * @test

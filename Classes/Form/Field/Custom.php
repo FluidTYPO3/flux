@@ -14,10 +14,10 @@ namespace FluidTYPO3\Flux\Form\Field;
  */
 class Custom extends UserFunction {
 
-	/*
+	/**
 	 * @var \Closure
 	 */
-	protected $closure = NULL;
+	protected $closure;
 
 	/**
 	 * @return array

@@ -21,17 +21,17 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 class Dummy extends AbstractEntity {
 
 	/**
+	 * @var \DateTime
 	 * @Flux\Form\Field dateTime
 	 * @Flux\Form\Sheet options
-	 * @var \DateTime
 	 */
 	protected $crdate;
 
 	/**
+	 * @var string
 	 * @Flux\Label
 	 * @Flux\Form\Sheet options
 	 * @Flux\Form\Field input(size: 40)
-	 * @var string
 	 */
 	protected $title;
 

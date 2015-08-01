@@ -86,7 +86,7 @@ class MiscellaneousUtility {
 			$iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
 			$filesInFolder = (TRUE === is_dir($iconFolder) ? glob($iconMatchPattern, GLOB_BRACE) : array());
 			$iconFile = (TRUE === is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : NULL);
-			$iconRelPathAndFilename = (FALSE === is_null($iconFile)) ? $iconAbsoluteUrl . str_replace($iconFolder, '', $iconFile) : NULL;
+			$iconRelPathAndFilename = (NULL !== $iconFile) ? $iconAbsoluteUrl . str_replace($iconFolder, '', $iconFile) : NULL;
 			return $iconRelPathAndFilename;
 		}
 		return NULL;

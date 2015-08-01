@@ -13,8 +13,10 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -77,7 +79,8 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	 * @return NULL
 	 */
 	public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem) {
-		$fieldName = NULL; // every provider for tt_content will be asked to get a preview
+		// every provider for tt_content will be asked to get a preview
+		$fieldName = NULL;
 		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
 			$itemContent = $this->createShortcutIcon($row) . $itemContent;
 		} else {
@@ -142,7 +145,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 			// is not the perfect solution for Flux Grids!
 			// an adapted version of DragDrop.js is used - Resources/Public/js/VersionSevenPointTwo/DragDrop.js
 			// Also fluxCollapse.js is updated.
-			$fullJsPath = \TYPO3\CMS\Core\Utility\PathUtility::getRelativePath(PATH_typo3, GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/js/'));
+			$fullJsPath = PathUtility::getRelativePath(PATH_typo3, GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/js/'));
 
 			// requirejs
 			$pageRenderer->addRequireJsConfiguration(array(

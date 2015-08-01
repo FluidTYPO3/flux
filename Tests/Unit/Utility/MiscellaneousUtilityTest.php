@@ -22,7 +22,7 @@ use org\bovigo\vfs\vfsStreamDirectory;
 /**
  * @package Flux
  */
-class MiscellaneousUtiltyTest extends AbstractTestCase {
+class MiscellaneousUtilityTest extends AbstractTestCase {
 
 	/**
 	 * Setup

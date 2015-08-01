@@ -32,10 +32,10 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['move
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] = 'FluidTYPO3\Flux\Backend\TceMain->clearCacheCommand';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'] = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux'] = 'FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor';
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] =
-	TRUE === version_compare(TYPO3_version, '7.1', '<')
-		? 'FluidTYPO3\Flux\Backend\LegacyPreview'
-		: 'FluidTYPO3\Flux\Backend\Preview';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = 'FluidTYPO3\Flux\Backend\Preview';
+if (TRUE === version_compare(TYPO3_version, '7.1', '<')) {
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = 'FluidTYPO3\Flux\Backend\LegacyPreview';
+}
 
 
 if (TRUE === class_exists('FluidTYPO3\Flux\Core')) {
@@ -57,7 +57,7 @@ $extbaseObjectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('
 $extbaseObjectContainer->registerImplementation('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface', 'FluidTYPO3\Flux\Configuration\ConfigurationManager');
 unset($extbaseObjectContainer);
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] = 'FluidTYPO3\Flux\Hooks\WizardItemsHookSubscriber';
-
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] = TRUE === version_compare(TYPO3_version, '7.1', '<')
-	? 'FluidTYPO3\\Flux\\Hooks\\LegacyContentIconHookSubscriber->addSubIcon'
-	: 'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] = 'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon';
+if (TRUE === version_compare(TYPO3_version, '7.1', '<')) {
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] = 'FluidTYPO3\\Flux\\Hooks\\LegacyContentIconHookSubscriber->addSubIcon';
+}

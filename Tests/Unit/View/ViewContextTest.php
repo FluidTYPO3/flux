@@ -37,7 +37,7 @@ class ViewContextTest extends BaseTestCase {
 		return array(
 			array('sectionName', 'Configuration'),
 			array('packageName', 'Package'),
-			array('variables', array('foo' =>'bar')),
+			array('variables', array('foo' => 'bar')),
 			array('templatePaths', new TemplatePaths('Flux')),
 			array('controllerName', 'Controller'),
 			array('templatePathAndFilename', 'filename'),

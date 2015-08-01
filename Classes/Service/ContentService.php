@@ -299,8 +299,7 @@ class ContentService implements SingletonInterface {
 				} else {
 					$translatedParent = NULL;
 				}
-				$sortbyFieldName = TRUE === isset($GLOBALS['TCA']['tt_content']['ctrl']['sortby']) ?
-					$GLOBALS['TCA']['tt_content']['ctrl']['sortby'] : 'sorting';
+				$sortbyFieldName = TRUE === isset($GLOBALS['TCA']['tt_content']['ctrl']['sortby']) ? $GLOBALS['TCA']['tt_content']['ctrl']['sortby'] : 'sorting';
 				$overrideValues = array(
 					$sortbyFieldName => $tceMain->resorting('tt_content', $row['pid'], $sortbyFieldName, $oldUid),
 					'tx_flux_parent' => NULL !== $translatedParent ? $translatedParent['uid'] : $oldRecord['tx_flux_parent']
@@ -369,7 +368,7 @@ class ContentService implements SingletonInterface {
 	 * @return array
 	 */
 	protected function getTargetAreaStoredInSession($relativeTo) {
-		'' !== session_id() ?  : session_start();
+		'' !== session_id() ? : session_start();
 		return $_SESSION['target' . $relativeTo];
 	}
 
