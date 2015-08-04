@@ -274,7 +274,7 @@ class AbstractProvider implements ProviderInterface {
 				$form = call_user_func_array(array($formClassName, 'create'), array($row));
 			} else {
 				$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-				if (NULL !== $templatePathAndFilename) {
+				if (FALSE === empty($templatePathAndFilename)) {
 					$class = get_class($this);
 					$controllerName = substr(substr($class, strrpos($class, '\\')), -8);
 					$section = $this->getConfigurationSectionName($row);
