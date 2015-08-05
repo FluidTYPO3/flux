@@ -390,7 +390,10 @@ class AbstractProvider implements ProviderInterface {
 	public function getTemplatePathAndFilename(array $row) {
 		unset($row);
 		if (0 === strpos($this->templatePathAndFilename, 'EXT:') || 0 !== strpos($this->templatePathAndFilename, '/')) {
-			return GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
+			$path = GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
+			if (TRUE === empty($path)) {
+				return NULL;
+			}
 		}
 		return $this->templatePathAndFilename;
 	}
