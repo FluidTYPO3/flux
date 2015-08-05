@@ -560,7 +560,10 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$record = $this->getBasicRecord();
 		$template = 'test.html';
 		$provider->setTemplatePathAndFilename($template);
-		$this->assertSame(GeneralUtility::getFileAbsFileName($template), $provider->getTemplatePathAndFilename($record));
+		$this->assertSame($template, $provider->getTemplatePathAndFilename($record));
+		$template = NULL;
+		$provider->setTemplatePathAndFilename($template);
+		$this->assertSame($template, $provider->getTemplatePathAndFilename($record));
 	}
 
 	/**
