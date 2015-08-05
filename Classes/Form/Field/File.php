@@ -65,7 +65,7 @@ class File extends AbstractMultiValueFormField {
 	 */
 	public function setDefault($default) {
 		if (NULL !== $default) {
-			$files = array();
+			$files = [];
 			$filePaths = GeneralUtility::trimExplode(',', $default);
 			foreach ($filePaths as $path) {
 				if (FALSE === strpos($path, '|')) {

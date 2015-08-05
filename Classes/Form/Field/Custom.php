@@ -25,10 +25,10 @@ class Custom extends UserFunction {
 	public function buildConfiguration() {
 		$fieldConfiguration = $this->prepareConfiguration('user');
 		$fieldConfiguration['userFunc'] = 'FluidTYPO3\Flux\UserFunction\HtmlOutput->renderField';
-		$fieldConfiguration['parameters'] = array(
+		$fieldConfiguration['parameters'] = [
 			'closure' => $this->getClosure(),
 			'arguments' => $this->getArguments(),
-		);
+		];
 		return $fieldConfiguration;
 	}
 

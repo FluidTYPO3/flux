@@ -25,7 +25,7 @@ class DateTime extends Input implements FieldInterface {
 	 * @param array $settings
 	 * @return FieldInterface
 	 */
-	public static function create(array $settings = array()) {
+	public static function create(array $settings = []) {
 		return parent::create($settings);
 	}
 

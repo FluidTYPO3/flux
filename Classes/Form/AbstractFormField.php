@@ -90,7 +90,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	 * @return FieldInterface
 	 * @throws \RuntimeException
 	 */
-	public static function create(array $settings = array()) {
+	public static function create(array $settings = []) {
 		/** @var ObjectManagerInterface $objectManager */
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		if ('Section' === $settings['type']) {
@@ -112,7 +112,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 		foreach ($settings as $settingName => $settingValue) {
 			$setterMethodName = 'set' . ucfirst($settingName);
 			if (TRUE === method_exists($object, $setterMethodName)) {
-				call_user_func_array(array($object, $setterMethodName), array($settingValue));
+				call_user_func_array([$object, $setterMethodName], [$settingValue]);
 			}
 		}
 		return $object;
@@ -191,30 +191,30 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	 */
 	public function build() {
 		if (FALSE === $this->getEnable()) {
-			return array();
+			return [];
 		}
 		$configuration = $this->buildConfiguration();
-		$fieldStructureArray = array(
-			'TCEforms' => array(
+		$fieldStructureArray = [
+			'TCEforms' => [
 				'label' => $this->getLabel(),
 				'exclude' => intval($this->getExclude()),
 				'config' => $configuration,
 				'displayCond' => $this->getDisplayCondition(),
-			)
-		);
+			]
+		];
 		if (TRUE === isset($configuration['defaultExtras'])) {
 			$fieldStructureArray['TCEforms']['defaultExtras'] = $configuration['defaultExtras'];
 			unset($fieldStructureArray['TCEforms']['config']['defaultExtras']);
 		}
 		$wizards = $this->buildChildren($this->wizards);
 		if (TRUE === $this->getClearable()) {
-			array_push($wizards, array(
+			array_push($wizards, [
 				'type' => 'userFunc',
 				'userFunc' => 'FluidTYPO3\Flux\UserFunction\ClearValueWizard->renderField',
-				'params' => array(
+				'params' => [
 					'itemName' => $this->getName(),
-				),
-			));
+				],
+			]);
 		}
 		$fieldStructureArray['TCEforms']['config']['wizards'] = $wizards;
 		if (TRUE === $this->getRequestUpdate()) {
@@ -228,11 +228,11 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	 * @return array
 	 */
 	protected function prepareConfiguration($type) {
-		$fieldConfiguration = array(
+		$fieldConfiguration = [
 			'type' => $type,
 			'transform' => $this->getTransform(),
 			'default' => $this->getDefault(),
-		);
+		];
 		return $fieldConfiguration;
 	}
 

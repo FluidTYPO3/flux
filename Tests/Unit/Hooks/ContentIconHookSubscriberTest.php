@@ -36,12 +36,12 @@ class ContentIconHookSubscriberTest extends UnitTestCase {
 	 * @test
 	 */
 	public function testAddSubIconUsesCache() {
-		$cache = $this->getMock('TYPO3\\CMS\\Core\\Cache\\CacheManager', array('has', 'get'));
+		$cache = $this->getMock('TYPO3\\CMS\\Core\\Cache\\CacheManager', ['has', 'get']);
 		$cache->expects($this->once())->method('has')->willReturn(TRUE);
 		$cache->expects($this->once())->method('get')->willReturn('icon');
 		$instance = new ContentIconHookSubscriber();
 		ObjectAccess::setProperty($instance, 'cache', $cache, TRUE);
-		$result = $instance->addSubIcon(array(), new PageLayoutView());
+		$result = $instance->addSubIcon([], new PageLayoutView());
 		$this->assertEquals('icon', $result);
 	}
 
@@ -53,10 +53,10 @@ class ContentIconHookSubscriberTest extends UnitTestCase {
 	 */
 	public function testAddSubIcon(array $parameters, $provider, $expected) {
 		$GLOBALS['TCA']['tt_content']['columns']['field']['config']['type'] = 'flex';
-		$cache = $this->getMock('TYPO3\\CMS\\Core\\Cache\\CacheManager', array('has', 'set'));
+		$cache = $this->getMock('TYPO3\\CMS\\Core\\Cache\\CacheManager', ['has', 'set']);
 		$cache->expects($this->once())->method('has')->willReturn(FALSE);
 		$cache->expects($this->once())->method('set')->willReturn('icon');
-		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolvePrimaryConfigurationProvider'));
+		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', ['resolvePrimaryConfigurationProvider']);
 		$service->expects($this->any())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 		$instance = new ContentIconHookSubscriber();
 		$instance->injectFluxService($service);
@@ -75,19 +75,19 @@ class ContentIconHookSubscriberTest extends UnitTestCase {
 	 */
 	public function getAddSubIconTestValues() {
 		$formWithoutIcon = Form::create();
-		$formWithIcon = Form::create(array('options' => array('icon' => 'icon')));
-		$providerWithoutForm = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getForm'));
+		$formWithIcon = Form::create(['options' => ['icon' => 'icon']]);
+		$providerWithoutForm = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', ['getForm']);
 		$providerWithoutForm->expects($this->any())->method('getForm')->willReturn(NULL);
-		$providerWithFormWithoutIcon = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getForm'));
+		$providerWithFormWithoutIcon = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', ['getForm']);
 		$providerWithFormWithoutIcon->expects($this->any())->method('getForm')->willReturn($formWithoutIcon);
-		$providerWithFormWithIcon = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getForm'));
+		$providerWithFormWithIcon = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', ['getForm']);
 		$providerWithFormWithIcon->expects($this->any())->method('getForm')->willReturn($formWithIcon);
-		return array(
-			array(array('pages', 1, array()), NULL, NULL),
-			array(array('tt_content', 1, array()), NULL, NULL),
-			array(array('tt_content', 1, array()), $providerWithoutForm, NULL),
-			array(array('tt_content', 1, array('field' => 'test')), $providerWithoutForm, NULL),
-			array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon, '</div>
+		return [
+			[['pages', 1, []], NULL, NULL],
+			[['tt_content', 1, []], NULL, NULL],
+			[['tt_content', 1, []], $providerWithoutForm, NULL],
+			[['tt_content', 1, ['field' => 'test']], $providerWithoutForm, NULL],
+			[['tt_content', 1, ['field' => 'test']], $providerWithFormWithoutIcon, '</div>
 							<style>
 								.t3-js-clickmenutrigger {
 								z-index: 2;
@@ -117,9 +117,9 @@ class ContentIconHookSubscriberTest extends UnitTestCase {
 								}
 							</style>
 							<span class="t3-icon t3-icon-empty t3-icon-empty-empty fluidcontent-icon">%s</span>
-							<div class="fluidcontent-hack">'),
-			array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon, 'icon'),
-		);
+							<div class="fluidcontent-hack">'],
+			[['tt_content', 1, ['field' => 'test']], $providerWithFormWithIcon, 'icon'],
+		];
 	}
 
 }

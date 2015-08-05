@@ -18,17 +18,17 @@ class InlineViewHelperTest extends AbstractFieldViewHelperTestCase {
 	/**
 	 * @var array
 	 */
-	protected $defaultArguments = array(
+	protected $defaultArguments = [
 		'name' => 'test',
-		'enabledControls' => array(
+		'enabledControls' => [
 			'new' => TRUE,
 			'hide' => TRUE
-		),
-		'foreignTypes' => array(
-			0 => array(
+		],
+		'foreignTypes' => [
+			0 => [
 				'showitem' => 'a,b,c'
-			)
-		)
-	);
+			]
+		]
+	];
 
 }

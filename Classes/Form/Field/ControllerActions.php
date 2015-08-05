@@ -54,7 +54,7 @@ class ControllerActions extends Select {
 	 *
 	 * @var array
 	 */
-	protected $actions = array();
+	protected $actions = [];
 
 	/**
 	 * Array of "ControllerName" => "csv,of,actions" which must
@@ -62,7 +62,7 @@ class ControllerActions extends Select {
 	 *
 	 * @var array
 	 */
-	protected $excludeActions = array();
+	protected $excludeActions = [];
 
 	/**
 	 * A short string denoting that the method takes arguments,
@@ -121,7 +121,7 @@ class ControllerActions extends Select {
 	 *
 	 * @var array
 	 */
-	protected $subActions = array();
+	protected $subActions = [];
 
 	/**
 	 * Overridden getter: the name of a SwitchableControllerActions
@@ -417,7 +417,7 @@ class ControllerActions extends Select {
 		foreach ($exclusions as $controllerName => $controllerActionList) {
 			$exclusions[$controllerName] = $this->convertActionListToArray($controllerActionList);
 		}
-		$items = array();
+		$items = [];
 		$limitByControllerName = $this->getControllerName();
 		foreach ($actions as $controllerName => $controllerActionList) {
 			$controllerActions = $this->convertActionListToArray($controllerActionList);
@@ -433,17 +433,17 @@ class ControllerActions extends Select {
 				}
 				$label = $this->getLabelForControllerAction($controllerName, $actionName);
 				$label = $this->prefixLabel($controllerName, $actionName, $label);
-				$actionKey = array($controllerName . $separator . $actionName);
+				$actionKey = [$controllerName . $separator . $actionName];
 				if (isset($subActions[$controllerName][$actionName])) {
 					$subActionsArray = $this->convertActionListToArray($subActions[$controllerName][$actionName]);
 					foreach ($subActionsArray as $allowedActionName) {
 						$actionKey[] = $controllerName . $separator . $allowedActionName;
 					}
 				}
-				$values = array(
+				$values = [
 					$label,
 					implode(';', $actionKey),
-				);
+				];
 				array_push($items, $values);
 			}
 		}

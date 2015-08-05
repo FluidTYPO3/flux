@@ -16,13 +16,13 @@ class EditTest extends AbstractWizardTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'hideParent' => FALSE,
 		'openOnlyIfSelected' => FALSE,
 		'width' => 400,
 		'height' => 500
-	);
+	];
 
 }

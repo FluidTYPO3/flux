@@ -54,7 +54,7 @@ class RecordServiceTest extends AbstractTestCase {
 		$groupBy = 'foo';
 		$orderBy = 'bar';
 		$limit = 60;
-		$mock = $this->getMockServiceInstance(array(), array('exec_SELECTgetRows'));
+		$mock = $this->getMockServiceInstance([], ['exec_SELECTgetRows']);
 		self::$connectionMock->expects($this->once())->method('exec_SELECTgetRows')->with($fields, $table, $clause, $groupBy, $orderBy, $limit);
 		$mock->get($table, $fields, $clause, $groupBy, $orderBy, $limit);
 	}
@@ -66,7 +66,7 @@ class RecordServiceTest extends AbstractTestCase {
 		$table = 'test';
 		$fields = 'a,b';
 		$uid = 123;
-		$mock = $this->getMockServiceInstance(array(), array('exec_SELECTgetSingleRow'));
+		$mock = $this->getMockServiceInstance([], ['exec_SELECTgetSingleRow']);
 		self::$connectionMock->expects($this->once())->method('exec_SELECTgetSingleRow')->with($fields, $table, "uid = '" . $uid . "'");
 		$mock->getSingle($table, $fields, $uid);
 	}
@@ -77,8 +77,8 @@ class RecordServiceTest extends AbstractTestCase {
 	public function updateMethodCallsExpectedDatabaseMethod() {
 		$table = 'test';
 		$uid = 123;
-		$fields = array('foo' => 'bar', 'uid' => $uid);
-		$mock = $this->getMockServiceInstance(array(), array('exec_UPDATEquery'));
+		$fields = ['foo' => 'bar', 'uid' => $uid];
+		$mock = $this->getMockServiceInstance([], ['exec_UPDATEquery']);
 		self::$connectionMock->expects($this->once())->method('exec_UPDATEquery')->with($table, "uid = '" . $uid . "'", $fields);
 		$mock->update($table, $fields, $uid);
 	}
@@ -89,7 +89,7 @@ class RecordServiceTest extends AbstractTestCase {
 	public function deleteMethodCallsExpectedDatabaseMethodWithUid() {
 		$table = 'test';
 		$uid = 123;
-		$mock = $this->getMockServiceInstance(array(), array('exec_DELETEquery'));
+		$mock = $this->getMockServiceInstance([], ['exec_DELETEquery']);
 		self::$connectionMock->expects($this->once())->method('exec_DELETEquery')->with($table, "uid = '" . $uid . "'");
 		$mock->delete($table, $uid);
 	}
@@ -100,8 +100,8 @@ class RecordServiceTest extends AbstractTestCase {
 	public function deleteMethodCallsExpectedDatabaseMethodWithRecord() {
 		$table = 'test';
 		$uid = 123;
-		$record = array('uid' => 123);
-		$mock = $this->getMockServiceInstance(array(), array('exec_DELETEquery'));
+		$record = ['uid' => 123];
+		$mock = $this->getMockServiceInstance([], ['exec_DELETEquery']);
 		self::$connectionMock->expects($this->once())->method('exec_DELETEquery')->with($table, "uid = '" . $uid . "'");
 		$mock->delete($table, $record);
 	}
@@ -119,15 +119,15 @@ class RecordServiceTest extends AbstractTestCase {
 	 */
 	public function preparedGetCallsExpectedMethodSequence() {
 		$query = $this->getMock('TYPO3\\CMS\\Core\\Database\\PreparedStatement',
-			array('execute', 'fetchAll', 'free'), array(), '', FALSE);
-		$connection = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('prepare_SELECTquery'));
+			['execute', 'fetchAll', 'free'], [], '', FALSE);
+		$connection = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', ['prepare_SELECTquery']);
 		$connection->expects($this->once())->method('prepare_SELECTquery')->will($this->returnValue($query));
 		$query->expects($this->once())->method('execute');
-		$query->expects($this->once())->method('fetchAll')->will($this->returnValue(array()));
+		$query->expects($this->once())->method('fetchAll')->will($this->returnValue([]));
 		$query->expects($this->once())->method('free');
-		$mock = $this->getMock($this->createInstanceClassName(), array('getDatabaseConnection'));
+		$mock = $this->getMock($this->createInstanceClassName(), ['getDatabaseConnection']);
 		$mock->expects($this->once())->method('getDatabaseConnection')->will($this->returnValue($connection));
-		$mock->preparedGet('table', '', '', array());
+		$mock->preparedGet('table', '', '', []);
 	}
 
 }

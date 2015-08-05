@@ -19,10 +19,10 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase {
 	 * @test
 	 */
 	public function createsExpectedComponent() {
-		$arguments = array(
+		$arguments = [
 			'name' => 'test'
-		);
-		$instance = $this->buildViewHelperInstance($arguments, array());
+		];
+		$instance = $this->buildViewHelperInstance($arguments, []);
 		$component = $instance->getComponent();
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Field\Inline\Fal', $component);
 	}
@@ -31,11 +31,11 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase {
 	 * @test
 	 */
 	public function supportsHeaderThumbnail() {
-		$arguments = array(
+		$arguments = [
 			'name' => 'test',
-			'headerThumbnail' => array('test' => 'test')
-		);
-		$instance = $this->buildViewHelperInstance($arguments, array());
+			'headerThumbnail' => ['test' => 'test']
+		];
+		$instance = $this->buildViewHelperInstance($arguments, []);
 		$component = $instance->getComponent();
 		$this->assertEquals($arguments['headerThumbnail'], $component->getHeaderThumbnail());
 	}
@@ -44,11 +44,11 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase {
 	 * @test
 	 */
 	public function supportsForeignMatchFields() {
-		$arguments = array(
+		$arguments = [
 			'name' => 'test',
-			'foreignMatchFields' => array('test' => 'test')
-		);
-		$instance = $this->buildViewHelperInstance($arguments, array());
+			'foreignMatchFields' => ['test' => 'test']
+		];
+		$instance = $this->buildViewHelperInstance($arguments, []);
 		$component = $instance->getComponent();
 		$this->assertEquals($arguments['foreignMatchFields'], $component->getForeignMatchFields());
 	}

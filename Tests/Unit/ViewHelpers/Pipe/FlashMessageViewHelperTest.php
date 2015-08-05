@@ -20,7 +20,7 @@ class FlashMessageViewHelperTest extends AbstractViewHelperTestCase {
 	 * @param array $arguments
 	 */
 	public function testWithArguments(array $arguments) {
-		$result = $this->executeViewHelper($arguments, array(), NULL, NULL, 'FakePlugin');
+		$result = $this->executeViewHelper($arguments, [], NULL, NULL, 'FakePlugin');
 		$this->assertNull($result);
 	}
 
@@ -28,12 +28,12 @@ class FlashMessageViewHelperTest extends AbstractViewHelperTestCase {
 	 * @return array
 	 */
 	public function getTestArguments() {
-		return array(
-			array(array()),
-			array(array('message' => 'Some message')),
-			array(array('message' => 'Some message', 'title' => 'Some title')),
-			array(array('message' => 'Some message', 'title' => 'Some title', 'storeInSession' => TRUE)),
-		);
+		return [
+			[[]],
+			[['message' => 'Some message']],
+			[['message' => 'Some message', 'title' => 'Some title']],
+			[['message' => 'Some message', 'title' => 'Some title', 'storeInSession' => TRUE]],
+		];
 	}
 
 }

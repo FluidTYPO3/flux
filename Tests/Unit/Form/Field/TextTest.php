@@ -20,7 +20,7 @@ class TextTest extends InputTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'enable' => TRUE,
@@ -32,7 +32,7 @@ class TextTest extends InputTest {
 		'columns' => 85,
 		'rows' => 8,
 		'requestUpdate' => TRUE,
-	);
+	];
 
 	/**
 	 * @test

@@ -34,9 +34,9 @@ class ColorPicker extends AbstractWizard {
 	/**
 	 * @var array
 	 */
-	protected $module = array(
+	protected $module = [
 		'name' => 'wizard_colorpicker',
-	);
+	];
 
 	/**
 	 * @var string
@@ -57,14 +57,14 @@ class ColorPicker extends AbstractWizard {
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		$configuration = array(
+		$configuration = [
 			'type' => 'colorbox',
 			'title' => $this->getLabel(),
 			'hideParent' => intval($this->getHideParent()),
 			'dim' => $this->getDimensions(),
 			'exampleImg' => $this->getIcon(),
 			'JSopenParams' => 'height=' . $this->getHeight() . ',width=' . $this->getWidth() . ',status=0,menubar=0,scrollbars=1'
-		);
+		];
 		return $configuration;
 	}
 

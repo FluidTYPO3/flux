@@ -105,8 +105,8 @@ class CoreTest extends AbstractTestCase {
 	 */
 	public function canRegisterStandaloneTemplateForContentObject() {
 		$service = $this->createFluxServiceInstance();
-		$variables = array('test' => 'test');
-		$paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
+		$variables = ['test' => 'test'];
+		$paths = ['templateRootPaths' => ['EXT:flux/Resources/Private/Templates']];
 		$extensionKey = 'fake';
 		$contentObjectType = 'void';
 		$providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
@@ -125,8 +125,8 @@ class CoreTest extends AbstractTestCase {
 	 */
 	public function canRegisterStandaloneTemplateForPlugin() {
 		$service = $this->createFluxServiceInstance();
-		$variables = array('test' => 'test');
-		$paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
+		$variables = ['test' => 'test'];
+		$paths = ['templateRootPaths' => ['EXT:flux/Resources/Private/Templates']];
 		$extensionKey = 'more_fake';
 		$pluginType = 'void';
 		$fieldName = NULL;
@@ -146,8 +146,8 @@ class CoreTest extends AbstractTestCase {
 	 */
 	public function canRegisterStandaloneTemplateForTable() {
 		$service = $this->createFluxServiceInstance();
-		$variables = array('test' => 'test');
-		$paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
+		$variables = ['test' => 'test'];
+		$paths = ['templateRootPaths' => ['EXT:flux/Resources/Private/Templates']];
 		$table = 'fake';
 		$fieldName = NULL;
 		$providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
@@ -185,7 +185,7 @@ class CoreTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canAddAndRetrieveGlobalTypoScriptCollections() {
-		Core::addStaticTypoScript(array(self::FIXTURE_TYPOSCRIPT_DIR));
+		Core::addStaticTypoScript([self::FIXTURE_TYPOSCRIPT_DIR]);
 		$registered = Core::getStaticTypoScript();
 		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
 	}
@@ -251,7 +251,7 @@ class CoreTest extends AbstractTestCase {
 	 */
 	public function registerFormForModelObjectClassNameSetsExtensionNameFromExtensionKeyGlobal() {
 		$GLOBALS['_EXTKEY'] = 'test';
-		$form = $this->getMock('FluidTYPO3\\Flux\\Form', array('setExtensionName'));
+		$form = $this->getMock('FluidTYPO3\\Flux\\Form', ['setExtensionName']);
 		$form->expects($this->once())->method('setExtensionName')->with('Test');
 		Core::registerFormForModelObjectClassName('FooBar', $form);
 		unset($GLOBALS['_EXTKEY']);
@@ -262,7 +262,7 @@ class CoreTest extends AbstractTestCase {
 	 */
 	public function registerFormForTableSetsExtensionNameFromExtensionKeyGlobal() {
 		$GLOBALS['_EXTKEY'] = 'test';
-		$form = $this->getMock('FluidTYPO3\\Flux\\Form', array('setExtensionName'));
+		$form = $this->getMock('FluidTYPO3\\Flux\\Form', ['setExtensionName']);
 		$form->expects($this->once())->method('setExtensionName')->with('Test');
 		Core::registerFormForTable('foobar', $form);
 		unset($GLOBALS['_EXTKEY']);

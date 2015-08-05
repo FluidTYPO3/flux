@@ -18,9 +18,9 @@ class HtmlOutputTest extends AbstractUserFunctionTest {
 	/**
 	 * @var array
 	 */
-	protected $parameters = array(
-		'parameters' => array()
-	);
+	protected $parameters = [
+		'parameters' => []
+	];
 
 	/**
 	 * @return array

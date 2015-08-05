@@ -51,11 +51,11 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	public function testGetPrioritizedPageUidsCallsExpectedMethodSequence() {
 		$instance = $this->getMock(
 			'FluidTYPO3\\Flux\\Configuration\\BackendConfigurationManager',
-			array(
+			[
 				'getPageIdFromGet', 'getPageIdFromPost',
 				'getPageIdFromRecordIdentifiedInEditUrlArgument',
 				'getPageIdFromContentObject'
-			)
+			]
 		);
 		$instance->setCurrentPageId(1);
 		$instance->expects($this->at(0))->method('getPageIdFromGet')->willReturn(0);
@@ -63,7 +63,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 		$instance->expects($this->at(2))->method('getPageIdFromRecordIdentifiedInEditUrlArgument')->willReturn(0);
 		$instance->expects($this->at(3))->method('getPageIdFromContentObject')->willReturn(0);
 		$result = $this->callInaccessibleMethod($instance, 'getPrioritizedPageUids');
-		$this->assertEquals(array(0, 0, 0, 0, 1), $result);
+		$this->assertEquals([0, 0, 0, 0, 1], $result);
 	}
 
 	/**
@@ -73,7 +73,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 		$record = Records::$contentRecordWithParentAndWithoutChildren;
 		$mockContentObject = new \stdClass();
 		$mockContentObject->data = $record;
-		$mock = $this->getMock($this->createInstanceClassName(), array('getPageIdFromRecord', 'getContentObject'));
+		$mock = $this->getMock($this->createInstanceClassName(), ['getPageIdFromRecord', 'getContentObject']);
 		$mock->expects($this->at(0))->method('getContentObject')->will($this->returnValue($mockContentObject));
 		$mock->expects($this->at(1))->method('getPageIdFromRecord')->with($record);
 		$this->callInaccessibleMethod($mock, 'getPageIdFromContentObject');
@@ -128,7 +128,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	 */
 	public function getCurrentPageIdReturnsProtectedPropertyOnlyIfSet() {
 		$pageUid = 54642;
-		$mock = $this->getMock($this->createInstanceClassName(), array('getPrioritizedPageUids'));
+		$mock = $this->getMock($this->createInstanceClassName(), ['getPrioritizedPageUids']);
 		$mock->expects($this->never())->method('getPrioritizedPageUids');
 		$mock->setCurrentPageId($pageUid);
 		$result = $mock->getCurrentPageId();
@@ -139,8 +139,8 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function getCurrentPageIdCallsGetPrioritizedPageUids() {
-		$mock = $this->getMock($this->createInstanceClassName(), array('getPrioritizedPageUids'));
-		$mock->expects($this->once())->method('getPrioritizedPageUids')->willReturn(array(0, 0, 0, 0, 123));
+		$mock = $this->getMock($this->createInstanceClassName(), ['getPrioritizedPageUids']);
+		$mock->expects($this->once())->method('getPrioritizedPageUids')->willReturn([0, 0, 0, 0, 123]);
 		$result = $mock->getCurrentPageId();
 		$this->assertEquals(123, $result);
 	}
@@ -149,9 +149,9 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function getPageIdFromRecordUidDelegatesToRecordService() {
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', array('getSingle'));
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', ['getSingle']);
 		$recordService->expects($this->once())->method('getSingle')
-			->with('table', 'pid', 123)->will($this->returnValue(array('foo' => 'bar')));
+			->with('table', 'pid', 123)->will($this->returnValue(['foo' => 'bar']));
 		$mock = $this->objectManager->get($this->createInstanceClassName());
 		$mock->injectRecordService($recordService);
 		$this->callInaccessibleMethod($mock, 'getPageIdFromRecordUid', 'table', 123);
@@ -163,7 +163,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	 * @param array $expected
 	 */
 	public function testGetEditArguments(array $argument, array $expected) {
-		$mock = $this->getMock($this->createInstanceClassName(), array('getEditArgumentValuePair'));
+		$mock = $this->getMock($this->createInstanceClassName(), ['getEditArgumentValuePair']);
 		$mock->expects($this->once())->method('getEditArgumentValuePair')->willReturn($argument);
 		$result = $this->callInaccessibleMethod($mock, 'getEditArguments');
 		$this->assertEquals($expected, $result);
@@ -173,11 +173,11 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getEditArgumentsTestValues() {
-		return array(
-			array(array(array()), array(0, 0, 0)),
-			array(array('tt_content' => array(1 => 'update')), array('tt_content', 1, 'update')),
-			array(array('pages' => array(2 => 'delete')), array('pages', 2, 'delete'))
-		);
+		return [
+			[[[]], [0, 0, 0]],
+			[['tt_content' => [1 => 'update']], ['tt_content', 1, 'update']],
+			[['pages' => [2 => 'delete']], ['pages', 2, 'delete']]
+		];
 	}
 
 	/**
@@ -186,7 +186,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	public function getEditArgumentValuePairReturnsEmptyArray() {
 		$instance = new BackendConfigurationManager();
 		$result = $this->callInaccessibleMethod($instance, 'getEditArgumentValuePair');
-		$this->assertEquals(array(array()), $result);
+		$this->assertEquals([[]], $result);
 	}
 
 	/**
@@ -195,7 +195,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	 * @param boolean $expectsRecordFetch
 	 */
 	public function testGetPageIdFromRecordIdentifiedInEditUrlArgument(array $arguments, $expectsRecordFetch) {
-		$mock = $this->getMock($this->createInstanceClassName(), array('getEditArguments', 'getPageIdFromRecordUid'));
+		$mock = $this->getMock($this->createInstanceClassName(), ['getEditArguments', 'getPageIdFromRecordUid']);
 		$mock->expects($this->once())->method('getEditArguments')->willReturn($arguments);
 		$mock->expects($this->exactly((integer) $expectsRecordFetch))->method('getPageIdFromRecordUid')
 			->with($arguments[0], $arguments[1])->willReturn($arguments[1]);
@@ -207,15 +207,15 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getPageIdFromRecordIdentifiedInEditUrlArgumentTestValues() {
-		return array(
-			array(array('tt_content', 1, 'update'), TRUE),
-			array(array('tt_content', 0, 'update'), FALSE),
-			array(array('pages', 0, 'update'), FALSE),
-			array(array('pages', 1, 'update'), FALSE),
-			array(array('pages', 1, 'delete'), FALSE),
-			array(array('sys_file', 1, 'new'), FALSE),
-			array(array('sys_file', 1, 'edit'), TRUE),
-		);
+		return [
+			[['tt_content', 1, 'update'], TRUE],
+			[['tt_content', 0, 'update'], FALSE],
+			[['pages', 0, 'update'], FALSE],
+			[['pages', 1, 'update'], FALSE],
+			[['pages', 1, 'delete'], FALSE],
+			[['sys_file', 1, 'new'], FALSE],
+			[['sys_file', 1, 'edit'], TRUE],
+		];
 	}
 
 }

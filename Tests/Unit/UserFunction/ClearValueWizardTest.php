@@ -16,11 +16,11 @@ class ClearValueWizardTest extends AbstractUserFunctionTest {
 	/**
 	 * @var array
 	 */
-	protected $parameters = array(
-		'parameters' => array(
+	protected $parameters = [
+		'parameters' => [
 			'itemName' => 'test[foo][bar]'
-		)
-	);
+		]
+	];
 
 	/**
 	 * @var string

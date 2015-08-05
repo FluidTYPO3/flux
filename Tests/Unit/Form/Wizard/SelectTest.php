@@ -18,12 +18,12 @@ class SelectTest extends AbstractWizardTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'hideParent' => FALSE,
 		'mode' => 'append',
-		'items' => array('dummy' => 'Value', 'dummy2' => 'Value 2')
-	);
+		'items' => ['dummy' => 'Value', 'dummy2' => 'Value 2']
+	];
 
 	/**
 	 * @test

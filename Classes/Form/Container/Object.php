@@ -24,12 +24,12 @@ class Object extends AbstractFormContainer implements ContainerInterface, FieldC
 	 */
 	public function build() {
 		$label = $this->getLabel();
-		$structureArray = array(
+		$structureArray = [
 			'title' => $label,
 			'type' => 'array',
 			'el' => $this->buildChildren($this->children)
-		);
-		$structureArray['tx_templavoila'] = array('title' => $structureArray['title']); // patch: TYPO3 core legacy required for section objects.
+		];
+		$structureArray['tx_templavoila'] = ['title' => $structureArray['title']]; // patch: TYPO3 core legacy required for section objects.
 		return $structureArray;
 	}
 

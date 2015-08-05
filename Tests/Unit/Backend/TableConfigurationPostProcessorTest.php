@@ -37,7 +37,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 		$form = Form::create();
 		$form->setExtensionName('FluidTYPO3.Flux');
 		$form->createField('Input', $field);
-		$form->setOption('labels', array('title'));
+		$form->setOption('labels', ['title']);
 		Core::registerFormForTable($table, $form);
 		$object = GeneralUtility::getUserObj('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
 		$object->processData();

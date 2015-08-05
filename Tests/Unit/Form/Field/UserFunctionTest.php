@@ -16,11 +16,11 @@ class userFunctionTest extends AbstractFieldTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'function' => 'FluidTYPO3\Flux\UserFunction\NoFields->renderField',
-		'arguments' => array(1, 2),
-	);
+		'arguments' => [1, 2],
+	];
 
 }

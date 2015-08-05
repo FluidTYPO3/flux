@@ -35,13 +35,13 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @test
 	 */
 	public function triggersContentManipulatorOnPasteCommandWithCallbackInUrl() {
-		$_GET['CB'] = array('paste' => 'tt_content|0');
+		$_GET['CB'] = ['paste' => 'tt_content|0'];
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$provider = $this->getConfigurationProviderInstance();
 		/** @var DataHandler $tceMain */
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$relativeUid = 0;
-		$contentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('updateRecordInDatabase'));
+		$contentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', ['updateRecordInDatabase']);
 		$contentService->expects($this->once())->method('updateRecordInDatabase');
 		ObjectAccess::setProperty($provider, 'contentService', $contentService, TRUE);
 		$result = $provider->postProcessCommand('move', 0, $row, $relativeUid, $tceMain);
@@ -101,9 +101,9 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @test
 	 */
 	public function postProcessCommandCallsExpectedMethodToMoveRecord() {
-		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getCallbackCommand'));
-		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('move' => 1)));
-		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
+		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), ['getCallbackCommand']);
+		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(['move' => 1]));
+		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', ['pasteAfter', 'moveRecord']);
 		$mockContentService->expects($this->once())->method('moveRecord');
 		ObjectAccess::setProperty($mock, 'contentService', $mockContentService, TRUE);
 		$command = 'move';
@@ -120,9 +120,9 @@ class ContentProviderTest extends AbstractProviderTest {
 	 */
 	public function postProcessCommandCallsExpectedMethodToCopyRecord() {
 		$record = $this->getBasicRecord();
-		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getCallbackCommand'));
-		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('paste' => 1)));
-		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
+		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), ['getCallbackCommand']);
+		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(['paste' => 1]));
+		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', ['pasteAfter', 'moveRecord']);
 		$mockContentService->expects($this->once())->method('pasteAfter');
 		ObjectAccess::setProperty($mock, 'contentService', $mockContentService, TRUE);
 		$command = 'copy';
@@ -138,9 +138,9 @@ class ContentProviderTest extends AbstractProviderTest {
 	 */
 	public function postProcessCommandCallsExpectedMethodToPasteRecord() {
 		$record = $this->getBasicRecord();
-		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getCallbackCommand'));
-		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('paste' => 1)));
-		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
+		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), ['getCallbackCommand']);
+		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(['paste' => 1]));
+		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', ['pasteAfter', 'moveRecord']);
 		$mockContentService->expects($this->once())->method('pasteAfter');
 		ObjectAccess::setProperty($mock, 'contentService', $mockContentService, TRUE);
 		$command = 'move';
@@ -167,10 +167,10 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @return array
 	 */
 	public function getPriorityTestValues() {
-		return array(
-			array(array('CType' => 'anyotherctype', 'list_type' => ''), 50),
-			array(array('CType' => 'anyotherctype', 'list_type' => 'withlisttype'), 0),
-		);
+		return [
+			[['CType' => 'anyotherctype', 'list_type' => ''], 50],
+			[['CType' => 'anyotherctype', 'list_type' => 'withlisttype'], 0],
+		];
 	}
 
 	/**
@@ -192,11 +192,11 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @return array
 	 */
 	public function getTriggerTestValues() {
-		return array(
-			array(array(), 'not_tt_content', 'pi_flexform', NULL, FALSE),
-			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', NULL, FALSE),
-			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', 'flux', FALSE)
-		);
+		return [
+			[[], 'not_tt_content', 'pi_flexform', NULL, FALSE],
+			[['list_type' => '', 'CType' => 'any'], 'not_tt_content', 'pi_flexform', NULL, FALSE],
+			[['list_type' => '', 'CType' => 'any'], 'not_tt_content', 'pi_flexform', 'flux', FALSE]
+		];
 	}
 
 	/**
@@ -206,7 +206,7 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @param string|NULL $expected
 	 */
 	public function getMoveDataReturnsExpectedValues($postData, $expected) {
-		$instance = $this->getMock($this->createInstanceClassName(), array('getRawPostData'));
+		$instance = $this->getMock($this->createInstanceClassName(), ['getRawPostData']);
 		$instance->expects($this->once())->method('getRawPostData')->willReturn($postData);
 		$result = $this->callInaccessibleMethod($instance, 'getMoveData');
 		$this->assertEquals($expected, $result);
@@ -216,13 +216,13 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @return array
 	 */
 	public function getMoveDataTestvalues() {
-		return array(
-			array(NULL, NULL),
-			array('{}', NULL),
-			array('{"method": "test"}', NULL),
-			array('{"method": "test", "data": []}', NULL),
-			array('{"method": "moveContentElement", "data": "test"}', 'test'),
-		);
+		return [
+			[NULL, NULL],
+			['{}', NULL],
+			['{"method": "test"}', NULL],
+			['{"method": "test", "data": []}', NULL],
+			['{"method": "moveContentElement", "data": "test"}', 'test'],
+		];
 	}
 
 }

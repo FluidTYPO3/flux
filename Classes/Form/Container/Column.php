@@ -41,14 +41,14 @@ class Column extends AbstractFormContainer implements ContainerInterface {
 	 * @return array
 	 */
 	public function build() {
-		$structure = array(
+		$structure = [
 			'name' => $this->getName(),
 			'label' => $this->getLabel(),
 			'colspan' => $this->getColspan(),
 			'rowspan' => $this->getRowspan(),
 			'style' => $this->getStyle(),
 			'colPos' => $this->getColumnPosition()
-		);
+		];
 		return $structure;
 	}
 

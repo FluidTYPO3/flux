@@ -34,15 +34,15 @@ class ViewContextTest extends BaseTestCase {
 	 * @return array
 	 */
 	public function getGetterAndSetterTestValues() {
-		return array(
-			array('sectionName', 'Configuration'),
-			array('packageName', 'Package'),
-			array('variables', array('foo' =>'bar')),
-			array('templatePaths', new TemplatePaths('Flux')),
-			array('controllerName', 'Controller'),
-			array('templatePathAndFilename', 'filename'),
-			array('format', 'xml')
-		);
+		return [
+			['sectionName', 'Configuration'],
+			['packageName', 'Package'],
+			['variables', ['foo' =>'bar']],
+			['templatePaths', new TemplatePaths('Flux')],
+			['controllerName', 'Controller'],
+			['templatePathAndFilename', 'filename'],
+			['format', 'xml']
+		];
 	}
 
 }

@@ -45,7 +45,7 @@ class Suggest extends AbstractWizard {
 	/**
 	 * @var array
 	 */
-	protected $storagePageUids = array();
+	protected $storagePageUids = [];
 
 	/**
 	 * @var integer
@@ -98,9 +98,9 @@ class Suggest extends AbstractWizard {
 	 */
 	public function buildConfiguration() {
 		$table = $this->getTable();
-		$configuration = array(
+		$configuration = [
 			'type' => 'suggest',
-			$table => array(
+			$table => [
 				'table' => $table,
 				'pidList' => implode(',', $this->getStoragePageUids()),
 				'pidDepth' => $this->getStoragePageRecursiveDepth(),
@@ -111,8 +111,8 @@ class Suggest extends AbstractWizard {
 				'cssClass' => $this->getCssClass(),
 				'receiverClass' => $this->getReceiverClass(),
 				'renderFunc' => $this->getRenderFunction(),
-			),
-		);
+			],
+		];
 		return $configuration;
 	}
 

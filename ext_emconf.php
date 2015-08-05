@@ -10,7 +10,7 @@
  * writing. "version" and "dependencies" must not be touched!
  ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = array(
+$EM_CONF[$_EXTKEY] = [
 	'title' => 'Flux: Fluid FlexForms',
 	'description' => 'Backend form and frontend content rendering assistance API with focus on productivity.',
 	'category' => 'misc',
@@ -32,19 +32,19 @@ $EM_CONF[$_EXTKEY] = array(
 	'author_company' => '',
 	'CGLcompliance' => '',
 	'CGLcompliance_note' => '',
-	'constraints' => array(
-		'depends' => array(
+	'constraints' => [
+		'depends' => [
 			'typo3' => '6.2.0-7.1.99',
 			'cms' => ''
-		),
-		'conflicts' => array(
-		),
-		'suggests' => array(
-		),
-	),
+		],
+		'conflicts' => [
+		],
+		'suggests' => [
+		],
+	],
 	'_md5_values_when_last_written' => '',
-	'suggests' => array(
-	),
-);
+	'suggests' => [
+	],
+];
 
 ?>

@@ -19,7 +19,7 @@ abstract class AbstractWizardTest extends AbstractFormTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'hideParent' => FALSE);
+	protected $chainProperties = ['name' => 'test', 'label' => 'Test field', 'hideParent' => FALSE];
 
 	/**
 	 * @return void

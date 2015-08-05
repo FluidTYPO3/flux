@@ -18,7 +18,7 @@ $autoloader->addPsr4('TYPO3\\CMS\\Recordlist\\', __DIR__ . '/../vendor/typo3/cms
 $autoloader->addPsr4('TYPO3\\CMS\\Frontend\\', __DIR__ . '/../vendor/typo3/cms/typo3/sysext/frontend/Classes/');
 $autoloader->addPsr4('TYPO3\\CMS\\Lang\\', __DIR__ . '/../vendor/typo3/cms/typo3/sysext/lang/Classes/');
 
-\FluidTYPO3\Development\Bootstrap::initialize(array(
+\FluidTYPO3\Development\Bootstrap::initialize([
 	'cache_pages' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 	'cache_hash' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 	'extbase_reflection' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
@@ -33,7 +33,7 @@ $autoloader->addPsr4('TYPO3\\CMS\\Lang\\', __DIR__ . '/../vendor/typo3/cms/typo3
 	'fluidcontent' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 	'l10n' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 	'flux' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
-));
+]);
 
 class_alias('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\ContentController', 'FluidTYPO3\\Flux\\Controller\\ContentController');
 class_alias('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\ContentController', 'Tx_Flux_Controller_ContentController');

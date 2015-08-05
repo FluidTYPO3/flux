@@ -16,13 +16,13 @@ class AddTest extends AbstractWizardTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'hideParent' => FALSE,
 		'table' => 'tt_content',
 		'storagePageUid' => 1,
 		'setValue' => FALSE,
-	);
+	];
 
 }

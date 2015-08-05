@@ -34,9 +34,9 @@ class ListWizard extends AbstractWizard {
 	/**
 	 * @var array
 	 */
-	protected $module = array(
+	protected $module = [
 		'name' => 'wizard_list'
-	);
+	];
 
 	/**
 	 * @var string
@@ -62,13 +62,13 @@ class ListWizard extends AbstractWizard {
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		$structure = array(
+		$structure = [
 			'JSopenParams' => 'height=' . $this->getHeight() . ',width=' . $this->getWidth() . ',status=0,menubar=0,scrollbars=1',
-			'params' => array(
+			'params' => [
 				'table' => $this->getTable(),
 				'pid' => $this->getStoragePageUid(),
-			)
-		);
+			]
+		];
 		return $structure;
 	}
 

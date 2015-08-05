@@ -45,16 +45,16 @@ class DynamicFlexFormTest extends AbstractTestCase {
 	 * @return void
 	 */
 	protected function canExecuteDataStructurePostProcessHookInternal($fieldName = 'pi_flexform', $table = 'tt_content') {
-		$dataStructure = array();
-		$config = array();
-		$row = array();
+		$dataStructure = [];
+		$config = [];
+		$row = [];
 		$instance = new DynamicFlexForm();
-		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('postProcessDataStructure'));
-		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('postProcessDataStructure'));
+		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', ['postProcessDataStructure']);
+		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', ['postProcessDataStructure']);
 		$provider1->expects($this->once())->method('postProcessDataStructure');
 		$provider2->expects($this->once())->method('postProcessDataStructure');
-		$providers = array($provider1, $provider2);
-		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+		$providers = [$provider1, $provider2];
+		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', ['resolveConfigurationProviders']);
 		$service->expects($this->once())->method('resolveConfigurationProviders')
 			->with($table, $fieldName, $row)->willReturn($providers);
 		$instance->injectConfigurationService($service);

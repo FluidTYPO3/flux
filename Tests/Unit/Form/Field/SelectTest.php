@@ -20,7 +20,7 @@ class SelectTest extends AbstractFieldTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'itemListStyle' => 'color: red',
@@ -29,7 +29,7 @@ class SelectTest extends AbstractFieldTest {
 		'minItems' => 1,
 		'maxItems' => 3,
 		'requestUpdate' => TRUE,
-	);
+	];
 
 	/**
 	 * @test
@@ -47,7 +47,7 @@ class SelectTest extends AbstractFieldTest {
 	public function canConsumeSingleDimensionalArrayItems() {
 		/** @var Select $instance */
 		$instance = $this->createInstance();
-		$instance->setItems(array(1, 2));
+		$instance->setItems([1, 2]);
 		$this->assertSame(2, count($instance->getItems()));
 	}
 
@@ -57,10 +57,10 @@ class SelectTest extends AbstractFieldTest {
 	public function canConsumeMultiDimensionalArrayItems() {
 		/** @var Select $instance */
 		$instance = $this->createInstance();
-		$items = array(
-			array('foo' => 'bar'),
-			array('baz' => 'bay')
-		);
+		$items = [
+			['foo' => 'bar'],
+			['baz' => 'bay']
+		];
 		$instance->setItems($items);
 		$this->assertSame(2, count($instance->getItems()));
 	}
@@ -72,18 +72,18 @@ class SelectTest extends AbstractFieldTest {
 		$GLOBALS['TCA']['foobar']['ctrl']['label'] = 'username';
 		/** @var Select $instance */
 		$instance = $this->objectManager->get($this->createInstanceClassName());
-		$query = $this->getMock('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Query', array('execute', 'getType'), array(), '', FALSE);
+		$query = $this->getMock('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Query', ['execute', 'getType'], [], '', FALSE);
 		$query->expects($this->any())->method('getType')->will($this->returnValue('foobar'));
-		$query->expects($this->any())->method('execute')->will($this->returnValue(array(
+		$query->expects($this->any())->method('execute')->will($this->returnValue([
 			new FrontendUser('user1'),
 			new FrontendUser('user2')
-		)));
+		]));
 		$instance->setItems($query);
 		$result = $instance->getItems();
 		$this->assertIsArray($result);
-		$this->assertEquals(array(
-			array('user1', NULL), array('user2', NULL)
-		), $result);
+		$this->assertEquals([
+			['user1', NULL], ['user2', NULL]
+		], $result);
 	}
 
 	/**
@@ -92,11 +92,11 @@ class SelectTest extends AbstractFieldTest {
 	public function getLabelPropertyNameTranslatesTableNameFromObjectTypeRespectingTableMapping() {
 		$table = 'foo';
 		$type = 'bar';
-		$fixture = array('config' => array('tx_extbase' => array('persistence' => array('classes' =>
-			array($type => array('mapping' => array('tableName' => $table . 'suffix')))))));
-		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getAllTypoScript'));
+		$fixture = ['config' => ['tx_extbase' => ['persistence' => ['classes' =>
+			[$type => ['mapping' => ['tableName' => $table . 'suffix']]]]]]];
+		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', ['getAllTypoScript']);
 		$service->expects($this->once())->method('getAllTypoScript')->willReturn($fixture);
-		$instance = $this->getMock($this->createInstanceClassName(), array('getConfigurationService'));
+		$instance = $this->getMock($this->createInstanceClassName(), ['getConfigurationService']);
 		$instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
 		$GLOBALS['TCA'][$table . 'suffix']['ctrl']['label'] = $table . 'label';
 		$propertyName = $this->callInaccessibleMethod($instance, 'getLabelPropertyName', $table, $type);

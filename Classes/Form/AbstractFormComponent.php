@@ -73,7 +73,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	/**
 	 * @var array
 	 */
-	protected $variables = array();
+	protected $variables = [];
 
 	/**
 	 * @var boolean
@@ -89,7 +89,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @param array $settings
 	 * @return FormInterface
 	 */
-	public static function create(array $settings = array()) {
+	public static function create(array $settings = []) {
 		/** @var ObjectManagerInterface $objectManager */
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$className = get_called_class();
@@ -493,7 +493,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return array
 	 */
 	protected function buildChildren(\SplObjectStorage $children) {
-		$structure = array();
+		$structure = [];
 		foreach ($children as $child) {
 			if (TRUE === (boolean) $child->getEnabled()) {
 				$name = $child->getName();

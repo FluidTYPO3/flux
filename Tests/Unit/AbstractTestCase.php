@@ -42,7 +42,7 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @param array $data
 	 * @param string $dataName
 	 */
-	public function __construct($name = NULL, array $data = array(), $dataName = '') {
+	public function __construct($name = NULL, array $data = [], $dataName = '') {
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$this->objectManager = clone $objectManager;
 		parent::__construct($name, $data, $dataName);
@@ -139,9 +139,9 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @param string $templateName
 	 * @param array $variables
 	 */
-	protected function assertFluxTemplateLoadsWithoutErrors($templateName, $variables = array()) {
+	protected function assertFluxTemplateLoadsWithoutErrors($templateName, $variables = []) {
 		if (0 === count($variables)) {
-			$variables = array('row' => Records::$contentRecordWithoutParentAndWithoutChildren);
+			$variables = ['row' => Records::$contentRecordWithoutParentAndWithoutChildren];
 		}
 		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($templateName);
 		$service = $this->createFluxServiceInstance();
@@ -174,9 +174,9 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 * @param array $methods
 	 * @return FluxService
 	 */
-	protected function createFluxServiceInstance($methods = array('dummy')) {
+	protected function createFluxServiceInstance($methods = ['dummy']) {
 		/** @var FluxService $fluxService */
-		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', $methods, array(), '', FALSE);
+		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', $methods, [], '', FALSE);
 		$fluxService->injectObjectManager($this->objectManager);
 		$configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
 		$fluxService->injectConfigurationManager($configurationManager);
@@ -204,11 +204,11 @@ abstract class AbstractTestCase extends BaseTestCase {
 	 */
 	protected function performBasicTemplateReadTest($templatePathAndFilename) {
 		$service = $this->createFluxServiceInstance();
-		$paths = array(
+		$paths = [
 			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
 			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
 			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
-		);
+		];
 		$viewContext = new ViewContext($templatePathAndFilename);
 		$viewContext->setTemplatePaths(new TemplatePaths($paths));
 		$viewContext->setSectionName('Configuration');

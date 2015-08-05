@@ -18,9 +18,9 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 	/**
 	 * @var array
 	 */
-	protected $defaultData = array(
+	protected $defaultData = [
 		'targetType' => 'float',
-	);
+	];
 
 	/**
 	 * @test
@@ -73,7 +73,7 @@ class TypeConverterPipeTest extends AbstractPipeTestCase {
 		$instance->setTypeConverter($converter);
 		$instance->setTargetType('DateTime');
 		$this->setExpectedException('TYPO3\CMS\Extbase\Property\Exception\TypeConverterException', NULL, 1308003914);
-		$instance->conduct(array());
+		$instance->conduct([]);
 	}
 
 	/**

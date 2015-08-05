@@ -29,19 +29,19 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 	 */
 	protected function setUp() {
 		parent::setUp();
-		$GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
+		$GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = [];
 	}
 
 	/**
 	 * @return array
 	 */
 	protected function getClipBoardDataFixture() {
-		$clipBoardData = array(
+		$clipBoardData = [
 			'current' => 'normal',
-			'normal' => array(
+			'normal' => [
 				'el' => Records::$contentRecordWithoutParentAndWithoutChildren
-			)
-		);
+			]
+		];
 		return $clipBoardData;
 	}
 
@@ -49,10 +49,10 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 	 * @return array
 	 */
 	protected function getFormOptionsFixture() {
-		$formOptionsData = array(
+		$formOptionsData = [
 			'extensionName' => 'flux',
 			'iconOption' => 'Icons/Mock/Fixture.gif',
-		);
+		];
 		return $formOptionsData;
 	}
 
@@ -158,39 +158,39 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getGenerateUniqueIntegerForFluxAreaTestValues() {
-		return array(
-			array(1, 'test', -10000000449),
-			array(321, 'foobar', -10000000954),
-			array(8, 'xyzbazbar', -10000000997),
-			array(123, 'verylongstringverylongstringverylongstring', -10000004770)
-		);
+		return [
+			[1, 'test', -10000000449],
+			[321, 'foobar', -10000000954],
+			[8, 'xyzbazbar', -10000000997],
+			[123, 'verylongstringverylongstringverylongstring', -10000004770]
+		];
 	}
 
 	/**
 	 * @return string
 	 */
 	protected function getMockExtension() {
-		$structure = array(
-			'flux' => array(
-				'Resources' => array(
-					'Private' => array(
-						'Templates' => array(
-							'Content' => array(
+		$structure = [
+			'flux' => [
+				'Resources' => [
+					'Private' => [
+						'Templates' => [
+							'Content' => [
 								'TestTrue.html' => 'Test template with Icon available',
 								'TestFalse.html' => 'Test template with Icon not available'
-							)
-						)
-					),
-					'Public' => array(
-						'Icons' => array(
-							'Content' => array(
+							]
+						]
+					],
+					'Public' => [
+						'Icons' => [
+							'Content' => [
 								'TestTrue.png' => 'Test-Icon'
-							)
-						)
-					)
-				),
-			)
-		);
+							]
+						]
+					]
+				],
+			]
+		];
 		vfsStream::setup('ext', NULL, $structure);
 		$vfsUrl = vfsStream::url('ext');
 

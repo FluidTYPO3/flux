@@ -16,13 +16,13 @@ class ColorPickerTest extends AbstractWizardTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'hideParent' => FALSE,
 		'dimensions' => '40x40',
 		'width' => 100,
 		'height' => 100
-	);
+	];
 
 }

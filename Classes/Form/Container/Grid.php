@@ -21,11 +21,11 @@ class Grid extends AbstractFormContainer implements ContainerInterface {
 	 * @return array
 	 */
 	public function build() {
-		$structure = array(
+		$structure = [
 			'name' => $this->getName(),
 			'label' => $this->getLabel(),
 			'rows' => $this->buildChildren($this->children)
-		);
+		];
 		return $structure;
 	}
 

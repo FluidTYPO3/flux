@@ -19,13 +19,13 @@ class EmailPipeTest extends AbstractPipeTestCase {
 	/**
 	 * @var array
 	 */
-	protected $defaultData = array('subject' => 'Test subject');
+	protected $defaultData = ['subject' => 'Test subject'];
 
 	/**
 	 * @return EmailPipe
 	 */
 	protected function createInstance() {
-		$pipe = $this->getMock('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe', array('sendEmail'));
+		$pipe = $this->getMock('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe', ['sendEmail']);
 		ObjectAccess::setProperty($pipe, 'label', 'Mock EmailPipe', TRUE);
 		return $pipe;
 	}
@@ -35,7 +35,7 @@ class EmailPipeTest extends AbstractPipeTestCase {
 	 */
 	public function supportsSenderArray() {
 		$instance = $this->createInstance();
-		$instance->setSender(array('test@test.com', 'test'));
+		$instance->setSender(['test@test.com', 'test']);
 		$output = $instance->conduct($this->defaultData);
 		$this->assertNotEmpty($output);
 	}
@@ -45,7 +45,7 @@ class EmailPipeTest extends AbstractPipeTestCase {
 	 */
 	public function supportsRecipientArray() {
 		$instance = $this->createInstance();
-		$instance->setRecipient(array('test@test.com', 'test'));
+		$instance->setRecipient(['test@test.com', 'test']);
 		$output = $instance->conduct($this->defaultData);
 		$this->assertNotEmpty($output);
 	}
@@ -65,7 +65,7 @@ class EmailPipeTest extends AbstractPipeTestCase {
 	public function turnsMailboxValidationErrorIntoPipeException() {
 		$instance = $this->createInstance();
 		$this->setExpectedException('FluidTYPO3\Flux\Outlet\Pipe\Exception');
-		$instance->setRecipient(array('test', 'test'));
+		$instance->setRecipient(['test', 'test']);
 		$instance->conduct($this->defaultData);
 	}
 
@@ -74,7 +74,7 @@ class EmailPipeTest extends AbstractPipeTestCase {
 	 */
 	public function sendsEmail() {
 		$instance = $this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe');
-		$message = $this->getMock('TYPO3\CMS\Core\Mail\MailMessage', array('send'));
+		$message = $this->getMock('TYPO3\CMS\Core\Mail\MailMessage', ['send']);
 		$message->expects($this->once())->method('send');
 		$this->callInaccessibleMethod($instance, 'sendEmail', $message);
 	}

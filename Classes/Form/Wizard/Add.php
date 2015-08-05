@@ -34,9 +34,9 @@ class Add extends AbstractWizard {
 	/**
 	 * @var array
 	 */
-	protected $module = array(
+	protected $module = [
 		'name' => 'wizard_add'
-	);
+	];
 
 	/**
 	 * @var string
@@ -57,13 +57,13 @@ class Add extends AbstractWizard {
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		$configuration = array(
-			'params' => array(
+		$configuration = [
+			'params' => [
 				'table'=> $this->getTable(),
 				'pid' => $this->getStoragePageUid(),
 				'setValue' => intval($this->getSetValue())
-			)
-		);
+			]
+		];
 		return $configuration;
 	}
 

@@ -65,17 +65,17 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 	 * @return array
 	 */
 	public function build() {
-		$sheetStructArray = array(
-			'ROOT' => array(
-				'TCEforms' => array(
+		$sheetStructArray = [
+			'ROOT' => [
+				'TCEforms' => [
 					'sheetTitle' => $this->getLabel(),
 					'sheetDescription' => $this->getDescription(),
 					'sheetShortDescr' => $this->getShortDescription()
-				),
+				],
 				'type' => 'array',
 				'el' => $this->buildChildren($this->children)
-			)
-		);
+			]
+		];
 		return $sheetStructArray;
 	}
 
@@ -83,7 +83,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 	 * @return array
 	 */
 	protected function buildChildren() {
-		$structure = array();
+		$structure = [];
 		/** @var \FluidTYPO3\Flux\Form\FormInterface[] $children */
 		$children = $this->getFields();
 		foreach ($children as $child) {
@@ -97,7 +97,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 	 * @return \FluidTYPO3\Flux\Form\FieldInterface[]
 	 */
 	public function getFields() {
-		$fields = array();
+		$fields = [];
 		foreach ($this->children as $child) {
 			if (TRUE === $child->getEnabled()) {
 				$isSectionOrContainer = (TRUE === $child instanceof Section || TRUE === $child instanceof Container);

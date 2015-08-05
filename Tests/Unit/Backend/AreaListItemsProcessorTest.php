@@ -39,11 +39,11 @@ class AreaListItemsProcessorTest extends AbstractTestCase {
 	public function testItemsProcFunc($parameters, $urlParent, $urlArea, $expectedReturnedItems = NULL, $expectedItems) {
 		$mock = $this->getMock(
 			$this->createInstanceClassName(),
-			array('readParentAndAreaNameFromUrl', 'getContentAreasDefinedInContentElement'),
-			array(), '', FALSE
+			['readParentAndAreaNameFromUrl', 'getContentAreasDefinedInContentElement'],
+			[], '', FALSE
 		);
 		$mock->expects($this->once())->method('readParentAndAreaNameFromUrl')
-			->will($this->returnValue(array($urlParent, $urlArea)));
+			->will($this->returnValue([$urlParent, $urlArea]));
 		if (NULL !== $expectedReturnedItems) {
 			$mock->expects($this->once())->method('getContentAreasDefinedInContentElement')
 				->will($this->returnValue($expectedReturnedItems));
@@ -58,11 +58,11 @@ class AreaListItemsProcessorTest extends AbstractTestCase {
 	 * @return array
 	 */
 	public function getItemsProcFuncTestValues() {
-		return array(
-			array(array(), NULL, NULL, NULL, array(array('', ''))),
-			array(array(), 1, 'areaname', array(), array()),
-			array(array(), 1, 'areaname', array(array('foobar', 'areaname')), array(1 => array('foobar', 'areaname'))),
-		);
+		return [
+			[[], NULL, NULL, NULL, [['', '']]],
+			[[], 1, 'areaname', [], []],
+			[[], 1, 'areaname', [['foobar', 'areaname']], [1 => ['foobar', 'areaname']]],
+		];
 	}
 
 	/**
@@ -78,21 +78,21 @@ class AreaListItemsProcessorTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function getContentAreasDefinedInContentElementCallsExpectedMethods() {
-		$grid = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Grid', array('build'));
-		$grid->expects($this->once())->method('build')->willReturn(array('rows' => array(array('columns' => array(array(
+		$grid = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Grid', ['build']);
+		$grid->expects($this->once())->method('build')->willReturn(['rows' => [['columns' => [[
 			'label' => 'column-label',
 			'name' => 'column'
-		))))));
-		$mock = $this->getMock('FluidTYPO3\\Flux\\Backend\\AreaListItemsProcessor', array('dummy'), array(), '', FALSE);
-		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
+		]]]]]);
+		$mock = $this->getMock('FluidTYPO3\\Flux\\Backend\\AreaListItemsProcessor', ['dummy'], [], '', FALSE);
+		$provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', ['getGrid']);
 		$provider1->expects($this->once())->method('getGrid')->willReturn(NULL);
-		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
+		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', ['getGrid']);
 		$provider2->expects($this->once())->method('getGrid')->willReturn($grid);
 
-		$providers = array($provider1, $provider2);
-		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', array('getSingle'));
-		$recordService->expects($this->once())->method('getSingle')->will($this->returnValue(array('foo' => 'bar')));
-		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+		$providers = [$provider1, $provider2];
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', ['getSingle']);
+		$recordService->expects($this->once())->method('getSingle')->will($this->returnValue(['foo' => 'bar']));
+		$fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', ['resolveConfigurationProviders']);
 		$fluxService->expects($this->once())->method('resolveConfigurationProviders')->willReturn($providers);
 		ObjectAccess::setProperty($mock, 'fluxService', $fluxService, TRUE);
 		ObjectAccess::setProperty($mock, 'recordService', $recordService, TRUE);

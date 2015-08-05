@@ -30,14 +30,14 @@ class ContentViewHelperTest extends AbstractViewHelperTestCase {
 		/** @var ControllerContext $controllerContext */
 		$controllerContext = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
 		$controllerContext->setRequest($request);
-		$column = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Column', array('setName', 'setLabel'));
+		$column = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Column', ['setName', 'setLabel']);
 		$column->expects($this->once())->method('setName');
 		$column->expects($this->once())->method('setLabel');
-		$row = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Row', array('createContainer'));
-		$grid = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Grid', array('createContainer'));
+		$row = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Row', ['createContainer']);
+		$grid = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Grid', ['createContainer']);
 		$grid->expects($this->once())->method('createContainer')->will($this->returnValue($row));
 		$row->expects($this->once())->method('createContainer')->will($this->returnValue($column));
-		$mock = $this->getMock($this->createInstanceClassName(), array('getContainer', 'getGrid'));
+		$mock = $this->getMock($this->createInstanceClassName(), ['getContainer', 'getGrid']);
 		$mock->expects($this->once())->method('getContainer')->will($this->returnValue(NULL));
 		$mock->expects($this->once())->method('getGrid')->will($this->returnValue($grid));
 		ObjectAccess::setProperty($mock, 'viewHelperVariableContainer', $viewHelperContainer, TRUE);

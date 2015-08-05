@@ -16,12 +16,12 @@ class CheckboxTest extends AbstractFieldTest {
 	/**
 	 * @var array
 	 */
-	protected $chainProperties = array(
+	protected $chainProperties = [
 		'name' => 'test',
 		'label' => 'Test field',
 		'enable' => TRUE,
 		'default' => 1,
 		'requestUpdate' => TRUE,
-	);
+	];
 
 }
