@@ -293,8 +293,12 @@ class ContentService implements SingletonInterface {
 				// look for the translated version of the parent record indicated
 				// in this new, translated record. Below, we adjust the parent UID
 				// so it has the UID of the translated parent if one exists.
-				$translatedParents = (array) $this->workspacesAwareRecordService->get('tt_content', 'uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'");
-				$translatedParent = reset($translatedParents);
+				if ($oldRecord['tx_flux_parent'] > 0) {
+					$translatedParents = (array) $this->workspacesAwareRecordService->get('tt_content', 'uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'");
+					$translatedParent = reset($translatedParents);
+				} else {
+					$translatedParent = NULL;
+				}
 				$sortbyFieldName = TRUE === isset($GLOBALS['TCA']['tt_content']['ctrl']['sortby']) ?
 					$GLOBALS['TCA']['tt_content']['ctrl']['sortby'] : 'sorting';
 				$overrideValues = array(
