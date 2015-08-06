@@ -1,26 +1,27 @@
 <phpunit bootstrap="Tests/bootstrap.php"
 	backupGlobals="false"
-        backupStaticAttributes="false"
-        colors="false"
-        convertErrorsToExceptions="true"
-        convertWarningsToExceptions="true"
-        forceCoversAnnotation="false"
-        processIsolation="false"
-        stopOnError="false"
-        stopOnFailure="false"
-        stopOnIncomplete="false"
-        stopOnSkipped="false"
-        strict="false"
-        verbose="false">
+    backupStaticAttributes="false"
+    colors="false"
+    convertErrorsToExceptions="true"
+    convertWarningsToExceptions="true"
+    forceCoversAnnotation="false"
+    processIsolation="false"
+    stopOnError="false"
+    stopOnFailure="false"
+    stopOnIncomplete="false"
+    stopOnSkipped="false"
+    strict="false"
+    verbose="false">
 
-        <testsuites>
-                <testsuite name="EXT:flux">
-                        <directory>Tests/</directory>
-                </testsuite>
-        </testsuites>
-		<filter>
-				<whitelist>
-						<directory>Classes/</directory>
-				</whitelist>
-		</filter>
+    <testsuites>
+            <testsuite name="EXT:flux">
+                    <directory>Tests/</directory>
+                    <exclude>Tests/Functional</exclude>
+            </testsuite>
+    </testsuites>
+    <filter>
+            <whitelist>
+                    <directory>Classes/</directory>
+            </whitelist>
+    </filter>
 </phpunit>
