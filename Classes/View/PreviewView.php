@@ -197,10 +197,13 @@ class PreviewView {
 	 * @param ProviderInterface $provider
 	 * @param array $row
 	 * @param Form $form
-	 * @return string
+	 * @return string|NULL
 	 */
 	protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = NULL) {
 		$templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
+		if (NULL === $templatePathAndFilename) {
+			return NULL;
+		}
 		$extensionKey = $provider->getExtensionKey($row);
 		$paths = $provider->getTemplatePaths($row);
 
