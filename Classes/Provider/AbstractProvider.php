@@ -268,7 +268,7 @@ class AbstractProvider implements ProviderInterface {
 		}
 		$formName = 'form';
 		$cacheKey = $this->getCacheKeyForStoredVariable($row, $formName);
-		if (FALSE === isset(self::$cache[$cacheKey])) {
+		if (FALSE === array_key_exists($cacheKey, self::$cache)) {
 			$formClassName = $this->resolveFormClassName($row);
 			if (NULL !== $formClassName) {
 				$form = call_user_func_array(array($formClassName, 'create'), array($row));
