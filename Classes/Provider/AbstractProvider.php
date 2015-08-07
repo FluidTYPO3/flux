@@ -309,7 +309,7 @@ class AbstractProvider implements ProviderInterface {
 			return $this->grid;
 		}
 		$cacheKey = $this->getCacheKeyForStoredVariable($row, 'grid');
-		if (FALSE === isset(self::$cache[$cacheKey])) {
+		if (FALSE === array_key_exists($cacheKey, self::$cache)) {
 			$class = get_class($this);
 			$controllerName = substr(substr($class, strrpos($class, '\\') + 1), 0, -8);
 			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
