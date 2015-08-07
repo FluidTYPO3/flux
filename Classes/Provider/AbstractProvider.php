@@ -574,7 +574,8 @@ class AbstractProvider implements ProviderInterface {
 					}
 				}
 			}
-			$row[$fieldName] = $stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($row[$fieldName], $removals);
+			$stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($row[$fieldName], $removals);
+			$row[$fieldName] = $stored[$fieldName];
 			$reference->datamap[$this->tableName][$id][$fieldName] = $row[$fieldName];
 			$this->recordService->update($this->tableName, $stored);
 		}
@@ -653,10 +654,10 @@ class AbstractProvider implements ProviderInterface {
 	 * @return PreviewView
 	 */
 	protected function getPreviewView() {
-		$preview = TRUE === version_compare(TYPO3_version, '7.1', '<')
-			? 'FluidTYPO3\\Flux\\View\\LegacyPreviewView'
-			: 'FluidTYPO3\\Flux\\View\\PreviewView';
-
+		$preview = 'FluidTYPO3\\Flux\\View\\PreviewView';
+		if (TRUE === version_compare(TYPO3_version, '7.1', '<')) {
+			$preview = 'FluidTYPO3\\Flux\\View\\LegacyPreviewView';
+		}
 		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get($preview);
 	}
 

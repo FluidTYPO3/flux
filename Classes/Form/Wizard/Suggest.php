@@ -105,7 +105,7 @@ class Suggest extends AbstractWizard {
 				'pidList' => implode(',', $this->getStoragePageUids()),
 				'pidDepth' => $this->getStoragePageRecursiveDepth(),
 				'minimumCharacters' => $this->getMinimumCharacters(),
-				'maxPathTitleLength'=> $this->getMaxPathTitleLength(),
+				'maxPathTitleLength' => $this->getMaxPathTitleLength(),
 				'searchWholePhrase' => intval($this->getSearchWholePhrase()),
 				'searchCondition' => $this->getSearchCondition(),
 				'cssClass' => $this->getCssClass(),

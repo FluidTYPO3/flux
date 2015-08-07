@@ -5,6 +5,7 @@
  *
  * Performs update tasks for extension flux
  */
+ // @codingStandardsIgnoreStart
 class ext_update {
 
 	/**

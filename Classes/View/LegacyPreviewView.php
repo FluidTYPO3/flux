@@ -8,12 +8,16 @@ namespace FluidTYPO3\Flux\View;
  * LICENSE.md file that was distributed with this source code.
  */
 use FluidTYPO3\Flux\Form\Container\Column;
+use TYPO3\CMS\Backend\View\PageLayoutView;
 
 /**
  * @package Flux
  */
 class LegacyPreviewView extends PreviewView {
 
+	/**
+	 * @var array
+	 */
     protected $templates = array(
         'grid' => '<table cellspacing="0" cellpadding="0" id="content-grid-%s" class="flux-grid%s">
 						<tbody>
@@ -54,17 +58,17 @@ class LegacyPreviewView extends PreviewView {
     );
 
 
-    /**
+	/**
 	 * @codeCoverageIgnore
-     * @param array $row
-     * @param Column $column
-     * @param $colPosFluxContent
-     * @param $dblist
-     * @param $target
-     * @param $id
-     * @param $content
-     * @return string
-     */
+	 * @param array $row
+	 * @param Column $column
+	 * @param integer $colPosFluxContent
+	 * @param PageLayoutView $dblist
+	 * @param integer $target
+	 * @param string $id
+	 * @param string $content
+	 * @return string
+	 */
     protected function parseGridColumnTemplate(array $row, Column $column, $colPosFluxContent, $dblist, $target, $id, $content) {
         return sprintf($this->templates['gridColumnLegacy'],
 			$column->getColspan(),

@@ -46,6 +46,9 @@ class PreviewView {
 	const PREVIEW_SECTION = 'Preview';
 	const CONTROLLER_NAME = 'Content';
 
+	/**
+	 * @var array
+	 */
 	protected $templates = array(
 		'grid' => '<table cellspacing="0" cellpadding="0" id="content-grid-%s" class="flux-grid%s">
 						<tbody>
@@ -634,11 +637,11 @@ class PreviewView {
 	 * @codeCoverageIgnore
 	 * @param array $row
 	 * @param Column $column
-	 * @param $colPosFluxContent
-	 * @param $dblist
-	 * @param $target
-	 * @param $id
-	 * @param $content
+	 * @param integer $colPosFluxContent
+	 * @param PageLayoutView $dblist
+	 * @param integer $target
+	 * @param string $id
+	 * @param string $content
 	 * @return string
 	 */
 	protected function parseGridColumnTemplate(array $row, Column $column, $colPosFluxContent, $dblist, $target, $id, $content) {
