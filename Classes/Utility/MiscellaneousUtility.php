@@ -28,7 +28,7 @@ class MiscellaneousUtility {
 	/**
 	 * @var array
 	 */
-	private static $allowedIconTypes = array('png', 'gif');
+	private static $allowedIconTypes = array('svg', 'png', 'gif');
 
 	/**
 	 * @param integer $contentElementUid
