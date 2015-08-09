@@ -211,7 +211,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetForcedTemplateVariables() {
-		$provider = $this->getConfigurationProviderInstance();
+		$provider = $this->getMock($this->createInstanceClassName(), array('getPageValues'));
 		$record = $this->getBasicRecord();
 		$variables = $provider->getTemplateVariables($record);
 		$this->assertIsArray($variables);
@@ -238,7 +238,10 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetTemplateVariables() {
-		$provider = $this->getConfigurationProviderInstance();
+		$provider = $this->getMock($this->createInstanceClassName(), array('getPageValues', 'getGrid', 'getForm'));
+		$provider->expects($this->once())->method('getPageValues')->willReturnArgument(0);
+		$provider->expects($this->once())->method('getForm')->willReturn(NULL);
+		$provider->expects($this->once())->method('getGrid')->willReturn(NULL);
 		ObjectAccess::setProperty($provider, 'templatePaths', array(), TRUE);
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
 		$record = $this->getBasicRecord();
@@ -545,7 +548,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canSetTemplateVariables() {
-		$provider = $this->getConfigurationProviderInstance();
+		$provider = $this->getMock($this->createInstanceClassName(), array('getPageValues'));
+		$provider->expects($this->once())->method('getPageValues')->willReturnArgument(0);
 		$record = $this->getBasicRecord();
 		$variables = array('test' => 'test');
 		$provider->setTemplateVariables($variables);

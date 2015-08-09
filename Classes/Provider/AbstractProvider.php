@@ -442,13 +442,28 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * Returns the page record with localisation applied, if any
+	 * exists in database.
+	 *
+	 * @return array
+	 */
+	protected function getPageValues() {
+		$record = $GLOBALS['TSFE']->page;
+		$localisation = $this->recordService->get('pages_language_overlay', '*', "pid = '" . $record['uid'] . "'");
+		if (FALSE === empty($localisation)) {
+			$record = RecursiveArrayUtility::merge($record, reset($localisation));
+		}
+		return $record;
+	}
+
+	/**
 	 * @param array $row
 	 * @return array|NULL
 	 */
 	public function getTemplateVariables(array $row) {
 		$variables = (array) $this->templateVariables;
 		$variables['record'] = $row;
-		$variables['page'] = $GLOBALS['TSFE']->page;
+		$variables['page'] = $this->getPageValues();
 		$variables['user'] = $GLOBALS['TSFE']->fe_user->user;
 		if (TRUE === file_exists($this->getTemplatePathAndFilename($row))) {
 			$variables['grid'] = $this->getGrid($row);
