@@ -39,6 +39,17 @@ class Select extends AbstractMultiValueFormField {
 	protected $emptyOption = FALSE;
 
 	/**
+	 * If set to TRUE, Flux will attempt to translate the LLL labels of items
+	 * provided as CSV values, e.g. items "foo,bar" would try to resolve LLL
+	 * values for "LLL:EXT:myext/Resources/Private/Languages/locallang.xlf:foo"
+	 * and "LLL:EXT:myext/Resources/Private/Languages/locallang.xlf:bar" to be
+	 * used as value labels.
+	 *
+	 * @var boolean
+	 */
+	protected $translateCsvItems = FALSE;
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
@@ -57,6 +68,22 @@ class Select extends AbstractMultiValueFormField {
 	}
 
 	/**
+	 * @return boolean
+	 */
+	public function getTranslateCsvItems() {
+		return $this->translateCsvItems;
+	}
+
+	/**
+	 * @param boolean $translateCsvItems
+	 * @return Select
+	 */
+	public function setTranslateCsvItems($translateCsvItems) {
+		$this->translateCsvItems = $translateCsvItems;
+		return $this;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function getItems() {
@@ -65,8 +92,16 @@ class Select extends AbstractMultiValueFormField {
 			$items = $this->addOptionsFromResults($this->items);
 		} elseif (TRUE === is_string($this->items)) {
 			$itemNames = GeneralUtility::trimExplode(',', $this->items);
-			foreach ($itemNames as $itemName) {
-				array_push($items, array($itemName, $itemName));
+			if (!$this->getTranslateCsvItems()) {
+				$items = array_combine($itemNames, $itemNames);
+			} else {
+				foreach ($itemNames as $itemName) {
+					$resolvedLabel = $this->resolveLocalLanguageValueOfLabel('', $this->name . '.option.' . $itemName);
+					if (0 === strpos($resolvedLabel, 'LLL:') ) {
+						$resolvedLabel = $itemName;
+					}
+					array_push($items, array($resolvedLabel, $itemName));
+				}
 			}
 		} elseif (TRUE === is_array($this->items) || TRUE === $this->items instanceof \Traversable) {
 			foreach ($this->items as $itemIndex => $itemValue) {
