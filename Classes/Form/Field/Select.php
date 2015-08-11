@@ -67,7 +67,11 @@ class Select extends AbstractMultiValueFormField {
 		} elseif (TRUE === is_string($this->items)) {
 			$itemNames = GeneralUtility::trimExplode(',', $this->items);
 			foreach ($itemNames as $itemName) {
-				array_push($items, array($itemName, $itemName));
+				$resolvedLabel = $this->resolveLocalLanguageValueOfLabel('', $this->name . '.option.' . $itemName);
+				if (0 === strpos($resolvedLabel, 'LLL:') ) {
+					$resolvedLabel = $itemName;
+				}
+				array_push($items, array($resolvedLabel, $itemName));
 			}
 		} elseif (TRUE === is_array($this->items) || TRUE === $this->items instanceof \Traversable) {
 			foreach ($this->items as $itemIndex => $itemValue) {
