@@ -482,6 +482,7 @@ class PreviewView {
 		// records based on them having remove placeholders.
 		$condition = "AND tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' ";
 		$condition .= "AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' ";
+		$condition .= (1 === $view->tt_contentConfig['showHidden']) ? '' : 'AND hidden = 0 ';
 		$queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
 		$result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
 		$rows = $view->getResult($result);
@@ -551,6 +552,7 @@ class PreviewView {
 		$dblist->tt_contentConfig['showCommands'] = 1;
 		$dblist->tt_contentConfig['showInfo'] = 1;
 		$dblist->tt_contentConfig['single'] = 0;
+		$dblist->tt_contentConfig['showHidden'] = intval($GLOBALS['BE_USER']->uc['moduleData']['web_layout']['tt_content_showHidden']);
 		$dblist->tt_contentConfig['activeCols'] .= ',' . ContentService::COLPOS_FLUXCONTENT;
 		$dblist->CType_labels = array();
 		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";
