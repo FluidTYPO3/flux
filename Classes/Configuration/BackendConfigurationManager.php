@@ -110,9 +110,15 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 */
 	protected function getPageIdFromRecordIdentifiedInEditUrlArgument() {
 		list ($table, $id, $command) = $this->getEditArguments();
-		// if TYPO3 wants to insert a new page, URL argument is already the PID value.
-		// if any non-page record is being edited, load it and return the PID value.
-		return ('pages' === $table || 'new' === $command || 0 === $id) ? $id : $this->getPageIdFromRecordUid($table, $id);
+		if ('pages' === $table && 'new' === $command) {
+			// if TYPO3 wants to insert a new page, URL argument is already the PID value.
+			return $id;
+		} elseif (0 <> $id) {
+			// if any identified record is being edited, load it and return the PID value.
+			// if the (new) record is relative to another, $id is negative UID of relative record, hence abs().
+			return $this->getPageIdFromRecordUid($table, abs($id));
+		}
+		return $id;
 	}
 
 	/**

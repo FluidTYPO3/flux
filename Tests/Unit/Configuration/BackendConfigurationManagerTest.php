@@ -198,7 +198,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 		$mock = $this->getMock($this->createInstanceClassName(), array('getEditArguments', 'getPageIdFromRecordUid'));
 		$mock->expects($this->once())->method('getEditArguments')->willReturn($arguments);
 		$mock->expects($this->exactly((integer) $expectsRecordFetch))->method('getPageIdFromRecordUid')
-			->with($arguments[0], $arguments[1])->willReturn($arguments[1]);
+			->with($arguments[0], abs($arguments[1]))->willReturn($arguments[1]);
 		$result = $this->callInaccessibleMethod($mock, 'getPageIdFromRecordIdentifiedInEditUrlArgument');
 		$this->assertEquals($arguments[1], $result);
 	}
@@ -209,11 +209,11 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 	public function getPageIdFromRecordIdentifiedInEditUrlArgumentTestValues() {
 		return array(
 			array(array('tt_content', 1, 'update'), TRUE),
-			array(array('tt_content', 0, 'update'), FALSE),
+			array(array('tt_content', -1, 'new'), TRUE),
 			array(array('pages', 0, 'update'), FALSE),
-			array(array('pages', 1, 'update'), FALSE),
-			array(array('pages', 1, 'delete'), FALSE),
-			array(array('sys_file', 1, 'new'), FALSE),
+			array(array('pages', 1, 'update'), TRUE),
+			array(array('pages', 1, 'delete'), TRUE),
+			array(array('sys_file', 1, 'new'), TRUE),
 			array(array('sys_file', 1, 'edit'), TRUE),
 		);
 	}
