@@ -101,8 +101,12 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @test
 	 */
 	public function postProcessCommandCallsExpectedMethodToMoveRecord() {
-		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getCallbackCommand'));
+		$mock = $this->getMock(
+			str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)),
+			array('getCallbackCommand', 'getMoveData')
+		);
 		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('move' => 1)));
+		$mock->expects($this->once())->method('getMoveData')->willReturn(array());
 		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
 		$mockContentService->expects($this->once())->method('moveRecord');
 		ObjectAccess::setProperty($mock, 'contentService', $mockContentService, TRUE);
