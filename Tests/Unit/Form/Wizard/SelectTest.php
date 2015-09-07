@@ -45,7 +45,7 @@ class SelectTest extends AbstractWizardTest {
 		$items = new \ArrayIterator($this->chainProperties['items']);
 		$instance = $this->createInstance();
 		$fetched = $instance->setItems($items)->getItems();
-		$this->assertIsString('ArrayIterator', $fetched);
+		$this->assertInstanceOf('ArrayIterator', $fetched);
 		$this->assertIsArray($instance->getFormattedItems());
 	}
 

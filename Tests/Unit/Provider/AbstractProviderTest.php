@@ -127,11 +127,10 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetAndSetContentObjectType() {
-		$record = Records::$contentRecordIsParentAndHasChildren;
 		/** @var ProviderInterface $instance */
 		$instance = $this->getConfigurationProviderInstance();
 		$instance->setContentObjectType('test');
-		$this->assertSame('test', $instance->getContentObjectType($record));
+		$this->assertSame('test', $instance->getContentObjectType());
 	}
 
 	/**
@@ -143,16 +142,6 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		$instance = $this->getConfigurationProviderInstance();
 		ObjectAccess::setProperty($instance, 'parentFieldName', 'test', TRUE);
 		$this->assertSame('test', $instance->getParentFieldName($record));
-	}
-
-	/**
-	 * @test
-	 */
-	public function canGetContentObjectType() {
-		$instance = $this->getConfigurationProviderInstance();
-		$record = Records::$contentRecordIsParentAndHasChildren;
-		$contentType = $instance->getContentObjectType($record);
-		$this->assertNull($contentType);
 	}
 
 	/**
