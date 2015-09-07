@@ -87,37 +87,7 @@ class ContentIconHookSubscriberTest extends UnitTestCase {
 			array(array('tt_content', 1, array()), NULL, NULL),
 			array(array('tt_content', 1, array()), $providerWithoutForm, NULL),
 			array(array('tt_content', 1, array('field' => 'test')), $providerWithoutForm, NULL),
-			array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon, '</div>
-							<style>
-								.t3-js-clickmenutrigger {
-								z-index: 2;
-								position: relative
-								}
-								.t3-js-clickmenutrigger .t3-icon-pagetree-root {
-								opacity: 0
-								}
-								.fluidcontent-icon {
-								margin-top: 7px;
-								position: absolute;
-								left: 12px;
-								z-index: 1
-								}
-								.fluidcontent-hack {
-								display: none
-								}
-								.t3-page-ce-header-icons-left .t3-js-clickmenutrigger+span.t3-icon-empty-empty {
-								display: none
-								}
-								.t3-page-ce-header {
-								position: relative
-								}
-								.t3-page-ce-header .fluidcontent-icon {
-								margin-top: 3px;
-								left: 10px;
-								}
-							</style>
-							<span class="t3-icon t3-icon-empty t3-icon-empty-empty fluidcontent-icon">%s</span>
-							<div class="fluidcontent-hack">'),
+			array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon, NULL),
 			array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon, 'icon'),
 		);
 	}

@@ -107,10 +107,8 @@ class ContentIconHookSubscriber {
 								$label = trim($form->getLabel());
 								$icon = '<img width="16" height="16" src="' . $icon . '" alt="' . $label . '"
 									title="' . $label . '" class="" />';
-							} else {
-								$icon = '<span class="t3-icon t3-icon-apps t3-icon-apps-pagetree t3-icon-pagetree-root"> </span>';
+								$icon = sprintf($this->templates['iconWrapper'], $icon);
 							}
-							$icon = sprintf($this->templates['iconWrapper'], $icon);
 						}
 					}
 				}
