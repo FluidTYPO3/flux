@@ -532,6 +532,7 @@ class PreviewView {
 	 */
 	protected function getInitializedPageLayoutView(array $row) {
 		$pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $row['pid']);
+		$moduleData = $GLOBALS['BE_USER']->getModuleData('web_layout', '');
 		/** @var $dblist PageLayoutView */
 		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
@@ -549,7 +550,7 @@ class PreviewView {
 		$dblist->tt_contentConfig['showCommands'] = 1;
 		$dblist->tt_contentConfig['showInfo'] = 1;
 		$dblist->tt_contentConfig['single'] = 0;
-		$dblist->tt_contentConfig['showHidden'] = intval($GLOBALS['BE_USER']->uc['moduleData']['web_layout']['tt_content_showHidden']);
+		$dblist->tt_contentConfig['showHidden'] = intval($moduleData['tt_content_showHidden']);
 		$dblist->tt_contentConfig['activeCols'] .= ',' . ContentService::COLPOS_FLUXCONTENT;
 		$dblist->CType_labels = array();
 		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";
