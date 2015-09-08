@@ -552,7 +552,7 @@ class PreviewView {
 		$dblist->tt_contentConfig['showCommands'] = 1;
 		$dblist->tt_contentConfig['showInfo'] = 1;
 		$dblist->tt_contentConfig['single'] = 0;
-		$dblist->tt_contentConfig['showHidden'] = intval($GLOBALS['BE_USER']->uc['moduleData']['web_layout']['tt_content_showHidden']);
+		$dblist->tt_contentConfig['showHidden'] = intval($GLOBALS['BE_USER']->getModuleData('web_layout', '')['tt_content_showHidden']);
 		$dblist->tt_contentConfig['activeCols'] .= ',' . ContentService::COLPOS_FLUXCONTENT;
 		$dblist->CType_labels = array();
 		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";
