@@ -434,7 +434,7 @@ class PreviewView {
 		$relativeUid = TRUE === isset($relativeTo['uid']) ? $relativeTo['uid'] : 0;
 		$columnName = $column->getName();
 		$relativeTo = $row['pid'] . '-' . $command . '-' . $relativeUid . '-' .
-			$row['uid'] . (FALSE === empty($columnName) ? '-' . $columnName : '');
+			$row['uid'] . (FALSE === empty($columnName) ? '-' . $columnName : '') . '-' . ContentService::COLPOS_FLUXCONTENT;
 		return ClipBoardUtility::createIconWithUrl($relativeTo, $reference);
 	}
 
