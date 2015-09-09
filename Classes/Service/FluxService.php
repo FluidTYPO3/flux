@@ -451,11 +451,7 @@ class FluxService implements SingletonInterface {
 		$shouldExcludedFriendlySeverities = 2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$isExcludedSeverity = (TRUE === $shouldExcludedFriendlySeverities && TRUE === in_array($severity, self::$friendlySeverities));
 		if (FALSE === $disabledDebugMode && FALSE === $alreadySent && FALSE === $isExcludedSeverity) {
-			$isAjaxCall = (boolean) 0 < GeneralUtility::_GET('ajaxCall');
-			$flashMessage = $this->createFlashMessage($message, $title, $severity);
-			$flashMessage->setStoreInSession($isAjaxCall);
-			$flashMessageQueue = new FlashMessageQueue('flux');
-			$flashMessageQueue->addMessage($flashMessage);
+			$this->logMessage($message, $severity);
 			$this->sentDebugMessages[$hash] = TRUE;
 		}
 	}
@@ -469,12 +465,12 @@ class FluxService implements SingletonInterface {
 
 	/**
 	 * @param string $message
-	 * @param string $title
 	 * @param integer $severity
-	 * @return FlashMessage
+	 * @return void
+	 * @codeCoverageIgnore
 	 */
-	protected function createFlashMessage($message, $title, $severity) {
-		return new FlashMessage($message, $title, $severity);
+	protected function logMessage($message, $severity) {
+		GeneralUtility::sysLog($message, 'flux', $severity);
 	}
 
 }

@@ -296,20 +296,9 @@ class FluxServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function createFlashMessageCreatesFlashMessage() {
-		$instance = $this->createInstance();
-		$result = $this->callInaccessibleMethod($instance, 'createFlashMessage', 'Message', 'Title', 2);
-		$this->assertAttributeEquals('Message', 'message', $result);
-		$this->assertAttributeEquals('Title', 'title', $result);
-		$this->assertAttributeEquals(2, 'severity', $result);
-	}
-
-	/**
-	 * @test
-	 */
 	public function messageIgnoresRepeatedMessages() {
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('createFlashMessage'));
-		$instance->expects($this->once())->method('createFlashMessage')->willReturn(new FlashMessage('Test', 'Test', 2));
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('logMessage'));
+		$instance->expects($this->once())->method('logMessage');
 		$instance->message('Test', 'Test', 2);
 		$instance->message('Test', 'Test', 2);
 	}
