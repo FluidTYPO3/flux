@@ -241,7 +241,6 @@ abstract class AbstractFluxController extends ActionController {
 				->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndAction(
 				$extensionName, $actionName, $controllerName
 			);
-			$extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
 			return $this->callSubControllerAction($extensionName, $foreignControllerClass, $actionName, $pluginSignature);
 		}
 		return $this->view->render();
@@ -274,6 +273,8 @@ abstract class AbstractFluxController extends ActionController {
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
 		$arguments = (array) (TRUE === is_array($post) ? $post : GeneralUtility::_GET($pluginSignature));
 		$potentialControllerInstance = $this->objectManager->get($controllerClassName);
+		list ($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
+		$this->request->setControllerVendorName($vendorName);
 		$this->request->setControllerExtensionName($extensionName);
 		$this->request->setControllerActionName($controllerActionName);
 		$this->request->setArguments($arguments);
