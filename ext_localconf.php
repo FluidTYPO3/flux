@@ -37,7 +37,6 @@ if (TRUE === version_compare(TYPO3_version, '7.1', '<')) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = 'FluidTYPO3\Flux\Backend\LegacyPreview';
 }
 
-
 if (TRUE === class_exists('FluidTYPO3\Flux\Core')) {
 	\FluidTYPO3\Flux\Core::registerConfigurationProvider('FluidTYPO3\Flux\Provider\ContentProvider');
 
@@ -61,3 +60,5 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] 
 if (TRUE === version_compare(TYPO3_version, '7.1', '<')) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] = 'FluidTYPO3\\Flux\\Hooks\\LegacyContentIconHookSubscriber->addSubIcon';
 }
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable']['flux'] = 'FluidTYPO3\Flux\Hooks\RecordListGetTableHookSubscriber';
