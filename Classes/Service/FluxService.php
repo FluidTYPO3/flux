@@ -182,15 +182,9 @@ class FluxService implements SingletonInterface {
 		}
 		/** @var $context ControllerContext */
 		$context = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
-		/** @var $request Request */
-		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
+		$request = $viewContext->getRequest();
 		/** @var $response Response */
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
-		$request->setControllerExtensionName($extensionName);
-		$request->setControllerName($controllerName);
-		$request->setControllerVendorName($vendorName);
-		$request->setFormat($viewContext->getFormat());
-		$request->setDispatched(TRUE);
 		/** @var $uriBuilder UriBuilder */
 		$uriBuilder = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');
 		$uriBuilder->setRequest($request);

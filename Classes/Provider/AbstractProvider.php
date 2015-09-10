@@ -21,6 +21,7 @@ use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 
 /**
  * @package Flux
@@ -129,6 +130,11 @@ class AbstractProvider implements ProviderInterface {
 	 * @var Grid
 	 */
 	protected $grid = NULL;
+
+	/**
+	 * @var ViewContext
+	 */
+	protected $viewContext;
 
 	/**
 	 * @var FluxService
@@ -260,6 +266,37 @@ class AbstractProvider implements ProviderInterface {
 
 	/**
 	 * @param array $row
+	 * @return ViewContext
+	 */
+	public function getViewContext(array $row, RequestInterface $request = NULL) {
+		if (FALSE === $this->viewContext instanceof ViewContext) {
+			// Note: we do *not* store a local property because we do *not* want this function
+			// to re-use the ViewContext unless explicitly set from the outside or initialised
+			// by a sub-class.
+			$context = new ViewContext(
+				$this->getTemplatePathAndFilename($row),
+				$this->getControllerPackageNameFromRecord($row),
+				$this->getControllerNameFromRecord($row),
+				$request
+			);
+			$context->setSectionName($this->getConfigurationSectionName($row));
+			$context->setTemplatePaths(new TemplatePaths($this->getTemplatePaths($row)));
+			$context->setVariables($this->getViewVariables($row));
+			return $context;
+		}
+		return $this->viewContext;
+	}
+
+	/**
+	 * @param ViewContext $viewContext
+	 * @return void
+	 */
+	public function setViewContext(ViewContext $viewContext) {
+		$this->viewContext = $viewContext;
+	}
+
+	/**
+	 * @param array $row
 	 * @return Form|NULL
 	 */
 	public function getForm(array $row) {
@@ -273,21 +310,10 @@ class AbstractProvider implements ProviderInterface {
 			if (NULL !== $formClassName) {
 				$form = call_user_func_array(array($formClassName, 'create'), array($row));
 			} else {
-				$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-				if (NULL !== $templatePathAndFilename) {
-					$class = get_class($this);
-					$controllerName = substr(substr($class, strrpos($class, '\\')), -8);
-					$section = $this->getConfigurationSectionName($row);
-					$paths = $this->getTemplatePaths($row);
-					$extensionKey = $this->getExtensionKey($row);
-					$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
-					$templatePaths = new TemplatePaths($paths);
-					$viewContext = new ViewContext($templatePathAndFilename, $extensionName, $controllerName);
-					$viewContext->setTemplatePaths($templatePaths);
-					$variables = $this->getViewVariables($row);
-					$viewContext->setVariables($variables);
+				$viewContext = $this->getViewContext($row);
+				if (NULL !== $viewContext->getTemplatePathAndFilename()) {
 					$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
-					$form = $view->getForm($section, $formName);
+					$form = $view->getForm($viewContext->getSectionName(), $formName);
 				}
 			}
 			if (NULL !== $form) {
@@ -308,21 +334,10 @@ class AbstractProvider implements ProviderInterface {
 		if (NULL !== $this->grid) {
 			return $this->grid;
 		}
-		$cacheKey = $this->getCacheKeyForStoredVariable($row, 'grid');
+		$gridName = 'grid';
+		$cacheKey = $this->getCacheKeyForStoredVariable($row, $gridName);
 		if (FALSE === array_key_exists($cacheKey, self::$cache)) {
-			$class = get_class($this);
-			$controllerName = substr(substr($class, strrpos($class, '\\') + 1), 0, -8);
-			$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-			$section = $this->getConfigurationSectionName($row);
-			$gridName = 'grid';
-			$paths = $this->getTemplatePaths($row);
-			$extensionKey = $this->getExtensionKey($row);
-			$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
-			$variables = $this->getViewVariables($row);
-			$viewContext = new ViewContext($templatePathAndFilename, $extensionName, $controllerName);
-			$viewContext->setTemplatePaths(new TemplatePaths($paths));
-			$viewContext->setSectionName($section);
-			$viewContext->setVariables($variables);
+			$viewContext = $this->getViewContext($row);
 			$grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
 			self::$cache[$cacheKey] = $grid;
 		}
@@ -478,9 +493,9 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	public function getTemplatePaths(array $row) {
 		$paths = $this->templatePaths;
-		$extensionKey = $this->getExtensionKey($row);
-		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		if (FALSE === is_array($paths)) {
+			$extensionKey = $this->getExtensionKey($row);
+			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 			if (FALSE === empty($extensionKey)) {
 				$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
 			}
