@@ -27,7 +27,6 @@ class LegacyPreviewViewTest extends AbstractTestCase {
 		$column->expects($this->once())->method('getLabel')->willReturn('foobar-label');
 		$subject = $this->getMock('FluidTYPO3\\Flux\\View\\LegacyPreviewView', array('drawNewIcon', 'drawPasteIcon'));
 		$subject->expects($this->once())->method('drawNewIcon');
-		$subject->expects($this->exactly(2))->method('drawPasteIcon');
 		$this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 1, NULL, 'f-target', 2, 'f-content');
 	}
 

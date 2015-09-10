@@ -77,7 +77,7 @@ class LegacyPreviewView extends PreviewView {
 			$column->getLabel(),
 			$target,
 			$id,
-            $this->drawNewIcon($row, $column) . $this->drawPasteIcon($row, $column) . $this->drawPasteIcon($row, $column, TRUE),
+            $this->drawNewIcon($row, $column),
 			$content
 		);
     }

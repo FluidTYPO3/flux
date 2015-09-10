@@ -339,9 +339,7 @@ class PreviewView {
 
 		return sprintf($this->templates['record'], $disabledClass, $record['_CSSCLASS'], $record['uid'], $record['uid'],
 			$element, $colPosFluxContent, $parentRow['pid'], $parentRow['uid'], $record['uid'],
-			$this->drawNewIcon($parentRow, $column, $record['uid']) .
-			$this->drawPasteIcon($parentRow, $column, FALSE, $record) .
-			$this->drawPasteIcon($parentRow, $column, TRUE, $record));
+			$this->drawNewIcon($parentRow, $column, $record['uid']));
 	}
 
 	/**
@@ -433,22 +431,6 @@ class PreviewView {
 			'&defVals[tt_content][tx_flux_column]=' . $columnName .
 			'&returnUrl=' . $returnUri;
 		return $uri;
-	}
-
-	/**
-	 * @param array $row
-	 * @param Column $column
-	 * @param boolean $reference
-	 * @param array $relativeTo
-	 * @return string
-	 */
-	protected function drawPasteIcon(array $row, Column $column, $reference = FALSE, array $relativeTo = array()) {
-		$command = TRUE === $reference ? 'reference' : 'paste';
-		$relativeUid = TRUE === isset($relativeTo['uid']) ? $relativeTo['uid'] : 0;
-		$columnName = $column->getName();
-		$relativeTo = $row['pid'] . '-' . $command . '-' . $relativeUid . '-' .
-			$row['uid'] . (FALSE === empty($columnName) ? '-' . $columnName : '') . '-' . ContentService::COLPOS_FLUXCONTENT;
-		return ClipBoardUtility::createIconWithUrl($relativeTo, $reference);
 	}
 
 	/**
@@ -681,7 +663,7 @@ class PreviewView {
 			$column->getLabel(),
 			$target,
 			$id,
-			$this->drawNewIcon($row, $column) . $this->drawPasteIcon($row, $column) . $this->drawPasteIcon($row, $column, TRUE),
+			$this->drawNewIcon($row, $column),
 			$content
 		);
 	}
