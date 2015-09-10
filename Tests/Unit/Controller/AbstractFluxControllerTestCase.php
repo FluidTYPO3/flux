@@ -389,19 +389,24 @@ class AbstractFluxControllerTestCase extends AbstractTestCase {
 	 */
 	public function callingSubControllerActionExecutesExpectedMethodsOnNestedObjects() {
 		$controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-		$instance = $this->getMock($controllerClassName, array('processRequest'));
+		$instance = $this->getMock($controllerClassName, array('processRequest', 'getRecord'));
 		$objectManager = $this->getMock(get_class($this->objectManager), array('get'));
 		$responseClassName = 'TYPO3\CMS\Extbase\Mvc\Web\Response';
 		$response = $this->getMock($responseClassName, array('getContent'));
 		$response->expects($this->once())->method('getContent')->will($this->returnValue('test'));
 		$objectManager->expects($this->at(0))->method('get')->with($responseClassName)->will($this->returnValue($response));
 		$objectManager->expects($this->at(1))->method('get')->with($controllerClassName)->will($this->returnValue($instance));
-		$request = $this->getMock('TYPO3\CMS\Extbase\Mvc\Web\Request', array('setControllerActionName', 'setArguments'));
-		$request->expects($this->once())->method('setControllerActionName')->with($this->defaultAction);
+		$request = $this->getMock('TYPO3\CMS\Extbase\Mvc\Web\Request', array('setControllerActionName'));
+		$request->expects($this->once())->method('setControllerActionName')->with('render');
+		$provider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('getViewContext', 'getControllerActionFromRecord'));
+		$provider->expects($this->once())->method('getViewContext')->willReturn(new ViewContext(NULL, NULL, NULL, $request));
+		$provider->expects($this->once())->method('getControllerActionFromRecord')->willReturn('render');
 		ObjectAccess::setProperty($instance, 'objectManager', $objectManager, TRUE);
 		ObjectAccess::setProperty($instance, 'request', $request, TRUE);
+		ObjectAccess::setProperty($instance, 'provider', $provider, TRUE);
 		$instance->expects($this->once())->method('processRequest')->with($request, $response);
-		$result = $this->callInaccessibleMethod($instance, 'callSubControllerAction', $this->shortExtensionName, $controllerClassName, $this->defaultAction, 'tx_flux_content');
+		$instance->expects($this->once())->method('getRecord')->willReturn(array());
+		$result = $this->callInaccessibleMethod($instance, 'callSubControllerAction', $this->shortExtensionName, $controllerClassName, 'render', 'tx_flux_content');
 		$this->assertEquals('test', $result);
 	}
 

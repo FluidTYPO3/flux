@@ -243,7 +243,7 @@ abstract class AbstractFluxController extends ActionController {
 	protected function hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName) {
 		$potentialControllerClassName = $this->configurationService
 			->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndAction($extensionName, $actionName, $controllerName);
-		$isForeign = $extensionName !== $this->extensionName;
+		$isForeign = ExtensionNamingUtility::getExtensionName($extensionName) !== ExtensionNamingUtility::getExtensionName($this->extensionName);
 		$isValidController = class_exists($potentialControllerClassName);
 		return (TRUE === $isForeign && TRUE === $isValidController);
 	}
@@ -258,15 +258,17 @@ abstract class AbstractFluxController extends ActionController {
 	protected function callSubControllerAction($extensionName, $controllerClassName, $controllerActionName, $pluginSignature) {
 		/** @var Response $response */
 		$post = GeneralUtility::_POST($pluginSignature);
+		$row = $this->getRecord();
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
 		$arguments = (array) (TRUE === is_array($post) ? $post : GeneralUtility::_GET($pluginSignature));
 		$potentialControllerInstance = $this->objectManager->get($controllerClassName);
-		list ($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
-		$this->request->setControllerVendorName($vendorName);
-		$this->request->setControllerExtensionName($extensionName);
-		$this->request->setControllerActionName($controllerActionName);
-		$this->request->setArguments($arguments);
-		$potentialControllerInstance->processRequest($this->request, $response);
+		$viewContext = $this->provider->getViewContext($row, $this->request);
+		$viewContext->setPackageName($this->provider->getControllerPackageNameFromRecord($row));
+		$subRequest = $viewContext->getRequest();
+		$subRequest->setControllerExtensionName($viewContext->getExtensionName());
+		$subRequest->setControllerVendorName($viewContext->getVendorName());
+		$subRequest->setControllerActionName($this->provider->getControllerActionFromRecord($row));
+		$potentialControllerInstance->processRequest($subRequest, $response);
 		return $response->getContent();
 	}
 
