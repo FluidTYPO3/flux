@@ -124,6 +124,59 @@ class ContentService implements SingletonInterface {
 		}
 		$this->applyMappingArray($mappingArray, $pid, $possibleColPos, $possibleArea, $parentUid, $tablename, $relativeUid,
 			$relativeRecord, $tceMain);
+
+		// apply mappings to localized records
+		if(is_array($parameters['update'])) {
+			if(isset($parameters['update']['colPos'])) {
+				$possibleColPos = $parameters['update']['colPos'];
+			}
+		}
+		$this->moveL10nOverlayRecords($id, $pid, $possibleColPos, $possibleArea, $parentUid, $tablename, $relativeUid,$relativeRecord, $tceMain);
+	}
+
+	/**
+	 * Find l10n-overlay records and perform the requested move action for these records.
+	 *
+	 * @param integer $origUid uid of record in default language
+	 * @param integer $pid pid of record in default language
+	 * @param integer $possibleColPos colPos where the record is moved to
+	 * @param string $possibleArea
+	 * @param integer $origParentUid uid of flux parent of record in default language
+	 * @param string $tablename
+	 * @param integer $relativeUid
+	 * @param array|NULL $relativeRecord
+	 * @param DataHandler $tceMain
+	 *
+	 * @return void
+	 */
+	public function moveL10nOverlayRecords($origUid, $pid, $possibleColPos, $possibleArea, $origParentUid, $tablename, $relativeUid, $relativeRecord, &$tceMain)
+	{
+		$table = 'tt_content';
+		// There's no need to perform this for page-records or not localizeable tables
+		if (!BackendUtility::isTableLocalizable($table) || !empty($GLOBALS['TCA'][$table]['ctrl']['transForeignTable']) || !empty($GLOBALS['TCA'][$table]['ctrl']['transOrigPointerTable'])) {
+			return;
+		}
+		$where = '';
+		if (isset($GLOBALS['TCA'][$table]['ctrl']['versioningWS']) && $GLOBALS['TCA'][$table]['ctrl']['versioningWS']) {
+			$where = ' AND t3ver_oid=0';
+		}
+		$l10nRecords = BackendUtility::getRecordsByField($table, $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField'], $origUid, $where);
+		if (is_array($l10nRecords)) {
+			foreach($l10nRecords as $l10nRecord){
+				if($origParentUid !== NULL) {
+					$l10nParent = BackendUtility::getRecordsByField($table, $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField'], $origParentUid, $where . ' AND sys_language_uid=' . $l10nRecord['sys_language_uid']);
+					if (is_array($l10nParent)) {
+						$parentUid = $l10nParent[0]['uid'];
+						$this->applyMappingArray(array($l10nRecord), $pid, $possibleColPos, $possibleArea, $parentUid, $tablename, $relativeUid, $relativeRecord, $tceMain);
+					}
+				}
+				else {
+					// record in default language doesn't have a parent
+					$origRecord = $this->loadRecordFromDatabase($origUid);
+					$this->applyMappingArray(array($l10nRecord), $pid, $possibleColPos, $origRecord['tx_flux_column'], NULL, $tablename, $relativeUid, $relativeRecord, $tceMain);
+				}
+			}
+		}
 	}
 
 	/**
@@ -238,6 +291,9 @@ class ContentService implements SingletonInterface {
 			$row['colPos'] = self::COLPOS_FLUXCONTENT;
 		}
 		$this->updateRecordInDatabase($row);
+		// apply mappings to localized records
+		$this->moveL10nOverlayRecords($row['uid'], $row['pid'], $row['colPos'], $row['tx_flux_column'], $row['tx_flux_parent'], 'tt_content', $relativeUid,NULL, $tceMain);
+
 		$this->updateMovePlaceholder($row);
 	}
 
