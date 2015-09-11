@@ -87,6 +87,7 @@ class PreviewTest extends AbstractTestCase {
 		$header = 'test';
 		$item = 'test';
 		$record = Records::$contentRecordIsParentAndHasChildren;
+		$record['CType'] = 'fluidcontent_content';
 		$draw = TRUE;
 		$this->setup();
 		$instance->renderPreview($header, $item, $record, $draw);
