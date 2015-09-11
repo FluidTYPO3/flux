@@ -552,7 +552,7 @@ class AbstractProvider implements ProviderInterface {
 	public function preProcessRecord(array &$row, $id, DataHandler $reference) {
 		$fieldName = $this->getFieldName($row);
 		$tableName = $this->getTableName($row);
-		if (TRUE === is_array($row[$fieldName]['data']) && TRUE === is_array($row[$fieldName]['data']['options']['lDEF'])) {
+		if (TRUE === is_array($row[$fieldName]) && TRUE === is_array($row[$fieldName]['data']) && TRUE === is_array($row[$fieldName]['data']['options']['lDEF'])) {
 			foreach ($row[$fieldName]['data']['options']['lDEF'] as $key => $value) {
 				if (0 === strpos($key, $tableName)) {
 					$realKey = array_pop(explode('.', $key));
