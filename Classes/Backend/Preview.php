@@ -86,23 +86,25 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 		} else {
 			$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
 		}
-		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
-		foreach ($providers as $provider) {
-			/** @var ProviderInterface $provider */
-			list ($previewHeader, $previewContent, $continueDrawing) = $provider->getPreview($row);
-			if (FALSE === empty($previewHeader)) {
-				$headerContent = $previewHeader . (FALSE === empty($headerContent) ? ': ' . $headerContent : '');
-				$drawItem = FALSE;
+		if ('fluidcontent_content' === $row['CType'] ) {
+			$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
+			foreach ($providers as $provider) {
+				/** @var ProviderInterface $provider */
+				list ($previewHeader, $previewContent, $continueDrawing) = $provider->getPreview($row);
+				if (FALSE === empty($previewHeader)) {
+					$headerContent = $previewHeader . (FALSE === empty($headerContent) ? ': ' . $headerContent : '');
+					$drawItem      = FALSE;
+				}
+				if (FALSE === empty($previewContent)) {
+					$itemContent .= $previewContent;
+					$drawItem = FALSE;
+				}
+				if (FALSE === $continueDrawing) {
+					break;
+				}
 			}
-			if (FALSE === empty($previewContent)) {
-				$itemContent .= $previewContent;
-				$drawItem = FALSE;
-			}
-			if (FALSE === $continueDrawing) {
-				break;
-			}
+			$this->attachAssets();
 		}
-		$this->attachAssets();
 		return NULL;
 	}
 
