@@ -572,12 +572,34 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canSetTemplatePathAndFilename() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
+
 		$template = 'test.html';
 		$provider->setTemplatePathAndFilename($template);
-		$this->assertSame($template, $provider->getTemplatePathAndFilename($record));
+		$this->assertContains($template, $provider->getTemplatePathAndFilename($record));
+
 		$template = NULL;
 		$provider->setTemplatePathAndFilename($template);
 		$this->assertSame($template, $provider->getTemplatePathAndFilename($record));
+
+		$template = 'EXT:flux/Tests/Fixtures/Templates/Content/Dummy.html';
+		$provider->setTemplatePathAndFilename($template);
+		$this->assertTrue(
+			GeneralUtility::isAbsPath($provider->getTemplatePathAndFilename($record)),
+			'EXT relative paths are transformed'
+		);
+		$this->assertStringEndsWith(
+			'flux/Tests/Fixtures/Templates/Content/Dummy.html',
+			$provider->getTemplatePathAndFilename($record),
+			'EXT relative paths are transformed'
+		);
+
+		$template = '/foo/Resources/Private/Foo/Bar.html';
+		$provider->setTemplatePathAndFilename($template);
+		$this->assertSame(
+			$template,
+			$provider->getTemplatePathAndFilename($record),
+			'Absolute paths are not transformed'
+		);
 	}
 
 	/**
