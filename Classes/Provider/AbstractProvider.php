@@ -409,6 +409,7 @@ class AbstractProvider implements ProviderInterface {
 			if (TRUE === empty($path)) {
 				return NULL;
 			}
+			return $path;
 		}
 		return $this->templatePathAndFilename;
 	}
