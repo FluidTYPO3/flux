@@ -19,7 +19,7 @@ class DummyGraphicalFunctions extends GraphicalFunctions {
 		$options = array(),
 		$mustCreate = FALSE
 	) {
-		return 'foobar';
+		return array('foobar-0', 'foobar-1', 'foobar-2', 'foobar-3');
 	}
 
 }
