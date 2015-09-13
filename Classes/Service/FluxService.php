@@ -177,9 +177,6 @@ class FluxService implements SingletonInterface {
 			$qualifiedExtensionName = 'Flux';
 		}
 		$extensionName = ExtensionNamingUtility::getExtensionName($qualifiedExtensionName);
-		if (NULL === $controllerName) {
-			$controllerName = 'Flux';
-		}
 		/** @var $context ControllerContext */
 		$context = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
 		$request = $viewContext->getRequest();
