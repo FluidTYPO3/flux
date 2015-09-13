@@ -48,6 +48,17 @@ interface RelationFieldInterface extends MultiValueFieldInterface {
 	public function getManyToMany();
 
 	/**
+	 * @return array
+	 */
+	public function getMatchFields();
+
+	/**
+	 * @param array $matchFields
+	 * @return RelationFieldInterface
+	 */
+	public function setMatchFields(array $matchFields);
+
+	/**
 	 * @param string $table
 	 * @return RelationFieldInterface
 	 */
