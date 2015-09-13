@@ -132,11 +132,8 @@ class PreviewView {
 		$form = $provider->getForm($row);
 		$options = $this->getPreviewOptions($form);
 		$mode = $this->getOptionMode($options);
-		if (FALSE === file_exists($provider->getTemplatePathAndFilename($row))) {
-			$previewContent = '';
-		} else {
-			$previewContent = $this->renderPreviewSection($provider, $row, $form);
-		}
+		$previewContent = (string) $this->renderPreviewSection($provider, $row, $form);
+
 		if (self::MODE_NONE === $mode || FALSE === is_object($form)) {
 			return $previewContent;
 		}
