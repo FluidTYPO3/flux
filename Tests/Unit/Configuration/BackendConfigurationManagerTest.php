@@ -213,6 +213,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase {
 			array(array('pages', 0, 'update'), FALSE),
 			array(array('pages', 1, 'update'), TRUE),
 			array(array('pages', 1, 'delete'), TRUE),
+			array(array('pages', 1, 'new'), FALSE),
 			array(array('sys_file', 1, 'new'), TRUE),
 			array(array('sys_file', 1, 'edit'), TRUE),
 		);

@@ -198,6 +198,8 @@ class ContentProviderTest extends AbstractProviderTest {
 	public function getTriggerTestValues() {
 		return array(
 			array(array(), 'not_tt_content', 'pi_flexform', NULL, FALSE),
+			array(array(), 'not_tt_content', NULL, NULL, FALSE),
+			array(array(), 'tt_content', NULL, NULL, TRUE),
 			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', NULL, FALSE),
 			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', 'flux', FALSE)
 		);

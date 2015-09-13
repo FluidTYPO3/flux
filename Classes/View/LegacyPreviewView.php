@@ -59,7 +59,6 @@ class LegacyPreviewView extends PreviewView {
 
 
 	/**
-	 * @codeCoverageIgnore
 	 * @param array $row
 	 * @param Column $column
 	 * @param integer $colPosFluxContent

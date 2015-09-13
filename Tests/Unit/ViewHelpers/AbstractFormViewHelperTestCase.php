@@ -19,6 +19,15 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 	/**
 	 * @test
 	 */
+	public function testGetExtensionNameReturnsExtensionNameArgumentIfSet() {
+		$instance = $this->buildViewHelperInstance(array_merge($this->defaultArguments, array('extensionName' => 'foobar-ext')));
+		$result = $this->callInaccessibleMethod($instance, 'getExtensionName');
+		$this->assertEquals('foobar-ext', $result);
+	}
+
+	/**
+	 * @test
+	 */
 	public function canCreateViewHelperInstanceAndRenderWithoutArguments() {
 		$instance = $this->buildViewHelperInstance($this->defaultArguments);
 		$this->assertInstanceOf($this->getViewHelperClassName(), $instance);

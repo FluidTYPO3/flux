@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\View;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Tests\BaseTestCase;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
 
 /**
  * Class ViewContextTest
@@ -41,7 +42,8 @@ class ViewContextTest extends BaseTestCase {
 			array('templatePaths', new TemplatePaths('Flux')),
 			array('controllerName', 'Controller'),
 			array('templatePathAndFilename', 'filename'),
-			array('format', 'xml')
+			array('format', 'xml'),
+			array('request', new Request()),
 		);
 	}
 
