@@ -143,6 +143,9 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 					$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
 				}
 			}
+			if($command === 'localize') {
+				$this->contentService->fixPositionInLocalization($id, $relativeTo, $row, $reference);
+			}
 			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 		}
 	}
