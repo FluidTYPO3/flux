@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -24,7 +25,11 @@ class ContentProviderTest extends AbstractProviderTest {
 	 */
 	public function triggersContentManipulatorOnDatabaseOperationNew() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$provider = $this->getConfigurationProviderInstance();
+		$form = Form::create();
+		$provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\ContentProvider', array('loadRecordFromDatabase', 'getForm'));
+		$provider->expects($this->once())->method('loadRecordFromDatabase')->willReturn(array('foo' => 'bar'));
+		$provider->expects($this->once())->method('getForm')->willReturn($form);
+
 		/** @var DataHandler $tceMain */
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$result = $provider->postProcessDatabaseOperation('new', $row['uid'], $row, $tceMain);

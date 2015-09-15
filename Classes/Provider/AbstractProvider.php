@@ -623,7 +623,22 @@ class AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference) {
-		unset($status, $id, $row, $reference);
+		// We dispatch the Outlet associated with the Form, triggering each defined
+		// Pipe inside the Outlet to "conduct" the data.
+		$record = $this->loadRecordFromDatabase($id);
+		if (FALSE !== $record) {
+			$form = $this->getForm($record);
+			if (TRUE === $form instanceof Form\FormInterface) {
+				$form->getOutlet()->fill(array(
+					'command' => $status,
+					'uid' => $id,
+					'record' => $row,
+					'table' => $this->getTableName($record),
+					'provider' => $this,
+					'dataHandler' => $reference
+				));
+			}
+		}
 	}
 
 	/**
