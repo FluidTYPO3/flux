@@ -46,8 +46,8 @@ class RecordListGetTableHookSubscriber implements \TYPO3\CMS\Backend\RecordList\
 	 * @param \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList $parentObject Parent localRecordList object
 	 * @return void
 	 */
-	public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject){
-		if($table=='tt_content') {
+	public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject) {
+		if ($table=='tt_content') {
 			$additionalWhereClause .= ' AND colPos<>' . \FluidTYPO3\Flux\Service\ContentService::COLPOS_FLUXCONTENT;
 		}
 	}

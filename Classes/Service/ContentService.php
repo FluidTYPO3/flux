@@ -126,12 +126,12 @@ class ContentService implements SingletonInterface {
 			$relativeRecord, $tceMain);
 
 		// apply mappings to localized records
-		if(is_array($parameters['update'])) {
-			if(isset($parameters['update']['colPos'])) {
+		if (is_array($parameters['update'])) {
+			if (isset($parameters['update']['colPos'])) {
 				$possibleColPos = $parameters['update']['colPos'];
 			}
 		}
-		$this->moveL10nOverlayRecords($id, $pid, $possibleColPos, $possibleArea, $parentUid, $tablename, $relativeUid,$relativeRecord, $tceMain);
+		$this->moveL10nOverlayRecords($id, $pid, $possibleColPos, $possibleArea, $parentUid, $tablename, $relativeUid, $relativeRecord, $tceMain);
 	}
 
 	/**
@@ -149,8 +149,7 @@ class ContentService implements SingletonInterface {
 	 *
 	 * @return void
 	 */
-	public function moveL10nOverlayRecords($origUid, $pid, $possibleColPos, $possibleArea, $origParentUid, $tablename, $relativeUid, $relativeRecord, &$tceMain)
-	{
+	public function moveL10nOverlayRecords($origUid, $pid, $possibleColPos, $possibleArea, $origParentUid, $tablename, $relativeUid, $relativeRecord, &$tceMain) {
 		$table = 'tt_content';
 		// There's no need to perform this for page-records or not localizeable tables
 		if (!BackendUtility::isTableLocalizable($table) || !empty($GLOBALS['TCA'][$table]['ctrl']['transForeignTable']) || !empty($GLOBALS['TCA'][$table]['ctrl']['transOrigPointerTable'])) {
@@ -162,15 +161,14 @@ class ContentService implements SingletonInterface {
 		}
 		$l10nRecords = BackendUtility::getRecordsByField($table, $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField'], $origUid, $where);
 		if (is_array($l10nRecords)) {
-			foreach($l10nRecords as $l10nRecord){
-				if($origParentUid !== NULL) {
+			foreach ($l10nRecords as $l10nRecord) {
+				if ($origParentUid !== NULL) {
 					$l10nParent = BackendUtility::getRecordsByField($table, $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField'], $origParentUid, $where . ' AND sys_language_uid=' . $l10nRecord['sys_language_uid']);
 					if (is_array($l10nParent)) {
 						$parentUid = $l10nParent[0]['uid'];
 						$this->applyMappingArray(array($l10nRecord), $pid, $possibleColPos, $possibleArea, $parentUid, $tablename, $relativeUid, $relativeRecord, $tceMain);
 					}
-				}
-				else {
+				} else {
 					// record in default language doesn't have a parent
 					$origRecord = $this->loadRecordFromDatabase($origUid);
 					$this->applyMappingArray(array($l10nRecord), $pid, $possibleColPos, $origRecord['tx_flux_column'], NULL, $tablename, $relativeUid, $relativeRecord, $tceMain);
@@ -292,7 +290,7 @@ class ContentService implements SingletonInterface {
 		}
 		$this->updateRecordInDatabase($row);
 		// apply mappings to localized records
-		$this->moveL10nOverlayRecords($row['uid'], $row['pid'], $row['colPos'], $row['tx_flux_column'], $row['tx_flux_parent'], 'tt_content', $relativeUid,NULL, $tceMain);
+		$this->moveL10nOverlayRecords($row['uid'], $row['pid'], $row['colPos'], $row['tx_flux_column'], $row['tx_flux_parent'], 'tt_content', $relativeUid, NULL, $tceMain);
 
 		$this->updateMovePlaceholder($row);
 	}
@@ -350,7 +348,7 @@ class ContentService implements SingletonInterface {
 				// in this new, translated record. Below, we adjust the parent UID
 				// so it has the UID of the translated parent if one exists.
 				$translatedParent = NULL;
-				if(isset($oldRecord['tx_flux_parent']) && $oldRecord['tx_flux_parent']!=='0') {
+				if (isset($oldRecord['tx_flux_parent']) && $oldRecord['tx_flux_parent']!=='0') {
 					$translatedParents = (array)$this->workspacesAwareRecordService->get('tt_content', 'uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'");
 					$translatedParent = reset($translatedParents);
 				}
@@ -437,11 +435,10 @@ class ContentService implements SingletonInterface {
 	public function fixPositionInLocalization($uid, $languageUid, &$defaultLanguageRecord, DataHandler $reference) {
 		$previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
 		$localizedRecord = BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
-		if(NULL !== $previousLocalizedRecordUid) {
+		if (NULL !== $previousLocalizedRecordUid) {
 			$sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
-			$localizedRecord[0][$sortingRow] = $reference->resorting('tt_content',$defaultLanguageRecord['pid'],$sortingRow,$previousLocalizedRecordUid);
-		}
-		else {
+			$localizedRecord[0][$sortingRow] = $reference->resorting('tt_content', $defaultLanguageRecord['pid'], $sortingRow, $previousLocalizedRecordUid);
+		} else {
 			// moving to first position in tx_flux_column
 			$localizedRecord[0][$sortingRow] = $reference->getSortNumber('tt_content', 0, $defaultLanguageRecord['pid']);
 		}

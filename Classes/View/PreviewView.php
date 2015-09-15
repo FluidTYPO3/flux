@@ -302,12 +302,12 @@ class PreviewView {
 			$content .= $this->drawRecord($row, $column, $record, $dblist);
 		}
 		// add localize buttons for flux container elements
-		if($row['l18n_parent']!=0){
+		if ($row['l18n_parent']!=0) {
 			if (!$dblist->defLangBinding) {
 				$langPointer = $row['sys_language_uid'];
-				$childrenInDefaultLang = $this->getRecords($dblist,array('uid'=>$row['l18n_parent'],'pid'=>$row['pid']),$column->getName());
+				$childrenInDefaultLang = $this->getRecords($dblist, array('uid'=>$row['l18n_parent'], 'pid'=>$row['pid']), $column->getName());
 				$childrenUids = array();
-				foreach($childrenInDefaultLang as $child){
+				foreach ($childrenInDefaultLang as $child) {
 					$childrenUids[] = $child['uid'];
 				}
 				$localizeButton = $dblist->newLanguageButton(
