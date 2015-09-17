@@ -333,4 +333,34 @@ class ContentServiceTest extends AbstractTestCase {
 		return $mock;
 	}
 
+	/**
+	 * @test
+	 */
+	public function moveRecordWithPositiveRelativeToValueLoadsRelativeRecordFromDatabaseAndCopiesValuesToRecordAndSetsColumnPositionAndUpdatesRelativeToValue() {
+		$methods = array('loadRecordFromDatabase', 'updateRecordInDatabase', 'getTargetAreaStoredInSession');
+		$mock = $this->createMock($methods);
+		$row = array(
+			'pid' => 1,
+			'uid' => 31264,
+			'tx_flux_column' => 2,
+			'tx_flux_parent' => 2,
+			'colPos' => ContentService::COLPOS_FLUXCONTENT
+		);
+		$relativeTo = 2526;
+		$newColPos = 0;
+		$parameters = array (
+			'element-tt_content-31264',
+			'colpos-'.$newColPos.'-page-'.$relativeTo.'-55fa7440556875.32732811',
+			'55fa744055675684544498',
+			'c3930735166bc98255fc33755fac2beb6ea705b8'
+		);
+		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
+		$mock->expects($this->once())->method('updateRecordInDatabase');
+		$mock->moveRecord($row, $relativeTo, $parameters, $tceMain);
+		$this->assertEquals(NULL, $row['tx_flux_column']);
+		$this->assertEquals(NULL, $row['tx_flux_parent']);
+		$this->assertEquals($newColPos, $row['colPos']);
+		// pid will be changed from TYPO3 Core
+		$this->assertEquals(1, $row['pid']);
+	}
 }
