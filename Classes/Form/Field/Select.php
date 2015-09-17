@@ -80,7 +80,7 @@ class Select extends AbstractMultiValueFormField {
 		}
 		$emptyOption = $this->getEmptyOption();
 		if (FALSE !== $emptyOption) {
-			array_unshift($items, array('', $emptyOption));
+			array_unshift($items, array($emptyOption, ''));
 		}
 		return $items;
 	}
