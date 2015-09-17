@@ -298,7 +298,22 @@ class PreviewView {
 		foreach ($records as $record) {
 			$content .= $this->drawRecord($row, $column, $record, $dblist);
 		}
-
+		// add localize buttons for flux container elements
+		if ($row['l18n_parent']!=0) {
+			if (!$dblist->defLangBinding) {
+				$langPointer = $row['sys_language_uid'];
+				$childrenInDefaultLang = $this->getRecords($dblist, array('uid'=>$row['l18n_parent'], 'pid'=>$row['pid']), $column->getName());
+				$childrenUids = array();
+				foreach ($childrenInDefaultLang as $child) {
+					$childrenUids[] = $child['uid'];
+				}
+				$localizeButton = $dblist->newLanguageButton(
+					$dblist->getNonTranslatedTTcontentUids($childrenUids, $dblist->id, $langPointer),
+					$langPointer
+				);
+				$content .= $localizeButton;
+			}
+		}
 		$id = 'colpos-' . $colPosFluxContent . '-page-' . $row['pid'] . '--top-' . $row['uid'] . '-' . $column->getName();
 		$target = $this->registerTargetContentAreaInSession($row['uid'], $column->getName());
 
@@ -325,7 +340,6 @@ class PreviewView {
 			$this->drawNewIcon($parentRow, $column, $record['uid']) .
 			$this->drawPasteIcon($parentRow, $column, FALSE, $record) .
 			$this->drawPasteIcon($parentRow, $column, TRUE, $record));
-
 	}
 
 	/**
@@ -549,7 +563,7 @@ class PreviewView {
 		$dblist->tt_contentConfig['showCommands'] = 1;
 		$dblist->tt_contentConfig['showInfo'] = 1;
 		$dblist->tt_contentConfig['single'] = 0;
-		$dblist->tt_contentConfig['showHidden'] = intval($GLOBALS['BE_USER']->uc['moduleData']['web_layout']['tt_content_showHidden']);
+		$dblist->tt_contentConfig['showHidden'] = intval($GLOBALS['BE_USER']->getModuleData('web_layout', '')['tt_content_showHidden']);
 		$dblist->tt_contentConfig['activeCols'] .= ',' . ContentService::COLPOS_FLUXCONTENT;
 		$dblist->CType_labels = array();
 		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";

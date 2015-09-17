@@ -134,6 +134,9 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 				if (TRUE === isset($callback['paste'])) {
 					$pasteCommand = $callback['paste'];
 					$parameters = explode('|', $pasteCommand);
+					if (TRUE === isset($callback['update'])) {
+						$parameters['update'] = $callback['update'];
+					}
 					$this->contentService->pasteAfter($command, $row, $parameters, $reference);
 				} else {
 					$moveData = $this->getMoveData();
@@ -141,6 +144,9 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 						$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
 					}
 				}
+			}
+			if ($command === 'localize') {
+				$this->contentService->fixPositionInLocalization($id, $relativeTo, $row, $reference);
 			}
 			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 		}
