@@ -626,7 +626,7 @@ class AbstractProvider implements ProviderInterface {
 		// We dispatch the Outlet associated with the Form, triggering each defined
 		// Pipe inside the Outlet to "conduct" the data.
 		$record = $this->loadRecordFromDatabase($id);
-		if (FALSE !== $record) {
+		if (NULL !== $record) {
 			$form = $this->getForm($record);
 			if (TRUE === $form instanceof Form\FormInterface) {
 				$form->getOutlet()->fill(array(
@@ -875,7 +875,7 @@ class AbstractProvider implements ProviderInterface {
 
 	/**
 	 * @param integer $uid
-	 * @return array|FALSE
+	 * @return array|NULL
 	 */
 	protected function loadRecordFromDatabase($uid) {
 		$uid = intval($uid);
