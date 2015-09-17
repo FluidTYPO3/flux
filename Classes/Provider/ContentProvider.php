@@ -136,10 +136,8 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 					$parameters = explode('|', $pasteCommand);
 					$this->contentService->pasteAfter($command, $row, $parameters, $reference);
 				} else {
-					$moveData = $this->getMoveData();
-					if (NULL !== $moveData) {
-						$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
-					}
+					$moveData = (array) $this->getMoveData();
+					$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
 				}
 			}
 			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
