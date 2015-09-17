@@ -25,6 +25,7 @@ class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->registerArgument('items', 'mixed', 'Items for the selector; array / CSV / Traversable / Query supported', TRUE);
+		$this->registerArgument('emptyOption', 'mixed', 'If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property\'s value (cast to string) as label.', FALSE, FALSE);
 	}
 
 	/**
@@ -34,6 +35,7 @@ class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 		/** @var Select $component */
 		$component = $this->getPreparedComponent('Select');
 		$component->setItems($this->arguments['items']);
+		$component->setEmptyOption($this->arguments['emptyOption']);
 		return $component;
 	}
 
