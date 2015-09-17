@@ -264,6 +264,11 @@ class ContentService implements SingletonInterface {
 						$row['tx_flux_parent'] = $relativeUid;
 						$row['tx_flux_column'] = $area;
 					}
+					elseif (NULL === $relativePosition && 0 === $relativeUid) {
+						// move element to top of column outside any flux container
+						$row['tx_flux_parent'] = NULL;
+						$row['tx_flux_column'] = NULL;
+					}
 				}
 			} elseif (0 > (integer) $relativeTo) {
 				// inserting a new element after another element. Check column position of that element.
