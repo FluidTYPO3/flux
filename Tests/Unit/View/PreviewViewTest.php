@@ -318,4 +318,28 @@ class PreviewViewTest extends AbstractTestCase {
 		$this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 1, NULL, 'f-target', 2, 'f-content');
 	}
 
+	/**
+	 * @test
+	 */
+	public function testGetPreviewForNonFluxElements() {
+		$provider = $this->objectManager->get('FluidTYPO3\\Flux\\Provider\\Provider');
+		$form = Form::create(array('name' => 'test', 'options' => array('preview' => $options)));
+		$grid = Form\Container\Grid::create(array());
+		$grid->createContainer('Row', 'row')->createContainer('Column', 'column');
+		$provider->setGrid($grid);
+		$provider->setForm($form);
+		$provider->setTemplatePaths(array());
+		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
+		$previewView = $this->getMock($this->createInstanceClassName(), array('registerTargetContentAreaInSession'));
+		$previewView->expects($this->any())->method('registerTargetContentAreaInSession');
+		$previewView->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
+		$previewView->injectConfigurationManager(
+			$this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager')
+		);
+		$previewView->injectWorkspacesAwareRecordService(
+			$this->objectManager->get('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')
+		);
+		$result = $previewView->getPreview($provider, Records::$contentRecordWithTextElement);
+		$this->assertEmpty($result);
+	}
 }

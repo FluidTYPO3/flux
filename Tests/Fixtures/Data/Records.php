@@ -21,6 +21,7 @@ class Records {
 	const UID_CONTENT_PARENT = 90000003;
 	const UID_CONTENT_CHILD = 90000004;
 	const UID_CONTENT_PARENTANDCHILDREN = 90000005;
+	const UID_CONTENT_TEXTELEMENT = 90000006;
 
 	const UID_TEMPLATE_ROOT = 91000001;
 
@@ -38,6 +39,7 @@ class Records {
 	 */
 	public static $contentRecordWithoutParentAndWithoutChildren = array(
 		'uid' => self::UID_CONTENT_NOPARENTNOCHILDREN,
+		'CType' => 'fluidcontent_content',
 		'header' => 'Has no parent',
 		'colPos' => 0,
 		'tx_flux_parent' => 0,
@@ -62,6 +64,7 @@ class Records {
 	 */
 	public static $contentRecordIsParentAndHasChildren = array(
 		'uid' => self::UID_CONTENT_PARENT,
+		'CType' => 'fluidcontent_content',
 		'header' => 'Is itself parent, has no parent',
 		'colPos' => 0,
 		'tx_flux_parent' => 0,
@@ -90,6 +93,20 @@ class Records {
 		'tx_flux_parent' => 0,
 		'tx_flux_column' => '',
 		'tx_flux_children' => 1
+	);
+
+	/**
+	 * @var array
+	 */
+	public static $contentRecordWithTextElement = array(
+		'uid' => self::UID_CONTENT_TEXTELEMENT,
+		'CType' => 'text',
+		'header' => 'Default text element but with tx_fed_fcefile set',
+		'colPos' => ContentService::COLPOS_FLUXCONTENT,
+		'tx_flux_parent' => 0,
+		'tx_flux_column' => '',
+		'tx_flux_children' => 0,
+		'tx_fed_fce_file' => 'dummy-not-empty'
 	);
 
 }
