@@ -129,6 +129,9 @@ class PreviewView {
 	 * @return string
 	 */
 	public function getPreview(ProviderInterface $provider, array $row) {
+		if ($row['CType']!=='fluidcontent_content') {
+			return '';
+		}
 		$form = $provider->getForm($row);
 		$options = $this->getPreviewOptions($form);
 		$mode = $this->getOptionMode($options);
