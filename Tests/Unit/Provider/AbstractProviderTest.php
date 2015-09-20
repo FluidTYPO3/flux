@@ -14,6 +14,8 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -127,11 +129,10 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetAndSetContentObjectType() {
-		$record = Records::$contentRecordIsParentAndHasChildren;
 		/** @var ProviderInterface $instance */
 		$instance = $this->getConfigurationProviderInstance();
 		$instance->setContentObjectType('test');
-		$this->assertSame('test', $instance->getContentObjectType($record));
+		$this->assertSame('test', $instance->getContentObjectType());
 	}
 
 	/**
@@ -148,36 +149,45 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function canGetContentObjectType() {
-		$instance = $this->getConfigurationProviderInstance();
-		$record = Records::$contentRecordIsParentAndHasChildren;
-		$contentType = $instance->getContentObjectType($record);
-		$this->assertNull($contentType);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canGetForm() {
 		$provider = $this->getConfigurationProviderInstance();
-		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
+		$paths = new TemplatePaths(array(
+			'templateRootPaths' => array(__DIR__ . '/../../Fixtures/Templates/'),
+			'partialRootPaths' => array(__DIR__ . '/../../Fixtures/Partials/'),
+			'layoutRootPaths' => array(__DIR__ . '/../../Fixtures/Layouts/')
+		));
 		$record = $this->getBasicRecord();
+		$context = $provider->getViewContext($record);
+		$context->setSectionName('Configuration');
+		$context->setPackageName('FluidTYPO3.Flux');
+		$context->setTemplatePaths($paths);
+		$context->setTemplatePathAndFilename(
+			$this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW)
+		);
+		$provider->setViewContext($context);
 		$form = $provider->getForm($record);
-		if ($form) {
-			$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
-		} else {
-			$this->assertNull($form);
-		}
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 	}
 
 	/**
 	 * @test
 	 */
 	public function canGetFormWithFieldsFromTemplate() {
-		$templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW_EMPTY);
 		$provider = $this->getConfigurationProviderInstance();
+		$paths = new TemplatePaths(array(
+			'templateRootPaths' => array(__DIR__ . '/../../Fixtures/Templates/'),
+			'partialRootPaths' => array(__DIR__ . '/../../Fixtures/Partials/'),
+			'layoutRootPaths' => array(__DIR__ . '/../../Fixtures/Layouts/')
+		));
 		$record = $this->getBasicRecord();
-		$provider->setTemplatePathAndFilename($templatePathAndFilename);
+		$context = $provider->getViewContext($record);
+		$context->setSectionName('Configuration');
+		$context->setPackageName('FluidTYPO3.Flux');
+		$context->setTemplatePaths($paths);
+		$context->setTemplatePathAndFilename(
+			$this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW_EMPTY)
+		);
+		$provider->setViewContext($context);
 		$form = $provider->getForm($record);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
 		$this->assertTrue($form->get('options')->has('settings.input'));
@@ -192,8 +202,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 		ObjectAccess::setProperty($provider, 'templatePathAndFilename', $templatePathAndFilename, TRUE);
 		ObjectAccess::setProperty($provider, 'templatePaths', array(), TRUE);
 		$record = $this->getBasicRecord();
-		$form = $provider->getGrid($record);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $form);
+		$grid = $provider->getGrid($record);
+		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $grid);
 	}
 
 	/**
@@ -211,7 +221,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetForcedTemplateVariables() {
-		$provider = $this->getConfigurationProviderInstance();
+		$provider = $this->getMock($this->createInstanceClassName(), array('getPageValues'));
 		$record = $this->getBasicRecord();
 		$variables = $provider->getTemplateVariables($record);
 		$this->assertIsArray($variables);
@@ -238,7 +248,10 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canGetTemplateVariables() {
-		$provider = $this->getConfigurationProviderInstance();
+		$provider = $this->getMock($this->createInstanceClassName(), array('getPageValues', 'getGrid', 'getForm'));
+		$provider->expects($this->once())->method('getPageValues')->willReturnArgument(0);
+		$provider->expects($this->once())->method('getForm')->willReturn(NULL);
+		$provider->expects($this->once())->method('getGrid')->willReturn(NULL);
 		ObjectAccess::setProperty($provider, 'templatePaths', array(), TRUE);
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
 		$record = $this->getBasicRecord();
@@ -545,7 +558,8 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canSetTemplateVariables() {
-		$provider = $this->getConfigurationProviderInstance();
+		$provider = $this->getMock($this->createInstanceClassName(), array('getPageValues'));
+		$provider->expects($this->once())->method('getPageValues')->willReturnArgument(0);
 		$record = $this->getBasicRecord();
 		$variables = array('test' => 'test');
 		$provider->setTemplateVariables($variables);
@@ -555,12 +569,49 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function testAppliesLocalisationToPageValues() {
+		$GLOBALS['TSFE'] = (object) array('page' => array('foo' => 'bar'));
+		$recordService = $this->getMock('FluidTYPO3\\Service\\RecordService', array('get'));
+		$recordService->expects($this->once())->method('get')->willReturn(array(array('also' => 'baz')));
+		$subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
+		$subject->_set('recordService', $recordService);
+		$this->assertEquals(array('foo' => 'bar', 'also' => 'baz'), $this->callInaccessibleMethod($subject, 'getPageValues'));
+	}
+
+	/**
+	 * @test
+	 */
 	public function canSetTemplatePathAndFilename() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();
+
 		$template = 'test.html';
 		$provider->setTemplatePathAndFilename($template);
-		$this->assertSame(GeneralUtility::getFileAbsFileName($template), $provider->getTemplatePathAndFilename($record));
+		$this->assertContains($template, $provider->getTemplatePathAndFilename($record));
+
+		$template = NULL;
+		$provider->setTemplatePathAndFilename($template);
+		$this->assertSame($template, $provider->getTemplatePathAndFilename($record));
+
+		$template = 'EXT:flux/Tests/Fixtures/Templates/Content/Dummy.html';
+		$provider->setTemplatePathAndFilename($template);
+		$this->assertTrue(
+			GeneralUtility::isAbsPath($provider->getTemplatePathAndFilename($record)),
+			'EXT relative paths are transformed'
+		);
+		$this->assertStringEndsWith(
+			'flux/Tests/Fixtures/Templates/Content/Dummy.html',
+			$provider->getTemplatePathAndFilename($record),
+			'EXT relative paths are transformed'
+		);
+
+		$template = '/foo/Resources/Private/Foo/Bar.html';
+		$provider->setTemplatePathAndFilename($template);
+		$this->assertSame(
+			$template,
+			$provider->getTemplatePathAndFilename($record),
+			'Absolute paths are not transformed'
+		);
 	}
 
 	/**

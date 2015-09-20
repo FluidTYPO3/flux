@@ -59,6 +59,30 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * @param array $row
+	 * @param string $table
+	 * @param string $field
+	 * @param string $extensionKey
+	 * @return bool
+	 */
+	public function trigger(array $row, $table, $field, $extensionKey = NULL) {
+		if ('tt_content' === $table && NULL === $field) {
+			// This Provider will bypass checking for matched plugin-
+			// and/or content type in the case where $field is NULL.
+			// This case is triggered *once* per record from our
+			// TCEMain class; subsequent calls all have a $field and
+			// will pass through to the basic trigger() method.
+			// Note for implementers: if you subclass this ContentProvider
+			// in your own extension (which is perfectly valid to do!)
+			// please consider if you must override the trigger() method
+			// to ensure that your particular Provider only reacts when
+			// users save records that your Provider actually supports.
+			return TRUE;
+		}
+		return parent::trigger($row, $table, $field, $extensionKey);
+	}
+
+	/**
 	 * Note: This Provider will -always- trigger on tt_content list_type records (plugin)
 	 * but has the lowest possible (0) priority, ensuring that any
 	 * Provider which wants to take over, can do so.
@@ -112,27 +136,12 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 					$parameters = explode('|', $pasteCommand);
 					$this->contentService->pasteAfter($command, $row, $parameters, $reference);
 				} else {
-					$moveData = $this->getMoveData();
+					$moveData = (array) $this->getMoveData();
 					$this->contentService->moveRecord($row, $relativeTo, $moveData, $reference);
 				}
 			}
 			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
 		}
-	}
-
-	/**
-	 * @return array
-	 */
-	protected function getCallbackCommand() {
-		$command = GeneralUtility::_GET('CB');
-		return (array) $command;
-	}
-
-	/**
-	 * @return string
-	 */
-	protected function getRawPostData() {
-		return file_get_contents('php://input');
 	}
 
 	/**
@@ -148,6 +157,22 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 			$return = (TRUE === $hasRequestData && TRUE === $isMoveMethod) ? $request['data'] : NULL;
 		}
 		return $return;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getCallbackCommand() {
+		$command = GeneralUtility::_GET('CB');
+		return (array) $command;
+	}
+
+	/**
+	 * @return string
+	 * @codeCoverageIgnore
+	 */
+	protected function getRawPostData() {
+		return file_get_contents('php://input');
 	}
 
 }

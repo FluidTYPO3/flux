@@ -69,13 +69,16 @@ class TemplatePaths {
 	protected $partialRootPaths = array();
 
 	/**
-	 * @param string|NULL $packageNameOrTypoScriptArray
+	 * @param string|NULL $packageOrPaths
 	 */
-	public function __construct($packageNameOrTypoScriptArray = NULL) {
-		if (TRUE === is_array($packageNameOrTypoScriptArray)) {
-			$this->fillFromTypoScriptArray($packageNameOrTypoScriptArray);
-		} elseif (FALSE === empty($packageNameOrTypoScriptArray)) {
-			$this->fillDefaultsByPackageName($packageNameOrTypoScriptArray);
+	public function __construct($packageOrPaths = NULL) {
+		if (TRUE === is_array($packageOrPaths)) {
+			$this->fillFromTypoScriptArray($packageOrPaths);
+		} elseif (
+			FALSE === empty($packageOrPaths)
+			&& ExtensionManagementUtility::isLoaded(ExtensionNamingUtility::getExtensionKey($packageOrPaths))
+		) {
+			$this->fillDefaultsByPackageName($packageOrPaths);
 		}
 	}
 

@@ -43,6 +43,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$this->registerArgument('localizeChildrenAtParentLocalization', 'boolean', 'Defines whether children should be localized when the localization of the parent gets created.', FALSE, FALSE);
 		$this->registerArgument('disableMovingChildrenWithParent', 'boolean', 'Disables that child records get moved along with their parent records.', FALSE, FALSE);
 		$this->registerArgument('showThumbs', 'boolean', 'If TRUE, adds thumbnail display when editing in BE', FALSE, TRUE);
+		$this->registerArgument('matchFields', 'array', 'When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table', FALSE, array());
 	}
 
 	/**
@@ -78,6 +79,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$component->setLocalizeChildrenAtParentLocalization($this->arguments['localizeChildrenAtParentLocalization']);
 		$component->setDisableMovingChildrenWithParent($this->arguments['disableMovingChildrenWithParent']);
 		$component->setShowThumbnails($this->arguments['showThumbs']);
+		$component->setMatchFields((array) $this->arguments['matchFields']);
 		return $component;
 	}
 

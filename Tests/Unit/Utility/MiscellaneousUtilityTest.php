@@ -22,7 +22,7 @@ use org\bovigo\vfs\vfsStreamDirectory;
 /**
  * @package Flux
  */
-class MiscellaneousUtiltyTest extends AbstractTestCase {
+class MiscellaneousUtilityTest extends AbstractTestCase {
 
 	/**
 	 * Setup
@@ -167,6 +167,16 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 	}
 
 	/**
+	 * @test
+	 */
+	public function testCreateIcon() {
+		$graphicsClassName = 'TYPO3\\CMS\\Core\\Imaging\\GraphicalFunctions';
+		$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][$graphicsClassName]['className'] =
+			'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyGraphicalFunctions';
+		$this->assertEquals('foobar-3', MiscellaneousUtility::createIcon('foobar-icon', 1, 2));
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function getMockExtension() {
@@ -195,6 +205,27 @@ class MiscellaneousUtiltyTest extends AbstractTestCase {
 		$vfsUrl = vfsStream::url('ext');
 
 		return $vfsUrl;
+	}
+
+	/**
+	 * @param string $xml
+	 * @param array $removals
+	 * @param string $expected
+	 * @dataProvider getCleanFlexFormXmlTestValues
+	 * @test
+	 */
+	public function testCleanFlexFormXml($xml, array $removals, $expected) {
+		$result = MiscellaneousUtility::cleanFlexFormXml($xml, $removals);
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getCleanFlexFormXmlTestValues() {
+		return array(
+			array('<data><fields></fields></data>', array(), '')
+		);
 	}
 
 }

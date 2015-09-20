@@ -9,6 +9,8 @@ namespace FluidTYPO3\Flux\View;
  */
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Extbase\Mvc\Request;
+use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 
 /**
  * Class ViewContext
@@ -19,11 +21,6 @@ class ViewContext {
 	 * @var string
 	 */
 	protected $packageName;
-
-	/**
-	 * @var string
-	 */
-	protected $controllerName;
 
 	/**
 	 * @var string
@@ -46,19 +43,35 @@ class ViewContext {
 	protected $templatePathAndFilename;
 
 	/**
-	 * @var string
+	 * @var RequestInterface
 	 */
-	protected $format = TemplatePaths::DEFAULT_FORMAT;
+	protected $request;
 
 	/**
 	 * @param string $templatePathAndFilename
 	 * @param string $packageName
 	 * @param string $controllerName
+	 * @param RequestInterface|NULL $request
 	 */
-	public function __construct($templatePathAndFilename = NULL, $packageName = NULL, $controllerName = NULL) {
+	public function __construct(
+		$templatePathAndFilename = NULL,
+		$packageName = NULL,
+		$controllerName = NULL,
+		RequestInterface $request = NULL
+	) {
+		if (TRUE === $request instanceof RequestInterface) {
+			$this->request = clone $request;
+		} else {
+			$this->request = new Request();
+			$this->setPackageName($packageName);
+			$this->setControllerName($controllerName);
+			$this->request->setFormat(TemplatePaths::DEFAULT_FORMAT);
+		}
 		$this->setTemplatePathAndFilename($templatePathAndFilename);
-		$this->setPackageName($packageName);
-		$this->setControllerName($controllerName);
+		$this->setTemplatePaths(new TemplatePaths($packageName));
+		if (NULL !== $controllerName) {
+			$this->setControllerName($controllerName);
+		}
 	}
 
 	/**
@@ -95,13 +108,16 @@ class ViewContext {
 	 */
 	public function setPackageName($packageName) {
 		$this->packageName = $packageName;
+		list ($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($packageName);
+		$this->request->setControllerVendorName($vendorName);
+		$this->request->setControllerExtensionName($extensionName);
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getControllerName() {
-		return $this->controllerName;
+		return $this->request->getControllerName();
 	}
 
 	/**
@@ -109,7 +125,7 @@ class ViewContext {
 	 * @return void
 	 */
 	public function setControllerName($controllerName) {
-		$this->controllerName = $controllerName;
+		$this->request->setControllerName($controllerName);
 	}
 
 	/**
@@ -146,10 +162,7 @@ class ViewContext {
 	 * @return TemplatePaths
 	 */
 	public function getTemplatePaths() {
-		if (TRUE === $this->templatePaths instanceof TemplatePaths) {
-			return $this->templatePaths;
-		}
-		return new TemplatePaths($this->packageName);
+		return $this->templatePaths;
 	}
 
 	/**
@@ -163,7 +176,7 @@ class ViewContext {
 	 * @return string
 	 */
 	public function getFormat() {
-		return $this->format;
+		return $this->request->getFormat();
 	}
 
 	/**
@@ -171,7 +184,7 @@ class ViewContext {
 	 * @return void
 	 */
 	public function setFormat($format) {
-		$this->format = $format;
+		$this->request->setFormat($format);
 	}
 
 	/**
@@ -187,6 +200,21 @@ class ViewContext {
 	 */
 	public function setTemplatePathAndFilename($templatePathAndFilename) {
 		$this->templatePathAndFilename = $templatePathAndFilename;
+	}
+
+	/**
+	 * @return RequestInterface
+	 */
+	public function getRequest() {
+		return $this->request;
+	}
+
+	/**
+	 * @param RequestInterface $request
+	 * @return void
+	 */
+	public function setRequest(RequestInterface $request) {
+		$this->request = $request;
 	}
 
 }

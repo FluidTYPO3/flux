@@ -51,7 +51,8 @@ class PreviewTest extends AbstractTestCase {
 		$className = 'FluidTYPO3\Flux\Backend\Preview';
 		$instance = $this->getMock($className, array('getPageTitleAndPidFromContentUid'));
 		$instance->expects($this->once())->method('getPageTitleAndPidFromContentUid')->with(1)->will($this->returnValue(array('pid' => 1, 'title' => 'test')));
-		$headerContent = $itemContent = '';
+		$headerContent = '';
+		$itemContent = '';
 		$drawItem = TRUE;
 		$row = array('uid' => 1, 'CType' => 'shortcut', 'records' => 1);
 		$this->setup();

@@ -222,6 +222,16 @@ class PreviewViewTest extends AbstractTestCase {
 	}
 
 	/**
+	 * @test
+	 */
+	public function avoidsRenderPreviewSectionIfTemplateFileDoesNotExist() {
+		$provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getTemplatePathAndFilename'));
+		$provider->expects($this->atLeastOnce())->method('getTemplatePathAndFilename')->willReturn(NULL);
+		$previewView = $this->getMock($this->createInstanceClassName(), array('dummy'));
+		$this->callInaccessibleMethod($previewView, 'renderPreviewSection', $provider, array());
+	}
+
+	/**
 	 * @param string $preview
 	 * @return void
 	 */
@@ -291,6 +301,21 @@ class PreviewViewTest extends AbstractTestCase {
 		$result = $this->callInaccessibleMethod($instance, 'configurePageLayoutViewForLanguageMode', $view);
 		$this->assertSame($view, $result);
 		$this->assertEquals(1, $result->tt_contentConfig['languageMode']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function testParseGridColumnTemplate() {
+		$column = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Column', array('getColspan', 'getRowspan', 'getStyle', 'getLabel'));
+		$column->expects($this->once())->method('getColSpan')->willReturn('foobar-colSpan');
+		$column->expects($this->once())->method('getRowSpan')->willReturn('foobar-rowSpan');
+		$column->expects($this->once())->method('getStyle')->willReturn('foobar-style');
+		$column->expects($this->once())->method('getLabel')->willReturn('foobar-label');
+		$subject = $this->getMock('FluidTYPO3\\Flux\\View\\PreviewView', array('drawNewIcon', 'drawPasteIcon'));
+		$subject->expects($this->once())->method('drawNewIcon');
+		$subject->expects($this->exactly(2))->method('drawPasteIcon');
+		$this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 1, NULL, 'f-target', 2, 'f-content');
 	}
 
 }

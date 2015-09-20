@@ -56,8 +56,9 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 			return $this->currentPageId;
 		}
 		$pageUids = $this->getPrioritizedPageUids();
-		$this->currentPageId = 0; // parent::getCurrentPageId() in getPrioritizedPageUids() set possible wrong value
-		while (TRUE === empty($this->currentPageId) && 0 < count($pageUids)) {
+		// parent::getCurrentPageId() in getPrioritizedPageUids() set possible wrong value
+		$this->currentPageId = 0;
+		while (TRUE === empty($this->currentPageId) && TRUE !== empty($pageUids)) {
 			$this->currentPageId = array_shift($pageUids);
 		};
 		return $this->currentPageId;
@@ -109,9 +110,15 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 	 */
 	protected function getPageIdFromRecordIdentifiedInEditUrlArgument() {
 		list ($table, $id, $command) = $this->getEditArguments();
-		// if TYPO3 wants to insert a new page, URL argument is already the PID value.
-		// if any non-page record is being edited, load it and return the PID value.
-		return ('pages' === $table || 'new' === $command || 0 === $id) ? $id : $this->getPageIdFromRecordUid($table, $id);
+		if ('pages' === $table && 'new' === $command) {
+			// if TYPO3 wants to insert a new page, URL argument is already the PID value.
+			return $id;
+		} elseif (0 <> $id) {
+			// if any identified record is being edited, load it and return the PID value.
+			// if the (new) record is relative to another, $id is negative UID of relative record, hence abs().
+			return $this->getPageIdFromRecordUid($table, abs($id));
+		}
+		return $id;
 	}
 
 	/**

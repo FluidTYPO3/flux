@@ -177,20 +177,11 @@ class FluxService implements SingletonInterface {
 			$qualifiedExtensionName = 'Flux';
 		}
 		$extensionName = ExtensionNamingUtility::getExtensionName($qualifiedExtensionName);
-		if (NULL === $controllerName) {
-			$controllerName = 'Flux';
-		}
 		/** @var $context ControllerContext */
 		$context = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
-		/** @var $request Request */
-		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
+		$request = $viewContext->getRequest();
 		/** @var $response Response */
 		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
-		$request->setControllerExtensionName($extensionName);
-		$request->setControllerName($controllerName);
-		$request->setControllerVendorName($vendorName);
-		$request->setFormat($viewContext->getFormat());
-		$request->setDispatched(TRUE);
 		/** @var $uriBuilder UriBuilder */
 		$uriBuilder = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');
 		$uriBuilder->setRequest($request);
@@ -287,9 +278,9 @@ class FluxService implements SingletonInterface {
 	protected function getDefaultViewConfigurationForExtensionKey($extensionKey) {
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 		return array(
-			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array(10 => 'EXT:' . $extensionKey . '/Resources/Private/Templates/'),
-			TemplatePaths::CONFIG_PARTIALROOTPATHS => array(10 => 'EXT:' . $extensionKey . '/Resources/Private/Partials/'),
-			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array(10 => 'EXT:' . $extensionKey . '/Resources/Private/Layouts/'),
+			TemplatePaths::CONFIG_TEMPLATEROOTPATHS => array(0 => 'EXT:' . $extensionKey . '/Resources/Private/Templates/'),
+			TemplatePaths::CONFIG_PARTIALROOTPATHS => array(0 => 'EXT:' . $extensionKey . '/Resources/Private/Partials/'),
+			TemplatePaths::CONFIG_LAYOUTROOTPATHS => array(0 => 'EXT:' . $extensionKey . '/Resources/Private/Layouts/'),
 		);
 	}
 
@@ -451,11 +442,7 @@ class FluxService implements SingletonInterface {
 		$shouldExcludedFriendlySeverities = 2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
 		$isExcludedSeverity = (TRUE === $shouldExcludedFriendlySeverities && TRUE === in_array($severity, self::$friendlySeverities));
 		if (FALSE === $disabledDebugMode && FALSE === $alreadySent && FALSE === $isExcludedSeverity) {
-			$isAjaxCall = (boolean) 0 < GeneralUtility::_GET('ajaxCall');
-			$flashMessage = $this->createFlashMessage($message, $title, $severity);
-			$flashMessage->setStoreInSession($isAjaxCall);
-			$flashMessageQueue = new FlashMessageQueue('flux');
-			$flashMessageQueue->addMessage($flashMessage);
+			$this->logMessage($message, $severity);
 			$this->sentDebugMessages[$hash] = TRUE;
 		}
 	}
@@ -469,12 +456,12 @@ class FluxService implements SingletonInterface {
 
 	/**
 	 * @param string $message
-	 * @param string $title
 	 * @param integer $severity
-	 * @return FlashMessage
+	 * @return void
+	 * @codeCoverageIgnore
 	 */
-	protected function createFlashMessage($message, $title, $severity) {
-		return new FlashMessage($message, $title, $severity);
+	protected function logMessage($message, $severity) {
+		GeneralUtility::sysLog($message, 'flux', $severity);
 	}
 
 }

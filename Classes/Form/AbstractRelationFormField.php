@@ -57,6 +57,14 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
 	protected $manyToMany = NULL;
 
 	/**
+	 * When using many-to-many mode you can specify an array of field=>value pairs
+	 * which must also match in the relation table when the relation is resolved.
+	 *
+	 * @var array
+	 */
+	protected $matchFields = array();
+
+	/**
 	 * If set, it overrides the label set in TCA[foreign_table]['ctrl']['label']
 	 * for the foreign table view.
 	 *
@@ -175,6 +183,7 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
 		$configuration['disableMovingChildrenWithParent'] = intval($this->getDisableMovingChildrenWithParent());
 		$configuration['showThumbs'] = intval($this->getShowThumbnails());
 		$configuration['MM'] = $this->getManyToMany();
+		$configuration['MM_match_fields'] = $this->getMatchFields();
 		$configuration['filter'] = $this->getFilter();
 		return $configuration;
 	}
@@ -241,6 +250,22 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
 	 */
 	public function getManyToMany() {
 		return $this->manyToMany;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getMatchFields() {
+		return $this->matchFields;
+	}
+
+	/**
+	 * @param array $matchFields
+	 * @return RelationFieldInterface
+	 */
+	public function setMatchFields(array $matchFields) {
+		$this->matchFields = $matchFields;
+		return $this;
 	}
 
 	/**

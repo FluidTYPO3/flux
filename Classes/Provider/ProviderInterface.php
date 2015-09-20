@@ -10,7 +10,9 @@ namespace FluidTYPO3\Flux\Provider;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 
 /**
  * @package Flux
@@ -59,6 +61,16 @@ interface ProviderInterface {
 	 * @return boolean
 	 */
 	public function trigger(array $row, $table, $field, $extensionKey = NULL);
+
+	/**
+	 * Returns an instance of \FluidTYPO3\Flux\View\ViewContext as required by this record,
+	 * with the provided RequestInterface instance as context.
+	 *
+	 * @param array $row
+	 * @param RequestInterface|NULL $request
+	 * @return ViewContext
+	 */
+	public function getViewContext(array $row, RequestInterface $request = NULL);
 
 	/**
 	 * Returns an instance of \FluidTYPO3\Flux\Form as required by this record.

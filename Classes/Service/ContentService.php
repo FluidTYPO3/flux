@@ -86,10 +86,16 @@ class ContentService implements SingletonInterface {
 		$parentUid = NULL;
 		$relativeRecord = NULL;
 		$possibleColPos = NULL;
-		if (1 < substr_count($parameters[1], '-')) {
+		$nestedArguments = explode('-', $parameters[1]);
+		$numberOfNestedArguments = count($nestedArguments);
+		if (5 < $numberOfNestedArguments) {
 			// Parameters were passed in a hyphen-glued string, created by Flux and passed into command.
-			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = explode('-', $parameters[1]);
+			list ($pid, $subCommand, $relativeUid, $parentUid, $possibleArea, $possibleColPos) = $nestedArguments;
 			$parentUid = (integer) $parentUid;
+			// Parent into same grid results in endless loop
+			if ('move' === $command && (integer) $id === $parentUid && (integer) $pid === (integer) $row['pid']) {
+				return;
+			}
 			$relativeUid = 0 - (integer) $relativeUid;
 			if (FALSE === empty($possibleArea)) {
 				// Flux content area detected, override colPos to virtual Flux column number.
@@ -97,12 +103,16 @@ class ContentService implements SingletonInterface {
 				// overridden regardless.
 				$possibleColPos = self::COLPOS_FLUXCONTENT;
 			}
-		} else {
+		} elseif (5 === $numberOfNestedArguments) {
 			// Parameters are directly from TYPO3 and it almost certainly is a paste to page column.
-			list ($tablename, $pid, $relativeUid) = $parameters;
-			// Third parameter is not passed by every context. If not set and $pid is negative,
+			list (, $possibleColPos, , $relativeUid) = $nestedArguments;
+			// $relativeUid parameter is not passed by every context. If not set and $pid is negative,
 			// we must assume that the positive value of $pid is our relative target UID.
 			$relativeUid = (integer) (0 >= (integer) $pid) ? $pid : $relativeUid;
+		} elseif (2 === count($parameters) && is_numeric($parameters[1])) {
+			// The most basic form of pasting: using the clickmenu to "paste after" sends only
+			// two parameters and the second parameter is always numeric-only.
+			list ($tablename, $relativeUid) = $parameters;
 		}
 
 		// Creating the copy mapping array. Initial processing of all records being pasted,
@@ -191,7 +201,6 @@ class ContentService implements SingletonInterface {
 	 * @return void
 	 */
 	public function moveRecord(array &$row, &$relativeTo, $parameters, DataHandler $tceMain) {
-		$row['tx_flux_column'] = $row['tx_flux_parent'] = NULL;
 		// Note: this condition is here in order to NOT perform any actions if
 		// the $relativeTo variable was passed by EXT:gridelements in which case
 		// it is invalid (not a negative/positive integer but a string).
@@ -206,10 +215,8 @@ class ContentService implements SingletonInterface {
 				$relativeUid = (integer) $relativeUid;
 				if ('colpos' === $prefix && 'page' === $prefix2) {
 					$row['colPos'] = $column;
-					if ('top' === $relativePosition && 0 < $relativeUid) {
-						$row['tx_flux_parent'] = $relativeUid;
-						$row['tx_flux_column'] = $area;
-					}
+					$row['tx_flux_parent'] = $relativeUid;
+					$row['tx_flux_column'] = $area;
 				}
 			} elseif (0 > (integer) $relativeTo) {
 				// inserting a new element after another element. Check column position of that element.
@@ -218,7 +225,18 @@ class ContentService implements SingletonInterface {
 				$row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
 				$row['colPos'] = $relativeToRecord['colPos'];
 				$row['sorting'] = $tceMain->resorting('tt_content', $relativeToRecord['pid'], 'sorting', abs($relativeTo));
+			} elseif (0 < (integer) $relativeTo) {
+				// moving to first position in colPos, means that $relativeTo is the pid of the containing page
+				$row['sorting'] = $tceMain->getSortNumber('tt_content', 0, $relativeTo);
+				// neither change fields tx_flux_column nor tx_flux_parent here!
+			} else {
+				$row['tx_flux_parent'] = NULL;
+				$row['tx_flux_column'] = NULL;
 			}
+		} else {
+			// $relativeTo variable was passed by EXT:gridelements
+			$row['tx_flux_parent'] = NULL;
+			$row['tx_flux_column'] = NULL;
 		}
 		if (0 < $row['tx_flux_parent']) {
 			$row['colPos'] = self::COLPOS_FLUXCONTENT;
@@ -351,7 +369,7 @@ class ContentService implements SingletonInterface {
 	 * @return array
 	 */
 	protected function getTargetAreaStoredInSession($relativeTo) {
-		'' !== session_id() ?  : session_start();
+		'' !== session_id() ? : session_start();
 		return $_SESSION['target' . $relativeTo];
 	}
 
