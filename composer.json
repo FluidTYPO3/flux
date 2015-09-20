@@ -2,7 +2,7 @@
     "name": "fluidtypo3/flux",
     "description": "The flux package from FluidTYPO3",
     "type": "typo3-cms-extension",
-    "version": "7.2.1",
+    "version": "7.2.2",
     "homepage": "http://fluidtypo3.org",
     "license": "GPL-2.0+",
     "preferred-install": "dist",
