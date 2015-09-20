@@ -489,10 +489,10 @@ abstract class AbstractFormComponent implements FormInterface {
 	}
 
 	/**
-	 * @param \SplObjectStorage $children
+	 * @param \SplObjectStorage|array $children
 	 * @return array
 	 */
-	protected function buildChildren(\SplObjectStorage $children) {
+	protected function buildChildren($children) {
 		$structure = array();
 		foreach ($children as $child) {
 			if (TRUE === (boolean) $child->getEnabled()) {
