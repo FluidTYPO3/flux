@@ -39,7 +39,10 @@ class PathUtility {
 	 */
 	public static function translatePath($path) {
 		if (is_array($path) == FALSE) {
-			return 0 === strpos($path, '/') ? $path : GeneralUtility::getFileAbsFileName($path);
+			$path = (0 === strpos($path, '/') ? $path : GeneralUtility::getFileAbsFileName($path));
+			if (is_dir($path)) {
+				$path = realpath($path) . '/';
+			}
 		} else {
 			foreach ($path as $key => $subPath) {
 				if (TRUE === in_array($key, self::$knownPathNames)) {

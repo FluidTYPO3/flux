@@ -179,9 +179,6 @@ class TceMain {
 			$arguments['row'] = &$record;
 			$arguments[] = &$reference;
 			$detectedProviders = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
-			if (TRUE === empty($detectedProviders) && 'move' === $arguments['command']) {
-				$detectedProviders = array($this->objectManager->get('FluidTYPO3\Flux\Provider\LightweightProvider'));
-			}
 			foreach ($detectedProviders as $provider) {
 				if (TRUE === $provider->shouldCall($methodName, $id)) {
 					call_user_func_array(array($provider, $methodName), array_values($arguments));

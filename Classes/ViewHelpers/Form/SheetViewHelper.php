@@ -61,6 +61,7 @@ class SheetViewHelper extends AbstractFormViewHelper {
 			$this->setContainer($sheet);
 		}
 		$this->renderChildren();
+		$this->setContainer($form);
 	}
 
 }

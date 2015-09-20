@@ -21,7 +21,7 @@ class Passthrough extends AbstractFormField implements FieldInterface {
 	 * @return array
 	 */
 	public function buildConfiguration() {
-		$configuration = $configuration = $this->prepareConfiguration('passthrough');
+		$configuration = $this->prepareConfiguration('passthrough');
 		return $configuration;
 	}
 

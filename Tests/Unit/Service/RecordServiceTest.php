@@ -80,7 +80,7 @@ class RecordServiceTest extends AbstractTestCase {
 		$fields = array('foo' => 'bar', 'uid' => $uid);
 		$mock = $this->getMockServiceInstance(array(), array('exec_UPDATEquery'));
 		self::$connectionMock->expects($this->once())->method('exec_UPDATEquery')->with($table, "uid = '" . $uid . "'", $fields);
-		$mock->update($table, $fields, $uid);
+		$mock->update($table, $fields);
 	}
 
 	/**

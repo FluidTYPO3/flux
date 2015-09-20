@@ -23,6 +23,9 @@ class MultiRelationTest extends AbstractFieldTest {
 		'foreignLabel' => 'uid',
 		'filter' => array(
 			'test' => 'test'
+		),
+		'matchFields' => array(
+			'field' => 'value'
 		)
 	);
 

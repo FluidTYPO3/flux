@@ -148,6 +148,7 @@ class ProviderResolver implements SingletonInterface {
 	/**
 	 * @param array $providers
 	 * @return ProviderInterface[]
+	 * @throws \RuntimeException
 	 */
 	protected function validateAndInstantiateProviders(array $providers) {
 		$instances = array();

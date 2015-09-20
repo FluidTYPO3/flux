@@ -258,9 +258,9 @@ class FluxServiceTest extends AbstractTestCase {
 	 */
 	public function canGetViewConfigurationForExtensionNameWhichDoesNotExistAndConstructDefaults() {
 		$expected = array(
-			'templateRootPaths' => array(10 => 'EXT:void/Resources/Private/Templates/'),
-			'partialRootPaths' => array(10 => 'EXT:void/Resources/Private/Partials/'),
-			'layoutRootPaths' => array(10 => 'EXT:void/Resources/Private/Layouts/'),
+			'templateRootPaths' => array(0 => 'EXT:void/Resources/Private/Templates/'),
+			'partialRootPaths' => array(0 => 'EXT:void/Resources/Private/Partials/'),
+			'layoutRootPaths' => array(0 => 'EXT:void/Resources/Private/Layouts/'),
 		);
 		$service = $this->createFluxServiceInstance();
 		$config = $service->getViewConfigurationForExtensionName('void');
@@ -296,20 +296,9 @@ class FluxServiceTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function createFlashMessageCreatesFlashMessage() {
-		$instance = $this->createInstance();
-		$result = $this->callInaccessibleMethod($instance, 'createFlashMessage', 'Message', 'Title', 2);
-		$this->assertAttributeEquals('Message', 'message', $result);
-		$this->assertAttributeEquals('Title', 'title', $result);
-		$this->assertAttributeEquals(2, 'severity', $result);
-	}
-
-	/**
-	 * @test
-	 */
 	public function messageIgnoresRepeatedMessages() {
-		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('createFlashMessage'));
-		$instance->expects($this->once())->method('createFlashMessage')->willReturn(new FlashMessage('Test', 'Test', 2));
+		$instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('logMessage'));
+		$instance->expects($this->once())->method('logMessage');
 		$instance->message('Test', 'Test', 2);
 		$instance->message('Test', 'Test', 2);
 	}

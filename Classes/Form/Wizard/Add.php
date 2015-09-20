@@ -59,7 +59,7 @@ class Add extends AbstractWizard {
 	public function buildConfiguration() {
 		$configuration = array(
 			'params' => array(
-				'table'=> $this->getTable(),
+				'table' => $this->getTable(),
 				'pid' => $this->getStoragePageUid(),
 				'setValue' => intval($this->getSetValue())
 			)

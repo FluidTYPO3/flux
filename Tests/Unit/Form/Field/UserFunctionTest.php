@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /**
  * @package Flux
  */
-class userFunctionTest extends AbstractFieldTest {
+class UserFunctionTest extends AbstractFieldTest {
 
 	/**
 	 * @var array

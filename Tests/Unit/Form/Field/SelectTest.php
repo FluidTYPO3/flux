@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 
@@ -92,8 +91,21 @@ class SelectTest extends AbstractFieldTest {
 	public function getLabelPropertyNameTranslatesTableNameFromObjectTypeRespectingTableMapping() {
 		$table = 'foo';
 		$type = 'bar';
-		$fixture = array('config' => array('tx_extbase' => array('persistence' => array('classes' =>
-			array($type => array('mapping' => array('tableName' => $table . 'suffix')))))));
+		$fixture = array(
+			'config' => array(
+				'tx_extbase' => array(
+					'persistence' => array(
+						'classes' => array(
+							$type => array(
+								'mapping' => array(
+									'tableName' => $table . 'suffix'
+								)
+							)
+						)
+					)
+				)
+			)
+		);
 		$service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getAllTypoScript'));
 		$service->expects($this->once())->method('getAllTypoScript')->willReturn($fixture);
 		$instance = $this->getMock($this->createInstanceClassName(), array('getConfigurationService'));

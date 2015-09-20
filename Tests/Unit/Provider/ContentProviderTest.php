@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -24,7 +25,11 @@ class ContentProviderTest extends AbstractProviderTest {
 	 */
 	public function triggersContentManipulatorOnDatabaseOperationNew() {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$provider = $this->getConfigurationProviderInstance();
+		$form = Form::create();
+		$provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\ContentProvider', array('loadRecordFromDatabase', 'getForm'));
+		$provider->expects($this->once())->method('loadRecordFromDatabase')->willReturn(array('foo' => 'bar'));
+		$provider->expects($this->once())->method('getForm')->willReturn($form);
+
 		/** @var DataHandler $tceMain */
 		$tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
 		$result = $provider->postProcessDatabaseOperation('new', $row['uid'], $row, $tceMain);
@@ -101,8 +106,12 @@ class ContentProviderTest extends AbstractProviderTest {
 	 * @test
 	 */
 	public function postProcessCommandCallsExpectedMethodToMoveRecord() {
-		$mock = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getCallbackCommand'));
+		$mock = $this->getMock(
+			str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)),
+			array('getCallbackCommand', 'getMoveData')
+		);
 		$mock->expects($this->once())->method('getCallbackCommand')->will($this->returnValue(array('move' => 1)));
+		$mock->expects($this->once())->method('getMoveData')->willReturn(array());
 		$mockContentService = $this->getMock('FluidTYPO3\Flux\Service\ContentService', array('pasteAfter', 'moveRecord'));
 		$mockContentService->expects($this->once())->method('moveRecord');
 		ObjectAccess::setProperty($mock, 'contentService', $mockContentService, TRUE);
@@ -194,6 +203,8 @@ class ContentProviderTest extends AbstractProviderTest {
 	public function getTriggerTestValues() {
 		return array(
 			array(array(), 'not_tt_content', 'pi_flexform', NULL, FALSE),
+			array(array(), 'not_tt_content', NULL, NULL, FALSE),
+			array(array(), 'tt_content', NULL, NULL, TRUE),
 			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', NULL, FALSE),
 			array(array('list_type' => '', 'CType' => 'any'), 'not_tt_content', 'pi_flexform', 'flux', FALSE)
 		);
