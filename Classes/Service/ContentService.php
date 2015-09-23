@@ -297,7 +297,7 @@ class ContentService implements SingletonInterface {
 				// look for the translated version of the parent record indicated
 				// in this new, translated record. Below, we adjust the parent UID
 				// so it has the UID of the translated parent if one exists.
-				$translatedParents = (array) $this->workspacesAwareRecordService->get('tt_content', 'uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'");
+				$translatedParents = (array) $this->workspacesAwareRecordService->get('tt_content', 'uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'" . BackendUtility::deleteClause('tt_content'));
 				$translatedParent = reset($translatedParents);
 				$sortbyFieldName = TRUE === isset($GLOBALS['TCA']['tt_content']['ctrl']['sortby']) ?
 					$GLOBALS['TCA']['tt_content']['ctrl']['sortby'] : 'sorting';
