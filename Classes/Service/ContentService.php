@@ -263,8 +263,7 @@ class ContentService implements SingletonInterface {
 					if ('top' === $relativePosition && 0 < $relativeUid) {
 						$row['tx_flux_parent'] = $relativeUid;
 						$row['tx_flux_column'] = $area;
-					}
-					elseif (NULL === $relativePosition && 0 === $relativeUid) {
+					} elseif (NULL === $relativePosition && 0 === $relativeUid) {
 						// move element to top of column outside any flux container
 						$row['tx_flux_parent'] = NULL;
 						$row['tx_flux_column'] = NULL;
@@ -354,7 +353,7 @@ class ContentService implements SingletonInterface {
 				// so it has the UID of the translated parent if one exists.
 				$translatedParent = NULL;
 				if (isset($oldRecord['tx_flux_parent']) && $oldRecord['tx_flux_parent']!=='0') {
-					$translatedParents = (array)$this->workspacesAwareRecordService->get('tt_content', 'uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'");
+					$translatedParents = (array)$this->workspacesAwareRecordService->get('tt_content', 'uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'" . BackendUtility::deleteClause('tt_content'));
 					$translatedParent = reset($translatedParents);
 				}
 				$sortbyFieldName = TRUE === isset($GLOBALS['TCA']['tt_content']['ctrl']['sortby']) ?

@@ -50,9 +50,11 @@ class ContentServiceTest extends AbstractDataHandlerActionTestCase {
 	const FLUIDCONTENT_CONTENT_ID = 201;
 	const CONTENT_ID_ABOVE = 203;
 	const CONTENT_ID_BELOW = 202;
+	const CONTENT_WITH_DELETED_AND_UNDELETED_FLUX_PARENT = 303;
 	const FLUIDCONTENT_NESTED_OUTER_CONTAINER_ID = 300;
 	const FLUIDCONTENT_NESTED_INNER_CONTAINER_ID = 301;
 	const FLUIDCONTENT_NESTED_INNER_CONTENT_ID = 302;
+	const LOCALIZED_FLUX_PARENT = 500;
 	const LANGUAGE_DEFAULT = 0;
 	const LANGUAGE_TARGET = 1;
 
@@ -356,5 +358,19 @@ class ContentServiceTest extends AbstractDataHandlerActionTestCase {
 
 		$localizedRecord = BackendUtility::getRecord('tt_content', $mappingArray['tt_content'][self::CONTENT_ID_BELOW]);
 		$this->assertContentNotInFluxElement($localizedRecord);
+	}
+
+	/**
+	 * @test
+	 *
+	 * creates a localisation of a standard content element that resides in a flux container
+	 * The container has already been deleted and localized again
+	 * This test checks if the flux parent is the not deleted flux parent
+	 */
+	public function translatedFluxElementHasNotDeletedParentAfterCreation() {
+		$mappingArray = $this->actionService->localizeRecord('tt_content', self::CONTENT_WITH_DELETED_AND_UNDELETED_FLUX_PARENT, self::LANGUAGE_TARGET);
+
+		$localizedRecord = BackendUtility::getRecord('tt_content', $mappingArray['tt_content'][self::CONTENT_WITH_DELETED_AND_UNDELETED_FLUX_PARENT]);
+		$this->assertEquals($localizedRecord['tx_flux_parent'], self::LOCALIZED_FLUX_PARENT, 'Localized flux parent is not as expected.');
 	}
 }
