@@ -10,7 +10,7 @@
 
 .fluidcontent-icon {
 	margin-top: 7px;
-	position: absolute;
+	position: absolute!important;
 	left: 12px;
 	z-index: 1
 }
