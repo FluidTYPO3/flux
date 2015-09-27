@@ -373,4 +373,61 @@ class ContentService implements SingletonInterface {
 		return $_SESSION['target' . $relativeTo];
 	}
 
+	/**
+	 * @param integer $uid uid of record in default language
+	 * @param integer $languageUid sys_language_uid of language for the localized record
+	 * @param array $defaultLanguageRecord record in default language (from table tt_content)
+	 * @param DataHandler $reference
+	 */
+	public function fixPositionInLocalization($uid, $languageUid, &$defaultLanguageRecord, DataHandler $reference) {
+		$previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
+		$localizedRecord = BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
+		if (NULL !== $previousLocalizedRecordUid) {
+			$sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
+			$localizedRecord[0][$sortingRow] = $reference->resorting('tt_content', $defaultLanguageRecord['pid'], $sortingRow, $previousLocalizedRecordUid);
+		} else {
+			// moving to first position in tx_flux_column
+			$localizedRecord[0][$sortingRow] = $reference->getSortNumber('tt_content', 0, $defaultLanguageRecord['pid']);
+		}
+		$this->updateRecordInDatabase($localizedRecord[0]);
+	}
+
+	/**
+	 * Returning uid of previous localized record, if any, for tables with a "sortby" column
+	 * Used when new localized records are created so that localized records are sorted in the same order as the default language records
+	 *
+	 * This is a port from DataHandler::getPreviousLocalizedRecordUid that respects tx_flux_parent and tx_flux_column!
+	 *
+	 * @param integer $uid Uid of default language record
+	 * @param integer $language Language of localization
+	 * @param TYPO3\CMS\Core\DataHandling\DataHandler $datahandler
+	 * @return integer uid of record after which the localized record should be inserted
+	 */
+	protected function getPreviousLocalizedRecordUid($uid, $language, DataHandler $reference) {
+		$table = 'tt_content';
+		$previousLocalizedRecordUid = $uid;
+		$sortRow = $GLOBALS['TCA'][$table]['ctrl']['sortby'];
+		$select = $sortRow . ',pid,uid,colPos,tx_flux_parent,tx_flux_column';
+		// Get the sort value of the default language record
+		$row = BackendUtility::getRecord($table, $uid, $select);
+		if (is_array($row)) {
+			// Find the previous record in default language on the same page
+			$where = 'pid=' . (int)$row['pid'] . ' AND ' . 'sys_language_uid=0' . ' AND ' . $sortRow . '<' . (int)$row[$sortRow];
+			// Respect the colPos for content elements
+			if ($table === 'tt_content') {
+				$where .= ' AND colPos=' . (int)$row['colPos'] . ' AND tx_flux_column=\''.$row['tx_flux_column'].'\' AND tx_flux_parent=\''.$row['tx_flux_parent'].'\'';
+			}
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select, $table, $where . $reference->deleteClause($table), '', $sortRow . ' DESC', '1');
+			// If there is an element, find its localized record in specified localization language
+			if ($previousRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				$previousLocalizedRecord = BackendUtility::getRecordLocalization($table, $previousRow['uid'], $language);
+				if (is_array($previousLocalizedRecord[0])) {
+					$previousLocalizedRecordUid = $previousLocalizedRecord[0]['uid'];
+				}
+			}
+			$GLOBALS['TYPO3_DB']->sql_free_result($res);
+		}
+		return $previousLocalizedRecordUid;
+	}
+
 }
