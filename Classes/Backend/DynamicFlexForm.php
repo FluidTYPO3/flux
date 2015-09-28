@@ -77,6 +77,9 @@ class DynamicFlexForm {
 		foreach ($providers as $provider) {
 			$provider->postProcessDataStructure($row, $dataStructArray, $conf);
 		}
+		if (empty($dataStructArray)) {
+			$dataStructArray = array('ROOT' => array('el' => array()));
+		}
 	}
 
 }
