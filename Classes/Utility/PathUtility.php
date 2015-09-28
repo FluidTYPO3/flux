@@ -43,6 +43,7 @@ class PathUtility {
 			if (is_dir($path)) {
 				$path = realpath($path) . '/';
 			}
+			$path = GeneralUtility::fixWindowsFilePath($path);
 		} else {
 			foreach ($path as $key => $subPath) {
 				if (TRUE === in_array($key, self::$knownPathNames)) {
