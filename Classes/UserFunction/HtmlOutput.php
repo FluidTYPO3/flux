@@ -23,7 +23,7 @@ class HtmlOutput {
 	 * @param FormEngine $pObj
 	 * @return mixed
 	 */
-	public function renderField(array &$parameters, FormEngine &$pObj) {
+	public function renderField(array &$parameters, &$pObj) {
 		unset($pObj);
 		return trim($parameters['parameters']['closure']($parameters));
 	}
