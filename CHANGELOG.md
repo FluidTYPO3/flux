@@ -1,7 +1,7 @@
 # Flux Change log
 
-7.2.3 - Upcoming
-----------------
+7.2.3 - 2015-09-30
+------------------
 
 - Bugfix for catching when parent record localisation is deleted
   - https://github.com/FluidTYPO3/flux/commit/8c886e2119a133a482e5f102acfe20293369fd21
