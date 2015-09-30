@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\View;
  * LICENSE.md file that was distributed with this source code.
  */
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -292,23 +293,7 @@ class TemplatePaths {
 	 * @return mixed
 	 */
 	protected function ensureAbsolutePath($reference) {
-		if (FALSE === is_array($reference)) {
-			$filename = ('/' !== $reference{0} ? GeneralUtility::getFileAbsFileName($reference) : $reference);
-		} else {
-			foreach ($reference as &$subValue) {
-				$subValue = $this->ensureAbsolutePath($subValue);
-			}
-			return $reference;
-		}
-		return $filename;
-	}
-
-	/**
-	 * @param string $path
-	 * @return string
-	 */
-	protected function ensureSuffixedPath($path) {
-		return rtrim($path, '/') . '/';
+		return PathUtility::translatePath($reference);
 	}
 
 	/**
@@ -368,10 +353,10 @@ class TemplatePaths {
 		if (TRUE === isset($paths[self::CONFIG_PARTIALROOTPATH])) {
 			$partialRootPaths[] = $paths[self::CONFIG_PARTIALROOTPATH];
 		}
-		// make sure every path is suffixed by a trailing slash:
-		$templateRootPaths = array_map(array($this, 'ensureSuffixedPath'), $templateRootPaths);
-		$layoutRootPaths = array_map(array($this, 'ensureSuffixedPath'), $layoutRootPaths);
-		$partialRootPaths = array_map(array($this, 'ensureSuffixedPath'), $partialRootPaths);
+		// translate all paths to absolute paths
+		$templateRootPaths = array_map(array($this, 'ensureAbsolutePath'), $templateRootPaths);
+		$layoutRootPaths = array_map(array($this, 'ensureAbsolutePath'), $layoutRootPaths);
+		$partialRootPaths = array_map(array($this, 'ensureAbsolutePath'), $partialRootPaths);
 		$templateRootPaths = array_unique($templateRootPaths);
 		$partialRootPaths = array_unique($partialRootPaths);
 		$layoutRootPaths = array_unique($layoutRootPaths);
@@ -379,7 +364,6 @@ class TemplatePaths {
 		$layoutRootPaths = array_values($layoutRootPaths);
 		$partialRootPaths = array_values($partialRootPaths);
 		$pathCollections = array($templateRootPaths, $layoutRootPaths, $partialRootPaths);
-		$pathCollections = $this->ensureAbsolutePath($pathCollections);
 		return $pathCollections;
 	}
 

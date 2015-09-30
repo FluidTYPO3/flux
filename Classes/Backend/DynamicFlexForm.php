@@ -70,9 +70,15 @@ class DynamicFlexForm {
 			// respect to which ConfigurationProvider(s) are returned.
 			$fieldName = NULL;
 		}
+		if (FALSE === is_array($dataStructArray)) {
+			$dataStructArray = array();
+		}
 		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
 		foreach ($providers as $provider) {
 			$provider->postProcessDataStructure($row, $dataStructArray, $conf);
+		}
+		if (empty($dataStructArray)) {
+			$dataStructArray = array('ROOT' => array('el' => array()));
 		}
 	}
 
