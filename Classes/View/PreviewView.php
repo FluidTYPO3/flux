@@ -549,6 +549,13 @@ class PreviewView {
 	protected function getInitializedPageLayoutView(array $row) {
 		$pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $row['pid']);
 		$moduleData = $GLOBALS['BE_USER']->getModuleData('web_layout', '');
+
+		// For all elements to be shown in draft workspaces & to also show hidden elements by default if user hasn't disabled the option
+		// analog behavior to the PageLayoutController at the end of menuConfig()
+		if ($this->getBackendUser()->workspace != 0 || FALSE === isset($this->moduleData['tt_content_showHidden']) || $this->moduleData['tt_content_showHidden'] !== '0') {
+			$moduleData['tt_content_showHidden'] = 1;
+		}
+
 		/** @var $dblist PageLayoutView */
 		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
 		$dblist->backPath = $GLOBALS['BACK_PATH'];

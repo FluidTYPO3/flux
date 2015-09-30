@@ -1,5 +1,23 @@
 # Flux Change log
 
+7.2.3 - Upcoming
+----------------
+
+- Bugfix for catching when parent record localisation is deleted
+  - https://github.com/FluidTYPO3/flux/commit/8c886e2119a133a482e5f102acfe20293369fd21
+- Bugfix to give "show hidden content elements" a default value when rendering child content
+  - https://github.com/FluidTYPO3/flux/commit/8cb30d0d9202a98d80c39c1a73d34ebbe108acc6
+- Bugfix for relationship of localised child records
+  - https://github.com/FluidTYPO3/flux/commit/58602dd9166e2e12fb14e0755d6bccd5455b728a
+- Bugfix for incorrect package name in sub request when original request exists
+  - https://github.com/FluidTYPO3/flux/commit/dcd6132042e5f8b670f443e6b74398ae8c4db6b6
+- Bugfix for path resolution on Windows environments
+  - https://github.com/FluidTYPO3/flux/commit/382be33e613dd947805c841a426f16700109e2dc
+- TYPO3 7.5 compatibility improvements
+  - https://github.com/FluidTYPO3/flux/commit/f2632afd2cd05bc485f6f7c3ec63e6cd449a6f15
+  - https://github.com/FluidTYPO3/flux/commit/ebe2989b1587d755eba5aa87cd429ec81421c72a
+  - https://github.com/FluidTYPO3/flux/commit/99960c23950348c5f92a2573bce4ea4f5dac8415
+
 7.2.2 - 2015-09-20
 ------------------
 

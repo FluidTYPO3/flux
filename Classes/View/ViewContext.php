@@ -63,12 +63,13 @@ class ViewContext {
 			$this->request = clone $request;
 		} else {
 			$this->request = new Request();
-			$this->setPackageName($packageName);
-			$this->setControllerName($controllerName);
 			$this->request->setFormat(TemplatePaths::DEFAULT_FORMAT);
 		}
 		$this->setTemplatePathAndFilename($templatePathAndFilename);
 		$this->setTemplatePaths(new TemplatePaths($packageName));
+		if (NULL !== $packageName) {
+			$this->setPackageName($packageName);
+		}
 		if (NULL !== $controllerName) {
 			$this->setControllerName($controllerName);
 		}
