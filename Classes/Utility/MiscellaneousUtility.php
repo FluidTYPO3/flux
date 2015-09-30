@@ -61,7 +61,7 @@ class MiscellaneousUtility {
 	}
 
 	/**
-	 * Returns the icon for a template
+	 * Returns the relative http icon path for a template
 	 * - checks and returns if manually set as option or
 	 * - checks and returns Icon if it exists by convention in
 	 *   EXT:$extensionKey/Resources/Public/Icons/$controllerName/$templateName.(png|gif)
@@ -80,14 +80,17 @@ class MiscellaneousUtility {
 			$templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
 			$controllerName = array_pop($templatePathParts);
 			$allowedExtensions = implode(',', self::$allowedIconTypes);
-			$iconFolder = ExtensionManagementUtility::extPath($extensionKey, 'Resources/Public/Icons/' . $controllerName . '/');
-			$iconAbsoluteUrl = '/' . str_replace(PATH_site, '', $iconFolder);
+			$absoluteExtensionPath = ExtensionManagementUtility::extPath($extensionKey);
+			$iconFolder = $absoluteExtensionPath . 'Resources/Public/Icons/' . $controllerName . '/';
 			$iconPathAndName = $iconFolder . $templateName;
 			$iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
 			$filesInFolder = (TRUE === is_dir($iconFolder) ? glob($iconMatchPattern, GLOB_BRACE) : array());
 			$iconFile = (TRUE === is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : NULL);
-			$iconRelPathAndFilename = (NULL !== $iconFile) ? $iconAbsoluteUrl . str_replace($iconFolder, '', $iconFile) : NULL;
-			return $iconRelPathAndFilename;
+
+			if (NULL !== $iconFile) {
+				$relativeIconFolder = str_replace($absoluteExtensionPath, ExtensionManagementUtility::extRelPath($extensionKey), $iconFolder);
+				return $relativeIconFolder . str_replace($iconFolder, '', $iconFile);
+			}
 		}
 		return NULL;
 	}
