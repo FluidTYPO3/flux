@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\RelationFieldInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
@@ -47,39 +48,41 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 	}
 
 	/**
-	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return RelationFieldInterface
 	 */
-	public function getComponent($type = 'Relation') {
-		$component = $this->getPreparedComponent($type);
-		return $component;
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		return static::getPreparedComponent('Relation', $renderingContext, $arguments);
 	}
 
 	/**
 	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return RelationFieldInterface
 	 */
-	protected function getPreparedComponent($type) {
+	protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var RelationFieldInterface $component */
-		$component = parent::getPreparedComponent($type);
-		$component->setTable($this->arguments['table']);
-		$component->setCondition($this->arguments['condition']);
-		$component->setManyToMany($this->arguments['mm']);
-		$component->setForeignField($this->arguments['foreignField']);
-		$component->setForeignSelector($this->arguments['foreignSelector']);
-		$component->setForeignLabel($this->arguments['foreignLabel']);
-		$component->setForeignSortby($this->arguments['foreignSortby']);
-		$component->setForeignDefaultSortby($this->arguments['foreignDefaultSortby']);
-		$component->setForeignTableField($this->arguments['foreignTableField']);
-		$component->setForeignUnique($this->arguments['foreignUnique']);
-		$component->setSymmetricField($this->arguments['symmetricField']);
-		$component->setSymmetricLabel($this->arguments['symmetricLabel']);
-		$component->setSymmetricSortby($this->arguments['symmetricSortby']);
-		$component->setLocalizationMode($this->arguments['localizationMode']);
-		$component->setLocalizeChildrenAtParentLocalization($this->arguments['localizeChildrenAtParentLocalization']);
-		$component->setDisableMovingChildrenWithParent($this->arguments['disableMovingChildrenWithParent']);
-		$component->setShowThumbnails($this->arguments['showThumbs']);
-		$component->setMatchFields((array) $this->arguments['matchFields']);
+		$component = parent::getPreparedComponent($type, $renderingContext, $arguments);
+		$component->setTable($arguments['table']);
+		$component->setCondition($arguments['condition']);
+		$component->setManyToMany($arguments['mm']);
+		$component->setForeignField($arguments['foreignField']);
+		$component->setForeignSelector($arguments['foreignSelector']);
+		$component->setForeignLabel($arguments['foreignLabel']);
+		$component->setForeignSortby($arguments['foreignSortby']);
+		$component->setForeignDefaultSortby($arguments['foreignDefaultSortby']);
+		$component->setForeignTableField($arguments['foreignTableField']);
+		$component->setForeignUnique($arguments['foreignUnique']);
+		$component->setSymmetricField($arguments['symmetricField']);
+		$component->setSymmetricLabel($arguments['symmetricLabel']);
+		$component->setSymmetricSortby($arguments['symmetricSortby']);
+		$component->setLocalizationMode($arguments['localizationMode']);
+		$component->setLocalizeChildrenAtParentLocalization($arguments['localizeChildrenAtParentLocalization']);
+		$component->setDisableMovingChildrenWithParent($arguments['disableMovingChildrenWithParent']);
+		$component->setShowThumbnails($arguments['showThumbs']);
+		$component->setMatchFields((array) $arguments['matchFields']);
 		return $component;
 	}
 

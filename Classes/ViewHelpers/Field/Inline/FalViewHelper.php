@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field\Inline;
 use FluidTYPO3\Flux\Form\Field\Inline\Fal;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractInlineFieldViewHelper;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Repeats rendering of children with a typical for loop: starting at index $from it will loop until the index has reached $to.
@@ -63,18 +64,20 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Fal
 	 */
-	public function getComponent() {
-		$allowedExtensions = $this->arguments['allowedExtensions'];
-		$disallowedExtensions = $this->arguments['disallowedExtensions'];
-		$createNewRelationLinkTitle = $this->arguments['createNewRelationLinkTitle'];
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		$allowedExtensions = $arguments['allowedExtensions'];
+		$disallowedExtensions = $arguments['disallowedExtensions'];
+		$createNewRelationLinkTitle = $arguments['createNewRelationLinkTitle'];
 
 		/** @var Fal $component */
-		$component = $this->getPreparedComponent('Inline/Fal');
-		if (FALSE === is_array($this->arguments['foreignMatchFields'])) {
+		$component = static::getPreparedComponent('Inline/Fal', $renderingContext, $arguments);
+		if (FALSE === is_array($arguments['foreignMatchFields'])) {
 			$component->setForeignMatchFields(array(
-				'fieldname' => $this->arguments['name']
+				'fieldname' => $arguments['name']
 			));
 		}
 		$component->setForeignSelectorFieldTcaOverride(array(
@@ -94,7 +97,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 			))
 		);
 
-		if (FALSE === $this->hasArgument('foreignTypes')) {
+		if (FALSE === isset($arguments['foreignTypes'])) {
 			$component->setForeignTypes(array(
 				'0' => array(
 					'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'

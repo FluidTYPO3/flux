@@ -9,6 +9,11 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler;
+use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\AbstractNode;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Fetches a single variable from the template variables
@@ -16,19 +21,48 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  * @package Flux
  * @subpackage ViewHelpers
  */
-class VariableViewHelper extends AbstractFormViewHelper {
+class VariableViewHelper extends AbstractViewHelper implements CompilableInterface {
+
+	public function initializeArguments() {
+		$this->registerArgument('name', 'string', 'Name (dotted path supported) of template variable to get', TRUE);
+	}
 
 	/**
-	 * @param string $name
 	 * @return string
 	 */
-	public function render($name) {
-		if (strpos($name, '.') === FALSE) {
-			return $this->templateVariableContainer->get($name);
-		} else {
-			$parts = explode('.', $name);
-			return ObjectAccess::getPropertyPath($this->templateVariableContainer->get(array_shift($parts)), implode('.', $parts));
-		}
+	public function render() {
+		return static::renderStatic($this->arguments, $this->renderChildrenClosure, $this->renderingContext);
+	}
+
+	/**
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
+	 * @return mixed
+	 */
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+		return ObjectAccess::getPropertyPath($renderingContext->getTemplateVariableContainer()->getAll(), $arguments['name']);
+	}
+
+	/**
+	 * @param string $argumentsVariableName
+	 * @param string $renderChildrenClosureVariableName
+	 * @param string $initializationPhpCode
+	 * @param AbstractNode $syntaxTreeNode
+	 * @param TemplateCompiler $templateCompiler
+	 * @return string
+	 */
+	public function compile(
+			$argumentsVariableName,
+			$renderChildrenClosureVariableName,
+			&$initializationPhpCode,
+			AbstractNode $syntaxTreeNode,
+			TemplateCompiler $templateCompiler) {
+		return sprintf(
+			'\\TYPO3\\CMS\\Extbase\\Reflection\\ObjectAccess::getPropertyPath(' .
+			'%s[\'name\'], $renderingContext->getTemplateVariableContainer()->getAll())',
+			$argumentsVariableName
+		);
 	}
 
 }

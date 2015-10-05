@@ -54,10 +54,15 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase {
 		$node = new ViewHelperNode($instance, $arguments);
 		$childNode = new TextNode('Hello world!');
 		$node->addChildNode($childNode);
-		$instance->setRenderingContext($renderingContext);
 		$instance->setViewHelperNode($node);
 		/** @var \Closure $closure */
-		$closure = $this->callInaccessibleMethod($instance, 'buildClosure');
+		$closure = $this->callInaccessibleMethod(
+			$instance,
+			'buildClosure',
+			$renderingContext,
+			$arguments,
+			function() use ($childNode, $renderingContext) { return $childNode->evaluate($renderingContext); }
+		);
 		$parameters = array(
 			'itemFormElName' => 'test',
 			'itemFormElLabel' => 'Test label',
@@ -65,7 +70,7 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase {
 		$output = $closure($parameters);
 		$this->assertNotEmpty($output);
 		$this->assertSame('Hello world!', $output);
-		return $instance->getTemplateVariableContainer();
+		return $container;
 	}
 
 }

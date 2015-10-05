@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+
 /**
  * Grid container ViewHelper
  *
@@ -28,19 +30,21 @@ class GridViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @return string
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
+	 * @return void
 	 */
-	public function render() {
-		$grid = $this->getGrid($this->arguments['name']);
-		$grid->setExtensionName($this->getExtensionName());
-		$grid->setParent($this->getForm());
-		$grid->setLabel($this->arguments['label']);
-		$grid->setVariables($this->arguments['variables']);
-		$container = $this->getContainer();
-		$this->setContainer($grid);
-		$this->renderChildren();
-		$this->setContainer($container);
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+		$grid = static::getGridFromRenderingContext($renderingContext, $arguments['name']);
+		$grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$grid->setParent(static::getFormFromRenderingContext($renderingContext));
+		$grid->setLabel($arguments['label']);
+		$grid->setVariables($arguments['variables']);
+		$container = static::getContainerFromRenderingContext($renderingContext);
+		static::setContainerInRenderingContext($renderingContext, $grid);
+		$renderChildrenClosure();
+		static::setContainerInRenderingContext($renderingContext, $container);
 	}
 
 }

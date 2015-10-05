@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\Inline;
  */
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
@@ -23,7 +24,10 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase {
 			'name' => 'test'
 		);
 		$instance = $this->buildViewHelperInstance($arguments, array());
-		$component = $instance->getComponent();
+		$component = $instance->getComponent(
+			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
+			ObjectAccess::getProperty($instance, 'arguments', TRUE)
+		);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Field\Inline\Fal', $component);
 	}
 
@@ -36,7 +40,10 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase {
 			'headerThumbnail' => array('test' => 'test')
 		);
 		$instance = $this->buildViewHelperInstance($arguments, array());
-		$component = $instance->getComponent();
+		$component = $instance->getComponent(
+			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
+			ObjectAccess::getProperty($instance, 'arguments', TRUE)
+		);
 		$this->assertEquals($arguments['headerThumbnail'], $component->getHeaderThumbnail());
 	}
 
@@ -49,7 +56,10 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase {
 			'foreignMatchFields' => array('test' => 'test')
 		);
 		$instance = $this->buildViewHelperInstance($arguments, array());
-		$component = $instance->getComponent();
+		$component = $instance->getComponent(
+			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
+			ObjectAccess::getProperty($instance, 'arguments', TRUE)
+		);
 		$this->assertEquals($arguments['foreignMatchFields'], $component->getForeignMatchFields());
 	}
 

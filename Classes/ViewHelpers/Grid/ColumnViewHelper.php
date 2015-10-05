@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Flexform Grid Column ViewHelper
@@ -37,22 +38,20 @@ class ColumnViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
-	 * @return string
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return Column
 	 */
-	public function render() {
+	static public function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Column $column */
-		$column = $this->getForm()->createContainer('Column', $this->arguments['name'], $this->arguments['label']);
-		$column->setExtensionName($this->getExtensionName());
-		$column->setColspan($this->arguments['colspan']);
-		$column->setRowspan($this->arguments['rowspan']);
-		$column->setStyle($this->arguments['style']);
-		$column->setColumnPosition($this->arguments['colPos']);
-		$column->setVariables($this->arguments['variables']);
-		$container = $this->getContainer();
-		$container->add($column);
-		$this->setContainer($column);
-		$this->renderChildren();
-		$this->setContainer($container);
+		$column = static::getFormFromRenderingContext($renderingContext)->createContainer('Column', $arguments['name'], $arguments['label']);
+		$column->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$column->setColspan($arguments['colspan']);
+		$column->setRowspan($arguments['rowspan']);
+		$column->setStyle($arguments['style']);
+		$column->setColumnPosition($arguments['colPos']);
+		$column->setVariables($arguments['variables']);
+		return $column;
 	}
 
 }

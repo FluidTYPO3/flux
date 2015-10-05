@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\MultiValueFieldInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
@@ -36,18 +37,20 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
 
 	/**
 	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return MultiValueFieldInterface
 	 */
-	protected function getPreparedComponent($type) {
+	protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var MultiValueFieldInterface $component */
-		$component = parent::getPreparedComponent($type);
-		$component->setMinItems($this->arguments['minItems']);
-		$component->setMaxItems($this->arguments['maxItems']);
-		$component->setSize($this->arguments['size']);
-		$component->setMultiple($this->arguments['multiple']);
-		$component->setRenderMode($this->arguments['renderMode']);
-		$component->setItemListStyle($this->arguments['itemListStyle']);
-		$component->setSelectedListStyle($this->arguments['selectedListStyle']);
+		$component = parent::getPreparedComponent($type, $renderingContext, $arguments);
+		$component->setMinItems($arguments['minItems']);
+		$component->setMaxItems($arguments['maxItems']);
+		$component->setSize($arguments['size']);
+		$component->setMultiple($arguments['multiple']);
+		$component->setRenderMode($arguments['renderMode']);
+		$component->setItemListStyle($arguments['itemListStyle']);
+		$component->setSelectedListStyle($arguments['selectedListStyle']);
 		return $component;
 	}
 
