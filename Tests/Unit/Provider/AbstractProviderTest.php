@@ -571,6 +571,7 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	 */
 	public function testAppliesLocalisationToPageValues() {
 		$GLOBALS['TSFE'] = (object) array('page' => array('foo' => 'bar'));
+		$GLOBALS['TSFE'] = (object) array('lang' => 1);
 		$recordService = $this->getMock('FluidTYPO3\\Service\\RecordService', array('get'));
 		$recordService->expects($this->once())->method('get')->willReturn(array(array('also' => 'baz')));
 		$subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
