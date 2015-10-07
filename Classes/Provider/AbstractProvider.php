@@ -465,7 +465,7 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	protected function getPageValues() {
 		$record = $GLOBALS['TSFE']->page;
-		if (FALSE !== $this->getCurrentLanguageName()) {
+		if (NULL !== $this->getCurrentLanguageName()) {
 			$localisation = $this->recordService->get('pages_language_overlay', '*', "pid = '" . $record['uid'] . "'");
 		}
 		if (FALSE === empty($localisation)) {
