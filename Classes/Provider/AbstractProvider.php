@@ -465,7 +465,9 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	protected function getPageValues() {
 		$record = $GLOBALS['TSFE']->page;
-		$localisation = $this->recordService->get('pages_language_overlay', '*', "pid = '" . $record['uid'] . "'");
+		if ( $GLOBALS['TSFE']->lang != 0 ) {
+			$localisation = $this->recordService->get('pages_language_overlay', '*', "pid = '" . $record['uid'] . "'");
+		}
 		if (FALSE === empty($localisation)) {
 			$record = RecursiveArrayUtility::merge($record, reset($localisation));
 		}
