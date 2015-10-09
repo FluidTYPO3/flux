@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Form\Wizard\Slider;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Slider
@@ -34,13 +35,15 @@ class SliderViewHelper extends AbstractWizardViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Slider
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Slider $component */
-		$component = $this->getPreparedComponent('Slider');
-		$component->setWidth($this->arguments['width']);
-		$component->setStep($this->arguments['step']);
+		$component = static::getPreparedComponent('Slider', $renderingContext, $arguments);
+		$component->setWidth($arguments['width']);
+		$component->setStep($arguments['step']);
 		return $component;
 	}
 

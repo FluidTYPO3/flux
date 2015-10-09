@@ -11,6 +11,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 use FluidTYPO3\Flux\Outlet\Pipe\FlashMessagePipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlashMessage Outlet Pipe ViewHelper
@@ -34,15 +36,22 @@ class FlashMessageViewHelper extends AbstractPipeViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return PipeInterface
 	 */
-	protected function preparePipeInstance() {
+	protected static function preparePipeInstance(
+		RenderingContextInterface $renderingContext,
+		array $arguments,
+		\Closure $renderChildrenClosure = NULL
+	) {
 		/** @var FlashMessagePipe $pipe */
-		$pipe = $this->objectManager->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\FlashMessagePipe');
-		$pipe->setTitle($this->arguments['title']);
-		$pipe->setMessage($this->arguments['message']);
-		$pipe->setSeverity($this->arguments['severity']);
-		$pipe->setStoreInSession((boolean) $this->arguments['storeInSession']);
+		$pipe = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+			->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\FlashMessagePipe');
+		$pipe->setTitle($arguments['title']);
+		$pipe->setMessage($arguments['message']);
+		$pipe->setSeverity($arguments['severity']);
+		$pipe->setStoreInSession((boolean) $arguments['storeInSession']);
 		return $pipe;
 	}
 

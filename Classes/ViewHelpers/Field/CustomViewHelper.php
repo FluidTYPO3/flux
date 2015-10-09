@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\Custom;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 
 /**
@@ -31,33 +32,39 @@ class CustomViewHelper extends UserFuncViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
 	 * @return Custom
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments, \Closure $renderChildrenClosure) {
 		/** @var Custom $component */
-		$component = parent::getComponent('Custom');
-		$closure = $this->buildClosure();
+		$component = parent::getPreparedComponent('Custom', $renderingContext, $arguments);
+		$closure = static::buildClosure($renderingContext, $arguments, $renderChildrenClosure);
 		$component->setClosure($closure);
 		return $component;
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
 	 * @return \Closure
 	 */
-	protected function buildClosure() {
+	protected function buildClosure(RenderingContextInterface $renderingContext, array $arguments, \Closure $renderChildrenClosure) {
 		$self = $this;
-		$closure = function($parameters) use ($self) {
+		$closure = function($parameters) use ($renderingContext, $renderChildrenClosure) {
 			$backupParameters = NULL;
 			$backupParameters = NULL;
-			if ($self->getTemplateVariableContainer()->exists('parameters') === TRUE) {
-				$backupParameters = $self->getTemplateVariableContainer()->get('parameters');
-				$self->getTemplateVariableContainer()->remove('parameters');
+			if ($renderingContext->getTemplateVariableContainer()->exists('parameters') === TRUE) {
+				$backupParameters = $renderingContext->getTemplateVariableContainer()->get('parameters');
+				$renderingContext->getTemplateVariableContainer()->remove('parameters');
 			}
-			$self->getTemplateVariableContainer()->add('parameters', $parameters);
-			$content = $self->renderChildren();
-			$self->getTemplateVariableContainer()->remove('parameters');
+			$renderingContext->getTemplateVariableContainer()->add('parameters', $parameters);
+			$content = $renderChildrenClosure();
+			$renderingContext->getTemplateVariableContainer()->remove('parameters');
 			if (NULL !== $backupParameters) {
-				$self->getTemplateVariableContainer()->add('parameters', $backupParameters);
+				$renderingContext->getTemplateVariableContainer()->add('parameters', $backupParameters);
 			}
 			return $content;
 		};

@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Form\Wizard\Suggest;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Suggest
@@ -37,21 +38,23 @@ class SuggestViewHelper extends AbstractWizardViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Suggest
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Suggest $component */
-		$component = $this->getPreparedComponent('Suggest');
-		$component->setTable($this->arguments['table']);
-		$component->setStoragePageUids($this->arguments['pidList']);
-		$component->setStoragePageRecursiveDepth($this->arguments['pidDepth']);
-		$component->setMinimumCharacters($this->arguments['minimumCharacters']);
-		$component->setMaxPathTitleLength($this->arguments['maxPathTitleLength']);
-		$component->setSearchWholePhrase($this->arguments['setSearchWholePhrase']);
-		$component->setSearchCondition($this->arguments['searchCondition']);
-		$component->setCssClass($this->arguments['cssClass']);
-		$component->setReceiverClass($this->arguments['receiverClass']);
-		$component->setRenderFunction($this->arguments['renderFunc']);
+		$component = static::getPreparedComponent('Suggest', $renderingContext, $arguments);
+		$component->setTable($arguments['table']);
+		$component->setStoragePageUids($arguments['pidList']);
+		$component->setStoragePageRecursiveDepth($arguments['pidDepth']);
+		$component->setMinimumCharacters($arguments['minimumCharacters']);
+		$component->setMaxPathTitleLength($arguments['maxPathTitleLength']);
+		$component->setSearchWholePhrase($arguments['setSearchWholePhrase']);
+		$component->setSearchCondition($arguments['searchCondition']);
+		$component->setCssClass($arguments['cssClass']);
+		$component->setReceiverClass($arguments['receiverClass']);
+		$component->setRenderFunction($arguments['renderFunc']);
 		return $component;
 	}
 

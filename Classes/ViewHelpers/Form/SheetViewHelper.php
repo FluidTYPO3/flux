@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm sheet ViewHelper
@@ -38,30 +39,28 @@ class SheetViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @return void
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return Sheet
 	 */
-	public function render() {
-		$form = $this->getForm();
-		if (TRUE === $form->has($this->arguments['name'])) {
-			$sheet = $form->get($this->arguments['name']);
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		$form = static::getFormFromRenderingContext($renderingContext);
+		$extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
+		if (TRUE === $form->has($arguments['name'])) {
+			$sheet = $form->get($arguments['name']);
 			// Note: this next line will -override- any variables set in any existing sheet of that name. This
 			// is expected behavior but it also affects previously added sheets.
-			$sheet->setExtensionName($this->getExtensionName());
-			$sheet->setVariables($this->arguments['variables']);
-			$this->setContainer($sheet);
+			$sheet->setExtensionName($extensionName);
+			$sheet->setVariables($arguments['variables']);
 		} else {
 			/** @var Sheet $sheet */
-			$sheet = $this->getForm()->createContainer('Sheet', $this->arguments['name'], $this->arguments['label']);
-			$sheet->setExtensionName($this->getExtensionName());
-			$sheet->setVariables($this->arguments['variables']);
-			$sheet->setDescription($this->arguments['description']);
-			$sheet->setShortDescription($this->arguments['shortDescription']);
-			$form->add($sheet);
-			$this->setContainer($sheet);
+			$sheet = $form->createContainer('Sheet', $arguments['name'], $arguments['label']);
+			$sheet->setExtensionName($extensionName);
+			$sheet->setVariables($arguments['variables']);
+			$sheet->setDescription($arguments['description']);
+			$sheet->setShortDescription($arguments['shortDescription']);
 		}
-		$this->renderChildren();
-		$this->setContainer($form);
+		return $sheet;
 	}
 
 }

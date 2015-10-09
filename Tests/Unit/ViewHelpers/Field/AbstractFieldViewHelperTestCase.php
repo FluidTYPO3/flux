@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
@@ -20,8 +21,7 @@ abstract class AbstractFieldViewHelperTestCase extends AbstractFormViewHelperTes
 	 */
 	public function createsValidFieldInterfaceComponents() {
 		$instance = $this->buildViewHelperInstance($this->defaultArguments);
-		$instance->render();
-		$component = $instance->getComponent();
+		$component = $instance->getComponent(ObjectAccess::getProperty($instance, 'renderingContext', TRUE), $this->defaultArguments, function() {});
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $component);
 	}
 

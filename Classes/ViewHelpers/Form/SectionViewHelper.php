@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm field section ViewHelper
@@ -36,20 +37,19 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 	}
 
 	/**
-	 * Render method
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
 	 * @return void
 	 */
-	public function render() {
-		$container = $this->getContainer();
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+		$container = static::getContainerFromRenderingContext($renderingContext);
 		/** @var Section $section */
-		$section = $container->createContainer('Section', $this->arguments['name'], $this->arguments['label']);
-		$section->setExtensionName($this->getExtensionName());
-		$section->setVariables($this->arguments['variables']);
-		$section->setInherit($this->arguments['inherit']);
-		$section->setInheritEmpty($this->arguments['inheritEmpty']);
-		$this->setContainer($section);
-		$this->renderChildren();
-		$this->setContainer($container);
+		$section = $container->createContainer('Section', $arguments['name'], $arguments['label']);
+		$section->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$section->setVariables($arguments['variables']);
+		$section->setInherit($arguments['inherit']);
+		$section->setInheritEmpty($arguments['inheritEmpty']);
 	}
 
 }

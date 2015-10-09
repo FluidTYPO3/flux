@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\UserFunction;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Flexform Userfunc field ViewHelper
@@ -29,15 +30,15 @@ class UserFuncViewHelper extends AbstractFieldViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return UserFunction
 	 */
-	public function getComponent($type = 'UserFunction') {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var UserFunction $user */
-		$user = $this->getPreparedComponent($type);
-		$user->setFunction($this->arguments['userFunc']);
-		$user->setArguments($this->arguments['arguments']);
+		$user = static::getPreparedComponent('UserFunction', $renderingContext, $arguments);
+		$user->setFunction($arguments['userFunc']);
+		$user->setArguments($arguments['arguments']);
 		return $user;
 	}
 

@@ -8,6 +8,9 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Field\Text;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+
 /**
  * Textarea FlexForm field ViewHelper
  *
@@ -30,16 +33,16 @@ class TextViewHelper extends AbstractFieldViewHelper {
 	}
 
 	/**
-	 * @return \FluidTYPO3\Flux\Form\Field\Text
+	 * @return Text
 	 */
-	public function getComponent() {
-		/** @var \FluidTYPO3\Flux\Form\Field\Text $text */
-		$text = $this->getPreparedComponent('Text', $this->arguments['name'], $this->arguments['label']);
-		$text->setValidate($this->arguments['validate']);
-		$text->setColumns($this->arguments['cols']);
-		$text->setRows($this->arguments['rows']);
-		$text->setDefaultExtras($this->arguments['defaultExtras']);
-		$text->setEnableRichText($this->arguments['enableRichText']);
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		/** @var Text $text */
+		$text = static::getPreparedComponent('Text', $renderingContext, $arguments);
+		$text->setValidate($arguments['validate']);
+		$text->setColumns($arguments['cols']);
+		$text->setRows($arguments['rows']);
+		$text->setDefaultExtras($arguments['defaultExtras']);
+		$text->setEnableRichText($arguments['enableRichText']);
 		return $text;
 	}
 

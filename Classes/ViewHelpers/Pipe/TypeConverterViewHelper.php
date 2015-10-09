@@ -10,7 +10,9 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\TypeConverterPipe;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Type Converter Outlet Pipe ViewHelper
@@ -37,20 +39,27 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return PipeInterface
 	 */
-	protected function preparePipeInstance() {
+	protected static function preparePipeInstance(
+		RenderingContextInterface $renderingContext,
+		array $arguments,
+		\Closure $renderChildrenClosure = NULL
+	) {
+		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var TypeConverterPipe $pipe */
-		$pipe = $this->objectManager->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\TypeConverterPipe');
-		$converter = $this->arguments['typeConverter'];
+		$pipe = $objectManager->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\TypeConverterPipe');
+		$converter = $arguments['typeConverter'];
 		if (FALSE === $converter instanceof TypeConverterInterface) {
 			if (FALSE === class_exists($converter)) {
 				$converter = 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\' . $converter . 'Converter';
 			}
-			$converter = $this->objectManager->get($converter);
+			$converter = $objectManager->get($converter);
 		}
 		$pipe->setTypeConverter($converter);
-		$pipe->setTargetType($this->arguments['targetType']);
+		$pipe->setTargetType($arguments['targetType']);
 		return $pipe;
 	}
 

@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 use FluidTYPO3\Flux\Form\Field\ControllerActions;
 use TYPO3\CMS\Extbase\Mvc\Request;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * ControllerActions ViewHelper
@@ -97,23 +99,25 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return ControllerActions
 	 * @throws \RuntimeException
 	 */
-	public function getComponent() {
-		$extensionName = $this->arguments['controllerExtensionName'];
-		$pluginName = $this->arguments['pluginName'];
-		$actions = $this->arguments['actions'];
-		$controllerName = $this->arguments['controllerName'];
-		$separator = $this->arguments['separator'];
-		$controllerContext = $this->renderingContext->getControllerContext();
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		$extensionName = $arguments['controllerExtensionName'];
+		$pluginName = $arguments['pluginName'];
+		$actions = $arguments['actions'];
+		$controllerName = $arguments['controllerName'];
+		$separator = $arguments['separator'];
+		$controllerContext = $renderingContext->getControllerContext();
 		if (TRUE === $actions instanceof \Traversable) {
 			$actions = iterator_to_array($actions);
 		}
 		if (NULL !== $controllerContext) {
 			if (TRUE === empty($extensionName)) {
 				$request = $controllerContext->getRequest();
-				$extensionName = $this->getFullExtensionNameFromRequest($request);
+				$extensionName = static::getFullExtensionNameFromRequest($request);
 			}
 			if (TRUE === empty($pluginName)) {
 				$pluginName = $controllerContext->getRequest()->getPluginName();
@@ -124,18 +128,18 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 				'flux:field.controllerActions. None were found and none were detected from the ControllerContext Request.', 1346514748);
 		}
 		/** @var ControllerActions $component */
-		$component = $this->getPreparedComponent('ControllerActions');
-		$component->setExtensionName($this->getExtensionName());
-		$component->setItems($this->arguments['items']);
+		$component = static::getPreparedComponent('ControllerActions', $renderingContext, $arguments);
+		$component->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$component->setItems($arguments['items']);
 		$component->setControllerExtensionName($extensionName);
 		$component->setPluginName($pluginName);
 		$component->setControllerName($controllerName);
 		$component->setActions($actions);
-		$component->setExcludeActions($this->arguments['excludeActions']);
-		$component->setPrefixOnRequiredArguments($this->arguments['prefixOnRequiredArguments']);
-		$component->setDisableLocalLanguageLabels($this->arguments['disableLocalLanguageLabels']);
-		$component->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
-		$component->setSubActions($this->arguments['subActions']);
+		$component->setExcludeActions($arguments['excludeActions']);
+		$component->setPrefixOnRequiredArguments($arguments['prefixOnRequiredArguments']);
+		$component->setDisableLocalLanguageLabels($arguments['disableLocalLanguageLabels']);
+		$component->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
+		$component->setSubActions($arguments['subActions']);
 		if (FALSE === empty($separator)) {
 			$component->setSeparator($separator);
 		}
@@ -146,7 +150,7 @@ class ControllerActionsViewHelper extends SelectViewHelper {
 	 * @param Request $request
 	 * @return string
 	 */
-	protected function getFullExtensionNameFromRequest(Request $request) {
+	protected static function getFullExtensionNameFromRequest(Request $request) {
 		$vendorName = NULL;
 		if (TRUE === method_exists($request, 'getControllerVendorName')) {
 			$vendorName = $request->getControllerVendorName();

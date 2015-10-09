@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm configuration container ViewHelper
@@ -43,42 +44,46 @@ class FormViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
-	 * Render method
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
 	 * @return void
 	 */
-	public function render() {
-		$extensionName = $this->getExtensionName();
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+		$templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+		$extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
 		$form = Form::create();
 		$container = $form->last();
 		// configure Form instance
-		$form->setId($this->arguments['id']);
-		$form->setName($this->arguments['id']);
-		$form->setLabel($this->arguments['label']);
-		$form->setDescription($this->arguments['description']);
-		$form->setEnabled($this->arguments['enabled']);
-		$form->setCompact($this->arguments['compact']);
+		$form->setId($arguments['id']);
+		$form->setName($arguments['id']);
+		$form->setLabel($arguments['label']);
+		$form->setDescription($arguments['description']);
+		$form->setEnabled($arguments['enabled']);
+		$form->setCompact($arguments['compact']);
 		$form->setExtensionName($extensionName);
-		$form->setLocalLanguageFileRelativePath($this->arguments['localLanguageFileRelativePath']);
-		$form->setVariables((array) $this->arguments['variables']);
-		$form->setOptions((array) $this->arguments['options']);
+		$form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
+		$form->setVariables((array) $arguments['variables']);
+		$form->setOptions((array) $arguments['options']);
 		if (FALSE === $form->hasOption(Form::OPTION_ICON)) {
-			$form->setOption(Form::OPTION_ICON, $this->arguments['icon']);
+			$form->setOption(Form::OPTION_ICON, $arguments['icon']);
 		}
 		if (FALSE === $form->hasOption(Form::OPTION_GROUP)) {
-			$form->setOption(Form::OPTION_GROUP, $this->arguments['wizardTab']);
+			$form->setOption(Form::OPTION_GROUP, $arguments['wizardTab']);
 		}
 
 		// rendering child nodes with Form's last sheet as active container
-		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_FORM, $form);
-		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
-		$this->templateVariableContainer->add(self::SCOPE_VARIABLE_FORM, $form);
+		$viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
+		$viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
+		$templateVariableContainer->add(static::SCOPE_VARIABLE_FORM, $form);
 
-		$this->setContainer($container);
-		$this->renderChildren();
+		static::setContainerInRenderingContext($renderingContext, $container);
+		$renderChildrenClosure();
 
-		$this->viewHelperVariableContainer->remove(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
-		$this->viewHelperVariableContainer->remove(self::SCOPE, self::SCOPE_VARIABLE_CONTAINER);
-		$this->templateVariableContainer->remove(self::SCOPE_VARIABLE_CONTAINER);
+		$viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
+		$viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
+		$templateVariableContainer->remove(static::SCOPE_VARIABLE_CONTAINER);
 	}
 
 }

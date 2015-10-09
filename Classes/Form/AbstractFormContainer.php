@@ -42,39 +42,16 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 	}
 
 	/**
+	 * @param string $namespace
 	 * @param string $type
 	 * @param string $name
 	 * @param null $label
-	 * @return FieldInterface
+	 * @return FormInterface
 	 */
-	public function createField($type, $name, $label = NULL) {
-		$field = parent::createField($type, $name, $label);
-		$this->add($field);
-		return $field;
-	}
-
-	/**
-	 * @param string $type
-	 * @param string $name
-	 * @param null $label
-	 * @return ContainerInterface
-	 */
-	public function createContainer($type, $name, $label = NULL) {
-		$container = parent::createContainer($type, $name, $label);
-		$this->add($container);
-		return $container;
-	}
-
-	/**
-	 * @param string $type
-	 * @param string $name
-	 * @param null $label
-	 * @return WizardInterface
-	 */
-	public function createWizard($type, $name, $label = NULL) {
-		$wizard = parent::createWizard($type, $name, $label);
-		$this->add($wizard);
-		return $wizard;
+	public function createComponent($namespace, $type, $name, $label = NULL) {
+		$component = parent::createComponent($namespace, $type, $name, $label);
+		$this->add($component);
+		return $component;
 	}
 
 	/**

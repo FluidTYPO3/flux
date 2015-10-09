@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Email Outlet Pipe ViewHelper
@@ -33,18 +35,25 @@ class EmailViewHelper extends AbstractPipeViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return PipeInterface
 	 */
-	protected function preparePipeInstance() {
-		$body = $this->arguments['body'];
-		if (TRUE === empty($body)) {
-			$body = $this->renderChildren();
+	protected static function preparePipeInstance(
+		RenderingContextInterface $renderingContext,
+		array $arguments,
+		\Closure $renderChildrenClosure = NULL
+	) {
+		$body = $arguments['body'];
+		if (TRUE === empty($body) && $renderChildrenClosure instanceof \Closure) {
+			$body = $renderChildrenClosure();
 		}
 		/** @var EmailPipe $pipe */
-		$pipe = $this->objectManager->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\EmailPipe');
-		$pipe->setSubject($this->arguments['subject']);
-		$pipe->setSender($this->arguments['sender']);
-		$pipe->setRecipient($this->arguments['recipient']);
+		$pipe = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+			->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\EmailPipe');
+		$pipe->setSubject($arguments['subject']);
+		$pipe->setSender($arguments['sender']);
+		$pipe->setRecipient($arguments['recipient']);
 		$pipe->setBody($body);
 		return $pipe;
 	}

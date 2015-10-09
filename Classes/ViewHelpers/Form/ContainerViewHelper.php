@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form\Container\Container;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * ### FlexForm Field Container element
@@ -43,19 +44,16 @@ class ContainerViewHelper extends AbstractFieldViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @return void
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return Container
 	 */
-	public function render() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Container $container */
-		$container = $this->getForm()->createContainer('Container', $this->arguments['name'], $this->arguments['label']);
-		$container->setExtensionName($this->getExtensionName());
-		$container->setVariables($this->arguments['variables']);
-		$existingContainer = $this->getContainer();
-		$existingContainer->add($container);
-		$this->setContainer($container);
-		$this->renderChildren();
-		$this->setContainer($existingContainer);
+		$container = static::getFormFromRenderingContext($renderingContext)->createContainer('Container', $arguments['name'], $arguments['label']);
+		$container->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$container->setVariables($arguments['variables']);
+		return $container;
 	}
 
 }

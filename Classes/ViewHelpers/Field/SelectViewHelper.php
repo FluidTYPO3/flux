@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\Select;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Select-type FlexForm field ViewHelper
@@ -29,13 +30,15 @@ class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Select
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Select $component */
-		$component = $this->getPreparedComponent('Select');
-		$component->setItems($this->arguments['items']);
-		$component->setEmptyOption($this->arguments['emptyOption']);
+		$component = static::getPreparedComponent('Select', $renderingContext, $arguments);
+		$component->setItems($arguments['items']);
+		$component->setEmptyOption($arguments['emptyOption']);
 		return $component;
 	}
 

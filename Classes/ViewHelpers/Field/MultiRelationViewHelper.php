@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\RelationFieldInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Multi-table-relation FlexForm field ViewHelper
@@ -19,12 +20,12 @@ use FluidTYPO3\Flux\Form\RelationFieldInterface;
 class MultiRelationViewHelper extends AbstractRelationFieldViewHelper {
 
 	/**
-	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return RelationFieldInterface
 	 */
-	public function getComponent($type = 'MultiRelation') {
-		$component = $this->getPreparedComponent($type);
-		return $component;
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		return static::getPreparedComponent('MultiRelation', $renderingContext, $arguments);
 	}
 
 }

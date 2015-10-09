@@ -9,12 +9,37 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * @package Flux
  */
 abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase {
+
+	/**
+	 * @return void
+	 */
+	public function setUp() {
+		$this->viewHelperVariableContainer = $this->getMock(
+			'TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer',
+			array('exists', 'get', 'add')
+		);
+		$this->templateVariableContainer = $this->getMock(
+			'TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer',
+			array('exists', 'get', 'add')
+		);
+		$this->renderingContext = $this->getMock(
+			'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface',
+			array('getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext')
+		);
+		$this->renderingContext->expects($this->any())
+			->method('getTemplateVariableContainer')
+			->willReturn($this->templateVariableContainer);
+		$this->renderingContext->expects($this->any())
+			->method('getViewHelperVariableContainer')
+			->willReturn($this->viewHelperVariableContainer);
+	}
 
 	/**
 	 * @test
@@ -40,9 +65,10 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 	public function canGetFormInstanceFromTemplateVariables() {
 		$form = Form::create();
 		$instance = $this->createMockedInstanceForVariableContainerTests();
-		ObjectAccess::getProperty($instance, 'viewHelperVariableContainer', TRUE)->expects($this->any())->method('exists')->will($this->returnValue(FALSE));
-		ObjectAccess::getProperty($instance, 'templateVariableContainer', TRUE)->expects($this->any())->method('exists')->will($this->returnValue(TRUE));
-		ObjectAccess::getProperty($instance, 'templateVariableContainer', TRUE)->expects($this->any())->method('get')->will($this->returnValue($form));
+		$instance->setRenderingcontext($this->renderingContext);
+		$this->viewHelperVariableContainer->expects($this->any())->method('exists')->will($this->returnValue(FALSE));
+		$this->templateVariableContainer->expects($this->any())->method('exists')->will($this->returnValue(TRUE));
+		$this->templateVariableContainer->expects($this->any())->method('get')->will($this->returnValue($form));
 		$output = $this->callInaccessibleMethod($instance, 'getForm');
 		$this->assertSame($form, $output);
 	}
@@ -53,9 +79,9 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 	public function canGetContainerInstanceFromTemplateVariables() {
 		$sheet = Form\Container\Sheet::create();
 		$instance = $this->createMockedInstanceForVariableContainerTests();
-		ObjectAccess::getProperty($instance, 'viewHelperVariableContainer', TRUE)->expects($this->any())->method('exists')->will($this->returnValue(FALSE));
-		ObjectAccess::getProperty($instance, 'templateVariableContainer', TRUE)->expects($this->any())->method('exists')->will($this->returnValue(TRUE));
-		ObjectAccess::getProperty($instance, 'templateVariableContainer', TRUE)->expects($this->any())->method('get')->will($this->returnValue($sheet));
+		$this->viewHelperVariableContainer->expects($this->any())->method('exists')->will($this->returnValue(FALSE));
+		$this->templateVariableContainer->expects($this->any())->method('exists')->will($this->returnValue(TRUE));
+		$this->templateVariableContainer->expects($this->any())->method('get')->will($this->returnValue($sheet));
 		$output = $this->callInaccessibleMethod($instance, 'getContainer');
 		$this->assertSame($sheet, $output);
 	}
@@ -65,11 +91,21 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 	 */
 	public function canGetGridWhenItDoesNotExistButStorageDoes() {
 		$form = Form::create();
-		$instance = $this->createMockedInstanceForVariableContainerTests(array('getForm'));
-		$instance->expects($this->once())->method('getForm')->will($this->returnValue($form));
-		ObjectAccess::getProperty($instance, 'viewHelperVariableContainer', TRUE)->expects($this->any())->method('exists')->will($this->returnValue(TRUE));
-		ObjectAccess::getProperty($instance, 'viewHelperVariableContainer', TRUE)->expects($this->any())->method('get')->will($this->returnValue(array()));
-		$output = $this->callInaccessibleMethod($instance, 'getGrid');
+		$instance = $this->createMockedInstanceForVariableContainerTests();
+		$this->templateVariableContainer->expects($this->any())->method('exists')->willReturn(FALSE);
+		$this->viewHelperVariableContainer->expects($this->at(0))->method('exists')
+			->with(AbstractFormViewHelper::SCOPE, AbstractFormViewHelper::SCOPE_VARIABLE_FORM)
+			->will($this->returnValue(TRUE));
+		$this->viewHelperVariableContainer->expects($this->at(1))->method('get')
+			->with(AbstractFormViewHelper::SCOPE, AbstractFormViewHelper::SCOPE_VARIABLE_FORM)
+			->will($this->returnValue($form));
+		$this->viewHelperVariableContainer->expects($this->at(2))->method('exists')
+			->with(AbstractFormViewHelper::SCOPE, AbstractFormViewHelper::SCOPE_VARIABLE_GRIDS)
+			->will($this->returnValue(TRUE));
+		$this->viewHelperVariableContainer->expects($this->at(3))->method('get')
+			->with(AbstractFormViewHelper::SCOPE, AbstractFormViewHelper::SCOPE_VARIABLE_GRIDS)
+			->will($this->returnValue(array()));
+		$output = $this->callInaccessibleMethod($instance, 'getGrid', 'test');
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $output);
 	}
 
@@ -85,8 +121,8 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 		);
 		$instance = $this->createMockedInstanceForVariableContainerTests(array('getForm'));
 		$instance->expects($this->any())->method('getForm')->will($this->returnValue($form));
-		ObjectAccess::getProperty($instance, 'viewHelperVariableContainer', TRUE)->expects($this->any())->method('exists')->will($this->returnValue(TRUE));
-		ObjectAccess::getProperty($instance, 'viewHelperVariableContainer', TRUE)->expects($this->any())->method('get')->will($this->returnValue($grids));
+		$this->viewHelperVariableContainer->expects($this->any())->method('exists')->will($this->returnValue(TRUE));
+		$this->viewHelperVariableContainer->expects($this->any())->method('get')->will($this->returnValue($grids));
 		$output = $this->callInaccessibleMethod($instance, 'getGrid', 'test');
 		$this->assertSame($grid, $output);
 	}
@@ -97,10 +133,16 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 	public function canGetGridWhenItDoesNotExistAndStorageDoesNotExist() {
 		$form = Form::create();
 		$instance = $this->createMockedInstanceForVariableContainerTests();
-		ObjectAccess::getProperty($instance, 'viewHelperVariableContainer', TRUE)->expects($this->any())->method('exists')->will($this->returnValue(FALSE));
-		ObjectAccess::getProperty($instance, 'templateVariableContainer', TRUE)->expects($this->any())->method('exists')->will($this->returnValue(TRUE));
-		ObjectAccess::getProperty($instance, 'templateVariableContainer', TRUE)->expects($this->any())->method('get')->will($this->returnValue($form));
-		$output = $this->callInaccessibleMethod($instance, 'getGrid');
+		$this->viewHelperVariableContainer->expects($this->at(0))->method('exists')
+			->with(AbstractFormViewHelper::SCOPE, AbstractFormViewHelper::SCOPE_VARIABLE_FORM)
+			->will($this->returnValue(TRUE));
+		$this->viewHelperVariableContainer->expects($this->at(1))->method('get')
+			->with(AbstractFormViewHelper::SCOPE, AbstractFormViewHelper::SCOPE_VARIABLE_FORM)
+			->will($this->returnValue($form));
+		$this->viewHelperVariableContainer->expects($this->at(2))->method('exists')
+			->with(AbstractFormViewHelper::SCOPE, AbstractFormViewHelper::SCOPE_VARIABLE_GRIDS)
+			->will($this->returnValue(FALSE));
+		$output = $this->callInaccessibleMethod($instance, 'getGrid', 'test');
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $output);
 	}
 
@@ -109,12 +151,11 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 	 * @return object
 	 */
 	protected function createMockedInstanceForVariableContainerTests($methods = array()) {
+		if (TRUE === empty($methods)) {
+			$methods[] = 'dummy';
+		}
 		$instance = $this->getMock($this->getViewHelperClassName(), $methods);
-		$mockViewHelperVariableContainer = $this->getMock('TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer', array('exists', 'get', 'add'));
-		$mockTemplateVariableContainer = $this->getMock('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer', array('exists', 'get', 'add'));
-		ObjectAccess::setProperty($instance, 'viewHelperVariableContainer', $mockViewHelperVariableContainer, TRUE);
-		ObjectAccess::setProperty($instance, 'templateVariableContainer', $mockTemplateVariableContainer, TRUE);
-		ObjectAccess::setProperty($instance, 'objectManager', $this->objectManager, TRUE);
+		$instance->setRenderingContext($this->renderingContext);
 		return $instance;
 	}
 

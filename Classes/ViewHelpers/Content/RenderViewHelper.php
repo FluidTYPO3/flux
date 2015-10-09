@@ -1,6 +1,8 @@
 <?php
 namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
  *
@@ -17,14 +19,16 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
  * @subpackage ViewHelpers/Flexform
  */
 class RenderViewHelper extends GetViewHelper {
-
 	/**
-	 * Render
+	 * Default implementation for use in compiled templates
 	 *
-	 * @return string
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
+	 * @return mixed
 	 */
-	public function render() {
-		$content = parent::render();
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+		$content = parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
 		if (TRUE === is_array($content)) {
 			return implode(LF, $content);
 		}

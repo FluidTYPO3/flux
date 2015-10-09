@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Controller Action Outlet Pipe ViewHelper
@@ -32,20 +34,29 @@ class ControllerViewHelper extends AbstractPipeViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
 	 * @return PipeInterface
 	 */
-	protected function preparePipeInstance() {
-		$extensionName = $this->arguments['extensionName'];
-		$controller = $this->arguments['controller'];
+	protected static function preparePipeInstance(
+		RenderingContextInterface $renderingContext,
+		array $arguments,
+		\Closure $renderChildrenClosure = NULL
+	) {
+		$extensionName = $arguments['extensionName'];
+		$controller = $arguments['controller'];
+		$controllerContext = $renderingContext->getControllerContext();
 		if (TRUE === empty($extensionName)) {
-			$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
+			$extensionName = $controllerContext->getRequest()->getControllerExtensionName();
 		}
 		if (TRUE === empty($controller)) {
-			$controller = $this->controllerContext->getRequest()->getControllerObjectName();
+			$controller = $controllerContext->getRequest()->getControllerObjectName();
 		}
 		/** @var ControllerPipe $pipe */
-		$pipe = $this->objectManager->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\ControllerPipe');
-		$pipe->setAction($this->arguments['action']);
+		$pipe = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+			->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\ControllerPipe');
+		$pipe->setAction($arguments['action']);
 		$pipe->setController($controller);
 		$pipe->setExtensionName($extensionName);
 		return $pipe;
