@@ -47,7 +47,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
 	/**
 	 * @var string
 	 */
-	protected $renderMode = 'default';
+	protected $renderMode = NULL;
 
 	/**
 	 * @param string $type
