@@ -22,7 +22,7 @@ class IconViewHelper extends OptionViewHelper {
 	/**
 	 * @var string
 	 */
-	protected $option = Form::OPTION_ICON;
+	public static $option = Form::OPTION_ICON;
 
 	/**
 	 * Initialize arguments

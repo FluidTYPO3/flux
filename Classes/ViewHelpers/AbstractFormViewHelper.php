@@ -122,7 +122,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
 	 * @throws InvalidVariableException
 	 * @return FormInterface
 	 */
-	protected static function getFormFromRenderingContext(RenderingContextInterface $renderingContext) {
+	public static function getFormFromRenderingContext(RenderingContextInterface $renderingContext) {
 		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
 		$templateVariableContainer = $renderingContext->getTemplateVariableContainer();
 		if (TRUE === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_FORM)) {

@@ -22,7 +22,7 @@ class GroupViewHelper extends OptionViewHelper {
 	/**
 	 * @var string
 	 */
-	protected $option = Form::OPTION_GROUP;
+	public static $option = Form::OPTION_GROUP;
 
 	/**
 	 * Initialize arguments
