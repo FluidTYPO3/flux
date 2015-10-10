@@ -36,19 +36,33 @@ class PathUtility {
 	 * @return mixed
 	 */
 	public static function translatePath($path) {
-		if (is_array($path) == FALSE) {
-			$path = (0 === strpos($path, '/') ? $path : GeneralUtility::getFileAbsFileName($path));
+		if (is_string($path)) {
+			$path = GeneralUtility::isAbsPath($path) ? $path : GeneralUtility::getFileAbsFileName($path);
 			if (is_dir($path)) {
 				$path = realpath($path) . '/';
 			}
 			$path = GeneralUtility::fixWindowsFilePath($path);
-		} else {
-			foreach ($path as $key => $subPath) {
-				if (TRUE === in_array($key, self::$knownPathNames)) {
-					$path[$key] = self::translatePath($subPath);
+		} elseif (is_array($path)) {
+			$templatePaths = self::getTemplatePathFields($path);
+			foreach ($templatePaths as $field => $subpath) {
+				if (is_array($subpath)) {
+					$path[$field] = array_map(array(__CLASS__, __METHOD__), $subpath);
+				} else {
+					$path[$field] = self::translatePath($subpath);
 				}
 			}
 		}
 		return $path;
+	}
+
+	/**
+	 * Get fields from view configuration that are template paths
+	 *
+	 * @param array $viewConfiguration
+	 * @return array
+	 */
+	public static function getTemplatePathFields(array $viewConfiguration) {
+		$knownPathKeys = array_fill_keys(self::$knownPathNames, NULL);
+		return array_intersect_key($viewConfiguration, $knownPathKeys);
 	}
 }
