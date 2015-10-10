@@ -1,5 +1,26 @@
 # Flux Change log
 
+7.2.4 - Upcoming
+----------------
+
+- ViewHelpers added for Form options `sorting` and `translation` allowing both to be documented by ViewHelper references
+  - https://github.com/FluidTYPO3/flux/commit/aa84fe1a42cd13e57eb65796c39f535ea21d04f4
+- CompatibilityRegistry created with the purpose of handling version-dependent configuration, feature flags and class substitution
+  - https://github.com/FluidTYPO3/flux/commit/cc3f77f93a3b990b34387557bab32bae380d4f03
+  - https://github.com/FluidTYPO3/flux/commit/a7c6cfbf4f557f3655e6fd51aeb814bb96be9aa0
+- Bugfix for vendor name not being used when retrieved from controller context (resulting in controller class not being resolved)
+  - https://github.com/FluidTYPO3/flux/commit/a00e81b633402735dc681430cdfa6718e4df8dbd
+- Every ViewHelper is now compilable, for a significant performance boost in sites using many instances of the same template
+  - https://github.com/FluidTYPO3/flux/commit/fdcb40ffd8145f9eb30d25017973b430ada814ae
+  - https://github.com/FluidTYPO3/flux/commit/5cf43c76d2659c2138bed321e0c472efcda3bfdc
+  - https://github.com/FluidTYPO3/flux/commit/089bab4c591f84056ac1c05f0ef9b1567030c726
+- Bugfix for localisation behavior when multiple languages exist
+  - https://github.com/FluidTYPO3/flux/commit/1bd80f59b92bdcaffc771db3ca0d12863a7e3a80
+- TYPO3 7.5 compatibility improvements
+  - https://github.com/FluidTYPO3/flux/commit/aef19610862e3b74b184bf8909bb8b715c171b7d
+  - https://github.com/FluidTYPO3/flux/commit/43912a3eeb3119bd1387266887b7bc998727a086
+  - https://github.com/FluidTYPO3/flux/commit/1fcc911683a32010b8e830b7464db0c0bb652832
+
 7.2.3 - 2015-09-30
 ------------------
 
