@@ -103,7 +103,9 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
 		}
 		$controllerContext = $renderingContext->getControllerContext();
 		if (NULL !== $controllerContext) {
-			return $controllerContext->getRequest()->getControllerExtensionName();
+			$controllerExtensionName = $controllerContext->getRequest()->getControllerExtensionName();
+			$controllerVendorName = $controllerContext->getRequest()->getControllerVendorName();
+			return (FALSE === empty($controllerVendorName) ? $controllerVendorName . '.' : '') . $controllerExtensionName;
 		}
 		return 'FluidTYPO3.Flux';
 	}
