@@ -28,7 +28,7 @@ use TYPO3\CMS\Fluid\Core\Widget\WidgetContext;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
- * @package Flux
+ * AbstractViewHelperTestCase
  */
 abstract class AbstractViewHelperTestCase extends AbstractTestCase {
 

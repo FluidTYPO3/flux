@@ -16,9 +16,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Fluid Template preview renderer for TYPO3 CMS Version < 7.1
- *
- * @package Flux
- * @subpackage Backend
  */
 class LegacyPreview extends Preview {
 

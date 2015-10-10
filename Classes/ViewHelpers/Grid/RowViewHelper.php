@@ -15,9 +15,6 @@ use FluidTYPO3\Flux\Form\Container\Row;
 
 /**
  * Flexform Grid Row ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Grid
  */
 class RowViewHelper extends AbstractFormViewHelper {
 

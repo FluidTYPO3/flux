@@ -13,9 +13,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Sets an option in the Form instance
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class VariableViewHelper extends AbstractFormViewHelper {
 

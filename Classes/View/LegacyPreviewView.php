@@ -7,11 +7,12 @@ namespace FluidTYPO3\Flux\View;
  * For the full copyright and license information, please read the
  * LICENSE.md file that was distributed with this source code.
  */
+
 use FluidTYPO3\Flux\Form\Container\Column;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 
 /**
- * @package Flux
+ * LegacyPreviewView
  */
 class LegacyPreviewView extends PreviewView {
 

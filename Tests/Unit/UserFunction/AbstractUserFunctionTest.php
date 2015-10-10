@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @package Flux
+ * AbstractUserFunctionTest
  */
 abstract class AbstractUserFunctionTest extends AbstractTestCase {
 

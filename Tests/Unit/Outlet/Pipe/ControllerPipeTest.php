@@ -14,7 +14,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\Argument;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * ControllerPipeTest
  */
 class ControllerPipeTest extends AbstractPipeTestCase {
 

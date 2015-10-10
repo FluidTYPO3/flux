@@ -17,9 +17,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * Use this inside flux:form.section to name and divide the fields
  * into individual objects that can be inserted into the section.
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class ObjectViewHelper extends AbstractFormViewHelper {
 

@@ -13,9 +13,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Input FlexForm field ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class InputViewHelper extends AbstractFieldViewHelper {
 

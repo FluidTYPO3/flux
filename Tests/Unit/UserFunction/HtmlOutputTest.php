@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\UserFunction;
 use TYPO3\CMS\Backend\Form\FormEngine;
 
 /**
- * @package Flux
+ * HtmlOutputTest
  */
 class HtmlOutputTest extends AbstractUserFunctionTest {
 

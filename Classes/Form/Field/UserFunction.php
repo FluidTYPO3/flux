@@ -12,8 +12,7 @@ use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * UserFunction
  */
 class UserFunction extends AbstractFormField implements FieldInterface {
 

@@ -13,9 +13,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Multi-table-relation FlexForm field ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class MultiRelationViewHelper extends AbstractRelationFieldViewHelper {
 

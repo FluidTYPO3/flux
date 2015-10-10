@@ -13,9 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
 
 /**
- * Transforms data according to settings defined in the Form instance.
- *
- * @package FluidTYPO3\Flux
+ * FormDataTransformerTest
  */
 class FormDataTransformerTest extends AbstractTestCase {
 

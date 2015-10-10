@@ -14,9 +14,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Flexform Grid Column ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Grid
  */
 class ColumnViewHelper extends AbstractFormViewHelper {
 

@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  */
 
 /**
- * @package Flux
+ * InvalidConfigurationProvider
  */
 class InvalidConfigurationProvider {
 

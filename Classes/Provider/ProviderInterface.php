@@ -15,8 +15,7 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 
 /**
- * @package Flux
- * @subpackage Provider
+ * ProviderInterface
  */
 interface ProviderInterface {
 

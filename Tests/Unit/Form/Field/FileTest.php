@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 use FluidTYPO3\Flux\Form;
 
 /**
- * @package Flux
+ * FileTest
  */
 class FileTest extends AbstractFieldTest {
 

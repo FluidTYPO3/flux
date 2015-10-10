@@ -20,7 +20,7 @@ use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 
 /**
- * @package Flux
+ * MiscellaneousUtilityTest
  */
 class MiscellaneousUtilityTest extends AbstractTestCase {
 

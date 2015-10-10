@@ -15,7 +15,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 
 /**
- * @package Flux
+ * WizardItemsHookSubscriberTest
  */
 class WizardItemsHookSubscriberTest extends AbstractTestCase {
 

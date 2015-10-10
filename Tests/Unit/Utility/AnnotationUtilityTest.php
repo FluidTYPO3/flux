@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 
 /**
- * @package Flux
+ * AnnotationUtilityTest
  */
 class AnnotationUtilityTest extends AbstractTestCase {
 

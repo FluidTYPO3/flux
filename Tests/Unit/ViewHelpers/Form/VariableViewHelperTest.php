@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
- * @package Flux
+ * VariableViewHelperTest
  */
 class VariableViewHelperTest extends AbstractViewHelperTestCase {
 

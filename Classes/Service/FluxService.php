@@ -39,9 +39,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
  * Flux FlexForm integration Service
  *
  * Main API Service for interacting with Flux-based FlexForms
- *
- * @package Flux
- * @subpackage Service
  */
 class FluxService implements SingletonInterface {
 

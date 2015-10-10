@@ -17,8 +17,6 @@ use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 
 /**
  * Transforms data according to settings defined in the Form instance.
- *
- * @package FluidTYPO3\Flux
  */
 class FormDataTransformer {
 

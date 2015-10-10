@@ -9,8 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 /**
- * @package Flux
- * @subpackage Form
+ * MultiValueFieldInterface
  */
 interface MultiValueFieldInterface extends FieldInterface {
 

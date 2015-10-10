@@ -27,11 +27,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * 	{v:page.resources.fal(field: 'settings.files')
  * 		-> v:iterator.first()
  * 		-> v:variable.set(name: 'settings.files')}
- *
- * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
- * @author Johannes Pieper <pieper@dlrg.de> DLRG e.V.
- * @package Flux
- * @subpackage ViewHelpers/Field/Inline
  */
 class FalViewHelper extends AbstractInlineFieldViewHelper {
 

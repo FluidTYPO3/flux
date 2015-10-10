@@ -22,9 +22,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * The field grouping can be hidden or completely removed. In this regard
  * this element is a simpler version of the Section and Object logic.
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class ContainerViewHelper extends AbstractFieldViewHelper {
 

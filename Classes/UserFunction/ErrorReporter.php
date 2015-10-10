@@ -10,9 +10,6 @@ namespace FluidTYPO3\Flux\UserFunction;
 
 /**
  * Renders an exception error message in a nice way
- *
- * @package	Flux
- * @subpackage UserFunction
  */
 class ErrorReporter {
 

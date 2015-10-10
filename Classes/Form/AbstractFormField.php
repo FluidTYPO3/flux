@@ -13,8 +13,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
- * @package Flux
- * @subpackage Form
+ * AbstractFormField
  */
 abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface {
 

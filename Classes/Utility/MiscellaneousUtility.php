@@ -16,9 +16,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * MiscellaneousUtility Utility
- *
- * @package Flux
- * @subpackage Utility
  */
 class MiscellaneousUtility {
 

@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * AbstractWizardViewHelperTestCase
  */
 abstract class AbstractWizardViewHelperTestCase extends AbstractFormViewHelperTestCase {
 

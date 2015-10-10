@@ -15,8 +15,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
- * @subpackage Form\Container
+ * Section
  */
 class Section extends AbstractFormContainer implements ContainerInterface {
 

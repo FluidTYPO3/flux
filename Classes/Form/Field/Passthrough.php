@@ -12,8 +12,7 @@ use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * Passthrough
  */
 class Passthrough extends AbstractFormField implements FieldInterface {
 

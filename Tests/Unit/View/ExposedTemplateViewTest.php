@@ -20,7 +20,7 @@ use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * ExposedTemplateViewTest
  */
 class ExposedTemplateViewTest extends AbstractTestCase {
 

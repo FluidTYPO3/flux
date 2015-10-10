@@ -24,9 +24,6 @@ use TYPO3\CMS\Fluid\View\TemplateView;
 /**
  * ExposedTemplateView. Allows access to registered template and viewhelper
  * variables from a Fluid template.
- *
- * @package Flux
- * @subpackage MVC/View
  */
 class ExposedTemplateView extends TemplateView implements ViewInterface {
 

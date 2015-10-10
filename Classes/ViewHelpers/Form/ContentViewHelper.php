@@ -52,9 +52,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *     <!-- No use of flux:content is possible after this point -->
  * </flux:form>
  * ```
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class ContentViewHelper extends AbstractFormViewHelper {
 

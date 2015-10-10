@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit;
  */
 
 /**
- * @package Flux
+ * AbstractExceptionTestCase
  */
 abstract class AbstractExceptionTestCase extends AbstractTestCase {
 

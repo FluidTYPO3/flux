@@ -18,9 +18,6 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 /**
  * DEPRECATED
  * Grid Widget for rendering a grid in previews of BE elements
- *
- * @package Flux
- * @subpackage ViewHelpers/Widget
  */
 class GridViewHelper extends AbstractViewHelper implements CompilableInterface {
 

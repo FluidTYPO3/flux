@@ -18,9 +18,6 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Base class for all FlexForm related ViewHelpers
- *
- * @package Flux
- * @subpackage ViewHelpers
  */
 abstract class AbstractFormViewHelper extends AbstractViewHelper implements CompilableInterface {
 

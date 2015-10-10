@@ -15,7 +15,7 @@ use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
 use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 
 /**
- * @package Flux
+ * CustomViewHelperTest
  */
 class CustomViewHelperTest extends AbstractFieldViewHelperTestCase {
 

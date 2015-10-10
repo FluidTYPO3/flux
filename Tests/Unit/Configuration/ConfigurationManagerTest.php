@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package FluidTYPO3\Flux
+ * ConfigurationManagerTest
  */
 class ConfigurationManagerTest extends AbstractTestCase {
 

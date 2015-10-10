@@ -18,9 +18,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * FlashMessage Outlet Pipe ViewHelper
  *
  * Adds a FlashMessagePipe to the Form's Outlet
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class FlashMessageViewHelper extends AbstractPipeViewHelper {
 

@@ -17,8 +17,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  * Provider Resolver
  *
  * Returns one or more Provider instances based on parameters.
- *
- * @package FluidTYPO3\Flux
  */
 class ProviderResolver implements SingletonInterface {
 

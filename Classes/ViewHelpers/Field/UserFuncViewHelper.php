@@ -13,9 +13,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Flexform Userfunc field ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class UserFuncViewHelper extends AbstractFieldViewHelper {
 

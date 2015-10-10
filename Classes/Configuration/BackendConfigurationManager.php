@@ -15,9 +15,6 @@ use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager as CoreBackendCo
 
 /**
  * Flux ConfigurationManager implementation: Backend
- *
- * @package Flux
- * @subpackage Configuraion
  */
 class BackendConfigurationManager extends CoreBackendConfigurationManager implements SingletonInterface {
 

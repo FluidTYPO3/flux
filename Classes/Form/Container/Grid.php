@@ -12,8 +12,7 @@ use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 
 /**
- * @package Flux
- * @subpackage Form\Container
+ * Grid
  */
 class Grid extends AbstractFormContainer implements ContainerInterface {
 

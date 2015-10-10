@@ -11,8 +11,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * Text
  */
 class Text extends Input implements FieldInterface {
 

@@ -24,9 +24,6 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  *
  * Simply loads the Flux service and lets methods
  * on this Service load necessary configuration.
- *
- * @package Flux
- * @subpackage Backend
  */
 class TableConfigurationPostProcessor implements TableConfigurationPostProcessingHookInterface {
 

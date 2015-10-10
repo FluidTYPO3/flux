@@ -10,9 +10,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /**
  * Select-type FlexForm field ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class RelationViewHelper extends AbstractRelationFieldViewHelper {
 

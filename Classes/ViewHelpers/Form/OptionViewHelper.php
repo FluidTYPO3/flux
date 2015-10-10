@@ -16,9 +16,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Form option ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class OptionViewHelper extends AbstractFormViewHelper {
 

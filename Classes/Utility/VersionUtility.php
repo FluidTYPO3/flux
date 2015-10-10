@@ -11,10 +11,7 @@ namespace FluidTYPO3\Flux\Utility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
- * VersionUtility utilities
- *
- * @package Flux
- * @subpackage Utility
+ * VersionUtility
  */
 class VersionUtility {
 

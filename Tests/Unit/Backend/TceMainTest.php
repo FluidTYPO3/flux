@@ -17,7 +17,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * TceMainTest
  */
 class TceMainTest extends AbstractTestCase {
 

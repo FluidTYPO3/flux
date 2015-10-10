@@ -14,7 +14,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 
 /**
- * @package Flux
+ * AbstractPipeViewHelperTest
  */
 class AbstractPipeViewHelperTest extends UnitTestCase {
 

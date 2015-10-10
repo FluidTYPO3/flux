@@ -13,8 +13,7 @@ use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
 /**
- * author Claus Due <claus@namelesscoder.net>
- * @package Flux
+ * AbstractFieldTest
  */
 abstract class AbstractFieldTest extends AbstractFormTest {
 

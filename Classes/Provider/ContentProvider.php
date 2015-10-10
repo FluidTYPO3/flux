@@ -19,9 +19,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * and is only used to execute a set of hook-style methods for
  * processing records. This processing ensures that relationships
  * between content elements get stored correctly.
- *
- * @package Flux
- * @subpackage Provider
  */
 class ContentProvider extends AbstractProvider implements ProviderInterface {
 

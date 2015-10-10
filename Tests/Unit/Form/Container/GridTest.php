@@ -14,7 +14,7 @@ use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 use FluidTYPO3\Flux\View\ViewContext;
 
 /**
- * @package Flux
+ * GridTest
  */
 class GridTest extends AbstractContainerTest {
 

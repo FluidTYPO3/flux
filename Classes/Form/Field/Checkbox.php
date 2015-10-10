@@ -11,8 +11,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * Checkbox
  */
 class Checkbox extends AbstractFormField {
 

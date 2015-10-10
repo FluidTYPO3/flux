@@ -16,9 +16,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * Makes a read-only component which supports a default value
  * but which cannot be edited.
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class NoneViewHelper extends AbstractFieldViewHelper {
 

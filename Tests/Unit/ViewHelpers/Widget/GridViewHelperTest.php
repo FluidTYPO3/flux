@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Widget;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
- * @package Flux
+ * GridViewHelperTest
  */
 class GridViewHelperTest extends AbstractViewHelperTestCase {
 

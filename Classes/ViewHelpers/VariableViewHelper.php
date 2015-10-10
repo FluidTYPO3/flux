@@ -17,9 +17,6 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Fetches a single variable from the template variables
- *
- * @package Flux
- * @subpackage ViewHelpers
  */
 class VariableViewHelper extends AbstractViewHelper implements CompilableInterface {
 

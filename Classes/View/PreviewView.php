@@ -32,7 +32,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
- * @package Flux
+ * PreviewView
  */
 class PreviewView {
 

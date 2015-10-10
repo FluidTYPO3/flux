@@ -18,9 +18,6 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Exception;
 
 /**
  * Converts raw flexform xml into an associative array
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class DataViewHelper extends AbstractViewHelper {
 

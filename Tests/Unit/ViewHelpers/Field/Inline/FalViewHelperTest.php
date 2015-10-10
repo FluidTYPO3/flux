@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * FalViewHelperTest
  */
 class FalViewHelperTest extends AbstractFieldViewHelperTestCase {
 

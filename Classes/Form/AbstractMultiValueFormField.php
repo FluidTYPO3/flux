@@ -9,8 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 /**
- * @package Flux
- * @subpackage Form
+ * AbstractMultiValueFormField
  */
 abstract class AbstractMultiValueFormField extends AbstractFormField implements MultiValueFieldInterface {
 

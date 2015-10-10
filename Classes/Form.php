@@ -15,7 +15,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * @package Flux
+ * Form
  */
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface {
 

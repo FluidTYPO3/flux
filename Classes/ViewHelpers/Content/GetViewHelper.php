@@ -19,9 +19,6 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  * ### Content: Get ViewHelper
  *
  * Gets all child content of a record based on area.
- *
- * @package Flux
- * @subpackage ViewHelpers/Flexform
  */
 class GetViewHelper extends AbstractViewHelper {
 

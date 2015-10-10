@@ -14,9 +14,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm field section ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class SectionViewHelper extends AbstractFieldViewHelper {
 

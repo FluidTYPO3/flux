@@ -13,9 +13,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper {
 

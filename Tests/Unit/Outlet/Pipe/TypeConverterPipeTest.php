@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 
 /**
- * @package Flux
+ * TypeConverterPipeTest
  */
 class TypeConverterPipeTest extends AbstractPipeTestCase {
 

@@ -14,9 +14,6 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 
 /**
  * Custom FlexForm field ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class CustomViewHelper extends UserFuncViewHelper {
 

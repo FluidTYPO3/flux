@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
- * @package Flux
+ * RenderViewHelperTest
  */
 class RenderViewHelperTest extends AbstractViewHelperTestCase {
 

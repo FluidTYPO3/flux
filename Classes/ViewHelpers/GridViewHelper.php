@@ -12,9 +12,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Grid container ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Flexform
  */
 class GridViewHelper extends AbstractFormViewHelper {
 

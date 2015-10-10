@@ -21,9 +21,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  * Pipe: Controller Action
  *
  * Passes data through a controller action
- *
- * @package Flux
- * @subpackage Outlet\Pipe
  */
 class ControllerPipe extends AbstractPipe implements PipeInterface {
 

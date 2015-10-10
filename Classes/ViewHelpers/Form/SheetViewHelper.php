@@ -16,9 +16,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * FlexForm sheet ViewHelper
  *
  * Groups FlexForm fields into sheets.
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class SheetViewHelper extends AbstractFormViewHelper {
 

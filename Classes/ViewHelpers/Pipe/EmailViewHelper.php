@@ -17,9 +17,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * Email Outlet Pipe ViewHelper
  *
  * Adds an EmailPipe to the Form's Outlet
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class EmailViewHelper extends AbstractPipeViewHelper {
 

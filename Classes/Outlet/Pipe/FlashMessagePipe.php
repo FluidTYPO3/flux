@@ -19,9 +19,6 @@ use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
  * Pipe: Flash Message
  *
  * Sends a custom FlashMessage
- *
- * @package Flux
- * @subpackage Outlet\Pipe
  */
 class FlashMessagePipe extends AbstractPipe implements PipeInterface {
 

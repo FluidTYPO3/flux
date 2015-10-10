@@ -11,8 +11,7 @@ namespace FluidTYPO3\Flux\Form\Wizard;
 use FluidTYPO3\Flux\Form\AbstractWizard;
 
 /**
- * @package Flux
- * @subpackage Form\Wizard
+ * Edit
  */
 class Edit extends AbstractWizard {
 

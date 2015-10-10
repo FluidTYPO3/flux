@@ -24,8 +24,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * @package Flux
- * @subpackage Form
+ * AbstractFormComponent
  */
 abstract class AbstractFormComponent implements FormInterface {
 

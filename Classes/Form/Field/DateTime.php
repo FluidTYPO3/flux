@@ -11,8 +11,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * DateTime
  */
 class DateTime extends Input implements FieldInterface {
 

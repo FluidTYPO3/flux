@@ -14,8 +14,7 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * Select
  */
 class Select extends AbstractMultiValueFormField {
 

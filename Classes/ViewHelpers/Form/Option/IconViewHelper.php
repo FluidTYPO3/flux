@@ -13,9 +13,6 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
  * Form icon option ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class IconViewHelper extends OptionViewHelper {
 

@@ -18,7 +18,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * @package Flux
+ * AbstractFormTest
  */
 abstract class AbstractFormTest extends AbstractTestCase {
 

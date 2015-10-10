@@ -24,8 +24,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 
 /**
- * @package Flux
- * @subpackage Provider
+ * AbstractProvider
  */
 class AbstractProvider implements ProviderInterface {
 

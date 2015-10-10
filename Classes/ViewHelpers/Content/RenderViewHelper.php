@@ -14,9 +14,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * ### Content: Render ViewHelper
  *
  * Renders all child content of a record based on area.
- *
- * @package Flux
- * @subpackage ViewHelpers/Flexform
  */
 class RenderViewHelper extends GetViewHelper {
 	/**

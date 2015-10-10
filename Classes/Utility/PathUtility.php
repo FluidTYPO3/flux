@@ -12,9 +12,7 @@ use FluidTYPO3\Flux\View\TemplatePaths;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- *
- * @package Flux
- * @subpackage Utility
+ * PathUtility
  */
 class PathUtility {
 

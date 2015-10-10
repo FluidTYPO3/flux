@@ -14,9 +14,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for Field Wizard style ViewHelpers
- *
- * @package Flux
- * @subpackage ViewHelpers/Wizard
  */
 abstract class AbstractWizardViewHelper extends AbstractFormViewHelper {
 

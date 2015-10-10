@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
 /**
- * @package Flux
+ * AbstractContainerTest
  */
 abstract class AbstractContainerTest extends AbstractFormTest {
 

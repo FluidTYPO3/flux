@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  */
 
 /**
- * @package Flux
+ * TreeViewHelperTest
  */
 class TreeViewHelperTest extends SelectViewHelperTest {
 

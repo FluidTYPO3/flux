@@ -15,9 +15,6 @@ use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
  * Outlet Interface
  *
  * Implemented by all Outlet types.
- *
- * @package Flux
- * @subpackage Outlet
  */
 interface OutletInterface {
 

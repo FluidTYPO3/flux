@@ -29,8 +29,6 @@ use TYPO3\CMS\Extbase\Mvc\Web\Response;
  * Controllers rendering records associated with Flux - all it does is
  * ease the interaction by providing a common API.
  *
- * @package Flux
- * @subpackage Controller
  * @route off
  */
 abstract class AbstractFluxController extends ActionController {

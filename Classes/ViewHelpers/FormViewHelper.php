@@ -13,9 +13,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm configuration container ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers
  */
 class FormViewHelper extends AbstractFormViewHelper {
 

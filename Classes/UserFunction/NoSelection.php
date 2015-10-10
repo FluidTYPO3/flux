@@ -12,9 +12,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Renders nothing in case no template is selected
- *
- * @package Flux
- * @subpackage UserFunction
  */
 class NoSelection {
 

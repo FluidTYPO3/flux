@@ -13,9 +13,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Group (select supertype) FlexForm field ViewHelper, subtype "file"
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class FileViewHelper extends AbstractMultiValueFieldViewHelper {
 

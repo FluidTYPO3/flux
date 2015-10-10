@@ -13,7 +13,7 @@ use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * ControllerActionsViewHelperTest
  */
 class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase {
 

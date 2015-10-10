@@ -13,9 +13,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: List
- *
- * @package Flux
- * @subpackage ViewHelpers/Wizard
  */
 class ListViewHelper extends AbstractWizardViewHelper {
 

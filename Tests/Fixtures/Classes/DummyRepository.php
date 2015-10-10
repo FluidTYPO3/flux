@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Domain\Repository;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
- * @package Flux
+ * DummyRepository
  */
 class DummyRepository extends Repository {
 

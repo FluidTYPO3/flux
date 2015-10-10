@@ -13,9 +13,6 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
  * Form group option ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class GroupViewHelper extends OptionViewHelper {
 

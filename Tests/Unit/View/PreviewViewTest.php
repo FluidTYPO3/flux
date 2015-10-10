@@ -17,7 +17,7 @@ use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Versioning\VersionState;
 
 /**
- * @package Flux
+ * PreviewViewTest
  */
 class PreviewViewTest extends AbstractTestCase {
 

@@ -20,7 +20,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Core\Tests\UnitTestCase as BaseTestCase;
 
 /**
- * @package Flux
+ * AbstractTestCase
  */
 abstract class AbstractTestCase extends BaseTestCase {
 

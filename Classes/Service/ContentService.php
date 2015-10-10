@@ -18,9 +18,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Flux FlexForm integration Service
  *
  * Main API Service for interacting with Flux-based FlexForms
- *
- * @package Flux
- * @subpackage Service
  */
 class ContentService implements SingletonInterface {
 

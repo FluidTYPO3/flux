@@ -10,9 +10,6 @@ namespace FluidTYPO3\Flux\Provider;
 
 /**
  * Base implementation of Provider concept.
- *
- * @package Flux
- * @subpackage Provider
  */
 class Provider extends AbstractProvider implements ProviderInterface {
 

@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 use FluidTYPO3\Flux\Form\WizardInterface;
 
 /**
- * @package Flux
+ * SelectTest
  */
 class SelectTest extends AbstractWizardTest {
 
