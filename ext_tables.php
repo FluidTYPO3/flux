@@ -19,6 +19,10 @@ $GLOBALS['TCA']['tt_content']['ctrl']['useColumnsForDefaultValues'] .= ',tx_flux
 			'displayCond' => 'FIELD:tx_flux_parent:>:0',
 			'config' => array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
+				'items' => array(
+					array('', '')
+				),
 				'default' => '',
 				'itemsProcFunc' => 'FluidTYPO3\Flux\Backend\AreaListItemsProcessor->itemsProcFunc'
 			)
