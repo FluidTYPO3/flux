@@ -37,12 +37,11 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 	}
 
 	/**
-	 * @param array $arguments
-	 * @param \Closure $renderChildrenClosure
 	 * @param RenderingContextInterface $renderingContext
-	 * @return void
+	 * @param array $arguments
+	 * @return Section
 	 */
-	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+	static public function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		$container = static::getContainerFromRenderingContext($renderingContext);
 		/** @var Section $section */
 		$section = $container->createContainer('Section', $arguments['name'], $arguments['label']);
@@ -50,6 +49,7 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 		$section->setVariables($arguments['variables']);
 		$section->setInherit($arguments['inherit']);
 		$section->setInheritEmpty($arguments['inheritEmpty']);
+		return $section;
 	}
 
 }
