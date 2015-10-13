@@ -97,9 +97,11 @@ class TceMain {
 	 * @return void
 	 */
 	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference) {
-		$record = array();
-		$arguments = array('command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo);
-		$this->executeConfigurationProviderMethod('preProcessCommand', $table, $id, $record, $arguments, $reference);
+		if ('version' !== $command) {
+			$record = array();
+			$arguments = array('command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo);
+			$this->executeConfigurationProviderMethod('preProcessCommand', $table, $id, $record, $arguments, $reference);
+		}
 	}
 
 	/**
@@ -111,9 +113,11 @@ class TceMain {
 	 * @return void
 	 */
 	public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference) {
-		$record = array();
-		$arguments = array('command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo);
-		$this->executeConfigurationProviderMethod('postProcessCommand', $table, $id, $record, $arguments, $reference);
+		if ('version' !== $command) {
+			$record = array();
+			$arguments = array('command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo);
+			$this->executeConfigurationProviderMethod('postProcessCommand', $table, $id, $record, $arguments, $reference);
+		}
 	}
 
 	/**
