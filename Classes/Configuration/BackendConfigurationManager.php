@@ -110,7 +110,7 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
 		if ('pages' === $table && 'new' === $command) {
 			// if TYPO3 wants to insert a new page, URL argument is already the PID value.
 			return $id;
-		} elseif (0 <> $id) {
+		} elseif (0 <> $id && 'pages' !== $table) {
 			// if any identified record is being edited, load it and return the PID value.
 			// if the (new) record is relative to another, $id is negative UID of relative record, hence abs().
 			return $this->getPageIdFromRecordUid($table, abs($id));
