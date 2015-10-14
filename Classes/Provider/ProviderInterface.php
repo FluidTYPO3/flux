@@ -21,16 +21,18 @@ interface ProviderInterface {
 
 	/**
 	 * Use by TceMain to track method calls to providers for a certain $id.
-	 * Every provider should only be called once per method / $id.
+	 * Every provider should only be called once per method / $id / command.
 	 * Before calling a provider, TceMain will call this method.
-	 * If the provider hasn't been called for that method / $id before, it is.
+	 * If the provider hasn't been called for that method / $id / command
+	 * before, it is.
 	 *
 	 *
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @param string $command
 	 * @return boolean
 	 */
-	public function shouldCall($methodName, $id);
+	public function shouldCall($methodName, $id, $command = '');
 
 	/**
 	 * Use by TceMain to track method calls to providers for a certain $id.

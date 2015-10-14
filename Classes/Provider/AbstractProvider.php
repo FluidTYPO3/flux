@@ -886,15 +886,16 @@ class AbstractProvider implements ProviderInterface {
 
 	/**
 	 * Use by TceMain to track method calls to providers for a certain $id.
-	 * Every provider should only be called once per method / $id.
+	 * Every provider should only be called once per method / $id / command.
 	 * When TceMain has called the provider it will call this method afterwards.
 	 *
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @param string command
 	 * @return void
 	 */
-	public function trackMethodCall($methodName, $id) {
-		self::trackMethodCallWithClassName(get_called_class(), $methodName, $id);
+	public function trackMethodCall($methodName, $id, $command = '') {
+		self::trackMethodCallWithClassName(get_called_class(), $methodName, $id, $command);
 	}
 
 	/**
@@ -906,10 +907,11 @@ class AbstractProvider implements ProviderInterface {
 	 *
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @param string $command
 	 * @return boolean
 	 */
-	public function shouldCall($methodName, $id) {
-		return self::shouldCallWithClassName(get_class($this), $methodName, $id);
+	public function shouldCall($methodName, $id, $command = '') {
+		return self::shouldCallWithClassName(get_class($this), $methodName, $id, $command);
 	}
 
 	/**
@@ -919,10 +921,11 @@ class AbstractProvider implements ProviderInterface {
 	 * @param string $className
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @param string $command
 	 * @return void
 	 */
-	protected function trackMethodCallWithClassName($className, $methodName, $id) {
-		$cacheKey = $className . $methodName . $id;
+	protected function trackMethodCallWithClassName($className, $methodName, $id, $command = '') {
+		$cacheKey = $className . $methodName . $id . $command;
 		self::$trackedMethodCalls[$cacheKey] = TRUE;
 	}
 
@@ -933,10 +936,11 @@ class AbstractProvider implements ProviderInterface {
 	 * @param string $className
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @param string $command
 	 * @return boolean
 	 */
-	protected function shouldCallWithClassName($className, $methodName, $id) {
-		$cacheKey = $className . $methodName . $id;
+	protected function shouldCallWithClassName($className, $methodName, $id, $command = '') {
+		$cacheKey = $className . $methodName . $id . $command;
 		return empty(self::$trackedMethodCalls[$cacheKey]);
 	}
 

@@ -103,11 +103,11 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = array()) {
-		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
+		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id, $operation)) {
 			parent::postProcessRecord($operation, $id, $row, $reference, $removals);
 			$parameters = GeneralUtility::_GET();
 			$this->contentService->affectRecordByRequestParameters($id, $row, $parameters, $reference);
-			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
+			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id, $operation);
 		}
 	}
 
@@ -123,7 +123,7 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 	 * @return void
 	 */
 	public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference) {
-		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id)) {
+		if (TRUE === self::shouldCallWithClassName(__CLASS__, __FUNCTION__, $id, $command)) {
 			parent::postProcessCommand($command, $id, $row, $relativeTo, $reference);
 			$pasteCommands = array('copy', 'move');
 			if (TRUE === in_array($command, $pasteCommands)) {
@@ -140,7 +140,7 @@ class ContentProvider extends AbstractProvider implements ProviderInterface {
 			if ('localize' === $command) {
 				$this->contentService->fixPositionInLocalization($id, $relativeTo, $row, $reference);
 			}
-			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id);
+			self::trackMethodCallWithClassName(__CLASS__, __FUNCTION__, $id, $command);
 		}
 	}
 
