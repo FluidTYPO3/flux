@@ -65,7 +65,7 @@ class OptionViewHelper extends AbstractFormViewHelper {
 			'%s::getFormFromRenderingContext($renderingContext)->setOption(' .
 			'isset(%s[\'name\']) ? %s[\'name\'] : %s::$option,' .
 			'isset(%s[\'value\']) ? %s[\'value\']) : %s()' .
-			')',
+			');',
 			$className,
 			$argumentsVariableName,
 			$argumentsVariableName,
@@ -74,7 +74,7 @@ class OptionViewHelper extends AbstractFormViewHelper {
 			$argumentsVariableName,
 			$renderChildrenClosureVariableName
 		);
-		return '';
+		return '\'\'';
 	}
 
 }
