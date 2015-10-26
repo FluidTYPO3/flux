@@ -64,7 +64,7 @@ class OptionViewHelper extends AbstractFormViewHelper {
 		$initializationPhpCode .= sprintf(
 			'%s::getFormFromRenderingContext($renderingContext)->setOption(' .
 			'isset(%s[\'name\']) ? %s[\'name\'] : %s::$option,' .
-			'isset(%s[\'value\']) ? %s[\'value\']) : %s()' .
+			'isset(%s[\'value\']) ? %s[\'value\'] : %s()' .
 			');',
 			$className,
 			$argumentsVariableName,
