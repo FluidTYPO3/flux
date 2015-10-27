@@ -385,11 +385,11 @@ class ContentService implements SingletonInterface {
 	public function fixPositionInLocalization($uid, $languageUid, &$defaultLanguageRecord, DataHandler $reference) {
 		$previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
 		$localizedRecord = BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
+		$sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
 		if (NULL === $previousLocalizedRecordUid) {
 			// moving to first position in tx_flux_column
 			$localizedRecord[0][$sortingRow] = $reference->getSortNumber('tt_content', 0, $defaultLanguageRecord['pid']);
 		} else {
-			$sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
 			$localizedRecord[0][$sortingRow] = $reference->resorting(
 				'tt_content',
 				$defaultLanguageRecord['pid'],
