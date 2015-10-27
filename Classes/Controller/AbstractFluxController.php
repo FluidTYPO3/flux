@@ -241,7 +241,7 @@ abstract class AbstractFluxController extends ActionController {
 	protected function hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName) {
 		$potentialControllerClassName = $this->configurationService
 			->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndAction($extensionName, $actionName, $controllerName);
-		$isForeign = ExtensionNamingUtility::getExtensionName($extensionName) !== ExtensionNamingUtility::getExtensionName($this->extensionName);
+		$isForeign = $extensionName !== $this->extensionName;
 		$isValidController = class_exists($potentialControllerClassName);
 		return (TRUE === $isForeign && TRUE === $isValidController);
 	}
