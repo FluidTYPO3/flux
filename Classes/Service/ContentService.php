@@ -289,7 +289,12 @@ class ContentService implements SingletonInterface {
 	 * @param DataHandler $tceMain
 	 */
 	protected function initializeRecordByNewAndOldAndLanguageUids($row, $newUid, $oldUid, $newLanguageUid, $languageFieldName, DataHandler $tceMain) {
-		if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid) {
+
+		// no processing for elements outside a fluid content area
+		// if there is a paste action this is done in the content provider
+		$isl10nParentInsideFluidcontentArea = ($row['tx_flux_parent'] > 0);
+
+		if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid && $isl10nParentInsideFluidcontentArea) {
 			$oldRecord = $this->loadRecordFromDatabase($oldUid);
 			if ($oldRecord[$languageFieldName] !== $newLanguageUid && $oldRecord['pid'] === $row['pid']) {
 				// look for the translated version of the parent record indicated
