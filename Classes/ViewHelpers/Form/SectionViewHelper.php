@@ -14,6 +14,26 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm field section ViewHelper
+ *
+ * #### Using a section to let a user add many elements
+ *
+ *     <flux:form.section name="settings.numbers" label="Telephone numbers">
+ *         <flux:form.object name="mobile" label="Mobile">
+ *             <flux:field.input name="number"/>
+ *         </flux:form.object>
+ *         <flux:form.object name="landline" label="Landline">
+ *             <flux:field.input name="number"/>
+ *         </flux:form.object>
+ *     </flux:form.section>
+ *
+ * #### Reading section element values
+ *
+ *     <f:for each="{settings.numbers}" as="obj" key="id">
+ *         Number #{id}:
+ *         <f:if condition="{obj.landline}">mobile, {obj.landline.number}</f:if>
+ *         <f:if condition="{obj.mobile}">landline, {obj.mobile.number}</f:if>
+ *         <br/>
+ *     </f:for>
  */
 class SectionViewHelper extends AbstractFieldViewHelper {
 
