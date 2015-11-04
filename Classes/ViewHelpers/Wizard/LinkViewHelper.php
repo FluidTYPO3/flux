@@ -13,6 +13,12 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Link
+ *
+ * #### Link input field with link wizard
+ *
+ *     <flux:field.input name="link">
+ *         <flux:wizard.link/>
+ *     </flux:field.input>
  */
 class LinkViewHelper extends AbstractWizardViewHelper {
 
