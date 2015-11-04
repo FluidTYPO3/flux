@@ -14,6 +14,13 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Flexform Grid Column ViewHelper
+ *
+ * Used inside `<flux:grid.row>` tags.
+ *
+ * Use the `name` attribute for grids in content elements,
+ * and the `colPos` attribute for grids in pages templates.
+ *
+ * See `<flux:grid>` for an example.
  */
 class ColumnViewHelper extends AbstractFormViewHelper {
 

@@ -15,6 +15,11 @@ use FluidTYPO3\Flux\Form\Container\Row;
 
 /**
  * Flexform Grid Row ViewHelper
+ *
+ * Used inside `<flux:grid>` tags.
+ * Usually contains `<flux:grid.column>` tags.
+ *
+ * See `<flux:grid>` for an example.
  */
 class RowViewHelper extends AbstractFormViewHelper {
 

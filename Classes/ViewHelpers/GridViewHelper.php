@@ -11,7 +11,53 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
- * Grid container ViewHelper
+ * Grid container ViewHelper.
+ *
+ * Use `<flux:grid.row>` with nested `<flux:grid.column>` tags
+ * to define a tablular layout.
+ *
+ * Preview rendering can be done with `<flux:widget.grid>`.
+ * For frontend rendering, use `flux:content.render`.
+ *
+ * ### Content elements
+ *
+ * Use the `name` and `area` attributes.
+ *
+ * #### Grid for a two-column container element
+ *
+ *     <flux:grid>
+ *         <flux:grid.row>
+ *             <flux:grid.column name="left" />
+ *             <flux:grid.column name="right" />
+ *         </flux:grid.row>
+ *     </flux:grid>
+ *
+ * #### Container element preview rendering
+ *
+ *     <flux:widget.grid />
+ *
+ * #### Container element frontend rendering
+ *
+ *     <flux:content.render area="left" />
+ *     <flux:content.render area="right" />
+ *
+ * ### Pages
+ *
+ * Use the `colPos` and `column` attributes.
+ *
+ * #### Two-colum page template
+ *
+ *     <flux:grid>
+ *         <flux:grid.row>
+ *             <flux:grid.column colPos="0" name="Main" colspan="3" style="width: 75%" />
+ *             <flux:grid.column colPos="1" name="Secondary" colspan="1" style="width: 25%" />
+ *         </flux:grid.row>
+ *     </flux:grid>
+ *
+ * #### Page rendering
+ *
+ *     <v:content.render column="0" />
+ *     <v:content.render column="1" />
  */
 class GridViewHelper extends AbstractFormViewHelper {
 
