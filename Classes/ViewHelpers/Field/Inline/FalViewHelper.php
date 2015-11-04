@@ -19,14 +19,33 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
  *
  * Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
- * 	{v:content.resources.fal(field: 'settings.files')
- * 		-> v:iterator.first()
- * 		-> v:variable.set(name: 'settings.files')}
+ *
+ *     {v:content.resources.fal(field: 'settings.files')
+ *         -> v:iterator.first()
+ *         -> v:variable.set(name: 'settings.files')}
  *
  * And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
- * 	{v:page.resources.fal(field: 'settings.files')
- * 		-> v:iterator.first()
- * 		-> v:variable.set(name: 'settings.files')}
+ *
+ *     {v:page.resources.fal(field: 'settings.files')
+ *         -> v:iterator.first()
+ *         -> v:variable.set(name: 'settings.files')}
+ *
+ * ### Selecting and rendering an image
+ *
+ * #### Selecting a single image
+ *
+ *     <flux:field.inline.fal name="settings.image" required="1" maxItems="1" minItems="1"/>
+ *
+ * #### Rendering the image
+ *
+ *     {v:content.resources.fal(field: 'settings.image') -> v:iterator.first() -> v:variable.set(name: 'image')}
+ *     <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
+ *
+ * #### Rendering multiple images
+ *
+ *     <f:for each="{v:content.resources.fal(field: 'settings.image')}" as="image">
+ *         <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
+ *     </f:for>
  */
 class FalViewHelper extends AbstractInlineFieldViewHelper {
 
