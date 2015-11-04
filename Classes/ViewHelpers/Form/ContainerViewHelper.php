@@ -22,6 +22,17 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * The field grouping can be hidden or completely removed. In this regard
  * this element is a simpler version of the Section and Object logic.
+ *
+ * #### Grouping elements with a container
+ *
+ *     <flux:form.container name="settings.name" label="Name">
+ *         <flux:field.input name="firstname" label="First name"/>
+ *         <flux:field.input name="lastname" label="Last name"/>
+ *     </flux:form.container>
+ *
+ * #### Accessing values of grouped elements
+ *
+ *     Name: {settings.name.firstname} {settings.name.lastname}
  */
 class ContainerViewHelper extends AbstractFieldViewHelper {
 
