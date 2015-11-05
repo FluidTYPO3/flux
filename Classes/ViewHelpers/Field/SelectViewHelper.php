@@ -13,6 +13,28 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Select-type FlexForm field ViewHelper
+ *
+ * ### Choosing one of two items
+ *
+ * Items are given in CSV mode:
+ *
+ *     <flux:field.select name="settings.position" items="left,right" default="left"/>
+ *
+ * ### Items with labels
+ *
+ * If you want to display labels that are different than the values itself,
+ * use an object in `items`:
+ *
+ *      <flux:field.select name="settings.position"
+ *                         items="{
+ *                                0:{0:'On the left side',1:'left'},
+ *                                1:{0:'On the right side',1:'right'}
+ *                                }"
+ *                        />
+ *
+ * You can translate those labels by putting a LLL reference in the first property:
+ *
+ *     LLL:EXT:extname/Resources/Private/Language/locallang.xlf:flux.example.fields.items.foo'
  */
 class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 
