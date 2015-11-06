@@ -25,6 +25,9 @@ class TceMainTest extends AbstractTestCase {
 	 * @return void
 	 */
 	public function setUp() {
+		$configurationManager = $this->getMock('FluidTYPO3\Flux\Configuration\ConfigurationManager');
+		$fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+		$fluxService->injectConfigurationManager($configurationManager);
 		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetSingleRow'), array(), '', FALSE);
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(FALSE);
 		$GLOBALS['TCA'] = array(

@@ -19,6 +19,7 @@ use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
+use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -339,11 +340,15 @@ class FluxService implements SingletonInterface {
 	 * @return array
 	 */
 	public function getAllTypoScript() {
-		if (0 === count(self::$typoScript)) {
-			self::$typoScript = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-			self::$typoScript = GeneralUtility::removeDotsFromTS(self::$typoScript);
+		if (!$this->configurationManager instanceof ConfigurationManager) {
+			debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		}
-		return self::$typoScript;
+		$pageId = $this->configurationManager->getCurrentPageId();
+		if (FALSE === isset(self::$typoScript[$pageId])) {
+			self::$typoScript[$pageId] = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			self::$typoScript[$pageId] = GeneralUtility::removeDotsFromTS(self::$typoScript);
+		}
+		return (array) self::$typoScript[$pageId];
 	}
 
 	/**
