@@ -21,6 +21,27 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * and the `colPos` attribute for grids in pages templates.
  *
  * See `<flux:grid>` for an example.
+ *
+ * ### Limit allowed elements
+ *
+ * It is possible to limit the elements allowed in the column by setting
+ * the `allowedContentTypes` variable:
+ *
+ *     <flux:grid.column name="elements">
+ *         <flux:form.variable name="allowedContentTypes" value="text,shortcut"/>
+ *     </flux:grid.column>
+ *
+ * The value is a comma-separated list of content type IDs; they can be found
+ * in `tt_content.CType` column.
+ *
+ * ### Limit allowed fluid content elements
+ *
+ * It is also possible to limit the allowed fluid content elements:
+ *
+ *     <flux:grid.column name="elements">
+ *         <flux:form.variable name="allowedContentTypes" value="fluidcontent_content"/>
+ *         <flux:form.variable name="Fluidcontent" value="{allowedContentTypes: 'Vendor.Extension:ContentElement.html'}"/>
+ *     </flux:grid.column>
  */
 class ColumnViewHelper extends AbstractFormViewHelper {
 
