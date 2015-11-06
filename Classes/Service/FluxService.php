@@ -340,9 +340,6 @@ class FluxService implements SingletonInterface {
 	 * @return array
 	 */
 	public function getAllTypoScript() {
-		if (!$this->configurationManager instanceof ConfigurationManager) {
-			debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-		}
 		$pageId = $this->configurationManager->getCurrentPageId();
 		if (FALSE === isset(self::$typoScript[$pageId])) {
 			self::$typoScript[$pageId] = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
