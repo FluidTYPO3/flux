@@ -224,7 +224,8 @@ class MiscellaneousUtilityTest extends AbstractTestCase {
 	 */
 	public function getCleanFlexFormXmlTestValues() {
 		return array(
-			array('<data><fields></fields></data>', array(), '')
+			array('<data><fields></fields></data>', array(), ''),
+			array('<data><field index="columns">   <el index="el">   </el>   </field></data>', array(), ''),
 		);
 	}
 

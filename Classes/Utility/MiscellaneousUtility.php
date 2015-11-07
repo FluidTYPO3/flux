@@ -172,7 +172,8 @@ class MiscellaneousUtility {
 		}
 		$xml = $dom->saveXML();
 		// hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
-		$xml = str_replace('<field index=""></field>', '', $xml);
+		$xml = preg_replace('#<el index="el">\s*</el>#', '', $xml);
+		$xml = preg_replace('#<field index="[^"]*">\s*</field>#', '', $xml);
 		return $xml;
 	}
 
