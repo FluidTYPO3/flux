@@ -276,15 +276,10 @@ abstract class CompatibilityRegistry {
 	 * @param string $version
 	 * @return null
 	 */
-	protected function cache(array &$source, $prefix, $scope, $version) {
+	protected static function cache(array &$source, $prefix, $scope, $version) {
 		$key = $prefix . '-' . $scope . '-' . $version;
 		if (TRUE === array_key_exists($key, static::$cache)) {
 			return static::$cache[$key];
-		}
-		if (TRUE === array_key_exists($scope, $source)) {
-			$value = $source[$scope];
-		} else {
-			$value = NULL;
 		}
 		$value = static::resolveVersionedValue($source[$scope], $version);
 		static::$cache[$key] = $value;
