@@ -77,7 +77,6 @@ class PreviewViewTest extends AbstractTestCase {
 				'drawRecord',
 				'registerTargetContentAreaInSession',
 				'drawNewIcon',
-				'drawPasteIcon',
 				'getInitializedPageLayoutView'
 			)
 		);
@@ -85,7 +84,6 @@ class PreviewViewTest extends AbstractTestCase {
 		$instance->expects($this->exactly(2))->method('drawRecord');
 		$instance->expects($this->once())->method('getInitializedPageLayoutView')->willReturn(new PageLayoutView());
 		$instance->expects($this->once())->method('drawNewIcon');
-		$instance->expects($this->exactly(2))->method('drawPasteIcon');
 		$instance->expects($this->once())->method('registerTargetContentAreaInSession');
 		$result = $this->callInaccessibleMethod($instance, 'drawGridColumn', $record, $column);
 		$this->assertNotEmpty($result);
@@ -314,7 +312,6 @@ class PreviewViewTest extends AbstractTestCase {
 		$column->expects($this->once())->method('getLabel')->willReturn('foobar-label');
 		$subject = $this->getMock('FluidTYPO3\\Flux\\View\\PreviewView', array('drawNewIcon', 'drawPasteIcon'));
 		$subject->expects($this->once())->method('drawNewIcon');
-		$subject->expects($this->exactly(2))->method('drawPasteIcon');
 		$this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 1, NULL, 'f-target', 2, 'f-content');
 	}
 
