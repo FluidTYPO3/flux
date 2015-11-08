@@ -93,7 +93,9 @@ class Select extends AbstractMultiValueFormField {
 		} elseif (TRUE === is_string($this->items)) {
 			$itemNames = GeneralUtility::trimExplode(',', $this->items);
 			if (!$this->getTranslateCsvItems()) {
-				$items = array_combine($itemNames, $itemNames);
+				foreach ($itemNames as $itemName) {
+					array_push($items, array($itemName, $itemName));
+				}
 			} else {
 				foreach ($itemNames as $itemName) {
 					$resolvedLabel = $this->resolveLocalLanguageValueOfLabel('', $this->name . '.option.' . $itemName);
