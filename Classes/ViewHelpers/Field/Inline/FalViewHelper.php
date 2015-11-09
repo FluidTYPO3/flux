@@ -30,6 +30,20 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *         -> v:iterator.first()
  *         -> v:variable.set(name: 'settings.files')}
  *
+ * ### Usage warning
+ *
+ * Due to [TYPO3 core bug #71239](https://forge.typo3.org/issues/71239), using
+ * FAL references within sections (`<flux:form.section>`) in content elements
+ * or within the page configuration does not work.
+ *
+ * When choosing a file in one section element, you will see it in all sections.
+ * When choosing a file in a page configuration, it will be visible in the subpages
+ * configuration, too.
+ *
+ * This issue will most likely not be fixed before TYPO3 8, so do not use it.
+ *
+ * Alternatively, you could use `<flux:field.file>`.
+ *
  * ### Selecting and rendering an image
  *
  * #### Selecting a single image
