@@ -35,7 +35,7 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$instance->expects($this->once())->method('getAreaNameAndParentFromRelativeRecordOrDefaults')
 			->willReturn(array(1, 'area'));
 		$emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'area');
-		$controller = $this->getMock(NewContentElementController::class, array('init'));
+		$controller = $this->getMock(NewContentElementController::class, array('init'), array(), '', FALSE);
 		$controller->colPos = 0;
 		$controller->uid_pid = -1;
 		$grid = new Grid();
@@ -155,7 +155,7 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase {
 		$instance->expects($this->once())->method('applyBlacklist')->will($this->returnValue($items));
 		$instance->expects($this->once())->method('trimItems')->will($this->returnValue($items));
 		$instance->expects($this->once())->method('getDefaultValues')->will($this->returnValue($defaultValues));
-		$controller = $this->getMock(NewContentElementController::class, array('init'));
+		$controller = $this->getMock(NewContentElementController::class, array('init'), array(), '', FALSE);
 		$instance->manipulateWizardItems($items, $controller);
 		$this->assertNotEmpty($items);
 	}
