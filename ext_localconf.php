@@ -8,14 +8,12 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF)
 \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
 	'FluidTYPO3\\Flux\\Backend\\Preview',
 	array(
-		'6.2.0' => 'FluidTYPO3\\Flux\\Backend\\LegacyPreview',
 		'7.1.0' => 'FluidTYPO3\\Flux\\Backend\\Preview'
 	)
 );
 \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
 	'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon',
 	array(
-		'6.2.0' => 'FluidTYPO3\\Flux\\Hooks\\LegacyContentIconHookSubscriber->addSubIcon',
 		'7.1.0' => 'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon'
 	)
 );
