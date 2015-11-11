@@ -72,3 +72,14 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] 
 if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['listNestedContent']) && !(boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['listNestedContent']) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable']['flux'] = 'FluidTYPO3\Flux\Hooks\RecordListGetTableHookSubscriber';
 }
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Backend\FormEngine\ProviderProcessor::class] = array(
+	'depends' => array(
+		\TYPO3\CMS\Backend\Form\FormDataProvider\PageTsConfig::class,
+		\TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsProcessCommon::class,
+		\TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsProcessShowitem::class
+	),
+	'before' => array(
+		\TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class
+	)
+);
