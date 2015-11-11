@@ -215,7 +215,7 @@ class TceMainTest extends AbstractTestCase {
 		$handler->substNEWwithIDs['NEW123'] = 123;
 		$mock->injectConfigurationService($configurationService);
 		$result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod',
-			'method', 'tt_content', 'NEW123', $record, $parameters, $handler);
+			'method', 'tt_content', 'command', 'NEW123', $record, $parameters, $handler);
 		$this->assertEmpty($result);
 	}
 
@@ -236,7 +236,7 @@ class TceMainTest extends AbstractTestCase {
 		$configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
 		$configurationService->expects($this->once())->method('resolveConfigurationProviders')->willReturn($providers);
 		$mock->injectConfigurationService($configurationService);
-		$result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, $row, $arguments, $caller);
+		$result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, 'command', $row, $arguments, $caller);
 		$this->assertEquals($row, $result);
 	}
 
