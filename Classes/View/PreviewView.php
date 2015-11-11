@@ -23,6 +23,8 @@ use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
@@ -81,7 +83,8 @@ class PreviewView {
 								<span class="t3-icon t3-icon-actions t3-icon-view-table-%s"></span>
 							</div>
 							%s
-						</div>'
+						</div>',
+		'link' => '<a href="#" onclick="window.location.href=\'%s\'" title="%s" class="btn btn-default btn-sm">%s %s</a>'
 	);
 
 	/**
@@ -374,21 +377,12 @@ class PreviewView {
 	protected function drawNewIcon(array $row, Column $column, $after = 0) {
 		$columnName = $column->getName();
 		$after = (FALSE === empty($columnName) && FALSE === empty($after)) ? '-' . $after : $row['pid'];
-		$icon = IconUtility::getSpriteIcon('actions-document-new');
-		$legacy = $this->isLegacyCoreVersion();
-		$uri = (FALSE === $legacy ? $this->getNewLink($row, $after, $columnName) : $this->getNewLinkLegacy($row, $after, $columnName));
+		$iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+		$icon = $iconFactory->getIcon('actions-document-new', Icon::SIZE_SMALL)->render();
+		$uri = $this->getNewLink($row, $after, $columnName);
 		$title = $this->getLanguageService()->getLL('newRecordHere');
 		$inner = $this->getLanguageService()->getLL('content');
-		$link = '<a href="#" onclick="window.location.href=\'' . htmlspecialchars($uri) . '\'" title="' . $title .
-			'" class="btn btn-default btn-sm">' . $icon . ' ' . $inner . '</a>';
-		return $link;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	protected function isLegacyCoreVersion() {
-		return (FALSE === version_compare(VersionNumberUtility::getNumericTypo3Version(), '7.1.0', '>='));
+		return sprintf($this->templates['link'], htmlspecialchars($uri), $title, $icon, $inner);
 	}
 
 	/**
@@ -410,26 +404,6 @@ class PreviewView {
 			'defVals[tt_content][tx_flux_column]' => $columnName,
 			'returnUrl' => $returnUri
 		));
-		return $uri;
-	}
-
-	/**
-	 * Generate a link valid on TYPO3 6.2
-	 *
-	 * @param array $row
-	 * @param integer $after
-	 * @param string $columnName
-	 * @return string
-	 */
-	protected function getNewLinkLegacy(array $row, $after, $columnName) {
-		$returnUri = rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI'));
-		$uri = 'db_new_content_el.php?id=' . $row['pid'] .
-			'&uid_pid=' . $after .
-			'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
-			'&sys_language_uid=' . $row['sys_language_uid'] .
-			'&defVals[tt_content][tx_flux_parent]=' . $row['uid'] .
-			'&defVals[tt_content][tx_flux_column]=' . $columnName .
-			'&returnUrl=' . $returnUri;
 		return $uri;
 	}
 

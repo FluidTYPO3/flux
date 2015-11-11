@@ -138,16 +138,6 @@ class PreviewViewTest extends AbstractTestCase {
 	}
 
 	/**
-	 * @test
-	 */
-	public function testGetNewLinkLegacy() {
-		$instance = $this->createInstance();
-		$result = $this->callInaccessibleMethod($instance, 'getNewLinkLegacy', array(), 123, 'myareaname');
-		$this->assertContains('123', $result);
-		$this->assertContains('myareaname', $result);
-	}
-
-	/**
 	 * @dataProvider getProcessRecordOverlaysTestValues
 	 * @param array $input
 	 * @param array $expected
