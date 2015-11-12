@@ -225,7 +225,8 @@ class ContentService implements SingletonInterface {
 			} elseif (0 < (integer) $relativeTo) {
 				// moving to first position in colPos, means that $relativeTo is the pid of the containing page
 				$row['sorting'] = $tceMain->getSortNumber('tt_content', 0, $relativeTo);
-				// neither change fields tx_flux_column nor tx_flux_parent here!
+				$row['tx_flux_parent'] = NULL;
+				$row['tx_flux_column'] = NULL;
 			} else {
 				$row['tx_flux_parent'] = NULL;
 				$row['tx_flux_column'] = NULL;
