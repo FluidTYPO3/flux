@@ -69,4 +69,6 @@ unset($extbaseObjectContainer);
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] = 'FluidTYPO3\Flux\Hooks\WizardItemsHookSubscriber';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] = \FluidTYPO3\Flux\Utility\CompatibilityRegistry::get('FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon');
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable']['flux'] = 'FluidTYPO3\Flux\Hooks\RecordListGetTableHookSubscriber';
+if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['listNestedContent']) && !(boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['listNestedContent']) {
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable']['flux'] = 'FluidTYPO3\Flux\Hooks\RecordListGetTableHookSubscriber';
+}
