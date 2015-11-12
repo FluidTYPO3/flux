@@ -33,7 +33,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$this->registerArgument('foreignSortby', 'string', 'Define a field on the child record (or on the intermediate table) that stores the manual sorting information.', FALSE, '');
 		$this->registerArgument('foreignDefaultSortby', 'string', 'If a fieldname for foreign_sortby is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.', FALSE, '');
 		$this->registerArgument('foreignTableField', 'string', 'The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with foreign_field, the child record knows what its parent record is - so the child record could also be used on other parent tables.', FALSE, '');
-		$this->registerArgument('foreignUnique', 'string', 'Field which must be uniue for all children of a parent record.', FALSE, '');
+		$this->registerArgument('foreignUnique', 'string', 'Field which must be uniue for all children of a parent record.', FALSE, NULL);
 		$this->registerArgument('symmetricField', 'string', 'In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.', FALSE, '');
 		$this->registerArgument('symmetricLabel', 'string', 'If set, this overrides the default label of the selected symmetric_field.', FALSE, '');
 		$this->registerArgument('symmetricSortby', 'string', 'This works like foreign_sortby, but defines the field on foreign_table where the "other" sort order is stored.', FALSE, '');
