@@ -264,12 +264,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	 * @return mixed
 	 */
 	public function getDefault() {
-		if (FALSE === empty($this->default)) {
-			$defaultValue = $this->default;
-		} else {
-			$defaultValue = NULL;
-		}
-		return $defaultValue;
+		return $this->default;
 	}
 
 	/**
