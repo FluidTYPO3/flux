@@ -28,30 +28,26 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * ### Example of difference
  *
- * ```xml
- * <flux:form id="myform">
- *     <!-- Creates a basic Grid with one row and one column, names
- *          the column "mycontent" and makes Flux use this Grid -->
- *     <flux:content name="mycontent" />
- *     <!-- Additional flux:content tags are completely ignored -->
- * </flux:form>
- * ```
+ *     <flux:form id="myform">
+ *         <!-- Creates a basic Grid with one row and one column, names
+ *              the column "mycontent" and makes Flux use this Grid -->
+ *         <flux:content name="mycontent" />
+ *         <!-- Additional flux:content tags are completely ignored -->
+ *     </flux:form>
  *
- * ```xml
- * <flux:form id="myform">
- *     <!-- Creates a full, multi-column/row Grid -->
- *     <flux:grid>
- *         <flux:grid.row>
- *             <flux:grid.column name="mycontentA" />
- *             <flux:grid.column name="mycontentB" />
- *         </flux:grid.row>
- *         <flux:grid.row>
- *             <flux:grid.column name="mycontentC" colspan="2" />
- *         </flux:grid.row>
- *     </flux:grid>
- *     <!-- No use of flux:content is possible after this point -->
- * </flux:form>
- * ```
+ *     <flux:form id="myform">
+ *         <!-- Creates a full, multi-column/row Grid -->
+ *         <flux:grid>
+ *             <flux:grid.row>
+ *                 <flux:grid.column name="mycontentA" />
+ *                 <flux:grid.column name="mycontentB" />
+ *             </flux:grid.row>
+ *             <flux:grid.row>
+ *                 <flux:grid.column name="mycontentC" colspan="2" />
+ *             </flux:grid.row>
+ *         </flux:grid>
+ *         <!-- No use of flux:content is possible after this point -->
+ *     </flux:form>
  */
 class ContentViewHelper extends AbstractFormViewHelper {
 
