@@ -207,6 +207,7 @@ class ContentService implements SingletonInterface {
 				list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
 				$row['tx_flux_parent'] = $parent;
 				$row['tx_flux_column'] = $column;
+				$row['sorting'] = $tceMain->getSortNumber('tt_content', 0, $row['pid']);
 			} elseif (0 <= (integer) $relativeTo && FALSE === empty($parameters[1])) {
 				list($prefix, $column, $prefix2, , , $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
 				$relativeUid = (integer) $relativeUid;

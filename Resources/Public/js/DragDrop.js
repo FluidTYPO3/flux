@@ -154,6 +154,23 @@ define(['jquery', 'jquery-ui/sortable'], function ($) {
      */
     return function() {
         DragDrop.initialize();
+        // Workaround move with the element with the up button to the first position in grid column
+        // The 'href' of the up button href becomes the 'href' of the down button of the first element
+        $('[data-colpos="18181"]').each(
+            function(i){
+                var gridColumn = $(this);
+                var pageId = parseInt(gridColumn.find(' > [data-page]').data('page'));
+                if (pageId<0) {
+                    var downArrow = gridColumn.find('> .t3js-page-ce-sortable span.icon-actions-move-down').first().closest('a');
+                    var upArrow = gridColumn.find('> .t3js-page-ce-sortable span.icon-actions-move-up').first().closest('a');
+                    // Check if up and down arrow exists
+                    if (upArrow.length && downArrow.length) {
+                        // Set 'href' of the up button to the 'href' of the down button of the first element in the grid column
+                        upArrow.attr('href', downArrow.attr('href'));
+                    }
+                }
+            });
+
         return DragDrop;
     }();
 });
