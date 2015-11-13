@@ -130,12 +130,19 @@ class MiscellaneousUtility {
 		$dom->loadXML($xml);
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->formatOutput = TRUE;
+		$fieldNodesToRemove = array();
 		foreach ($dom->getElementsByTagName('field') as $fieldNode) {
 			/** @var \DOMElement $fieldNode */
 			if (TRUE === in_array($fieldNode->getAttribute('index'), $removals)) {
-				$fieldNode->parentNode->removeChild($fieldNode);
+				$fieldNodesToRemove[] = $fieldNode;
 			}
 		}
+
+		foreach ($fieldNodesToRemove as $fieldNodeToRemove) {
+			/** @var \DOMElement $fieldNodeToRemove */
+			$fieldNodeToRemove->parentNode->removeChild($fieldNodeToRemove);
+		}
+
 		// Assign a hidden ID to all container-type nodes, making the value available in templates etc.
 		foreach ($dom->getElementsByTagName('el') as $containerNode) {
 			/** @var \DOMElement $containerNode */
