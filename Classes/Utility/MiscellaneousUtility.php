@@ -11,6 +11,8 @@ namespace FluidTYPO3\Flux\Utility;
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -26,6 +28,11 @@ class MiscellaneousUtility {
 	 * @var array
 	 */
 	private static $allowedIconTypes = array('svg', 'png', 'gif');
+
+	/**
+	 * @var IconFactory
+	 */
+	private static $iconFactory;
 
 	/**
 	 * @param integer $contentElementUid
@@ -44,7 +51,11 @@ class MiscellaneousUtility {
 	 * @return string
 	 */
 	public static function getIcon($icon) {
-		return IconUtility::getSpriteIcon($icon);
+		if (NULL === static::$iconFactory) {
+			static::$iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+		}
+
+		return static::$iconFactory->getIcon($icon, Icon::SIZE_SMALL);
 	}
 
 	/**
@@ -54,7 +65,7 @@ class MiscellaneousUtility {
 	 * @return string
 	 */
 	public static function wrapLink($inner, $uri, $title) {
-		return '<a href="#" onclick="window.location.href=\'' . htmlspecialchars($uri) . '\'" title="' . $title . '">' . $inner . '</a>';
+		return '<a href="#" class="btn btn-default btn-sm" onclick="window.location.href=\'' . htmlspecialchars($uri) . '\'" title="' . $title . '">' . $inner . '</a>';
 	}
 
 	/**
