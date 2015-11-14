@@ -20,11 +20,11 @@ use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\Utility\IconUtility;
-use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
@@ -357,9 +357,9 @@ class PreviewView {
 		$footerRenderMethod = new \ReflectionMethod($dblist, 'tt_content_drawFooter');
 		$footerRenderMethod->setAccessible(TRUE);
 		$space = 0;
-		$disableMoveAndNewButtons = FALSE;
 		$langMode = $dblist->tt_contentConfig['languageMode'];
-		$dragDropEnabled = FALSE;
+		$dragDropEnabled = $this->getBackendUser()->doesUserHaveAccess($dblist->getPageinfo(), Permission::CONTENT_EDIT);
+		$disableMoveAndNewButtons = !$dragDropEnabled;
 
 		// Necessary for edit button in workspace.
 		$dblist->tt_contentData['nextThree'][$row['uid']] = $row['uid'];
@@ -516,7 +516,8 @@ class PreviewView {
 		}
 
 		/** @var $dblist PageLayoutView */
-		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
+		$dblist = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class)->get(\FluidTYPO3\Flux\View\PageLayoutView::class);
+
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
 		$dblist->script = 'db_layout.php';
 		$dblist->showIcon = 1;
@@ -536,6 +537,7 @@ class PreviewView {
 		$dblist->tt_contentConfig['activeCols'] .= ',' . ContentService::COLPOS_FLUXCONTENT;
 		$dblist->CType_labels = array();
 		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";
+		$dblist->setPageinfo(BackendUtility::readPageAccess($row['pid'], ''));
 		$dblist->initializeLanguages();
 		foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
 			$dblist->CType_labels[$val[1]] = $this->getLanguageService()->sL($val[0]);
