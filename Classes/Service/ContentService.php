@@ -171,8 +171,11 @@ class ContentService implements SingletonInterface {
 	 *
 	 * @param $l10nParentUid
 	 */
+
 	protected function setFluidPositionOnL10nRecords ($l10nParentUid) {
+		$this->assertIsValidContentUid( $l10nParentUid );
 		$l10nParentRecord = $this->loadRecordFromDatabase( $l10nParentUid );
+		$this->assertIsValidFluxChildContentRecord( $l10nParentRecord );
 		// 1)
 		$l10nSiblingRecords = (array) $this->workspacesAwareRecordService->get(
 			'tt_content',
@@ -520,6 +523,30 @@ class ContentService implements SingletonInterface {
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
 		return $previousLocalizedRecordUid;
+	}
+
+	/**
+	 * @param array $fluxChildContentRecord
+	 */
+	private function assertIsValidFluxChildContentRecord ($fluxChildContentRecord) {
+		if ($fluxChildContentRecord['colPos'] != self::COLPOS_FLUXCONTENT) {
+			trigger_error( 'colPos needs to be a valid flux colpos', E_USER_ERROR );
+		}
+		if ( !is_string( $fluxChildContentRecord['tx_flux_column'] ) || empty( $fluxChildContentRecord['tx_flux_column'] ) ) {
+			trigger_error( 'tx_flux_column of record needs to be valid column id', E_USER_ERROR );
+		}
+		if ( abs( $fluxChildContentRecord['tx_flux_parent'] ) <= 0 ) {
+			trigger_error( 'tx_flux_parent of record needs to be a valid content uid', E_USER_ERROR );
+		}
+	}
+
+	/**
+	 * @param int $contentUid
+	 */
+	private function assertIsValidContentUid ($contentUid) {
+		if ( !is_int( $contentUid ) || abs( $contentUid ) <= 0 ) {
+			trigger_error( 'Parameter is not a valid tt_content uid', E_USER_ERROR );
+		}
 	}
 
 }
