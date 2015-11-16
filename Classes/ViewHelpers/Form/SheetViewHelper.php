@@ -45,18 +45,14 @@ class SheetViewHelper extends AbstractFormViewHelper {
 		$extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
 		if (TRUE === $form->has($arguments['name'])) {
 			$sheet = $form->get($arguments['name']);
-			// Note: this next line will -override- any variables set in any existing sheet of that name. This
-			// is expected behavior but it also affects previously added sheets.
-			$sheet->setExtensionName($extensionName);
-			$sheet->setVariables($arguments['variables']);
 		} else {
 			/** @var Sheet $sheet */
 			$sheet = $form->createContainer('Sheet', $arguments['name'], $arguments['label']);
-			$sheet->setExtensionName($extensionName);
-			$sheet->setVariables($arguments['variables']);
-			$sheet->setDescription($arguments['description']);
-			$sheet->setShortDescription($arguments['shortDescription']);
 		}
+		$sheet->setExtensionName($extensionName);
+		$sheet->setVariables($arguments['variables']);
+		$sheet->setDescription($arguments['description']);
+		$sheet->setShortDescription($arguments['shortDescription']);
 		return $sheet;
 	}
 
