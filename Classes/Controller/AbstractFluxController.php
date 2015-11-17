@@ -262,7 +262,9 @@ abstract class AbstractFluxController extends ActionController {
 		$potentialControllerInstance = $this->objectManager->get($controllerClassName);
 		$viewContext = $this->provider->getViewContext($row, $this->request);
 		$viewContext->setPackageName($this->provider->getControllerPackageNameFromRecord($row));
+		/** @var \TYPO3\CMS\Extbase\Mvc\Web\Request $subRequest */
 		$subRequest = $viewContext->getRequest();
+		$subRequest->setArguments($arguments);
 		$subRequest->setControllerExtensionName($viewContext->getExtensionName());
 		$subRequest->setControllerVendorName($viewContext->getVendorName());
 		$subRequest->setControllerActionName($this->provider->getControllerActionFromRecord($row));
