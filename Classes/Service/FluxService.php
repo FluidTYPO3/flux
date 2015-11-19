@@ -192,6 +192,7 @@ class FluxService implements SingletonInterface {
 		/** @var $exposedView ExposedTemplateView */
 		$exposedView = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
 		$exposedView->setRenderingContext($renderingContext);
+		$exposedView->setControllerContext($context);
 		$exposedView->assignMultiple($variables);
 		$exposedView->setTemplatePaths($viewContext->getTemplatePaths());
 		$exposedView->setTemplatePathAndFilename($viewContext->getTemplatePathAndFilename());

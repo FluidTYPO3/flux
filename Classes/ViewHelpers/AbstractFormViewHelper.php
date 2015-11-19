@@ -52,7 +52,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
 			$renderingContext,
 			static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
 		);
-		parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
 	}
 
 	/**
