@@ -42,6 +42,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$this->registerArgument('disableMovingChildrenWithParent', 'boolean', 'Disables that child records get moved along with their parent records.', FALSE, FALSE);
 		$this->registerArgument('showThumbs', 'boolean', 'If TRUE, adds thumbnail display when editing in BE', FALSE, TRUE);
 		$this->registerArgument('matchFields', 'array', 'When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table', FALSE, array());
+		$this->registerArgument('oppositeField', 'string', 'Name of the opposite field related to a proper mm relation', FALSE, '');
 	}
 
 	/**
@@ -80,6 +81,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$component->setDisableMovingChildrenWithParent($arguments['disableMovingChildrenWithParent']);
 		$component->setShowThumbnails($arguments['showThumbs']);
 		$component->setMatchFields((array) $arguments['matchFields']);
+		$component->setOppositeField($arguments['oppositeField']);
 		return $component;
 	}
 

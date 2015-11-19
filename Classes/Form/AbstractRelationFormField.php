@@ -183,6 +183,7 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
 		$configuration['showThumbs'] = intval($this->getShowThumbnails());
 		$configuration['MM'] = $this->getManyToMany();
 		$configuration['MM_match_fields'] = $this->getMatchFields();
+		$configuration['MM_opposite_field'] = $this->getOppositeField();
 		$configuration['filter'] = $this->getFilter();
 		return $configuration;
 	}
@@ -264,6 +265,22 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
 	 */
 	public function setMatchFields(array $matchFields) {
 		$this->matchFields = $matchFields;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getOppositeField() {
+		return $this->oppositeField;
+	}
+
+	/**
+	 * @param string $oppositeField
+	 * @return RelationFieldInterface
+	 */
+	public function setOppositeField($oppositeField) {
+		$this->oppositeField = $oppositeField;
 		return $this;
 	}
 
