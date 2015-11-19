@@ -103,8 +103,11 @@ abstract class AbstractFluxController extends ActionController {
 		$extensionKey = $this->provider->getExtensionKey($row);
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$pluginName = $this->request->getPluginName();
-		$this->settings = (array) $this->configurationManager->getConfiguration(
-			ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName, $pluginName
+		$this->settings = RecursiveArrayUtility::merge(
+			(array) $this->configurationManager->getConfiguration(
+				ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName, $pluginName
+			),
+			$this->settings
 		);
 		$this->data = $this->provider->getFlexFormValues($row);
 		$this->setup = $this->provider->getTemplatePaths($row);
