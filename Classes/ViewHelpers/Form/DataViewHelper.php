@@ -12,26 +12,24 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception;
 
 /**
  * Converts raw flexform xml into an associative array
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class DataViewHelper extends AbstractViewHelper {
 
 	/**
 	 * @var FluxService
 	 */
-	protected $configurationService;
+	protected static $configurationService;
 
 	/**
 	 * @var WorkspacesAwareRecordService
 	 */
-	protected $recordService;
+	protected static $recordService;
 
 	/**
 	 * Inject Flux service
@@ -39,7 +37,7 @@ class DataViewHelper extends AbstractViewHelper {
 	 * @return void
 	 */
 	public function injectConfigurationService(FluxService $configurationService) {
-		$this->configurationService = $configurationService;
+		static::$configurationService = $configurationService;
 	}
 
 	/**
@@ -47,49 +45,72 @@ class DataViewHelper extends AbstractViewHelper {
 	 * @return void
 	 */
 	public function injectRecordService(WorkspacesAwareRecordService $recordService) {
-		$this->recordService = $recordService;
+		static::$recordService = $recordService;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function initializeArguments() {
+		$this->registerArgument('table', 'string', 'Name of table that contains record with Flux field', TRUE);
+		$this->registerArgument('field', 'string', 'Name of Flux field in table', TRUE);
+		$this->registerArgument('uid', 'integer', 'UID of record to load (used if "record" attribute not used)', FALSE, NULL);
+		$this->registerArgument('record', 'array', 'Record containing Flux field (used if "uid" attribute not used)', FALSE, NULL);
+		$this->registerArgument('as', 'string', 'Optional name of template variable to assign in tag content rendering', FALSE, NULL);
 	}
 
 	/**
 	 * Render method
-	 * @param string $table
-	 * @param string $field
-	 * @param integer $uid
-	 * @param array $record
-	 * @param string $as
-	 * @return array
+	 * @return mixed
 	 * @throws Exception
 	 */
-	public function render($table, $field, $uid = NULL, $record = NULL, $as = NULL) {
+	public function render() {
+		return static::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
+	}
+
+	/**
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
+	 * @return mixed
+	 */
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+		$templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+		$as = $arguments['as'];
+		$record = $arguments['record'];
+		$uid = $arguments['uid'];
+		$field = $arguments['field'];
+		$table = $arguments['table'];
+
 		if (NULL === $record && NULL === $as) {
-			$record = $this->renderChildren();
+			$record = $renderChildrenClosure();
 		}
 		if (NULL === $uid && NULL !== $record && TRUE === isset($record['uid'])) {
 			$uid = $record['uid'];
 		}
 		if (TRUE === isset($GLOBALS['TCA'][$table]) && TRUE === isset($GLOBALS['TCA'][$table]['columns'][$field])) {
 			if (NULL === $record) {
-				$record = $this->recordService->getSingle($table, 'uid,' . $field, $uid);
+				$record = static::$recordService->getSingle($table, 'uid,' . $field, $uid);
 			}
 			if (NULL === $record) {
 				throw new Exception(sprintf('Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .
 					'provide the "record" attribute.', $table, $field, $uid), 1358679983);
 			}
-			$providers = $this->configurationService->resolveConfigurationProviders($table, $field, $record);
-			$dataArray = $this->readDataArrayFromProvidersOrUsingDefaultMethod($providers, $record, $field);
+			$providers = static::$configurationService->resolveConfigurationProviders($table, $field, $record);
+			$dataArray = static::readDataArrayFromProvidersOrUsingDefaultMethod($providers, $record, $field);
 		} else {
 			throw new Exception('Invalid table:field "' . $table . ':' . $field . '" - does not exist in TYPO3 TCA.', 1387049117);
 		}
 		if (NULL !== $as) {
-			if ($this->templateVariableContainer->exists($as)) {
-				$backupVariable = $this->templateVariableContainer->get($as);
-				$this->templateVariableContainer->remove($as);
+			if ($templateVariableContainer->exists($as)) {
+				$backupVariable = $templateVariableContainer->get($as);
+				$templateVariableContainer->remove($as);
 			}
-			$this->templateVariableContainer->add($as, $dataArray);
-			$content = $this->renderChildren();
-			$this->templateVariableContainer->remove($as);
+			$templateVariableContainer->add($as, $dataArray);
+			$content = $renderChildrenClosure();
+			$templateVariableContainer->remove($as);
 			if (TRUE === isset($backupVariable)) {
-				$this->templateVariableContainer->add($as, $backupVariable);
+				$templateVariableContainer->add($as, $backupVariable);
 			}
 			return $content;
 		}
@@ -102,11 +123,11 @@ class DataViewHelper extends AbstractViewHelper {
 	 * @param string $field
 	 * @return array
 	 */
-	protected function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field) {
+	protected static function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field) {
 		if (0 === count($providers)) {
-			$lang = $this->getCurrentLanguageName();
-			$pointer = $this->getCurrentValuePointerName();
-			$dataArray = $this->configurationService->convertFlexFormContentToArray($record[$field], NULL, $lang, $pointer);
+			$lang = static::getCurrentLanguageName();
+			$pointer = static::getCurrentValuePointerName();
+			$dataArray = static::$configurationService->convertFlexFormContentToArray($record[$field], NULL, $lang, $pointer);
 		} else {
 			$dataArray = array();
 			/** @var ProviderInterface $provider */
@@ -127,7 +148,7 @@ class DataViewHelper extends AbstractViewHelper {
 	 *
 	 * @return string|NULL
 	 */
-	protected function getCurrentLanguageName() {
+	protected static function getCurrentLanguageName() {
 		$language = $GLOBALS['TSFE']->lang;
 		if (TRUE === empty($language) || 'default' === $language) {
 			$language = NULL;
@@ -141,8 +162,8 @@ class DataViewHelper extends AbstractViewHelper {
 	 *
 	 * @return string|NULL
 	 */
-	protected function getCurrentValuePointerName() {
-		return $this->getCurrentLanguageName();
+	protected static function getCurrentValuePointerName() {
+		return static::getCurrentLanguageName();
 	}
 
 }

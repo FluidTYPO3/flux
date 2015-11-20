@@ -12,9 +12,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 
 /**
- * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
- * @package Flux
- * @subpackage Utility
+ * ExtensionNamingUtilityTest
  */
 class ExtensionNamingUtilityTest extends AbstractTestCase {
 

@@ -20,7 +20,7 @@ use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 
 /**
- * @package Flux
+ * MiscellaneousUtilityTest
  */
 class MiscellaneousUtilityTest extends AbstractTestCase {
 
@@ -224,7 +224,8 @@ class MiscellaneousUtilityTest extends AbstractTestCase {
 	 */
 	public function getCleanFlexFormXmlTestValues() {
 		return array(
-			array('<data><fields></fields></data>', array(), '')
+			array('<data><fields></fields></data>', array(), ''),
+			array('<data><field index="columns">   <el index="el">   </el>   </field></data>', array(), ''),
 		);
 	}
 

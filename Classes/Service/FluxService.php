@@ -19,6 +19,7 @@ use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
+use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -39,9 +40,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
  * Flux FlexForm integration Service
  *
  * Main API Service for interacting with Flux-based FlexForms
- *
- * @package Flux
- * @subpackage Service
  */
 class FluxService implements SingletonInterface {
 
@@ -194,6 +192,7 @@ class FluxService implements SingletonInterface {
 		/** @var $exposedView ExposedTemplateView */
 		$exposedView = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
 		$exposedView->setRenderingContext($renderingContext);
+		$exposedView->setControllerContext($context);
 		$exposedView->assignMultiple($variables);
 		$exposedView->setTemplatePaths($viewContext->getTemplatePaths());
 		$exposedView->setTemplatePathAndFilename($viewContext->getTemplatePathAndFilename());
@@ -342,11 +341,12 @@ class FluxService implements SingletonInterface {
 	 * @return array
 	 */
 	public function getAllTypoScript() {
-		if (0 === count(self::$typoScript)) {
-			self::$typoScript = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-			self::$typoScript = GeneralUtility::removeDotsFromTS(self::$typoScript);
+		$pageId = $this->configurationManager->getCurrentPageId();
+		if (FALSE === isset(self::$typoScript[$pageId])) {
+			self::$typoScript[$pageId] = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			self::$typoScript[$pageId] = GeneralUtility::removeDotsFromTS(self::$typoScript[$pageId]);
 		}
-		return self::$typoScript;
+		return (array) self::$typoScript[$pageId];
 	}
 
 	/**

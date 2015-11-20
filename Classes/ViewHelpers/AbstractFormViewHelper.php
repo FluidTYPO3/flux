@@ -11,15 +11,15 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Base class for all FlexForm related ViewHelpers
- *
- * @package Flux
- * @subpackage ViewHelpers
  */
-abstract class AbstractFormViewHelper extends AbstractViewHelper {
+abstract class AbstractFormViewHelper extends AbstractViewHelper implements CompilableInterface {
 
 	const SCOPE = 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper';
 	const SCOPE_VARIABLE_EXTENSIONNAME = 'extensionName';
@@ -31,13 +31,27 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 	 * @return void
 	 */
 	public function render() {
-		$component = $this->getComponent();
-		$container = $this->getContainer();
+		return static::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
+	}
+
+	/**
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
+	 * @return void
+	 */
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+		$component = static::getComponent($renderingContext, $arguments, $renderChildrenClosure);
+		$container = static::getContainerFromRenderingContext($renderingContext);
 		$container->add($component);
 		// rendering child nodes with Form's last sheet as active container
-		$this->setContainer($component);
-		$this->renderChildren();
-		$this->setContainer($container);
+		static::setContainerInRenderingContext($renderingContext, $component);
+		$renderChildrenClosure();
+		static::setContainerInRenderingContext($renderingContext, $container);
+		static::setExtensionNameInRenderingContext(
+			$renderingContext,
+			static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
+		);
 	}
 
 	/**
@@ -45,7 +59,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 	 */
 	public function renderChildren() {
 		// Make sure the current extension name always propagates to child nodes
-		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME, $this->getExtensionName());
+		static::setExtensionNameInRenderingContext($this->renderingContext, $this->getExtensionName());
 
 		return parent::renderChildren();
 	}
@@ -54,14 +68,40 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 	 * @return string
 	 */
 	protected function getExtensionName() {
-		if (TRUE === $this->hasArgument(self::SCOPE_VARIABLE_EXTENSIONNAME)) {
-			return $this->arguments[self::SCOPE_VARIABLE_EXTENSIONNAME];
+		return static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments);
+	}
+
+	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param string $name
+	 * @throws InvalidVariableException
+	 */
+	protected static function setExtensionNameInRenderingContext(RenderingContextInterface $renderingContext, $name) {
+		$renderingContext->getViewHelperVariableContainer()->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $name);
+	}
+
+	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @throws InvalidVariableException
+	 * @return string
+	 */
+	protected static function getExtensionNameFromRenderingContextOrArguments(
+		RenderingContextInterface $renderingContext,
+		array $arguments
+	) {
+		if (TRUE === isset($arguments[static::SCOPE_VARIABLE_EXTENSIONNAME])) {
+			return $arguments[static::SCOPE_VARIABLE_EXTENSIONNAME];
 		}
-		if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME)) {
-			return $this->viewHelperVariableContainer->get(self::SCOPE, self::SCOPE_VARIABLE_EXTENSIONNAME);
+		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+		if (TRUE === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME)) {
+			return $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
 		}
-		if (TRUE === isset($this->controllerContext)) {
-			return $this->controllerContext->getRequest()->getControllerExtensionName();
+		$controllerContext = $renderingContext->getControllerContext();
+		if (NULL !== $controllerContext) {
+			$controllerExtensionName = $controllerContext->getRequest()->getControllerExtensionName();
+			$controllerVendorName = $controllerContext->getRequest()->getControllerVendorName();
+			return (FALSE === empty($controllerVendorName) ? $controllerVendorName . '.' : '') . $controllerExtensionName;
 		}
 		return 'FluidTYPO3.Flux';
 	}
@@ -70,35 +110,57 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 	 * @return Form
 	 */
 	protected function getForm() {
-		if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, self::SCOPE_VARIABLE_FORM)) {
-			$form = $this->viewHelperVariableContainer->get(self::SCOPE, self::SCOPE_VARIABLE_FORM);
-		} elseif (TRUE === $this->templateVariableContainer->exists(self::SCOPE_VARIABLE_FORM)) {
-			$form = $this->templateVariableContainer->get(self::SCOPE_VARIABLE_FORM);
+		return static::getFormFromRenderingContext($this->renderingContext);
+	}
+
+	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @throws InvalidVariableException
+	 * @return FormInterface
+	 */
+	public static function getFormFromRenderingContext(RenderingContextInterface $renderingContext) {
+		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+		$templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+		if (TRUE === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_FORM)) {
+			$form = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_FORM);
+		} elseif (TRUE === $templateVariableContainer->exists(static::SCOPE_VARIABLE_FORM)) {
+			$form = $templateVariableContainer->get(static::SCOPE_VARIABLE_FORM);
 		} else {
 			$form = Form::create();
-			$this->viewHelperVariableContainer->add(self::SCOPE, self::SCOPE_VARIABLE_FORM, $form);
+			$viewHelperVariableContainer->add(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
 		}
 		return $form;
 	}
 
 	/**
 	 * @param string $gridName
-	 * @return Form
+	 * @return Grid
 	 */
 	protected function getGrid($gridName = 'grid') {
-		$form = $this->getForm();
-		if (FALSE === $this->viewHelperVariableContainer->exists(self::SCOPE, self::SCOPE_VARIABLE_GRIDS)) {
+		return static::getGridFromRenderingContext($this->renderingContext, $gridName);
+	}
+
+	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param string $gridName
+	 * @throws InvalidVariableException
+	 * @return Grid
+	 */
+	protected static function getGridFromRenderingContext(RenderingContextInterface $renderingContext, $gridName = 'grid') {
+		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+		$form = static::getFormFromRenderingContext($renderingContext);
+		if (FALSE === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_GRIDS)) {
 			$grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
 			$grids = array($gridName => $grid);
-			$this->viewHelperVariableContainer->add(self::SCOPE, self::SCOPE_VARIABLE_GRIDS, $grids);
+			$viewHelperVariableContainer->add(static::SCOPE, static::SCOPE_VARIABLE_GRIDS, $grids);
 		} else {
-			$grids = $this->viewHelperVariableContainer->get(self::SCOPE, self::SCOPE_VARIABLE_GRIDS);
+			$grids = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_GRIDS);
 			if (TRUE === isset($grids[$gridName])) {
 				$grid = $grids[$gridName];
 			} else {
 				$grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
 				$grids[$gridName] = $grid;
-				$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_GRIDS, $grids);
+				$viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_GRIDS, $grids);
 			}
 		}
 		return $grid;
@@ -108,28 +170,50 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper {
 	 * @return ContainerInterface
 	 */
 	protected function getContainer() {
-		if (TRUE === $this->viewHelperVariableContainer->exists(self::SCOPE, self::SCOPE_VARIABLE_CONTAINER)) {
-			$container = $this->viewHelperVariableContainer->get(self::SCOPE, self::SCOPE_VARIABLE_CONTAINER);
-		} elseif (TRUE === $this->templateVariableContainer->exists(self::SCOPE_VARIABLE_CONTAINER)) {
-			$container = $this->templateVariableContainer->get(self::SCOPE_VARIABLE_CONTAINER);
+		return static::getContainerFromRenderingContext($this->renderingContext);
+	}
+
+	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @throws InvalidVariableException
+	 * @return mixed
+	 */
+	protected static function getContainerFromRenderingContext(RenderingContextInterface $renderingContext) {
+		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+		$templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+		if (TRUE === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER)) {
+			$container = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
+		} elseif (TRUE === $templateVariableContainer->exists(static::SCOPE_VARIABLE_CONTAINER)) {
+			$container = $templateVariableContainer->get(static::SCOPE_VARIABLE_CONTAINER);
 		} else {
-			$form = $this->getForm();
+			$form = static::getFormFromRenderingContext($renderingContext);
 			$container = $form->last();
-			$this->setContainer($container);
+			static::setContainerInRenderingContext($renderingContext, $container);
 		}
 		return $container;
 	}
 
 	/**
 	 * @param FormInterface $container
+	 * @throws InvalidVariableException
 	 * @return void
 	 */
 	protected function setContainer(FormInterface $container) {
-		$this->viewHelperVariableContainer->addOrUpdate(self::SCOPE, self::SCOPE_VARIABLE_CONTAINER, $container);
-		if (TRUE === $this->templateVariableContainer->exists(self::SCOPE_VARIABLE_CONTAINER)) {
-			$this->templateVariableContainer->remove(self::SCOPE_VARIABLE_CONTAINER);
+		static::setContainerInRenderingContext($this->renderingContext, $container);
+	}
+
+	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param FormInterface $container
+	 * @throws InvalidVariableException
+	 * @return void
+	 */
+	protected static function setContainerInRenderingContext(RenderingContextInterface $renderingContext, FormInterface $container) {
+		$renderingContext->getViewHelperVariableContainer()->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER, $container);
+		if (TRUE === $renderingContext->getTemplateVariableContainer()->exists(static::SCOPE_VARIABLE_CONTAINER)) {
+			$renderingContext->getTemplateVariableContainer()->remove(static::SCOPE_VARIABLE_CONTAINER);
 		}
-		$this->templateVariableContainer->add(self::SCOPE_VARIABLE_CONTAINER, $container);
+		$renderingContext->getTemplateVariableContainer()->add(static::SCOPE_VARIABLE_CONTAINER, $container);
 	}
 
 }

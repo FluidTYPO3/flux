@@ -15,9 +15,6 @@ use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 /**
  * This class removes all elements with colPos=18181 from db list view to avoid trouble with sorting
  * containers into child elements.
- *
- * Class RecordListGetTableHookSubscriber
- * @package FluidTYPO3\Flux\Hooks
  */
 class RecordListGetTableHookSubscriber implements RecordListGetTableHookInterface {
 

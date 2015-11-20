@@ -4,11 +4,11 @@
 	position: relative
 }
 
-.t3-js-clickmenutrigger .t3-icon-pagetree-root {
+.t3-js-clickmenutrigger .icon-state-default.icon-apps-pagetree-root .icon-markup {
 	opacity: 0
 }
 
-.fluidcontent-icon {
+.t3-icon.fluidcontent-icon, .fluidcontent-icon {
 	margin-top: 7px;
 	position: absolute;
 	left: 12px;

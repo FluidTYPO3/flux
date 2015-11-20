@@ -13,11 +13,11 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\PreviewView;
-use TYPO3\CMS\Backend\View\PageLayoutView;
+use FluidTYPO3\Flux\View\PageLayoutView;
 use TYPO3\CMS\Core\Versioning\VersionState;
 
 /**
- * @package Flux
+ * PreviewViewTest
  */
 class PreviewViewTest extends AbstractTestCase {
 
@@ -77,7 +77,6 @@ class PreviewViewTest extends AbstractTestCase {
 				'drawRecord',
 				'registerTargetContentAreaInSession',
 				'drawNewIcon',
-				'drawPasteIcon',
 				'getInitializedPageLayoutView'
 			)
 		);
@@ -85,7 +84,6 @@ class PreviewViewTest extends AbstractTestCase {
 		$instance->expects($this->exactly(2))->method('drawRecord');
 		$instance->expects($this->once())->method('getInitializedPageLayoutView')->willReturn(new PageLayoutView());
 		$instance->expects($this->once())->method('drawNewIcon');
-		$instance->expects($this->exactly(2))->method('drawPasteIcon');
 		$instance->expects($this->once())->method('registerTargetContentAreaInSession');
 		$result = $this->callInaccessibleMethod($instance, 'drawGridColumn', $record, $column);
 		$this->assertNotEmpty($result);
@@ -121,7 +119,7 @@ class PreviewViewTest extends AbstractTestCase {
 		$parentRow = array('bar' => 'foo');
 		$record = array('foo' => 'bar');
 		$column = new Form\Container\Column();
-		$view = $this->getMock('TYPO3\\CMS\\Backend\\View\\PageLayoutView', array('tt_content_drawHeader'));
+		$view = $this->getMock('FluidTYPO3\\Flux\\View\\PageLayoutView', array('tt_content_drawHeader'));
 		$view->expects($this->any())->method('tt_content_drawHeader')
 			->with($record, $this->anything(), $this->anything(), $this->anything());
 		$instance = $this->createInstance();
@@ -135,16 +133,6 @@ class PreviewViewTest extends AbstractTestCase {
 	public function testGetNewLink() {
 		$instance = $this->createInstance();
 		$result = $this->callInaccessibleMethod($instance, 'getNewLink', array(), 123, 'myareaname');
-		$this->assertContains('123', $result);
-		$this->assertContains('myareaname', $result);
-	}
-
-	/**
-	 * @test
-	 */
-	public function testGetNewLinkLegacy() {
-		$instance = $this->createInstance();
-		$result = $this->callInaccessibleMethod($instance, 'getNewLinkLegacy', array(), 123, 'myareaname');
 		$this->assertContains('123', $result);
 		$this->assertContains('myareaname', $result);
 	}
@@ -293,7 +281,7 @@ class PreviewViewTest extends AbstractTestCase {
 	public function configurePageLayoutViewForLanguageModeSetsSpecialVariablesInLanguageMode() {
 		$languageService = $this->getMock('TYPO3\\CMS\\Lang\\LanguageService', array('getLL'));
 		$languageService->expects($this->once())->method('getLL');
-		$view = $this->getMock('TYPO3\\CMS\\Backend\\View\\PageLayoutView', array('initializeLanguages'));
+		$view = $this->getMock('FluidTYPO3\\Flux\\View\\PageLayoutView', array('initializeLanguages'));
 		$view->expects($this->once())->method('initializeLanguages');
 		$instance = $this->getMock($this->createInstanceClassName(), array('getPageModuleSettings', 'getLanguageService'));
 		$instance->expects($this->once())->method('getPageModuleSettings')->willReturn(array('function' => 2));
@@ -314,7 +302,6 @@ class PreviewViewTest extends AbstractTestCase {
 		$column->expects($this->once())->method('getLabel')->willReturn('foobar-label');
 		$subject = $this->getMock('FluidTYPO3\\Flux\\View\\PreviewView', array('drawNewIcon', 'drawPasteIcon'));
 		$subject->expects($this->once())->method('drawNewIcon');
-		$subject->expects($this->exactly(2))->method('drawPasteIcon');
 		$this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 1, NULL, 'f-target', 2, 'f-content');
 	}
 

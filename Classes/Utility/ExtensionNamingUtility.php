@@ -12,10 +12,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Extension Utility
- *
- * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
- * @package Flux
- * @subpackage Utility
  */
 class ExtensionNamingUtility {
 

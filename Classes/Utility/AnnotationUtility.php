@@ -14,9 +14,6 @@ use TYPO3\CMS\Fluid\Core\Parser\TemplateParser;
 
 /**
  * Annotation Utility
- *
- * @package Flux
- * @subpackage Utility
  */
 class AnnotationUtility {
 

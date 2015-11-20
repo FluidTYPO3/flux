@@ -17,9 +17,6 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * Returns options for a "content area" selector box
- *
- * @package Flux
- * @subpackage Backend
  */
 class AreaListItemsProcessor {
 

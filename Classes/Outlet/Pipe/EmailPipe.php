@@ -20,9 +20,6 @@ use TYPO3\CMS\Core\Mail\MailMessage;
  * Chain with other Pipes to convert data before it reaches this
  * Pipe if you want to - just as an example - create a proper
  * email body text containing a nice representaton of the data.
- *
- * @package Flux
- * @subpackage Outlet\Pipe
  */
 class EmailPipe extends AbstractPipe implements PipeInterface {
 

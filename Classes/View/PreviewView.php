@@ -20,9 +20,11 @@ use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\Utility\IconUtility;
-use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
@@ -32,7 +34,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
- * @package Flux
+ * PreviewView
  */
 class PreviewView {
 
@@ -81,7 +83,8 @@ class PreviewView {
 								<span class="t3-icon t3-icon-actions t3-icon-view-table-%s"></span>
 							</div>
 							%s
-						</div>'
+						</div>',
+		'link' => '<a href="#" onclick="window.location.href=\'%s\'" title="%s" class="btn btn-default btn-sm">%s %s</a>'
 	);
 
 	/**
@@ -339,9 +342,10 @@ class PreviewView {
 
 		return sprintf($this->templates['record'], $disabledClass, $record['_CSSCLASS'], $record['uid'], $record['uid'],
 			$element, $colPosFluxContent, $parentRow['pid'], $parentRow['uid'], $record['uid'],
-			$this->drawNewIcon($parentRow, $column, $record['uid']) .
-			$this->drawPasteIcon($parentRow, $column, FALSE, $record) .
+			$this->drawNewIcon($parentRow, $column, $record['uid']).
+			$this->drawPasteIcon($parentRow, $column, FALSE, $record).
 			$this->drawPasteIcon($parentRow, $column, TRUE, $record));
+
 	}
 
 	/**
@@ -353,9 +357,9 @@ class PreviewView {
 		$footerRenderMethod = new \ReflectionMethod($dblist, 'tt_content_drawFooter');
 		$footerRenderMethod->setAccessible(TRUE);
 		$space = 0;
-		$disableMoveAndNewButtons = FALSE;
 		$langMode = $dblist->tt_contentConfig['languageMode'];
-		$dragDropEnabled = FALSE;
+		$dragDropEnabled = $this->getBackendUser()->doesUserHaveAccess($dblist->getPageinfo(), Permission::CONTENT_EDIT);
+		$disableMoveAndNewButtons = !$dragDropEnabled;
 
 		// Necessary for edit button in workspace.
 		$dblist->tt_contentData['nextThree'][$row['uid']] = $row['uid'];
@@ -376,21 +380,12 @@ class PreviewView {
 	protected function drawNewIcon(array $row, Column $column, $after = 0) {
 		$columnName = $column->getName();
 		$after = (FALSE === empty($columnName) && FALSE === empty($after)) ? '-' . $after : $row['pid'];
-		$icon = IconUtility::getSpriteIcon('actions-document-new');
-		$legacy = $this->isLegacyCoreVersion();
-		$uri = (FALSE === $legacy ? $this->getNewLink($row, $after, $columnName) : $this->getNewLinkLegacy($row, $after, $columnName));
+		$iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+		$icon = $iconFactory->getIcon('actions-document-new', Icon::SIZE_SMALL)->render();
+		$uri = $this->getNewLink($row, $after, $columnName);
 		$title = $this->getLanguageService()->getLL('newRecordHere');
 		$inner = $this->getLanguageService()->getLL('content');
-		$link = '<a href="#" onclick="window.location.href=\'' . htmlspecialchars($uri) . '\'" title="' . $title .
-			'" class="btn btn-default btn-sm">' . $icon . ' ' . $inner . '</a>';
-		return $link;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	protected function isLegacyCoreVersion() {
-		return (FALSE === version_compare(VersionNumberUtility::getNumericTypo3Version(), '7.1.0', '>='));
+		return sprintf($this->templates['link'], htmlspecialchars($uri), $title, $icon, $inner);
 	}
 
 	/**
@@ -413,42 +408,6 @@ class PreviewView {
 			'returnUrl' => $returnUri
 		));
 		return $uri;
-	}
-
-	/**
-	 * Generate a link valid on TYPO3 6.2
-	 *
-	 * @param array $row
-	 * @param integer $after
-	 * @param string $columnName
-	 * @return string
-	 */
-	protected function getNewLinkLegacy(array $row, $after, $columnName) {
-		$returnUri = rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI'));
-		$uri = 'db_new_content_el.php?id=' . $row['pid'] .
-			'&uid_pid=' . $after .
-			'&colPos=' . ContentService::COLPOS_FLUXCONTENT .
-			'&sys_language_uid=' . $row['sys_language_uid'] .
-			'&defVals[tt_content][tx_flux_parent]=' . $row['uid'] .
-			'&defVals[tt_content][tx_flux_column]=' . $columnName .
-			'&returnUrl=' . $returnUri;
-		return $uri;
-	}
-
-	/**
-	 * @param array $row
-	 * @param Column $column
-	 * @param boolean $reference
-	 * @param array $relativeTo
-	 * @return string
-	 */
-	protected function drawPasteIcon(array $row, Column $column, $reference = FALSE, array $relativeTo = array()) {
-		$command = TRUE === $reference ? 'reference' : 'paste';
-		$relativeUid = TRUE === isset($relativeTo['uid']) ? $relativeTo['uid'] : 0;
-		$columnName = $column->getName();
-		$relativeTo = $row['pid'] . '-' . $command . '-' . $relativeUid . '-' .
-			$row['uid'] . (FALSE === empty($columnName) ? '-' . $columnName : '') . '-' . ContentService::COLPOS_FLUXCONTENT;
-		return ClipBoardUtility::createIconWithUrl($relativeTo, $reference);
 	}
 
 	/**
@@ -557,7 +516,8 @@ class PreviewView {
 		}
 
 		/** @var $dblist PageLayoutView */
-		$dblist = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Backend\View\PageLayoutView');
+		$dblist = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class)->get(\FluidTYPO3\Flux\View\PageLayoutView::class);
+
 		$dblist->backPath = $GLOBALS['BACK_PATH'];
 		$dblist->script = 'db_layout.php';
 		$dblist->showIcon = 1;
@@ -577,6 +537,7 @@ class PreviewView {
 		$dblist->tt_contentConfig['activeCols'] .= ',' . ContentService::COLPOS_FLUXCONTENT;
 		$dblist->CType_labels = array();
 		$dblist->pidSelect = "pid = '" . $row['pid'] . "'";
+		$dblist->setPageinfo(BackendUtility::readPageAccess($row['pid'], ''));
 		$dblist->initializeLanguages();
 		foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
 			$dblist->CType_labels[$val[1]] = $this->getLanguageService()->sL($val[0]);
@@ -663,6 +624,22 @@ class PreviewView {
 	/**
 	 * @param array $row
 	 * @param Column $column
+	 * @param boolean $reference
+	 * @param array $relativeTo
+	 * @return string
+	 */
+	protected function drawPasteIcon(array $row, Column $column, $reference = FALSE, array $relativeTo = array()) {
+		$command = TRUE === $reference ? 'reference' : 'paste';
+		$relativeUid = TRUE === isset($relativeTo['uid']) ? $relativeTo['uid'] : 0;
+		$columnName = $column->getName();
+		$relativeTo = $row['pid'] . '-' . $command . '-' . $relativeUid . '-' .
+				$row['uid'] . (FALSE === empty($columnName) ? '-' . $columnName : '') . '-' . ContentService::COLPOS_FLUXCONTENT;
+		return ClipBoardUtility::createIconWithUrl($relativeTo, $reference);
+	}
+
+	/**
+	 * @param array $row
+	 * @param Column $column
 	 * @param integer $colPosFluxContent
 	 * @param PageLayoutView $dblist
 	 * @param integer $target
@@ -681,7 +658,7 @@ class PreviewView {
 			$column->getLabel(),
 			$target,
 			$id,
-			$this->drawNewIcon($row, $column) . $this->drawPasteIcon($row, $column) . $this->drawPasteIcon($row, $column, TRUE),
+			$this->drawNewIcon($row, $column). $this->drawPasteIcon($row, $column) . $this->drawPasteIcon($row, $column, TRUE),
 			$content
 		);
 	}

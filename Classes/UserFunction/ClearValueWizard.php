@@ -12,9 +12,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Renders a checkbox which, when checked, clears a flexform field value.
- *
- * @package	Flux
- * @subpackage UserFunction
  */
 class ClearValueWizard {
 

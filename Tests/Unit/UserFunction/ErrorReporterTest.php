@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\UserFunction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @package Flux
+ * ErrorReporterTest
  */
 class ErrorReporterTest extends AbstractUserFunctionTest {
 

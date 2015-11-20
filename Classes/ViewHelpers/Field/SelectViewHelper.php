@@ -9,12 +9,32 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\Select;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Select-type FlexForm field ViewHelper
  *
- * @package Flux
- * @subpackage ViewHelpers/Field
+ * ### Choosing one of two items
+ *
+ * Items are given in CSV mode:
+ *
+ *     <flux:field.select name="settings.position" items="left,right" default="left"/>
+ *
+ * ### Items with labels
+ *
+ * If you want to display labels that are different than the values itself,
+ * use an object in `items`:
+ *
+ *      <flux:field.select name="settings.position"
+ *                         items="{
+ *                                0:{0:'On the left side',1:'left'},
+ *                                1:{0:'On the right side',1:'right'}
+ *                                }"
+ *                        />
+ *
+ * You can translate those labels by putting a LLL reference in the first property:
+ *
+ *     LLL:EXT:extname/Resources/Private/Language/locallang.xlf:flux.example.fields.items.foo'
  */
 class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 
@@ -26,16 +46,20 @@ class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 		parent::initializeArguments();
 		$this->registerArgument('items', 'mixed', 'Items for the selector; array / CSV / Traversable / Query supported', TRUE);
 		$this->registerArgument('emptyOption', 'mixed', 'If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property\'s value (cast to string) as label.', FALSE, FALSE);
+		$this->registerArgument('translateCsvItems', 'boolean', 'If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined by normal Flux field name conventions');
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Select
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Select $component */
-		$component = $this->getPreparedComponent('Select');
-		$component->setItems($this->arguments['items']);
-		$component->setEmptyOption($this->arguments['emptyOption']);
+		$component = static::getPreparedComponent('Select', $renderingContext, $arguments);
+		$component->setItems($arguments['items']);
+		$component->setEmptyOption($arguments['emptyOption']);
+		$component->setTranslateCsvItems((boolean) $arguments['translateCsvItems']);
 		return $component;
 	}
 

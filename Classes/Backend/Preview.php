@@ -22,9 +22,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Fluid Template preview renderer
- *
- * @package Flux
- * @subpackage Backend
  */
 class Preview implements PageLayoutViewDrawItemHookInterface {
 

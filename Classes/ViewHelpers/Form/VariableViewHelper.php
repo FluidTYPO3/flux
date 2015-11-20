@@ -9,12 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  */
 
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Sets an option in the Form instance
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class VariableViewHelper extends AbstractFormViewHelper {
 
@@ -28,11 +26,13 @@ class VariableViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @return string
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
+	 * @return void
 	 */
-	public function render() {
-		$this->getContainer()->setVariable($this->arguments['name'], $this->arguments['value']);
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+		static::getContainerFromRenderingContext($renderingContext)->setVariable($arguments['name'], $arguments['value']);
 	}
 
 }

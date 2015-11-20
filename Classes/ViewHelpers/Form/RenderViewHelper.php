@@ -18,9 +18,6 @@ use TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper as FluidFormViewHelper;
  * ## Main form rendering ViewHelper
  *
  * Use to render a Flux form as HTML.
- *
- * @package Fluidbackend
- * @subpackage ViewHelpers
  */
 class RenderViewHelper extends FluidFormViewHelper {
 

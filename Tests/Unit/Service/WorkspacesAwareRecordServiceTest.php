@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 
 /**
- * @package Flux
+ * WorkspacesAwareRecordServiceTest
  */
 class WorkspacesAwareRecordServiceTest extends RecordServiceTest {
 

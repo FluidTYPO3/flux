@@ -13,16 +13,13 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
  * Form icon option ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class IconViewHelper extends OptionViewHelper {
 
 	/**
 	 * @var string
 	 */
-	protected $option = Form::OPTION_ICON;
+	public static $option = Form::OPTION_ICON;
 
 	/**
 	 * Initialize arguments

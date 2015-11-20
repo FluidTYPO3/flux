@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  */
 
 /**
- * @package Flux
+ * RowTest
  */
 class RowTest extends AbstractContainerTest {
 

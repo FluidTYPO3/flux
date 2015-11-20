@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field\Inline;
 use FluidTYPO3\Flux\Form\Field\Inline\Fal;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractInlineFieldViewHelper;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Repeats rendering of children with a typical for loop: starting at index $from it will loop until the index has reached $to.
@@ -18,19 +19,47 @@ use TYPO3\CMS\Core\Resource\File;
  * To get the file references, assigned with that field in a flux form, you will have to use EXT:vhs but there are two different ViewHelpers for fluidpages templates and fluidcontent elements.
  *
  * Example how to get the first file reference from a fluidcontent element, for the flux field named "settings.files":
- * 	{v:content.resources.fal(field: 'settings.files')
- * 		-> v:iterator.first()
- * 		-> v:variable.set(name: 'settings.files')}
+ *
+ *     {v:content.resources.fal(field: 'settings.files')
+ *         -> v:iterator.first()
+ *         -> v:variable.set(name: 'settings.files')}
  *
  * And now the example how to get the first file reference from a fluidpages template, for the flux field named "settings.files":
- * 	{v:page.resources.fal(field: 'settings.files')
- * 		-> v:iterator.first()
- * 		-> v:variable.set(name: 'settings.files')}
  *
- * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
- * @author Johannes Pieper <pieper@dlrg.de> DLRG e.V.
- * @package Flux
- * @subpackage ViewHelpers/Field/Inline
+ *     {v:page.resources.fal(field: 'settings.files')
+ *         -> v:iterator.first()
+ *         -> v:variable.set(name: 'settings.files')}
+ *
+ * ### Usage warning
+ *
+ * Due to [TYPO3 core bug #71239](https://forge.typo3.org/issues/71239), using
+ * FAL references within sections (`<flux:form.section>`) in content elements
+ * or within the page configuration does not work.
+ *
+ * When choosing a file in one section element, you will see it in all sections.
+ * When choosing a file in a page configuration, it will be visible in the subpages
+ * configuration, too.
+ *
+ * This issue will most likely not be fixed before TYPO3 8, so do not use it.
+ *
+ * Alternatively, you could use `<flux:field.file>`.
+ *
+ * ### Selecting and rendering an image
+ *
+ * #### Selecting a single image
+ *
+ *     <flux:field.inline.fal name="settings.image" required="1" maxItems="1" minItems="1"/>
+ *
+ * #### Rendering the image
+ *
+ *     {v:content.resources.fal(field: 'settings.image') -> v:iterator.first() -> v:variable.set(name: 'image')}
+ *     <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
+ *
+ * #### Rendering multiple images
+ *
+ *     <f:for each="{v:content.resources.fal(field: 'settings.image')}" as="image">
+ *         <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
+ *     </f:for>
  */
 class FalViewHelper extends AbstractInlineFieldViewHelper {
 
@@ -63,18 +92,20 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Fal
 	 */
-	public function getComponent() {
-		$allowedExtensions = $this->arguments['allowedExtensions'];
-		$disallowedExtensions = $this->arguments['disallowedExtensions'];
-		$createNewRelationLinkTitle = $this->arguments['createNewRelationLinkTitle'];
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		$allowedExtensions = $arguments['allowedExtensions'];
+		$disallowedExtensions = $arguments['disallowedExtensions'];
+		$createNewRelationLinkTitle = $arguments['createNewRelationLinkTitle'];
 
 		/** @var Fal $component */
-		$component = $this->getPreparedComponent('Inline/Fal');
-		if (FALSE === is_array($this->arguments['foreignMatchFields'])) {
+		$component = static::getPreparedComponent('Inline/Fal', $renderingContext, $arguments);
+		if (FALSE === is_array($arguments['foreignMatchFields'])) {
 			$component->setForeignMatchFields(array(
-				'fieldname' => $this->arguments['name']
+				'fieldname' => $arguments['name']
 			));
 		}
 		$component->setForeignSelectorFieldTcaOverride(array(
@@ -94,7 +125,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper {
 			))
 		);
 
-		if (FALSE === $this->hasArgument('foreignTypes')) {
+		if (FALSE === isset($arguments['foreignTypes'])) {
 			$component->setForeignTypes(array(
 				'0' => array(
 					'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'

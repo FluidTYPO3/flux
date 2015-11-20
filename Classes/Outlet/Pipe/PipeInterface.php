@@ -15,9 +15,6 @@ use FluidTYPO3\Flux\Form\FieldInterface;
  * Pipe Interface
  *
  * Interface for Pipes which process data for Outlets.
- *
- * @package Flux
- * @subpackage Outlet\Pipe
  */
 interface PipeInterface {
 

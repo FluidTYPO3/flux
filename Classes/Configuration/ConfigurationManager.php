@@ -17,9 +17,6 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  *
  * More context-sensitive ConfigurationManager with TS resolve
  * methods optimised for use in the backend.
- *
- * @package Flux
- * @subpackage Configuraion
  */
 class ConfigurationManager extends CoreConfigurationManager implements ConfigurationManagerInterface, SingletonInterface {
 

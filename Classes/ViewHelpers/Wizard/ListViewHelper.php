@@ -9,12 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Form\Wizard\ListWizard;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: List
- *
- * @package Flux
- * @subpackage ViewHelpers/Wizard
  */
 class ListViewHelper extends AbstractWizardViewHelper {
 
@@ -31,15 +29,17 @@ class ListViewHelper extends AbstractWizardViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return ListWizard
 	 */
-	public function getComponent() {
+	public function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var ListWizard $component */
-		$component = $this->getPreparedComponent('ListWizard');
-		$component->setTable($this->arguments['table']);
-		$component->setStoragePageUid($this->arguments['pid']);
-		$component->setWidth($this->arguments['width']);
-		$component->setHeight($this->arguments['height']);
+		$component = static::getPreparedComponent('ListWizard', $renderingContext, $arguments);
+		$component->setTable($arguments['table']);
+		$component->setStoragePageUid($arguments['pid']);
+		$component->setWidth($arguments['width']);
+		$component->setHeight($arguments['height']);
 		return $component;
 	}
 

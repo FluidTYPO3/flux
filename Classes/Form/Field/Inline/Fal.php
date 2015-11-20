@@ -12,10 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractInlineFormField;
 
 /**
- * @author Danilo Bürger <danilo.buerger@hmspl.de>, Heimspiel GmbH
- * @author Johannes Pieper <pieper@dlrg.de> DLRG e.V.
- * @package Flux
- * @subpackage Form\Field\Inline
+ * Fal
  */
 class Fal extends AbstractInlineFormField {
 

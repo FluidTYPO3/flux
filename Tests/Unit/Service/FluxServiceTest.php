@@ -21,7 +21,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @package Flux
+ * FluxServiceTest
  */
 class FluxServiceTest extends AbstractTestCase {
 

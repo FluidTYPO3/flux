@@ -1,5 +1,144 @@
 # Flux Change log
 
+7.3.0 - 2015-11-20
+------------------
+
+New minor release introducing **TYPO3 7.6 LTS compatibility** - which also means that **from this point onward, the minimum
+supported TYPO3 version is 7.6**. For those that still require critical fixes but must remain on for example TYPO3 6.2 we provide
+a `legacy` branch: https://github.com/FluidTYPO3/flux/commits/legacy
+
+However, some notes about the `legacy` branch:
+
+1. We Provide this branch as-is, not guaranteeing compatibility.
+2. We do not actively maintain this branch:
+   * We happily accept suggestions for fixes including code
+   * We happily accept pull requests to the legacy branch (but please observe our contribution guidelines very closely when making
+     patches for this branch - we aim for a minimal maintenance effort)
+3. There is no expected maximum lifetime of the branch, but you should prioritise upgrading your TYPO3 site to LTS as soon as you
+   can. The 6.2 branch of TYPO3 no longer receives bug fixes (including security patches).
+
+The following new changes and features are highlighted:
+
+All ViewHelpers compilable
+==========================
+
+This change means that all Flux ViewHelpers can now be compiled to native PHP which increases the performance, in particular for
+templates that have many instances, such as page templates.
+
+However, this change has required a small change to the internal API of Flux: the `getComponent` method on Form component
+ViewHelpers is now `static` which may yield warnings if you use custom component ViewHelpers - and depending on your PHP version.
+Very few should be affected since custom components are rare, only causes warnings and only warns on newer versions of PHP.
+
+Compatibility Registry
+======================
+
+A special registry has been introduced to facilitate easy version based dependency configuration. Essentially it allows you to
+provide a list of TYPO3 versions and values that apply to that version, with resolving happening in a way that the maximum viable
+configuration always gets returned. For example you can specify class names to return for TYPO3 versions 7.4 and 7.6, and if the
+active version is 7.5 the 7.4-specific class name gets returned (because the 7.6-specific one cannot be used).
+
+	\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
+    	'MyVendor\MyExtension\MyClass',
+    	array(
+    		'7.4.0' => 'MyVendor\MyExtension\Legacy\MyClass',
+    		'7.6.0' => 'MyVendor\MyExtension\MyClass'
+    	)
+    );
+    \FluidTYPO3\Flux\Utility\CompatibilityRegistry::get('MyVendor\MyExtension\MyClass');
+    
+The compatibility registry is introduced to make version checks completely uniform and allow any number of alternatives to be
+speficied, consistently returning a single value without you having to care about checking TYPO3 versions. In addition, the
+static signature means you can use the registry from anywhere (and manipulate it without mocking from unit tests).
+
+On-the-fly TCA manipulation
+===========================
+
+Provider classes are fitted with a method that together with the new FormEngine allows TCA to be manipulated freely. If a Provider
+is triggered when editing a record, every aspect of the editing form's composition can be manipulated. To utilise this feature all
+you need to do is implement `public function processTableConfiguration(array $row, array $configuration)` in your Provider class
+and make the method return the (modified) `$configuration` array. The `$configuration` array is a *big* array of FormEngine
+configuration and is at the time of writing this not fully documented. See the official TYPO3 documentation for more information
+about the FormEngine configuration - or debug the array and make your own experiments, it's not too difficult except for the size.
+
+Various other changes
+=====================
+
+- ViewHelper `flux:field.tree.category` added as shorthand to configure a `sys_category` relation field
+  - https://github.com/FluidTYPO3/flux/commit/e9ecf239e9c8038b5a497f606d8f68861fcab5de
+- Bugfix to preserve and merge `$this->settings` from other controller when rendering sub-requests
+  - https://github.com/FluidTYPO3/flux/commit/d34d2aaa4079e1ceebab4614321b6fa303a90a31
+- Compatibility for use with standalone Fluid as dependency
+  - https://github.com/FluidTYPO3/flux/commit/94f7e9323f60c22b752ea68008907ab73dc32417
+- Bugfix for passing arguments of original request to foreign controller
+  - https://github.com/FluidTYPO3/flux/commit/976d4497bbea97b57568875a7a3c12cc5a736d77
+- Feature to specify default values associated with a `flux:form` - can be consumed by other features for any purpose
+  - https://github.com/FluidTYPO3/flux/commit/bb9da3815e24f0a90aaeab65e35f2db9fee86820
+- Bugfix for visibility of sorting arrows in list view and assignment of correct permissions used for visibility of action links
+  - https://github.com/FluidTYPO3/flux/commit/ca6e6018610a00a52b1e885a8c0cdc202dd81e87
+- Bugfix for cleaning of stored data
+  - https://github.com/FluidTYPO3/flux/commit/5eaa1df584e033f51feea2ad02c8ffa803a7e5d4
+- Feature to allow Provider classes to manipulate TCA on-the-fly
+  - https://github.com/FluidTYPO3/flux/commit/e1af87651266b736b961dcd3a9ed96e0410efdbb
+- Feature to toggle display of nested content elements in list view (use may have unexpected results but is widely requested)
+  - https://github.com/FluidTYPO3/flux/commit/fab20a070409112b04c38c94c8b7ef69352fa72f
+- Bugfix for moving elements from within nested content to top of page column (regression)
+  - https://github.com/FluidTYPO3/flux/commit/7e20161288e6a830565e288bab91e908ca196ea3
+- Bugfix for default value resolving of `foreignUnique` field
+  - https://github.com/FluidTYPO3/flux/commit/090ac5c1cdf2adfd3177167ebd1934d7cbd8f574
+- Bugfix to ensure correct calling of Provider commands for each DataHandler command provided
+  - https://github.com/FluidTYPO3/flux/commit/744e53c8c1d0baa8f85207292db42eaf42b896db
+- Styling fixes for 7.6 compatibility
+  - https://github.com/FluidTYPO3/flux/commit/ecfcd4c41a12dffd4c73787e93a9487bfb172837
+- Legacy (6.2) compatibility classes and functions removed
+  - https://github.com/FluidTYPO3/flux/commit/956b8136befcff94a04c51b040113318a9ab98a7
+  - https://github.com/FluidTYPO3/flux/commit/548f3b7345a48dd8633b249524bad6e7fb0d4dcc
+- Various bug fixes and adaptations for compatibility with FormEngine
+  - https://github.com/FluidTYPO3/flux/commit/1805b7dc06f0767948d546e6079aaec0fc99ea46
+  - https://github.com/FluidTYPO3/flux/commit/e4489aaed867f27f4a6bfa32b50e5fbe015d2b33
+  - https://github.com/FluidTYPO3/flux/commit/c9357b718818569e171eba2a588a979a6335fcca
+- Feature to translate `<flux:field.select />` items lists provided as CSV, using naming convention
+  https://github.com/FluidTYPO3/flux/commit/c5c79ea3f6b42c5abe48b24fab0a96d326cbc7df
+- Bugfix for custom icon position
+  - https://github.com/FluidTYPO3/flux/commit/f8923b61b768468ca991e5255df967ac5d1f762b
+- Bugfix to clean empty element lists from stored data
+  - https://github.com/FluidTYPO3/flux/commit/a047b0dfdabd52e693006dcabcbe11cc08afdc6b
+- Bugfix for using root TS templates on separate page root lines
+  - https://github.com/FluidTYPO3/flux/commit/f953dbfb4d163349555e96eb77949a57899d4abb
+  - https://github.com/FluidTYPO3/flux/commit/ba38d03558ac6adcf82eae7fd6759d97ec331256
+- Usage examples documented
+  - https://github.com/FluidTYPO3/flux/commit/cbf421b69552e5fa44ed2ceebe021f6f20e0cd66
+  - https://github.com/FluidTYPO3/flux/commit/5c5866422339d34b9a5e80e947d688bbada41a4b
+  - https://github.com/FluidTYPO3/flux/commit/7afcf893fbf82e559cb2d91a2c516f6a6e128ee6
+  - https://github.com/FluidTYPO3/flux/commit/be5a69dd0969b020c26395638905966da3685c14
+  - https://github.com/FluidTYPO3/flux/commit/7a582a845585b0636a79c1240edc589012493995
+  - https://github.com/FluidTYPO3/flux/commit/26e0d037546ff888a24e606cd74a35293377aec1
+  - https://github.com/FluidTYPO3/flux/commit/cd53145887d03336f3ee569dc3a499d156dbe5ea
+  - https://github.com/FluidTYPO3/flux/commit/9f2d9ca40ca6e30546b88dcfa4ecd816d4a88371
+  - https://github.com/FluidTYPO3/flux/commit/4101a89130bee4ec953cb4acae7a7db9d009fc97
+- Bugfix to skip language overlays in default language
+  - https://github.com/FluidTYPO3/flux/commit/71ce237b627370a36bba67ba3d3da0bc7334ef4a
+- Bugfix for `isForeign` check preventing resolving of controller classes by foreign extension key
+  - https://github.com/FluidTYPO3/flux/commit/54a0109d72ed2af8ebe280bc640bd7ff53438fb3
+- ViewHelpers added for Form options `sorting` and `translation` allowing both to be documented by ViewHelper references
+  - https://github.com/FluidTYPO3/flux/commit/aa84fe1a42cd13e57eb65796c39f535ea21d04f4
+- CompatibilityRegistry created with the purpose of handling version-dependent configuration, feature flags and class substitution
+  - https://github.com/FluidTYPO3/flux/commit/cc3f77f93a3b990b34387557bab32bae380d4f03
+  - https://github.com/FluidTYPO3/flux/commit/a7c6cfbf4f557f3655e6fd51aeb814bb96be9aa0
+- Bugfix for vendor name not being used when retrieved from controller context (resulting in controller class not being resolved)
+  - https://github.com/FluidTYPO3/flux/commit/a00e81b633402735dc681430cdfa6718e4df8dbd
+- Every ViewHelper is now compilable, for a significant performance boost in sites using many instances of the same template
+  - https://github.com/FluidTYPO3/flux/commit/fdcb40ffd8145f9eb30d25017973b430ada814ae
+  - https://github.com/FluidTYPO3/flux/commit/5cf43c76d2659c2138bed321e0c472efcda3bfdc
+  - https://github.com/FluidTYPO3/flux/commit/089bab4c591f84056ac1c05f0ef9b1567030c726
+  - https://github.com/FluidTYPO3/flux/commit/07e804ced973421e1224a4cd02d693e94070bad9
+  - https://github.com/FluidTYPO3/flux/commit/7c32264321387e9edc9786ab5a493777ba3199a2
+- Bugfix for localisation behavior when multiple languages exist
+  - https://github.com/FluidTYPO3/flux/commit/1bd80f59b92bdcaffc771db3ca0d12863a7e3a80
+- TYPO3 7.5 compatibility improvements
+  - https://github.com/FluidTYPO3/flux/commit/aef19610862e3b74b184bf8909bb8b715c171b7d
+  - https://github.com/FluidTYPO3/flux/commit/43912a3eeb3119bd1387266887b7bc998727a086
+  - https://github.com/FluidTYPO3/flux/commit/1fcc911683a32010b8e830b7464db0c0bb652832
+
 7.2.3 - 2015-09-30
 ------------------
 

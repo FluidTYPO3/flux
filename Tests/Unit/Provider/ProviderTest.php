@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 
 /**
- * @package Flux
+ * ProviderTest
  */
 class ProviderTest extends AbstractProviderTest {
 

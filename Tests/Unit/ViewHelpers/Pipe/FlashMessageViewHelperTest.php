@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
 /**
- * @package Flux
+ * FlashMessageViewHelperTest
  */
 class FlashMessageViewHelperTest extends AbstractViewHelperTestCase {
 

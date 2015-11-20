@@ -9,12 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Form\Wizard\Edit;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Edit
- *
- * @package Flux
- * @subpackage ViewHelpers/Wizard
  */
 class EditViewHelper extends AbstractWizardViewHelper {
 
@@ -30,14 +28,16 @@ class EditViewHelper extends AbstractWizardViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Edit
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Edit $component */
-		$component = $this->getPreparedComponent('Edit');
-		$component->setOpenOnlyIfSelected($this->arguments['openOnlyIfSelected']);
-		$component->setHeight($this->arguments['height']);
-		$component->setWidth($this->arguments['width']);
+		$component = static::getPreparedComponent('Edit', $renderingContext, $arguments);
+		$component->setOpenOnlyIfSelected($arguments['openOnlyIfSelected']);
+		$component->setHeight($arguments['height']);
+		$component->setWidth($arguments['width']);
 		return $component;
 	}
 

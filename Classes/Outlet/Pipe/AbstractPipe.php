@@ -19,9 +19,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * Abstract Pipe
  *
  * Base class for all Pipes
- *
- * @package Flux
- * @subpackage Outlet\Pipe
  */
 abstract class AbstractPipe implements PipeInterface {
 

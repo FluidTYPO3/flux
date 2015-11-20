@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 
 /**
- * @package Flux
+ * SelectTest
  */
 class SelectTest extends AbstractFieldTest {
 

@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 
 /**
- * @package Flux
+ * ContentController
  */
 class ContentController extends AbstractFluxController {
 

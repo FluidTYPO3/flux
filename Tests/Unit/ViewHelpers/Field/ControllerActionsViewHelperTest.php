@@ -10,9 +10,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * ControllerActionsViewHelperTest
  */
 class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase {
 
@@ -51,7 +52,10 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase {
 			'subActions' => array()
 		);
 		$instance = $this->buildViewHelperInstance($arguments);
-		$component = $instance->getComponent();
+		$component = $instance->getComponent(
+			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
+			ObjectAccess::getProperty($instance, 'arguments', TRUE)
+		);
 		$this->assertSame($array, $component->getActions());
 	}
 
@@ -94,7 +98,10 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase {
 		);
 		$instance = $this->buildViewHelperInstance($arguments, array(), NULL, $arguments['extensionName'], $arguments['pluginName']);;
 		$instance->initializeArgumentsAndRender();
-		$component = $instance->getComponent();
+		$component = $instance->getComponent(
+			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
+			ObjectAccess::getProperty($instance, 'arguments', TRUE)
+		);
 		$this->assertSame($arguments['separator'], $component->getSeparator());
 	}
 

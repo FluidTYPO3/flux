@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 use FluidTYPO3\Flux\Form\WizardInterface;
 
 /**
- * @package Flux
+ * AbstractWizardTest
  */
 abstract class AbstractWizardTest extends AbstractFormTest {
 

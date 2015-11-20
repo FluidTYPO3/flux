@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 
 /**
- * @package Flux
+ * DummyConfigurationProvider
  */
 class DummyConfigurationProvider extends AbstractProvider {
 

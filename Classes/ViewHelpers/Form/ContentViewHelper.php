@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Adds a content area to a source using Flux FlexForms
@@ -27,33 +28,26 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
  *
  * ### Example of difference
  *
- * ```xml
- * <flux:form id="myform">
- *     <!-- Creates a basic Grid with one row and one column, names
- *          the column "mycontent" and makes Flux use this Grid -->
- *     <flux:content name="mycontent" />
- *     <!-- Additional flux:content tags are completely ignored -->
- * </flux:form>
- * ```
+ *     <flux:form id="myform">
+ *         <!-- Creates a basic Grid with one row and one column, names
+ *              the column "mycontent" and makes Flux use this Grid -->
+ *         <flux:content name="mycontent" />
+ *         <!-- Additional flux:content tags are completely ignored -->
+ *     </flux:form>
  *
- * ```xml
- * <flux:form id="myform">
- *     <!-- Creates a full, multi-column/row Grid -->
- *     <flux:grid>
- *         <flux:grid.row>
- *             <flux:grid.column name="mycontentA" />
- *             <flux:grid.column name="mycontentB" />
- *         </flux:grid.row>
- *         <flux:grid.row>
- *             <flux:grid.column name="mycontentC" colspan="2" />
- *         </flux:grid.row>
- *     </flux:grid>
- *     <!-- No use of flux:content is possible after this point -->
- * </flux:form>
- * ```
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
+ *     <flux:form id="myform">
+ *         <!-- Creates a full, multi-column/row Grid -->
+ *         <flux:grid>
+ *             <flux:grid.row>
+ *                 <flux:grid.column name="mycontentA" />
+ *                 <flux:grid.column name="mycontentB" />
+ *             </flux:grid.row>
+ *             <flux:grid.row>
+ *                 <flux:grid.column name="mycontentC" colspan="2" />
+ *             </flux:grid.row>
+ *         </flux:grid>
+ *         <!-- No use of flux:content is possible after this point -->
+ *     </flux:form>
  */
 class ContentViewHelper extends AbstractFormViewHelper {
 
@@ -70,22 +64,19 @@ class ContentViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @return string
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return Column
 	 */
-	public function render() {
-		$originalContainer = $this->getContainer();
-		if (FALSE === $originalContainer instanceof Column) {
-			// get the current Grid and check for existence of one row and one column, if missing then create them:
-			$grid = $this->getGrid('grid');
-			if (0 === count($grid->getRows())) {
-				$grid->setExtensionName($this->getExtensionName());
-				$row = $grid->createContainer('Row', 'row');
-				$column = $row->createContainer('Column', 'column');
-				$column->setName($this->arguments['name']);
-				$column->setLabel($this->arguments['label']);
-			}
-		}
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		// get the current Grid and check for existence of one row and one column, if missing then create them:
+		$grid = static::getGridFromRenderingContext($renderingContext, 'grid');;
+		$grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$row = $grid->createContainer('Row', 'row');
+		$column = $row->createContainer('Column', 'column');
+		$column->setName($arguments['name']);
+		$column->setLabel($arguments['label']);
+		return $column;
 	}
 
 }

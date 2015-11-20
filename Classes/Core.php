@@ -18,9 +18,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  * FLUX CORE
  *
  * Quick-access API methods to easily integrate with Flux
- *
- * @package Flux
- * @subpackage Core
  */
 class Core {
 

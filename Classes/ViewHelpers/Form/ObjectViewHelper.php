@@ -10,15 +10,13 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form\Container\Object as ObjectComponent;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm field section object ViewHelper
  *
  * Use this inside flux:form.section to name and divide the fields
  * into individual objects that can be inserted into the section.
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class ObjectViewHelper extends AbstractFormViewHelper {
 
@@ -39,21 +37,18 @@ class ObjectViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @return void
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return ObjectComponent
 	 */
-	public function render() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var ObjectComponent $object */
-		$object = $this->getForm()->createContainer('Object', $this->arguments['name'], $this->arguments['label']);
-		$object->setExtensionName($this->getExtensionName());
-		$object->setVariables($this->arguments['variables']);
-		$object->setInherit($this->arguments['inherit']);
-		$object->setInheritEmpty($this->arguments['inheritEmpty']);
-		$container = $this->getContainer();
-		$container->add($object);
-		$this->setContainer($object);
-		$this->renderChildren();
-		$this->setContainer($container);
+		$object = static::getFormFromRenderingContext($renderingContext)->createContainer('Object', $arguments['name'], $arguments['label']);
+		$object->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$object->setVariables($arguments['variables']);
+		$object->setInherit($arguments['inherit']);
+		$object->setInheritEmpty($arguments['inheritEmpty']);
+		return $object;
 	}
 
 }

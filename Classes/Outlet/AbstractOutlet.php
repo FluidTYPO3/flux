@@ -16,9 +16,6 @@ use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
  *
  * Defines one data outlet for a Fluid form. Each outlet
  * is updated with the information when the form is saved.
- *
- * @package Fluidbackend
- * @subpackage Outlet
  */
 abstract class AbstractOutlet implements OutletInterface {
 

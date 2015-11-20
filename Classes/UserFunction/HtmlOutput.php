@@ -12,9 +12,6 @@ use TYPO3\CMS\Backend\Form\FormEngine;
 
 /**
  * Renders HTML stored in a Fluid FlexForm HTML field
- *
- * @package Flux
- * @subpackage UserFunction
  */
 class HtmlOutput {
 

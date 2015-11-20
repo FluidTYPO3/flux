@@ -12,8 +12,7 @@ use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * None
  */
 class None extends AbstractFormField implements FieldInterface {
 

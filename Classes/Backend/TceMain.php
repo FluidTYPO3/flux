@@ -17,8 +17,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
- * @package Flux
- * @subpackage Backend
+ * TCEMain
  */
 class TceMain {
 
@@ -100,7 +99,7 @@ class TceMain {
 	public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference) {
 		$record = array();
 		$arguments = array('command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo);
-		$this->executeConfigurationProviderMethod('preProcessCommand', $table, $id, $record, $arguments, $reference);
+		$this->executeConfigurationProviderMethod('preProcessCommand', $table, $id, $command, $record, $arguments, $reference);
 	}
 
 	/**
@@ -114,7 +113,7 @@ class TceMain {
 	public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference) {
 		$record = array();
 		$arguments = array('command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo);
-		$this->executeConfigurationProviderMethod('postProcessCommand', $table, $id, $record, $arguments, $reference);
+		$this->executeConfigurationProviderMethod('postProcessCommand', $table, $id, $command, $record, $arguments, $reference);
 	}
 
 	/**
@@ -127,7 +126,7 @@ class TceMain {
 	public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, &$reference) {
 		$arguments = array('row' => &$incomingFieldArray, 'id' => $id);
 		$incomingFieldArray = $this->executeConfigurationProviderMethod(
-			'preProcessRecord', $table, $id, $incomingFieldArray, $arguments, $reference);
+			'preProcessRecord', $table, $id, '', $incomingFieldArray, $arguments, $reference);
 	}
 
 	/**
@@ -141,7 +140,7 @@ class TceMain {
 	public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$reference) {
 		$arguments = array('status' => $status, 'id' => $id, 'row' => &$fieldArray);
 		$fieldArray = $this->executeConfigurationProviderMethod(
-			'postProcessRecord', $table, $id, $fieldArray, $arguments, $reference);
+			'postProcessRecord', $table, $id, '', $fieldArray, $arguments, $reference);
 	}
 
 	/**
@@ -158,7 +157,7 @@ class TceMain {
 		}
 		$arguments = array('status' => $status, 'id' => $id, 'row' => &$fieldArray);
 		$fieldArray = $this->executeConfigurationProviderMethod('postProcessDatabaseOperation',
-			$table, $id, $fieldArray, $arguments, $reference);
+			$table, $id, '', $fieldArray, $arguments, $reference);
 	}
 
 	/**
@@ -167,12 +166,13 @@ class TceMain {
 	 * @param string $methodName
 	 * @param string $table
 	 * @param mixed $id
+	 * @param string $command
 	 * @param array $record
 	 * @param array $arguments
 	 * @param DataHandler $reference
 	 * @return array
 	 */
-	protected function executeConfigurationProviderMethod($methodName, $table, $id, array $record, array $arguments, DataHandler $reference) {
+	protected function executeConfigurationProviderMethod($methodName, $table, $id, $command, array $record, array $arguments, DataHandler $reference) {
 		try {
 			$id = $this->resolveRecordUid($id, $reference);
 			$record = $this->ensureRecordDataIsLoaded($table, $id, $record);
@@ -180,9 +180,9 @@ class TceMain {
 			$arguments[] = &$reference;
 			$detectedProviders = $this->configurationService->resolveConfigurationProviders($table, NULL, $record);
 			foreach ($detectedProviders as $provider) {
-				if (TRUE === $provider->shouldCall($methodName, $id)) {
+				if (TRUE === $provider->shouldCall($methodName, $id, $command)) {
 					call_user_func_array(array($provider, $methodName), array_values($arguments));
-					$provider->trackMethodCall($methodName, $id);
+					$provider->trackMethodCall($methodName, $id, $command);
 				}
 			}
 		} catch (\RuntimeException $error) {

@@ -13,9 +13,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * ClipBoard Utility
- *
- * @package Flux
- * @subpackage Utility
  */
 class ClipBoardUtility {
 

@@ -14,8 +14,7 @@ use FluidTYPO3\Flux\Form\FieldContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
 /**
- * @package Flux
- * @subpackage Form\Container
+ * Sheet
  */
 class Sheet extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface {
 
