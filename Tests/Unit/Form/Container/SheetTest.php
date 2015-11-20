@@ -11,8 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 use FluidTYPO3\Flux\Form;
 
 /**
- * author Claus Due <claus@namelesscoder.net>
- * @package Flux
+ * SheetTest
  */
 class SheetTest extends AbstractContainerTest {
 

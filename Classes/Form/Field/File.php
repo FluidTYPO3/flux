@@ -12,8 +12,7 @@ use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * File
  */
 class File extends AbstractMultiValueFormField {
 

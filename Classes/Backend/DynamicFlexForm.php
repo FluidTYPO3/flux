@@ -14,9 +14,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Dynamic FlexForm insertion hook class
- *
- * @package Flux
- * @subpackage Backend
  */
 class DynamicFlexForm {
 

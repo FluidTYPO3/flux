@@ -9,12 +9,16 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Form\Wizard\Link;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Link
  *
- * @package Flux
- * @subpackage ViewHelpers/Wizard
+ * #### Link input field with link wizard
+ *
+ *     <flux:field.input name="link">
+ *         <flux:wizard.link/>
+ *     </flux:field.input>
  */
 class LinkViewHelper extends AbstractWizardViewHelper {
 
@@ -38,17 +42,19 @@ class LinkViewHelper extends AbstractWizardViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Link
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Link $component */
-		$component = $this->getPreparedComponent('Link');
-		$component->setActiveTab($this->arguments['activeTab']);
-		$component->setWidth($this->arguments['width']);
-		$component->setHeight($this->arguments['height']);
-		$component->setAllowedExtensions($this->arguments['allowedExtensions']);
-		$component->setBlindLinkOptions($this->arguments['blindLinkOptions']);
-		$component->setBlindLinkFields($this->arguments['blindLinkFields']);
+		$component = static::getPreparedComponent('Link', $renderingContext, $arguments);
+		$component->setActiveTab($arguments['activeTab']);
+		$component->setWidth($arguments['width']);
+		$component->setHeight($arguments['height']);
+		$component->setAllowedExtensions($arguments['allowedExtensions']);
+		$component->setBlindLinkOptions($arguments['blindLinkOptions']);
+		$component->setBlindLinkFields($arguments['blindLinkFields']);
 		return $component;
 	}
 

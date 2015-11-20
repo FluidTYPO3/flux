@@ -9,12 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Form\Wizard\Select;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Edit
- *
- * @package Flux
- * @subpackage ViewHelpers/Wizard
  */
 class SelectViewHelper extends AbstractWizardViewHelper {
 
@@ -29,13 +27,15 @@ class SelectViewHelper extends AbstractWizardViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Select
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Select $component */
-		$component = $this->getPreparedComponent('Select');
-		$component->setMode($this->arguments['mode']);
-		$component->setItems($this->arguments['items']);
+		$component = static::getPreparedComponent('Select', $renderingContext, $arguments);
+		$component->setMode($arguments['mode']);
+		$component->setItems($arguments['items']);
 		return $component;
 	}
 

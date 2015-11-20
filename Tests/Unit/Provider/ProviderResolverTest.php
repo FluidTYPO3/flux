@@ -16,7 +16,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * ProviderResolverTest
  */
 class ProviderResolverTest extends AbstractTestCase {
 

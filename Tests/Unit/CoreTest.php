@@ -16,7 +16,7 @@ use FluidTYPO3\Flux\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @package Flux
+ * CoreTest
  */
 class CoreTest extends AbstractTestCase {
 

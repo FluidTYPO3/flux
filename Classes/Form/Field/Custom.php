@@ -9,8 +9,7 @@ namespace FluidTYPO3\Flux\Form\Field;
  */
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * Custom
  */
 class Custom extends UserFunction {
 

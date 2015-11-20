@@ -29,8 +29,6 @@ use TYPO3\CMS\Extbase\Mvc\Web\Response;
  * Controllers rendering records associated with Flux - all it does is
  * ease the interaction by providing a common API.
  *
- * @package Flux
- * @subpackage Controller
  * @route off
  */
 abstract class AbstractFluxController extends ActionController {
@@ -105,8 +103,11 @@ abstract class AbstractFluxController extends ActionController {
 		$extensionKey = $this->provider->getExtensionKey($row);
 		$extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 		$pluginName = $this->request->getPluginName();
-		$this->settings = (array) $this->configurationManager->getConfiguration(
-			ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName, $pluginName
+		$this->settings = RecursiveArrayUtility::merge(
+			(array) $this->configurationManager->getConfiguration(
+				ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extensionName, $pluginName
+			),
+			$this->settings
 		);
 		$this->data = $this->provider->getFlexFormValues($row);
 		$this->setup = $this->provider->getTemplatePaths($row);
@@ -243,7 +244,7 @@ abstract class AbstractFluxController extends ActionController {
 	protected function hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName) {
 		$potentialControllerClassName = $this->configurationService
 			->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndAction($extensionName, $actionName, $controllerName);
-		$isForeign = ExtensionNamingUtility::getExtensionName($extensionName) !== ExtensionNamingUtility::getExtensionName($this->extensionName);
+		$isForeign = $extensionName !== $this->extensionName;
 		$isValidController = class_exists($potentialControllerClassName);
 		return (TRUE === $isForeign && TRUE === $isValidController);
 	}
@@ -264,7 +265,9 @@ abstract class AbstractFluxController extends ActionController {
 		$potentialControllerInstance = $this->objectManager->get($controllerClassName);
 		$viewContext = $this->provider->getViewContext($row, $this->request);
 		$viewContext->setPackageName($this->provider->getControllerPackageNameFromRecord($row));
+		/** @var \TYPO3\CMS\Extbase\Mvc\Web\Request $subRequest */
 		$subRequest = $viewContext->getRequest();
+		$subRequest->setArguments($arguments);
 		$subRequest->setControllerExtensionName($viewContext->getExtensionName());
 		$subRequest->setControllerVendorName($viewContext->getVendorName());
 		$subRequest->setControllerActionName($this->provider->getControllerActionFromRecord($row));

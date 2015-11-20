@@ -12,9 +12,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Renders nothing in case no fields are defined, label is used for feedback
- *
- * @package	Flux
- * @subpackage UserFunction
  */
 class NoFields {
 

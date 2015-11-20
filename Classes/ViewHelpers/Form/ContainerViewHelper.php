@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form\Container\Container;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * ### FlexForm Field Container element
@@ -22,8 +23,16 @@ use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
  * The field grouping can be hidden or completely removed. In this regard
  * this element is a simpler version of the Section and Object logic.
  *
- * @package Flux
- * @subpackage ViewHelpers/Form
+ * #### Grouping elements with a container
+ *
+ *     <flux:form.container name="settings.name" label="Name">
+ *         <flux:field.input name="firstname" label="First name"/>
+ *         <flux:field.input name="lastname" label="Last name"/>
+ *     </flux:form.container>
+ *
+ * #### Accessing values of grouped elements
+ *
+ *     Name: {settings.name.firstname} {settings.name.lastname}
  */
 class ContainerViewHelper extends AbstractFieldViewHelper {
 
@@ -43,19 +52,16 @@ class ContainerViewHelper extends AbstractFieldViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @return void
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return Container
 	 */
-	public function render() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Container $container */
-		$container = $this->getForm()->createContainer('Container', $this->arguments['name'], $this->arguments['label']);
-		$container->setExtensionName($this->getExtensionName());
-		$container->setVariables($this->arguments['variables']);
-		$existingContainer = $this->getContainer();
-		$existingContainer->add($container);
-		$this->setContainer($container);
-		$this->renderChildren();
-		$this->setContainer($existingContainer);
+		$container = static::getFormFromRenderingContext($renderingContext)->createContainer('Container', $arguments['name'], $arguments['label']);
+		$container->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$container->setVariables($arguments['variables']);
+		return $container;
 	}
 
 }

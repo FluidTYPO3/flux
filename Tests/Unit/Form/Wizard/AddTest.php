@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
  */
 
 /**
- * @package Flux
+ * AddTest
  */
 class AddTest extends AbstractWizardTest {
 

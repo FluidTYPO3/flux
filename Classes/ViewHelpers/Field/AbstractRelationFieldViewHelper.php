@@ -9,12 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\RelationFieldInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldViewHelper {
 
@@ -35,7 +33,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$this->registerArgument('foreignSortby', 'string', 'Define a field on the child record (or on the intermediate table) that stores the manual sorting information.', FALSE, '');
 		$this->registerArgument('foreignDefaultSortby', 'string', 'If a fieldname for foreign_sortby is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.', FALSE, '');
 		$this->registerArgument('foreignTableField', 'string', 'The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with foreign_field, the child record knows what its parent record is - so the child record could also be used on other parent tables.', FALSE, '');
-		$this->registerArgument('foreignUnique', 'string', 'Field which must be uniue for all children of a parent record.', FALSE, '');
+		$this->registerArgument('foreignUnique', 'string', 'Field which must be uniue for all children of a parent record.', FALSE, NULL);
 		$this->registerArgument('symmetricField', 'string', 'In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.', FALSE, '');
 		$this->registerArgument('symmetricLabel', 'string', 'If set, this overrides the default label of the selected symmetric_field.', FALSE, '');
 		$this->registerArgument('symmetricSortby', 'string', 'This works like foreign_sortby, but defines the field on foreign_table where the "other" sort order is stored.', FALSE, '');
@@ -44,42 +42,46 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$this->registerArgument('disableMovingChildrenWithParent', 'boolean', 'Disables that child records get moved along with their parent records.', FALSE, FALSE);
 		$this->registerArgument('showThumbs', 'boolean', 'If TRUE, adds thumbnail display when editing in BE', FALSE, TRUE);
 		$this->registerArgument('matchFields', 'array', 'When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table', FALSE, array());
+		$this->registerArgument('oppositeField', 'string', 'Name of the opposite field related to a proper mm relation', FALSE, '');
+	}
+
+	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return RelationFieldInterface
+	 */
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		return static::getPreparedComponent('Relation', $renderingContext, $arguments);
 	}
 
 	/**
 	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return RelationFieldInterface
 	 */
-	public function getComponent($type = 'Relation') {
-		$component = $this->getPreparedComponent($type);
-		return $component;
-	}
-
-	/**
-	 * @param string $type
-	 * @return RelationFieldInterface
-	 */
-	protected function getPreparedComponent($type) {
+	protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var RelationFieldInterface $component */
-		$component = parent::getPreparedComponent($type);
-		$component->setTable($this->arguments['table']);
-		$component->setCondition($this->arguments['condition']);
-		$component->setManyToMany($this->arguments['mm']);
-		$component->setForeignField($this->arguments['foreignField']);
-		$component->setForeignSelector($this->arguments['foreignSelector']);
-		$component->setForeignLabel($this->arguments['foreignLabel']);
-		$component->setForeignSortby($this->arguments['foreignSortby']);
-		$component->setForeignDefaultSortby($this->arguments['foreignDefaultSortby']);
-		$component->setForeignTableField($this->arguments['foreignTableField']);
-		$component->setForeignUnique($this->arguments['foreignUnique']);
-		$component->setSymmetricField($this->arguments['symmetricField']);
-		$component->setSymmetricLabel($this->arguments['symmetricLabel']);
-		$component->setSymmetricSortby($this->arguments['symmetricSortby']);
-		$component->setLocalizationMode($this->arguments['localizationMode']);
-		$component->setLocalizeChildrenAtParentLocalization($this->arguments['localizeChildrenAtParentLocalization']);
-		$component->setDisableMovingChildrenWithParent($this->arguments['disableMovingChildrenWithParent']);
-		$component->setShowThumbnails($this->arguments['showThumbs']);
-		$component->setMatchFields((array) $this->arguments['matchFields']);
+		$component = parent::getPreparedComponent($type, $renderingContext, $arguments);
+		$component->setTable($arguments['table']);
+		$component->setCondition($arguments['condition']);
+		$component->setManyToMany($arguments['mm']);
+		$component->setForeignField($arguments['foreignField']);
+		$component->setForeignSelector($arguments['foreignSelector']);
+		$component->setForeignLabel($arguments['foreignLabel']);
+		$component->setForeignSortby($arguments['foreignSortby']);
+		$component->setForeignDefaultSortby($arguments['foreignDefaultSortby']);
+		$component->setForeignTableField($arguments['foreignTableField']);
+		$component->setForeignUnique($arguments['foreignUnique']);
+		$component->setSymmetricField($arguments['symmetricField']);
+		$component->setSymmetricLabel($arguments['symmetricLabel']);
+		$component->setSymmetricSortby($arguments['symmetricSortby']);
+		$component->setLocalizationMode($arguments['localizationMode']);
+		$component->setLocalizeChildrenAtParentLocalization($arguments['localizeChildrenAtParentLocalization']);
+		$component->setDisableMovingChildrenWithParent($arguments['disableMovingChildrenWithParent']);
+		$component->setShowThumbnails($arguments['showThumbs']);
+		$component->setMatchFields((array) $arguments['matchFields']);
+		$component->setOppositeField($arguments['oppositeField']);
 		return $component;
 	}
 

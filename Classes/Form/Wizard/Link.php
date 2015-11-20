@@ -12,8 +12,7 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @package Flux
- * @subpackage Form\Wizard
+ * Link
  */
 class Link extends AbstractWizard {
 

@@ -12,9 +12,6 @@ namespace FluidTYPO3\Flux\Outlet;
  * Outlet Exception
  *
  * Thrown by Outlets on errors.
- *
- * @package Flux
- * @subpackage Outlet
  */
 class Exception extends \Exception {
 

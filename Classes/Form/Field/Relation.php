@@ -11,8 +11,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\AbstractRelationFormField;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * Relation
  */
 class Relation extends AbstractRelationFormField {
 

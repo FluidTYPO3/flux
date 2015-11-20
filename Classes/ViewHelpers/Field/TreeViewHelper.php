@@ -9,12 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\Tree;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Tree (select supertype) FlexForm field ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class TreeViewHelper extends AbstractRelationFieldViewHelper {
 
@@ -34,19 +32,20 @@ class TreeViewHelper extends AbstractRelationFieldViewHelper {
 	}
 
 	/**
-	 * Render method
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Tree
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Tree $tree */
-		$tree = $this->getPreparedComponent('Tree');
-		$tree->setParentField($this->arguments['parentField']);
-		$tree->setAllowRecursiveMode($this->arguments['allowRecursiveMode']);
-		$tree->setExpandAll($this->arguments['expandAll']);
-		$tree->setNonSelectableLevels($this->arguments['nonSelectableLevels']);
-		$tree->setMaxLevels($this->arguments['maxLevels']);
-		$tree->setShowHeader($this->arguments['showHeader']);
-		$tree->setWidth($this->arguments['width']);
+		$tree = static::getPreparedComponent('Tree', $renderingContext, $arguments);
+		$tree->setParentField($arguments['parentField']);
+		$tree->setAllowRecursiveMode($arguments['allowRecursiveMode']);
+		$tree->setExpandAll($arguments['expandAll']);
+		$tree->setNonSelectableLevels($arguments['nonSelectableLevels']);
+		$tree->setMaxLevels($arguments['maxLevels']);
+		$tree->setShowHeader($arguments['showHeader']);
+		$tree->setWidth($arguments['width']);
 		return $tree;
 	}
 

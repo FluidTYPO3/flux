@@ -15,7 +15,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * @package Flux
+ * Form
  */
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface {
 
@@ -33,6 +33,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 	const OPTION_RECORD = 'record';
 	const OPTION_RECORD_FIELD = 'recordField';
 	const OPTION_RECORD_TABLE = 'recordTable';
+	const OPTION_DEFAULT_VALUES = 'defaultValues';
 	const TRANSLATION_DISABLED = 'disabled';
 	const TRANSLATION_SEPARATE = 'separate';
 	const TRANSLATION_INHERIT = 'inherit';

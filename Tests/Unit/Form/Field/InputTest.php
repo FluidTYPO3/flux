@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  */
 
 /**
- * @package Flux
+ * InputTest
  */
 class InputTest extends AbstractFieldTest {
 

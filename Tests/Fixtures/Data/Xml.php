@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Data;
  */
 
 /**
- * @package Flux
+ * Xml
  */
 class Xml {
 

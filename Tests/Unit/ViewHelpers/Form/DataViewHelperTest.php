@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * DataViewHelperTest
  */
 class DataViewHelperTest extends AbstractViewHelperTestCase {
 
@@ -61,8 +61,11 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$viewHelper = $this->buildViewHelperInstance($arguments);
 		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
 		$GLOBALS['TYPO3_DB']->expects($this->never())->method('exec_SELECTgetSingleRow');
-		$output = $viewHelper->initializeArgumentsAndRender();
-		$this->assertEquals('Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.', $output);
+		$this->setExpectedException(
+			'TYPO3\CMS\Fluid\Core\ViewHelper\Exception',
+			'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
+		);
+		$viewHelper->initializeArgumentsAndRender();
 	}
 
 	/**
@@ -75,8 +78,11 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		);
 		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
 		$GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
+		$this->setExpectedException(
+			'TYPO3\CMS\Fluid\Core\ViewHelper\Exception',
+			'Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.'
+		);
 		$output = $this->executeViewHelper($arguments);
-		$this->assertEquals('Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.', $output);
 	}
 
 	/**
@@ -88,8 +94,11 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 			'field' => 'invalid',
 			'uid' => 1
 		);
+		$this->setExpectedException(
+			'TYPO3\CMS\Fluid\Core\ViewHelper\Exception',
+			'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
+		);
 		$output = $this->executeViewHelper($arguments);
-		$this->assertEquals('Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.', $output);
 	}
 
 	/**
@@ -103,6 +112,9 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		);
 		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
 		$GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
+		$this->setExpectedException(
+			'TYPO3\CMS\Fluid\Core\ViewHelper\Exception'
+		);
 		$this->executeViewHelper($arguments);
 	}
 
@@ -133,23 +145,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase {
 		$viewHelper = $this->buildViewHelperInstance($arguments, array(), $content);
 		$output = $viewHelper->initializeArgumentsAndRender();
 		$this->assertIsArray($output);
-	}
-
-	/**
-	 * @test
-	 */
-	public function canExecuteViewHelperWithUnregisteredTableAndReturnEmptyArray() {
-		$arguments = array(
-			'table' => 'be_users',
-			'field' => 'username',
-			'uid' => 1
-		);
-		$viewHelper = $this->buildViewHelperInstance($arguments);
-		$mockRecordService = $this->getMock('FluidTYPO3\Flux\Service\RecordService', array('getSingle'));
-		$mockRecordService->expects($this->once())->method('getSingle')->will($this->returnValue(NULL));
-		ObjectAccess::setProperty($viewHelper, 'recordService', $mockRecordService, TRUE);
-		$output = $viewHelper->initializeArgumentsAndRender();
-		$this->assertEquals('Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid ' . $arguments['uid'] . ' do not exist and you did not manually provide the "record" attribute.', $output);
 	}
 
 	/**

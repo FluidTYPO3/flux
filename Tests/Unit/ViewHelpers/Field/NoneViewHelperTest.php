@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
 
 /**
- * @package Flux
+ * NoneViewHelperTest
  */
 class NoneViewHelperTest extends AbstractFieldViewHelperTestCase {
 

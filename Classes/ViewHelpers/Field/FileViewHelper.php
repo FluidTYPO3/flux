@@ -9,12 +9,21 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\File;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Group (select supertype) FlexForm field ViewHelper, subtype "file"
  *
- * @package Flux
- * @subpackage ViewHelpers/Field
+ * ### Select and render an image
+ *
+ *    <flux:field.file name="settings.image" allowed="jpg,png,svg" showThumbnails="1" />
+ *
+ * Then use `<f:image>` to render the image in the frontend:
+ *
+ *    <f:image src="{settings.image}"/>
+ *
+ * `alt` and `title` tags are not loaded from the file's meta data record.
+ * Use `<flux:field.inline.fal>` if you want this feature.
  */
 class FileViewHelper extends AbstractMultiValueFieldViewHelper {
 
@@ -32,16 +41,18 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return File
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var File $component */
-		$component = $this->getPreparedComponent('File');
-		$component->setMaxSize($this->arguments['maxSize']);
-		$component->setDisallowed($this->arguments['disallowed']);
-		$component->setAllowed($this->arguments['allowed']);
-		$component->setUploadFolder($this->arguments['uploadFolder']);
-		$component->setShowThumbnails($this->arguments['showThumbnails']);
+		$component = static::getPreparedComponent('File', $renderingContext, $arguments);
+		$component->setMaxSize($arguments['maxSize']);
+		$component->setDisallowed($arguments['disallowed']);
+		$component->setAllowed($arguments['allowed']);
+		$component->setUploadFolder($arguments['uploadFolder']);
+		$component->setShowThumbnails($arguments['showThumbnails']);
 		return $component;
 	}
 

@@ -12,8 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Inline;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * AbstractInlineFormField
  */
 abstract class AbstractInlineFormField extends AbstractRelationFormField implements InlineRelationFieldInterface {
 

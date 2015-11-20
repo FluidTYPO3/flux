@@ -14,9 +14,6 @@ use TYPO3\CMS\Core\SingletonInterface;
 /**
  * Service to wrap around record operations normally going through
  * the $TYPO3_DB global variable.
- *
- * @package Flux
- * @subpackage Service
  */
 class WorkspacesAwareRecordService extends RecordService implements SingletonInterface {
 

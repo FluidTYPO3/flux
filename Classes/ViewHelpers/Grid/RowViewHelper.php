@@ -8,13 +8,18 @@ namespace FluidTYPO3\Flux\ViewHelpers\Grid;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use FluidTYPO3\Flux\Form\Container\Row;
 
 /**
  * Flexform Grid Row ViewHelper
  *
- * @package Flux
- * @subpackage ViewHelpers/Grid
+ * Used inside `<flux:grid>` tags.
+ * Usually contains `<flux:grid.column>` tags.
+ *
+ * See `<flux:grid>` for an example.
  */
 class RowViewHelper extends AbstractFormViewHelper {
 
@@ -31,19 +36,17 @@ class RowViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @return string
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return Row
 	 */
-	public function render() {
-		$name = ('row' === $this->arguments['name'] ? uniqid('row', TRUE) : $this->arguments['name']);
-		$row = $this->getForm()->createContainer('Row', $name, $this->arguments['label']);
-		$row->setExtensionName($this->getExtensionName());
-		$row->setVariables($this->arguments['variables']);
-		$container = $this->getContainer();
-		$container->add($row);
-		$this->setContainer($row);
-		$this->renderChildren();
-		$this->setContainer($container);
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		$name = ('row' === $arguments['name'] ? uniqid('row', TRUE) : $arguments['name']);
+		/** @var Row $column */
+		$row = static::getFormFromRenderingContext($renderingContext)->createContainer('Row', $name, $arguments['label']);
+		$row->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$row->setVariables($arguments['variables']);
+		return $row;
 	}
 
 }

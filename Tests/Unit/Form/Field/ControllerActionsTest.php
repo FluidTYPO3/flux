@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\ControllerActions;
 
 /**
- * @package Flux
+ * ControllerActionsTest
  */
 class ControllerActionsTest extends AbstractFieldTest {
 

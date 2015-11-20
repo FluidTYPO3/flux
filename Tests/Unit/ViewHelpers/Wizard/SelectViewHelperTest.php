@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Wizard;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Wizard\AbstractWizardViewHelperTestCase;
 
 /**
- * @package Flux
+ * SelectViewHelperTest
  */
 class SelectViewHelperTest extends AbstractWizardViewHelperTestCase {
 

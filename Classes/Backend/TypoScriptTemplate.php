@@ -13,8 +13,7 @@ use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @package Flux
- * @subpackage Backend
+ * TypoScriptTemplate
  */
 class TypoScriptTemplate {
 

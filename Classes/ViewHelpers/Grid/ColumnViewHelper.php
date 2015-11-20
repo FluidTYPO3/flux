@@ -10,12 +10,38 @@ namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Flexform Grid Column ViewHelper
  *
- * @package Flux
- * @subpackage ViewHelpers/Grid
+ * Used inside `<flux:grid.row>` tags.
+ *
+ * Use the `name` attribute for grids in content elements,
+ * and the `colPos` attribute for grids in pages templates.
+ *
+ * See `<flux:grid>` for an example.
+ *
+ * ### Limit allowed elements
+ *
+ * It is possible to limit the elements allowed in the column by setting
+ * the `allowedContentTypes` variable:
+ *
+ *     <flux:grid.column name="elements">
+ *         <flux:form.variable name="allowedContentTypes" value="text,shortcut"/>
+ *     </flux:grid.column>
+ *
+ * The value is a comma-separated list of content type IDs; they can be found
+ * in `tt_content.CType` column.
+ *
+ * ### Limit allowed fluid content elements
+ *
+ * It is also possible to limit the allowed fluid content elements:
+ *
+ *     <flux:grid.column name="elements">
+ *         <flux:form.variable name="allowedContentTypes" value="fluidcontent_content"/>
+ *         <flux:form.variable name="Fluidcontent" value="{allowedContentTypes: 'Vendor.Extension:ContentElement.html'}"/>
+ *     </flux:grid.column>
  */
 class ColumnViewHelper extends AbstractFormViewHelper {
 
@@ -32,27 +58,25 @@ class ColumnViewHelper extends AbstractFormViewHelper {
 		$this->registerArgument('style', 'string', 'Inline style to add when rendering the column');
 		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
 			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template. ' .
-			'Can also be set and/or overridden in tag content using <flux:form.variable />', FALSE, array());
+			'Can also be set and/or overridden in tag content using `<flux:form.variable />`', FALSE, array());
 		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
 	}
 
 	/**
-	 * @return string
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return Column
 	 */
-	public function render() {
+	static public function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Column $column */
-		$column = $this->getForm()->createContainer('Column', $this->arguments['name'], $this->arguments['label']);
-		$column->setExtensionName($this->getExtensionName());
-		$column->setColspan($this->arguments['colspan']);
-		$column->setRowspan($this->arguments['rowspan']);
-		$column->setStyle($this->arguments['style']);
-		$column->setColumnPosition($this->arguments['colPos']);
-		$column->setVariables($this->arguments['variables']);
-		$container = $this->getContainer();
-		$container->add($column);
-		$this->setContainer($column);
-		$this->renderChildren();
-		$this->setContainer($container);
+		$column = static::getFormFromRenderingContext($renderingContext)->createContainer('Column', $arguments['name'], $arguments['label']);
+		$column->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$column->setColspan($arguments['colspan']);
+		$column->setRowspan($arguments['rowspan']);
+		$column->setStyle($arguments['style']);
+		$column->setColumnPosition($arguments['colPos']);
+		$column->setVariables($arguments['variables']);
+		return $column;
 	}
 
 }

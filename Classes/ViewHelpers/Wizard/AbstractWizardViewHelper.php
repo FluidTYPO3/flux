@@ -10,12 +10,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 use FluidTYPO3\Flux\Form\WizardInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for Field Wizard style ViewHelpers
- *
- * @package Flux
- * @subpackage ViewHelpers/Wizard
  */
 abstract class AbstractWizardViewHelper extends AbstractFormViewHelper {
 
@@ -38,15 +36,17 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return WizardInterface
 	 */
-	protected function getPreparedComponent($type) {
-		$name = (TRUE === isset($this->arguments['name']) ? $this->arguments['name'] : 'wizard');
-		$component = $this->getContainer()->createWizard($type, $name);
-		$component->setExtensionName($this->getExtensionName());
-		$component->setHideParent($this->arguments['hideParent']);
-		$component->setLabel($this->arguments['label']);
-		$component->setVariables($this->arguments['variables']);
+	protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments) {
+		$name = (TRUE === isset($arguments['name']) ? $arguments['name'] : 'wizard');
+		$component = static::getContainerFromRenderingContext($renderingContext)->createWizard($type, $name);
+		$component->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$component->setHideParent($arguments['hideParent']);
+		$component->setLabel($arguments['label']);
+		$component->setVariables($arguments['variables']);
 		return $component;
 	}
 

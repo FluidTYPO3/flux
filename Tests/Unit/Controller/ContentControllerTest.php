@@ -18,7 +18,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
- * @package Flux
+ * ContentControllerTest
  */
 class ContentControllerTest extends AbstractFluxControllerTestCase {
 

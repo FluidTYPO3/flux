@@ -10,12 +10,11 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 
@@ -46,22 +45,25 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper {
 
 	/**
 	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return FieldInterface
 	 */
-	protected function getPreparedComponent($type) {
-		$component = $this->getForm()->createField($type, $this->arguments['name'], $this->arguments['label']);
-		$component->setExtensionName($this->getExtensionName());
-		$component->setDefault($this->arguments['default']);
-		$component->setRequired($this->arguments['required']);
-		$component->setExclude($this->arguments['exclude']);
-		$component->setEnable($this->arguments['enabled']);
-		$component->setRequestUpdate($this->arguments['requestUpdate']);
-		$component->setDisplayCondition($this->arguments['displayCond']);
-		$component->setInherit($this->arguments['inherit']);
-		$component->setInheritEmpty($this->arguments['inheritEmpty']);
-		$component->setTransform($this->arguments['transform']);
-		$component->setClearable($this->arguments['clear']);
-		$component->setVariables($this->arguments['variables']);
+	protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments) {
+		$component = static::getFormFromRenderingContext($renderingContext)
+			->createField($type, $arguments['name'], $arguments['label']);
+		$component->setExtensionName(self::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$component->setDefault($arguments['default']);
+		$component->setRequired($arguments['required']);
+		$component->setExclude($arguments['exclude']);
+		$component->setEnable($arguments['enabled']);
+		$component->setRequestUpdate($arguments['requestUpdate']);
+		$component->setDisplayCondition($arguments['displayCond']);
+		$component->setInherit($arguments['inherit']);
+		$component->setInheritEmpty($arguments['inheritEmpty']);
+		$component->setTransform($arguments['transform']);
+		$component->setClearable($arguments['clear']);
+		$component->setVariables($arguments['variables']);
 		return $component;
 	}
 

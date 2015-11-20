@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Data;
 use FluidTYPO3\Flux\Service\ContentService;
 
 /**
- * @package Flux
+ * Records
  */
 class Records {
 

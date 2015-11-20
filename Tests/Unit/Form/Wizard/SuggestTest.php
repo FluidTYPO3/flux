@@ -12,7 +12,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use FluidTYPO3\Flux\Form\Wizard\Suggest;
 
 /**
- * @package Flux
+ * SuggestTest
  */
 class SuggestTest extends AbstractWizardTest {
 

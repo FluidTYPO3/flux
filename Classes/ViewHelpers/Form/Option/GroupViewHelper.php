@@ -13,16 +13,13 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
  * Form group option ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Form
  */
 class GroupViewHelper extends OptionViewHelper {
 
 	/**
 	 * @var string
 	 */
-	protected $option = Form::OPTION_GROUP;
+	public static $option = Form::OPTION_GROUP;
 
 	/**
 	 * Initialize arguments

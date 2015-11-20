@@ -20,9 +20,6 @@ use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
  *
  * Accepts POST array form data and uses a Flux Form
  * to perform pre-saving steps (validation, transformation etc).
- *
- * @package Flux
- * @subpackage Outlet\Pipe
  */
 class TypeConverterPipe extends AbstractPipe implements PipeInterface {
 

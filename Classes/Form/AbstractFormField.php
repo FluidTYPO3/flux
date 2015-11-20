@@ -13,8 +13,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
- * @package Flux
- * @subpackage Form
+ * AbstractFormField
  */
 abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface {
 
@@ -265,12 +264,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	 * @return mixed
 	 */
 	public function getDefault() {
-		if (FALSE === empty($this->default)) {
-			$defaultValue = $this->default;
-		} else {
-			$defaultValue = NULL;
-		}
-		return $defaultValue;
+		return $this->default;
 	}
 
 	/**

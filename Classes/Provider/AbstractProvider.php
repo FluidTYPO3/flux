@@ -24,8 +24,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 
 /**
- * @package Flux
- * @subpackage Provider
+ * AbstractProvider
  */
 class AbstractProvider implements ProviderInterface {
 
@@ -465,7 +464,9 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	protected function getPageValues() {
 		$record = $GLOBALS['TSFE']->page;
-		$localisation = $this->recordService->get('pages_language_overlay', '*', "pid = '" . $record['uid'] . "'");
+		if ($GLOBALS['TSFE']->sys_language_uid != 0) {
+			$localisation = $this->recordService->get('pages_language_overlay', '*', 'pid = "' . $record['uid'] . '" AND sys_language_uid = "' . $GLOBALS['TSFE']->sys_language_uid . '"');
+		}
 		if (FALSE === empty($localisation)) {
 			$record = RecursiveArrayUtility::merge($record, reset($localisation));
 		}
@@ -553,7 +554,7 @@ class AbstractProvider implements ProviderInterface {
 	public function preProcessRecord(array &$row, $id, DataHandler $reference) {
 		$fieldName = $this->getFieldName($row);
 		$tableName = $this->getTableName($row);
-		if (TRUE === is_array($row[$fieldName]) && TRUE === is_array($row[$fieldName]['data']) && TRUE === is_array($row[$fieldName]['data']['options']['lDEF'])) {
+		if (TRUE === is_array($row[$fieldName]) && TRUE === isset($row[$fieldName]['data']['options']['lDEF']) && TRUE === is_array($row[$fieldName]['data']['options']['lDEF'])) {
 			foreach ($row[$fieldName]['data']['options']['lDEF'] as $key => $value) {
 				if (0 === strpos($key, $tableName)) {
 					$realKey = array_pop(explode('.', $key));
@@ -688,6 +689,20 @@ class AbstractProvider implements ProviderInterface {
 	}
 
 	/**
+	 * Processes the table configuration (TCA) for the table associated
+	 * with this Provider, as determined by the trigger() method. Gets
+	 * passed an instance of the record being edited/created along with
+	 * the current configuration array - and must return a complete copy
+	 * of the configuration array manipulated to the Provider's needs.
+	 *
+	 * @param array $row The record being edited/created
+	 * @return array The large FormEngine configuration array - see FormEngine documentation!
+	 */
+	public function processTableConfiguration(array $row, array $configuration) {
+		return $configuration;
+	}
+
+	/**
 	 * Perform various cleanup operations upon clearing cache
 	 *
 	 * @param array $command
@@ -701,9 +716,6 @@ class AbstractProvider implements ProviderInterface {
 	 */
 	protected function getPreviewView() {
 		$preview = 'FluidTYPO3\\Flux\\View\\PreviewView';
-		if (TRUE === version_compare(TYPO3_version, '7.1', '<')) {
-			$preview = 'FluidTYPO3\\Flux\\View\\LegacyPreviewView';
-		}
 		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get($preview);
 	}
 
@@ -885,15 +897,16 @@ class AbstractProvider implements ProviderInterface {
 
 	/**
 	 * Use by TceMain to track method calls to providers for a certain $id.
-	 * Every provider should only be called once per method / $id.
+	 * Every provider should only be called once per method / $id / command.
 	 * When TceMain has called the provider it will call this method afterwards.
 	 *
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @param string command
 	 * @return void
 	 */
-	public function trackMethodCall($methodName, $id) {
-		self::trackMethodCallWithClassName(get_called_class(), $methodName, $id);
+	public function trackMethodCall($methodName, $id, $command = '') {
+		self::trackMethodCallWithClassName(get_called_class(), $methodName, $id, $command);
 	}
 
 	/**
@@ -905,10 +918,11 @@ class AbstractProvider implements ProviderInterface {
 	 *
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @param string $command
 	 * @return boolean
 	 */
-	public function shouldCall($methodName, $id) {
-		return self::shouldCallWithClassName(get_class($this), $methodName, $id);
+	public function shouldCall($methodName, $id, $command = '') {
+		return self::shouldCallWithClassName(get_class($this), $methodName, $id, $command);
 	}
 
 	/**
@@ -918,10 +932,11 @@ class AbstractProvider implements ProviderInterface {
 	 * @param string $className
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @param string $command
 	 * @return void
 	 */
-	protected function trackMethodCallWithClassName($className, $methodName, $id) {
-		$cacheKey = $className . $methodName . $id;
+	protected function trackMethodCallWithClassName($className, $methodName, $id, $command = '') {
+		$cacheKey = $className . $methodName . $id . $command;
 		self::$trackedMethodCalls[$cacheKey] = TRUE;
 	}
 
@@ -932,10 +947,11 @@ class AbstractProvider implements ProviderInterface {
 	 * @param string $className
 	 * @param string $methodName
 	 * @param mixed $id
+	 * @param string $command
 	 * @return boolean
 	 */
-	protected function shouldCallWithClassName($className, $methodName, $id) {
-		$cacheKey = $className . $methodName . $id;
+	protected function shouldCallWithClassName($className, $methodName, $id, $command = '') {
+		$cacheKey = $className . $methodName . $id . $command;
 		return empty(self::$trackedMethodCalls[$cacheKey]);
 	}
 

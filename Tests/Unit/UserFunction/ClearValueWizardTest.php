@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\UserFunction;
  */
 
 /**
- * @package Flux
+ * ClearValueWizardTest
  */
 class ClearValueWizardTest extends AbstractUserFunctionTest {
 

@@ -9,25 +9,23 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\None;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * None field ViewHelper
  *
  * Makes a read-only component which supports a default value
  * but which cannot be edited.
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class NoneViewHelper extends AbstractFieldViewHelper {
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return None
 	 */
-	public function getComponent() {
-		/** @var None $none */
-		$none = $this->getPreparedComponent('None');
-		return $none;
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		return static::getPreparedComponent('None', $renderingContext, $arguments);
 	}
 
 }

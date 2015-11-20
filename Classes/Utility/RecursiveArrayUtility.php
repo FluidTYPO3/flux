@@ -12,9 +12,6 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
 
 /**
  * RecursiveArray Utility
- *
- * @package Flux
- * @subpackage Utility
  */
 class RecursiveArrayUtility {
 

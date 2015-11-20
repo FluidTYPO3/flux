@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 
 /**
- * @package Flux
+ * TextTest
  */
 class TextTest extends InputTest {
 

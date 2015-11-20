@@ -14,8 +14,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * ControllerActions
  */
 class ControllerActions extends Select {
 

@@ -24,8 +24,6 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * Test case for Flux-enabled controllers
- *
- * @package Flux
  */
 class AbstractFluxControllerTestCase extends AbstractTestCase {
 

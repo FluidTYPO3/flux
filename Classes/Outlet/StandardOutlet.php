@@ -13,8 +13,6 @@ namespace FluidTYPO3\Flux\Outlet;
  *
  * Performs a 100% standard Outlet processing; Pipes leading
  * data in and other Pipes leading data out.
- *
- * @package Flux\Outlet
  */
 class StandardOutlet extends AbstractOutlet implements OutletInterface {
 

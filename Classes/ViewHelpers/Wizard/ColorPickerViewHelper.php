@@ -9,12 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Form\Wizard\ColorPicker;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Color Picker
- *
- * @package Flux
- * @subpackage ViewHelpers/Wizard
  */
 class ColorPickerViewHelper extends AbstractWizardViewHelper {
 
@@ -36,15 +34,17 @@ class ColorPickerViewHelper extends AbstractWizardViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return ColorPicker
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var ColorPicker $component */
-		$component = $this->getPreparedComponent('ColorPicker');
-		$component->setIcon($this->arguments['exampleImg']);
-		$component->setDimensions($this->arguments['dim']);
-		$component->setWidth($this->arguments['width']);
-		$component->setHeight($this->arguments['height']);
+		$component = static::getPreparedComponent('ColorPicker', $renderingContext, $arguments);
+		$component->setIcon($arguments['exampleImg']);
+		$component->setDimensions($arguments['dim']);
+		$component->setWidth($arguments['width']);
+		$component->setHeight($arguments['height']);
 		return $component;
 	}
 

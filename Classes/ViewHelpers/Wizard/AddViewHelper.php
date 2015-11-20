@@ -9,12 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Form\Wizard\Add;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Add
- *
- * @package Flux
- * @subpackage ViewHelpers/Wizard
  */
 class AddViewHelper extends AbstractWizardViewHelper {
 
@@ -35,14 +33,16 @@ class AddViewHelper extends AbstractWizardViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return Add
 	 */
-	public function getComponent() {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var Add $component */
-		$component = $this->getPreparedComponent('Add');
-		$component->setTable($this->arguments['table']);
-		$component->setStoragePageUid($this->arguments['pid']);
-		$component->setSetValue($this->arguments['setValue']);
+		$component = static::getPreparedComponent('Add', $renderingContext, $arguments);
+		$component->setTable($arguments['table']);
+		$component->setStoragePageUid($arguments['pid']);
+		$component->setSetValue($arguments['setValue']);
 		return $component;
 	}
 

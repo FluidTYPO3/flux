@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 use FluidTYPO3\Flux\Form\Container\Section;
 
 /**
- * @package Flux
+ * SectionTest
  */
 class SectionTest extends AbstractContainerTest {
 

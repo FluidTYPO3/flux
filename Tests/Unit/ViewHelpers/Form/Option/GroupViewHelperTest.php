@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form\Option;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 
 /**
- * @package Flux
+ * GroupViewHelperTest
  */
 class GroupViewHelperTest extends AbstractFormViewHelperTestCase {
 

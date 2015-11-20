@@ -11,14 +11,13 @@ namespace FluidTYPO3\Flux\Utility;
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * MiscellaneousUtility Utility
- *
- * @package Flux
- * @subpackage Utility
  */
 class MiscellaneousUtility {
 
@@ -29,6 +28,11 @@ class MiscellaneousUtility {
 	 * @var array
 	 */
 	private static $allowedIconTypes = array('svg', 'png', 'gif');
+
+	/**
+	 * @var IconFactory
+	 */
+	private static $iconFactory;
 
 	/**
 	 * @param integer $contentElementUid
@@ -47,7 +51,11 @@ class MiscellaneousUtility {
 	 * @return string
 	 */
 	public static function getIcon($icon) {
-		return IconUtility::getSpriteIcon($icon);
+		if (NULL === static::$iconFactory) {
+			static::$iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+		}
+
+		return static::$iconFactory->getIcon($icon, Icon::SIZE_SMALL);
 	}
 
 	/**
@@ -57,7 +65,7 @@ class MiscellaneousUtility {
 	 * @return string
 	 */
 	public static function wrapLink($inner, $uri, $title) {
-		return '<a href="#" onclick="window.location.href=\'' . htmlspecialchars($uri) . '\'" title="' . $title . '">' . $inner . '</a>';
+		return '<a href="#" class="btn btn-default btn-sm" onclick="window.location.href=\'' . htmlspecialchars($uri) . '\'" title="' . $title . '">' . $inner . '</a>';
 	}
 
 	/**
@@ -122,12 +130,19 @@ class MiscellaneousUtility {
 		$dom->loadXML($xml);
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->formatOutput = TRUE;
+		$fieldNodesToRemove = array();
 		foreach ($dom->getElementsByTagName('field') as $fieldNode) {
 			/** @var \DOMElement $fieldNode */
 			if (TRUE === in_array($fieldNode->getAttribute('index'), $removals)) {
-				$fieldNode->parentNode->removeChild($fieldNode);
+				$fieldNodesToRemove[] = $fieldNode;
 			}
 		}
+
+		foreach ($fieldNodesToRemove as $fieldNodeToRemove) {
+			/** @var \DOMElement $fieldNodeToRemove */
+			$fieldNodeToRemove->parentNode->removeChild($fieldNodeToRemove);
+		}
+
 		// Assign a hidden ID to all container-type nodes, making the value available in templates etc.
 		foreach ($dom->getElementsByTagName('el') as $containerNode) {
 			/** @var \DOMElement $containerNode */
@@ -175,7 +190,8 @@ class MiscellaneousUtility {
 		}
 		$xml = $dom->saveXML();
 		// hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
-		$xml = str_replace('<field index=""></field>', '', $xml);
+		$xml = preg_replace('#<el index="el">\s*</el>#', '', $xml);
+		$xml = preg_replace('#<field index="[^"]*">\s*</field>#', '', $xml);
 		return $xml;
 	}
 

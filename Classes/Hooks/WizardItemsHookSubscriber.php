@@ -17,8 +17,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
- * WizardItems Hook Subscriber
- * @package Flux
+ * WizardItemsHookSubscriber
  */
 class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface {
 

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Hooks;
+namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\Tree;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -8,9 +8,11 @@ namespace FluidTYPO3\Flux\Hooks;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\TreeViewHelperTest;
+
 /**
- * Class LegacyContentIconHookSubscriberTest
+ * TreeViewHelperTest
  */
-class LegacyContentIconHookSubscriberTest extends ContentIconHookSubscriberTest {
+class CategoryViewHelperTest extends TreeViewHelperTest {
 
 }

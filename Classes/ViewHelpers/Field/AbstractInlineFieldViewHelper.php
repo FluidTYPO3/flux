@@ -9,12 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\InlineRelationFieldInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Inline-style FlexForm field ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHelper {
 
@@ -43,44 +41,47 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
 	}
 
 	/**
-	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return InlineRelationFieldInterface
 	 */
-	public function getComponent($type = 'Inline') {
-		$component = $this->getPreparedComponent($type);
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		$component = static::getPreparedComponent('Inline', $renderingContext, $arguments);
 		return $component;
 	}
 
 	/**
 	 * @param string $type
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
 	 * @return InlineRelationFieldInterface
 	 */
-	protected function getPreparedComponent($type) {
+	protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var InlineRelationFieldInterface $component */
-		$component = parent::getPreparedComponent($type);
-		$component->setCollapseAll($this->arguments['collapseAll']);
-		$component->setExpandSingle($this->arguments['expandSingle']);
-		$component->setNewRecordLinkAddTitle($this->arguments['newRecordLinkAddTitle']);
-		$component->setNewRecordLinkPosition($this->arguments['newRecordLinkPosition']);
-		$component->setUseCombination($this->arguments['useCombination']);
-		$component->setUseSortable($this->arguments['useSortable']);
-		$component->setShowPossibleLocalizationRecords($this->arguments['showPossibleLocalizationRecords']);
-		$component->setShowRemovedLocalizationRecords($this->arguments['showRemovedLocalizationRecords']);
-		$component->setShowAllLocalizationLink($this->arguments['showAllLocalizationLink']);
-		$component->setShowSynchronizationLink($this->arguments['showSynchronizationLink']);
-		if (TRUE === is_array($this->arguments['enabledControls'])) {
-			$component->setEnabledControls($this->arguments['enabledControls']);
+		$component = parent::getPreparedComponent($type, $renderingContext, $arguments);
+		$component->setCollapseAll($arguments['collapseAll']);
+		$component->setExpandSingle($arguments['expandSingle']);
+		$component->setNewRecordLinkAddTitle($arguments['newRecordLinkAddTitle']);
+		$component->setNewRecordLinkPosition($arguments['newRecordLinkPosition']);
+		$component->setUseCombination($arguments['useCombination']);
+		$component->setUseSortable($arguments['useSortable']);
+		$component->setShowPossibleLocalizationRecords($arguments['showPossibleLocalizationRecords']);
+		$component->setShowRemovedLocalizationRecords($arguments['showRemovedLocalizationRecords']);
+		$component->setShowAllLocalizationLink($arguments['showAllLocalizationLink']);
+		$component->setShowSynchronizationLink($arguments['showSynchronizationLink']);
+		if (TRUE === is_array($arguments['enabledControls'])) {
+			$component->setEnabledControls($arguments['enabledControls']);
 		}
-		if (TRUE === is_array($this->arguments['headerThumbnail'])) {
-			$component->setHeaderThumbnail($this->arguments['headerThumbnail']);
+		if (TRUE === is_array($arguments['headerThumbnail'])) {
+			$component->setHeaderThumbnail($arguments['headerThumbnail']);
 		}
-		if (TRUE === is_array($this->arguments['foreignMatchFields'])) {
-			$component->setForeignMatchFields($this->arguments['foreignMatchFields']);
+		if (TRUE === is_array($arguments['foreignMatchFields'])) {
+			$component->setForeignMatchFields($arguments['foreignMatchFields']);
 		}
-		if (TRUE === is_array($this->arguments['foreignTypes'])) {
-			$component->setForeignTypes($this->arguments['foreignTypes']);
+		if (TRUE === is_array($arguments['foreignTypes'])) {
+			$component->setForeignTypes($arguments['foreignTypes']);
 		}
-		$component->setLevelLinksPosition($this->arguments['levelLinksPosition']);
+		$component->setLevelLinksPosition($arguments['levelLinksPosition']);
 		return $component;
 	}
 

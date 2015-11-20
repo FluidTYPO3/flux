@@ -21,7 +21,7 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
- * @package Flux
+ * GetViewHelperTest
  */
 class GetViewHelperTest extends AbstractViewHelperTestCase {
 

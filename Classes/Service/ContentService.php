@@ -18,9 +18,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Flux FlexForm integration Service
  *
  * Main API Service for interacting with Flux-based FlexForms
- *
- * @package Flux
- * @subpackage Service
  */
 class ContentService implements SingletonInterface {
 
@@ -210,6 +207,7 @@ class ContentService implements SingletonInterface {
 				list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
 				$row['tx_flux_parent'] = $parent;
 				$row['tx_flux_column'] = $column;
+				$row['sorting'] = $tceMain->getSortNumber('tt_content', 0, $row['pid']);
 			} elseif (0 <= (integer) $relativeTo && FALSE === empty($parameters[1])) {
 				list($prefix, $column, $prefix2, , , $relativePosition, $relativeUid, $area) = GeneralUtility::trimExplode('-', $parameters[1]);
 				$relativeUid = (integer) $relativeUid;
@@ -228,7 +226,8 @@ class ContentService implements SingletonInterface {
 			} elseif (0 < (integer) $relativeTo) {
 				// moving to first position in colPos, means that $relativeTo is the pid of the containing page
 				$row['sorting'] = $tceMain->getSortNumber('tt_content', 0, $relativeTo);
-				// neither change fields tx_flux_column nor tx_flux_parent here!
+				$row['tx_flux_parent'] = NULL;
+				$row['tx_flux_column'] = NULL;
 			} else {
 				$row['tx_flux_parent'] = NULL;
 				$row['tx_flux_column'] = NULL;
@@ -297,8 +296,13 @@ class ContentService implements SingletonInterface {
 				// look for the translated version of the parent record indicated
 				// in this new, translated record. Below, we adjust the parent UID
 				// so it has the UID of the translated parent if one exists.
-				$translatedParents = (array) $this->workspacesAwareRecordService->get('tt_content', 'uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'" . BackendUtility::deleteClause('tt_content'));
-				$translatedParent = reset($translatedParents);
+				$translatedParents = (array) $this->workspacesAwareRecordService->get('tt_content', 'uid,sys_language_uid', "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'" . BackendUtility::deleteClause('tt_content'));
+				foreach ($translatedParents as $translatedParent) {
+					if ($translatedParent['sys_language_uid'] == $newLanguageUid) {
+						// set $translatedParent to the right language ($newLanguageUid):
+						break;
+					}
+				}
 				$sortbyFieldName = TRUE === isset($GLOBALS['TCA']['tt_content']['ctrl']['sortby']) ?
 					$GLOBALS['TCA']['tt_content']['ctrl']['sortby'] : 'sorting';
 				$overrideValues = array(

@@ -10,9 +10,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /**
  * Inline-style FlexForm field ViewHelper
- *
- * @package Flux
- * @subpackage ViewHelpers/Field
  */
 class InlineViewHelper extends AbstractInlineFieldViewHelper {
 

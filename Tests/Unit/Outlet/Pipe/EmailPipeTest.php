@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * EmailPipeTest
  */
 class EmailPipeTest extends AbstractPipeTestCase {
 

@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 
 /**
- * @package Flux
+ * RecordServiceTest
  */
 class RecordServiceTest extends AbstractTestCase {
 

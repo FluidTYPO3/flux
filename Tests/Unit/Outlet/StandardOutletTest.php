@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet;
 use FluidTYPO3\Flux\Tests\Unit\Outlet\AbstractOutletTestCase;
 
 /**
- * @package Flux
+ * StandardOutletTest
  */
 class StandardOutletTest extends AbstractOutletTestCase {
 

@@ -11,8 +11,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\AbstractInlineFormField;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * Inline
  */
 class Inline extends AbstractInlineFormField {
 

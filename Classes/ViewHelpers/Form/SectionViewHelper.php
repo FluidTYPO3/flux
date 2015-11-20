@@ -10,12 +10,30 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm field section ViewHelper
  *
- * @package Flux
- * @subpackage ViewHelpers/Form
+ * #### Using a section to let a user add many elements
+ *
+ *     <flux:form.section name="settings.numbers" label="Telephone numbers">
+ *         <flux:form.object name="mobile" label="Mobile">
+ *             <flux:field.input name="number"/>
+ *         </flux:form.object>
+ *         <flux:form.object name="landline" label="Landline">
+ *             <flux:field.input name="number"/>
+ *         </flux:form.object>
+ *     </flux:form.section>
+ *
+ * #### Reading section element values
+ *
+ *     <f:for each="{settings.numbers}" as="obj" key="id">
+ *         Number #{id}:
+ *         <f:if condition="{obj.landline}">mobile, {obj.landline.number}</f:if>
+ *         <f:if condition="{obj.mobile}">landline, {obj.mobile.number}</f:if>
+ *         <br/>
+ *     </f:for>
  */
 class SectionViewHelper extends AbstractFieldViewHelper {
 
@@ -36,20 +54,19 @@ class SectionViewHelper extends AbstractFieldViewHelper {
 	}
 
 	/**
-	 * Render method
-	 * @return void
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @return Section
 	 */
-	public function render() {
-		$container = $this->getContainer();
+	static public function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+		$container = static::getContainerFromRenderingContext($renderingContext);
 		/** @var Section $section */
-		$section = $container->createContainer('Section', $this->arguments['name'], $this->arguments['label']);
-		$section->setExtensionName($this->getExtensionName());
-		$section->setVariables($this->arguments['variables']);
-		$section->setInherit($this->arguments['inherit']);
-		$section->setInheritEmpty($this->arguments['inheritEmpty']);
-		$this->setContainer($section);
-		$this->renderChildren();
-		$this->setContainer($container);
+		$section = $container->createContainer('Section', $arguments['name'], $arguments['label']);
+		$section->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+		$section->setVariables($arguments['variables']);
+		$section->setInherit($arguments['inherit']);
+		$section->setInheritEmpty($arguments['inheritEmpty']);
+		return $section;
 	}
 
 }

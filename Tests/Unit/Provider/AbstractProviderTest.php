@@ -21,7 +21,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * AbstractProviderTest
  */
 abstract class AbstractProviderTest extends AbstractTestCase {
 
@@ -569,13 +569,25 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function testAppliesLocalisationToPageValues() {
-		$GLOBALS['TSFE'] = (object) array('page' => array('foo' => 'bar'));
+	public function testApplyLocalisationToPageValues() {
+		$GLOBALS['TSFE'] = (object) array('page' => array('title' => 'foo'), 'sys_language_uid' => 1);
 		$recordService = $this->getMock('FluidTYPO3\\Service\\RecordService', array('get'));
-		$recordService->expects($this->once())->method('get')->willReturn(array(array('also' => 'baz')));
+		$recordService->expects($this->once())->method('get')->willReturn(array(array('title' => 'bar', 'subtitle' => 'baz')));
 		$subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
 		$subject->_set('recordService', $recordService);
-		$this->assertEquals(array('foo' => 'bar', 'also' => 'baz'), $this->callInaccessibleMethod($subject, 'getPageValues'));
+		$this->assertEquals(array('title' => 'bar', 'subtitle' => 'baz'), $this->callInaccessibleMethod($subject, 'getPageValues'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function testDontApplyLocalisationToPageValuesInDefaultLanguage() {
+		$GLOBALS['TSFE'] = (object) array('page' => array('title' => 'foo'), 'sys_language_uid' => 0);
+		$recordService = $this->getMock('FluidTYPO3\\Service\\RecordService', array('get'));
+		$recordService->expects($this->never())->method('get');
+		$subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
+		$subject->_set('recordService', $recordService);
+		$this->assertEquals(array('title' => 'foo'), $this->callInaccessibleMethod($subject, 'getPageValues'));
 	}
 
 	/**

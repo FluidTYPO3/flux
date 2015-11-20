@@ -16,7 +16,6 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
  * @Flux\Control\StartTime
  * @Flux\Control\EndTime
  * @Flux\Control\FrontendUserGroup
- * @package Flux
  */
 class Dummy extends AbstractEntity {
 

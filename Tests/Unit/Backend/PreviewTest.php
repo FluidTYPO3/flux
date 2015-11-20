@@ -16,7 +16,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * PreviewTest
  */
 class PreviewTest extends AbstractTestCase {
 
@@ -24,6 +24,9 @@ class PreviewTest extends AbstractTestCase {
 	 * Setup
 	 */
 	public function setUp() {
+		$configurationManager = $this->getMock('FluidTYPO3\Flux\Configuration\ConfigurationManager');
+		$fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+		$fluxService->injectConfigurationManager($configurationManager);
 		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', FALSE);
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
 		$tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));

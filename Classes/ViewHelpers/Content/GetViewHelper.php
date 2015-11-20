@@ -10,40 +10,39 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * ### Content: Get ViewHelper
  *
  * Gets all child content of a record based on area.
- *
- * @package Flux
- * @subpackage ViewHelpers/Flexform
  */
 class GetViewHelper extends AbstractViewHelper {
 
 	/**
 	 * @var FluxService
 	 */
-	protected $configurationService;
+	protected static $configurationService;
 
 	/**
 	 * @var ConfigurationManagerInterface
 	 */
-	protected $configurationManager;
+	protected static $configurationManager;
 
 	/**
 	 * @var WorkspacesAwareRecordService
 	 */
-	protected $recordService;
+	protected static $recordService;
 
 	/**
 	 * @param FluxService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(FluxService $configurationService) {
-		$this->configurationService = $configurationService;
+		self::$configurationService = $configurationService;
 	}
 
 	/**
@@ -51,7 +50,7 @@ class GetViewHelper extends AbstractViewHelper {
 	 * @return void
 	 */
 	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
-		$this->configurationManager = $configurationManager;
+		self::$configurationManager = $configurationManager;
 	}
 
 	/**
@@ -59,9 +58,8 @@ class GetViewHelper extends AbstractViewHelper {
 	 * @return void
 	 */
 	public function injectRecordService(WorkspacesAwareRecordService $recordService) {
-		$this->recordService = $recordService;
+		self::$recordService = $recordService;
 	}
-
 	/**
 	 * Initialize
 	 * @return void
@@ -80,47 +78,77 @@ class GetViewHelper extends AbstractViewHelper {
 	/**
 	 * Render
 	 *
-	 * @return mixed
+	 * @return string
 	 */
 	public function render() {
+		return static::renderStatic(
+			$this->arguments,
+			$this->buildRenderChildrenClosure(),
+			$this->renderingContext
+		);
+	}
+
+	/**
+	 * Default implementation for use in compiled templates
+	 *
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
+	 * @return mixed
+	 */
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
+		if (self::$configurationService === NULL || self::$configurationManager === NULL || self::$recordService === NULL) {
+			$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+			if (self::$configurationService === NULL) {
+				self::$configurationService = $objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+			}
+			if (self::$configurationManager === NULL) {
+				self::$configurationManager = $objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
+			}
+			if (self::$recordService === NULL) {
+				self::$recordService = $objectManager->get('FluidTYPO3\Flux\Service\WorkspacesAwareRecordService');
+			}
+		}
+		$templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+
 		$loadRegister = FALSE;
-		if (empty($this->arguments['loadRegister']) === FALSE) {
-			$this->configurationManager->getContentObject()->cObjGetSingle('LOAD_REGISTER', $this->arguments['loadRegister']);
+		if (empty($arguments['loadRegister']) === FALSE) {
+			self::$configurationManager->getContentObject()->cObjGetSingle('LOAD_REGISTER', $arguments['loadRegister']);
 			$loadRegister = TRUE;
 		}
-		$record = $this->templateVariableContainer->get('record');
+		$record = $templateVariableContainer->get('record');
 		$id = $record['uid'];
-		$order = $this->arguments['order'];
-		$area = $this->arguments['area'];
-		$limit = $this->arguments['limit'] ? $this->arguments['limit'] : 99999;
-		$offset = intval($this->arguments['offset']);
-		$sortDirection = $this->arguments['sortDirection'];
+		$order = $arguments['order'];
+		$area = $arguments['area'];
+		$limit = $arguments['limit'] ? $arguments['limit'] : 99999;
+		$offset = intval($arguments['offset']);
+		$sortDirection = $arguments['sortDirection'];
 		$order .= ' ' . $sortDirection;
 		// Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and column.
 		// The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.
 		// Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the localized version or default version.
 		$conditions = "(tx_flux_parent = '" . $id . "' AND tx_flux_column = '" . $area . "' AND pid = '" . $record['pid'] . "')" .
 			$GLOBALS['TSFE']->cObj->enableFields('tt_content');
-		$rows = $this->recordService->get('tt_content', '*', $conditions, '', $order, $offset . ',' . $limit);
+		$rows = self::$recordService->get('tt_content', '*', $conditions, '', $order, $offset . ',' . $limit);
 
-		$elements = FALSE === (boolean) $this->arguments['render'] ? $rows : $this->getRenderedRecords($rows);
-		if (TRUE === empty($this->arguments['as'])) {
+		$elements = FALSE === (boolean) $arguments['render'] ? $rows : self::getRenderedRecords($rows);
+		if (TRUE === empty($arguments['as'])) {
 			$content = $elements;
 		} else {
-			$as = $this->arguments['as'];
-			if (TRUE === $this->templateVariableContainer->exists($as)) {
-				$backup = $this->templateVariableContainer->get($as);
-				$this->templateVariableContainer->remove($as);
+			$as = $arguments['as'];
+			if (TRUE === $templateVariableContainer->exists($as)) {
+				$backup = $templateVariableContainer->get($as);
+				$templateVariableContainer->remove($as);
 			}
-			$this->templateVariableContainer->add($as, $elements);
-			$content = $this->renderChildren();
-			$this->templateVariableContainer->remove($as);
+			$templateVariableContainer->add($as, $elements);
+			$content = $renderChildrenClosure();
+			$templateVariableContainer->remove($as);
 			if (TRUE === isset($backup)) {
-				$this->templateVariableContainer->add($as, $backup);
+				$templateVariableContainer->add($as, $backup);
 			}
 		}
 		if ($loadRegister) {
-			$this->configurationManager->getContentObject()->cObjGetSingle('RESTORE_REGISTER', '');
+			self::$configurationManager->getContentObject()->cObjGetSingle('RESTORE_REGISTER', '');
 		}
 		return $content;
 	}
@@ -133,7 +161,7 @@ class GetViewHelper extends AbstractViewHelper {
 	 * @param array $rows database rows of records (each item is a tt_content table record)
 	 * @return array
 	 */
-	protected function getRenderedRecords($rows) {
+	protected static function getRenderedRecords($rows) {
 		$elements = array();
 		foreach ($rows as $row) {
 			$conf = array(
@@ -141,7 +169,7 @@ class GetViewHelper extends AbstractViewHelper {
 				'source' => $row['uid'],
 				'dontCheckPid' => 1
 			);
-			array_push($elements, $this->configurationManager->getContentObject()->cObjGetSingle('RECORDS', $conf));
+			array_push($elements, self::$configurationManager->getContentObject()->cObjGetSingle('RECORDS', $conf));
 		}
 		return $elements;
 	}

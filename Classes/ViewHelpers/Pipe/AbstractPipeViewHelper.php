@@ -9,6 +9,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  */
 
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Class AbstractPipeViewHelper
@@ -30,12 +32,19 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
 	 * @return void
 	 */
-	public function render() {
-		$form = $this->getForm();
+	public static function renderStatic(
+		array $arguments,
+		\Closure $renderChildrenClosure,
+		RenderingContextInterface $renderingContext
+	) {
+		$form = static::getFormFromRenderingContext($renderingContext);
 		$sheet = TRUE === $form->has('pipes') ? $form->get('pipes') : $form->createContainer('Sheet', 'pipes');
-		$pipe = $this->preparePipeInstance();
+		$pipe = static::preparePipeInstance($renderingContext, $arguments);
 		foreach ($pipe->getFormFields() as $formField) {
 			$sheet->add($formField);
 		}
@@ -43,10 +52,18 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper {
 	}
 
 	/**
+	 * @param RenderingContextInterface $renderingContext
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
 	 * @return PipeInterface
 	 */
-	protected function preparePipeInstance() {
-		return $this->objectManager->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\StandardPipe');
+	protected static function preparePipeInstance(
+		RenderingContextInterface $renderingContext,
+		array $arguments,
+		\Closure $renderChildrenClosure = NULL
+	) {
+		return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+			->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\StandardPipe');
 	}
 
 }

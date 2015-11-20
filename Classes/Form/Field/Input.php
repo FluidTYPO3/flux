@@ -13,8 +13,7 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @package Flux
- * @subpackage Form\Field
+ * Input
  */
 class Input extends AbstractFormField implements FieldInterface {
 

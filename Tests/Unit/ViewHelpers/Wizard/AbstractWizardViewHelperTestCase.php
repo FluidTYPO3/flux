@@ -9,9 +9,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * @package Flux
+ * AbstractWizardViewHelperTestCase
  */
 abstract class AbstractWizardViewHelperTestCase extends AbstractFormViewHelperTestCase {
 
@@ -21,7 +22,10 @@ abstract class AbstractWizardViewHelperTestCase extends AbstractFormViewHelperTe
 	public function createsValidFieldInterfaceComponents() {
 		$instance = $this->buildViewHelperInstance($this->defaultArguments);
 		$instance->render();
-		$component = $instance->getComponent();
+		$component = $instance->getComponent(
+			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
+			ObjectAccess::getProperty($instance, 'arguments', TRUE)
+		);
 		$this->assertInstanceOf('FluidTYPO3\Flux\Form\WizardInterface', $component);
 	}
 
