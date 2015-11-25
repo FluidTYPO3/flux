@@ -16,11 +16,11 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * ### Select and render an image
  *
- *    <flux:field.file name="settings.image" allowed="jpg,png,svg" showThumbnails="1" />
+ *     <flux:field.file name="settings.image" allowed="jpg,png,svg" showThumbnails="1" />
  *
  * Then use `<f:image>` to render the image in the frontend:
  *
- *    <f:image src="{settings.image}"/>
+ *     <f:image src="{settings.image}"/>
  *
  * `alt` and `title` tags are not loaded from the file's meta data record.
  * Use `<flux:field.inline.fal>` if you want this feature.
