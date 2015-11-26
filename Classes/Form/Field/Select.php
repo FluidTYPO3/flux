@@ -50,6 +50,15 @@ class Select extends AbstractMultiValueFormField {
 	protected $translateCsvItems = FALSE;
 
 	/**
+	 * Special rendering type of this component - supports all values normally
+	 * supported by TCA of the "select" field type.
+	 *
+	 * @var string
+	 * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#rendertype
+	 */
+	protected $renderType = 'selectSingle';
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
@@ -135,6 +144,21 @@ class Select extends AbstractMultiValueFormField {
 	 */
 	public function getEmptyOption() {
 		return $this->emptyOption;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRenderType() {
+		return $this->renderType;
+	}
+
+	/**
+	 * @param string $renderType
+	 * @return void
+	 */
+	public function setRenderType($renderType) {
+		$this->renderType = $renderType;
 	}
 
 	/**
