@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Backend;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
@@ -64,7 +65,11 @@ class DynamicFlexForm {
 	 */
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName) {
 		// $row doesn't neccessarily contain all fields that we need
-		$fullrow = BackendUtility::getRecord($table, $row['uid']);
+		if (MathUtility::canBeInterpretedAsInteger($row['uid'])) {
+			$fullrow = BackendUtility::getRecord($table, $row['uid']);
+		} else {
+			$fullrow = $row;
+		}
 		if (empty($fieldName) === TRUE) {
 			// Cast NULL if an empty but not-NULL field name was passed. This has significance to the Flux internals in
 			// respect to which ConfigurationProvider(s) are returned.
