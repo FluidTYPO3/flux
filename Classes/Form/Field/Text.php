@@ -36,6 +36,16 @@ class Text extends Input implements FieldInterface {
 	protected $enableRichText = FALSE;
 
 	/**
+	 * @var string
+	 */
+	protected $renderType = '';
+
+	/**
+	 * @var string
+	 */
+	protected $format;
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
@@ -49,6 +59,11 @@ class Text extends Input implements FieldInterface {
 			$configuration['defaultExtras'] = $typoScript['plugin']['tx_flux']['settings']['flexform']['rteDefaults'];
 		} else {
 			$configuration['defaultExtras'] = $defaultExtras;
+		}
+		$renderType = $this->getRenderType();
+		if (FALSE === empty($renderType)) {
+			$configuration['renderType'] = $renderType;
+			$configuration['format'] = $this->getFormat();
 		}
 		return $configuration;
 	}
@@ -117,4 +132,31 @@ class Text extends Input implements FieldInterface {
 		return $this->rows;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getRenderType() {
+		return $this->renderType;
+	}
+
+	/**
+	 * @param string $renderType
+	 */
+	public function setRenderType($renderType) {
+		$this->renderType = $renderType;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFormat() {
+		return $this->format;
+	}
+
+	/**
+	 * @param string $format
+	 */
+	public function setFormat($format) {
+		$this->format = $format;
+	}
 }
