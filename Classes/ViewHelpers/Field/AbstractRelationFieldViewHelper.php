@@ -29,7 +29,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$this->registerArgument('foreignLabel', 'string', "If set, it overrides the label set in TCA[foreign_table]['ctrl']['label'] for the inline-view.", FALSE, '');
 		$this->registerArgument('foreignSelector', 'string', 'A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a ' .
 			'multi-select-box. On clicking on an item inside the selector a new relation is created. The foreign_selector points to a field of the foreign_table that is responsible for providing a selector-box – ' .
-			'this field on the foreign_table usually has the type "select" and also has a "foreign_table" defined.', FALSE, '');
+			'this field on the foreign_table usually has the type "select" and also has a "foreign_table" defined.', FALSE, NULL);
 		$this->registerArgument('foreignSortby', 'string', 'Define a field on the child record (or on the intermediate table) that stores the manual sorting information.', FALSE, '');
 		$this->registerArgument('foreignDefaultSortby', 'string', 'If a fieldname for foreign_sortby is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.', FALSE, '');
 		$this->registerArgument('foreignTableField', 'string', 'The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with foreign_field, the child record knows what its parent record is - so the child record could also be used on other parent tables.', FALSE, '');
