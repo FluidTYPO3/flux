@@ -8,9 +8,11 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\FluxPackage;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Helper\Resolver;
+use FluidTYPO3\Flux\Package\FluxPackageFactory;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
@@ -187,10 +189,16 @@ class FluxService implements SingletonInterface {
 		$context->setRequest($request);
 		$context->setResponse($response);
 		/** @var $renderingContext RenderingContext */
-		$renderingContext = $this->objectManager->get('TYPO3\\CMS\\Fluid\\Core\\Rendering\\RenderingContext');
+		$renderingContext = $this->objectManager->get(
+			FluxPackageFactory::getPackageWithFallback($qualifiedExtensionName)
+				->getImplementation(FluxPackage::IMPLEMENTATION_RENDERINGCONTEXT)
+		);
 		$renderingContext->setControllerContext($context);
 		/** @var $exposedView ExposedTemplateView */
-		$exposedView = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
+		$exposedView = $this->objectManager->get(
+			FluxPackageFactory::getPackageWithFallback($qualifiedExtensionName)
+				->getImplementation(FluxPackage::IMPLEMENTATION_VIEW)
+		);
 		$exposedView->setRenderingContext($renderingContext);
 		$exposedView->setControllerContext($context);
 		$exposedView->assignMultiple($variables);
@@ -221,7 +229,10 @@ class FluxService implements SingletonInterface {
 			} catch (\RuntimeException $error) {
 				$this->debug($error);
 				/** @var Form $form */
-				self::$cache[$cacheKey] = $this->objectManager->get('FluidTYPO3\Flux\Form');
+				self::$cache[$cacheKey] = $this->objectManager->get(
+					FluxPackageFactory::getPackageWithFallback($extensionName)
+						->getImplementation(FluxPackage::IMPLEMENTATION_FORM)
+				);
 				self::$cache[$cacheKey]->createField('UserFunction', 'error')
 					->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField')
 					->setArguments(array($error)

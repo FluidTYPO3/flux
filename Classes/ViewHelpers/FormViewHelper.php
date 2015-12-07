@@ -8,7 +8,9 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\FluxPackage;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Package\FluxPackageFactory;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -50,7 +52,8 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
 		$templateVariableContainer = $renderingContext->getTemplateVariableContainer();
 		$extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-		$form = Form::create();
+		$formClassName = FluxPackageFactory::getPackageWithFallback($extensionName)->getImplementation(FluxPackage::IMPLEMENTATION_FORM);
+		$form = call_user_func_array(array($formClassName, 'create'), array());
 		$container = $form->last();
 		// configure Form instance
 		$form->setId($arguments['id']);

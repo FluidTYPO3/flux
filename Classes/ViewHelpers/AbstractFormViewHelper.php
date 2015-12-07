@@ -126,7 +126,9 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
 		} elseif (TRUE === $templateVariableContainer->exists(static::SCOPE_VARIABLE_FORM)) {
 			$form = $templateVariableContainer->get(static::SCOPE_VARIABLE_FORM);
 		} else {
-			$form = Form::create();
+			$form = Form::create(array(
+				'extensionName' => $renderingContext->getControllerContext()->getRequest()->getControllerExtensionName()
+			));
 			$viewHelperVariableContainer->add(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
 		}
 		return $form;
