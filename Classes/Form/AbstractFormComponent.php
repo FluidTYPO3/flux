@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -374,7 +375,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return FormInterface
 	 */
 	public function setVariable($name, $value) {
-		$this->variables[$name] = $value;
+		$this->variables = RecursiveArrayUtility::mergeRecursiveOverrule($this->variables, RecursiveArrayUtility::convertPathToArray($name, $value));
 		return $this;
 	}
 
