@@ -171,7 +171,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$instance = $this->createInstance();
 		$instance->setClearable(TRUE);
 		$result = $this->performTestBuild($instance);
-		$this->assertNotEmpty($result['TCEforms']['config']['wizards']);
+		$this->assertNotEmpty($result['config']['wizards']);
 	}
 
 	/**

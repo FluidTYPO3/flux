@@ -31,7 +31,7 @@ class TextTest extends InputTest {
 		'default' => 'test',
 		'columns' => 85,
 		'rows' => 8,
-		'requestUpdate' => TRUE,
+		'requestUpdate' => TRUE
 	);
 
 	/**
@@ -64,7 +64,7 @@ class TextTest extends InputTest {
 		$instance = $this->createInstance();
 		$instance->setDefaultExtras(NULL)->setEnableRichText(TRUE);
 		$result = $this->performTestBuild($instance);
-		$this->assertArrayHasKey('defaultExtras', $result['TCEforms']['config']);
+		$this->assertArrayHasKey('defaultExtras', $result['config']);
 	}
 
 	/**
@@ -75,7 +75,7 @@ class TextTest extends InputTest {
 		$instance = $this->createInstance();
 		$instance->setDefaultExtras('richtext[*]');
 		$result = $this->performTestBuild($instance);
-		$this->assertNotEmpty($result['TCEforms']['defaultExtras']);
+		$this->assertNotEmpty($result['defaultExtras']);
 	}
 
 }
