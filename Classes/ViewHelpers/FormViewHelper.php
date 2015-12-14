@@ -21,7 +21,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('id', 'string', 'Identifier of this Flexible Content Element, [a-z0-9\-] allowed', TRUE);
+		$this->registerArgument('id', 'string', 'Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed', TRUE);
 		$this->registerArgument('label', 'string', 'Label for the form, can be LLL: value. Optional - if not specified, Flux ' .
 			'tries to detect an LLL label named "flux.fluxFormId", in scope of extension rendering the Flux form.', FALSE, NULL);
 		$this->registerArgument('description', 'string', 'Short description of the purpose/function of this form', FALSE, NULL);
