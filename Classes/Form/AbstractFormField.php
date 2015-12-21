@@ -217,6 +217,9 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 		if (TRUE === $this->getRequestUpdate()) {
 			$fieldStructureArray['onChange'] = 'reload';
 		}
+		// We need a TCEforms wrap
+		$fieldStructureArray = array('TCEforms' => $fieldStructureArray);
+
 		return $fieldStructureArray;
 	}
 
