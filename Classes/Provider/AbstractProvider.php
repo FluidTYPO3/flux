@@ -138,7 +138,7 @@ class AbstractProvider implements ProviderInterface {
 	/**
 	 * @var FluxService
 	 */
-	protected $configurationService;
+	protected $fluxService;
 
 	/**
 	 * @var WorkspacesAwareRecordService
@@ -146,11 +146,11 @@ class AbstractProvider implements ProviderInterface {
 	protected $recordService;
 
 	/**
-	 * @param FluxService $configurationService
+	 * @param FluxService $fluxService
 	 * @return void
 	 */
-	public function injectConfigurationService(FluxService $configurationService) {
-		$this->configurationService = $configurationService;
+	public function injectFluxService(FluxService $fluxService) {
+		$this->fluxService = $fluxService;
 	}
 
 	/**
@@ -244,7 +244,7 @@ class AbstractProvider implements ProviderInterface {
 		$fieldName = $this->getFieldName($row);
 		$variables = array(
 			'record' => $row,
-			'settings' => $this->configurationService->getSettingsForExtensionName($extensionKey)
+			'settings' => $this->fluxService->getSettingsForExtensionName($extensionKey)
 		);
 
 		// Special case: when saving a new record variable $row[$fieldName] is already an array
@@ -254,7 +254,7 @@ class AbstractProvider implements ProviderInterface {
 		$lang = $this->getCurrentLanguageName();
 		$value = $this->getCurrentValuePointerName();
 		if (FALSE === is_array($row[$fieldName])) {
-			$recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName], NULL, $lang, $value);
+			$recordVariables = $this->fluxService->convertFlexFormContentToArray($row[$fieldName], NULL, $lang, $value);
 			$variables = RecursiveArrayUtility::mergeRecursiveOverrule($variables, $recordVariables);
 		}
 
@@ -311,7 +311,7 @@ class AbstractProvider implements ProviderInterface {
 			} else {
 				$viewContext = $this->getViewContext($row);
 				if (NULL !== $viewContext->getTemplatePathAndFilename()) {
-					$view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
+					$view = $this->fluxService->getPreparedExposedTemplateView($viewContext);
 					$form = $view->getForm($viewContext->getSectionName(), $formName);
 				}
 			}
@@ -337,7 +337,7 @@ class AbstractProvider implements ProviderInterface {
 		$cacheKey = $this->getCacheKeyForStoredVariable($row, $gridName);
 		if (FALSE === array_key_exists($cacheKey, self::$cache)) {
 			$viewContext = $this->getViewContext($row);
-			$grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
+			$grid = $this->fluxService->getGridFromTemplateFile($viewContext, $gridName);
 			self::$cache[$cacheKey] = $grid;
 		}
 		return self::$cache[$cacheKey];
@@ -426,7 +426,7 @@ class AbstractProvider implements ProviderInterface {
 		$form = $this->getForm($row);
 		$languageName = $this->getCurrentLanguageName();
 		$valuePointer = $this->getCurrentValuePointerName();
-		return $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form, $languageName, $valuePointer);
+		return $this->fluxService->convertFlexFormContentToArray($row[$fieldName], $form, $languageName, $valuePointer);
 	}
 
 	/**
@@ -499,7 +499,7 @@ class AbstractProvider implements ProviderInterface {
 			$extensionKey = $this->getExtensionKey($row);
 			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 			if (FALSE === empty($extensionKey)) {
-				$paths = $this->configurationService->getViewConfigurationForExtensionName($extensionKey);
+				$paths = $this->fluxService->getViewConfigurationForExtensionName($extensionKey);
 			}
 		}
 		if (TRUE === is_array($paths)) {
@@ -902,7 +902,7 @@ class AbstractProvider implements ProviderInterface {
 	 *
 	 * @param string $methodName
 	 * @param mixed $id
-	 * @param string command
+	 * @param string $command
 	 * @return void
 	 */
 	public function trackMethodCall($methodName, $id, $command = '') {
