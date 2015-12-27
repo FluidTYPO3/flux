@@ -54,6 +54,7 @@ class ContentViewHelperTest extends AbstractViewHelperTestCase {
 		$renderingcontext->expects($this->atLeastOnce())->method('getTemplateVariableContainer')->willReturn(
 			$this->getMock('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer')
 		);
+		$renderingcontext->expects($this->any())->method('getControllerContext')->willReturn($controllerContext);
 		$mock->setRenderingContext($renderingcontext);
 		$mock->setArguments(array());
 		$mock::getComponent($renderingcontext, array());

@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux;
  */
 
 use FluidTYPO3\Flux\Outlet\OutletInterface;
+use FluidTYPO3\Flux\Package\FluxPackageFactory;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -97,6 +98,24 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		$defaultSheet->setLabel('LLL:EXT:flux/' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
 		$this->add($defaultSheet);
 		$this->outlet = $this->getObjectManager()->get('FluidTYPO3\Flux\Outlet\StandardOutlet');
+	}
+
+	/**
+	 * @param array $settings
+	 * @return FormInterface
+	 */
+	public static function create(array $settings = array()) {
+		/** @var ObjectManagerInterface $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		if (isset($settings['extensionName'])) {
+			$className = FluxPackageFactory::getPackageWithFallback($settings['extensionName'])
+				->getImplementation(FluxPackage::IMPLEMENTATION_FORM);
+		} else {
+			$className = get_called_class();
+		}
+		/** @var FormInterface $object */
+		$object = $objectManager->get($className);
+		return $object->modify($settings);
 	}
 
 	/**
