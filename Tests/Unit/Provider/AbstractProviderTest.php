@@ -233,10 +233,10 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	public function canGetFlexformValues() {
 		$record = $this->getBasicRecord();
 		$provider = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getForm'));
-		$mockConfigurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('convertFlexFormContentToArray'));
-		$mockConfigurationService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(array('test' => 'test')));
+		$mockFluxService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('convertFlexFormContentToArray'));
+		$mockFluxService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(array('test' => 'test')));
 		$provider->expects($this->once())->method('getForm')->will($this->returnValue(Form::create()));
-		$provider->injectConfigurationService($mockConfigurationService);
+		$provider->injectFluxService($mockFluxService);
 		$provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
 		$provider->reset();
 		$values = $provider->getFlexformValues($record);
