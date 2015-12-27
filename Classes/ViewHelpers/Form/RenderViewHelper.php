@@ -14,14 +14,14 @@ use TYPO3\CMS\Backend\Form\FormEngine;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Backend\Template\DocumentTemplate;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper as FluidFormViewHelper;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * ## Main form rendering ViewHelper
  *
  * Use to render a Flux form as HTML.
  */
-class RenderViewHelper extends FluidFormViewHelper {
+class RenderViewHelper extends AbstractViewHelper {
 
 	/**
 	 * @var FluxService

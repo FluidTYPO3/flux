@@ -48,31 +48,24 @@ class CustomViewHelper extends UserFuncViewHelper {
 	 * @param \Closure $renderChildrenClosure
 	 * @return \Closure
 	 */
-	protected function buildClosure(RenderingContextInterface $renderingContext, array $arguments, \Closure $renderChildrenClosure) {
-		$self = $this;
-		$closure = function($parameters) use ($renderingContext, $renderChildrenClosure) {
+	protected static function buildClosure(RenderingContextInterface $renderingContext, array $arguments, \Closure $renderChildrenClosure) {
+		$container = $renderingContext->getTemplateVariableContainer();
+		$closure = function($parameters) use ($container, $renderingContext, $renderChildrenClosure) {
 			$backupParameters = NULL;
 			$backupParameters = NULL;
-			if ($renderingContext->getTemplateVariableContainer()->exists('parameters') === TRUE) {
-				$backupParameters = $renderingContext->getTemplateVariableContainer()->get('parameters');
-				$renderingContext->getTemplateVariableContainer()->remove('parameters');
+			if ($container->exists('parameters') === TRUE) {
+				$backupParameters = $container->get('parameters');
+				$container->remove('parameters');
 			}
-			$renderingContext->getTemplateVariableContainer()->add('parameters', $parameters);
+			$container->add('parameters', $parameters);
 			$content = $renderChildrenClosure();
-			$renderingContext->getTemplateVariableContainer()->remove('parameters');
+			$container->remove('parameters');
 			if (NULL !== $backupParameters) {
-				$renderingContext->getTemplateVariableContainer()->add('parameters', $backupParameters);
+				$container->add('parameters', $backupParameters);
 			}
 			return $content;
 		};
 		return $closure;
-	}
-
-	/**
-	 * @return TemplateVariableContainer
-	 */
-	public function getTemplateVariableContainer() {
-		return $this->templateVariableContainer;
 	}
 
 }

@@ -23,7 +23,7 @@ class Section extends AbstractFormContainer implements ContainerInterface {
 	 * @param array $settings
 	 * @return \FluidTYPO3\Flux\Form\Container\Section
 	 */
-	public static function create(array $settings) {
+	public static function create(array $settings = array()) {
 		/** @var ObjectManagerInterface $objectManager */
 		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		/** @var Section */
