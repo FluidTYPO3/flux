@@ -33,7 +33,7 @@ class ListViewHelper extends AbstractWizardViewHelper {
 	 * @param array $arguments
 	 * @return ListWizard
 	 */
-	public function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
+	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
 		/** @var ListWizard $component */
 		$component = static::getPreparedComponent('ListWizard', $renderingContext, $arguments);
 		$component->setTable($arguments['table']);
