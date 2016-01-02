@@ -9,7 +9,9 @@ namespace FluidTYPO3\Flux\Backend;
  */
 
 use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
@@ -62,6 +64,12 @@ class DynamicFlexForm {
 	 * @return void
 	 */
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName) {
+		// $row doesn't neccessarily contain all fields that we need
+		if (MathUtility::canBeInterpretedAsInteger($row['uid'])) {
+			$fullrow = BackendUtility::getRecord($table, $row['uid']);
+		} else {
+			$fullrow = $row;
+		}
 		if (empty($fieldName) === TRUE) {
 			// Cast NULL if an empty but not-NULL field name was passed. This has significance to the Flux internals in
 			// respect to which ConfigurationProvider(s) are returned.
@@ -70,9 +78,9 @@ class DynamicFlexForm {
 		if (FALSE === is_array($dataStructArray)) {
 			$dataStructArray = array();
 		}
-		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
+		$providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $fullrow);
 		foreach ($providers as $provider) {
-			$provider->postProcessDataStructure($row, $dataStructArray, $conf);
+			$provider->postProcessDataStructure($fullrow, $dataStructArray, $conf);
 		}
 		if (empty($dataStructArray)) {
 			$dataStructArray = array('ROOT' => array('el' => array()));
