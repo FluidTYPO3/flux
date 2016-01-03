@@ -269,7 +269,7 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 	 * @param array $whitelist
 	 * @return array
 	 */
-	protected function applyWhitelist(array $items, $whitelist) {
+	protected function applyWhitelist(array $items, array $whitelist) {
 		$whitelist = array_unique($whitelist);
 		if (0 < count($whitelist)) {
 			foreach ($items as $name => $item) {
