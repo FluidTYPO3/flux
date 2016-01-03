@@ -44,6 +44,15 @@ abstract class FluxPackageFactory {
 			throw new PackageNotFoundException('Package name cannot be empty');
 		}
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($qualifiedExtensionName);
+		if (!ExtensionManagementUtility::isLoaded($extensionKey)) {
+			throw new PackageNotFoundException(
+				sprintf(
+					'Package name %s (extension key %s) is not loaded',
+					$qualifiedExtensionName,
+					$extensionKey
+				)
+			);
+		}
 		if (!array_key_exists($extensionKey, static::$packages)) {
 			$manifestPath = ExtensionManagementUtility::extPath($extensionKey, 'flux.json');
 			static::$packages[$extensionKey] = FluxPackage::create($manifestPath)->upcast();
