@@ -7,16 +7,28 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF);
 
 	// Configure the CompatibilityRegistry so it will return the right values based on TYPO3 version:
+
+	// Preview class name (expecting needed changes on TYPO3 8.0+)
 	\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
 		'FluidTYPO3\\Flux\\Backend\\Preview',
 		array(
-			'7.1.0' => 'FluidTYPO3\\Flux\\Backend\\Preview'
+			'7.6.0' => 'FluidTYPO3\\Flux\\Backend\\Preview'
 		)
 	);
+
+	// FormEngine requires "TCEforms" dimension (expecting change on future TYPO3 versions)
+	\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
+		'FluidTYPO3\\Flux\\Backend\\DynamicFlexForm::NEEDS_TCEFORMS_WRAPPER',
+		array(
+			'7.6.0' => TRUE
+		)
+	);
+
+	// Hook class which generates icons for "tt_content" editing views
 	\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
 		'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon',
 		array(
-			'7.1.0' => 'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon'
+			'7.6.0' => 'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon'
 		)
 	);
 

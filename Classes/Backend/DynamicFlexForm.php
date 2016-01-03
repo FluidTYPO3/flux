@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Backend;
  */
 
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
@@ -77,6 +78,32 @@ class DynamicFlexForm {
 		if (empty($dataStructArray)) {
 			$dataStructArray = array('ROOT' => array('el' => array()));
 		}
+		// Trigger TCEforms dimension patching only if required by TYPO3 version according to CompatibilityRegistry.
+		if (CompatibilityRegistry::get('FluidTYPO3\\Flux\\Backend\\DynamicFlexForm::NEEDS_TCEFORMS_WRAPPER')) {
+			$dataStructArray = $this->patchTceformsWrapper($dataStructArray);
+		}
+	}
+
+	/**
+	 * Temporary method during FormEngine transition!
+	 *
+	 * Performs a duplication in data source, applying a wrapper
+	 * around field configurations which require it for correct
+	 * rendering in flex form containers.
+	 *
+	 * @param array $dataStructure
+	 * @return array
+	 */
+	protected function patchTceformsWrapper(array $dataStructure) {
+		foreach ($dataStructure as $index => $subStructure) {
+			if (is_array($subStructure)) {
+				$dataStructure[$index] = $this->patchTceformsWrapper($subStructure);
+			}
+		}
+		if (isset($dataStructure['config'])) {
+			$dataStructure = array('TCEforms' => $dataStructure);
+		}
+		return $dataStructure;
 	}
 
 }
