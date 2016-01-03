@@ -64,7 +64,7 @@ class TextTest extends InputTest {
 		$instance = $this->createInstance();
 		$instance->setDefaultExtras(NULL)->setEnableRichText(TRUE);
 		$result = $this->performTestBuild($instance);
-		$this->assertArrayHasKey('defaultExtras', $result['config']);
+		$this->assertArrayHasKey('defaultExtras', $result['TCEforms']['config']);
 	}
 
 	/**
@@ -75,7 +75,7 @@ class TextTest extends InputTest {
 		$instance = $this->createInstance();
 		$instance->setDefaultExtras('richtext[*]');
 		$result = $this->performTestBuild($instance);
-		$this->assertNotEmpty($result['defaultExtras']);
+		$this->assertNotEmpty($result['TCEforms']['defaultExtras']);
 	}
 
 }
