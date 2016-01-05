@@ -38,6 +38,7 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper {
 		$this->registerArgument('disallowed', 'string', 'Defines a list of file types NOT allowed in this field');
 		$this->registerArgument('uploadFolder', 'string', 'Upload folder. DEPRECATED, will be moved to the File field ViewHelper');
 		$this->registerArgument('showThumbnails', 'boolean', 'If TRUE, displays thumbnails for selected values', FALSE, FALSE);
+		$this->registerArgument('internalType', 'string', 'sets the internal type of this field', FALSE, 'file');
 	}
 
 	/**
@@ -53,6 +54,7 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper {
 		$component->setAllowed($arguments['allowed']);
 		$component->setUploadFolder($arguments['uploadFolder']);
 		$component->setShowThumbnails($arguments['showThumbnails']);
+		$component->setInternalType($arguments['internalType']);
 		return $component;
 	}
 

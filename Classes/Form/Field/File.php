@@ -42,6 +42,11 @@ class File extends AbstractMultiValueFormField {
 	protected $showThumbnails = FALSE;
 
 	/**
+	 * @var string
+	 */
+	protected $internalType = 'file';
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
@@ -49,7 +54,7 @@ class File extends AbstractMultiValueFormField {
 		$configuration['disallowed'] = $this->getDisallowed();
 		$configuration['allowed'] = $this->getAllowed();
 		$configuration['max_size'] = $this->getMaxSize();
-		$configuration['internal_type'] = 'file';
+		$configuration['internal_type'] = $this->getInternalType();
 		$configuration['uploadfolder'] = $this->getUploadFolder();
 		$configuration['show_thumbs'] = $this->getShowThumbnails();
 		return $configuration;
@@ -157,6 +162,22 @@ class File extends AbstractMultiValueFormField {
 	 */
 	public function getShowThumbnails() {
 		return (boolean) $this->showThumbnails;
+	}
+
+	/**
+	 * @param string $internalType
+	 * @return File
+	 */
+	public function setInternalType($internalType) {
+		$this->internalType = $internalType;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getInternalType() {
+		return $this->internalType;
 	}
 
 }
