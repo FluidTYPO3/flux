@@ -100,7 +100,7 @@ class DynamicFlexForm {
 				$dataStructure[$index] = $this->patchTceformsWrapper($subStructure);
 			}
 		}
-		if (isset($dataStructure['config'])) {
+		if (isset($dataStructure['config']) && !isset($dataStructure['TCEforms'])) {
 			$dataStructure = array('TCEforms' => $dataStructure);
 		}
 		return $dataStructure;
