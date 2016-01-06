@@ -42,9 +42,9 @@ class File extends AbstractMultiValueFormField {
 	protected $showThumbnails = FALSE;
 
 	/**
-	 * @var string
+	 * @var boolean
 	 */
-	protected $internalType = 'file';
+	protected $useFalRelation = FALSE;
 
 	/**
 	 * @return array
@@ -54,9 +54,18 @@ class File extends AbstractMultiValueFormField {
 		$configuration['disallowed'] = $this->getDisallowed();
 		$configuration['allowed'] = $this->getAllowed();
 		$configuration['max_size'] = $this->getMaxSize();
-		$configuration['internal_type'] = $this->getInternalType();
 		$configuration['uploadfolder'] = $this->getUploadFolder();
 		$configuration['show_thumbs'] = $this->getShowThumbnails();
+		$configuration['internal_type'] = 'file';
+
+		if ($this->getUseFalRelation() === TRUE) {
+			$configuration['internal_type'] = 'db';
+			$configuration['allowed'] = 'sys_file';
+			$configuration['appearance'] = array(
+				'elementBrowserAllowed' => $this->getAllowed() ? $this->getAllowed() : '*',
+				'elementBrowserType' => 'file'
+			);
+		}
 		return $configuration;
 	}
 
@@ -165,19 +174,19 @@ class File extends AbstractMultiValueFormField {
 	}
 
 	/**
-	 * @param string $internalType
+	 * @param boolean $useFalRelation
 	 * @return File
 	 */
-	public function setInternalType($internalType) {
-		$this->internalType = $internalType;
+	public function setUseFalRelation($useFalRelation) {
+		$this->useFalRelation = $useFalRelation;
 		return $this;
 	}
 
 	/**
-	 * @return string
+	 * @return boolean
 	 */
-	public function getInternalType() {
-		return $this->internalType;
+	public function getUseFalRelation() {
+		return $this->useFalRelation;
 	}
 
 }
