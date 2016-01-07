@@ -94,13 +94,13 @@ class DynamicFlexForm {
 	 * @param array $dataStructure
 	 * @return array
 	 */
-	protected function patchTceformsWrapper(array $dataStructure) {
+	protected function patchTceformsWrapper(array $dataStructure, $parentIndex = NULL) {
 		foreach ($dataStructure as $index => $subStructure) {
 			if (is_array($subStructure)) {
-				$dataStructure[$index] = $this->patchTceformsWrapper($subStructure);
+				$dataStructure[$index] = $this->patchTceformsWrapper($subStructure, $index);
 			}
 		}
-		if (isset($dataStructure['config']) && !isset($dataStructure['TCEforms'])) {
+		if (isset($dataStructure['config']) && $parentIndex !== 'TCEforms') {
 			$dataStructure = array('TCEforms' => $dataStructure);
 		}
 		return $dataStructure;
