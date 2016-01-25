@@ -302,6 +302,7 @@ class ContentService implements SingletonInterface {
 						// set $translatedParent to the right language ($newLanguageUid):
 						break;
 					}
+					unset($translatedParent);
 				}
 				$sortbyFieldName = TRUE === isset($GLOBALS['TCA']['tt_content']['ctrl']['sortby']) ?
 					$GLOBALS['TCA']['tt_content']['ctrl']['sortby'] : 'sorting';
