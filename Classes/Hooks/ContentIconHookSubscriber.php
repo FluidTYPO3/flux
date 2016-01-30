@@ -137,7 +137,7 @@ class ContentIconHookSubscriber {
 	 */
 	protected function attachAssets() {
 		if (FALSE === self::$assetsIncluded) {
-			$doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
+			$doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\ModuleTemplate');
 			$doc->backPath = $GLOBALS['BACK_PATH'];
 			$doc->getPageRenderer()->addCssFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/icon.css');
 			self::$assetsIncluded = TRUE;
