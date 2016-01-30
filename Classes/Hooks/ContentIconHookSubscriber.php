@@ -25,11 +25,6 @@ use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 class ContentIconHookSubscriber {
 
 	/**
-	 * @var boolean
-	 */
-	protected static $assetsIncluded = FALSE;
-
-	/**
 	 * @var array
 	 */
 	protected $templates = array(
@@ -136,12 +131,7 @@ class ContentIconHookSubscriber {
 	 * @return void
 	 */
 	protected function attachAssets() {
-		if (FALSE === self::$assetsIncluded) {
-			$doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\ModuleTemplate');
-			$doc->backPath = $GLOBALS['BACK_PATH'];
-			$doc->getPageRenderer()->addCssFile($doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/icon.css');
-			self::$assetsIncluded = TRUE;
-		}
+		$GLOBALS['TBE_STYLES']['stylesheet']['flux'] = $doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/icon.css';
 	}
 
 }
