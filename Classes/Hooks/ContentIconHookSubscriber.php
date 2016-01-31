@@ -131,7 +131,7 @@ class ContentIconHookSubscriber {
 	 * @return void
 	 */
 	protected function attachAssets() {
-		$GLOBALS['TBE_STYLES']['stylesheet']['flux'] = $doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/icon.css';
+		$GLOBALS['TBE_STYLES']['stylesheet'] = $doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/icon.css';
 	}
 
 }
