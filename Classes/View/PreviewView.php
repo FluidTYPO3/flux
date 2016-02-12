@@ -250,6 +250,10 @@ class PreviewView {
 		$content = '';
 		if (TRUE === $grid->hasChildren()) {
 			$workspaceVersionOfRow = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $row['uid']);
+			if ((integer) $workspaceVersionOfRow['pid'] === -1 && !empty($workspaceVersionOfRow['t3ver_oid'])) {
+				$originalRecord = BackendUtility::getRecord('tt_content', $workspaceVersionOfRow['t3ver_oid'], '*', '', FALSE);
+				$workspaceVersionOfRow['pid'] = $originalRecord['pid'];
+			}
 			$content = $this->drawGrid($workspaceVersionOfRow, $grid, $form);
 
 			$options = $this->getPreviewOptions($form);
