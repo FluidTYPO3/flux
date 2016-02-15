@@ -407,7 +407,7 @@ class PreviewView {
 			'uid_pid' => $after,
 			'colPos' => ContentService::COLPOS_FLUXCONTENT,
 			'sys_language_uid' => $row['sys_language_uid'],
-			'defVals[tt_content][tx_flux_parent]' => $row['uid'],
+			'defVals[tt_content][tx_flux_parent]' => $this->getFluxParentUid($row),
 			'defVals[tt_content][tx_flux_column]' => $columnName,
 			'returnUrl' => $returnUri
 		));
@@ -456,7 +456,7 @@ class PreviewView {
 		// and relies on TYPO3 core query parts for enable-clause-, language- and versioning placeholders. All that needs
 		// to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will not remove
 		// records based on them having remove placeholders.
-		$condition = "AND tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' ";
+		$condition = "AND tx_flux_parent = '" . $this->getFluxParentUid($row) . "' AND tx_flux_column = '" . $area . "' ";
 		$condition .= "AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' ";
 		$condition .= (1 === $view->tt_contentConfig['showHidden']) ? '' : 'AND hidden = 0 ';
 		$queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
@@ -623,6 +623,14 @@ class PreviewView {
 		$integer = MiscellaneousUtility::generateUniqueIntegerForFluxArea($contentElementUid, $areaName);
 		$_SESSION['target' . $integer] = array($contentElementUid, $areaName);
 		return $integer;
+	}
+
+	/**
+	 * @param array $row
+	 * @return mixed
+	 */
+	protected function getFluxParentUid(array $row) {
+		return $row['t3ver_oid'] ?  $row['t3ver_oid'] : $row['uid'];
 	}
 
 	/**
