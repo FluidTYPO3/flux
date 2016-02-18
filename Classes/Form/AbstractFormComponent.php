@@ -24,6 +24,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
+
 /**
  * AbstractFormComponent
  */
@@ -165,6 +166,9 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return FormInterface
 	 */
 	public function setName($name) {
+        if (TYPO3_MODE === 'FE' && $this->hasIlegalChars($name)) {
+            throw new \Exception('Names must not use \'|\' or \'-\' characters! Given was "' . $name . '".');
+        }
 		$this->name = $name;
 		return $this;
 	}
@@ -495,5 +499,17 @@ abstract class AbstractFormComponent implements FormInterface {
 		}
 		return $structure;
 	}
+    
+    /**
+     * Tests if a given identfier uses illegal characters
+     * 
+     * @param string $str String to check
+     * @return boolean
+     */
+    protected function hasIlegalChars($str)
+    {
+        $pattern = '/[\-\|]+/';
+        return preg_match($pattern, $str);
+    }
 
 }
