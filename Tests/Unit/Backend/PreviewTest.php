@@ -41,7 +41,7 @@ class PreviewTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function canExecuteRenderer() {
-		$caller = $this->objectManager->get('TYPO3\CMS\Backend\View\PageLayoutView');
+		$caller = $this->getMock('TYPO3\CMS\Backend\View\PageLayoutView', array('attachAssets'), array(), '', FALSE);
 		$function = 'FluidTYPO3\Flux\Backend\Preview';
 		$result = $this->callUserFunction($function, $caller);
 		$this->assertEmpty($result);
@@ -52,7 +52,7 @@ class PreviewTest extends AbstractTestCase {
 	 */
 	public function canGenerateShortcutIconAndLink() {
 		$className = 'FluidTYPO3\Flux\Backend\Preview';
-		$instance = $this->getMock($className, array('getPageTitleAndPidFromContentUid'));
+		$instance = $this->getMock($className, array('getPageTitleAndPidFromContentUid', 'attachAssets'));
 		$instance->expects($this->once())->method('getPageTitleAndPidFromContentUid')->with(1)->will($this->returnValue(array('pid' => 1, 'title' => 'test')));
 		$headerContent = '';
 		$itemContent = '';
@@ -78,7 +78,7 @@ class PreviewTest extends AbstractTestCase {
 	 * @test
 	 */
 	public function stopsRenderingWhenProviderSaysStop() {
-		$instance = $this->getMock('FluidTYPO3\Flux\Backend\Preview', array('createShortcutIcon'));
+		$instance = $this->getMock('FluidTYPO3\Flux\Backend\Preview', array('createShortcutIcon', 'attachAssets'));
 		$instance->expects($this->never())->method('createShortcutIcon');
 		$configurationServiceMock = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
 		$providerOne = $this->getMock('FluidTYPO3\Flux\Provider\ContentProvider', array('getPreview'));
@@ -106,7 +106,7 @@ class PreviewTest extends AbstractTestCase {
 		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
 		$row['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
 		Core::registerConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
-		$instance = $this->objectManager->get($function);
+		$instance = $this->getMock($function, array('attachAssets'));
 		$instance->preProcess($caller, $drawItem, $headerContent, $itemContent, $row);
 		Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
 	}
