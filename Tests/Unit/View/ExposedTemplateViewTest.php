@@ -126,7 +126,7 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	 */
 	public function throwsRuntimeExceptionIfImproperlyInitialized() {
 		$view = $this->objectManager->get('FluidTYPO3\Flux\View\ExposedTemplateView');
-		$this->setExpectedException('RuntimeException', NULL, 1343521593);
+		$this->setExpectedException('RuntimeException', '', 1343521593);
 		$this->callInaccessibleMethod($view, 'getStoredVariable', 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper', 'storage');
 	}
 

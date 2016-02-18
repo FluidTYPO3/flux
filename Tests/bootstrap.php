@@ -35,6 +35,9 @@ $autoloader->addPsr4('TYPO3\\CMS\\Lang\\', __DIR__ . '/../vendor/typo3/cms/typo3
 		'extbase_typo3dbbackend_queries' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 		'fluidcontent' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 		'flux' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
+	),
+	array(
+		'core'
 	)
 );
 
