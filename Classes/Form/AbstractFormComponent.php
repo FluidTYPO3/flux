@@ -257,51 +257,43 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return NULL|string
 	 */
 	protected function resolveLocalLanguageValueOfLabel($label, $path = NULL) {
-		if (TRUE === $this->getDisableLocalLanguageLabels()) {
+		if ($this->getDisableLocalLanguageLabels()) {
 			return $label;
 		}
+
 		$name = $this->getName();
-		$root = $this->getRoot();
 		$extensionName = $this->extensionName;
+		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+		if (empty($label) && !ExtensionManagementUtility::isLoaded($extensionKey)) {
+			return $name;
+		} elseif (strpos($label, 'LLL:EXT:') === 0) {
+			return $label;
+		}
+
+		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
+		$relativeFilePath = ltrim($relativeFilePath, '/');
+		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
+		if (strpos($label, 'LLL:') === 0) {
+			// Shorthand LLL:name.of.index reference, expand
+			list (, $labelIdentifier) = explode(':', $label, 2);
+			return $filePrefix . ':' . $labelIdentifier;
+		} elseif (!empty($label)) {
+			return $label;
+		}
+		$root = $this->getRoot();
 		if (FALSE === $root instanceof Form) {
 			$id = 'form';
 		} else {
 			$id = $root->getName();
 		}
-		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-		if (FALSE === empty($label)) {
-			return $this->translateLabelReference($label, $extensionKey);
-		}
-		if ((TRUE === empty($extensionKey) || FALSE === ExtensionManagementUtility::isLoaded($extensionKey))) {
-			return $name;
-		}
-		if (TRUE === empty($path)) {
-			if (FALSE === $this instanceof Form) {
+		if (empty($path)) {
+			if (!$this instanceof Form) {
 				$path = $this->getPath();
 			} else {
 				$path = '';
 			}
 		}
-		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
-		$relativeFilePath = ltrim($relativeFilePath, '/');
-		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-		$labelIdentifier = $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
-		$translated = LocalizationUtility::translate($labelIdentifier, $extensionKey);
-		return (NULL !== $translated ? $translated : $labelIdentifier);
-	}
-
-	/**
-	 * @param string $label
-	 * @param string $extensionKey
-	 * @return NULL|string
-	 */
-	protected function translateLabelReference($label, $extensionKey) {
-		if (0 === strpos($label, 'LLL:EXT:')) {
-			return LocalizationUtility::translate($label, NULL);
-		} else if (0 === strpos($label, 'LLL:') ) {
-			return LocalizationUtility::translate(substr($label, 4), $extensionKey);
-		}
-		return $label;
+		return $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
 	}
 
 	/**
