@@ -344,14 +344,14 @@ class TemplatePaths {
 			}
 		}
 		// last appended if set: the legacy singular paths configuration
-		if (TRUE === isset($paths[self::CONFIG_TEMPLATEROOTPATH])) {
-			$templateRootPaths[] = $paths[self::CONFIG_TEMPLATEROOTPATH];
+		if (TRUE === isset($paths[self::CONFIG_TEMPLATEROOTPATH])) {			
+			$templateRootPaths = array_merge($templateRootPaths,$paths[self::CONFIG_TEMPLATEROOTPATH]);
 		}
-		if (TRUE === isset($paths[self::CONFIG_LAYOUTROOTPATH])) {
-			$layoutRootPaths[] = $paths[self::CONFIG_LAYOUTROOTPATH];
+		if (TRUE === isset($paths[self::CONFIG_LAYOUTROOTPATH])) {			
+			$layoutRootPaths = array_merge($layoutRootPaths,$paths[self::CONFIG_LAYOUTROOTPATH]);			
 		}
-		if (TRUE === isset($paths[self::CONFIG_PARTIALROOTPATH])) {
-			$partialRootPaths[] = $paths[self::CONFIG_PARTIALROOTPATH];
+		if (TRUE === isset($paths[self::CONFIG_PARTIALROOTPATH])) {			
+			$partialRootPaths = array_merge($partialRootPaths,$paths[self::CONFIG_PARTIALROOTPATH]);
 		}
 		// translate all paths to absolute paths
 		$templateRootPaths = array_map(array($this, 'ensureAbsolutePath'), $templateRootPaths);
