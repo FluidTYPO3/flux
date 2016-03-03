@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ClipBoardUtility;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -660,6 +661,16 @@ class PreviewView {
 	 * @return string
 	 */
 	protected function parseGridColumnTemplate(array $row, Column $column, $colPosFluxContent, $dblist, $target, $id, $content) {
+		$label = $column->getLabel();
+		if (strpos($label, 'LLL:') === 0) {
+			$label = LocalizationUtility::translate(
+				$label,
+				ExtensionNamingUtility::getExtensionName($column->getExtensionName())
+			);
+			if (empty($label)) {
+				$label = $column->getLabel();
+			}
+		}
 		return sprintf($this->templates['gridColumn'],
 			$column->getColspan(),
 			$column->getRowspan(),
@@ -667,7 +678,7 @@ class PreviewView {
 			$colPosFluxContent,
 			$dblist->tt_contentConfig['sys_language_uid'],
 			$dblist->tt_contentConfig['sys_language_uid'],
-			$column->getLabel(),
+			$label,
 			$target,
 			$id,
 			$this->drawNewIcon($row, $column). $this->drawPasteIcon($row, $column) . $this->drawPasteIcon($row, $column, TRUE),
