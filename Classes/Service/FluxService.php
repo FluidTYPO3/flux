@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Configuration\BackendConfigurationManager;
 use FluidTYPO3\Flux\FluxPackage;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
@@ -352,12 +353,18 @@ class FluxService implements SingletonInterface {
 	 * @return array
 	 */
 	public function getAllTypoScript() {
-		$pageId = $this->configurationManager->getCurrentPageId();
-		if (FALSE === isset(self::$typoScript[$pageId])) {
-			self::$typoScript[$pageId] = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-			self::$typoScript[$pageId] = GeneralUtility::removeDotsFromTS(self::$typoScript[$pageId]);
+		if (!$this->configurationManager instanceof BackendConfigurationManager) {
+			$typoScript = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$typoScript = GeneralUtility::removeDotsFromTS($typoScript);
+			return $typoScript;
+		} else {
+			$pageId = $this->configurationManager->getCurrentPageId();
+			if (FALSE === isset(self::$typoScript[$pageId])) {
+				self::$typoScript[$pageId] = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+				self::$typoScript[$pageId] = GeneralUtility::removeDotsFromTS(self::$typoScript[$pageId]);
+			}
+			return (array) self::$typoScript[$pageId];
 		}
-		return (array) self::$typoScript[$pageId];
 	}
 
 	/**
