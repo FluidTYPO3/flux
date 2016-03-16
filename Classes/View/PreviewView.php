@@ -671,13 +671,32 @@ class PreviewView {
 				$label = $column->getLabel();
 			}
 		}
+
+		// use this contents language as default
+		$columnLanguageUid = $row['sys_language_uid'];
+
+		// but for language mode all (uid -1):
+		if ( $columnLanguageUid == -1 ) {
+			/** @var \TYPO3\CMS\Backend\Controller\PageLayoutController $pageLayoutController */
+			$pageLayoutController = $GLOBALS['SOBE'];
+			$isColumnView    = ( 1 == $pageLayoutController->MOD_SETTINGS['function'] );
+			$isLanguagesView = ( 2 == $pageLayoutController->MOD_SETTINGS['function'] );
+			if ($isColumnView) {
+				$columnLanguageUid = $pageLayoutController->current_sys_language;
+			} elseif ($isLanguagesView) {
+				// if a language-all (uid -1) grid element in lanugages view
+				// use default language uid:
+				$columnLanguageUid = 0;
+			}
+		}
+
 		return sprintf($this->templates['gridColumn'],
 			$column->getColspan(),
 			$column->getRowspan(),
 			$column->getStyle(),
 			$colPosFluxContent,
-			$dblist->tt_contentConfig['sys_language_uid'],
-			$dblist->tt_contentConfig['sys_language_uid'],
+			$columnLanguageUid,
+			$columnLanguageUid,
 			$label,
 			$target,
 			$id,
