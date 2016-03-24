@@ -671,13 +671,44 @@ class PreviewView {
 				$label = $column->getLabel();
 			}
 		}
+
+		// this variable defines if this drop-area gets activated on drag action
+		// of a ce with the same data-language_uid
+		$tplClassJsSortableLanguageId = $row['sys_language_uid'];
+
+		// this variable defines which drop-areas will be activated
+		// with a drag action of this element
+		$tplDataLanguageUid = $row['sys_language_uid'];
+
+		// but for language mode all (uid -1):
+		if (-1 === (int)$row['sys_language_uid']) {
+			/** @var \TYPO3\CMS\Backend\Controller\PageLayoutController $pageLayoutController */
+			$pageLayoutController = $GLOBALS['SOBE'];
+			$isColumnView = (1 === (int) $pageLayoutController->MOD_SETTINGS['function']);
+			$isLanguagesView = (2 === (int) $pageLayoutController->MOD_SETTINGS['function']);
+			if ($isColumnView) {
+				$tplClassJsSortableLanguageId = $pageLayoutController->current_sys_language;
+				$tplDataLanguageUid = $pageLayoutController->current_sys_language;
+			} elseif ($isLanguagesView) {
+				// If this is a language-all (uid -1) grid-element in languages-view
+				// we use language-uid 0 for this elements drop-areas.
+				// This can be done because a ce with language-uid -1 in languages view
+				// is in TYPO3 7.6.4 only displayed in the default-language-column (maybe a bug atm.?).
+				// Additionally there is no access to the information which
+				// language column is currently rendered from here!
+				// ($lP in typo3/cms/typo3/sysext/backend/Classes/View/PageLayoutView.php L485)
+				$tplClassJsSortableLanguageId = 0;
+				$tplDataLanguageUid = 0;
+			}
+		}
+
 		return sprintf($this->templates['gridColumn'],
 			$column->getColspan(),
 			$column->getRowspan(),
 			$column->getStyle(),
 			$colPosFluxContent,
-			$dblist->tt_contentConfig['sys_language_uid'],
-			$dblist->tt_contentConfig['sys_language_uid'],
+			$tplClassJsSortableLanguageId,
+			$tplDataLanguageUid,
 			$label,
 			$target,
 			$id,
