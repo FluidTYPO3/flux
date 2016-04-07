@@ -95,7 +95,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 		/** @var Form\Container\Sheet $defaultSheet */
 		$defaultSheet = $this->getObjectManager()->get('FluidTYPO3\Flux\Form\Container\Sheet');
 		$defaultSheet->setName('options');
-		$defaultSheet->setLabel('LLL:EXT:flux/' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
+		$defaultSheet->setLabel('LLL:EXT:flux' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
 		$this->add($defaultSheet);
 		$this->outlet = $this->getObjectManager()->get('FluidTYPO3\Flux\Outlet\StandardOutlet');
 	}
