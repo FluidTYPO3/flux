@@ -205,9 +205,9 @@ class ExposedTemplateViewTest extends AbstractTestCase {
 	 */
 	protected function getFixtureTemplatePaths() {
 		$templatePaths = array(
-			'templateRootPath' => ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Templates'),
-			'partialRootPath' => ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Partials'),
-			'layoutRootPath' => ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts')
+			'templateRootPaths' => array(ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Templates')),
+			'partialRootPaths' => array(ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Partials')),
+			'layoutRootPaths' => array(ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts'))
 		);
 		return $templatePaths;
 	}

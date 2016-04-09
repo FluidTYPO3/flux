@@ -20,12 +20,8 @@ class PathUtility {
 	 * @var array
 	 */
 	private static $knownPathNames = array(
-		TemplatePaths::CONFIG_OVERLAYS,
-		TemplatePaths::CONFIG_TEMPLATEROOTPATH,
 		TemplatePaths::CONFIG_TEMPLATEROOTPATHS,
-		TemplatePaths::CONFIG_LAYOUTROOTPATH,
 		TemplatePaths::CONFIG_LAYOUTROOTPATHS,
-		TemplatePaths::CONFIG_PARTIALROOTPATH,
 		TemplatePaths::CONFIG_PARTIALROOTPATHS
 	);
 

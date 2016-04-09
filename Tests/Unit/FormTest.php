@@ -263,9 +263,9 @@ class FormTest extends AbstractTestCase {
 		$template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_USESPARTIAL);
 		$service = $this->createFluxServiceInstance();
 		$paths = array(
-			'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
-			'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
-			'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
+			'templateRootPaths' => array('EXT:flux/Tests/Fixtures/Templates/'),
+			'partialRootPaths' => array('EXT:flux/Tests/Fixtures/Partials/'),
+			'layoutRootPaths' => array('EXT:flux/Tests/Fixtures/Layouts/')
 		);
 		$viewContext = new ViewContext($template);
 		$viewContext->setTemplatePaths(new TemplatePaths($paths));

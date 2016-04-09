@@ -55,38 +55,6 @@ class TemplatePathsTest extends BaseTestCase {
 	/**
 	 * @return void
 	 */
-	public function testFillByLegacyTypoScript() {
-		$instance = new TemplatePaths(array(
-			'templateRootPath' => 'EXT:flux/Resources/Private/Templates/',
-			'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts/',
-			'partialRootPath' => 'EXT:flux/Resources/Private/Partials/'
-		));
-		$this->assertEquals(array(ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/')), $instance->getTemplateRootPaths());
-		$this->assertEquals(array(ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts/')), $instance->getLayoutRootPaths());
-		$this->assertEquals(array(ExtensionManagementUtility::extPath('flux', 'Resources/Private/Partials/')), $instance->getPartialRootPaths());
-	}
-
-	/**
-	 * @return void
-	 */
-	public function testFillByLegacyTypoScriptWithOverlays() {
-		$instance = new TemplatePaths(array(
-			'overlays' => array(
-				'flux' => array(
-					'templateRootPath' => 'EXT:flux/Resources/Private/Templates/',
-					'layoutRootPath' => 'EXT:flux/Resources/Private/Layouts/',
-					'partialRootPath' => 'EXT:flux/Resources/Private/Partials/',
-				)
-			)
-		));
-		$this->assertEquals(array(ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/')), $instance->getTemplateRootPaths());
-		$this->assertEquals(array(ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts/')), $instance->getLayoutRootPaths());
-		$this->assertEquals(array(ExtensionManagementUtility::extPath('flux', 'Resources/Private/Partials/')), $instance->getPartialRootPaths());
-	}
-
-	/**
-	 * @return void
-	 */
 	public function testFillByTypoScript() {
 		$instance = new TemplatePaths(array(
 			'templateRootPaths' => array('EXT:flux/Resources/Private/Templates/'),

@@ -46,13 +46,9 @@ class TemplatePaths {
 	const DEFAULT_LAYOUTS_DIRECTORY = 'Resources/Private/Layouts/';
 	const DEFAULT_PARTIALS_DIRECTORY = 'Resources/Private/Partials/';
 	const DEFAULT_FORMAT = 'html';
-	const CONFIG_TEMPLATEROOTPATH = 'templateRootPath';
 	const CONFIG_TEMPLATEROOTPATHS = 'templateRootPaths';
-	const CONFIG_LAYOUTROOTPATH = 'layoutRootPath';
 	const CONFIG_LAYOUTROOTPATHS = 'layoutRootPaths';
-	const CONFIG_PARTIALROOTPATH = 'partialRootPath';
 	const CONFIG_PARTIALROOTPATHS = 'partialRootPaths';
-	const CONFIG_OVERLAYS = 'overlays';
 
 	/**
 	 * @var array
@@ -318,8 +314,7 @@ class TemplatePaths {
 		$templateRootPaths = array();
 		$layoutRootPaths = array();
 		$partialRootPaths = array();
-		// first recorded: the modern plural paths configurations:
-		// checked as first candidates; sorted reverse by key to
+		// Modern plural paths configurations: sorted reverse by key to
 		// check the path with the highest number first.
 		if (TRUE === isset($paths[self::CONFIG_TEMPLATEROOTPATHS]) && TRUE === is_array($paths[self::CONFIG_TEMPLATEROOTPATHS])) {
 			krsort($paths[self::CONFIG_TEMPLATEROOTPATHS], SORT_NUMERIC);
@@ -332,26 +327,6 @@ class TemplatePaths {
 		if (TRUE === isset($paths[self::CONFIG_PARTIALROOTPATHS]) && TRUE === is_array($paths[self::CONFIG_PARTIALROOTPATHS])) {
 			krsort($paths[self::CONFIG_PARTIALROOTPATHS], SORT_NUMERIC);
 			$partialRootPaths = array_merge($partialRootPaths, array_values($paths[self::CONFIG_PARTIALROOTPATHS]));
-		}
-		// second recorded: the legacy "overlays." configurations
-		// by recursive call to extraction method:
-		if (TRUE === isset($paths[self::CONFIG_OVERLAYS])) {
-			foreach ($paths[self::CONFIG_OVERLAYS] as $overlayGroup) {
-				list ($overlayTemplates, $overlayLayouts, $overlayPartials) = $this->extractPathArrays($overlayGroup);
-				$templateRootPaths = array_merge($templateRootPaths, $overlayTemplates);
-				$layoutRootPaths = array_merge($layoutRootPaths, $overlayLayouts);
-				$partialRootPaths = array_merge($partialRootPaths, $overlayPartials);
-			}
-		}
-		// last appended if set: the legacy singular paths configuration
-		if (TRUE === isset($paths[self::CONFIG_TEMPLATEROOTPATH])) {
-			$templateRootPaths[] = $paths[self::CONFIG_TEMPLATEROOTPATH];
-		}
-		if (TRUE === isset($paths[self::CONFIG_LAYOUTROOTPATH])) {
-			$layoutRootPaths[] = $paths[self::CONFIG_LAYOUTROOTPATH];
-		}
-		if (TRUE === isset($paths[self::CONFIG_PARTIALROOTPATH])) {
-			$partialRootPaths[] = $paths[self::CONFIG_PARTIALROOTPATH];
 		}
 		// translate all paths to absolute paths
 		$templateRootPaths = array_map(array($this, 'ensureAbsolutePath'), $templateRootPaths);
