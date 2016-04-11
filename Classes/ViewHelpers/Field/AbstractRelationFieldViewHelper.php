@@ -43,6 +43,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$this->registerArgument('showThumbs', 'boolean', 'If TRUE, adds thumbnail display when editing in BE', FALSE, TRUE);
 		$this->registerArgument('matchFields', 'array', 'When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table', FALSE, array());
 		$this->registerArgument('oppositeField', 'string', 'Name of the opposite field related to a proper mm relation', FALSE, '');
+		$this->registerArgument('emptyOption', 'mixed', 'If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property\'s value (cast to string) as label.', FALSE, FALSE);
 	}
 
 	/**
@@ -82,6 +83,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
 		$component->setShowThumbnails($arguments['showThumbs']);
 		$component->setMatchFields((array) $arguments['matchFields']);
 		$component->setOppositeField($arguments['oppositeField']);
+		$component->setEmptyOption($arguments['emptyOption']);
 		return $component;
 	}
 

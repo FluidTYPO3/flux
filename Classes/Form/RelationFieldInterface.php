@@ -211,4 +211,26 @@ interface RelationFieldInterface extends MultiValueFieldInterface {
 	 */
 	public function getShowThumbnails();
 
+	/**
+	 * @param boolean|string $emptyOption
+	 * @return Select
+	 */
+	public function setEmptyOption($emptyOption);
+
+	/**
+	 * @return boolean|string
+	 */
+	public function getEmptyOption();
+
+	/**
+	 * @return string
+	 */
+	public function getOppositeField();
+
+	/**
+	 * @param string $oppositeField
+	 * @return RelationFieldInterface
+	 */
+	public function setOppositeField($oppositeField);
+
 }
