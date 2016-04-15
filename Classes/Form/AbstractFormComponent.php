@@ -280,18 +280,13 @@ abstract class AbstractFormComponent implements FormInterface {
 		} elseif (!empty($label)) {
 			return $label;
 		}
-		$root = $this->getRoot();
-		if (FALSE === $root instanceof Form) {
-			$id = 'form';
-		} else {
-			$id = $root->getName();
+		if ($this instanceof Form) {
+			return $filePrefix . ':flux.form.' . $this->getName();
 		}
+		$root = $this->getRoot();
+		$id = $root->getName();
 		if (empty($path)) {
-			if (!$this instanceof Form) {
-				$path = $this->getPath();
-			} else {
-				$path = '';
-			}
+			$path = $this->getPath();
 		}
 		return $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
 	}
