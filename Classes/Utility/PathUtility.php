@@ -34,8 +34,8 @@ class PathUtility {
 	public static function translatePath($path) {
 		if (is_array($path) == FALSE) {
 			$path = (0 === strpos($path, '/') ? $path : GeneralUtility::getFileAbsFileName($path));
-			if (is_dir($path)) {
-				$path = realpath($path) . '/';
+			if (is_dir($path) && substr($path, -1) !== '/') {
+				$path = $path . '/';
 			}
 			$path = GeneralUtility::fixWindowsFilePath($path);
 		} else {
