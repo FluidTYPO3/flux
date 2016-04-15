@@ -326,12 +326,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 			$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 			$relativeFilePath = ltrim($relativeFilePath, '/');
 			$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-			$description = $filePrefix . ':' . trim('flux.' . $this->id . '.description');
+			$description = $filePrefix . ':' . trim('flux.form.' . $this->id . '.description');
 		}
-		if (0 === strpos($description, 'LLL:EXT:')) {
-			$translated = LocalizationUtility::translate($description, $extensionKey);
-		}
-		return $translated !== NULL ? $translated : $description;
+		return $description;
 	}
 
 	/**
