@@ -59,11 +59,20 @@ class Select extends AbstractMultiValueFormField {
 	protected $renderType = 'selectSingle';
 
 	/**
+	 * Displays option icons as table beneath the select.
+	 *
+	 * @var boolean
+	 * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#showicontable
+	 */
+	protected $showIconTable = FALSE;
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
 		$configuration = parent::prepareConfiguration('select');
 		$configuration['items'] = $this->getItems();
+		$configuration['showIconTable'] = $this->getShowIconTable();
 		return $configuration;
 	}
 
@@ -194,6 +203,22 @@ class Select extends AbstractMultiValueFormField {
 		$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
 		$propertyName = GeneralUtility::underscoredToLowerCamelCase($labelField);
 		return $propertyName;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getShowIconTable() {
+		return $this->showIconTable;
+	}
+
+	/**
+	 * @param boolean $showIconTable
+	 * @return Select
+	 */
+	public function setShowIconTable($showIconTable) {
+		$this->showIconTable = $showIconTable;
+		return $this;
 	}
 
 }
