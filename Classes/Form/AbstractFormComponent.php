@@ -281,7 +281,7 @@ abstract class AbstractFormComponent implements FormInterface {
 			return $label;
 		}
 		if ($this instanceof Form) {
-			return $filePrefix . ':flux.form.' . $this->getName();
+			return $filePrefix . ':flux.' . $this->getName();
 		}
 		$root = $this->getRoot();
 		$id = $root->getName();
