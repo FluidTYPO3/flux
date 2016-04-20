@@ -46,7 +46,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase {
 		$this->assertContains($field, $GLOBALS['TCA'][$table]['interface']['showRecordFieldList']);
 		$this->assertContains($field, $GLOBALS['TCA'][$table]['types'][0]['showitem']);
 		$this->assertEquals($GLOBALS['TCA'][$table]['ctrl']['label'], 'title');
-		$this->assertContains('flux.form.this_table_does_not_exist', $GLOBALS['TCA'][$table]['ctrl']['title']);
+		$this->assertContains('flux.this_table_does_not_exist', $GLOBALS['TCA'][$table]['ctrl']['title']);
 	}
 
 	/**

@@ -326,7 +326,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 			$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 			$relativeFilePath = ltrim($relativeFilePath, '/');
 			$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-			$description = $filePrefix . ':' . trim('flux.form.' . $this->id . '.description');
+			$description = $filePrefix . ':' . trim('flux.' . $this->id . '.description');
 		}
 		return $description;
 	}
