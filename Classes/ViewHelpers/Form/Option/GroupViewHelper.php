@@ -13,6 +13,12 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
  * Form group option ViewHelper
+ *
+ * Defines a logical group name for the Flux form, which can
+ * then be read by extensions supporting Flux forms. How the
+ * setting gets used is specific to the extension reading the
+ * Flux form - please consule that documentation to learn
+ * if/how the extension supports this option.
  */
 class GroupViewHelper extends OptionViewHelper
 {
@@ -28,6 +34,6 @@ class GroupViewHelper extends OptionViewHelper
      */
     public function initializeArguments()
     {
-        $this->registerArgument('value', 'string', 'Name of the group (fx: shown as label of WizardTab)');
+        $this->registerArgument('value', 'string', 'Name of the group');
     }
 }
