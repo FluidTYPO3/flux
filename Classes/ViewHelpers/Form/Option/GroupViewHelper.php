@@ -13,6 +13,18 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
  * Form group option ViewHelper
+ *
+ * Allows to set the name of the group where the content element should be
+ * displayed in the "New content element wizard". Note that the default group
+ * name is "Content".
+ *
+ * Localization of the name is possible by defining the following language key:
+ *
+ *      fluidcontent.newContentWizard.group.<GroupName>
+ *
+ * For example, to translate the default group name, you'd use
+ * `fluidcontent.newContentWizard.group.Content`. For this to work, the group
+ * name must be alpha-numeric.
  */
 class GroupViewHelper extends OptionViewHelper {
 
