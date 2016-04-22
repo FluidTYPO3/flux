@@ -21,7 +21,7 @@ class RadioViewHelper extends SelectViewHelper {
 	/**
 	 * @return Checkbox
 	 */
-	public function getComponent() {
+	public static function getComponent() {
 		/** @var Radio $component */
 		$component = $this->getPreparedComponent('Radio');
 		$component->setItems($this->arguments['items']);
