@@ -116,10 +116,7 @@ class Select extends AbstractMultiValueFormField {
 				}
 			} else {
 				foreach ($itemNames as $itemName) {
-					$resolvedLabel = $this->resolveLocalLanguageValueOfLabel('', $this->name . '.option.' . $itemName);
-					if (0 === strpos($resolvedLabel, 'LLL:') ) {
-						$resolvedLabel = $itemName;
-					}
+					$resolvedLabel = $this->resolveLocalLanguageValueOfLabel('', $this->getPath() . '.option.' . $itemName);
 					array_push($items, array($resolvedLabel, $itemName));
 				}
 			}

@@ -115,4 +115,31 @@ class SelectTest extends AbstractFieldTest {
 		$this->assertEquals($table . 'label', $propertyName);
 	}
 
+
+	/**
+	 * @test
+	 */
+	public function translateCsvItems() {
+		$instance = $this->createInstance();
+		$instance->setExtensionName('flux');
+
+		$form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+		$form->add($instance);
+		$form->setName('parent');
+		$instance->setName('child');
+		$form->add($instance);
+
+		$instance->setItems('foo,bar');
+		$this->assertEquals(array(array('foo', 'foo'), array('bar', 'bar')), $instance->getItems());
+		$instance->setTranslateCsvItems(TRUE);
+
+		$expected = array(
+			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.parent.fields.child.option.foo', 'foo'),
+			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.parent.fields.child.option.bar', 'bar')
+		);
+
+		$this->assertEquals($expected, $instance->getItems());
+	}
+
+
 }
