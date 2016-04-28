@@ -35,6 +35,10 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * You can translate those labels by putting a LLL reference in the first property:
  *
  *     LLL:EXT:extname/Resources/Private/Language/locallang.xlf:flux.example.fields.items.foo'
+ *
+ * ### Links
+ *
+ * * [TCA Reference: column type "select"](https://docs.typo3.org/typo3cms/TCAReference/stable/Reference/Columns/Select/)
  */
 class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
 
