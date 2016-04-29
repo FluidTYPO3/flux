@@ -16,7 +16,13 @@ requirejs.undef("TYPO3/CMS/Backend/LayoutModule/DragDrop");
  * based on jQuery UI
  */
 define(['jquery', 'jquery-ui/sortable'], function ($) {
+    'use strict';
 
+    /**
+     *
+     * @type {{contentIdentifier: string, dragIdentifier: string, dropZoneAvailableIdentifier: string, dropPossibleClass: string, sortableItemsIdentifier: string, columnIdentifier: string, columnHolderIdentifier: string, addContentIdentifier: string, langClassPrefix: string}}
+     * @exports TYPO3/CMS/Backend/LayoutModule/DragDrop
+     */
     var DragDrop = {
         contentIdentifier: '.t3js-page-ce',
         dragIdentifier: '.t3js-page-ce-draghandle',
@@ -33,6 +39,9 @@ define(['jquery', 'jquery-ui/sortable'], function ($) {
      * initializes Drag+Drop for all content elements on the page
      */
     DragDrop.initialize = function() {
+        // setting the style of all divs with data-language-uid to 'postion:relative' in order to prevend during dragging a wrong positioning
+        $('div[data-language-uid]').css('position','relative');
+
         $('td[data-language-uid]').each(function() {
             var connectWithClassName = DragDrop.langClassPrefix + $(this).data('language-uid');
             $(connectWithClassName).sortable({
@@ -47,9 +56,11 @@ define(['jquery', 'jquery-ui/sortable'], function ($) {
                 tolerance: 'pointer',
                 start: function(e, ui) {
                     DragDrop.onSortStart($(this), ui);
+                    $(this).addClass('t3-is-dragged');
                 },
                 stop: function(e, ui) {
                     DragDrop.onSortStop($(this), ui);
+                    $(this).removeClass('t3-is-dragged');
                 },
                 change: function(e, ui) {
                     DragDrop.onSortChange($(this), ui);
@@ -65,6 +76,9 @@ define(['jquery', 'jquery-ui/sortable'], function ($) {
 
     /**
      * Called when an item is about to be moved
+     *
+     * @param {Object} $container
+     * @param {Object} ui
      */
     DragDrop.onSortStart = function($container, ui) {
         var $item = $(ui.item),
@@ -82,6 +96,9 @@ define(['jquery', 'jquery-ui/sortable'], function ($) {
 
     /**
      * Called when the sorting stopped
+     *
+     * @param {Object} $container
+     * @param {Object} ui
      */
     DragDrop.onSortStop = function($container, ui) {
         var $allColumns = $container.parents(DragDrop.columnHolderIdentifier);
@@ -91,6 +108,9 @@ define(['jquery', 'jquery-ui/sortable'], function ($) {
 
     /**
      * Called when the index of the element in the sortable list has changed
+     *
+     * @param {Object} $container
+     * @param {Object} ui
      */
     DragDrop.onSortChange = function($container, ui) {
         var $helper = $(ui.helper),
@@ -99,6 +119,12 @@ define(['jquery', 'jquery-ui/sortable'], function ($) {
         DragDrop.changeDropzoneVisibility($container, $placeholder, $helper);
     };
 
+    /**
+     *
+     * @param {Object} $container
+     * @param {Object} $subject
+     * @param {Object} $helper
+     */
     DragDrop.changeDropzoneVisibility = function($container, $subject, $helper) {
         var $prev = $subject.prev(':visible'),
             droppableClassName = DragDrop.langClassPrefix + $container.data('language-uid');
@@ -114,14 +140,18 @@ define(['jquery', 'jquery-ui/sortable'], function ($) {
 
     /**
      * Called when the new position of the element gets stored
+     *
+     * @param {Object} $container
+     * @param {Object} ui
      */
     DragDrop.onSortUpdate = function($container, ui) {
         var $selectedItem = $(ui.item),
-            contentElementUid = parseInt($selectedItem.data('uid'));
+            contentElementUid = parseInt($selectedItem.data('uid')),
+            parameters = {};
 
         // send an AJAX requst via the AjaxDataHandler
         if (contentElementUid > 0) {
-            var parameters = {};
+
             // add the information about a possible column position change
             parameters['data'] = {tt_content: {}};
             parameters['data']['tt_content'][contentElementUid] = {colPos: parseInt($container.data('colpos'))};
@@ -149,11 +179,7 @@ define(['jquery', 'jquery-ui/sortable'], function ($) {
         });
     };
 
-    /**
-     * initialize function
-     */
-    return function() {
-        DragDrop.initialize();
+    $(DragDrop.initialize);
+
         return DragDrop;
-    }();
 });
