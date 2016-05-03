@@ -50,23 +50,6 @@ class PreviewTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
-	public function canGenerateShortcutIconAndLink() {
-		$className = 'FluidTYPO3\Flux\Backend\Preview';
-		$instance = $this->getMock($className, array('getPageTitleAndPidFromContentUid', 'attachAssets'));
-		$instance->expects($this->once())->method('getPageTitleAndPidFromContentUid')->with(1)->will($this->returnValue(array('pid' => 1, 'title' => 'test')));
-		$headerContent = '';
-		$itemContent = '';
-		$drawItem = TRUE;
-		$row = array('uid' => 1, 'CType' => 'shortcut', 'records' => 1);
-		$this->setup();
-		$instance->renderPreview($headerContent, $itemContent, $row, $drawItem);
-		$this->assertContains('href="?id=1#c1"', $itemContent);
-		$this->assertContains('<span class="t3-icon t3-icon-actions-insert t3-icon-insert-reference t3-icon-actions t3-icon-actions-insert-reference"></span>', $itemContent);
-	}
-
-	/**
-	 * @test
-	 */
 	public function canGetPageTitleAndPidFromContentUid() {
 		$className = 'FluidTYPO3\Flux\Backend\Preview';
 		$instance = $this->getMock($className);
