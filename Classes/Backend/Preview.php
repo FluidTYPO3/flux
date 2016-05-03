@@ -78,11 +78,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem) {
 		// every provider for tt_content will be asked to get a preview
 		$fieldName = NULL;
-		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
-			$itemContent = $this->createShortcutIcon($row) . $itemContent;
-		} else {
-			$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
-		}
+		$itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
 		$providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
 		foreach ($providers as $provider) {
 			/** @var ProviderInterface $provider */
@@ -101,21 +97,6 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 		}
 		$this->attachAssets();
 		return NULL;
-	}
-
-	/**
-	 * @param array $row
-	 * @return string
-	 */
-	protected function createShortcutIcon($row) {
-		$targetRecord = $this->getPageTitleAndPidFromContentUid(intval($row['records']));
-		$title = LocalizationUtility::translate('reference', 'Flux', array(
-			$targetRecord['title']
-		));
-		$targetLink = '?id=' . $targetRecord['pid'] . '#c' . $row['records'];
-		$iconClass = 't3-icon t3-icon-actions-insert t3-icon-insert-reference t3-icon-actions t3-icon-actions-insert-reference';
-		$icon = '<a name="c' . $row['uid'] . '" title="' . $title . '" href="' . $targetLink . '"><span class="' . $iconClass . '"></span></a>';
-		return $icon;
 	}
 
 	/**
