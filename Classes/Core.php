@@ -21,6 +21,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class Core {
 
+	const CONTROLLER_ALL = '_all';
+
 	/**
 	 * Contains all ConfigurationProviders registered with Flux
 	 * @var array
@@ -57,7 +59,9 @@ class Core {
 	 * Contains all extensions registered with Flux
 	 * @var array
 	 */
-	private static $extensions = array();
+	private static $extensions = array(
+		self::CONTROLLER_ALL => array()
+	);
 
 	/**
 	 * Contains all programatically added TypoScript configuration files for auto-inclusion
@@ -163,7 +167,7 @@ class Core {
 	 * @param string $providesControllerName
 	 * @return void
 	 */
-	public static function registerProviderExtensionKey($extensionKey, $providesControllerName) {
+	public static function registerProviderExtensionKey($extensionKey, $providesControllerName = self::CONTROLLER_ALL) {
 		if (FALSE === isset(self::$extensions[$providesControllerName])) {
 			self::$extensions[$providesControllerName] = array();
 		}
@@ -179,11 +183,10 @@ class Core {
 	 */
 	public static function getRegisteredProviderExtensionKeys($forControllerName) {
 		if (TRUE === isset(self::$extensions[$forControllerName])) {
-			return self::$extensions[$forControllerName];
+			return array_unique(array_merge(self::$extensions[self::CONTROLLER_ALL], self::$extensions[$forControllerName]));
 		}
-		return array();
+		return self::$extensions[self::CONTROLLER_ALL];
 	}
-
 
 	/**
 	 * Registers a class implementing one of the Flux ConfigurationProvider
