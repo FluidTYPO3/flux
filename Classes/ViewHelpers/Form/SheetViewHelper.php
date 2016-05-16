@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;

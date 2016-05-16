@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use TYPO3\CMS\Backend\Form\NodeInterface;
+use TYPO3\CMS\Backend\Form\NodeFactory;
 
 /**
  * RenderViewHelperTest
@@ -20,19 +22,14 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase {
 	 * @test
 	 */
 	public function testRender() {
+		$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'] = array();
+		$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeResolver'] = array();
 		$form = Form::create();
-		$engine = $this->getMock(
-			'TYPO3\\CMS\\Backend\\Form\\FormEngine',
-			array('printNeededJSFunctions_top', 'getSoloField', 'printNeededJSFunctions'),
-			array(), '', FALSE
-		);
-		$engine->expects($this->once())->method('printNeededJSFunctions_top')->willReturn('1');
-		$engine->expects($this->once())->method('getSoloField')->willReturn('2');
-		$engine->expects($this->once())->method('printNeededJSFunctions')->willReturn('3');
-		$instance = $this->getMock($this->createInstanceClassName(), array('getFormEngine'));
-		$instance->expects($this->once())->method('getFormEngine')->willReturn($engine);
-		$result = $instance->render($form);
-		$this->assertEquals('123', $result);
+		$nodeFactory = $this->getMock(NodeFactory::class, array('create'));
+		$nodeFactory->expects($this->once())->method('create')->willReturn($this->getMock(NodeInterface::class));
+		$instance = $this->getMock($this->createInstanceClassName(), array('getNodeFactory'));
+		$instance->expects($this->once())->method('getNodeFactory')->willReturn($nodeFactory);
+		$instance->render($form);
 	}
 
 }

@@ -70,10 +70,7 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		$className = $this->getObjectClassName();
 		$instance = $this->objectManager->get($className);
 		$instance->setName('test');
-		if (TRUE === $instance instanceof FieldInterface || TRUE === $instance instanceof ContainerInterface) {
-			$form = Form::create(array('extensionKey' => 'flux'));
-			$form->add($instance);
-		}
+		$instance->setExtensionName('FluidTYPO3.Flux');
 		$label = $instance->getLabel();
 		$this->assertNotEmpty($label);
 	}
@@ -205,36 +202,11 @@ abstract class AbstractFormTest extends AbstractTestCase {
 		$className = $this->getObjectClassName();
 		$instance = $this->getMock($className, array('getExtensionKey', 'getName', 'getRoot'));
 		$instance->expects($this->never())->method('getExtensionKey');
-		$instance->expects($this->once())->method('getRoot')->will($this->returnValue(NULL));
+		$instance->expects($this->any())->method('getRoot')->will($this->returnValue(NULL));
 		$instance->expects($this->once())->method('getName')->will($this->returnValue('form'));
 		$instance->setLabel('LLL:tt_content.tx_flux_container');
 		$result = $instance->getLabel();
-		$this->assertSame(LocalizationUtility::translate('tt_content.tx_flux_container', 'flux'), $result);
-	}
-
-	/**
-	 * @disabledtest
-	 * @dataProvider getLabelTranslationTestValues
-	 * @param string $input
-	 * @param string $extensionKey
-	 * @param string $expectedOutput
-	 */
-	public function canTranslateLabelReference($input, $extensionKey, $expectedOutput) {
-		$mock = $this->getMock($this->createInstanceClassName());
-		$result = $this->callInaccessibleMethod($mock, 'translateLabelReference', $input, $extensionKey);
-		$this->assertEquals($expectedOutput, $result);
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getLabelTranslationTestValues() {
-		return array(
-			array('label', NULL, 'label'),
-			array('LLL:tt_content.tx_flux_container', 'flux', 'Content Container'),
-			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', NULL, 'Content Container'),
-			array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', 'flux', 'Content Container'),
-		);
+		$this->assertSame('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', $result);
 	}
 
 	/**

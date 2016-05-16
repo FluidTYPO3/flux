@@ -54,10 +54,10 @@ class Input extends AbstractFormField implements FieldInterface {
 		$configuration['size'] = $this->getSize();
 		$configuration['max'] = $this->getMaxCharacters();
 		$configuration['eval'] = $validate;
-		if ($minimum >= 0 || $maximum >= 0 && in_array('int', GeneralUtility::trimExplode(',', $validate))) {
+		if (NULL !== $minimum && NULL !== $maximum && in_array('int', GeneralUtility::trimExplode(',', $validate))) {
 			$configuration['range'] = array(
 				'lower' => $minimum,
-				'upper' => $maximum,
+				'upper' => $maximum
 			);
 		}
 		return $configuration;

@@ -11,15 +11,17 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Form\FormEngine;
+use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Backend\Template\DocumentTemplate;
-use TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper as FluidFormViewHelper;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * ## Main form rendering ViewHelper
  *
  * Use to render a Flux form as HTML.
  */
-class RenderViewHelper extends FluidFormViewHelper {
+class RenderViewHelper extends AbstractViewHelper {
 
 	/**
 	 * @var FluxService
@@ -42,31 +44,34 @@ class RenderViewHelper extends FluidFormViewHelper {
 		$record = $form->getOption(Form::OPTION_RECORD);
 		$table = $form->getOption(Form::OPTION_RECORD_TABLE);
 		$field = $form->getOption(Form::OPTION_RECORD_FIELD);
-		$this->ensureBackendDocumentExists();
-		$formHandler = $this->getFormEngine();
-		return $formHandler->printNeededJSFunctions_top() .
-			$formHandler->getSoloField($table, $record, $field) .
-			$formHandler->printNeededJSFunctions();
+		$node = $this->getNodeFactory()->create(array(
+			'type' => 'flex',
+			'renderType' => 'flex',
+			'flexFormDataStructureArray' => $form->build(),
+			'tableName' => $table,
+			'fieldName' => $field,
+			'databaseRow' => $record,
+			'inlineStructure' => array(),
+			'parameterArray' => array(
+				'itemFormElName' => sprintf('data[%s][%d][%s]', $table, (integer) $record['uid'], $field),
+				'itemFormElValue' => GeneralUtility::xml2array($record[$field]),
+				'fieldChangeFunc' => array(),
+				'fieldConf' => array(
+					'config' => array(
+						'ds' => $form->build()
+					)
+				)
+			)
+		));
+		$output = $node->render();
+		return $output['html'];
 	}
 
 	/**
-	 * @codeCoverageIgnore
-	 * @return void
+	 * @return NodeFactory
 	 */
-	protected function ensureBackendDocumentExists() {
-		if (FALSE === isset($GLOBALS['SOBE'])) {
-			$GLOBALS['SOBE'] = (object) array('doc' => new DocumentTemplate());
-		}
-	}
-
-	/**
-	 * @codeCoverageIgnore
-	 * @return FormEngine
-	 */
-	protected function getFormEngine() {
-		$formHandler = new FormEngine();
-		$formHandler->prependFormFieldNames = $this->getFieldNamePrefix() . '[settings]';
-		return $formHandler;
+	protected function getNodeFactory() {
+		return new NodeFactory();
 	}
 
 }

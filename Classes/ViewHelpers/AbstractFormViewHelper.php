@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
+use FluidTYPO3\Flux\Form\Container\Grid;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
@@ -41,9 +42,11 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
 	 * @return void
 	 */
 	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-		$component = static::getComponent($renderingContext, $arguments, $renderChildrenClosure);
 		$container = static::getContainerFromRenderingContext($renderingContext);
-		$container->add($component);
+		$component = static::getComponent($renderingContext, $arguments, $renderChildrenClosure);
+		if ($component != $container) {
+			$container->add($component);
+		}
 		// rendering child nodes with Form's last sheet as active container
 		static::setContainerInRenderingContext($renderingContext, $component);
 		$renderChildrenClosure();
@@ -126,7 +129,9 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
 		} elseif (TRUE === $templateVariableContainer->exists(static::SCOPE_VARIABLE_FORM)) {
 			$form = $templateVariableContainer->get(static::SCOPE_VARIABLE_FORM);
 		} else {
-			$form = Form::create();
+			$form = Form::create(array(
+				'extensionName' => $renderingContext->getControllerContext()->getRequest()->getControllerExtensionName()
+			));
 			$viewHelperVariableContainer->add(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
 		}
 		return $form;

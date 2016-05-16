@@ -160,6 +160,14 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
 	protected $showThumbnails = FALSE;
 
 	/**
+	 * If not-FALSE, adds one empty option/value pair to the generated selector
+	 * box and tries to use this property's value (cast to string) as label.
+	 *
+	 * @var boolean|string
+	 */
+	protected $emptyOption = FALSE;
+
+	/**
 	 * @param string $type
 	 * @return array
 	 */
@@ -538,6 +546,22 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
 	 */
 	public function getShowThumbnails() {
 		return $this->showThumbnails;
+	}
+
+	/**
+	 * @param boolean|string $emptyOption
+	 * @return Select
+	 */
+	public function setEmptyOption($emptyOption) {
+		$this->emptyOption = $emptyOption;
+		return $this;
+	}
+
+	/**
+	 * @return boolean|string
+	 */
+	public function getEmptyOption() {
+		return $this->emptyOption;
 	}
 
 }

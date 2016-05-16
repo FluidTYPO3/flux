@@ -123,7 +123,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 	public function throwsExceptionOnInvalidFieldTypeWhenCreatingFromDefinition() {
 		$properties = $this->chainProperties;
 		$properties['type'] = 'InvalidType';
-		$this->setExpectedException('RuntimeException', NULL, 1375373527);
+		$this->setExpectedException('RuntimeException', '', 1375373527);
 		call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
 	}
 
@@ -171,7 +171,7 @@ abstract class AbstractFieldTest extends AbstractFormTest {
 		$instance = $this->createInstance();
 		$instance->setClearable(TRUE);
 		$result = $this->performTestBuild($instance);
-		$this->assertNotEmpty($result['TCEforms']['config']['wizards']);
+		$this->assertNotEmpty($result['config']['wizards']);
 	}
 
 	/**

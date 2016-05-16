@@ -197,7 +197,7 @@ abstract class AbstractFluxController extends ActionController {
 		$row = $this->getRecord();
 		$extensionKey = $this->provider->getExtensionKey($row);
 		$extensionSignature = ExtensionNamingUtility::getExtensionSignature($extensionKey);
-		$pluginSignature = 'tx_' . $extensionSignature . '_' . $this->request->getPluginName();
+		$pluginSignature = strtolower('tx_' . $extensionSignature . '_' . $this->request->getPluginName());
 		$controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
 		$requestActionName = $this->resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature);
 		$controllerActionName = $this->provider->getControllerActionFromRecord($row);

@@ -50,11 +50,29 @@ class Select extends AbstractMultiValueFormField {
 	protected $translateCsvItems = FALSE;
 
 	/**
+	 * Special rendering type of this component - supports all values normally
+	 * supported by TCA of the "select" field type.
+	 *
+	 * @var string
+	 * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#rendertype
+	 */
+	protected $renderType = 'selectSingle';
+
+	/**
+	 * Displays option icons as table beneath the select.
+	 *
+	 * @var boolean
+	 * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#showicontable
+	 */
+	protected $showIconTable = FALSE;
+
+	/**
 	 * @return array
 	 */
 	public function buildConfiguration() {
 		$configuration = parent::prepareConfiguration('select');
 		$configuration['items'] = $this->getItems();
+		$configuration['showIconTable'] = $this->getShowIconTable();
 		return $configuration;
 	}
 
@@ -98,10 +116,7 @@ class Select extends AbstractMultiValueFormField {
 				}
 			} else {
 				foreach ($itemNames as $itemName) {
-					$resolvedLabel = $this->resolveLocalLanguageValueOfLabel('', $this->name . '.option.' . $itemName);
-					if (0 === strpos($resolvedLabel, 'LLL:') ) {
-						$resolvedLabel = $itemName;
-					}
+					$resolvedLabel = $this->resolveLocalLanguageValueOfLabel('', $this->getPath() . '.option.' . $itemName);
 					array_push($items, array($resolvedLabel, $itemName));
 				}
 			}
@@ -138,6 +153,21 @@ class Select extends AbstractMultiValueFormField {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getRenderType() {
+		return $this->renderType;
+	}
+
+	/**
+	 * @param string $renderType
+	 * @return void
+	 */
+	public function setRenderType($renderType) {
+		$this->renderType = $renderType;
+	}
+
+	/**
 	 * @param QueryInterface $query
 	 * @return array
 	 */
@@ -170,6 +200,22 @@ class Select extends AbstractMultiValueFormField {
 		$labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
 		$propertyName = GeneralUtility::underscoredToLowerCamelCase($labelField);
 		return $propertyName;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getShowIconTable() {
+		return $this->showIconTable;
+	}
+
+	/**
+	 * @param boolean $showIconTable
+	 * @return Select
+	 */
+	public function setShowIconTable($showIconTable) {
+		$this->showIconTable = $showIconTable;
+		return $this;
 	}
 
 }

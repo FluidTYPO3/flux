@@ -61,6 +61,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
 		$configuration['renderMode'] = $this->getRenderMode();
 		$configuration['itemListStyle'] = $this->getItemListStyle();
 		$configuration['selectedListStyle'] = $this->getSelectedListStyle();
+		$configuration['renderType'] = $this->getRenderType();
 		return $configuration;
 	}
 
@@ -174,6 +175,21 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
 	 */
 	public function getRenderMode() {
 		return $this->renderMode;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRenderType() {
+		return $this->renderType;
+	}
+
+	/**
+	 * @param string $renderType
+	 * @return void
+	 */
+	public function setRenderType($renderType) {
+		$this->renderType = $renderType;
 	}
 
 }

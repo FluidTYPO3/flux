@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -256,51 +257,38 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return NULL|string
 	 */
 	protected function resolveLocalLanguageValueOfLabel($label, $path = NULL) {
-		if (TRUE === $this->getDisableLocalLanguageLabels()) {
+		if ($this->getDisableLocalLanguageLabels()) {
 			return $label;
 		}
+
 		$name = $this->getName();
-		$root = $this->getRoot();
 		$extensionName = $this->extensionName;
-		if (FALSE === $root instanceof Form) {
-			$id = 'form';
-		} else {
-			$id = $root->getName();
-		}
 		$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-		if (FALSE === empty($label)) {
-			return $this->translateLabelReference($label, $extensionKey);
-		}
-		if ((TRUE === empty($extensionKey) || FALSE === ExtensionManagementUtility::isLoaded($extensionKey))) {
+		if (empty($label) && !ExtensionManagementUtility::isLoaded($extensionKey)) {
 			return $name;
+		} elseif (strpos($label, 'LLL:EXT:') === 0) {
+			return $label;
 		}
-		if (TRUE === empty($path)) {
-			if (FALSE === $this instanceof Form) {
-				$path = $this->getPath();
-			} else {
-				$path = '';
-			}
-		}
+
 		$relativeFilePath = $this->getLocalLanguageFileRelativePath();
 		$relativeFilePath = ltrim($relativeFilePath, '/');
 		$filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-		$labelIdentifier = $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
-		$translated = LocalizationUtility::translate($labelIdentifier, $extensionKey);
-		return (NULL !== $translated ? $translated : $labelIdentifier);
-	}
-
-	/**
-	 * @param string $label
-	 * @param string $extensionKey
-	 * @return NULL|string
-	 */
-	protected function translateLabelReference($label, $extensionKey) {
-		if (0 === strpos($label, 'LLL:EXT:')) {
-			return LocalizationUtility::translate($label, NULL);
-		} else if (0 === strpos($label, 'LLL:') ) {
-			return LocalizationUtility::translate(substr($label, 4), $extensionKey);
+		if (strpos($label, 'LLL:') === 0) {
+			// Shorthand LLL:name.of.index reference, expand
+			list (, $labelIdentifier) = explode(':', $label, 2);
+			return $filePrefix . ':' . $labelIdentifier;
+		} elseif (!empty($label)) {
+			return $label;
 		}
-		return $label;
+		if ($this instanceof Form) {
+			return $filePrefix . ':flux.' . $this->getName();
+		}
+		$root = $this->getRoot();
+		$id = $root->getName();
+		if (empty($path)) {
+			$path = $this->getPath();
+		}
+		return $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
 	}
 
 	/**
@@ -374,7 +362,7 @@ abstract class AbstractFormComponent implements FormInterface {
 	 * @return FormInterface
 	 */
 	public function setVariable($name, $value) {
-		$this->variables[$name] = $value;
+		$this->variables = RecursiveArrayUtility::mergeRecursiveOverrule($this->variables, RecursiveArrayUtility::convertPathToArray($name, $value));
 		return $this;
 	}
 
