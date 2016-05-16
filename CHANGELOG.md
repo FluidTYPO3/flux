@@ -1,7 +1,7 @@
 # Flux Change log
 
-7.4.0 - Upcoming
-----------------
+7.4.0 - 2016-05-16
+------------------
 
 Minor release with a couple new features:
  
