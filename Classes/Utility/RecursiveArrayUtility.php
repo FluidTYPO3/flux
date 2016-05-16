@@ -67,6 +67,31 @@ class RecursiveArrayUtility {
 	}
 
 	/**
+	 * This method convert a string like "Some.long.tree" into an array ["Some"=>["long"=>["tree"=> $value]]]
+	 * @param string $path
+	 * @param mixed $value
+	 * @return array
+	 */
+	public static function convertPathToArray($path, $value = NULL) {
+		$array = array();
+		if (strpos($path, '.') === FALSE) {
+			$array[$path] = $value;
+		} else {
+			$target = &$array;
+			foreach (explode('.', $path) as $segment) {
+				if (!array_key_exists($segment, $target) || !is_array($target[$segment])) {
+					$target[$segment] = array();
+				}
+				$target = &$target[$segment];
+			}
+			$target = $value;
+		}
+
+		return $array;
+	}
+
+
+	/**
 	 * @param array $firstArray First array
 	 * @param array $secondArray Second array, overruling the first array
 	 * @param boolean $notAddKeys If set, keys that are NOT found in $firstArray will not be set. Thus only existing value can/will be overruled from second array.

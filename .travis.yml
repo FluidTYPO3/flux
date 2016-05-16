@@ -13,7 +13,6 @@ matrix:
     - php: "5.6"
       env: CHECKSTYLE="YES" COVERAGE="YES"
   allow_failures:
-    - php: "7"
     - php: "hhvm"
 
 cache:

@@ -194,16 +194,14 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 		}
 		$configuration = $this->buildConfiguration();
 		$fieldStructureArray = array(
-			'TCEforms' => array(
-				'label' => $this->getLabel(),
-				'exclude' => intval($this->getExclude()),
-				'config' => $configuration,
-				'displayCond' => $this->getDisplayCondition(),
-			)
+			'label' => $this->getLabel(),
+			'exclude' => intval($this->getExclude()),
+			'config' => $configuration,
+			'displayCond' => $this->getDisplayCondition()
 		);
 		if (TRUE === isset($configuration['defaultExtras'])) {
-			$fieldStructureArray['TCEforms']['defaultExtras'] = $configuration['defaultExtras'];
-			unset($fieldStructureArray['TCEforms']['config']['defaultExtras']);
+			$fieldStructureArray['defaultExtras'] = $configuration['defaultExtras'];
+			unset($fieldStructureArray['config']['defaultExtras']);
 		}
 		$wizards = $this->buildChildren($this->wizards);
 		if (TRUE === $this->getClearable()) {
@@ -215,9 +213,9 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 				),
 			));
 		}
-		$fieldStructureArray['TCEforms']['config']['wizards'] = $wizards;
+		$fieldStructureArray['config']['wizards'] = $wizards;
 		if (TRUE === $this->getRequestUpdate()) {
-			$fieldStructureArray['TCEforms']['onChange'] = 'reload';
+			$fieldStructureArray['onChange'] = 'reload';
 		}
 		return $fieldStructureArray;
 	}

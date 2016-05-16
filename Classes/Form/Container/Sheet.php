@@ -66,11 +66,9 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 	public function build() {
 		$sheetStructArray = array(
 			'ROOT' => array(
-				'TCEforms' => array(
-					'sheetTitle' => $this->getLabel(),
-					'sheetDescription' => $this->getDescription(),
-					'sheetShortDescr' => $this->getShortDescription()
-				),
+				'sheetTitle' => $this->getLabel(),
+				'sheetDescription' => $this->getDescription(),
+				'sheetShortDescr' => $this->getShortDescription(),
 				'type' => 'array',
 				'el' => $this->buildChildren($this->getFields())
 			)

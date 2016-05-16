@@ -39,7 +39,7 @@ class ResolveUtilityTest extends AbstractTestCase {
 	public function resolvesClassNamesInSubNamespaceOfPackage() {
 		$resolver = new Resolver();
 		$result = $resolver->resolveClassNamesInPackageSubNamespace('FluidTYPO3.Flux', '');
-		$this->assertEquals(array('FluidTYPO3\\Flux\\Core', 'FluidTYPO3\\Flux\\Form'), $result);
+		$this->assertEquals(array('FluidTYPO3\\Flux\\Core', 'FluidTYPO3\\Flux\\FluxPackage', 'FluidTYPO3\\Flux\\Form'), $result);
 	}
 
 	/**
@@ -75,7 +75,7 @@ class ResolveUtilityTest extends AbstractTestCase {
 	 */
 	public function throwsExceptionForClassIfSetToHardFail() {
 		$resolver = new Resolver();
-		$this->setExpectedException('RuntimeException', NULL, 1364498093);
+		$this->setExpectedException('RuntimeException', '', 1364498093);
 		$resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void', TRUE);
 	}
 
@@ -84,7 +84,7 @@ class ResolveUtilityTest extends AbstractTestCase {
 	 */
 	public function throwsExceptionForActionIfSetToHardFail() {
 		$resolver = new Resolver();
-		$this->setExpectedException('RuntimeException', NULL, 1364498223);
+		$this->setExpectedException('RuntimeException', '', 1364498223);
 		$resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content', FALSE, TRUE);
 	}
 

@@ -104,7 +104,12 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 			throw new \RuntimeException('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
 		}
 		$this->baseRenderingContext->setControllerContext($this->controllerContext);
-		$this->templateParser->setConfiguration($this->buildParserConfiguration());
+		$this->setRenderingContext($this->baseRenderingContext);
+		if (isset($this->templateParser)) {
+			// Note: this is for compatibility with Standalone Fluid as base;
+			// this package no longer requires this initialisation when rendering sections.
+			$this->templateParser->setConfiguration($this->buildParserConfiguration());
+		}
 		$parsedTemplate = $this->getParsedTemplate();
 		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
 		$viewHelperVariableContainer = $this->baseRenderingContext->getViewHelperVariableContainer();
@@ -126,15 +131,23 @@ class ExposedTemplateView extends TemplateView implements ViewInterface {
 	 * @return ParsedTemplateInterface
 	 */
 	public function getParsedTemplate() {
-		$templateIdentifier = $this->getTemplateIdentifier();
-		if (TRUE === $this->templateCompiler->has($templateIdentifier)) {
-			$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
-		} else {
-			$source = $this->getTemplateSource();
-			$parsedTemplate = $this->templateParser->parse($source);
-			if (TRUE === $parsedTemplate->isCompilable()) {
-				$this->templateCompiler->store($templateIdentifier, $parsedTemplate);
+		if (isset($this->templateParser)) {
+			// Note: this is for compatibility with Standalone Fluid as base;
+			// this package no longer requires this initialisation when rendering sections.
+			$templateIdentifier = $this->getTemplateIdentifier();
+			if (TRUE === $this->templateCompiler->has($templateIdentifier)) {
+				$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
+			} else {
+				$source = $this->getTemplateSource();
+				$parsedTemplate = $this->templateParser->parse($source);
+				if (TRUE === $parsedTemplate->isCompilable()) {
+					$this->templateCompiler->store($templateIdentifier, $parsedTemplate);
+				}
 			}
+		} else {
+			$parsedTemplate = $this->baseRenderingContext->getTemplateParser()->parse(
+				$this->baseRenderingContext->getTemplatePaths()->getTemplateSource()
+			);
 		}
 		return $parsedTemplate;
 	}

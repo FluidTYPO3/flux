@@ -16,11 +16,11 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * ### Select and render an image
  *
- *    <flux:field.file name="settings.image" allowed="jpg,png,svg" showThumbnails="1" />
+ *     <flux:field.file name="settings.image" allowed="jpg,png,svg" showThumbnails="1" />
  *
  * Then use `<f:image>` to render the image in the frontend:
  *
- *    <f:image src="{settings.image}"/>
+ *     <f:image src="{settings.image}"/>
  *
  * `alt` and `title` tags are not loaded from the file's meta data record.
  * Use `<flux:field.inline.fal>` if you want this feature.
@@ -38,6 +38,7 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper {
 		$this->registerArgument('disallowed', 'string', 'Defines a list of file types NOT allowed in this field');
 		$this->registerArgument('uploadFolder', 'string', 'Upload folder. DEPRECATED, will be moved to the File field ViewHelper');
 		$this->registerArgument('showThumbnails', 'boolean', 'If TRUE, displays thumbnails for selected values', FALSE, FALSE);
+		$this->registerArgument('useFalRelation', 'boolean', 'use a fal relation instead of a simple file path', FALSE, FALSE);
 	}
 
 	/**
@@ -53,6 +54,7 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper {
 		$component->setAllowed($arguments['allowed']);
 		$component->setUploadFolder($arguments['uploadFolder']);
 		$component->setShowThumbnails($arguments['showThumbnails']);
+		$component->setUseFalRelation($arguments['useFalRelation']);
 		return $component;
 	}
 

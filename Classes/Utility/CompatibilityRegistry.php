@@ -274,16 +274,30 @@ abstract class CompatibilityRegistry {
 	 * @param string $prefix
 	 * @param string $scope
 	 * @param string $version
-	 * @return null
+	 * @return array|NULL
 	 */
 	protected static function cache(array &$source, $prefix, $scope, $version) {
 		$key = $prefix . '-' . $scope . '-' . $version;
 		if (TRUE === array_key_exists($key, static::$cache)) {
 			return static::$cache[$key];
+		} elseif (is_array($source[$scope])) {
+			$value = static::resolveVersionedValue($source[$scope], $version);
+			static::$cache[$key] = $value;
+			return $value;
+		} else {
+			GeneralUtility::sysLog(
+				sprintf(
+					'Possible misconfiguration or stale cached configuration: versioned attributes named "%s" requested from %s ' .
+					'but no such named attributes are registered. If flushing the system cache does not remove this message please ' .
+					'check your source code for possible typos in registration or usages of "%s".',
+					$scope,
+					static::class,
+					$scope
+				),
+				GeneralUtility::SYSLOG_SEVERITY_WARNING
+			);
 		}
-		$value = static::resolveVersionedValue($source[$scope], $version);
-		static::$cache[$key] = $value;
-		return $value;
+		return NULL;
 	}
 
 }

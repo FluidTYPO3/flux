@@ -458,17 +458,32 @@ class AbstractProvider implements ProviderInterface {
 
 	/**
 	 * Returns the page record with localisation applied, if any
-	 * exists in database.
+	 * exists in database. Maintains uid and pid of the original
+	 * page if localisation is applied.
 	 *
 	 * @return array
 	 */
 	protected function getPageValues() {
 		$record = $GLOBALS['TSFE']->page;
 		if ($GLOBALS['TSFE']->sys_language_uid != 0) {
-			$localisation = $this->recordService->get('pages_language_overlay', '*', 'pid = "' . $record['uid'] . '" AND sys_language_uid = "' . $GLOBALS['TSFE']->sys_language_uid . '"');
+			$localisation = $this->recordService->get(
+				'pages_language_overlay',
+				'*',
+				'pid = "' . $record['uid'] .
+				'" AND sys_language_uid = "' . $GLOBALS['TSFE']->sys_language_uid . '"' .
+				' AND hidden = false' .
+				' AND deleted = false' .
+				' AND (starttime = 0 OR starttime <= UNIX_TIMESTAMP())' .
+				' AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())'
+			);
 		}
 		if (FALSE === empty($localisation)) {
-			$record = RecursiveArrayUtility::merge($record, reset($localisation));
+			$mergedRecord = RecursiveArrayUtility::merge($record, reset($localisation));
+			if (isset($record['uid']) && isset($record['pid'])) {
+				$mergedRecord['uid'] = $record['uid'];
+				$mergedRecord['pid'] = $record['pid'];
+			}
+			return $mergedRecord;
 		}
 		return $record;
 	}

@@ -593,6 +593,29 @@ abstract class AbstractProviderTest extends AbstractTestCase {
 	/**
 	 * @test
 	 */
+	public function testMaintainUidAndPidOfThePage() {
+		$GLOBALS['TSFE'] = (object) array(
+			'page' => array(
+				'title' => 'foo',
+				'uid' => 1,
+				'pid' => 0
+			), 'sys_language_uid' => 1);
+		$recordService = $this->getMock('FluidTYPO3\\Service\\RecordService', array('get'));
+		$recordService->expects($this->once())->method('get')->willReturn(array(
+			array('title' => 'bar',
+				'subtitle' => 'baz',
+				'uid' => 10,
+				'pid' => 20
+			)
+		));
+		$subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
+		$subject->_set('recordService', $recordService);
+		$this->assertEquals(array('title' => 'bar', 'subtitle' => 'baz', 'uid' => 1, 'pid' => 0), $this->callInaccessibleMethod($subject, 'getPageValues'));
+	}
+
+	/**
+	 * @test
+	 */
 	public function canSetTemplatePathAndFilename() {
 		$provider = $this->getConfigurationProviderInstance();
 		$record = $this->getBasicRecord();

@@ -8,7 +8,9 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\FluxPackage;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Package\FluxPackageFactory;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -21,7 +23,7 @@ class FormViewHelper extends AbstractFormViewHelper {
 	 * @return void
 	 */
 	public function initializeArguments() {
-		$this->registerArgument('id', 'string', 'Identifier of this Flexible Content Element, [a-z0-9\-] allowed', TRUE);
+		$this->registerArgument('id', 'string', 'Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed', TRUE);
 		$this->registerArgument('label', 'string', 'Label for the form, can be LLL: value. Optional - if not specified, Flux ' .
 			'tries to detect an LLL label named "flux.fluxFormId", in scope of extension rendering the Flux form.', FALSE, NULL);
 		$this->registerArgument('description', 'string', 'Short description of the purpose/function of this form', FALSE, NULL);
@@ -50,7 +52,8 @@ class FormViewHelper extends AbstractFormViewHelper {
 		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
 		$templateVariableContainer = $renderingContext->getTemplateVariableContainer();
 		$extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-		$form = Form::create();
+		$formClassName = FluxPackageFactory::getPackageWithFallback($extensionName)->getImplementation(FluxPackage::IMPLEMENTATION_FORM);
+		$form = call_user_func_array(array($formClassName, 'create'), array());
 		$container = $form->last();
 		// configure Form instance
 		$form->setId($arguments['id']);

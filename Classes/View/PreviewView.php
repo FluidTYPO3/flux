@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ClipBoardUtility;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -44,7 +45,6 @@ class PreviewView {
 	const MODE_PREPEND = 'prepend';
 	const MODE_NONE = 'none';
 	const OPTION_TOGGLE = 'toggle';
-
 	const PREVIEW_SECTION = 'Preview';
 	const CONTROLLER_NAME = 'Content';
 
@@ -250,6 +250,10 @@ class PreviewView {
 		$content = '';
 		if (TRUE === $grid->hasChildren()) {
 			$workspaceVersionOfRow = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $row['uid']);
+			if ((integer) $workspaceVersionOfRow['pid'] === -1 && !empty($workspaceVersionOfRow['t3ver_oid'])) {
+				$originalRecord = BackendUtility::getRecord('tt_content', $workspaceVersionOfRow['t3ver_oid'], '*', '', FALSE);
+				$workspaceVersionOfRow['pid'] = $originalRecord['pid'];
+			}
 			$content = $this->drawGrid($workspaceVersionOfRow, $grid, $form);
 
 			$options = $this->getPreviewOptions($form);
@@ -403,7 +407,7 @@ class PreviewView {
 			'uid_pid' => $after,
 			'colPos' => ContentService::COLPOS_FLUXCONTENT,
 			'sys_language_uid' => $row['sys_language_uid'],
-			'defVals[tt_content][tx_flux_parent]' => $row['uid'],
+			'defVals[tt_content][tx_flux_parent]' => $this->getFluxParentUid($row),
 			'defVals[tt_content][tx_flux_column]' => $columnName,
 			'returnUrl' => $returnUri
 		));
@@ -452,7 +456,7 @@ class PreviewView {
 		// and relies on TYPO3 core query parts for enable-clause-, language- and versioning placeholders. All that needs
 		// to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will not remove
 		// records based on them having remove placeholders.
-		$condition = "AND tx_flux_parent = '" . $row['uid'] . "' AND tx_flux_column = '" . $area . "' ";
+		$condition = "AND tx_flux_parent = '" . $this->getFluxParentUid($row) . "' AND tx_flux_column = '" . $area . "' ";
 		$condition .= "AND colPos = '" . ContentService::COLPOS_FLUXCONTENT . "' ";
 		$condition .= (1 === $view->tt_contentConfig['showHidden']) ? '' : 'AND hidden = 0 ';
 		$queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
@@ -623,6 +627,14 @@ class PreviewView {
 
 	/**
 	 * @param array $row
+	 * @return mixed
+	 */
+	protected function getFluxParentUid(array $row) {
+		return $row['t3ver_oid'] ?  $row['t3ver_oid'] : $row['uid'];
+	}
+
+	/**
+	 * @param array $row
 	 * @param Column $column
 	 * @param boolean $reference
 	 * @param array $relativeTo
@@ -648,14 +660,55 @@ class PreviewView {
 	 * @return string
 	 */
 	protected function parseGridColumnTemplate(array $row, Column $column, $colPosFluxContent, $dblist, $target, $id, $content) {
+		$label = $column->getLabel();
+		if (strpos($label, 'LLL:') === 0) {
+			$label = LocalizationUtility::translate(
+				$label,
+				ExtensionNamingUtility::getExtensionName($column->getExtensionName())
+			);
+			if (empty($label)) {
+				$label = $column->getLabel();
+			}
+		}
+
+		// this variable defines if this drop-area gets activated on drag action
+		// of a ce with the same data-language_uid
+		$templateClassJsSortableLanguageId = $row['sys_language_uid'];
+
+		// this variable defines which drop-areas will be activated
+		// with a drag action of this element
+		$templateDataLanguageUid = $row['sys_language_uid'];
+
+		// but for language mode all (uid -1):
+		if ((integer) $row['sys_language_uid'] === -1) {
+			/** @var \TYPO3\CMS\Backend\Controller\PageLayoutController $pageLayoutController */
+			$pageLayoutController = $GLOBALS['SOBE'];
+			$isColumnView = ((integer) $pageLayoutController->MOD_SETTINGS['function'] === 1);
+			$isLanguagesView = ((integer) $pageLayoutController->MOD_SETTINGS['function'] === 2);
+			if ($isColumnView) {
+				$templateClassJsSortableLanguageId = $pageLayoutController->current_sys_language;
+				$templateDataLanguageUid = $pageLayoutController->current_sys_language;
+			} elseif ($isLanguagesView) {
+				// If this is a language-all (uid -1) grid-element in languages-view
+				// we use language-uid 0 for this elements drop-areas.
+				// This can be done because a ce with language-uid -1 in languages view
+				// is in TYPO3 7.6.4 only displayed in the default-language-column (maybe a bug atm.?).
+				// Additionally there is no access to the information which
+				// language column is currently rendered from here!
+				// ($lP in typo3/cms/typo3/sysext/backend/Classes/View/PageLayoutView.php L485)
+				$templateClassJsSortableLanguageId = 0;
+				$templateDataLanguageUid = 0;
+			}
+		}
+
 		return sprintf($this->templates['gridColumn'],
 			$column->getColspan(),
 			$column->getRowspan(),
 			$column->getStyle(),
 			$colPosFluxContent,
-			$dblist->tt_contentConfig['sys_language_uid'],
-			$dblist->tt_contentConfig['sys_language_uid'],
-			$column->getLabel(),
+			$templateClassJsSortableLanguageId,
+			$templateDataLanguageUid,
+			$label,
 			$target,
 			$id,
 			$this->drawNewIcon($row, $column). $this->drawPasteIcon($row, $column) . $this->drawPasteIcon($row, $column, TRUE),

@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -33,12 +34,23 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 			'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface',
 			array('getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext')
 		);
+		$this->controllerContext = $this->getMock(
+			'TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext',
+			array('getRequest')
+		);
+		$this->controllerContext->expects($this->any())
+			->method('getRequest')
+			->willReturn(new Request());
+
 		$this->renderingContext->expects($this->any())
 			->method('getTemplateVariableContainer')
 			->willReturn($this->templateVariableContainer);
 		$this->renderingContext->expects($this->any())
 			->method('getViewHelperVariableContainer')
 			->willReturn($this->viewHelperVariableContainer);
+		$this->renderingContext->expects($this->any())
+			->method('getControllerContext')
+			->willReturn($this->controllerContext);
 	}
 
 	/**

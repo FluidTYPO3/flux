@@ -1,5 +1,88 @@
 # Flux Change log
 
+7.4.0 - Upcoming
+----------------
+
+Minor release with a couple new features:
+ 
+- The Flux Package API which allows a simple class to be implemented and control how Flux is integrated (which controllers your
+  provider extension supports, the default template paths it uses, and more). See https://github.com/FluidTYPO3/flux/pull/1038.
+- Flux form `options` can now be defined as dotted paths, for exampel `<flux:form.option name="FluidContent.sorting" value="100" />`.
+  See https://github.com/FluidTYPO3/flux/pull/1042.
+- Flux provider extensions can now be registered for any feature with a single command - filename conventions and detection then
+  determine which features get enabled. See https://github.com/FluidTYPO3/flux/commit/1e379247567c0f94921de0f82be9dc5a638f5091.
+
+And a very important bug fix:
+
+- Bugfix for editing IRRE relations in a FlexForm, applying to both new and existing elements (workaround for TYPO3 issue below)
+  - https://github.com/FluidTYPO3/flux/commit/6508a5fb26af1511ab5d6309d7e6ffffcc222f1d
+
+Many other bug fixes are included for breaking changes in FormEngine.
+
+Other bug fixes and minor updates:
+
+- Bugfix for `getTranslateCsvItems` for select form field
+  - https://github.com/FluidTYPO3/flux/commit/05c9e5a2e88a6119b20031b05b9c6f7ed3ee448b
+- `showIconTable` support for select form field and subtypes
+  - https://github.com/FluidTYPO3/flux/commit/fd8a9e955234318a17d8bf0d65f6859b79db577e
+- Prevent `realpath` on resolved template files (prevents issues on Windows)
+  - https://github.com/FluidTYPO3/flux/commit/f24706612cd233de0d97263eb65782ddc7bf43f0
+- Optimisations and bug fixes for form's LLL
+  - https://github.com/FluidTYPO3/flux/commit/41cb134fe6a2ce2bac05fd04152ab5c392ceaba9
+  - https://github.com/FluidTYPO3/flux/commit/dc9ca0a3ec0e0e3cc472a1828e9ca3a5d99ce9f2
+  - https://github.com/FluidTYPO3/flux/commit/1aa7d60de1e18f68ebc73811412f27f2367b27c0
+- `emptyOption` support for all relation type form fields
+  - https://github.com/FluidTYPO3/flux/commit/27d5d81c0ec705b81c1695c957fbf26e4d66ed8d
+- Radio field type added
+  - https://github.com/FluidTYPO3/flux/commit/c838efcb8f9072bf1996db771716ede539238bad
+- Legacy template path name supports removed
+  - https://github.com/FluidTYPO3/flux/commit/843f52fbea4bd8b290ddb4b7aae19985a2976fb3
+- Bugfix to avoid `range` in TCA of input fields if min/max not set
+  - https://github.com/FluidTYPO3/flux/commit/706f35cb729ff4a01156c988a54726ad9b846705
+- Bugfix for LLL path of default sheet on Windows systems
+  - https://github.com/FluidTYPO3/flux/commit/ac152d8d5bcf593a409f7dfee636f91bb015290b
+- Bugfix for missing `section=1` in TCA structure
+  - https://github.com/FluidTYPO3/flux/commit/efc0bfc90648d279e5e05326e54fb722dfe9a015
+- Bugfix for correcting language UID in preview section
+  - https://github.com/FluidTYPO3/flux/commit/41d15dbb2827747dec6f03ecf7560a966f2af8f4
+- Bugfix for parameter order in VariableViewHelper
+  - https://github.com/FluidTYPO3/flux/commit/88ca4c8d69db1fda0947f044401013f7dea93179
+- Bugfix to fall back to page context unaware ConfigurationManager when incorrect implementation is registered
+  - https://github.com/FluidTYPO3/flux/pull/1094
+- Bugfix for resolving page/parent relations in workspace mode in nested elements
+  - https://github.com/FluidTYPO3/flux/commit/8efe39dd9a9c3e85b809d485c858f6ae7cf7036e
+  - https://github.com/FluidTYPO3/flux/commit/affce839d04557e9c3df696a05e29f2594b691e0
+- Improvements for label handling (to deliver untranslated references and let TYPO3 do the translation, allows things like
+  Fluidcontent element labels to become translatable)
+  - https://github.com/FluidTYPO3/flux/commit/81bb392f99ab1e30c30303ee5d885a7a44c9ff6f
+  - https://github.com/FluidTYPO3/flux/commit/718365c98bdf552ba81f1cb05a564e6c67aa7c78
+- Bugfix for list view hook in TYPO3v7
+  - https://github.com/FluidTYPO3/flux/pull/1067
+- Bugfix for translation handling
+  - https://github.com/FluidTYPO3/flux/pull/1066
+- Bugfix for resolving page ID in ConfigurationManager
+  - https://github.com/FluidTYPO3/flux/pull/1065
+- Option/argument to set `useFalRelation` on `flux:field.file` (use case: forced generation of non-FAL, legacy, file reference)
+  - https://github.com/FluidTYPO3/flux/pull/1058
+- PHP 7, TYPO3v8 and Fluid standalone compatibility
+  - https://github.com/FluidTYPO3/flux/commit/07696ccc06589ae0c6cefaf40b7e1b85f889d3b2
+  - https://github.com/FluidTYPO3/flux/commit/1d819e9b0b0b57c3717bf03409ddbd534f5d9393
+  - https://github.com/FluidTYPO3/flux/commit/d26cbdc5345b6efe7a543e45e627d4d7c06eba4f
+  - https://github.com/FluidTYPO3/flux/commit/7565ebcce55daa04b128e9569946a7b4d745301a
+  - https://github.com/FluidTYPO3/flux/commit/496649953f54771d37c67ce31d71a5c87befe848
+  - https://github.com/FluidTYPO3/flux/commit/104744fd8fe382c0fdf5744f7aca9331879e2e7e
+- Update for `flux:form.render` to work with new FormEngine
+  - https://github.com/FluidTYPO3/flux/commit/3a582939acff5d401c9ddc945a25eac1a01a6675
+- Bugfix for issues with form components becoming children of themselves (infinite recursion / timeout)
+  - https://github.com/FluidTYPO3/flux/commit/93afbf08c6a71183d90fcc20cd6bf7588ecc7b46
+- Bugfix for respecting plugin signature when detecting controllers
+  - https://github.com/FluidTYPO3/flux/pull/1043
+- Bugfix for `foreignSelector` initial value
+  - https://github.com/FluidTYPO3/flux/pull/1037
+- `renderType` support as required by new FormEngine:
+  - https://github.com/FluidTYPO3/flux/commit/f0e74d313f740c280e8b79508acc885aebfb0358
+  - https://github.com/FluidTYPO3/flux/pull/1034
+
 7.3.0 - 2015-11-20
 ------------------
 

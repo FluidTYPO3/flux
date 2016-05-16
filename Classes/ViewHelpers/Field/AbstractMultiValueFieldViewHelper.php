@@ -29,7 +29,7 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
 		$this->registerArgument('maxItems', 'integer', 'Maxium allowed number of items to be selected', FALSE, 1);
 		$this->registerArgument('itemListStyle', 'string', 'Overrides the default list style when maxItems > 1', FALSE, NULL);
 		$this->registerArgument('selectedListStyle', 'string', 'Overrides the default selected list style when maxItems > 1 and renderMode is default', FALSE, NULL);
-		$this->registerArgument('renderMode', 'string', 'Alternative rendering mode - default is an HTML select field but you can also use fx "checkbox" - see TCA select field "renderMode" attribute', FALSE, NULL);
+		$this->registerArgument('renderMode', 'string', 'Alternative rendering mode - default is an HTML select field but you can also use fx "checkbox" - see TCA "select" field "renderType" attribute', FALSE, NULL);
 	}
 
 	/**
