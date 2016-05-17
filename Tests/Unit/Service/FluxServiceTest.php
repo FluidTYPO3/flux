@@ -339,4 +339,18 @@ class FluxServiceTest extends AbstractTestCase {
 		);
 	}
 
+	/**
+	 * @test
+	 */
+	public function testGetAllTypoScriptCache() {
+		$fluxService = $this->createFluxServiceInstance(array('getCurrentPageId'));
+
+		$configurationManager = $this->getMock('FluidTYPO3\Flux\Configuration\ConfigurationManager', array('getConfiguration'));
+		$fluxService->injectConfigurationManager($configurationManager);
+		$configurationManager->expects($this->once())->method('getConfiguration');
+
+		$this->assertNotNull($fluxService->getAllTypoScript());
+		$this->assertNotNull($fluxService->getAllTypoScript());
+	}
+
 }
