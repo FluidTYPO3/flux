@@ -108,7 +108,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface {
 	 * @return string
 	 */
 	protected function createShortcutIcon($row) {
-		$targetRecord = $this->getPageTitleAndPidFromContentUid(intval($row['records']));
+		$targetRecord = $this->getPageTitleAndPidFromContentUid(intval(substr($row['records'], 11)));
 		$title = LocalizationUtility::translate('reference', 'Flux', array(
 			$targetRecord['title']
 		));
