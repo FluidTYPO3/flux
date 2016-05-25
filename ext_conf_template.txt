@@ -1,0 +1,11 @@
+  # cat=basic/enable; type=options[0,1,2]; label=Debug Mode: Display debug information about every Flux template being rendered and every ConfigurationProvider being used. Value "0" (production) means debug messages are disabled and Exceptions may be suppressed. Value "1" (development) means every debug message is displayed. Value "2" (staging, testing) means only severe errors' messages are dislayed.
+debugMode = 0
+
+  # cat=basic/enable; type=boolean; label=Sheet compacting: If enabled, compacts Flux FlexForms which only have a single sheet into a ROOT-type form instead. If your site contains current elements do not enable this - however, the option is safe to enable for new sites.
+compact = 0
+
+  # cat=basic/enable; type=boolean; label=Allow list-editing of nested content: If enabled, Flux will allow nested content elements to be edited (and sorted) via the list module. Normally this toggle is OFF indicating that nested content elements have to be edited using the IRRE field in the Relations tab when editing the parent element. Switching it ON makes those elements appear in the list module but may cause unexpected behavior when sorting content elements.
+listNestedContent = 0
+
+  # cat=basic/enable; type=boolean; label=Error handling: If enabled, all Flux controllers are permitted to handle their own errors in ways that are far more flexible than traditional error catching. Enable with care - if your plugin, content or page template collection does not contain an Error.html template, your site may risk breaking with an extremely basic and not very informative error á la "Template not found for action foobar" but when enabled and combined with proper error templates you can customise pretty much any error which might happen anywhere when a Flux controller subclass is in play. Best turned off on development sites unless you are developing exactly error templates as it greatly limits debug output!
+handleErrors = 0
