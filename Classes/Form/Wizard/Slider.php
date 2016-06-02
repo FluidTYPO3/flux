@@ -11,7 +11,10 @@ namespace FluidTYPO3\Flux\Form\Wizard;
 use FluidTYPO3\Flux\Form\AbstractWizard;
 
 /**
- * Slider
+ * Slider wizard
+ *
+ * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
+ * for details about the behaviors that are controlled by properties.
  */
 class Slider extends AbstractWizard {
 

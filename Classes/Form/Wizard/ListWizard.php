@@ -11,7 +11,12 @@ namespace FluidTYPO3\Flux\Form\Wizard;
 use FluidTYPO3\Flux\Form\AbstractWizard;
 
 /**
- * ListWizard
+ * List wizard
+ *
+ * Note: named "ListWizard" due to restriction disallowing classes named "Wizard"
+ *
+ * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
+ * for details about the behaviors that are controlled by properties.
  */
 class ListWizard extends AbstractWizard {
 

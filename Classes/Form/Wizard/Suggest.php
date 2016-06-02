@@ -12,7 +12,10 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Suggest
+ * Suggest wizard
+ *
+ * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
+ * for details about the behaviors that are controlled by properties.
  */
 class Suggest extends AbstractWizard {
 

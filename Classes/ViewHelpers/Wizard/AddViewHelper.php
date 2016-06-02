@@ -13,6 +13,9 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Add
+ *
+ * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
+ * for details about the behaviors that are controlled by arguments.
  */
 class AddViewHelper extends AbstractWizardViewHelper {
 
