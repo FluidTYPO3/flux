@@ -33,6 +33,8 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 	protected $transform;
 
 	/**
+	 * Display condition - see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
+	 *
 	 * @var string
 	 */
 	protected $displayCondition = NULL;
