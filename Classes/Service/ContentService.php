@@ -83,6 +83,7 @@ class ContentService implements SingletonInterface {
 		$parentUid = NULL;
 		$relativeRecord = NULL;
 		$possibleColPos = NULL;
+		$doSetPositionOnL10nRecords = FALSE;
 		$nestedArguments = explode('-', $parameters[1]);
 		$numberOfNestedArguments = count($nestedArguments);
 		if (5 < $numberOfNestedArguments) {
@@ -99,6 +100,7 @@ class ContentService implements SingletonInterface {
 				// The $possibleColPos variable may or may not already be set but must be
 				// overridden regardless.
 				$possibleColPos = self::COLPOS_FLUXCONTENT;
+				$doSetPositionOnL10nRecords = true;
 			}
 		} elseif (5 === $numberOfNestedArguments) {
 			// Parameters are directly from TYPO3 and it almost certainly is a paste to page column.
@@ -110,6 +112,15 @@ class ContentService implements SingletonInterface {
 			// The most basic form of pasting: using the clickmenu to "paste after" sends only
 			// two parameters and the second parameter is always numeric-only.
 			list ($tablename, $relativeUid) = $parameters;
+
+			$relativeRecord = $this->loadRecordFromDatabase( abs( $relativeUid ) );
+			$hasFluxParent  = $relativeRecord['tx_flux_parent'] > 0 && $relativeRecord['tx_flux_column'] != '';
+			if ( $hasFluxParent ) {
+				$doSetPositionOnL10nRecords = TRUE;
+				$possibleArea               = $relativeRecord['tx_flux_column'];
+				$parentUid                  = $relativeRecord['tx_flux_parent'];
+			}
+
 		}
 
 		// Creating the copy mapping array. Initial processing of all records being pasted,
@@ -125,9 +136,73 @@ class ContentService implements SingletonInterface {
 			$possibleArea = $relativeRecord['tx_flux_column'];
 			$parentUid = (integer) $relativeRecord['tx_flux_parent'];
 		}
-		$this->applyMappingArray($mappingArray, $pid, $possibleColPos, $possibleArea, $parentUid, $tablename, $relativeUid,
-			$relativeRecord, $tceMain);
+		$this->applyMappingArray(
+			$mappingArray,
+			$pid,
+			$possibleColPos,
+			$possibleArea,
+			$parentUid,
+			$tablename,
+			$relativeUid,
+			$relativeRecord,
+			$tceMain
+		);
+
+		// $doSetPositionOnL10nRecords indicates that the tx_flux_parent,tx_flux_column,colPos and sorting must be set
+		// for the l10n-versions of the current record.
+		// Cases where this is needed are: (Copy and) Paste a localized record. Then the l10n-records need to be
+		// moved inside the same flux-column as the origin-language record.
+		if ( $doSetPositionOnL10nRecords ) {
+			$this->setFluidPositionOnL10nRecords(
+				abs((int)$mappingArray[ $row['uid'] ]['uid']) // origin record uid
+			);
+		}
+
 	}
+
+
+	/**
+	 * Sets the position (flux-parent, flux-column and colPos) to translation-records. This must for example be done
+	 * after a copying (copy&paste command) a content-element with translations.
+	 * 1)   get all content records ($l10nSiblingRecords) that are translations of this content ($l10nParentUid) by using "l18n_parent" column.
+	 * 2.1) skip 2.2 if flux-parent does not have a translation to the l10n-siblings language
+	 * 2.2) set their flux-parent, flux-column and colPos
+	 * 2.3) @todo: set/fix sorting. if pasted via paste-icon (not paste-after) the sorting of translations still is wrong.
+	 *
+	 * @param $l10nParentUid
+	 */
+
+	protected function setFluidPositionOnL10nRecords ($l10nParentUid) {
+		$this->assertIsValidContentUid( $l10nParentUid );
+		$l10nParentRecord = $this->loadRecordFromDatabase( $l10nParentUid );
+		$this->assertIsValidFluxChildContentRecord( $l10nParentRecord );
+		// 1)
+		$l10nSiblingRecords = (array) $this->workspacesAwareRecordService->get(
+			'tt_content',
+			'*',
+			"l18n_parent = '" . $l10nParentUid . "'" . BackendUtility::deleteClause( 'tt_content' )
+		);
+		foreach ( $l10nSiblingRecords as $l10nSiblingRecord ) {
+			// 2.1)
+			$l10nSiblingParentRecord = BackendUtility::getRecordLocalization(
+				'tt_content',
+				$l10nParentRecord['tx_flux_parent'],
+				$l10nSiblingRecord['sys_language_uid']
+			);
+			if ( !is_array( $l10nSiblingParentRecord ) ) {
+				// no flux parent for this language:
+				continue;
+			}
+			// 2.2)
+			$l10nSiblingParentRecord             = $l10nSiblingParentRecord[0];
+			$l10nSiblingRecord['tx_flux_parent'] = $l10nSiblingParentRecord['uid'];
+			$l10nSiblingRecord['tx_flux_column'] = $l10nParentRecord['tx_flux_column'];
+			$l10nSiblingRecord['colPos']         = self::COLPOS_FLUXCONTENT;
+			$this->updateRecordInDatabase( $l10nSiblingRecord );
+		}
+	}
+
+
 
 	/**
 	 * @param array $mappingArray
@@ -290,7 +365,12 @@ class ContentService implements SingletonInterface {
 	 * @param DataHandler $tceMain
 	 */
 	protected function initializeRecordByNewAndOldAndLanguageUids($row, $newUid, $oldUid, $newLanguageUid, $languageFieldName, DataHandler $tceMain) {
-		if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid) {
+
+		// no processing for elements outside a fluid content area
+		// if there is a paste action this is done in the content provider
+		$isl10nParentInsideFluidcontentArea = ($row['tx_flux_parent'] > 0);
+
+		if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid && $isl10nParentInsideFluidcontentArea) {
 			$oldRecord = $this->loadRecordFromDatabase($oldUid);
 			if ($oldRecord[$languageFieldName] !== $newLanguageUid && $oldRecord['pid'] === $row['pid']) {
 				// look for the translated version of the parent record indicated
@@ -387,11 +467,11 @@ class ContentService implements SingletonInterface {
 	public function fixPositionInLocalization($uid, $languageUid, &$defaultLanguageRecord, DataHandler $reference) {
 		$previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
 		$localizedRecord = BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
+		$sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
 		if (NULL === $previousLocalizedRecordUid) {
 			// moving to first position in tx_flux_column
 			$localizedRecord[0][$sortingRow] = $reference->getSortNumber('tt_content', 0, $defaultLanguageRecord['pid']);
 		} else {
-			$sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
 			$localizedRecord[0][$sortingRow] = $reference->resorting(
 				'tt_content',
 				$defaultLanguageRecord['pid'],
@@ -402,15 +482,16 @@ class ContentService implements SingletonInterface {
 		$this->updateRecordInDatabase($localizedRecord[0]);
 	}
 
+
 	/**
 	 * Returning uid of previous localized record, if any, for tables with a "sortby" column
 	 * Used when new localized records are created so that localized records are sorted in the same order as the default language records
-	 *
 	 * This is a port from DataHandler::getPreviousLocalizedRecordUid that respects tx_flux_parent and tx_flux_column!
 	 *
-	 * @param integer $uid Uid of default language record
-	 * @param integer $language Language of localization
-	 * @param TYPO3\CMS\Core\DataHandling\DataHandler $datahandler
+	 * @param integer     $uid      Uid of default language record
+	 * @param integer     $language Language of localization
+	 * @param DataHandler $reference
+	 *
 	 * @return integer uid of record after which the localized record should be inserted
 	 */
 	protected function getPreviousLocalizedRecordUid($uid, $language, DataHandler $reference) {
@@ -444,6 +525,30 @@ class ContentService implements SingletonInterface {
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
 		return $previousLocalizedRecordUid;
+	}
+
+	/**
+	 * @param array $fluxChildContentRecord
+	 */
+	private function assertIsValidFluxChildContentRecord ($fluxChildContentRecord) {
+		if ($fluxChildContentRecord['colPos'] != self::COLPOS_FLUXCONTENT) {
+			trigger_error( 'colPos needs to be a valid flux colpos', E_USER_ERROR );
+		}
+		if ( !is_string( $fluxChildContentRecord['tx_flux_column'] ) || empty( $fluxChildContentRecord['tx_flux_column'] ) ) {
+			trigger_error( 'tx_flux_column of record needs to be valid column id', E_USER_ERROR );
+		}
+		if ( abs( $fluxChildContentRecord['tx_flux_parent'] ) <= 0 ) {
+			trigger_error( 'tx_flux_parent of record needs to be a valid content uid', E_USER_ERROR );
+		}
+	}
+
+	/**
+	 * @param int $contentUid
+	 */
+	private function assertIsValidContentUid ($contentUid) {
+		if ( !is_int( $contentUid ) || abs( $contentUid ) <= 0 ) {
+			trigger_error( 'Parameter is not a valid tt_content uid', E_USER_ERROR );
+		}
 	}
 
 }
