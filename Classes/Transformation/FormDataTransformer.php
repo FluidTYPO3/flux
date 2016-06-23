@@ -74,6 +74,8 @@ class FormDataTransformer {
 			return floatval($value);
 		} elseif ('array' === $dataType) {
 			return explode(',', $value);
+		} elseif ('bool' === $dataType || 'boolean' === $dataType) {
+			return boolval($value);
 		} else {
 			return $this->getObjectOfType($dataType, $value);
 		}
