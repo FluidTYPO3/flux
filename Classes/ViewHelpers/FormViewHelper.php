@@ -38,22 +38,6 @@ class FormViewHelper extends AbstractFormViewHelper
             'named "flux.fluxFormId", in scope of extension rendering the Flux form.'
         );
         $this->registerArgument('description', 'string', 'Short description of the purpose/function of this form');
-        // @TODO: remove deprecated
-        $this->registerArgument(
-            'icon',
-            'string',
-            'DEPRECATED: Use `options="{icon: \'iconreference\'}"` or the `flux:form .option.icon` ViewHelper'
-        );
-        // @TODO remove deprecated
-        $this->registerArgument(
-            'mergeValues',
-            'boolean',
-            'DEPRECATED AND IGNORED. To cause value merging, simly prefix your field names with the table name, e.g. ' .
-            '`tt_content.header` will overwrite the "header" column in the record with the FlexForm field value ' .
-            'when saving the record if the record belongs in table `tt_content`.',
-            false,
-            false
-        );
         $this->registerArgument(
             'enabled',
             'boolean',
@@ -61,12 +45,6 @@ class FormViewHelper extends AbstractFormViewHelper
             'feature using the form.',
             false,
             true
-        );
-        // @TODO: remove deprecated
-        $this->registerArgument(
-            'wizardTab',
-            'string',
-            'DEPRECATED: Use `options="{group: \'GroupName\'}` or the `flux:form.option.group` ViewHelper'
         );
         $this->registerArgument(
             'compact',

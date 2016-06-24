@@ -111,17 +111,6 @@ class FormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canUseIconPropertyAndTransformToAbsolutePath()
-    {
-        $form = $this->getDummyFormFromTemplate();
-        $icon = 'EXT:flux/ext_icon.gif';
-        $form->setIcon($icon);
-        $this->assertSame(GeneralUtility::getFileAbsFileName($icon), $form->getIcon());
-    }
-
-    /**
-     * @test
-     */
     public function canUseDescriptionProperty()
     {
         $form = $this->getDummyFormFromTemplate();
