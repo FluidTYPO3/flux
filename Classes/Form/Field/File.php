@@ -14,179 +14,193 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * File
  */
-class File extends AbstractMultiValueFormField {
+class File extends AbstractMultiValueFormField
+{
 
-	/**
-	 * @var string
-	 */
-	protected $disallowed = '';
+    /**
+     * @var string
+     */
+    protected $disallowed = '';
 
-	/**
-	 * @var string
-	 */
-	protected $allowed = '';
+    /**
+     * @var string
+     */
+    protected $allowed = '';
 
-	/**
-	 * @var integer
-	 */
-	protected $maxSize;
+    /**
+     * @var integer
+     */
+    protected $maxSize;
 
-	/**
-	 * @var string
-	 */
-	protected $uploadFolder;
+    /**
+     * @var string
+     */
+    protected $uploadFolder;
 
-	/**
-	 * @var boolean
-	 */
-	protected $showThumbnails = FALSE;
+    /**
+     * @var boolean
+     */
+    protected $showThumbnails = false;
 
-	/**
-	 * @var boolean
-	 */
-	protected $useFalRelation = FALSE;
+    /**
+     * @var boolean
+     */
+    protected $useFalRelation = false;
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = $this->prepareConfiguration('group');
-		$configuration['disallowed'] = $this->getDisallowed();
-		$configuration['allowed'] = $this->getAllowed();
-		$configuration['max_size'] = $this->getMaxSize();
-		$configuration['uploadfolder'] = $this->getUploadFolder();
-		$configuration['show_thumbs'] = $this->getShowThumbnails();
-		$configuration['internal_type'] = 'file';
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = $this->prepareConfiguration('group');
+        $configuration['disallowed'] = $this->getDisallowed();
+        $configuration['allowed'] = $this->getAllowed();
+        $configuration['max_size'] = $this->getMaxSize();
+        $configuration['uploadfolder'] = $this->getUploadFolder();
+        $configuration['show_thumbs'] = $this->getShowThumbnails();
+        $configuration['internal_type'] = 'file';
 
-		if ($this->getUseFalRelation() === TRUE) {
-			$configuration['internal_type'] = 'db';
-			$configuration['allowed'] = 'sys_file';
-			$configuration['appearance'] = array(
-				'elementBrowserAllowed' => $this->getAllowed() ? $this->getAllowed() : '*',
-				'elementBrowserType' => 'file'
-			);
-		}
-		return $configuration;
-	}
+        if ($this->getUseFalRelation() === true) {
+            $configuration['internal_type'] = 'db';
+            $configuration['allowed'] = 'sys_file';
+            $configuration['appearance'] = [
+                'elementBrowserAllowed' => $this->getAllowed() ? $this->getAllowed() : '*',
+                'elementBrowserType' => 'file'
+            ];
+        }
+        return $configuration;
+    }
 
-	/**
-	 * Overrides parent method to ensure properly formatted
-	 * default values for files
-	 *
-	 * @param mixed $default
-	 * @return \FluidTYPO3\Flux\Form\FieldInterface
-	 */
-	public function setDefault($default) {
-		if (NULL !== $default) {
-			$files = array();
-			$filePaths = GeneralUtility::trimExplode(',', $default);
-			foreach ($filePaths as $path) {
-				if (FALSE === strpos($path, '|')) {
-					$files[] = $path . '|' . rawurlencode($path);
-				} else {
-					$files[] = $path;
-				}
-			}
-			$default = implode(',', $files);
-		}
-		$this->default = $default;
-		return $this;
-	}
+    /**
+     * Overrides parent method to ensure properly formatted
+     * default values for files
+     *
+     * @param mixed $default
+     * @return \FluidTYPO3\Flux\Form\FieldInterface
+     */
+    public function setDefault($default)
+    {
+        if (null !== $default) {
+            $files = [];
+            $filePaths = GeneralUtility::trimExplode(',', $default);
+            foreach ($filePaths as $path) {
+                if (false === strpos($path, '|')) {
+                    $files[] = $path . '|' . rawurlencode($path);
+                } else {
+                    $files[] = $path;
+                }
+            }
+            $default = implode(',', $files);
+        }
+        $this->default = $default;
+        return $this;
+    }
 
-	/**
-	 * @param string $allowed
-	 * @return File
-	 */
-	public function setAllowed($allowed) {
-		$this->allowed = $allowed;
-		return $this;
-	}
+    /**
+     * @param string $allowed
+     * @return File
+     */
+    public function setAllowed($allowed)
+    {
+        $this->allowed = $allowed;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getAllowed() {
-		return $this->allowed;
-	}
+    /**
+     * @return string
+     */
+    public function getAllowed()
+    {
+        return $this->allowed;
+    }
 
-	/**
-	 * @param string $disallowed
-	 * @return File
-	 */
-	public function setDisallowed($disallowed) {
-		$this->disallowed = $disallowed;
-		return $this;
-	}
+    /**
+     * @param string $disallowed
+     * @return File
+     */
+    public function setDisallowed($disallowed)
+    {
+        $this->disallowed = $disallowed;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getDisallowed() {
-		return $this->disallowed;
-	}
+    /**
+     * @return string
+     */
+    public function getDisallowed()
+    {
+        return $this->disallowed;
+    }
 
-	/**
-	 * @param integer $maxSize
-	 * @return File
-	 */
-	public function setMaxSize($maxSize) {
-		$this->maxSize = $maxSize;
-		return $this;
-	}
+    /**
+     * @param integer $maxSize
+     * @return File
+     */
+    public function setMaxSize($maxSize)
+    {
+        $this->maxSize = $maxSize;
+        return $this;
+    }
 
-	/**
-	 * @return integer
-	 */
-	public function getMaxSize() {
-		return $this->maxSize;
-	}
+    /**
+     * @return integer
+     */
+    public function getMaxSize()
+    {
+        return $this->maxSize;
+    }
 
-	/**
-	 * @param string $uploadFolder
-	 * @return File
-	 */
-	public function setUploadFolder($uploadFolder) {
-		$this->uploadFolder = $uploadFolder;
-		return $this;
-	}
+    /**
+     * @param string $uploadFolder
+     * @return File
+     */
+    public function setUploadFolder($uploadFolder)
+    {
+        $this->uploadFolder = $uploadFolder;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getUploadFolder() {
-		return $this->uploadFolder;
-	}
+    /**
+     * @return string
+     */
+    public function getUploadFolder()
+    {
+        return $this->uploadFolder;
+    }
 
-	/**
-	 * @param boolean $showThumbnails
-	 * @return File
-	 */
-	public function setShowThumbnails($showThumbnails) {
-		$this->showThumbnails = (boolean) $showThumbnails;
-		return $this;
-	}
+    /**
+     * @param boolean $showThumbnails
+     * @return File
+     */
+    public function setShowThumbnails($showThumbnails)
+    {
+        $this->showThumbnails = (boolean) $showThumbnails;
+        return $this;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public function getShowThumbnails() {
-		return (boolean) $this->showThumbnails;
-	}
+    /**
+     * @return boolean
+     */
+    public function getShowThumbnails()
+    {
+        return (boolean) $this->showThumbnails;
+    }
 
-	/**
-	 * @param boolean $useFalRelation
-	 * @return File
-	 */
-	public function setUseFalRelation($useFalRelation) {
-		$this->useFalRelation = $useFalRelation;
-		return $this;
-	}
+    /**
+     * @param boolean $useFalRelation
+     * @return File
+     */
+    public function setUseFalRelation($useFalRelation)
+    {
+        $this->useFalRelation = $useFalRelation;
+        return $this;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public function getUseFalRelation() {
-		return $this->useFalRelation;
-	}
-
+    /**
+     * @return boolean
+     */
+    public function getUseFalRelation()
+    {
+        return $this->useFalRelation;
+    }
 }

@@ -14,36 +14,39 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 /**
  * None
  */
-class None extends AbstractFormField implements FieldInterface {
+class None extends AbstractFormField implements FieldInterface
+{
 
-	/**
-	 * @var integer
-	 */
-	protected $size = 12;
+    /**
+     * @var integer
+     */
+    protected $size = 12;
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = $this->prepareConfiguration('none');
-		$configuration['size'] = $this->getSize();
-		return $configuration;
-	}
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = $this->prepareConfiguration('none');
+        $configuration['size'] = $this->getSize();
+        return $configuration;
+    }
 
-	/**
-	 * @param integer $size
-	 * @return None
-	 */
-	public function setSize($size) {
-		$this->size = $size;
-		return $this;
-	}
+    /**
+     * @param integer $size
+     * @return None
+     */
+    public function setSize($size)
+    {
+        $this->size = $size;
+        return $this;
+    }
 
-	/**
-	 * @return integer
-	 */
-	public function getSize() {
-		return $this->size;
-	}
-
+    /**
+     * @return integer
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
 }

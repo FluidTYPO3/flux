@@ -14,14 +14,15 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 /**
  * Passthrough
  */
-class Passthrough extends AbstractFormField implements FieldInterface {
+class Passthrough extends AbstractFormField implements FieldInterface
+{
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = $this->prepareConfiguration('passthrough');
-		return $configuration;
-	}
-
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = $this->prepareConfiguration('passthrough');
+        return $configuration;
+    }
 }

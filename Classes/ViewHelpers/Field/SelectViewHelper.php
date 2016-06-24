@@ -38,37 +38,69 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * ### Links
  *
- * * [TCA Reference: column type "select"](https://docs.typo3.org/typo3cms/TCAReference/stable/Reference/Columns/Select/)
+ * * [TCA Reference: type "select"](https://docs.typo3.org/typo3cms/TCAReference/stable/Reference/Columns/Select/)
  */
-class SelectViewHelper extends AbstractMultiValueFieldViewHelper {
+class SelectViewHelper extends AbstractMultiValueFieldViewHelper
+{
 
-	/**
-	 * Initialize
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('items', 'mixed', 'Items for the selector; array / CSV / Traversable / Query supported', TRUE);
-		$this->registerArgument('emptyOption', 'mixed', 'If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property\'s value (cast to string) as label.', FALSE, FALSE);
-		$this->registerArgument('translateCsvItems', 'boolean', 'If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined by normal Flux field name conventions');
-		$this->registerArgument('renderType', 'string', 'Rendering type as applies in FormEngine/TCA', FALSE, 'selectSingle');
-		$this->registerArgument('showIconTable', 'boolean', 'If TRUE shows the option icons as table beneath the select', FALSE, FALSE);
-	}
+    /**
+     * Initialize
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument(
+            'items',
+            'mixed',
+            'Items for the selector; array / CSV / Traversable / Query supported',
+            true
+        );
+        $this->registerArgument(
+            'emptyOption',
+            'mixed',
+            'If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this ' .
+            'property\'s value (cast to string) as label.',
+            false,
+            false
+        );
+        $this->registerArgument(
+            'translateCsvItems',
+            'boolean',
+            'If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using ' .
+            'convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined ' .
+            'by normal Flux field name conventions'
+        );
+        $this->registerArgument(
+            'renderType',
+            'string',
+            'Rendering type as applies in FormEngine/TCA',
+            false,
+            'selectSingle'
+        );
+        $this->registerArgument(
+            'showIconTable',
+            'boolean',
+            'If TRUE shows the option icons as table beneath the select',
+            false,
+            false
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return Select
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		/** @var Select $component */
-		$component = static::getPreparedComponent('Select', $renderingContext, $arguments);
-		$component->setItems($arguments['items']);
-		$component->setEmptyOption($arguments['emptyOption']);
-		$component->setTranslateCsvItems((boolean) $arguments['translateCsvItems']);
-		$component->setRenderType($arguments['renderType']);
-		$component->setShowIconTable($arguments['showIconTable']);
-		return $component;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return Select
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        /** @var Select $component */
+        $component = static::getPreparedComponent('Select', $renderingContext, $arguments);
+        $component->setItems($arguments['items']);
+        $component->setEmptyOption($arguments['emptyOption']);
+        $component->setTranslateCsvItems((boolean) $arguments['translateCsvItems']);
+        $component->setRenderType($arguments['renderType']);
+        $component->setShowIconTable($arguments['showIconTable']);
+        return $component;
+    }
 }

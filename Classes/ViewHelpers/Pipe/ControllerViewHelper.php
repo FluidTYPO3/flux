@@ -18,45 +18,59 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * Adds a ControllerPipe to the Form's Outlet.
  */
-class ControllerViewHelper extends AbstractPipeViewHelper {
+class ControllerViewHelper extends AbstractPipeViewHelper
+{
 
-	/**
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('action', 'string', 'Action to call on the controller, minus the "Action" suffix', TRUE);
-		$this->registerArgument('controller', 'string', 'Class name of controller to call. If empty, uses current controller');
-		$this->registerArgument('extensionName', 'string', 'Extension name of controller to call. If empty, uses current extension name');
-	}
+    /**
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument(
+            'action',
+            'string',
+            'Action to call on the controller, minus the "Action" suffix',
+            true
+        );
+        $this->registerArgument(
+            'controller',
+            'string',
+            'Class name of controller to call. If empty, uses current controller'
+        );
+        $this->registerArgument(
+            'extensionName',
+            'string',
+            'Extension name of controller to call. If empty, uses current extension name'
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @param \Closure $renderChildrenClosure
-	 * @return PipeInterface
-	 */
-	protected static function preparePipeInstance(
-		RenderingContextInterface $renderingContext,
-		array $arguments,
-		\Closure $renderChildrenClosure = NULL
-	) {
-		$extensionName = $arguments['extensionName'];
-		$controller = $arguments['controller'];
-		$controllerContext = $renderingContext->getControllerContext();
-		if (TRUE === empty($extensionName)) {
-			$extensionName = $controllerContext->getRequest()->getControllerExtensionName();
-		}
-		if (TRUE === empty($controller)) {
-			$controller = $controllerContext->getRequest()->getControllerObjectName();
-		}
-		/** @var ControllerPipe $pipe */
-		$pipe = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
-			->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\ControllerPipe');
-		$pipe->setAction($arguments['action']);
-		$pipe->setController($controller);
-		$pipe->setExtensionName($extensionName);
-		return $pipe;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @return PipeInterface
+     */
+    protected static function preparePipeInstance(
+        RenderingContextInterface $renderingContext,
+        array $arguments,
+        \Closure $renderChildrenClosure = null
+    ) {
+        $extensionName = $arguments['extensionName'];
+        $controller = $arguments['controller'];
+        $controllerContext = $renderingContext->getControllerContext();
+        if (true === empty($extensionName)) {
+            $extensionName = $controllerContext->getRequest()->getControllerExtensionName();
+        }
+        if (true === empty($controller)) {
+            $controller = $controllerContext->getRequest()->getControllerObjectName();
+        }
+        /** @var ControllerPipe $pipe */
+        $pipe = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+            ->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\ControllerPipe');
+        $pipe->setAction($arguments['action']);
+        $pipe->setController($controller);
+        $pipe->setExtensionName($extensionName);
+        return $pipe;
+    }
 }

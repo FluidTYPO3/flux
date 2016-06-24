@@ -16,105 +16,112 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by properties.
  */
-class Add extends AbstractWizard {
+class Add extends AbstractWizard
+{
 
-	/**
-	 * @var string
-	 */
-	protected $name = 'add';
+    /**
+     * @var string
+     */
+    protected $name = 'add';
 
-	/**
-	 * @var string
-	 */
-	protected $type = 'script';
+    /**
+     * @var string
+     */
+    protected $type = 'script';
 
-	/**
-	 * @var string
-	 */
-	protected $icon = 'add.gif';
+    /**
+     * @var string
+     */
+    protected $icon = 'add.gif';
 
-	/**
-	 * @var array
-	 */
-	protected $module = array(
-		'name' => 'wizard_add'
-	);
+    /**
+     * @var array
+     */
+    protected $module = [
+        'name' => 'wizard_add'
+    ];
 
-	/**
-	 * @var string
-	 */
-	protected $table;
+    /**
+     * @var string
+     */
+    protected $table;
 
-	/**
-	 * @var integer
-	 */
-	protected $storagePageUid;
+    /**
+     * @var integer
+     */
+    protected $storagePageUid;
 
-	/**
-	 * @var boolean
-	 */
-	protected $setValue = TRUE;
+    /**
+     * @var boolean
+     */
+    protected $setValue = true;
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = array(
-			'params' => array(
-				'table' => $this->getTable(),
-				'pid' => $this->getStoragePageUid(),
-				'setValue' => intval($this->getSetValue())
-			)
-		);
-		return $configuration;
-	}
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = [
+            'params' => [
+                'table' => $this->getTable(),
+                'pid' => $this->getStoragePageUid(),
+                'setValue' => intval($this->getSetValue())
+            ]
+        ];
+        return $configuration;
+    }
 
-	/**
-	 * @param boolean $setValue
-	 * @return Add
-	 */
-	public function setSetValue($setValue) {
-		$this->setValue = $setValue;
-		return $this;
-	}
+    /**
+     * @param boolean $setValue
+     * @return Add
+     */
+    public function setSetValue($setValue)
+    {
+        $this->setValue = $setValue;
+        return $this;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public function getSetValue() {
-		return $this->setValue;
-	}
+    /**
+     * @return boolean
+     */
+    public function getSetValue()
+    {
+        return $this->setValue;
+    }
 
-	/**
-	 * @param integer $storagePageUid
-	 * @return Add
-	 */
-	public function setStoragePageUid($storagePageUid) {
-		$this->storagePageUid = $storagePageUid;
-		return $this;
-	}
+    /**
+     * @param integer $storagePageUid
+     * @return Add
+     */
+    public function setStoragePageUid($storagePageUid)
+    {
+        $this->storagePageUid = $storagePageUid;
+        return $this;
+    }
 
-	/**
-	 * @return integer
-	 */
-	public function getStoragePageUid() {
-		return $this->storagePageUid;
-	}
+    /**
+     * @return integer
+     */
+    public function getStoragePageUid()
+    {
+        return $this->storagePageUid;
+    }
 
-	/**
-	 * @param string $table
-	 * @return Add
-	 */
-	public function setTable($table) {
-		$this->table = $table;
-		return $this;
-	}
+    /**
+     * @param string $table
+     * @return Add
+     */
+    public function setTable($table)
+    {
+        $this->table = $table;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getTable() {
-		return $this->table;
-	}
-
+    /**
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
 }

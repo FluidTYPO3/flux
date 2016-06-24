@@ -13,23 +13,25 @@ use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 /**
  * StandardPipeTest
  */
-class StandardPipeTest extends AbstractPipeTestCase {
+class StandardPipeTest extends AbstractPipeTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function canConductData() {
-		$instance = $this->createInstance();
-		$output = $instance->conduct($this->defaultData);
-		$this->assertEmpty($output);
-	}
+    /**
+     * @test
+     */
+    public function canConductData()
+    {
+        $instance = $this->createInstance();
+        $output = $instance->conduct($this->defaultData);
+        $this->assertEmpty($output);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canLoadSettings() {
-		$result = $this->createInstance()->loadSettings(array());
-		$this->assertEmpty($result);
-	}
-
+    /**
+     * @test
+     */
+    public function canLoadSettings()
+    {
+        $result = $this->createInstance()->loadSettings(array());
+        $this->assertEmpty($result);
+    }
 }

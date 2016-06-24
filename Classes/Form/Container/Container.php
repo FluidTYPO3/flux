@@ -16,26 +16,28 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 /**
  * Container
  */
-class Container extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface {
+class Container extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
+{
 
-	/**
-	 * @return array
-	 */
-	public function build() {
-		$structureArray = array(
-			'type' => 'array',
-			'section' => '1',
-			'title' => $this->getLabel(),
-			'el' => $this->buildChildren($this->children)
-		);
-		return $structureArray;
-	}
+    /**
+     * @return array
+     */
+    public function build()
+    {
+        $structureArray = [
+            'type' => 'array',
+            'section' => '1',
+            'title' => $this->getLabel(),
+            'el' => $this->buildChildren($this->children)
+        ];
+        return $structureArray;
+    }
 
-	/**
-	 * @return FieldInterface[]
-	 */
-	public function getFields() {
-		return (array) iterator_to_array($this->children);
-	}
-
+    /**
+     * @return FieldInterface[]
+     */
+    public function getFields()
+    {
+        return (array) iterator_to_array($this->children);
+    }
 }

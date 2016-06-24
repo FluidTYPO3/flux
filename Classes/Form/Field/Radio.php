@@ -17,15 +17,16 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  * @package Flux
  * @subpackage Form\Field
  */
-class Radio extends Select {
+class Radio extends Select
+{
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = parent::prepareConfiguration('radio');
-		$configuration['items'] = $this->getItems();
-		return $configuration;
-	}
-
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = parent::prepareConfiguration('radio');
+        $configuration['items'] = $this->getItems();
+        return $configuration;
+    }
 }

@@ -11,17 +11,17 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /**
  * CheckboxTest
  */
-class CheckboxTest extends AbstractFieldTest {
+class CheckboxTest extends AbstractFieldTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'enable' => TRUE,
-		'default' => 1,
-		'requestUpdate' => TRUE,
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'enable' => true,
+        'default' => 1,
+        'requestUpdate' => true,
+    );
 }

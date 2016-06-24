@@ -13,26 +13,26 @@ namespace FluidTYPO3\Flux\Outlet;
  *
  * Thrown by Outlets on errors.
  */
-class Exception extends \Exception {
+class Exception extends \Exception
+{
 
-	/**
-	 * @var string
-	 */
-	protected $message;
+    /**
+     * @var string
+     */
+    protected $message;
 
-	/**
-	 * @var integer
-	 */
-	protected $code;
+    /**
+     * @var integer
+     */
+    protected $code;
 
-	/**
-	 * @var string
-	 */
-	protected $file;
+    /**
+     * @var string
+     */
+    protected $file;
 
-	/**
-	 * @var integer
-	 */
-	protected $line;
-
+    /**
+     * @var integer
+     */
+    protected $line;
 }

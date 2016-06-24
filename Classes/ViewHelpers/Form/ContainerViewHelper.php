@@ -34,34 +34,54 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  *     Name: {settings.name.firstname} {settings.name.lastname}
  */
-class ContainerViewHelper extends AbstractFieldViewHelper {
+class ContainerViewHelper extends AbstractFieldViewHelper
+{
 
-	/**
-	 * Initialize arguments
-	 * @return void
-	 */
-	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', TRUE);
-		$this->registerArgument('label', 'string', 'Label for the attribute, can be LLL: value. Optional - if not specified, Flux ' .
-			'tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension ' .
-			'rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where ' .
-			'"foobar" is the name of the field.', FALSE, NULL);
-		$this->registerArgument('variables', 'array', 'Freestyle variables which become assigned to the resulting Component - ' .
-			'can then be read from that Component outside this Fluid template and in other templates using the Form object from this template', FALSE, array());
-		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
-	}
+    /**
+     * Initialize arguments
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', true);
+        $this->registerArgument(
+            'label',
+            'string',
+            'Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL ' .
+            'label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the ' .
+            'Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" ' .
+            'is the name of the field.'
+        );
+        $this->registerArgument(
+            'variables',
+            'array',
+            'Freestyle variables which become assigned to the resulting Component - can then be read from that ' .
+            'Component outside this Fluid template and in other templates using the Form object from this template',
+            false,
+            []
+        );
+        $this->registerArgument(
+            'extensionName',
+            'string',
+            'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
+            'is otherwise automatically detected from rendering context.'
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return Container
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		/** @var Container $container */
-		$container = static::getFormFromRenderingContext($renderingContext)->createContainer('Container', $arguments['name'], $arguments['label']);
-		$container->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
-		$container->setVariables($arguments['variables']);
-		return $container;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return Container
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        /** @var Container $container */
+        $container = static::getFormFromRenderingContext($renderingContext)
+            ->createContainer('Container', $arguments['name'], $arguments['label']);
+        $container->setExtensionName(
+            static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
+        );
+        $container->setVariables($arguments['variables']);
+        return $container;
+    }
 }

@@ -13,14 +13,15 @@ use FluidTYPO3\Flux\Form\AbstractInlineFormField;
 /**
  * Inline
  */
-class Inline extends AbstractInlineFormField {
+class Inline extends AbstractInlineFormField
+{
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = $this->prepareConfiguration('inline');
-		return $configuration;
-	}
-
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = $this->prepareConfiguration('inline');
+        return $configuration;
+    }
 }

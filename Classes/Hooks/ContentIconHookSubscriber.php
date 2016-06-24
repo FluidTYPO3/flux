@@ -13,125 +13,136 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 
 /**
  * Class ContentIconHookSubscriber
  */
-class ContentIconHookSubscriber {
+class ContentIconHookSubscriber
+{
 
-	/**
-	 * @var array
-	 */
-	protected $templates = array(
-		'iconWrapper' => '</div><span class="t3-icon t3-icon-empty t3-icon-empty-empty fluidcontent-icon">%s</span><div class="fluidcontent-hack">'
-	);
+    /**
+     * @var array
+     */
+    protected $templates = [
+        'iconWrapper' => '</div><span class="t3-icon t3-icon-empty t3-icon-empty-empty fluidcontent-icon">%s</span>
+            <div class="fluidcontent-hack">'
+    ];
 
-	/**
-	 * @var ObjectManagerInterface
-	 */
-	protected $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    protected $objectManager;
 
-	/**
-	 * @var FluxService
-	 */
-	protected $fluxService;
+    /**
+     * @var FluxService
+     */
+    protected $fluxService;
 
-	/**
-	 * @var VariableFrontend
-	 */
-	protected $cache;
+    /**
+     * @var VariableFrontend
+     */
+    protected $cache;
 
-	/**
-	 * @param ObjectManagerInterface $objectManager
-	 * @return void
-	 */
-	public function injectObjectManager(ObjectManagerInterface $objectManager) {
-		$this->objectManager = $objectManager;
-	}
+    /**
+     * @param ObjectManagerInterface $objectManager
+     * @return void
+     */
+    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    {
+        $this->objectManager = $objectManager;
+    }
 
-	/**
-	 * @param FluxService $fluxService
-	 * @return void
-	 */
-	public function injectFluxService(FluxService $fluxService) {
-		$this->fluxService = $fluxService;
-	}
+    /**
+     * @param FluxService $fluxService
+     * @return void
+     */
+    public function injectFluxService(FluxService $fluxService)
+    {
+        $this->fluxService = $fluxService;
+    }
 
-	/**
-	 * Construct
-	 */
-	public function __construct() {
-		$this->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
-		$this->injectFluxService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
-		$this->cache = $this->objectManager->get('TYPO3\\CMS\\Core\\Cache\\CacheManager', $this->objectManager)->getCache('flux');
-	}
+    /**
+     * Construct
+     */
+    public function __construct()
+    {
+        $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
+        $this->injectFluxService($this->objectManager->get(FluxService::class));
+        $this->cache = $this->objectManager->get(CacheManager::class, $this->objectManager)->getCache('flux');
+    }
 
-	/**
-	 * @param array $parameters
-	 * @param PageLayoutView|DatabaseRecordList $caller
-	 * @return string
-	 */
-	public function addSubIcon(array $parameters, $caller = NULL) {
-		$this->attachAssets();
-		list ($table, $uid, $record) = $parameters;
-		$icon = NULL;
-		if (NULL !== $caller) {
-			$record = NULL === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
-			$cacheIdentity = $table . $uid . sha1(serialize($record));
-			// filter 1: icon must not already be cached and both record and caller must be provided.
-			if (TRUE === $this->cache->has($cacheIdentity)) {
-				$icon = $this->cache->get($cacheIdentity);
-			} elseif (NULL !== $record) {
-				$field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
-				// filter 2: table must have one field defined as "flex" and record must include it.
-				if (NULL !== $field && TRUE === isset($record[$field])) {
-					// we check the cache here because at this point, the cache key is decidedly
-					// unique and we have not yet consulted the (potentially costly) Provider.
-					$provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
-					// filter 3: a Provider must be resolved for the record.
-					if (NULL !== $provider) {
-						$form = $provider->getForm((array) $record);
-						if (NULL !== $form) {
-							$icon = MiscellaneousUtility::getIconForTemplate($form);
-							if (NULL !== $icon) {
-								$label = trim($form->getLabel());
-								$icon = '<img width="16" height="16" src="' . $icon . '" alt="' . $label . '"
+    /**
+     * @param array $parameters
+     * @param PageLayoutView|DatabaseRecordList $caller
+     * @return string
+     */
+    public function addSubIcon(array $parameters, $caller = null)
+    {
+        $this->attachAssets();
+        list ($table, $uid, $record) = $parameters;
+        $icon = null;
+        if (null !== $caller) {
+            $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
+            $cacheIdentity = $table . $uid . sha1(serialize($record));
+            // filter 1: icon must not already be cached and both record and caller must be provided.
+            if (true === $this->cache->has($cacheIdentity)) {
+                $icon = $this->cache->get($cacheIdentity);
+            } elseif (null !== $record) {
+                $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
+                // filter 2: table must have one field defined as "flex" and record must include it.
+                if (null !== $field && true === isset($record[$field])) {
+                    // we check the cache here because at this point, the cache key is decidedly
+                    // unique and we have not yet consulted the (potentially costly) Provider.
+                    $provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
+                    // filter 3: a Provider must be resolved for the record.
+                    if (null !== $provider) {
+                        $form = $provider->getForm((array) $record);
+                        if (null !== $form) {
+                            $icon = MiscellaneousUtility::getIconForTemplate($form);
+                            if (null !== $icon) {
+                                $label = trim($form->getLabel());
+                                $icon = '<img width="16" height="16" src="' . $icon . '" alt="' . $label . '"
 									title="' . $label . '" class="" />';
-								$icon = sprintf($this->templates['iconWrapper'], $icon);
-							}
-						}
-					}
-				}
-				$this->cache->set($cacheIdentity, $icon);
-			}
-		}
-		return $icon;
-	}
+                                $icon = sprintf($this->templates['iconWrapper'], $icon);
+                            }
+                        }
+                    }
+                }
+                $this->cache->set($cacheIdentity, $icon);
+            }
+        }
+        return $icon;
+    }
 
-	/**
-	 * @param string $table
-	 * @param array $fields
-	 * @return string
-	 */
-	protected function detectFirstFlexTypeFieldInTableFromPossibilities($table, $fields) {
-		foreach ($fields as $fieldName) {
-			if ('flex' === $GLOBALS['TCA'][$table]['columns'][$fieldName]['config']['type']) {
-				return $fieldName;
-			}
-		}
-		return NULL;
-	}
+    /**
+     * @param string $table
+     * @param array $fields
+     * @return string
+     */
+    protected function detectFirstFlexTypeFieldInTableFromPossibilities($table, $fields)
+    {
+        foreach ($fields as $fieldName) {
+            if ('flex' === $GLOBALS['TCA'][$table]['columns'][$fieldName]['config']['type']) {
+                return $fieldName;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * @return void
-	 */
-	protected function attachAssets() {
-		$GLOBALS['TBE_STYLES']['stylesheet'] = $doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/icon.css';
-	}
-
+    /**
+     * @return void
+     */
+    protected function attachAssets()
+    {
+        $GLOBALS['TBE_STYLES']['stylesheet'] = $doc->backPath .
+            ExtensionManagementUtility::extRelPath('flux') .
+            'Resources/Public/css/icon.css';
+    }
 }

@@ -18,41 +18,52 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * Adds an EmailPipe to the Form's Outlet
  */
-class EmailViewHelper extends AbstractPipeViewHelper {
+class EmailViewHelper extends AbstractPipeViewHelper
+{
 
-	/**
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('body', 'string', 'Message body. Can also be inserted as tag content');
-		$this->registerArgument('subject', 'string', 'Message subject', TRUE);
-		$this->registerArgument('recipient', 'string', 'Message recipient address or name+address as "Name <add@ress>"', TRUE);
-		$this->registerArgument('sender', 'string', 'Message sender address or name+address as "Name <add@ress>"', TRUE);
-	}
+    /**
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('body', 'string', 'Message body. Can also be inserted as tag content');
+        $this->registerArgument('subject', 'string', 'Message subject', true);
+        $this->registerArgument(
+            'recipient',
+            'string',
+            'Message recipient address or name+address as "Name <add@ress>"',
+            true
+        );
+        $this->registerArgument(
+            'sender',
+            'string',
+            'Message sender address or name+address as "Name <add@ress>"',
+            true
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return PipeInterface
-	 */
-	protected static function preparePipeInstance(
-		RenderingContextInterface $renderingContext,
-		array $arguments,
-		\Closure $renderChildrenClosure = NULL
-	) {
-		$body = $arguments['body'];
-		if (TRUE === empty($body) && $renderChildrenClosure instanceof \Closure) {
-			$body = $renderChildrenClosure();
-		}
-		/** @var EmailPipe $pipe */
-		$pipe = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
-			->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\EmailPipe');
-		$pipe->setSubject($arguments['subject']);
-		$pipe->setSender($arguments['sender']);
-		$pipe->setRecipient($arguments['recipient']);
-		$pipe->setBody($body);
-		return $pipe;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return PipeInterface
+     */
+    protected static function preparePipeInstance(
+        RenderingContextInterface $renderingContext,
+        array $arguments,
+        \Closure $renderChildrenClosure = null
+    ) {
+        $body = $arguments['body'];
+        if (true === empty($body) && $renderChildrenClosure instanceof \Closure) {
+            $body = $renderChildrenClosure();
+        }
+        /** @var EmailPipe $pipe */
+        $pipe = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+            ->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\EmailPipe');
+        $pipe->setSubject($arguments['subject']);
+        $pipe->setSender($arguments['sender']);
+        $pipe->setRecipient($arguments['recipient']);
+        $pipe->setBody($body);
+        return $pipe;
+    }
 }

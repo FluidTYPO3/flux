@@ -25,169 +25,193 @@ use TYPO3\CMS\Fluid\View\TemplateView;
  * ExposedTemplateView. Allows access to registered template and viewhelper
  * variables from a Fluid template.
  */
-class ExposedTemplateView extends TemplateView implements ViewInterface {
+class ExposedTemplateView extends TemplateView implements ViewInterface
+{
 
-	/**
-	 * @var FluxService
-	 */
-	protected $configurationService;
+    /**
+     * @var FluxService
+     */
+    protected $configurationService;
 
-	/**
-	 * @var array
-	 */
-	protected $renderedSections = array();
+    /**
+     * @var array
+     */
+    protected $renderedSections = [];
 
-	/**
-	 * @param FluxService $configurationService
-	 * @return void
-	 */
-	public function injectConfigurationService(FluxService $configurationService) {
-		$this->configurationService = $configurationService;
-	}
+    /**
+     * @param FluxService $configurationService
+     * @return void
+     */
+    public function injectConfigurationService(FluxService $configurationService)
+    {
+        $this->configurationService = $configurationService;
+    }
 
-	/**
-	 * @param TemplatePaths $templatePaths
-	 * @return void
-	 */
-	public function setTemplatePaths(TemplatePaths $templatePaths) {
-		$this->setTemplateRootPaths($templatePaths->getTemplateRootPaths());
-		$this->setLayoutRootPaths($templatePaths->getLayoutRootPaths());
-		$this->setPartialRootPaths($templatePaths->getPartialRootPaths());
-	}
+    /**
+     * @param TemplatePaths $templatePaths
+     * @return void
+     */
+    public function setTemplatePaths(TemplatePaths $templatePaths)
+    {
+        $this->setTemplateRootPaths($templatePaths->getTemplateRootPaths());
+        $this->setLayoutRootPaths($templatePaths->getLayoutRootPaths());
+        $this->setPartialRootPaths($templatePaths->getPartialRootPaths());
+    }
 
-	/**
-	 * @param string $sectionName
-	 * @param string $formName
-	 * @return Form|NULL
-	 */
-	public function getForm($sectionName = 'Configuration', $formName = 'form') {
-		/** @var Form $form */
-		$form = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, $formName, $sectionName);
-		if (NULL !== $form && TRUE === isset($this->templatePathAndFilename)) {
-			$form->setOption(Form::OPTION_TEMPLATEFILE, $this->templatePathAndFilename);
-			$signature = ExtensionNamingUtility::getExtensionSignature($this->controllerContext->getRequest()->getControllerExtensionName());
-			$overrides = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_' . $signature . '.forms.' . $form->getName());
-			$form->modify($overrides);
-		}
-		return $form;
-	}
+    /**
+     * @param string $sectionName
+     * @param string $formName
+     * @return Form|NULL
+     */
+    public function getForm($sectionName = 'Configuration', $formName = 'form')
+    {
+        /** @var Form $form */
+        $form = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, $formName, $sectionName);
+        if (null !== $form && true === isset($this->templatePathAndFilename)) {
+            $form->setOption(Form::OPTION_TEMPLATEFILE, $this->templatePathAndFilename);
+            $signature = ExtensionNamingUtility::getExtensionSignature(
+                $this->controllerContext->getRequest()->getControllerExtensionName()
+            );
+            $overrides = (array) $this->configurationService->getTypoScriptByPath(
+                'plugin.tx_' . $signature . '.forms.' . $form->getName()
+            );
+            $form->modify($overrides);
+        }
+        return $form;
+    }
 
-	/**
-	 * @param string $sectionName
-	 * @param string $gridName
-	 * @return Grid
-	 */
-	public function getGrid($sectionName = 'Configuration', $gridName = 'grid') {
-		/** @var Grid[] $grids */
-		/** @var Grid $grid */
-		$grids = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, 'grids', $sectionName);
-		$grid = NULL;
-		if (TRUE === isset($grids[$gridName])) {
-			$grid = $grids[$gridName];
-		}
-		return $grid;
-	}
+    /**
+     * @param string $sectionName
+     * @param string $gridName
+     * @return Grid
+     */
+    public function getGrid($sectionName = 'Configuration', $gridName = 'grid')
+    {
+        /** @var Grid[] $grids */
+        /** @var Grid $grid */
+        $grids = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, 'grids', $sectionName);
+        $grid = null;
+        if (true === isset($grids[$gridName])) {
+            $grid = $grids[$gridName];
+        }
+        return $grid;
+    }
 
-	/**
-	 * Get a variable stored in the Fluid template
-	 * @param string $viewHelperClassName Class name of the ViewHelper which stored the variable
-	 * @param string $name Name of the variable which the ViewHelper stored
-	 * @param string $sectionName Optional name of a section in which the ViewHelper was called
-	 * @return mixed
-	 * @throws \RuntimeException
-	 */
-	protected function getStoredVariable($viewHelperClassName, $name, $sectionName = NULL) {
-		if (TRUE === isset($this->renderedSections[$sectionName])) {
-			return $this->renderedSections[$sectionName]->get($viewHelperClassName, $name);
-		}
-		if (FALSE === $this->controllerContext instanceof ControllerContext) {
-			throw new \RuntimeException('ExposedTemplateView->getStoredVariable requires a ControllerContext, none exists (getStoredVariable method)', 1343521593);
-		}
-		$this->baseRenderingContext->setControllerContext($this->controllerContext);
-		$this->setRenderingContext($this->baseRenderingContext);
-		if (isset($this->templateParser)) {
-			// Note: this is for compatibility with Standalone Fluid as base;
-			// this package no longer requires this initialisation when rendering sections.
-			$this->templateParser->setConfiguration($this->buildParserConfiguration());
-		}
-		$parsedTemplate = $this->getParsedTemplate();
-		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
-		$viewHelperVariableContainer = $this->baseRenderingContext->getViewHelperVariableContainer();
-		if (FALSE === empty($sectionName)) {
-			$this->renderStandaloneSection($sectionName, $this->baseRenderingContext->getTemplateVariableContainer()->getAll());
-		} else {
-			$this->render();
-		}
-		$this->stopRendering();
-		if (FALSE === $viewHelperVariableContainer->exists($viewHelperClassName, $name)) {
-			return NULL;
-		}
-		$this->renderedSections[$sectionName] = $viewHelperVariableContainer;
-		$stored = $viewHelperVariableContainer->get($viewHelperClassName, $name);
-		return $stored;
-	}
+    /**
+     * Get a variable stored in the Fluid template
+     * @param string $viewHelperClassName Class name of the ViewHelper which stored the variable
+     * @param string $name Name of the variable which the ViewHelper stored
+     * @param string $sectionName Optional name of a section in which the ViewHelper was called
+     * @return mixed
+     * @throws \RuntimeException
+     */
+    protected function getStoredVariable($viewHelperClassName, $name, $sectionName = null)
+    {
+        if (true === isset($this->renderedSections[$sectionName])) {
+            return $this->renderedSections[$sectionName]->get($viewHelperClassName, $name);
+        }
+        if (false === $this->controllerContext instanceof ControllerContext) {
+            throw new \RuntimeException(
+                'ExposedTemplateView->getStoredVariable requires ControllerContext (getStoredVariable method)',
+                1343521593
+            );
+        }
+        $this->baseRenderingContext->setControllerContext($this->controllerContext);
+        $this->setRenderingContext($this->baseRenderingContext);
+        if (isset($this->templateParser)) {
+            // Note: this is for compatibility with Standalone Fluid as base;
+            // this package no longer requires this initialisation when rendering sections.
+            $this->templateParser->setConfiguration($this->buildParserConfiguration());
+        }
+        $parsedTemplate = $this->getParsedTemplate();
+        $this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $parsedTemplate, $this->baseRenderingContext);
+        $viewHelperVariableContainer = $this->baseRenderingContext->getViewHelperVariableContainer();
+        if (false === empty($sectionName)) {
+            $this->renderStandaloneSection(
+                $sectionName,
+                $this->baseRenderingContext->getTemplateVariableContainer()->getAll()
+            );
+        } else {
+            $this->render();
+        }
+        $this->stopRendering();
+        if (false === $viewHelperVariableContainer->exists($viewHelperClassName, $name)) {
+            return null;
+        }
+        $this->renderedSections[$sectionName] = $viewHelperVariableContainer;
+        $stored = $viewHelperVariableContainer->get($viewHelperClassName, $name);
+        return $stored;
+    }
 
-	/**
-	 * @return ParsedTemplateInterface
-	 */
-	public function getParsedTemplate() {
-		if (isset($this->templateParser)) {
-			// Note: this is for compatibility with Standalone Fluid as base;
-			// this package no longer requires this initialisation when rendering sections.
-			$templateIdentifier = $this->getTemplateIdentifier();
-			if (TRUE === $this->templateCompiler->has($templateIdentifier)) {
-				$parsedTemplate = $this->templateCompiler->get($templateIdentifier);
-			} else {
-				$source = $this->getTemplateSource();
-				$parsedTemplate = $this->templateParser->parse($source);
-				if (TRUE === $parsedTemplate->isCompilable()) {
-					$this->templateCompiler->store($templateIdentifier, $parsedTemplate);
-				}
-			}
-		} else {
-			$parsedTemplate = $this->baseRenderingContext->getTemplateParser()->parse(
-				$this->baseRenderingContext->getTemplatePaths()->getTemplateSource()
-			);
-		}
-		return $parsedTemplate;
-	}
+    /**
+     * @return ParsedTemplateInterface
+     */
+    public function getParsedTemplate()
+    {
+        if (isset($this->templateParser)) {
+            // Note: this is for compatibility with Standalone Fluid as base;
+            // this package no longer requires this initialisation when rendering sections.
+            $templateIdentifier = $this->getTemplateIdentifier();
+            if (true === $this->templateCompiler->has($templateIdentifier)) {
+                $parsedTemplate = $this->templateCompiler->get($templateIdentifier);
+            } else {
+                $source = $this->getTemplateSource();
+                $parsedTemplate = $this->templateParser->parse($source);
+                if (true === $parsedTemplate->isCompilable()) {
+                    $this->templateCompiler->store($templateIdentifier, $parsedTemplate);
+                }
+            }
+        } else {
+            $parsedTemplate = $this->baseRenderingContext->getTemplateParser()->parse(
+                $this->baseRenderingContext->getTemplatePaths()->getTemplateSource()
+            );
+        }
+        return $parsedTemplate;
+    }
 
-	/**
-	 * Public-access wrapper for parent's method.
-	 *
-	 * @param string $actionName
-	 * @return string
-	 */
-	public function getTemplatePathAndFilename($actionName = NULL) {
-		return parent::getTemplatePathAndFilename($actionName);
-	}
+    /**
+     * Public-access wrapper for parent's method.
+     *
+     * @param string $actionName
+     * @return string
+     */
+    public function getTemplatePathAndFilename($actionName = null)
+    {
+        return parent::getTemplatePathAndFilename($actionName);
+    }
 
-	/**
-	 * Renders a section from the specified template w/o requring a call to the
-	 * main render() method - allows for cherry-picking sections to render.
-	 *
-	 * @param string $sectionName
-	 * @param array $variables
-	 * @param boolean $optional
-	 * @return string
-	 */
-	public function renderStandaloneSection($sectionName, $variables, $optional = TRUE) {
-		$content = NULL;
-		$this->baseRenderingContext->setControllerContext($this->controllerContext);
-		$this->startRendering(AbstractTemplateView::RENDERING_TEMPLATE, $this->getParsedTemplate(), $this->baseRenderingContext);
-		$content = parent::renderSection($sectionName, $variables, $optional);
-		$this->stopRendering();
-		return $content;
-	}
+    /**
+     * Renders a section from the specified template w/o requring a call to the
+     * main render() method - allows for cherry-picking sections to render.
+     *
+     * @param string $sectionName
+     * @param array $variables
+     * @param boolean $optional
+     * @return string
+     */
+    public function renderStandaloneSection($sectionName, $variables, $optional = true)
+    {
+        $content = null;
+        $this->baseRenderingContext->setControllerContext($this->controllerContext);
+        $this->startRendering(
+            AbstractTemplateView::RENDERING_TEMPLATE,
+            $this->getParsedTemplate(),
+            $this->baseRenderingContext
+        );
+        $content = parent::renderSection($sectionName, $variables, $optional);
+        $this->stopRendering();
+        return $content;
+    }
 
-	/**
-	 * Wrapper method to make the static call to GeneralUtility mockable in tests
-	 *
-	 * @param string $pathAndFilename
-	 *
-	 * @return string absolute pathAndFilename
-	 */
-	protected function resolveFileNamePath($pathAndFilename) {
-		return '/' !== $pathAndFilename{0} ? GeneralUtility::getFileAbsFileName($pathAndFilename) : $pathAndFilename;
-	}
+    /**
+     * Wrapper method to make the static call to GeneralUtility mockable in tests
+     *
+     * @param string $pathAndFilename
+     *
+     * @return string absolute pathAndFilename
+     */
+    protected function resolveFileNamePath($pathAndFilename)
+    {
+        return '/' !== $pathAndFilename{0} ? GeneralUtility::getFileAbsFileName($pathAndFilename) : $pathAndFilename;
+    }
 }

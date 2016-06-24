@@ -14,15 +14,16 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 /**
  * Multi-table-relation FlexForm field ViewHelper
  */
-class MultiRelationViewHelper extends AbstractRelationFieldViewHelper {
+class MultiRelationViewHelper extends AbstractRelationFieldViewHelper
+{
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return RelationFieldInterface
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		return static::getPreparedComponent('MultiRelation', $renderingContext, $arguments);
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return RelationFieldInterface
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        return static::getPreparedComponent('MultiRelation', $renderingContext, $arguments);
+    }
 }

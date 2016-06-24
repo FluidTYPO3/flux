@@ -16,16 +16,17 @@ use FluidTYPO3\Flux\Form\Field\Radio;
  * @package Flux
  * @subpackage ViewHelpers/Field
  */
-class RadioViewHelper extends SelectViewHelper {
+class RadioViewHelper extends SelectViewHelper
+{
 
-	/**
-	 * @return Checkbox
-	 */
-	public static function getComponent() {
-		/** @var Radio $component */
-		$component = $this->getPreparedComponent('Radio');
-		$component->setItems($this->arguments['items']);
-		return $component;
-	}
-
+    /**
+     * @return Checkbox
+     */
+    public static function getComponent()
+    {
+        /** @var Radio $component */
+        $component = $this->getPreparedComponent('Radio');
+        $component->setItems($this->arguments['items']);
+        return $component;
+    }
 }

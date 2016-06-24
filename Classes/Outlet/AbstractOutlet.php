@@ -17,127 +17,137 @@ use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
  * Defines one data outlet for a Fluid form. Each outlet
  * is updated with the information when the form is saved.
  */
-abstract class AbstractOutlet implements OutletInterface {
+abstract class AbstractOutlet implements OutletInterface
+{
 
-	/**
-	 * @var boolean
-	 */
-	protected $enabled = TRUE;
+    /**
+     * @var boolean
+     */
+    protected $enabled = true;
 
-	/**
-	 * @var mixed
-	 */
-	protected $data;
+    /**
+     * @var mixed
+     */
+    protected $data;
 
-	/**
-	 * @var PipeInterface[]
-	 */
-	protected $pipesIn = array();
+    /**
+     * @var PipeInterface[]
+     */
+    protected $pipesIn = [];
 
-	/**
-	 * @var PipeInterface[]
-	 */
-	protected $pipesOut = array();
+    /**
+     * @var PipeInterface[]
+     */
+    protected $pipesOut = [];
 
-	/**
-	 * @param boolean $enabled
-	 * @return OutletInterface
-	 */
-	public function setEnabled($enabled) {
-		$this->enabled = $enabled;
-		return $this;
-	}
+    /**
+     * @param boolean $enabled
+     * @return OutletInterface
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+        return $this;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public function getEnabled() {
-		return $this->enabled;
-	}
+    /**
+     * @return boolean
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
 
-	/**
-	 * @param PipeInterface[] $pipes
-	 * @return OutletInterface
-	 * @return void
-	 */
-	public function setPipesIn(array $pipes) {
-		$this->pipesIn = array();
-		foreach ($pipes as $pipe) {
-			$this->addPipeIn($pipe);
-		}
-		return $this;
-	}
+    /**
+     * @param PipeInterface[] $pipes
+     * @return OutletInterface
+     * @return void
+     */
+    public function setPipesIn(array $pipes)
+    {
+        $this->pipesIn = [];
+        foreach ($pipes as $pipe) {
+            $this->addPipeIn($pipe);
+        }
+        return $this;
+    }
 
-	/**
-	 * @return PipeInterface[]
-	 */
-	public function getPipesIn() {
-		return $this->pipesIn;
-	}
+    /**
+     * @return PipeInterface[]
+     */
+    public function getPipesIn()
+    {
+        return $this->pipesIn;
+    }
 
-	/**
-	 * @param PipeInterface[] $pipes
-	 * @return OutletInterface
-	 * @return void
-	 */
-	public function setPipesOut(array $pipes) {
-		$this->pipesOut = array();
-		foreach ($pipes as $pipe) {
-			$this->addPipeOut($pipe);
-		}
-		return $this;
-	}
+    /**
+     * @param PipeInterface[] $pipes
+     * @return OutletInterface
+     * @return void
+     */
+    public function setPipesOut(array $pipes)
+    {
+        $this->pipesOut = [];
+        foreach ($pipes as $pipe) {
+            $this->addPipeOut($pipe);
+        }
+        return $this;
+    }
 
-	/**
-	 * @return PipeInterface[]
-	 */
-	public function getPipesOut() {
-		return $this->pipesOut;
-	}
+    /**
+     * @return PipeInterface[]
+     */
+    public function getPipesOut()
+    {
+        return $this->pipesOut;
+    }
 
-	/**
-	 * @param PipeInterface $pipe
-	 * @return OutletInterface
-	 */
-	public function addPipeIn(PipeInterface $pipe) {
-		if (FALSE === in_array($pipe, $this->pipesIn)) {
-			array_push($this->pipesIn, $pipe);
-		}
-		return $this;
-	}
+    /**
+     * @param PipeInterface $pipe
+     * @return OutletInterface
+     */
+    public function addPipeIn(PipeInterface $pipe)
+    {
+        if (false === in_array($pipe, $this->pipesIn)) {
+            array_push($this->pipesIn, $pipe);
+        }
+        return $this;
+    }
 
-	/**
-	 * @param PipeInterface $pipe
-	 * @return OutletInterface
-	 */
-	public function addPipeOut(PipeInterface $pipe) {
-		if (FALSE === in_array($pipe, $this->pipesOut)) {
-			array_push($this->pipesOut, $pipe);
-		}
-		return $this;
-	}
+    /**
+     * @param PipeInterface $pipe
+     * @return OutletInterface
+     */
+    public function addPipeOut(PipeInterface $pipe)
+    {
+        if (false === in_array($pipe, $this->pipesOut)) {
+            array_push($this->pipesOut, $pipe);
+        }
+        return $this;
+    }
 
-	/**
-	 * @param mixed $data
-	 * @return OutletInterface
-	 */
-	public function fill($data) {
-		foreach ($this->pipesIn as $pipe) {
-			$data = $pipe->conduct($data);
-		}
-		$this->data = $data;
-		return $this;
-	}
+    /**
+     * @param mixed $data
+     * @return OutletInterface
+     */
+    public function fill($data)
+    {
+        foreach ($this->pipesIn as $pipe) {
+            $data = $pipe->conduct($data);
+        }
+        $this->data = $data;
+        return $this;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function produce() {
-		$data = $this->data;
-		foreach ($this->pipesOut as $pipe) {
-			$pipe->conduct($data);
-		}
-		return $data;
-	}
-
+    /**
+     * @return mixed
+     */
+    public function produce()
+    {
+        $data = $this->data;
+        foreach ($this->pipesOut as $pipe) {
+            $pipe->conduct($data);
+        }
+        return $data;
+    }
 }

@@ -11,13 +11,14 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /**
  * Inline-style FlexForm field ViewHelper
  */
-class InlineViewHelper extends AbstractInlineFieldViewHelper {
+class InlineViewHelper extends AbstractInlineFieldViewHelper
+{
 
-	/**
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-	}
-
+    /**
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+    }
 }

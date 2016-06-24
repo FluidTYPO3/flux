@@ -17,29 +17,42 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by arguments.
  */
-class SelectViewHelper extends AbstractWizardViewHelper {
+class SelectViewHelper extends AbstractWizardViewHelper
+{
 
-	/**
-	 * Initialize arguments
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('mode', 'string', 'Selection mode - substitution, append or prepend', FALSE, 'substitution');
-		$this->registerArgument('items', 'mixed', 'Comma-separated, comma-and-semicolon-separated or array list of possible values', TRUE);
-	}
+    /**
+     * Initialize arguments
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument(
+            'mode',
+            'string',
+            'Selection mode - substitution, append or prepend',
+            false,
+            'substitution'
+        );
+        $this->registerArgument(
+            'items',
+            'mixed',
+            'Comma-separated, comma-and-semicolon-separated or array list of possible values',
+            true
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return Select
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		/** @var Select $component */
-		$component = static::getPreparedComponent('Select', $renderingContext, $arguments);
-		$component->setMode($arguments['mode']);
-		$component->setItems($arguments['items']);
-		return $component;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return Select
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        /** @var Select $component */
+        $component = static::getPreparedComponent('Select', $renderingContext, $arguments);
+        $component->setMode($arguments['mode']);
+        $component->setItems($arguments['items']);
+        return $component;
+    }
 }

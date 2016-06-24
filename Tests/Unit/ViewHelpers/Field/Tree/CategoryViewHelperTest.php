@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\TreeViewHelperTest;
 /**
  * TreeViewHelperTest
  */
-class CategoryViewHelperTest extends TreeViewHelperTest {
+class CategoryViewHelperTest extends TreeViewHelperTest
+{
 
 }

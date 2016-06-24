@@ -13,19 +13,21 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 /**
  * Renders nothing in case no template is selected
  */
-class NoSelection {
+class NoSelection
+{
 
-	/**
-	 * @param array $parameters Not used
-	 * @param object $pObj Not used
-	 * @return string
-	 */
-	public function renderField(&$parameters, &$pObj) {
-		unset($pObj);
-		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-			return LocalizationUtility::translate('user.no_selection', 'Flux');
-		}
-		unset($parameters);
-		return NULL;
-	}
+    /**
+     * @param array $parameters Not used
+     * @param object $pObj Not used
+     * @return string
+     */
+    public function renderField(&$parameters, &$pObj)
+    {
+        unset($pObj);
+        if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
+            return LocalizationUtility::translate('user.no_selection', 'Flux');
+        }
+        unset($parameters);
+        return null;
+    }
 }

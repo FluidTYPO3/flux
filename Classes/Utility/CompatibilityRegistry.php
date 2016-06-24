@@ -1,5 +1,6 @@
 <?php
 namespace FluidTYPO3\Flux\Utility;
+
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -19,7 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * CompatibilityRegistry::register(
  *     'FluidTYPO3\\Flux\\Backend\\Preview',
- *     array(
+ *     [
  *         '6.2.0' => 'FluidTYPO3\\Flux\\Backend\\LegacyPreview',
  *         '7.1.0' => 'FluidTYPO3\\Flux\\Backend\\Preview'
  *     )
@@ -56,7 +57,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * CompatibilityRegistry::register(
  *     'MyExtension',
  *     '/mySpecialNameForTheStylesheet',
- *     array(
+ *     [
  *         '6.2.0' => 'EXT:my_extension/.../Styles.6.2.0.css',
  *         '7.2.0' => 'EXT:my_extension/.../Styles.7.2.0.css',
  *         '7.5.0' => 'EXT:my_extension/.../Styles.7.5.0.css'
@@ -85,10 +86,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * CompatibilityRegistry::registerFeatureFlags(
  *     'FluidTYPO3.Flux',
- *     array(
- *         '6.2.0' => array('form', 'nestedContent', 'provider', 'preview'),
- *         '7.5.0' => array('form', 'nestedContent', 'provider', 'preview', 'formengine'),
- *         '7.6.0' => array('form', 'provider', 'preview', 'formengine')
+ *     [
+ *         '6.2.0' => ['form', 'nestedContent', 'provider', 'preview'),
+ *         '7.5.0' => ['form', 'nestedContent', 'provider', 'preview', 'formengine'),
+ *         '7.6.0' => ['form', 'provider', 'preview', 'formengine')
  *     )
  * );
  *
@@ -110,8 +111,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * disable this deprecation reporting simply pass TRUE as
  * the last parameter for either of the register commands:
  *
- * CompatibilityRegistry::register('MyClass', array(...), TRUE);
- * CompatibilityRegistry::registerFeatureFlag('MyExt', array(...), TRUE);
+ * CompatibilityRegistry::register('MyClass', [...), TRUE);
+ * CompatibilityRegistry::registerFeatureFlag('MyExt', [...), TRUE);
  *
  * Doing so merely prevents the check for whether or not you
  * include a value or feature flag for a non-deprecated TYPO3.
@@ -134,9 +135,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * CompatibilityRegistry::registerFeatureFlags(
  *     'MyExt',
- *     array(
- *         '3.1.0' => array('falRelations'),
- *         '4.0.0' => array('falRelations', 'ajax')
+ *     [
+ *         '3.1.0' => ['falRelations'),
+ *         '4.0.0' => ['falRelations', 'ajax')
  *     ),
  *     TRUE
  *     // Note: *always* pass true here; the versions we record
@@ -153,151 +154,162 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * extension is installed in at least version 4.0.0 will
  * the "ajax" feature flag query be TRUE.
  */
-abstract class CompatibilityRegistry {
+abstract class CompatibilityRegistry
+{
 
-	const VERSION_DEFAULT = 'default';
+    const VERSION_DEFAULT = 'default';
 
-	/**
-	 * @var array
-	 */
-	protected static $registry = array();
+    /**
+     * @var array
+     */
+    protected static $registry = [];
 
-	/**
-	 * @var array
-	 */
-	protected static $featureFlags = array();
+    /**
+     * @var array
+     */
+    protected static $featureFlags = [];
 
-	/**
-	 * @var array
-	 */
-	protected static $cache = array();
+    /**
+     * @var array
+     */
+    protected static $cache = [];
 
-	/**
-	 * @param string $scope
-	 * @param array $versionedVariables
-	 * @param boolean $deprecationWarnings
-	 * @return void
-	 */
-	public static function register($scope, array $versionedVariables, $deprecationWarnings = FALSE) {
-		if (TRUE === $deprecationWarnings && NULL === static::resolveVersionedValue($versionedVariables, self::VERSION_DEFAULT)) {
-			GeneralUtility::deprecationLog(
-				sprintf(
-					'FluidTYPO3.Flux: CompatibilityRegistry was given versioned variables in scope %s but the versioned values ' .
-					'do not contain at least one value that applies on this version (%s)',
-					$scope,
-					static::resolveVersion(self::VERSION_DEFAULT)
-				)
-			);
-		}
-		static::$registry[$scope] = $versionedVariables;
-	}
+    /**
+     * @param string $scope
+     * @param array $versionedVariables
+     * @param boolean $deprecationWarnings
+     * @return void
+     */
+    public static function register($scope, array $versionedVariables, $deprecationWarnings = false)
+    {
+        if ($deprecationWarnings
+            && null === static::resolveVersionedValue($versionedVariables, self::VERSION_DEFAULT)) {
+            GeneralUtility::deprecationLog(
+                sprintf(
+                    'FluidTYPO3.Flux: CompatibilityRegistry was given versioned variables in scope %s but the ' .
+                    'versioned values do not contain at least one value that applies on this version of TYPO3 (%s)',
+                    $scope,
+                    static::resolveVersion(self::VERSION_DEFAULT)
+                )
+            );
+        }
+        static::$registry[$scope] = $versionedVariables;
+    }
 
-	/**
-	 * @param string $scope
-	 * @param array $versionedFeatureFlags
-	 * @param boolean $deprecationWarnings
-	 * @return void
-	 */
-	public static function registerFeatureFlags($scope, array $versionedFeatureFlags, $deprecationWarnings = FALSE) {
-		if (TRUE === $deprecationWarnings && NULL === static::resolveVersionedValue($versionedFeatureFlags, self::VERSION_DEFAULT)) {
-			GeneralUtility::deprecationLog(
-				sprintf(
-					'FluidTYPO3.Flux: CompatibilityRegistry was given versioned feature flags in scope %s but the versioned ' .
-					'values do not contain at least one set that applies on this version (%s)',
-					$scope,
-					static::resolveVersion(self::VERSION_DEFAULT)
-				)
-			);
-		}
-		static::$featureFlags[$scope] = $versionedFeatureFlags;
-	}
+    /**
+     * @param string $scope
+     * @param array $versionedFeatureFlags
+     * @param boolean $deprecationWarnings
+     * @return void
+     */
+    public static function registerFeatureFlags($scope, array $versionedFeatureFlags, $deprecationWarnings = false)
+    {
+        if ($deprecationWarnings
+            && null === static::resolveVersionedValue($versionedFeatureFlags, self::VERSION_DEFAULT)) {
+            GeneralUtility::deprecationLog(
+                sprintf(
+                    'FluidTYPO3.Flux: CompatibilityRegistry was given versioned feature flags in scope %s but the ' .
+                    'versioned values do not contain at least one set that applies on this version (%s)',
+                    $scope,
+                    static::resolveVersion(self::VERSION_DEFAULT)
+                )
+            );
+        }
+        static::$featureFlags[$scope] = $versionedFeatureFlags;
+    }
 
-	/**
-	 * @param string $scope
-	 * @param string|NULL $version
-	 * @param mixed $default
-	 * @return mixed
-	 */
-	public static function get($scope, $version = self::VERSION_DEFAULT, $default = NULL) {
-		$value = static::cache(static::$registry, 'registry', $scope, $version);
-		if (NULL === $value && $default !== $value) {
-			return $default;
-		}
-		return $value;
-	}
+    /**
+     * @param string $scope
+     * @param string|NULL $version
+     * @param mixed $default
+     * @return mixed
+     */
+    public static function get($scope, $version = self::VERSION_DEFAULT, $default = null)
+    {
+        $value = static::cache(static::$registry, 'registry', $scope, $version);
+        if (null === $value && $default !== $value) {
+            return $default;
+        }
+        return $value;
+    }
 
-	/**
-	 * @param string $scope
-	 * @param string $flag
-	 * @param string $version
-	 * @return boolean
-	 */
-	public static function hasFeatureFlag($scope, $flag, $version = self::VERSION_DEFAULT) {
-		return in_array($flag, static::getFeatureFlags($scope, $version));
-	}
+    /**
+     * @param string $scope
+     * @param string $flag
+     * @param string $version
+     * @return boolean
+     */
+    public static function hasFeatureFlag($scope, $flag, $version = self::VERSION_DEFAULT)
+    {
+        return in_array($flag, static::getFeatureFlags($scope, $version));
+    }
 
-	/**
-	 * @param string $scope
-	 * @param string $version
-	 * @return array
-	 */
-	public static function getFeatureFlags($scope, $version = self::VERSION_DEFAULT) {
-		return (array) static::cache(static::$featureFlags, 'featureFlags', $scope, $version);
-	}
+    /**
+     * @param string $scope
+     * @param string $version
+     * @return array
+     */
+    public static function getFeatureFlags($scope, $version = self::VERSION_DEFAULT)
+    {
+        return (array) static::cache(static::$featureFlags, 'featureFlags', $scope, $version);
+    }
 
-	/**
-	 * @param string $version
-	 * @return string
-	 */
-	protected static function resolveVersion($version) {
-		return (string) (self::VERSION_DEFAULT === $version ? TYPO3_version : $version);
-	}
+    /**
+     * @param string $version
+     * @return string
+     */
+    protected static function resolveVersion($version)
+    {
+        return (string) (self::VERSION_DEFAULT === $version ? TYPO3_version : $version);
+    }
 
-	/**
-	 * @param array $versionedValues
-	 * @param string $version
-	 * @return mixed
-	 */
-	protected static function resolveVersionedValue(array &$versionedValues, $version) {
-		$version = static::resolveVersion($version);
-		krsort($versionedValues);
-		foreach ($versionedValues as $valueVersion => $value) {
-			if (version_compare($version, $valueVersion, '>=')) {
-				return $value;
-			}
-		}
-		return NULL;
-	}
+    /**
+     * @param array $versionedValues
+     * @param string $version
+     * @return mixed
+     */
+    protected static function resolveVersionedValue(array &$versionedValues, $version)
+    {
+        $version = static::resolveVersion($version);
+        krsort($versionedValues);
+        foreach ($versionedValues as $valueVersion => $value) {
+            if (version_compare($version, $valueVersion, '>=')) {
+                return $value;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * @param array $source
-	 * @param string $prefix
-	 * @param string $scope
-	 * @param string $version
-	 * @return array|NULL
-	 */
-	protected static function cache(array &$source, $prefix, $scope, $version) {
-		$key = $prefix . '-' . $scope . '-' . $version;
-		if (TRUE === array_key_exists($key, static::$cache)) {
-			return static::$cache[$key];
-		} elseif (is_array($source[$scope])) {
-			$value = static::resolveVersionedValue($source[$scope], $version);
-			static::$cache[$key] = $value;
-			return $value;
-		} else {
-			GeneralUtility::sysLog(
-				sprintf(
-					'Possible misconfiguration or stale cached configuration: versioned attributes named "%s" requested from %s ' .
-					'but no such named attributes are registered. If flushing the system cache does not remove this message please ' .
-					'check your source code for possible typos in registration or usages of "%s".',
-					$scope,
-					static::class,
-					$scope
-				),
-				GeneralUtility::SYSLOG_SEVERITY_WARNING
-			);
-		}
-		return NULL;
-	}
-
+    /**
+     * @param array $source
+     * @param string $prefix
+     * @param string $scope
+     * @param string $version
+     * @return array|NULL
+     */
+    protected static function cache(array &$source, $prefix, $scope, $version)
+    {
+        $key = $prefix . '-' . $scope . '-' . $version;
+        if (true === array_key_exists($key, static::$cache)) {
+            return static::$cache[$key];
+        } elseif (is_array($source[$scope])) {
+            $value = static::resolveVersionedValue($source[$scope], $version);
+            static::$cache[$key] = $value;
+            return $value;
+        } else {
+            GeneralUtility::sysLog(
+                sprintf(
+                    'Possible misconfiguration or stale cached configuration: versioned attributes named "%s" ' .
+                    'requested from %s but no such named attributes are registered. If flushing the system cache ' .
+                    'does not remove this message please check your source code for possible typos in registration ' .
+                    'or usages of "%s".',
+                    $scope,
+                    static::class,
+                    $scope
+                ),
+                GeneralUtility::SYSLOG_SEVERITY_WARNING
+            );
+        }
+        return null;
+    }
 }

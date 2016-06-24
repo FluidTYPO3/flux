@@ -16,122 +16,135 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by properties.
  */
-class ColorPicker extends AbstractWizard {
+class ColorPicker extends AbstractWizard
+{
 
-	/**
-	 * @var string
-	 */
-	protected $name = 'color';
+    /**
+     * @var string
+     */
+    protected $name = 'color';
 
-	/**
-	 * @var string
-	 */
-	protected $type = 'script';
+    /**
+     * @var string
+     */
+    protected $type = 'script';
 
-	/**
-	 * @var string
-	 */
-	protected $icon = 'EXT:flux/Resources/Public/Icons/ColorWheel.png';
+    /**
+     * @var string
+     */
+    protected $icon = 'EXT:flux/Resources/Public/Icons/ColorWheel.png';
 
-	/**
-	 * @var array
-	 */
-	protected $module = array(
-		'name' => 'wizard_colorpicker',
-	);
+    /**
+     * @var array
+     */
+    protected $module = [
+        'name' => 'wizard_colorpicker',
+    ];
 
-	/**
-	 * @var string
-	 */
-	protected $dimensions = '20x20';
+    /**
+     * @var string
+     */
+    protected $dimensions = '20x20';
 
-	/**
-	 * @var integer
-	 */
-	protected $width = 450;
+    /**
+     * @var integer
+     */
+    protected $width = 450;
 
-	/**
-	 * @var integer
-	 */
-	protected $height = 720;
+    /**
+     * @var integer
+     */
+    protected $height = 720;
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = array(
-			'type' => 'colorbox',
-			'title' => $this->getLabel(),
-			'hideParent' => intval($this->getHideParent()),
-			'dim' => $this->getDimensions(),
-			'exampleImg' => $this->getIcon(),
-			'JSopenParams' => 'height=' . $this->getHeight() . ',width=' . $this->getWidth() . ',status=0,menubar=0,scrollbars=1'
-		);
-		return $configuration;
-	}
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = [
+            'type' => 'colorbox',
+            'title' => $this->getLabel(),
+            'hideParent' => intval($this->getHideParent()),
+            'dim' => $this->getDimensions(),
+            'exampleImg' => $this->getIcon(),
+            'JSopenParams' => sprintf(
+                'height=%d,width=%d,status=0,menubar=0,scrollbars=1',
+                $this->getHeight(),
+                $this->getWidth()
+            )
+        ];
+        return $configuration;
+    }
 
-	/**
-	 * @param string $dimensions
-	 * @return ColorPicker
-	 */
-	public function setDimensions($dimensions) {
-		$this->dimensions = $dimensions;
-		return $this;
-	}
+    /**
+     * @param string $dimensions
+     * @return ColorPicker
+     */
+    public function setDimensions($dimensions)
+    {
+        $this->dimensions = $dimensions;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getDimensions() {
-		return $this->dimensions;
-	}
+    /**
+     * @return string
+     */
+    public function getDimensions()
+    {
+        return $this->dimensions;
+    }
 
-	/**
-	 * @param integer $height
-	 * @return ColorPicker
-	 */
-	public function setHeight($height) {
-		$this->height = $height;
-		return $this;
-	}
+    /**
+     * @param integer $height
+     * @return ColorPicker
+     */
+    public function setHeight($height)
+    {
+        $this->height = $height;
+        return $this;
+    }
 
-	/**
-	 * @return integer
-	 */
-	public function getHeight() {
-		return $this->height;
-	}
+    /**
+     * @return integer
+     */
+    public function getHeight()
+    {
+        return $this->height;
+    }
 
-	/**
-	 * @param string $icon
-	 * @return ColorPicker
-	 */
-	public function setIcon($icon) {
-		$this->icon = $icon;
-		return $this;
-	}
+    /**
+     * @param string $icon
+     * @return ColorPicker
+     */
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getIcon() {
-		return $this->icon;
-	}
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
 
-	/**
-	 * @param integer $width
-	 * @return ColorPicker
-	 */
-	public function setWidth($width) {
-		$this->width = $width;
-		return $this;
-	}
+    /**
+     * @param integer $width
+     * @return ColorPicker
+     */
+    public function setWidth($width)
+    {
+        $this->width = $width;
+        return $this;
+    }
 
-	/**
-	 * @return integer
-	 */
-	public function getWidth() {
-		return $this->width;
-	}
-
+    /**
+     * @return integer
+     */
+    public function getWidth()
+    {
+        return $this->width;
+    }
 }

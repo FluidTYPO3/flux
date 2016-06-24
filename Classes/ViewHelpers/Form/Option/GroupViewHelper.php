@@ -14,18 +14,20 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 /**
  * Form group option ViewHelper
  */
-class GroupViewHelper extends OptionViewHelper {
+class GroupViewHelper extends OptionViewHelper
+{
 
-	/**
-	 * @var string
-	 */
-	public static $option = Form::OPTION_GROUP;
+    /**
+     * @var string
+     */
+    public static $option = Form::OPTION_GROUP;
 
-	/**
-	 * Initialize arguments
-	 * @return void
-	 */
-	public function initializeArguments() {
-		$this->registerArgument('value', 'string', 'Name of the group (fx: shown as label of WizardTab)', FALSE, NULL);
-	}
+    /**
+     * Initialize arguments
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument('value', 'string', 'Name of the group (fx: shown as label of WizardTab)');
+    }
 }

@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 /**
  * SortingViewHelperTest
  */
-class SortingViewHelperTest extends AbstractFormViewHelperTestCase {
+class SortingViewHelperTest extends AbstractFormViewHelperTestCase
+{
 
 }

@@ -30,10 +30,10 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * - And you can extend any of the two methods above with the "subActions"
  *   parameter, which allows you to extend the allowed actions whenever
  *   the specified combination of ControllerName + actionName is encountered.
- *   Example: 		actions="{ControllerName: 'action1,action2'}"
- *            		subActions="{ControllerName: {action1: 'action3,action4'}}"
+ *   Example:       actions="{ControllerName: 'action1,action2'}"
+ *                  subActions="{ControllerName: {action1: 'action3,action4'}}"
  *   Gives options: ControllerName->action1,action3,action4 with LLL values based on "action1"
- * 					ControllerName->action2 with LLL values based on "action2"
+ *                  ControllerName->action2 with LLL values based on "action2"
  *   By default Flux will create one option per action when reading
  *   Controller actions - using "subActions" it becomes possible to add
  *   additional actions to the list of allowed actions that the option
@@ -73,90 +73,162 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * field types at the time of writing this). Where the field is placed
  * is not important; the order and the sheet location don't matter.
  */
-class ControllerActionsViewHelper extends SelectViewHelper {
+class ControllerActionsViewHelper extends SelectViewHelper
+{
 
-	/**
-	 * Initialize
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->overrideArgument('items', 'mixed', 'Optional, full list of items to display - note: if used, this overrides any automatic option filling!', FALSE, NULL);
-		$this->overrideArgument('name', 'string', 'Name of the field', FALSE, 'switchableControllerActions');
-		$this->registerArgument('controllerExtensionName', 'string', 'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension');
-		$this->registerArgument('pluginName', 'string', 'Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName');
-		$this->registerArgument('controllerName', 'string', 'Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied', FALSE, NULL);
-		$this->registerArgument('actions', 'array', 'Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)', FALSE, array());
-		$this->registerArgument('excludeActions', 'array', 'Array of "ControllerName" => "csv,of,actions" which must be excluded', FALSE, array());
-		$this->registerArgument('prefixOnRequiredArguments', 'string', 'A short string denoting that the method takes arguments, ex * (which should then be explained in the documentation for your extension about how to setup your plugins', FALSE, '*');
-		$this->registerArgument('disableLocalLanguageLabels', 'boolean', 'If TRUE, disables LLL label usage and just uses the class comment or Controller->action syntax', FALSE, FALSE);
-		$this->registerArgument('localLanguageFileRelativePath', 'string', 'Relative (from extension $extensionName) path to locallang file containing the action method labels', FALSE, '/Resources/Private/Language/locallang_db.xml');
-		$this->registerArgument('subActions', 'array', "Array of sub actions {ControllerName: {list: 'update,delete'}, OtherController: {new: 'create'}} which are also allowed but not presented as options when the mapped action is selected (in example: if ControllerName->list is selected, ControllerName->update and ControllerName->delete are allowed - but cannot be selected).", FALSE, array());
-		$this->registerArgument('separator', 'string', 'Separator string (glue) for Controller->action values, defaults to "->". Empty values result in default being used.', FALSE, NULL);
-	}
+    /**
+     * Initialize
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->overrideArgument(
+            'items',
+            'mixed',
+            'Optional, full list of items to display - note: if used, this overrides any automatic option filling!'
+        );
+        $this->overrideArgument('name', 'string', 'Name of the field', false, 'switchableControllerActions');
+        $this->registerArgument(
+            'controllerExtensionName',
+            'string',
+            'Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based ' .
+            'extensions use dot, ex. Vendor.MyExtension'
+        );
+        $this->registerArgument(
+            'pluginName',
+            'string',
+            'Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName'
+        );
+        $this->registerArgument(
+            'controllerName',
+            'string',
+            'Optional extra limiting of actions displayed - if used, field only displays actions for this ' .
+            'controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied'
+        );
+        $this->registerArgument(
+            'actions',
+            'array',
+            'Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of ' .
+            'an ExtensionName and PluginName (will use the one specified in your current plugin automatically)',
+            false,
+            []
+        );
+        $this->registerArgument(
+            'excludeActions',
+            'array',
+            'Array of "ControllerName" => "csv,of,actions" which must be excluded',
+            false,
+            []
+        );
+        $this->registerArgument(
+            'prefixOnRequiredArguments',
+            'string',
+            'A short string denoting that the method takes arguments, ex * (which should then be explained in the ' .
+            'documentation for your extension about how to setup your plugins',
+            false,
+            '*'
+        );
+        $this->registerArgument(
+            'disableLocalLanguageLabels',
+            'boolean',
+            'If TRUE, disables LLL label usage and just uses the class comment or Controller->action syntax',
+            false,
+            false
+        );
+        $this->registerArgument(
+            'localLanguageFileRelativePath',
+            'string',
+            'Relative (from extension $extensionName) path to locallang file containing the action method labels',
+            false,
+            '/Resources/Private/Language/locallang_db.xml'
+        );
+        $this->registerArgument(
+            'subActions',
+            'array',
+            "Array of sub actions {ControllerName: {list: 'update,delete'}, OtherController: {new: 'create'}} which ' .
+            'are also allowed but not presented as options when the mapped action is selected (in example: if ' .
+            'ControllerName->list is selected, ControllerName->update and ControllerName->delete are allowed - but ' .
+            'cannot be selected).",
+            false,
+            []
+        );
+        $this->registerArgument(
+            'separator',
+            'string',
+            'Separator string (glue) for Controller->action values, defaults to "->". Empty values result in ' .
+            'default being used.'
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return ControllerActions
-	 * @throws \RuntimeException
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		$extensionName = $arguments['controllerExtensionName'];
-		$pluginName = $arguments['pluginName'];
-		$actions = $arguments['actions'];
-		$controllerName = $arguments['controllerName'];
-		$separator = $arguments['separator'];
-		$controllerContext = $renderingContext->getControllerContext();
-		if (TRUE === $actions instanceof \Traversable) {
-			$actions = iterator_to_array($actions);
-		}
-		if (NULL !== $controllerContext) {
-			if (TRUE === empty($extensionName)) {
-				$request = $controllerContext->getRequest();
-				$extensionName = static::getFullExtensionNameFromRequest($request);
-			}
-			if (TRUE === empty($pluginName)) {
-				$pluginName = $controllerContext->getRequest()->getPluginName();
-			}
-		}
-		if (TRUE === empty($extensionName) && TRUE === empty($pluginName) && 1 > count($actions)) {
-			throw new \RuntimeException('Either "actions", or both "extensionName" and "pluginName" must be used on ' .
-				'flux:field.controllerActions. None were found and none were detected from the ControllerContext Request.', 1346514748);
-		}
-		/** @var ControllerActions $component */
-		$component = static::getPreparedComponent('ControllerActions', $renderingContext, $arguments);
-		$component->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
-		$component->setItems($arguments['items']);
-		$component->setControllerExtensionName($extensionName);
-		$component->setPluginName($pluginName);
-		$component->setControllerName($controllerName);
-		$component->setActions($actions);
-		$component->setExcludeActions($arguments['excludeActions']);
-		$component->setPrefixOnRequiredArguments($arguments['prefixOnRequiredArguments']);
-		$component->setDisableLocalLanguageLabels($arguments['disableLocalLanguageLabels']);
-		$component->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
-		$component->setSubActions($arguments['subActions']);
-		if (FALSE === empty($separator)) {
-			$component->setSeparator($separator);
-		}
-		return $component;
-	}
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return ControllerActions
+     * @throws \RuntimeException
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        $extensionName = $arguments['controllerExtensionName'];
+        $pluginName = $arguments['pluginName'];
+        $actions = $arguments['actions'];
+        $controllerName = $arguments['controllerName'];
+        $separator = $arguments['separator'];
+        $controllerContext = $renderingContext->getControllerContext();
+        if (true === $actions instanceof \Traversable) {
+            $actions = iterator_to_array($actions);
+        }
+        if (null !== $controllerContext) {
+            if (true === empty($extensionName)) {
+                $request = $controllerContext->getRequest();
+                $extensionName = static::getFullExtensionNameFromRequest($request);
+            }
+            if (true === empty($pluginName)) {
+                $pluginName = $controllerContext->getRequest()->getPluginName();
+            }
+        }
+        if (true === empty($extensionName) && true === empty($pluginName) && 1 > count($actions)) {
+            throw new \RuntimeException(
+                'Either "actions", or both "extensionName" and "pluginName" must be used on ' .
+                'flux:field.controllerActions. None were found and none were detected from the Request.',
+                1346514748
+            );
+        }
+        /** @var ControllerActions $component */
+        $component = static::getPreparedComponent('ControllerActions', $renderingContext, $arguments);
+        $component->setExtensionName(
+            static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
+        );
+        $component->setItems($arguments['items']);
+        $component->setControllerExtensionName($extensionName);
+        $component->setPluginName($pluginName);
+        $component->setControllerName($controllerName);
+        $component->setActions($actions);
+        $component->setExcludeActions($arguments['excludeActions']);
+        $component->setPrefixOnRequiredArguments($arguments['prefixOnRequiredArguments']);
+        $component->setDisableLocalLanguageLabels($arguments['disableLocalLanguageLabels']);
+        $component->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
+        $component->setSubActions($arguments['subActions']);
+        if (false === empty($separator)) {
+            $component->setSeparator($separator);
+        }
+        return $component;
+    }
 
-	/**
-	 * @param Request $request
-	 * @return string
-	 */
-	protected static function getFullExtensionNameFromRequest(Request $request) {
-		$vendorName = NULL;
-		if (TRUE === method_exists($request, 'getControllerVendorName')) {
-			$vendorName = $request->getControllerVendorName();
-		}
-		$extensionName = $request->getControllerExtensionName();
-		if (NULL !== $vendorName) {
-			$extensionName = $vendorName . '.' . $extensionName;
-		}
-		return $extensionName;
-	}
-
+    /**
+     * @param Request $request
+     * @return string
+     */
+    protected static function getFullExtensionNameFromRequest(Request $request)
+    {
+        $vendorName = null;
+        if (true === method_exists($request, 'getControllerVendorName')) {
+            $vendorName = $request->getControllerVendorName();
+        }
+        $extensionName = $request->getControllerExtensionName();
+        if (null !== $vendorName) {
+            $extensionName = $vendorName . '.' . $extensionName;
+        }
+        return $extensionName;
+    }
 }

@@ -13,16 +13,17 @@ use FluidTYPO3\Flux\Form\AbstractRelationFormField;
 /**
  * MultiRelation
  */
-class MultiRelation extends AbstractRelationFormField {
+class MultiRelation extends AbstractRelationFormField
+{
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = $this->prepareConfiguration('group');
-		$configuration['internal_type'] = 'db';
-		$configuration['allowed'] = $this->getTable();
-		return $configuration;
-	}
-
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = $this->prepareConfiguration('group');
+        $configuration['internal_type'] = 'db';
+        $configuration['allowed'] = $this->getTable();
+        return $configuration;
+    }
 }

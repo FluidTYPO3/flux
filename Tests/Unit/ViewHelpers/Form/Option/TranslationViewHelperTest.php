@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 /**
  * TranslationViewHelperTest
  */
-class TranslationViewHelperTest extends AbstractFormViewHelperTestCase {
+class TranslationViewHelperTest extends AbstractFormViewHelperTestCase
+{
 
 }

@@ -13,26 +13,28 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 /**
  * VariableViewHelperTest
  */
-class VariableViewHelperTest extends AbstractViewHelperTestCase {
+class VariableViewHelperTest extends AbstractViewHelperTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function canFetchTemplateVariable() {
-		$arguments = array('name' => 'foobar');
-		$variables = array('foobar' => 'Hello world!');
-		$output = $this->executeViewHelper($arguments, $variables);
-		$this->assertSame($output, $variables['foobar']);
-	}
+    /**
+     * @test
+     */
+    public function canFetchTemplateVariable()
+    {
+        $arguments = array('name' => 'foobar');
+        $variables = array('foobar' => 'Hello world!');
+        $output = $this->executeViewHelper($arguments, $variables);
+        $this->assertSame($output, $variables['foobar']);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canFetchNestedTemplateVariable() {
-		$arguments = array('name' => 'nested.nested');
-		$variables = array('nested' => array('nested' => 'Hello again world!'));
-		$output = $this->executeViewHelper($arguments, $variables);
-		$this->assertSame($output, $variables['nested']['nested']);
-	}
-
+    /**
+     * @test
+     */
+    public function canFetchNestedTemplateVariable()
+    {
+        $arguments = array('name' => 'nested.nested');
+        $variables = array('nested' => array('nested' => 'Hello again world!'));
+        $output = $this->executeViewHelper($arguments, $variables);
+        $this->assertSame($output, $variables['nested']['nested']);
+    }
 }

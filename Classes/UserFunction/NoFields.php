@@ -13,15 +13,17 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 /**
  * Renders nothing in case no fields are defined, label is used for feedback
  */
-class NoFields {
+class NoFields
+{
 
-	/**
-	 * @param array $parameters Not used
-	 * @param object $pObj Not used
-	 * @return string
-	 */
-	public function renderField(&$parameters, &$pObj) {
-		unset($pObj, $parameters);
-		return LocalizationUtility::translate('user.no_fields', 'Flux');
-	}
+    /**
+     * @param array $parameters Not used
+     * @param object $pObj Not used
+     * @return string
+     */
+    public function renderField(&$parameters, &$pObj)
+    {
+        unset($pObj, $parameters);
+        return LocalizationUtility::translate('user.no_fields', 'Flux');
+    }
 }

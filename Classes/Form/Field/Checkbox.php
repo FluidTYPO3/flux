@@ -13,14 +13,15 @@ use FluidTYPO3\Flux\Form\AbstractFormField;
 /**
  * Checkbox
  */
-class Checkbox extends AbstractFormField {
+class Checkbox extends AbstractFormField
+{
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$fieldConfiguration = $this->prepareConfiguration('check');
-		return $fieldConfiguration;
-	}
-
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $fieldConfiguration = $this->prepareConfiguration('check');
+        return $fieldConfiguration;
+    }
 }

@@ -11,16 +11,16 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /**
  * TreeTest
  */
-class TreeTest extends AbstractFieldTest {
+class TreeTest extends AbstractFieldTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'table' => 'pages',
-		'parentField' => 'pid',
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'table' => 'pages',
+        'parentField' => 'pid',
+    );
 }

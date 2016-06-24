@@ -16,35 +16,37 @@ use TYPO3\CMS\Extbase\Mvc\Web\Request;
 /**
  * Class ViewContextTest
  */
-class ViewContextTest extends BaseTestCase {
+class ViewContextTest extends BaseTestCase
+{
 
-	/**
-	 * @dataProvider getGetterAndSetterTestValues
-	 * @param string $property
-	 * @param mixed $value
-	 */
-	public function testGetterAndSetter($property, $value) {
-		$getter = 'get' . ucfirst($property);
-		$setter = 'set' . ucfirst($property);
-		$instance = new ViewContext();
-		$instance->$setter($value);
-		$this->assertEquals($value, $instance->$getter());
-	}
+    /**
+     * @dataProvider getGetterAndSetterTestValues
+     * @param string $property
+     * @param mixed $value
+     */
+    public function testGetterAndSetter($property, $value)
+    {
+        $getter = 'get' . ucfirst($property);
+        $setter = 'set' . ucfirst($property);
+        $instance = new ViewContext();
+        $instance->$setter($value);
+        $this->assertEquals($value, $instance->$getter());
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getGetterAndSetterTestValues() {
-		return array(
-			array('sectionName', 'Configuration'),
-			array('packageName', 'Package'),
-			array('variables', array('foo' => 'bar')),
-			array('templatePaths', new TemplatePaths('Flux')),
-			array('controllerName', 'Controller'),
-			array('templatePathAndFilename', 'filename'),
-			array('format', 'xml'),
-			array('request', new Request()),
-		);
-	}
-
+    /**
+     * @return array
+     */
+    public function getGetterAndSetterTestValues()
+    {
+        return array(
+            array('sectionName', 'Configuration'),
+            array('packageName', 'Package'),
+            array('variables', array('foo' => 'bar')),
+            array('templatePaths', new TemplatePaths('Flux')),
+            array('controllerName', 'Controller'),
+            array('templatePathAndFilename', 'filename'),
+            array('format', 'xml'),
+            array('request', new Request()),
+        );
+    }
 }

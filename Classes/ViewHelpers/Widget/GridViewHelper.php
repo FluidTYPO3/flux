@@ -19,47 +19,48 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
  * DEPRECATED
  * Grid Widget for rendering a grid in previews of BE elements
  */
-class GridViewHelper extends AbstractViewHelper implements CompilableInterface {
+class GridViewHelper extends AbstractViewHelper implements CompilableInterface
+{
 
-	/**
-	 * @return string
-	 */
-	public function render() {
-		GeneralUtility::logDeprecatedFunction();
-		return '';
-	}
+    /**
+     * @return string
+     */
+    public function render()
+    {
+        GeneralUtility::logDeprecatedFunction();
+        return '';
+    }
 
-	/**
-	 * @param array $arguments
-	 * @param \Closure $renderChildrenClosure
-	 * @param RenderingContextInterface $renderingContext
-	 * @return string
-	 */
-	static public function renderStatic(
-		array $arguments,
-		\Closure $renderChildrenClosure,
-		RenderingContextInterface $renderingContext
-	) {
-		GeneralUtility::logDeprecatedFunction();
-		return '';
-	}
+    /**
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param RenderingContextInterface $renderingContext
+     * @return string
+     */
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ) {
+        GeneralUtility::logDeprecatedFunction();
+        return '';
+    }
 
-	/**
-	 * @param string $argumentsVariableName
-	 * @param string $renderChildrenClosureVariableName
-	 * @param string $initializationPhpCode
-	 * @param AbstractNode $syntaxTreeNode
-	 * @param TemplateCompiler $templateCompiler
-	 * @return NULL
-	 */
-	public function compile(
-		$argumentsVariableName,
-		$renderChildrenClosureVariableName,
-		&$initializationPhpCode,
-		AbstractNode $syntaxTreeNode,
-		TemplateCompiler $templateCompiler
-	) {
-		return 'NULL';
-	}
-
+    /**
+     * @param string $argumentsVariableName
+     * @param string $renderChildrenClosureVariableName
+     * @param string $initializationPhpCode
+     * @param AbstractNode $syntaxTreeNode
+     * @param TemplateCompiler $templateCompiler
+     * @return NULL
+     */
+    public function compile(
+        $argumentsVariableName,
+        $renderChildrenClosureVariableName,
+        &$initializationPhpCode,
+        AbstractNode $syntaxTreeNode,
+        TemplateCompiler $templateCompiler
+    ) {
+        return 'NULL';
+    }
 }

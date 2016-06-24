@@ -22,128 +22,137 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  *
  * Passes data through a controller action
  */
-class ControllerPipe extends AbstractPipe implements PipeInterface {
+class ControllerPipe extends AbstractPipe implements PipeInterface
+{
 
-	/**
-	 * @var ObjectManagerInterface
-	 */
-	protected $objectManager;
+    /**
+     * @var ObjectManagerInterface
+     */
+    protected $objectManager;
 
-	/**
-	 * @var string
-	 */
-	protected $controller;
+    /**
+     * @var string
+     */
+    protected $controller;
 
-	/**
-	 * @var string
-	 */
-	protected $action;
+    /**
+     * @var string
+     */
+    protected $action;
 
-	/**
-	 * @var string
-	 */
-	protected $extensionName;
+    /**
+     * @var string
+     */
+    protected $extensionName;
 
-	/**
-	 * @param ObjectManagerInterface $objectManager
-	 * @return void
-	 */
-	public function injectObjectManager(ObjectManagerInterface $objectManager) {
-		$this->objectManager = $objectManager;
-	}
+    /**
+     * @param ObjectManagerInterface $objectManager
+     * @return void
+     */
+    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    {
+        $this->objectManager = $objectManager;
+    }
 
-	/**
-	 * @return FieldInterface[]
-	 */
-	public function getFormFields() {
-		$fields = parent::getFormFields();
-		$extensionNames = array_keys((array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']);
-		$extensionNames = array_combine($extensionNames, $extensionNames);
-		$fields['action'] = Input::create(array('type' => 'Input'));
-		$fields['action']->setName('action');
-		$fields['action']->setValidate('trim,required');
-		$fields['controller'] = Input::create(array('type' => 'Input'));
-		$fields['controller']->setName('controller');
-		$fields['controller']->setValidate('trim,required');
-		/** @var Select $selectField */
-		$selectField = Select::create(array('type' => 'Select'));
-		$selectField->setName('extensionName');
-		$selectField->setItems($extensionNames);
-		$fields['extensionName'] = $selectField;
-		return $fields;
-	}
+    /**
+     * @return FieldInterface[]
+     */
+    public function getFormFields()
+    {
+        $fields = parent::getFormFields();
+        $extensionNames = array_keys((array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']);
+        $extensionNames = array_combine($extensionNames, $extensionNames);
+        $fields['action'] = Input::create(['type' => 'Input']);
+        $fields['action']->setName('action');
+        $fields['action']->setValidate('trim,required');
+        $fields['controller'] = Input::create(['type' => 'Input']);
+        $fields['controller']->setName('controller');
+        $fields['controller']->setValidate('trim,required');
+        /** @var Select $selectField */
+        $selectField = Select::create(['type' => 'Select']);
+        $selectField->setName('extensionName');
+        $selectField->setItems($extensionNames);
+        $fields['extensionName'] = $selectField;
+        return $fields;
+    }
 
-	/**
-	 * @param string $controller
-	 * @return ControllerPipe
-	 */
-	public function setController($controller) {
-		$this->controller = $controller;
-		return $this;
-	}
+    /**
+     * @param string $controller
+     * @return ControllerPipe
+     */
+    public function setController($controller)
+    {
+        $this->controller = $controller;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getController() {
-		return $this->controller;
-	}
+    /**
+     * @return string
+     */
+    public function getController()
+    {
+        return $this->controller;
+    }
 
-	/**
-	 * @param string $action
-	 * @return ControllerPipe
-	 */
-	public function setAction($action) {
-		$this->action = $action;
-		return $this;
-	}
+    /**
+     * @param string $action
+     * @return ControllerPipe
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getAction() {
-		return $this->action;
-	}
+    /**
+     * @return string
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
 
-	/**
-	 * @param string $extensionName
-	 * @return ControllerPipe
-	 */
-	public function setExtensionName($extensionName) {
-		$this->extensionName = $extensionName;
-		return $this;
-	}
+    /**
+     * @param string $extensionName
+     * @return ControllerPipe
+     */
+    public function setExtensionName($extensionName)
+    {
+        $this->extensionName = $extensionName;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getExtensionName() {
-		return $this->extensionName;
-	}
+    /**
+     * @return string
+     */
+    public function getExtensionName()
+    {
+        return $this->extensionName;
+    }
 
-	/**
-	 * @param array $data
-	 * @return mixed
-	 */
-	public function conduct($data) {
- 		$extensionName = $this->getExtensionName();
-		/** @var $request Request */
-		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
-		$request->setControllerName($this->getController());
-		$request->setControllerActionName($this->getAction());
-		list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
-		$request->setControllerExtensionName($extensionName);
-		if (NULL !== $vendorName) {
-			$request->setControllerVendorName($vendorName);
-		}
+    /**
+     * @param array $data
+     * @return mixed
+     */
+    public function conduct($data)
+    {
+        $extensionName = $this->getExtensionName();
+        /** @var $request Request */
+        $request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
+        $request->setControllerName($this->getController());
+        $request->setControllerActionName($this->getAction());
+        list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
+        $request->setControllerExtensionName($extensionName);
+        if (null !== $vendorName) {
+            $request->setControllerVendorName($vendorName);
+        }
 
-		$request->setArguments($data);
-		/** @var $response Response */
-		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
-		/** @var $dispatcher Dispatcher */
-		$dispatcher = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Dispatcher');
-		$dispatcher->dispatch($request, $response);
-		return $response->getContent();
-	}
-
+        $request->setArguments($data);
+        /** @var $response Response */
+        $response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
+        /** @var $dispatcher Dispatcher */
+        $dispatcher = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Dispatcher');
+        $dispatcher->dispatch($request, $response);
+        return $response->getContent();
+    }
 }

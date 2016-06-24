@@ -13,13 +13,14 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 /**
  * GridViewHelperTest
  */
-class GridViewHelperTest extends AbstractViewHelperTestCase {
+class GridViewHelperTest extends AbstractViewHelperTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function returnsEmptyContent() {
-		$this->assertEmpty($this->executeViewHelper());
-	}
-
+    /**
+     * @test
+     */
+    public function returnsEmptyContent()
+    {
+        $this->assertEmpty($this->executeViewHelper());
+    }
 }

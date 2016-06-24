@@ -13,22 +13,27 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 /**
  * VersionUtility
  */
-class VersionUtility {
+class VersionUtility
+{
 
-	/**
-	 * @param string $extensionKey
-	 * @param integer $majorVersion
-	 * @param integer $minorVersion
-	 * @param integer $bugfixVersion
-	 * @return boolean
-	 */
-	public static function assertExtensionVersionIsAtLeastVersion($extensionKey, $majorVersion, $minorVersion = 0, $bugfixVersion = 0) {
-		if (FALSE === ExtensionManagementUtility::isLoaded($extensionKey)) {
-			return FALSE;
-		}
-		$extensionVersion = ExtensionManagementUtility::getExtensionVersion($extensionKey);
-		list ($major, $minor, $bugfix) = explode('.', $extensionVersion);
-		return ($majorVersion <= $major && $minorVersion <= $minor && $bugfixVersion <= $bugfix);
-	}
-
+    /**
+     * @param string $extensionKey
+     * @param integer $majorVersion
+     * @param integer $minorVersion
+     * @param integer $bugfixVersion
+     * @return boolean
+     */
+    public static function assertExtensionVersionIsAtLeastVersion(
+        $extensionKey,
+        $majorVersion,
+        $minorVersion = 0,
+        $bugfixVersion = 0
+    ) {
+        if (false === ExtensionManagementUtility::isLoaded($extensionKey)) {
+            return false;
+        }
+        $extensionVersion = ExtensionManagementUtility::getExtensionVersion($extensionKey);
+        list ($major, $minor, $bugfix) = explode('.', $extensionVersion);
+        return ($majorVersion <= $major && $minorVersion <= $minor && $bugfixVersion <= $bugfix);
+    }
 }

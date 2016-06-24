@@ -15,21 +15,25 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * Renders all child content of a record based on area.
  */
-class RenderViewHelper extends GetViewHelper {
-	/**
-	 * Default implementation for use in compiled templates
-	 *
-	 * @param array $arguments
-	 * @param \Closure $renderChildrenClosure
-	 * @param RenderingContextInterface $renderingContext
-	 * @return mixed
-	 */
-	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-		$content = parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
-		if (TRUE === is_array($content)) {
-			return implode(LF, $content);
-		}
-		return $content;
-	}
-
+class RenderViewHelper extends GetViewHelper
+{
+    /**
+     * Default implementation for use in compiled templates
+     *
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param RenderingContextInterface $renderingContext
+     * @return mixed
+     */
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ) {
+        $content = parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
+        if (true === is_array($content)) {
+            return implode(LF, $content);
+        }
+        return $content;
+    }
 }

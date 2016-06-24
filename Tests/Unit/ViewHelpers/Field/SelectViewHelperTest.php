@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase
 /**
  * SelectViewHelperTest
  */
-class SelectViewHelperTest extends AbstractFieldViewHelperTestCase {
+class SelectViewHelperTest extends AbstractFieldViewHelperTestCase
+{
 
 }

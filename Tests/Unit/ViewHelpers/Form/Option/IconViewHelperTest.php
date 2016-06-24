@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 /**
  * IconViewHelperTest
  */
-class IconViewHelperTest extends AbstractFormViewHelperTestCase {
+class IconViewHelperTest extends AbstractFormViewHelperTestCase
+{
 
 }

@@ -11,18 +11,18 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 /**
  * ColorPickerTest
  */
-class ColorPickerTest extends AbstractWizardTest {
+class ColorPickerTest extends AbstractWizardTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'hideParent' => FALSE,
-		'dimensions' => '40x40',
-		'width' => 100,
-		'height' => 100
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'hideParent' => false,
+        'dimensions' => '40x40',
+        'width' => 100,
+        'height' => 100
+    );
 }

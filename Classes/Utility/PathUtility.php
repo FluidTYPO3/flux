@@ -14,37 +14,39 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * PathUtility
  */
-class PathUtility {
+class PathUtility
+{
 
-	/**
-	 * @var array
-	 */
-	private static $knownPathNames = array(
-		TemplatePaths::CONFIG_TEMPLATEROOTPATHS,
-		TemplatePaths::CONFIG_LAYOUTROOTPATHS,
-		TemplatePaths::CONFIG_PARTIALROOTPATHS
-	);
+    /**
+     * @var array
+     */
+    private static $knownPathNames = [
+        TemplatePaths::CONFIG_TEMPLATEROOTPATHS,
+        TemplatePaths::CONFIG_LAYOUTROOTPATHS,
+        TemplatePaths::CONFIG_PARTIALROOTPATHS
+    ];
 
-	/**
-	 * Translates an array of paths or single path into absolute paths/path
-	 *
-	 * @param mixed $path
-	 * @return mixed
-	 */
-	public static function translatePath($path) {
-		if (is_array($path) == FALSE) {
-			$path = (0 === strpos($path, '/') ? $path : GeneralUtility::getFileAbsFileName($path));
-			if (is_dir($path) && substr($path, -1) !== '/') {
-				$path = $path . '/';
-			}
-			$path = GeneralUtility::fixWindowsFilePath($path);
-		} else {
-			foreach ($path as $key => $subPath) {
-				if (TRUE === in_array($key, self::$knownPathNames)) {
-					$path[$key] = self::translatePath($subPath);
-				}
-			}
-		}
-		return $path;
-	}
+    /**
+     * Translates an array of paths or single path into absolute paths/path
+     *
+     * @param mixed $path
+     * @return mixed
+     */
+    public static function translatePath($path)
+    {
+        if (is_array($path) == false) {
+            $path = (0 === strpos($path, '/') ? $path : GeneralUtility::getFileAbsFileName($path));
+            if (is_dir($path) && substr($path, -1) !== '/') {
+                $path = $path . '/';
+            }
+            $path = GeneralUtility::fixWindowsFilePath($path);
+        } else {
+            foreach ($path as $key => $subPath) {
+                if (true === in_array($key, self::$knownPathNames)) {
+                    $path[$key] = self::translatePath($subPath);
+                }
+            }
+        }
+        return $path;
+    }
 }

@@ -11,17 +11,17 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 /**
  * SliderTest
  */
-class SliderTest extends AbstractWizardTest {
+class SliderTest extends AbstractWizardTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'hideParent' => FALSE,
-		'step' => 10,
-		'width' => 100
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'hideParent' => false,
+        'step' => 10,
+        'width' => 100
+    );
 }

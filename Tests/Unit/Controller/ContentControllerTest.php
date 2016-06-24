@@ -20,28 +20,30 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 /**
  * ContentControllerTest
  */
-class ContentControllerTest extends AbstractFluxControllerTestCase {
+class ContentControllerTest extends AbstractFluxControllerTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function canRegisterCustomControllerForContent() {
-		$this->performDummyRegistration();
-	}
+    /**
+     * @test
+     */
+    public function canRegisterCustomControllerForContent()
+    {
+        $this->performDummyRegistration();
+    }
 
-	/**
-	 * @return AbstractFluxController
-	 */
-	protected function createAndTestDummyControllerInstance() {
-		$record = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
-		$record['tx_fed_fcefile'] = 'Flux:Default.html';
-		$this->performDummyRegistration();
-		$controllerClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
-		/** @var AbstractFluxController $instance */
-		$instance = $this->objectManager->get($controllerClassName);
-		ObjectAccess::setProperty($instance, 'extensionName', 'Flux', TRUE);
-		return $instance;
-	}
-
+    /**
+     * @return AbstractFluxController
+     */
+    protected function createAndTestDummyControllerInstance()
+    {
+        $record = Records::$contentRecordWithoutParentAndWithoutChildren;
+        $record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+        $record['tx_fed_fcefile'] = 'Flux:Default.html';
+        $this->performDummyRegistration();
+        $controllerClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
+        /** @var AbstractFluxController $instance */
+        $instance = $this->objectManager->get($controllerClassName);
+        ObjectAccess::setProperty($instance, 'extensionName', 'Flux', true);
+        return $instance;
+    }
 }

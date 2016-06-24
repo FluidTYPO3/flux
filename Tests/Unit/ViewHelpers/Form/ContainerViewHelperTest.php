@@ -13,18 +13,19 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 /**
  * ContainerViewHelperTest
  */
-class ContainerViewHelperTest extends AbstractViewHelperTestCase {
+class ContainerViewHelperTest extends AbstractViewHelperTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function canExecuteViewHelper() {
-		$arguments = array(
-			'name' => 'test',
-			'label' => 'Test container'
-		);
-		$result = $this->executeViewHelper($arguments);
-		$this->assertEmpty(trim($result));
-	}
-
+    /**
+     * @test
+     */
+    public function canExecuteViewHelper()
+    {
+        $arguments = array(
+            'name' => 'test',
+            'label' => 'Test container'
+        );
+        $result = $this->executeViewHelper($arguments);
+        $this->assertEmpty(trim($result));
+    }
 }

@@ -13,19 +13,30 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
  * Form translation option ViewHelper
+ *
+ * @deprecated Will be removed in 8.0 - no alternative exists in TYPO3
  */
-class TranslationViewHelper extends OptionViewHelper {
+class TranslationViewHelper extends OptionViewHelper
+{
 
-	/**
-	 * @var string
-	 */
-	public static $option = Form::OPTION_TRANSLATION;
+    /**
+     * @var string
+     */
+    public static $option = Form::OPTION_TRANSLATION;
 
-	/**
-	 * Initialize arguments
-	 * @return void
-	 */
-	public function initializeArguments() {
-		$this->registerArgument('value', 'string', 'Translation mode for Form (valid values: disabled, separate or inherit). See TYPO3 documentation for reference.', FALSE, 'disabled');
-	}
+    /**
+     * Initialize arguments
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument(
+            'value',
+            'string',
+            'Translation mode for Form (valid values: disabled, separate or inherit). See TYPO3 documentation ' .
+            'for reference.',
+            false,
+            'disabled'
+        );
+    }
 }

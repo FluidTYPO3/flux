@@ -14,6 +14,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * Accepts POST array form data and uses a Flux Form
  * to perform pre-saving steps (validation, transformation etc).
  */
-class StandardPipe extends AbstractPipe implements PipeInterface {
+class StandardPipe extends AbstractPipe implements PipeInterface
+{
 
 }

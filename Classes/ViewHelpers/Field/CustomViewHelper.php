@@ -15,57 +15,72 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 /**
  * Custom FlexForm field ViewHelper
  */
-class CustomViewHelper extends UserFuncViewHelper {
+class CustomViewHelper extends UserFuncViewHelper
+{
 
-	const DEFAULT_USERFUNCTION = 'EXT:flux/Classes/UserFunction/HtmlOutput.php:\FluidTYPO3\Flux\UserFunction\HtmlOutput->renderField';
+    const DEFAULT_USERFUNCTION = 'FluidTYPO3\\Flux\\UserFunction\\HtmlOutput->renderField';
 
-	/**
-	 * Initialize
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->overrideArgument('userFunc', 'string', 'User function to render the Closure built by this ViewHelper', FALSE, self::DEFAULT_USERFUNCTION);
-	}
+    /**
+     * Initialize
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->overrideArgument(
+            'userFunc',
+            'string',
+            'User function to render the Closure built by this ViewHelper',
+            false,
+            self::DEFAULT_USERFUNCTION
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @param \Closure $renderChildrenClosure
-	 * @return Custom
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments, \Closure $renderChildrenClosure) {
-		/** @var Custom $component */
-		$component = parent::getPreparedComponent('Custom', $renderingContext, $arguments);
-		$closure = static::buildClosure($renderingContext, $arguments, $renderChildrenClosure);
-		$component->setClosure($closure);
-		return $component;
-	}
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @return Custom
+     */
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        array $arguments,
+        \Closure $renderChildrenClosure
+    ) {
+        /** @var Custom $component */
+        $component = parent::getPreparedComponent('Custom', $renderingContext, $arguments);
+        $closure = static::buildClosure($renderingContext, $arguments, $renderChildrenClosure);
+        $component->setClosure($closure);
+        return $component;
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @param \Closure $renderChildrenClosure
-	 * @return \Closure
-	 */
-	protected static function buildClosure(RenderingContextInterface $renderingContext, array $arguments, \Closure $renderChildrenClosure) {
-		$container = $renderingContext->getTemplateVariableContainer();
-		$closure = function($parameters) use ($container, $renderingContext, $renderChildrenClosure) {
-			$backupParameters = NULL;
-			$backupParameters = NULL;
-			if ($container->exists('parameters') === TRUE) {
-				$backupParameters = $container->get('parameters');
-				$container->remove('parameters');
-			}
-			$container->add('parameters', $parameters);
-			$content = $renderChildrenClosure();
-			$container->remove('parameters');
-			if (NULL !== $backupParameters) {
-				$container->add('parameters', $backupParameters);
-			}
-			return $content;
-		};
-		return $closure;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @return \Closure
+     */
+    protected static function buildClosure(
+        RenderingContextInterface $renderingContext,
+        array $arguments,
+        \Closure $renderChildrenClosure
+    ) {
+        $container = $renderingContext->getTemplateVariableContainer();
+        $closure = function ($parameters) use ($container, $renderingContext, $renderChildrenClosure) {
+            $backupParameters = null;
+            $backupParameters = null;
+            if ($container->exists('parameters') === true) {
+                $backupParameters = $container->get('parameters');
+                $container->remove('parameters');
+            }
+            $container->add('parameters', $parameters);
+            $content = $renderChildrenClosure();
+            $container->remove('parameters');
+            if (null !== $backupParameters) {
+                $container->add('parameters', $backupParameters);
+            }
+            return $content;
+        };
+        return $closure;
+    }
 }
