@@ -246,9 +246,8 @@ abstract class AbstractFluxController extends ActionController
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
         if (true === $shouldRelay) {
             $foreignControllerClass = $this->configurationService
-                ->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndAction(
+                ->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
                     $extensionName,
-                    $actionName,
                     $controllerName
                 );
             return $this->callSubControllerAction(
@@ -270,9 +269,8 @@ abstract class AbstractFluxController extends ActionController
     protected function hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName)
     {
         $potentialControllerClassName = $this->configurationService
-            ->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndAction(
+            ->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
                 $extensionName,
-                $actionName,
                 $controllerName
             );
         $isForeign = $extensionName !== $this->extensionName;

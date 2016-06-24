@@ -22,39 +22,26 @@ class Resolver
 
     /**
      * @param string $extensionKey
-     * @param string $action
      * @param string $controllerObjectShortName
-     * @param boolean $failHardClass
-     * @param boolean $failHardAction
+     * @param boolean $failHard
      * @throws \RuntimeException
      * @return string|NULL
      */
-    public function resolveFluxControllerClassNameByExtensionKeyAndAction(
+    public function resolveFluxControllerClassNameByExtensionKeyAndControllerName(
         $extensionKey,
-        $action,
         $controllerObjectShortName,
-        $failHardClass = false,
-        $failHardAction = false
+        $failHard = false
     ) {
         $potentialControllerClassName = $this->buildControllerClassNameFromExtensionKeyAndControllerType(
             $extensionKey,
             $controllerObjectShortName
         );
         if (false === class_exists($potentialControllerClassName)) {
-            if (true === $failHardClass) {
+            if (true === $failHard) {
                 throw new \RuntimeException(
                     'Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' .
                     var_export($extensionKey, true) . ' but the resulting class name was not found.',
                     1364498093
-                );
-            }
-            return null;
-        }
-        if (false === method_exists($potentialControllerClassName, $action . 'Action')) {
-            if (true === $failHardAction) {
-                throw new \RuntimeException(
-                    'Class ' . $potentialControllerClassName . ' does not contain a method named ' . $action . 'Action',
-                    1364498223
                 );
             }
             return null;

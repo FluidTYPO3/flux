@@ -51,7 +51,7 @@ class ResolveUtilityTest extends AbstractTestCase
     public function returnsClassIfClassExists()
     {
         $resolver = new Resolver();
-        $className = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Content');
+        $className = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('FluidTYPO3.Flux', 'Content');
         $instance = $this->objectManager->get($className);
         $this->assertInstanceOf('FluidTYPO3\Flux\Controller\AbstractFluxController', $instance);
     }
@@ -62,17 +62,7 @@ class ResolveUtilityTest extends AbstractTestCase
     public function returnsNullIfControllerClassNameDoesNotExist()
     {
         $resolver = new Resolver();
-        $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void');
-        $this->assertNull($result);
-    }
-
-    /**
-     * @test
-     */
-    public function returnsNullIfControllerActionDoesNotExist()
-    {
-        $resolver = new Resolver();
-        $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content');
+        $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('FluidTYPO3.Flux', 'Void');
         $this->assertNull($result);
     }
 
@@ -83,17 +73,7 @@ class ResolveUtilityTest extends AbstractTestCase
     {
         $resolver = new Resolver();
         $this->setExpectedException('RuntimeException', '', 1364498093);
-        $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'render', 'Void', true);
-    }
-
-    /**
-     * @test
-     */
-    public function throwsExceptionForActionIfSetToHardFail()
-    {
-        $resolver = new Resolver();
-        $this->setExpectedException('RuntimeException', '', 1364498223);
-        $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('FluidTYPO3.Flux', 'void', 'Content', false, true);
+        $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('FluidTYPO3.Flux', 'Void', true);
     }
 
     /**
@@ -103,7 +83,7 @@ class ResolveUtilityTest extends AbstractTestCase
     {
         $resolver = new Resolver();
         class_alias('FluidTYPO3\Flux\Controller\AbstractFluxController', 'Void\NoName\Controller\FakeController');
-        $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Fake');
+        $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('Void.NoName', 'Fake');
         $this->assertSame('Void\NoName\Controller\FakeController', $result);
     }
 
@@ -113,7 +93,7 @@ class ResolveUtilityTest extends AbstractTestCase
     public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassDoesNotExist()
     {
         $resolver = new Resolver();
-        $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndAction('Void.NoName', 'render', 'Void');
+        $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('Void.NoName', 'Void');
         $this->assertNull($result);
     }
 
