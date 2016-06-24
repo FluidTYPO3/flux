@@ -20,13 +20,15 @@ class RadioViewHelper extends SelectViewHelper
 {
 
     /**
-     * @return Checkbox
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return Radio
      */
-    public static function getComponent()
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
     {
         /** @var Radio $component */
-        $component = $this->getPreparedComponent('Radio');
-        $component->setItems($this->arguments['items']);
+        $component = static::getPreparedComponent('Radio');
+        $component->setItems($arguments['items']);
         return $component;
     }
 }
