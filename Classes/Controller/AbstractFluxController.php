@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
 
@@ -305,7 +306,10 @@ abstract class AbstractFluxController extends ActionController
         $subRequest->setControllerExtensionName($viewContext->getExtensionName());
         $subRequest->setControllerVendorName($viewContext->getVendorName());
         $subRequest->setControllerActionName($this->provider->getControllerActionFromRecord($row));
-        $potentialControllerInstance->processRequest($subRequest, $response);
+        try {
+            $potentialControllerInstance->processRequest($subRequest, $response);
+        } catch (StopActionException $error) {
+        }
         return $response->getContent();
     }
 
