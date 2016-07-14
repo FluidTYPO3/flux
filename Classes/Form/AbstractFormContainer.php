@@ -140,7 +140,8 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      */
     public function last()
     {
-        $result = array_pop(iterator_to_array($this->children));
+        $asArray = iterator_to_array($this->children);
+        $result = array_pop($asArray);
         return $result;
     }
 
