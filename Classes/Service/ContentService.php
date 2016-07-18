@@ -358,7 +358,7 @@ class ContentService implements SingletonInterface
                     $copiedParents = (array) $this->workspacesAwareRecordService->get(
                         'tt_content',
                         'uid,sys_language_uid',
-                        "t3_origuid = '" . (integer) $oldRecord['tx_flux_parent'] . "' AND sys_language_uid = '" . (integer) $newLanguageUid . "' " . BackendUtility::deleteClause('tt_content')
+                        "t3_origuid = '" . (integer) $oldRecord['tx_flux_parent'] . "' AND pid = '" . (integer) $row['pid'] . "' AND CType = 'fluidcontent_content' AND sys_language_uid = '" . (integer) $newLanguageUid . "' " . BackendUtility::deleteClause('tt_content')
                     );
 
                     if (count($copiedParents) > 0) {
