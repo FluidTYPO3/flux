@@ -281,7 +281,7 @@ class ContentServiceTest extends AbstractTestCase
         $recordService->expects($this->any())->method('get')->willReturn(null);
         $mock->injectWorkspacesAwareRecordService($recordService);
         $dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
-        $row = array('pid' => 1, 'uid' => 1, 'language' => 1);
+        $row = array('pid' => 1, 'uid' => 1, 'language' => 1, 'tx_flux_parent' => 123);
         $mock->expects($this->once())->method('loadRecordFromDatabase')->will($this->returnValue($row));
         if (true === $expectsInitialization) {
             $mock->expects($this->once())->method('updateRecordInDatabase');
@@ -311,6 +311,61 @@ class ContentServiceTest extends AbstractTestCase
             array(1, 2, 2, true),
             array(1, 2, 1, false)
         );
+    }
+
+    /**
+     * @test
+     * @dataProvider getIntegerEquivalentsOfZero
+     * @param mixed $zeroEquivalentValue an equivalent to zero when evaluated as integer (multiple inputs possible to tx_flux_parent)
+     */
+    public function initializeRecordByNewAndOldAndLanguageUidsWithZeroFluxParentShouldNotQueryForOriginalsOfNonParentedRecords($zeroEquivalentValue) {
+        // see flux issue #1125
+        // ContentService attempts to find FCE column assignments for copied
+        // FCEs but queried DB for t3_origuid = 0 if tx_flux_parent was 0,
+        // resulting in translations being assigned random UIDs as
+        // tx_flux_parents which in turn caused bad colPos assignments at later
+        // edits.
+        // Long story short: If tx_flux_parent is 0, ContentService should not
+        // look for t3_origuid = tx_flux_parent = 0...
+
+        $row = array('pid' => 1, 'uid' => 1, 'language' => 0, 'tx_flux_parent' => $zeroEquivalentValue);
+
+        $mock = $this->getMock($this->createInstanceClassName(), array('loadRecordFromDatabase', 'updateRecordInDatabase'));
+        $mock->expects($this->once())->method('loadRecordFromDatabase')->will($this->returnValue($row));
+        $mock->expects($this->once())->method('updateRecordInDatabase');
+
+        $recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('get'));
+        $recordService->expects($this->never())->method('get');
+        $mock->injectWorkspacesAwareRecordService($recordService);
+
+        $dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
+        $dataHandler->expects($this->once())->method('resorting');
+
+        $newUid = 2;
+        $oldUid = 1;
+        $newLanguageUid = 1;
+
+        $this->callInaccessibleMethod(
+            $mock,
+            'initializeRecordByNewAndOldAndLanguageUids',
+            $row,
+            $newUid,
+            $oldUid,
+            $newLanguageUid,
+            'language',
+            $dataHandler
+        );
+    }
+
+    /**
+     * @return array all expected results from database which are equivalent to 0 when casted to integers
+     */
+    public function getIntegerEquivalentsOfZero() {
+        return [
+            [0],
+            [''],
+            [NULL]
+        ];
     }
 
     /**

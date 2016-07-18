@@ -345,24 +345,34 @@ class ContentService implements SingletonInterface
                 // look for the translated version of the parent record indicated
                 // in this new, translated record. Below, we adjust the parent UID
                 // so it has the UID of the translated parent if one exists.
-                $translatedParents = (array) $this->workspacesAwareRecordService->get(
-                    'tt_content',
-                    'uid,sys_language_uid',
-                    "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'" . BackendUtility::deleteClause('tt_content')
-                );
-                foreach ($translatedParents as $translatedParent) {
-                    if ($translatedParent['sys_language_uid'] == $newLanguageUid) {
-                        // set $translatedParent to the right language ($newLanguageUid):
-                        break;
+                unset($copiedParent);
+                if (0 < (integer) $oldRecord['tx_flux_parent']) {
+                    // Search for a container element which has been copied from
+                    // the container referred to by the original element
+                    // (oldRecord) and exists in the target language.
+                    // Note that this cannot guarantee the correct container
+                    // to be found and used (using copies for translations
+                    // leads to ambiguous results by principle).
+                    // This is the old method which used to implement a fix for
+                    // #816 and #796.
+                    $copiedParents = (array) $this->workspacesAwareRecordService->get(
+                        'tt_content',
+                        'uid,sys_language_uid',
+                        "t3_origuid = '" . (integer) $oldRecord['tx_flux_parent'] . "' AND sys_language_uid = '" . (integer) $newLanguageUid . "' " . BackendUtility::deleteClause('tt_content')
+                    );
+
+                    if (count($copiedParents) > 0) {
+                        $copiedParent = $copiedParents[0];
                     }
-                    unset($translatedParent);
                 }
+
                 $sortbyFieldName = true === isset($GLOBALS['TCA']['tt_content']['ctrl']['sortby']) ?
                     $GLOBALS['TCA']['tt_content']['ctrl']['sortby'] : 'sorting';
                 $overrideValues = [
                     $sortbyFieldName => $tceMain->resorting('tt_content', $row['pid'], $sortbyFieldName, $oldUid),
-                    'tx_flux_parent' => $translatedParent ? $translatedParent['uid'] : $oldRecord['tx_flux_parent']
+                    'tx_flux_parent' => $copiedParent ? $copiedParent['uid'] : $oldRecord['tx_flux_parent']
                 ];
+
                 $this->updateRecordInDatabase($overrideValues, $newUid);
             }
         }
