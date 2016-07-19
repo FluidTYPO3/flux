@@ -64,7 +64,7 @@ class ContentService implements SingletonInterface
         unset($id, $tceMain);
         if (false === empty($parameters['overrideVals']['tt_content']['tx_flux_parent'])) {
             $row['tx_flux_parent'] = (integer) $parameters['overrideVals']['tt_content']['tx_flux_parent'];
-            if (0 < $row['tx_flux_parent']) {
+            if (0 < $row['tx_flux_parent'] && false === empty($row['tx_flux_column'])) {
                 $row['colPos'] = self::COLPOS_FLUXCONTENT;
             }
         }
@@ -269,7 +269,7 @@ class ContentService implements SingletonInterface
             $row['tx_flux_parent'] = null;
             $row['tx_flux_column'] = null;
         }
-        if (0 < $row['tx_flux_parent']) {
+        if (0 < $row['tx_flux_parent'] && false === empty($row['tx_flux_column'])) {
             $row['colPos'] = self::COLPOS_FLUXCONTENT;
         }
         $this->updateRecordInDatabase($row);
