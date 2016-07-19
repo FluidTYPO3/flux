@@ -384,7 +384,6 @@ class PreviewView
             $this->drawPasteIcon($parentRow, $column, false, $record).
             $this->drawPasteIcon($parentRow, $column, true, $record)
         );
-
     }
 
     /**
