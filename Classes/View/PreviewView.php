@@ -60,13 +60,13 @@ class PreviewView
 						</tbody>
 					</table>',
         'gridColumn' => '<td colspan="%s" rowspan="%s" style="%s">
-                            <div data-colpos="%s" class="t3js-sortable t3js-sortable-lang t3js-sortable-lang-%s 
+                            <div data-colpos="%s" class="t3js-sortable t3js-sortable-lang t3js-sortable-lang-%s
                                 t3-page-ce-wrapper ui-sortable" data-language-uid="%s">
                                 <div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
                                     <div>%s</div>
                                 </div>
                                 <div class="t3-page-ce t3js-page-ce" data-page="%s">
-                                    <div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s" 
+                                    <div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s"
                                         style="display: block;">
                                         %s %s %s
                                     </div>
@@ -75,7 +75,7 @@ class PreviewView
                                 %s
                             </div>
                         </td>',
-        'record' => '<div class="t3-page-ce%s %s t3js-page-ce t3js-page-ce-sortable" id="element-tt_content-%s" 
+        'record' => '<div class="t3-page-ce%s %s t3js-page-ce t3js-page-ce-sortable" id="element-tt_content-%s"
                         data-table="tt_content" data-uid="%s">
 						%s
 						<div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="colpos-%s-page-%s-%s-after-%s"
@@ -90,7 +90,7 @@ class PreviewView
 							</div>
 							%s
 						</div>',
-        'link' => '<a href="#" onclick="window.location.href=\'%s\'" title="%s" 
+        'link' => '<a href="#" onclick="window.location.href=\'%s\'" title="%s"
                       class="btn btn-default btn-sm">%s %s</a>'
     ];
 
@@ -384,7 +384,6 @@ class PreviewView
             $this->drawPasteIcon($parentRow, $column, false, $record).
             $this->drawPasteIcon($parentRow, $column, true, $record)
         );
-
     }
 
     /**
