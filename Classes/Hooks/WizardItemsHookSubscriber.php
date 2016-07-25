@@ -239,7 +239,6 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
                 }
             }
         }
-
     }
 
     /**

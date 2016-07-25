@@ -637,7 +637,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = [])
     {
-        if ('update' === $operation) {
+        if ('update' === $operation || 'new' === $operation) {
             $record = $reference->datamap[$this->tableName][$id];
             $stored = $this->recordService->getSingle($this->tableName, '*', $record['uid']);
             $fieldName = $this->getFieldName((array) $record);
