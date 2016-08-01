@@ -7,7 +7,7 @@ Minor release with a couple new features:
  
 - The Flux Package API which allows a simple class to be implemented and control how Flux is integrated (which controllers your
   provider extension supports, the default template paths it uses, and more). See https://github.com/FluidTYPO3/flux/pull/1038.
-- Flux form `options` can now be defined as dotted paths, for exampel `<flux:form.option name="FluidContent.sorting" value="100" />`.
+- Flux form `options` can now be defined as dotted paths, for example `<flux:form.option name="FluidContent.sorting" value="100" />`.
   See https://github.com/FluidTYPO3/flux/pull/1042.
 - Flux provider extensions can now be registered for any feature with a single command - filename conventions and detection then
   determine which features get enabled. See https://github.com/FluidTYPO3/flux/commit/1e379247567c0f94921de0f82be9dc5a638f5091.
@@ -130,7 +130,7 @@ active version is 7.5 the 7.4-specific class name gets returned (because the 7.6
     \FluidTYPO3\Flux\Utility\CompatibilityRegistry::get('MyVendor\MyExtension\MyClass');
     
 The compatibility registry is introduced to make version checks completely uniform and allow any number of alternatives to be
-speficied, consistently returning a single value without you having to care about checking TYPO3 versions. In addition, the
+specified, consistently returning a single value without you having to care about checking TYPO3 versions. In addition, the
 static signature means you can use the registry from anywhere (and manipulate it without mocking from unit tests).
 
 On-the-fly TCA manipulation
