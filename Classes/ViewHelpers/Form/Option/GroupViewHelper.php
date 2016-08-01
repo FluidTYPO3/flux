@@ -17,7 +17,7 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  * Defines a logical group name for the Flux form, which can
  * then be read by extensions supporting Flux forms. How the
  * setting gets used is specific to the extension reading the
- * Flux form - please consule that documentation to learn
+ * Flux form - please consult that documentation to learn
  * if/how the extension supports this option.
  */
 class GroupViewHelper extends OptionViewHelper
