@@ -41,11 +41,41 @@ class ContentServiceTest extends AbstractTestCase
         $parameters['overrideVals']['tt_content']['tx_flux_parent'] = 999999;
         $record = Records::$contentRecordIsParentAndHasChildren;
         $this->assertSame(0, $record['tx_flux_parent']);
+        $tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
+        $this->createInstance()->affectRecordByRequestParameters('NEW12345', $record, $parameters, $tceMain);
+        $this->assertSame(999999, $record['tx_flux_parent']);
+    }
+
+    /**
+     * @test
+     */
+    public function affectByRequestParametersSetsColPosIfColumnSpecified()
+    {
+        $parameters['overrideVals']['tt_content']['tx_flux_parent'] = 999999;
+        $record = Records::$contentRecordIsParentAndHasChildren;
+        $record['tx_flux_column'] = 'someColumn';
+        $this->assertSame(0, $record['tx_flux_parent']);
         $this->assertSame(0, $record['colPos']);
         $tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
         $this->createInstance()->affectRecordByRequestParameters('NEW12345', $record, $parameters, $tceMain);
         $this->assertSame(999999, $record['tx_flux_parent']);
         $this->assertSame(ContentService::COLPOS_FLUXCONTENT, $record['colPos']);
+    }
+
+    /**
+     * @test
+     */
+    public function affectByRequestParametersDoesNotSetColPosIfColumnMissing()
+    {
+        $parameters['overrideVals']['tt_content']['tx_flux_parent'] = 999999;
+        $record = Records::$contentRecordIsParentAndHasChildren;
+        $record['tx_flux_column'] = '';
+        $this->assertSame(0, $record['tx_flux_parent']);
+        $this->assertSame(0, $record['colPos']);
+        $tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
+        $this->createInstance()->affectRecordByRequestParameters('NEW12345', $record, $parameters, $tceMain);
+        $this->assertSame(999999, $record['tx_flux_parent']);
+        $this->assertSame(0, $record['colPos']);
     }
 
     /**
@@ -281,7 +311,7 @@ class ContentServiceTest extends AbstractTestCase
         $recordService->expects($this->any())->method('get')->willReturn(null);
         $mock->injectWorkspacesAwareRecordService($recordService);
         $dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
-        $row = array('pid' => 1, 'uid' => 1, 'language' => 1);
+        $row = array('pid' => 1, 'uid' => 1, 'language' => 1, 'tx_flux_parent' => 123);
         $mock->expects($this->once())->method('loadRecordFromDatabase')->will($this->returnValue($row));
         if (true === $expectsInitialization) {
             $mock->expects($this->once())->method('updateRecordInDatabase');
@@ -311,6 +341,61 @@ class ContentServiceTest extends AbstractTestCase
             array(1, 2, 2, true),
             array(1, 2, 1, false)
         );
+    }
+
+    /**
+     * @test
+     * @dataProvider getIntegerEquivalentsOfZero
+     * @param mixed $zeroEquivalentValue an equivalent to zero when evaluated as integer (multiple inputs possible to tx_flux_parent)
+     */
+    public function initializeRecordByNewAndOldAndLanguageUidsWithZeroFluxParentShouldNotQueryForOriginalsOfNonParentedRecords($zeroEquivalentValue) {
+        // see flux issue #1125
+        // ContentService attempts to find FCE column assignments for copied
+        // FCEs but queried DB for t3_origuid = 0 if tx_flux_parent was 0,
+        // resulting in translations being assigned random UIDs as
+        // tx_flux_parents which in turn caused bad colPos assignments at later
+        // edits.
+        // Long story short: If tx_flux_parent is 0, ContentService should not
+        // look for t3_origuid = tx_flux_parent = 0...
+
+        $row = array('pid' => 1, 'uid' => 1, 'language' => 0, 'tx_flux_parent' => $zeroEquivalentValue);
+
+        $mock = $this->getMock($this->createInstanceClassName(), array('loadRecordFromDatabase', 'updateRecordInDatabase'));
+        $mock->expects($this->once())->method('loadRecordFromDatabase')->will($this->returnValue($row));
+        $mock->expects($this->once())->method('updateRecordInDatabase');
+
+        $recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('get'));
+        $recordService->expects($this->never())->method('get');
+        $mock->injectWorkspacesAwareRecordService($recordService);
+
+        $dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
+        $dataHandler->expects($this->once())->method('resorting');
+
+        $newUid = 2;
+        $oldUid = 1;
+        $newLanguageUid = 1;
+
+        $this->callInaccessibleMethod(
+            $mock,
+            'initializeRecordByNewAndOldAndLanguageUids',
+            $row,
+            $newUid,
+            $oldUid,
+            $newLanguageUid,
+            'language',
+            $dataHandler
+        );
+    }
+
+    /**
+     * @return array all expected results from database which are equivalent to 0 when casted to integers
+     */
+    public function getIntegerEquivalentsOfZero() {
+        return [
+            [0],
+            [''],
+            [NULL]
+        ];
     }
 
     /**
@@ -392,5 +477,93 @@ class ContentServiceTest extends AbstractTestCase
         $this->assertEquals($newColPos, $row['colPos']);
         // pid will be changed from TYPO3 Core
         $this->assertEquals(1, $row['pid']);
+    }
+
+    /**
+     * @test
+     * @dataProvider getmoveRecordChangesColPosTestValues
+     * @param array $rowBefore (partial) record before changes have been applied
+     * @param int $relativeTo value for relativeTo (multiple interpretations by moveRecord, see ContentService)
+     * @param array $relativeToRecord (partial) record to be returned if queried for absolute $relativeTo value as content uid (return value for ContentService::loadRecordFromDatabase mock)
+     * @param array $targetAreaStoredInSession return value for ContentService::getTargetAreaStoredInSession mock
+     * @param array $parameters parameters as given to moveRecord
+     * @param int $expectedColPos the expected colPos after moveRecord has been called
+     */
+    public function moveRecordChangesColPos($rowBefore, $relativeTo, $relativeToRecord, $targetAreaStoredInSession, $parameters, $expectedColPos)
+    {
+        $mock = $this->getMock(
+            $this->createInstanceClassName(),
+            array('loadRecordFromDatabase', 'updateRecordInDatabase', 'updateMovePlaceholder', 'getTargetAreaStoredInSession')
+        );
+        $mock->expects($this->any())->method('loadRecordFromDatabase')->with(abs($relativeTo))->will($this->returnValue($relativeToRecord));
+        $mock->expects($this->any())->method('getTargetAreaStoredInSession')->with($relativeTo)->will($this->returnValue($targetAreaStoredInSession));
+        $mock->expects($this->any())->method('updateRecordInDatabase');
+        $mock->expects($this->any())->method('updateMovePlaceholder');
+        $dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
+        $dataHandler->expects($this->any())->method('resorting');
+
+        $row = $rowBefore; // row will be modified by reference
+        $mock->moveRecord($row, $relativeTo, $parameters, $dataHandler);
+
+        $this->assertEquals($expectedColPos, $row['colPos']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getmoveRecordChangesColPosTestValues()
+    {
+        $colPosFluxContent = 18181;
+
+        return [
+            // cases where colPos may change due to relative record using different colPos (starting with colPos 2, colPos 1 on relative record, neither flux parent or column name is set)
+            [['colPos' => 2], 0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD - 1, [], [0, ''], ['', ''], 2], // using session
+            [['colPos' => 2], 123, ['tx_flux_column' => '', 'tx_flux_parent' => 0, 'colPos' => 1], [], ['', 'colpos-1-page-unused-unused-top-0-'], 1], // using parameters
+            [['colPos' => 2], -23, ['tx_flux_column' => '', 'tx_flux_parent' => 0, 'colPos' => 1], [], ['', ''], 1], // "inserting new element after"
+            [['colPos' => 2], 123, ['tx_flux_column' => '', 'tx_flux_parent' => 0, 'colPos' => 1], [], ['', ''], 2], // "first position in colPos"
+            [['colPos' => 2], 0, ['tx_flux_column' => '', 'tx_flux_parent' => 0, 'colPos' => 1], [0, ''], ['', ''], 2], // unmatched inner cases
+            [['colPos' => 2], 'x123', ['tx_flux_column' => '', 'tx_flux_parent' => 0, 'colPos' => 1], [], ['', ''], 2], // not changing for gridelements
+
+            // cases where colPos should remain unchanged (testing with colPos 0, same colPos for relative record, flux parent is set but no column name)
+            [['colPos' => 0], 0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD - 1, [], [2, ''], ['', ''], 0], // using session 
+            [['colPos' => 0], 123, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 0], [], ['', 'colpos-0-page-unused-unused-top-1-'], 0], // using parameters
+            [['colPos' => 0], -23, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 0], [], ['', ''], 0], // "inserting new element after"
+            [['colPos' => 0], 123, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 0], [], ['', ''], 0], // "first position in colPos"
+            [['colPos' => 0], 0, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 0], [2, ''], ['', ''], 0], // unmatched inner cases
+            [['colPos' => 0], 'x123', ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 0], [], ['', ''], 0], // gridelements
+
+            // cases where colPos may change due to relative record using different colPos (starting with colPos 2, colPos 1 on relative record, flux parent is set but no column name)
+            [['colPos' => 2], 0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD - 1, [], [2, ''], ['', ''], 2], // using session
+            [['colPos' => 2], 123, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 1], [], ['', 'colpos-1-page-unused-unused-top-1-'], 1], // using parameters
+            [['colPos' => 2], -23, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 1], [], ['', ''], 1], // "inserting new element after"
+            [['colPos' => 2], 123, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 1], [], ['', ''], 2], // "first position in colPos"
+            [['colPos' => 2], 0, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 1], [2, ''], ['', ''], 2], // unmatched inner cases
+            [['colPos' => 2], 'x123', ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 1], [], ['', ''], 2], // not changing for gridelements
+
+            // cases where colPos may change due to relative record using different colPos (starting with colPos 0, colPos 2 on relative record, flux parent is set but no column name)
+            // (just testing for another starting colPos, otherwise same as before)
+            [['colPos' => 0], 0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD - 1, [], [2, ''], ['', ''], 0], // using session 
+            [['colPos' => 0], 123, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 2], [], ['', 'colpos-2-page-unused-unused-top-1-'], 2], // using parameters
+            [['colPos' => 0], -23, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 2], [], ['', ''], 2], // "inserting new element after"
+            [['colPos' => 0], 123, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 2], [], ['', ''], 0], // "first position in colPos"
+            [['colPos' => 0], 0, ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 2], [2, ''], ['', ''], 0], // unmatched inner cases
+            [['colPos' => 0], 'x123', ['tx_flux_column' => '', 'tx_flux_parent' => 2, 'colPos' => 2], [], ['', ''], 0], // not changing for gridelements
+
+            // cases where colPos may change due to relative record using different colPos (testing with colPos 0, colPos 1 for relative record, flux column name is set without flux parent ID)
+            [['colPos' => 0], 0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD - 1, [], [0, 'column'], ['', ''], 0], // using session 
+            [['colPos' => 0], 123, ['tx_flux_column' => 'column', 'tx_flux_parent' => 0, 'colPos' => 1], [], ['', 'colpos-1-page-unused-unused-top-0-column'], 1], // using parameters
+            [['colPos' => 0], -23, ['tx_flux_column' => 'column', 'tx_flux_parent' => 0, 'colPos' => 1], [], ['', ''], 1], // "inserting new element after"
+            [['colPos' => 0], 123, ['tx_flux_column' => 'column', 'tx_flux_parent' => 0, 'colPos' => 1], [], ['', ''], 0], // "first position in colPos"
+            [['colPos' => 0], 0, ['tx_flux_column' => 'column', 'tx_flux_parent' => 0, 'colPos' => 1], [0, 'column'], ['', ''], 0], // unmatched inner cases
+            [['colPos' => 0], 'x123', ['tx_flux_column' => 'column', 'tx_flux_parent' => 0, 'colPos' => 1], [], ['', ''], 0], // gridelements
+
+            // cases where colPos may change due to relative record specifying a flux column (starting with colPos 0)
+            [['colPos' => 0], 0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD - 1, [], [2, 'column'], ['', ''], $colPosFluxContent], // using session 
+            [['colPos' => 0], 123, ['tx_flux_column' => 'column', 'tx_flux_parent' => 2, 'colPos' => 1], [], ['', 'colpos-1-page-unused-unused-top-1-column'], $colPosFluxContent], // using parameters
+            [['colPos' => 0], -23, ['tx_flux_column' => 'column', 'tx_flux_parent' => 2, 'colPos' => 1], [], ['', ''], $colPosFluxContent], // "inserting new element after"
+            [['colPos' => 0], 123, ['tx_flux_column' => 'column', 'tx_flux_parent' => 2, 'colPos' => 1], [], ['', ''], 0], // "first position in colPos"
+            [['colPos' => 0], 0, ['tx_flux_column' => 'column', 'tx_flux_parent' => 2, 'colPos' => 1], [2, ''], ['', ''], 0], // unmatched inner cases
+            [['colPos' => 0], 'x123', ['tx_flux_column' => 'column', 'tx_flux_parent' => 2, 'colPos' => 1], [], ['', ''], 0], // not changing for gridelements
+        ];
     }
 }
