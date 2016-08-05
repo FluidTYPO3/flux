@@ -67,8 +67,8 @@ class VariableViewHelper extends AbstractViewHelper implements CompilableInterfa
         TemplateCompiler $templateCompiler
     ) {
         return sprintf(
-            '\\TYPO3\\CMS\\Extbase\\Reflection\\ObjectAccess::getPropertyPath(' .
-            '$renderingContext->getTemplateVariableContainer()->getAll(), %s[\'name\'])',
+            '%s::getPropertyPath($renderingContext->getTemplateVariableContainer()->getAll(), %s[\'name\'])',
+            ObjectAccess::class,
             $argumentsVariableName
         );
     }

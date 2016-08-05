@@ -23,6 +23,8 @@ use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 class DynamicFlexForm
 {
 
+    const OPTION_NEEDS_TCEFORMS_WRAPPER = 'needsTceformsWrapper';
+
     /**
      * @var ObjectManagerInterface
      */
@@ -148,7 +150,7 @@ class DynamicFlexForm
             );
         }
         // Trigger TCEforms dimension patching only if required by TYPO3 version according to CompatibilityRegistry.
-        if (CompatibilityRegistry::get('FluidTYPO3\\Flux\\Backend\\DynamicFlexForm::NEEDS_TCEFORMS_WRAPPER')) {
+        if (CompatibilityRegistry::get(static::OPTION_NEEDS_TCEFORMS_WRAPPER)) {
             $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
         }
     }

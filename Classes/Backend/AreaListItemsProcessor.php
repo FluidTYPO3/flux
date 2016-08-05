@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
@@ -41,9 +42,9 @@ class AreaListItemsProcessor
      */
     public function __construct()
     {
-        $this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        $this->fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
-        $this->recordService = $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService');
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->fluxService = $this->objectManager->get(FluxService::class);
+        $this->recordService = $this->objectManager->get(RecordService::class);
     }
 
     /**

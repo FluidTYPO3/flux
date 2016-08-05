@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\TypeConverterPipe;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -48,9 +49,9 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper
         array $arguments,
         \Closure $renderChildrenClosure = null
     ) {
-        $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var TypeConverterPipe $pipe */
-        $pipe = $objectManager->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\TypeConverterPipe');
+        $pipe = $objectManager->get(TypeConverterPipe::class);
         $converter = $arguments['typeConverter'];
         if (false === $converter instanceof TypeConverterInterface) {
             if (false === class_exists($converter)) {

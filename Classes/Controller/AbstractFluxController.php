@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
+use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -38,7 +39,7 @@ abstract class AbstractFluxController extends ActionController
     /**
      * @var string
      */
-    protected $defaultViewObjectName = 'FluidTYPO3\Flux\View\ExposedTemplateView';
+    protected $defaultViewObjectName = ExposedTemplateView::class;
 
     /**
      * @var string

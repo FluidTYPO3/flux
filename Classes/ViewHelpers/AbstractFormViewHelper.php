@@ -23,7 +23,7 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 abstract class AbstractFormViewHelper extends AbstractViewHelper implements CompilableInterface
 {
 
-    const SCOPE = 'FluidTYPO3\Flux\ViewHelpers\FormViewHelper';
+    const SCOPE = FormViewHelper::class;
     const SCOPE_VARIABLE_EXTENSIONNAME = 'extensionName';
     const SCOPE_VARIABLE_FORM = 'form';
     const SCOPE_VARIABLE_CONTAINER = 'container';

@@ -202,7 +202,7 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
 
     /**
      * @param string $condition
-     * @return \FluidTYPO3\Flux\Form\RelationFieldInterface
+     * @return RelationFieldInterface
      */
     public function setCondition($condition)
     {

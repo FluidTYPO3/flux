@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field\Inline;
 use FluidTYPO3\Flux\Form\Field\Inline\Fal;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractInlineFieldViewHelper;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\Filter\FileExtensionFilter;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -204,7 +205,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
             ]
         ]);
         $component->setFilter([[
-                'userFunc' => 'TYPO3\\CMS\\Core\\Resource\\Filter\\FileExtensionFilter->filterInlineChildren',
+                'userFunc' => FileExtensionFilter::class . '->filterInlineChildren',
                 'parameters' => [
                     'allowedFileExtensions' => $allowedExtensions,
                     'disallowedFileExtensions' => $disallowedExtensions

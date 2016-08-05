@@ -371,7 +371,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
 
     /**
      * @param array $foreignMatchFields
-     * @return Inline
+     * @return AbstractInlineFormField
      */
     public function setForeignMatchFields(array $foreignMatchFields)
     {

@@ -7,6 +7,7 @@ namespace FluidTYPO3\Flux\Form\Field;
  * For the full copyright and license information, please read the
  * LICENSE.md file that was distributed with this source code.
  */
+use FluidTYPO3\Flux\UserFunction\HtmlOutput;
 
 /**
  * Custom
@@ -25,7 +26,7 @@ class Custom extends UserFunction
     public function buildConfiguration()
     {
         $fieldConfiguration = $this->prepareConfiguration('user');
-        $fieldConfiguration['userFunc'] = 'FluidTYPO3\Flux\UserFunction\HtmlOutput->renderField';
+        $fieldConfiguration['userFunc'] = HtmlOutput::class . '->renderField';
         $fieldConfiguration['parameters'] = [
             'closure' => $this->getClosure(),
             'arguments' => $this->getArguments(),

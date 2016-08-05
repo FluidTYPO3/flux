@@ -123,7 +123,7 @@ class ProviderResolver implements SingletonInterface
         $providerConfigurations = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_flux.providers');
         $providers = [];
         foreach ($providerConfigurations as $name => $providerSettings) {
-            $className = 'FluidTYPO3\Flux\Provider\Provider';
+            $className = Provider::class;
             if (isset($providerSettings['className']) && class_exists($providerSettings['className'])) {
                 $className = $providerSettings['className'];
             }
@@ -159,7 +159,7 @@ class ProviderResolver implements SingletonInterface
     {
         $instances = [];
         foreach ($providers as $classNameOrInstance) {
-            if (!in_array('FluidTYPO3\Flux\Provider\ProviderInterface', class_implements($classNameOrInstance))) {
+            if (!is_a($classNameOrInstance, ProviderInterface::class, true)) {
                 $className = is_object($classNameOrInstance) ? get_class($classNameOrInstance) : $classNameOrInstance;
                 throw new \RuntimeException(
                     $className . ' must implement ProviderInterfaces from Flux/Provider',

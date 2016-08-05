@@ -119,7 +119,7 @@ class MiscellaneousUtility
     public static function createIcon($originalFile, $width, $height)
     {
         /** @var GraphicalFunctions $image */
-        $image = GeneralUtility::makeInstance('TYPO3\CMS\Core\Imaging\GraphicalFunctions');
+        $image = GeneralUtility::makeInstance(GraphicalFunctions::class);
         $image->absPrefix = PATH_site;
         $image->png_truecolor = true;
         $image->init();

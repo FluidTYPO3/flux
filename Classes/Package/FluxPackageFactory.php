@@ -12,6 +12,8 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -88,8 +90,8 @@ abstract class FluxPackageFactory
     {
         if (static::$overrides === null) {
             $collected = [];
-            $typoScript = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
-                ->get('TYPO3\\CMS\\Extbase\\Object\\ObjectManagerInterface')
+            $typoScript = GeneralUtility::makeInstance(ObjectManager::class)
+                ->get(ObjectManagerInterface::class)
                 ->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
             foreach ((array) ObjectAccess::getPropertyPath($typoScript, 'plugin') as $prefix => $pluginSettings) {
                 if (!empty($pluginSettings['package'])) {

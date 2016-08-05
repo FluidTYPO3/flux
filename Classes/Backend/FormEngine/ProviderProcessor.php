@@ -7,6 +7,7 @@ use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class ProviderProcessor implements FormDataProviderInterface
@@ -42,6 +43,6 @@ class ProviderProcessor implements FormDataProviderInterface
      */
     protected function getObjectManager()
     {
-        return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+        return GeneralUtility::makeInstance(ObjectManager::class);
     }
 }

@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Package\FluxPackageFactory;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Transformation\FormDataTransformer;
+use FluidTYPO3\Flux\UserFunction\ErrorReporter;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
@@ -36,6 +37,7 @@ use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
+use TYPO3\CMS\Extbase\Service\FlexFormService;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 
@@ -186,12 +188,12 @@ class FluxService implements SingletonInterface
         }
         $extensionName = ExtensionNamingUtility::getExtensionName($qualifiedExtensionName);
         /** @var $context ControllerContext */
-        $context = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
+        $context = $this->objectManager->get(ControllerContext::class);
         $request = $viewContext->getRequest();
         /** @var $response Response */
-        $response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Response');
+        $response = $this->objectManager->get(Response::class);
         /** @var $uriBuilder UriBuilder */
-        $uriBuilder = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');
+        $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($request);
         $context->setUriBuilder($uriBuilder);
         $context->setRequest($request);
@@ -243,7 +245,7 @@ class FluxService implements SingletonInterface
                         ->getImplementation(FluxPackage::IMPLEMENTATION_FORM)
                 );
                 self::$cache[$cacheKey]->createField('UserFunction', 'error')
-                    ->setFunction('FluidTYPO3\Flux\UserFunction\ErrorReporter->renderField')
+                    ->setFunction(ErrorReporter::class . '->renderField')
                     ->setArguments([$error]);
             }
         }
@@ -457,11 +459,11 @@ class FluxService implements SingletonInterface
         if (true === empty($valuePointer) || true === $formTranslationDisabled) {
             $valuePointer = 'vDEF';
         }
-        $settings = $this->objectManager->get('TYPO3\CMS\Extbase\Service\FlexFormService')
+        $settings = $this->objectManager->get(FlexFormService::class)
             ->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
         if (null !== $form) {
             /** @var FormDataTransformer $transformer */
-            $transformer = $this->objectManager->get('FluidTYPO3\Flux\Transformation\FormDataTransformer');
+            $transformer = $this->objectManager->get(FormDataTransformer::class);
             $settings = $transformer->transformAccordingToConfiguration($settings, $form);
         }
         return $settings;

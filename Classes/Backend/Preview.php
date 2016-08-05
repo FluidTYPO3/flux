@@ -11,12 +11,14 @@ namespace FluidTYPO3\Flux\Backend;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -51,9 +53,9 @@ class Preview implements PageLayoutViewDrawItemHookInterface
      */
     public function __construct()
     {
-        $this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        $this->configurationService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
-        $this->recordService = $this->objectManager->get('FluidTYPO3\Flux\Service\RecordService');
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->configurationService = $this->objectManager->get(FluxService::class);
+        $this->recordService = $this->objectManager->get(RecordService::class);
     }
 
     /**
@@ -124,7 +126,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
     protected function attachAssets()
     {
         if (false === self::$assetsIncluded) {
-            $doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\ModuleTemplate');
+            $doc = GeneralUtility::makeInstance(ModuleTemplate::class);
             $doc->backPath = $GLOBALS['BACK_PATH'];
 
             /** @var PageRenderer $pageRenderer */

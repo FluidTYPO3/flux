@@ -8,8 +8,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -66,7 +68,6 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
         array $arguments,
         \Closure $renderChildrenClosure = null
     ) {
-        return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
-            ->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\StandardPipe');
+        return GeneralUtility::makeInstance(ObjectManager::class)->get(StandardPipe::class);
     }
 }

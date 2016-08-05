@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -58,8 +59,7 @@ class EmailViewHelper extends AbstractPipeViewHelper
             $body = $renderChildrenClosure();
         }
         /** @var EmailPipe $pipe */
-        $pipe = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
-            ->get('FluidTYPO3\\Flux\\Outlet\\Pipe\\EmailPipe');
+        $pipe = GeneralUtility::makeInstance(ObjectManager::class)->get(EmailPipe::class);
         $pipe->setSubject($arguments['subject']);
         $pipe->setSender($arguments['sender']);
         $pipe->setRecipient($arguments['recipient']);

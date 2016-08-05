@@ -22,6 +22,7 @@ use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * AbstractProvider
@@ -783,7 +784,7 @@ class AbstractProvider implements ProviderInterface
     protected function getPreviewView()
     {
         $preview = 'FluidTYPO3\\Flux\\View\\PreviewView';
-        return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')->get($preview);
+        return GeneralUtility::makeInstance(ObjectManager::class)->get($preview);
     }
 
     /**

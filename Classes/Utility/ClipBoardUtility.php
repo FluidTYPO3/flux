@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use TYPO3\CMS\Backend\Clipboard\Clipboard;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -91,7 +92,7 @@ class ClipBoardUtility
     }
 
     /**
-     * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+     * @return BackendUserAuthentication
      */
     protected static function getBackendUser()
     {

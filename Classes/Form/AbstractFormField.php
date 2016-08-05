@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 use FluidTYPO3\Flux\Form\Container\Section;
+use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
@@ -96,11 +97,11 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     public static function create(array $settings = [])
     {
         /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $objectManager = static::getObjectManager();
         if ('Section' === $settings['type']) {
             return Section::create($settings);
         } else {
-            $prefix = 'FluidTYPO3\Flux\Form\Field\\';
+            $prefix = AbstractFormComponent::NAMESPACE_FIELD . '\\';
             $type = $settings['type'];
             $className = str_replace('/', '\\', $type);
             $className = true === class_exists($prefix . $className) ? $prefix . $className : $className;
@@ -157,7 +158,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @param string $wizardName
-     * @return WizardInterface|FALSE
+     * @return WizardInterface|false
      */
     public function get($wizardName)
     {
@@ -225,7 +226,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         if (true === $this->getClearable()) {
             array_push($wizards, [
                 'type' => 'userFunc',
-                'userFunc' => 'FluidTYPO3\Flux\UserFunction\ClearValueWizard->renderField',
+                'userFunc' => ClearValueWizard::class . '->renderField',
                 'params' => [
                     'itemName' => $this->getName(),
                 ],

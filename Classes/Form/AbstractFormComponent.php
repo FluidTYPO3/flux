@@ -20,6 +20,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -29,6 +30,10 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 abstract class AbstractFormComponent implements FormInterface
 {
+
+    const NAMESPACE_FIELD = 'FluidTYPO3\\Flux\\Form\\Field';
+    const NAMESPACE_CONTAINER = 'FluidTYPO3\\Flux\\Form\\Container';
+    const NAMESPACE_WIZARD = 'FluidTYPO3\\Flux\\Form\\Wizard';
 
     /**
      * @var string
@@ -93,7 +98,7 @@ abstract class AbstractFormComponent implements FormInterface
     public static function create(array $settings = [])
     {
         /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $objectManager = static::getObjectManager();
         $className = get_called_class();
         /** @var FormInterface $object */
         $object = $objectManager->get($className);
@@ -120,7 +125,7 @@ abstract class AbstractFormComponent implements FormInterface
      */
     public function createField($type, $name, $label = null)
     {
-        return $this->createComponent('FluidTYPO3\Flux\Form\Field', $type, $name, $label);
+        return $this->createComponent(static::NAMESPACE_FIELD, $type, $name, $label);
     }
 
     /**
@@ -131,7 +136,7 @@ abstract class AbstractFormComponent implements FormInterface
      */
     public function createContainer($type, $name, $label = null)
     {
-        return $this->createComponent('FluidTYPO3\Flux\Form\Container', $type, $name, $label);
+        return $this->createComponent(static::NAMESPACE_CONTAINER, $type, $name, $label);
     }
 
     /**
@@ -142,7 +147,7 @@ abstract class AbstractFormComponent implements FormInterface
      */
     public function createWizard($type, $name, $label = null)
     {
-        return $this->createComponent('FluidTYPO3\Flux\Form\Wizard', $type, $name, $label);
+        return $this->createComponent(static::NAMESPACE_WIZARD, $type, $name, $label);
     }
 
     /**
@@ -426,7 +431,7 @@ abstract class AbstractFormComponent implements FormInterface
         if ($parent === null) {
             return false;
         }
-        return ('FluidTYPO3\Flux\Form\Container\\' . $type === get_class($parent) || true === is_a($parent, $type));
+        return (static::NAMESPACE_CONTAINER . '\\' . $type === get_class($parent) || true === is_a($parent, $type));
     }
 
     /**
@@ -504,7 +509,7 @@ abstract class AbstractFormComponent implements FormInterface
      */
     protected function getObjectManager()
     {
-        return GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+        return GeneralUtility::makeInstance(ObjectManager::class);
     }
 
     /**
@@ -512,7 +517,7 @@ abstract class AbstractFormComponent implements FormInterface
      */
     protected function getConfigurationService()
     {
-        return $this->getObjectManager()->get('FluidTYPO3\\Flux\\Service\\FluxService');
+        return $this->getObjectManager()->get(FluxService::class);
     }
 
     /**

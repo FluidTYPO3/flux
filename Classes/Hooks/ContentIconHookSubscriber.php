@@ -27,6 +27,8 @@ use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 class ContentIconHookSubscriber
 {
 
+    const OPTION_HOOK_METHOD = 'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon';
+
     /**
      * @var array
      */

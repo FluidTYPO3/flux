@@ -19,6 +19,7 @@ use FluidTYPO3\Flux\Utility\ClipBoardUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
@@ -763,7 +764,7 @@ class PreviewView
 
         // but for language mode all (uid -1):
         if ((integer) $row['sys_language_uid'] === -1) {
-            /** @var \TYPO3\CMS\Backend\Controller\PageLayoutController $pageLayoutController */
+            /** @var PageLayoutController $pageLayoutController */
             $pageLayoutController = $GLOBALS['SOBE'];
             $isColumnView = ((integer) $pageLayoutController->MOD_SETTINGS['function'] === 1);
             $isLanguagesView = ((integer) $pageLayoutController->MOD_SETTINGS['function'] === 2);

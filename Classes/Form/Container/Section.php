@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
@@ -22,14 +23,14 @@ class Section extends AbstractFormContainer implements ContainerInterface
 
     /**
      * @param array $settings
-     * @return \FluidTYPO3\Flux\Form\Container\Section
+     * @return Section
      */
     public static function create(array $settings = [])
     {
         /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var Section */
-        $section = $objectManager->get('FluidTYPO3\Flux\Form\Container\Section');
+        $section = $objectManager->get(Section::class);
         foreach ($settings as $settingName => $settingValue) {
             $setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
             if (true === method_exists($section, $setterMethodName)) {
