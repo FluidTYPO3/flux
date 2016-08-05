@@ -148,10 +148,6 @@ class Resolver
         } else {
             $extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
             $potentialClassName = $extensionName . '\\Controller\\' . $controllerName . 'Controller';
-            // @TODO remove legacy
-            if (false === class_exists($potentialClassName)) {
-                $potentialClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
-            }
         }
         return $potentialClassName;
     }
