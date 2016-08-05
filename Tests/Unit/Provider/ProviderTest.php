@@ -96,7 +96,7 @@ class ProviderTest extends AbstractProviderTest
         $service = $this->createFluxServiceInstance();
         $provider = new Provider();
         $provider->setExtensionKey('test');
-        $resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', array('resolvePrimaryConfigurationProvider'));
+        $resolver = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\ProviderResolver')->setMethods(array('resolvePrimaryConfigurationProvider'))->getMock();
         $resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $service->injectProviderResolver($resolver);
         $result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
@@ -115,7 +115,7 @@ class ProviderTest extends AbstractProviderTest
         $service = $this->createFluxServiceInstance();
         $provider = new Provider();
         $provider->setTemplatePaths(array());
-        $resolver = $this->getMock('FluidTYPO3\\Flux\\Provider\\ProviderResolver', array('resolvePrimaryConfigurationProvider'));
+        $resolver = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\ProviderResolver')->setMethods(array('resolvePrimaryConfigurationProvider'))->getMock();
         $resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $service->injectProviderResolver($resolver);
         $result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);

@@ -31,7 +31,7 @@ class FlashMessagePipeTest extends AbstractPipeTestCase
      */
     public function setUp()
     {
-        $GLOBALS['BE_USER'] = $this->getMock('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication');
+        $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->getMock();
     }
 
     /**

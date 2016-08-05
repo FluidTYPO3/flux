@@ -22,11 +22,11 @@ class ConfigurationManagerTest extends AbstractTestCase
      */
     public function usesEnvironmentSettingToInstanciateCorrectConcreteInstanceForFrontend()
     {
-        $environmentServiceMock = $this->getMock('TYPO3\CMS\Extbase\Service\EnvironmentService', array('isEnvironmentInFrontendMode'));
+        $environmentServiceMock = $this->getMockBuilder('TYPO3\CMS\Extbase\Service\EnvironmentService')->setMethods(array('isEnvironmentInFrontendMode'))->getMock();
         $environmentServiceMock->expects($this->once())->method('isEnvironmentInFrontendMode')->will($this->returnValue(true));
-        $objectManagerMock = $this->getMock('TYPO3\CMS\Extbase\Object\ObjectManager', array('get'));
+        $objectManagerMock = $this->getMockBuilder('TYPO3\CMS\Extbase\Object\ObjectManager')->setMethods(array('get'))->getMock();
         $objectManagerMock->expects($this->once())->method('get')->with('TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager');
-        $mock = $this->getMock($this->createInstanceClassName());
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->getMock();
         ObjectAccess::setProperty($mock, 'environmentService', $environmentServiceMock, true);
         ObjectAccess::setProperty($mock, 'objectManager', $objectManagerMock, true);
         $this->callInaccessibleMethod($mock, 'initializeConcreteConfigurationManager');
@@ -37,11 +37,11 @@ class ConfigurationManagerTest extends AbstractTestCase
      */
     public function usesEnvironmentSettingToInstanciateCorrectConcreteInstanceForBackend()
     {
-        $environmentServiceMock = $this->getMock('TYPO3\CMS\Extbase\Service\EnvironmentService', array('isEnvironmentInFrontendMode'));
+        $environmentServiceMock = $this->getMockBuilder('TYPO3\CMS\Extbase\Service\EnvironmentService')->setMethods(array('isEnvironmentInFrontendMode'))->getMock();
         $environmentServiceMock->expects($this->once())->method('isEnvironmentInFrontendMode')->will($this->returnValue(false));
-        $objectManagerMock = $this->getMock('TYPO3\CMS\Extbase\Object\ObjectManager', array('get'));
+        $objectManagerMock = $this->getMockBuilder('TYPO3\CMS\Extbase\Object\ObjectManager')->setMethods(array('get'))->getMock();
         $objectManagerMock->expects($this->once())->method('get')->with('FluidTYPO3\Flux\Configuration\BackendConfigurationManager');
-        $mock = $this->getMock($this->createInstanceClassName());
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->getMock();
         ObjectAccess::setProperty($mock, 'environmentService', $environmentServiceMock, true);
         ObjectAccess::setProperty($mock, 'objectManager', $objectManagerMock, true);
         $this->callInaccessibleMethod($mock, 'initializeConcreteConfigurationManager');
@@ -52,8 +52,8 @@ class ConfigurationManagerTest extends AbstractTestCase
      */
     public function setCurrentPageUidIgnoresFrontendConfigurationManager()
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('initializeConcreteConfigurationManager'));
-        $configurationManager = $this->getMock('TYPO3\\CMS\\Extbase\\Configuration\\FrontendConfigurationManager', array('setCurrentPageId'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('initializeConcreteConfigurationManager'))->getMock();
+        $configurationManager = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Configuration\\FrontendConfigurationManager')->setMethods(array('setCurrentPageId'))->getMock();
         $configurationManager->expects($this->never())->method('setCurrentPageId');
         ObjectAccess::setProperty($mock, 'concreteConfigurationManager', $configurationManager, true);
         $mock->setCurrentPageUid(1);
@@ -64,8 +64,8 @@ class ConfigurationManagerTest extends AbstractTestCase
      */
     public function setCurrentPageUidUsesBackendConfigurationManager()
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('initializeConcreteConfigurationManager'));
-        $configurationManager = $this->getMock('FluidTYPO3\\Flux\\Configuration\\BackendConfigurationManager', array('setCurrentPageId'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('initializeConcreteConfigurationManager'))->getMock();
+        $configurationManager = $this->getMockBuilder('FluidTYPO3\\Flux\\Configuration\\BackendConfigurationManager')->setMethods(array('setCurrentPageId'))->getMock();
         $configurationManager->expects($this->once())->method('setCurrentPageId')->with(1);
         ObjectAccess::setProperty($mock, 'concreteConfigurationManager', $configurationManager, true);
         $mock->setCurrentPageUid(1);
@@ -76,8 +76,8 @@ class ConfigurationManagerTest extends AbstractTestCase
      */
     public function getCurrentPageUidIgnoresFrontendConfigurationManager()
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('initializeConcreteConfigurationManager'));
-        $configurationManager = $this->getMock('TYPO3\\CMS\\Extbase\\Configuration\\FrontendConfigurationManager', array('getCurrentPageId'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('initializeConcreteConfigurationManager'))->getMock();
+        $configurationManager = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Configuration\\FrontendConfigurationManager')->setMethods(array('getCurrentPageId'))->getMock();
         $configurationManager->expects($this->never())->method('getCurrentPageId');
         ObjectAccess::setProperty($mock, 'concreteConfigurationManager', $configurationManager, true);
         $result = $mock->getCurrentPageId();
@@ -89,8 +89,8 @@ class ConfigurationManagerTest extends AbstractTestCase
      */
     public function getCurrentPageUidUsesBackendConfigurationManager()
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('initializeConcreteConfigurationManager'));
-        $configurationManager = $this->getMock('FluidTYPO3\\Flux\\Configuration\\BackendConfigurationManager', array('getCurrentPageId'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('initializeConcreteConfigurationManager'))->getMock();
+        $configurationManager = $this->getMockBuilder('FluidTYPO3\\Flux\\Configuration\\BackendConfigurationManager')->setMethods(array('getCurrentPageId'))->getMock();
         $configurationManager->expects($this->once())->method('getCurrentPageId')->will($this->returnValue(1));
         ObjectAccess::setProperty($mock, 'concreteConfigurationManager', $configurationManager, true);
         $result = $mock->getCurrentPageId();

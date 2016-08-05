@@ -27,7 +27,7 @@ class FormDataTransformerTest extends AbstractTestCase
      */
     public function testTransformation($value, $transformation, $expected)
     {
-        $instance = $this->getMock('FluidTYPO3\\Flux\\Transformation\\FormDataTransformer', array('loadObjectsFromRepository'));
+        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Transformation\\FormDataTransformer')->setMethods(array('loadObjectsFromRepository'))->getMock();
         $instance->expects($this->any())->method('loadObjectsFromRepository')->willReturn(array());
         $instance->injectObjectManager($this->objectManager);
         $form = Form::create();
@@ -61,13 +61,11 @@ class FormDataTransformerTest extends AbstractTestCase
     {
         $instance = new FormDataTransformer();
         $identifiers = array('foobar', 'foobar2');
-        $repository = $this->getMock(
-            'TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserGroupRepository',
-            array('findByUid'),
-            array(),
-            '',
-            false
-        );
+        $repository = $this->getMockBuilder(
+            'TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserGroupRepository'
+        )->setMethods(
+            array('findByUid')
+        )->disableOriginalConstructor()->getMock();
         $repository->expects($this->exactly(2))->method('findByUid')->will($this->returnArgument(0));
         $result = $this->callInaccessibleMethod($instance, 'loadObjectsFromRepository', $repository, $identifiers);
         $this->assertEquals($result, array('foobar', 'foobar2'));

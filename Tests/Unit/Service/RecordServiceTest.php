@@ -29,7 +29,7 @@ class RecordServiceTest extends AbstractTestCase
      */
     protected function getMockDatabaseConnection(array $methods)
     {
-        self::$connectionMock = $this->getMock($this->createInstanceClassName(), $methods);
+        self::$connectionMock = $this->getMockBuilder($this->createInstanceClassName())->setMethods($methods)->getMock();
         return self::$connectionMock;
     }
 
@@ -41,7 +41,7 @@ class RecordServiceTest extends AbstractTestCase
     protected function getMockServiceInstance(array $methods, array $connectionMethods)
     {
         $methods[] = 'getDatabaseConnection';
-        $mock = $this->getAccessibleMock($this->createInstanceClassName(), $methods);
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods($methods)->getMock();
         $connectionMock = $this->getMockDatabaseConnection($connectionMethods);
         $mock->expects($this->atLeastOnce())->method('getDatabaseConnection')->will($this->returnValue($connectionMock));
         return $mock;
@@ -128,19 +128,17 @@ class RecordServiceTest extends AbstractTestCase
      */
     public function preparedGetCallsExpectedMethodSequence()
     {
-        $query = $this->getMock(
-            'TYPO3\\CMS\\Core\\Database\\PreparedStatement',
-            array('execute', 'fetchAll', 'free'),
-            array(),
-            '',
-            false
-        );
-        $connection = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('prepare_SELECTquery'));
+        $query = $this->getMockBuilder(
+            'TYPO3\\CMS\\Core\\Database\\PreparedStatement'
+        )->setMethods(
+            array('execute', 'fetchAll', 'free')
+        )->disableOriginalConstructor()->getMock();
+        $connection = $this->getMockDatabaseConnection(array('prepare_SELECTquery'));
         $connection->expects($this->once())->method('prepare_SELECTquery')->will($this->returnValue($query));
         $query->expects($this->once())->method('execute');
         $query->expects($this->once())->method('fetchAll')->will($this->returnValue(array()));
         $query->expects($this->once())->method('free');
-        $mock = $this->getMock($this->createInstanceClassName(), array('getDatabaseConnection'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getDatabaseConnection'))->getMock();
         $mock->expects($this->once())->method('getDatabaseConnection')->will($this->returnValue($connection));
         $mock->preparedGet('table', '', '', array());
     }

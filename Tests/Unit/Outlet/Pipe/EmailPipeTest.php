@@ -27,7 +27,7 @@ class EmailPipeTest extends AbstractPipeTestCase
      */
     protected function createInstance()
     {
-        $pipe = $this->getMock('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe', array('sendEmail'));
+        $pipe = $this->getMockBuilder('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe')->setMethods(array('sendEmail'))->getMock();
         ObjectAccess::setProperty($pipe, 'label', 'Mock EmailPipe', true);
         return $pipe;
     }
@@ -81,7 +81,7 @@ class EmailPipeTest extends AbstractPipeTestCase
     public function sendsEmail()
     {
         $instance = $this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe');
-        $message = $this->getMock('TYPO3\CMS\Core\Mail\MailMessage', array('send'));
+        $message = $this->getMockBuilder('TYPO3\CMS\Core\Mail\MailMessage')->setMethods(array('send'))->getMock();
         $message->expects($this->once())->method('send');
         $this->callInaccessibleMethod($instance, 'sendEmail', $message);
     }

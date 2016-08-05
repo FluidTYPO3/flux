@@ -65,7 +65,7 @@ abstract class AbstractUserFunctionTest extends AbstractTestCase
      */
     protected function getCallerInstance()
     {
-        return $this->getMock('TYPO3\\CMS\\Backend\\Form\\FormEngine', array('dummy'), array(), '', false);
+        return $this->getMockBuilder('TYPO3\\CMS\\Backend\\Form\\FormEngine')->setMethods(array('dummy'))->disableOriginalConstructor()->getMock();
     }
 
     /**

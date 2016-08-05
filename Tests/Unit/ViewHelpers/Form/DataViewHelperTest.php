@@ -64,7 +64,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'uid' => 1
         );
         $viewHelper = $this->buildViewHelperInstance($arguments);
-        $GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\CMS\Core\Database\DatabaseConnection')->setMethods(array('exec_SELECTgetSingleRow'))->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->never())->method('exec_SELECTgetSingleRow');
         $this->setExpectedException(
             'TYPO3\CMS\Fluid\Core\ViewHelper\Exception',
@@ -82,7 +82,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'table' => 'tt_content',
             'field' => 'pi_flexform',
         );
-        $GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\CMS\Core\Database\DatabaseConnection')->setMethods(array('exec_SELECTgetSingleRow'))->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
         $this->setExpectedException(
             'TYPO3\CMS\Fluid\Core\ViewHelper\Exception',
@@ -118,7 +118,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'field' => 'pi_flexform',
             'uid' => 1
         );
-        $GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\CMS\Core\Database\DatabaseConnection')->setMethods(array('exec_SELECTgetSingleRow'))->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
         $this->setExpectedException(
             'TYPO3\CMS\Fluid\Core\ViewHelper\Exception'
@@ -197,7 +197,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     public function readDataArrayFromProvidersOrUsingDefaultMethodCallsConfigurationServiceConvertOnEmptyProviderArray()
     {
         $mock = $this->createInstance();
-        $configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('convertFlexFormContentToArray'));
+        $configurationService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('convertFlexFormContentToArray'))->getMock();
         $providers = array();
         $record = array();
         $field = null;
@@ -212,9 +212,9 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     public function readDataArrayFromProvidersOrUsingDefaultMethodUsesProvidersToReadData()
     {
         $mock = $this->createInstance();
-        $provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getFlexFormValues'));
+        $provider1 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getFlexFormValues'))->getMock();
         $provider1->expects($this->once())->method('getFlexFormValues')->willReturn(array('foo' => array('bar' => 'test')));
-        $provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getFlexFormValues'));
+        $provider2 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getFlexFormValues'))->getMock();
         $provider2->expects($this->once())->method('getFlexFormValues')
             ->willReturn(array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test'));
         $providers = array($provider1, $provider2);

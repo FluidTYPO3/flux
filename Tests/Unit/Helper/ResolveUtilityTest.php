@@ -29,7 +29,7 @@ class ResolveUtilityTest extends AbstractTestCase
         $modelClassName = 'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\Domain\\Model\\Dummy';
         Core::registerAutoFormForModelObjectClassName($modelClassName);
         $classNames = array('FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\Domain\\Form\\DummyForm');
-        $resolver = $this->getMock('FluidTYPO3\\Flux\\Helper\\Resolver', array('resolveClassNamesInPackageSubNamespace'));
+        $resolver = $this->getMockBuilder('FluidTYPO3\\Flux\\Helper\\Resolver')->setMethods(array('resolveClassNamesInPackageSubNamespace'))->getMock();
         $resolver->expects($this->once())->method('resolveClassNamesInPackageSubNamespace')->willReturn($classNames);
         $result = $resolver->resolveDomainFormClassInstancesFromPackages(array('foobar'));
         $this->assertInstanceOf($classNames[0], $result[$modelClassName]);

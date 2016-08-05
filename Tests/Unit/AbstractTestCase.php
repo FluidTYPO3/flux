@@ -189,9 +189,9 @@ abstract class AbstractTestCase extends BaseTestCase
     protected function createFluxServiceInstance($methods = array('dummy'))
     {
         /** @var FluxService $fluxService */
-        $fluxService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', $methods, array(), '', false);
+        $fluxService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods($methods)->disableOriginalConstructor()->getMock();
         $fluxService->injectObjectManager($this->objectManager);
-        $configurationManager = $this->getMock('FluidTYPO3\Flux\Configuration\ConfigurationManager');
+        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
         return $fluxService;
     }

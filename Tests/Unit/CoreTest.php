@@ -289,7 +289,7 @@ class CoreTest extends AbstractTestCase
     public function registerFormForModelObjectClassNameSetsExtensionNameFromExtensionKeyGlobal()
     {
         $GLOBALS['_EXTKEY'] = 'test';
-        $form = $this->getMock('FluidTYPO3\\Flux\\Form', array('setExtensionName'));
+        $form = $this->getMockBuilder('FluidTYPO3\\Flux\\Form')->setMethods(array('setExtensionName'))->getMock();
         $form->expects($this->once())->method('setExtensionName')->with('Test');
         Core::registerFormForModelObjectClassName('FooBar', $form);
         unset($GLOBALS['_EXTKEY']);
@@ -301,7 +301,7 @@ class CoreTest extends AbstractTestCase
     public function registerFormForTableSetsExtensionNameFromExtensionKeyGlobal()
     {
         $GLOBALS['_EXTKEY'] = 'test';
-        $form = $this->getMock('FluidTYPO3\\Flux\\Form', array('setExtensionName'));
+        $form = $this->getMockBuilder('FluidTYPO3\\Flux\\Form')->setMethods(array('setExtensionName'))->getMock();
         $form->expects($this->once())->method('setExtensionName')->with('Test');
         Core::registerFormForTable('foobar', $form);
         unset($GLOBALS['_EXTKEY']);

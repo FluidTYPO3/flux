@@ -21,22 +21,24 @@ class VariableViewHelperTest extends AbstractViewHelperTestCase
      */
     public function addsVariableToContainer()
     {
-        $containerMock = $this->getMock('FluidTYPO3\Flux\Form', array('setVariable'));
+        $containerMock = $this->getMockBuilder('FluidTYPO3\Flux\Form')->setMethods(array('setVariable'))->getMock();
         $containerMock->expects($this->once())->method('setVariable')->with('test', 'testvalue');
-        $viewHelperVariableContainerMock = $this->getMock(
-            'TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer',
+        $viewHelperVariableContainerMock = $this->getMockBuilder(
+            'TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer'
+        )->setMethods(
             array('exists', 'get')
-        );
+        )->getMock();
         $viewHelperVariableContainerMock->expects($this->once())->method('exists')->willReturn(true);
         $viewHelperVariableContainerMock->expects($this->once())->method('get')->willReturn($containerMock);
-        $renderingContext = $this->getMock(
-            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface',
+        $renderingContext = $this->getMockBuilder(
+            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface'
+        )->setMethods(
             array('getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext')
-        );
+        )->getMock();
         $renderingContext->expects($this->atLeastOnce())
             ->method('getViewHelperVariableContainer')
             ->willReturn($viewHelperVariableContainerMock);
-        $instance = $this->getMock($this->createInstanceClassName(), array('dummy'));
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
         $instance->setRenderingContext($renderingContext);
         $instance->setArguments(array('name' => 'test', 'value' => 'testvalue'));
         $instance->render();

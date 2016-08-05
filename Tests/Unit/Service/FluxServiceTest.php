@@ -82,7 +82,7 @@ class FluxServiceTest extends AbstractTestCase
     public function dispatchesMessageOnInvalidPathsReturned()
     {
         $className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-        $instance = $this->getMock($className, array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptByPath'));
+        $instance = $this->getMockBuilder($className)->setMethods(array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptByPath'))->getMock();
         $instance->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue(null));
         $instance->expects($this->once())->method('getDefaultViewConfigurationForExtensionKey')->will($this->returnValue(null));
         $instance->getViewConfigurationForExtensionName('Flux');
@@ -292,7 +292,7 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testGetSettingsForExtensionName()
     {
-        $instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getTypoScriptByPath'));
+        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
         $instance->expects($this->once())->method('getTypoScriptByPath')
             ->with('plugin.tx_underscore.settings')
             ->willReturn(array('test' => 'test'));
@@ -306,7 +306,7 @@ class FluxServiceTest extends AbstractTestCase
     public function templateWithErrorReturnsFormWithErrorReporter()
     {
         $viewContext = new ViewContext($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
-        $instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getPreparedExposedTemplateView'));
+        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('getPreparedExposedTemplateView'))->getMock();
         $instance->expects($this->once())->method('getPreparedExposedTemplateView')->willThrowException(new \RuntimeException());
         $instance->injectObjectManager($this->objectManager);
         $form = $instance->getFormFromTemplateFile($viewContext);
@@ -320,7 +320,7 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function messageIgnoresRepeatedMessages()
     {
-        $instance = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('logMessage'));
+        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('logMessage'))->getMock();
         $instance->expects($this->once())->method('logMessage');
         $instance->message('Test', 'Test', 2);
         $instance->message('Test', 'Test', 2);
@@ -372,7 +372,7 @@ class FluxServiceTest extends AbstractTestCase
     {
         $fluxService = $this->createFluxServiceInstance(array('getCurrentPageId'));
 
-        $configurationManager = $this->getMock('FluidTYPO3\Flux\Configuration\ConfigurationManager', array('getConfiguration'));
+        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->setMethods(array('getConfiguration'))->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
         $configurationManager->expects($this->once())->method('getConfiguration');
 

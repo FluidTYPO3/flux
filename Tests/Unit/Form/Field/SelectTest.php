@@ -76,7 +76,7 @@ class SelectTest extends AbstractFieldTest
         $GLOBALS['TCA']['foobar']['ctrl']['label'] = 'username';
         /** @var Select $instance */
         $instance = $this->objectManager->get($this->createInstanceClassName());
-        $query = $this->getMock('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Query', array('execute', 'getType'), array(), '', false);
+        $query = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Query')->setMethods(array('execute', 'getType'))->disableOriginalConstructor()->getMock();
         $query->expects($this->any())->method('getType')->will($this->returnValue('foobar'));
         $query->expects($this->any())->method('execute')->will($this->returnValue(array(
             new FrontendUser('user1'),
@@ -112,9 +112,9 @@ class SelectTest extends AbstractFieldTest
                 )
             )
         );
-        $service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('getAllTypoScript'));
+        $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('getAllTypoScript'))->getMock();
         $service->expects($this->once())->method('getAllTypoScript')->willReturn($fixture);
-        $instance = $this->getMock($this->createInstanceClassName(), array('getConfigurationService'));
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getConfigurationService'))->getMock();
         $instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
         $GLOBALS['TCA'][$table . 'suffix']['ctrl']['label'] = $table . 'label';
         $propertyName = $this->callInaccessibleMethod($instance, 'getLabelPropertyName', $table, $type);

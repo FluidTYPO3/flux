@@ -28,9 +28,9 @@ class ProviderResolverTest extends AbstractTestCase
     {
         /** @var \FluidTYPO3\Flux\Provider\ProviderResolver $instance */
         $instance = $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver');
-        $configurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('getTypoScriptByPath'));
+        $configurationService = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
         $configurationService->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue(array()));
-        $objectManager = $this->getMock('TYPO3\CMS\Extbase\Object\ObjectManager', array('get'));
+        $objectManager = $this->getMockBuilder('TYPO3\CMS\Extbase\Object\ObjectManager')->setMethods(array('get'))->getMock();
         $objectManager->expects($this->never())->method('get');
         $instance->injectConfigurationService($configurationService);
         $providers = $instance->loadTypoScriptConfigurationProviderInstances();
@@ -45,8 +45,8 @@ class ProviderResolverTest extends AbstractTestCase
     {
         /** @var \FluidTYPO3\Flux\Provider\ProviderResolver $instance */
         $instance = $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver');
-        $configurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('getTypoScriptByPath'));
-        $objectManager = $this->getMock('TYPO3\CMS\Extbase\Object\ObjectManager', array('get'));
+        $configurationService = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
+        $objectManager = $this->getMockBuilder('TYPO3\CMS\Extbase\Object\ObjectManager')->setMethods(array('get'))->getMock();
         $mockedTypoScript = array(
             'dummy.' => array(
                 'className' => 'FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider'
@@ -124,7 +124,7 @@ class ProviderResolverTest extends AbstractTestCase
      */
     public function resolveConfigurationProvidersReturnsExpectedProviders(array $providers)
     {
-        $instance = $this->getMock($this->createInstanceClassName(), array('getAllRegisteredProviderInstances'));
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getAllRegisteredProviderInstances'))->getMock();
         $instance->expects($this->once())->method('getAllRegisteredProviderInstances')->willReturn($providers);
         $result = $instance->resolveConfigurationProviders('table', 'field');
         $this->assertEquals(array_reverse($providers), $result);
@@ -137,7 +137,7 @@ class ProviderResolverTest extends AbstractTestCase
      */
     public function resolvePrimaryConfigurationProvidersReturnsExpectedProvider(array $providers)
     {
-        $instance = $this->getMock($this->createInstanceClassName(), array('getAllRegisteredProviderInstances'));
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getAllRegisteredProviderInstances'))->getMock();
         $instance->expects($this->once())->method('getAllRegisteredProviderInstances')->willReturn($providers);
         $result = $instance->resolvePrimaryConfigurationProvider('table', 'field');
         $this->assertEquals(array_pop($providers), $result);
@@ -148,10 +148,10 @@ class ProviderResolverTest extends AbstractTestCase
      */
     public function getProviderTestValues()
     {
-        $priority50 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getPriority', 'trigger'));
+        $priority50 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getPriority', 'trigger'))->getMock();
         $priority50->expects($this->atLeastOnce())->method('getPriority')->willReturn(50);
         $priority50->expects($this->atLeastOnce())->method('trigger')->willReturn(true);
-        $priority40 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getPriority', 'trigger'));
+        $priority40 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getPriority', 'trigger'))->getMock();
         $priority40->expects($this->atLeastOnce())->method('getPriority')->willReturn(40);
         $priority40->expects($this->atLeastOnce())->method('trigger')->willReturn(true);
         return array(

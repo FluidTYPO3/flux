@@ -24,22 +24,26 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
      */
     public function setUp()
     {
-        $this->viewHelperVariableContainer = $this->getMock(
-            'TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer',
+        $this->viewHelperVariableContainer = $this->getMockBuilder(
+            'TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer'
+        )->setMethods(
             array('exists', 'get', 'add')
-        );
-        $this->templateVariableContainer = $this->getMock(
-            'TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer',
+        )->getMock();
+        $this->templateVariableContainer = $this->getMockBuilder(
+            'TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer')
+        ->setMethods(
             array('exists', 'get', 'add')
-        );
-        $this->renderingContext = $this->getMock(
-            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface',
+        )->getMock();
+        $this->renderingContext = $this->getMockBuilder(
+            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface'
+        )->setMethods(
             array('getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext')
-        );
-        $this->controllerContext = $this->getMock(
-            'TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext',
+        )->getMock();
+        $this->controllerContext = $this->getMockBuilder(
+            'TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext'
+        )->setMethods(
             array('getRequest')
-        );
+        )->getMock();
         $this->controllerContext->expects($this->any())
             ->method('getRequest')
             ->willReturn(new Request());
@@ -176,7 +180,7 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
         if (true === empty($methods)) {
             $methods[] = 'dummy';
         }
-        $instance = $this->getMock($this->getViewHelperClassName(), $methods);
+        $instance = $this->getMockBuilder($this->getViewHelperClassName())->setMethods($methods)->getMock();
         $instance->setRenderingContext($this->renderingContext);
         return $instance;
     }

@@ -33,7 +33,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
         $GLOBALS['TSFE']->sys_page = new PageRepository();
         $GLOBALS['TT'] = new NullTimeTracker();
-        $GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', false);
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
         $GLOBALS['TCA']['tt_content']['ctrl'] = array();
     }

@@ -54,12 +54,12 @@ class DynamicFlexFormTest extends AbstractTestCase
         $config = array();
         $row = array($fieldName => '');
         $instance = new DynamicFlexForm();
-        $provider1 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('postProcessDataStructure'));
-        $provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('postProcessDataStructure'));
+        $provider1 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('postProcessDataStructure'))->getMock();
+        $provider2 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('postProcessDataStructure'))->getMock();
         $provider1->expects($this->any())->method('postProcessDataStructure');
         $provider2->expects($this->any())->method('postProcessDataStructure');
         $providers = array($provider1, $provider2);
-        $service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+        $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
         $service->expects($this->any())->method('resolveConfigurationProviders')
             ->with($table, $fieldName, $row)->willReturn($providers);
         $instance->injectConfigurationService($service);

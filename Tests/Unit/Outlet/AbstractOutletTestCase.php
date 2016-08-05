@@ -75,7 +75,7 @@ abstract class AbstractOutletTestCase extends AbstractTestCase
     {
         $instance = $this->createInstance();
         $data = array('test');
-        $pipe = $this->getMock('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe', array('conduct'));
+        $pipe = $this->getMockBuilder('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe')->setMethods(array('conduct'))->getMock();
         $pipe->expects($this->exactly(2))->method('conduct')->with($data)->will($this->returnValue($data));
         $pipes = array(
             $pipe

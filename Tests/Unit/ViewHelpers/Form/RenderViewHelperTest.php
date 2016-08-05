@@ -27,9 +27,9 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'] = array();
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeResolver'] = array();
         $form = Form::create();
-        $nodeFactory = $this->getMock(NodeFactory::class, array('create'));
-        $nodeFactory->expects($this->once())->method('create')->willReturn($this->getMock(NodeInterface::class));
-        $instance = $this->getMock($this->createInstanceClassName(), array('getNodeFactory'));
+        $nodeFactory = $this->getMockBuilder(NodeFactory::class)->setMethods(array('create'))->getMock();
+        $nodeFactory->expects($this->once())->method('create')->willReturn($this->getMockBuilder(NodeInterface::class)->getMock());
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getNodeFactory'))->getMock();
         $instance->expects($this->once())->method('getNodeFactory')->willReturn($nodeFactory);
         $instance->render($form);
     }

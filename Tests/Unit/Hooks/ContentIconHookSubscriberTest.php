@@ -39,7 +39,7 @@ class ContentIconHookSubscriberTest extends UnitTestCase
      */
     public function testAddSubIconUsesCache()
     {
-        $cache = $this->getMock('TYPO3\\CMS\\Core\\Cache\\CacheManager', array('has', 'get'));
+        $cache = $this->getMockBuilder('TYPO3\\CMS\\Core\\Cache\\CacheManager')->setMethods(array('has', 'get'))->getMock();
         $cache->expects($this->once())->method('has')->willReturn(true);
         $cache->expects($this->once())->method('get')->willReturn('icon');
         $instance = new ContentIconHookSubscriber();
@@ -57,10 +57,10 @@ class ContentIconHookSubscriberTest extends UnitTestCase
     public function testAddSubIcon(array $parameters, $provider, $expected)
     {
         $GLOBALS['TCA']['tt_content']['columns']['field']['config']['type'] = 'flex';
-        $cache = $this->getMock('TYPO3\\CMS\\Core\\Cache\\CacheManager', array('has', 'set'));
+        $cache = $this->getMockBuilder('TYPO3\\CMS\\Core\\Cache\\CacheManager')->setMethods(array('has', 'set'))->getMock();
         $cache->expects($this->once())->method('has')->willReturn(false);
         $cache->expects($this->once())->method('set')->willReturn('icon');
-        $service = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolvePrimaryConfigurationProvider'));
+        $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolvePrimaryConfigurationProvider'))->getMock();
         $service->expects($this->any())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $instance = new ContentIconHookSubscriber();
         $instance->injectFluxService($service);
@@ -81,11 +81,11 @@ class ContentIconHookSubscriberTest extends UnitTestCase
     {
         $formWithoutIcon = Form::create();
         $formWithIcon = Form::create(array('options' => array('icon' => 'icon')));
-        $providerWithoutForm = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getForm'));
+        $providerWithoutForm = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getForm'))->getMock();
         $providerWithoutForm->expects($this->any())->method('getForm')->willReturn(null);
-        $providerWithFormWithoutIcon = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getForm'));
+        $providerWithFormWithoutIcon = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getForm'))->getMock();
         $providerWithFormWithoutIcon->expects($this->any())->method('getForm')->willReturn($formWithoutIcon);
-        $providerWithFormWithIcon = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getForm'));
+        $providerWithFormWithIcon = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getForm'))->getMock();
         $providerWithFormWithIcon->expects($this->any())->method('getForm')->willReturn($formWithIcon);
         return array(
             array(array('pages', 1, array()), null, null),

@@ -26,10 +26,10 @@ class PreviewTest extends AbstractTestCase
      */
     public function setUp()
     {
-        $configurationManager = $this->getMock('FluidTYPO3\Flux\Configuration\ConfigurationManager');
+        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
         $fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
         $fluxService->injectConfigurationManager($configurationManager);
-        $GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', false);
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
         $tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
         foreach ($tempFiles as $tempFile) {
@@ -44,7 +44,7 @@ class PreviewTest extends AbstractTestCase
      */
     public function canExecuteRenderer()
     {
-        $caller = $this->getMock('TYPO3\CMS\Backend\View\PageLayoutView', array('attachAssets'), array(), '', false);
+        $caller = $this->getMockBuilder('TYPO3\CMS\Backend\View\PageLayoutView')->setMethods(array('attachAssets'))->disableOriginalConstructor()->getMock();
         $function = 'FluidTYPO3\Flux\Backend\Preview';
         $result = $this->callUserFunction($function, $caller);
         $this->assertEmpty($result);
@@ -56,7 +56,7 @@ class PreviewTest extends AbstractTestCase
     public function canGetPageTitleAndPidFromContentUid()
     {
         $className = 'FluidTYPO3\Flux\Backend\Preview';
-        $instance = $this->getMock($className);
+        $instance = $this->getMockBuilder($className)->getMock();
         $result = $this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
         $this->assertEmpty($result);
     }
@@ -66,12 +66,12 @@ class PreviewTest extends AbstractTestCase
      */
     public function stopsRenderingWhenProviderSaysStop()
     {
-        $instance = $this->getMock('FluidTYPO3\Flux\Backend\Preview', array('createShortcutIcon', 'attachAssets'));
+        $instance = $this->getMockBuilder('FluidTYPO3\Flux\Backend\Preview')->setMethods(array('createShortcutIcon', 'attachAssets'))->getMock();
         $instance->expects($this->never())->method('createShortcutIcon');
-        $configurationServiceMock = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
-        $providerOne = $this->getMock('FluidTYPO3\Flux\Provider\ContentProvider', array('getPreview'));
+        $configurationServiceMock = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
+        $providerOne = $this->getMockBuilder('FluidTYPO3\Flux\Provider\ContentProvider')->setMethods(array('getPreview'))->getMock();
         $providerOne->expects($this->once())->method('getPreview')->will($this->returnValue(array('test', 'test', false)));
-        $providerTwo = $this->getMock('FluidTYPO3\Flux\Provider\ContentProvider', array('getPreview'));
+        $providerTwo = $this->getMockBuilder('FluidTYPO3\Flux\Provider\ContentProvider')->setMethods(array('getPreview'))->getMock();
         $providerTwo->expects($this->never())->method('getPreview');
         $configurationServiceMock->expects($this->once())->method('resolveConfigurationProviders')->will($this->returnValue(array($providerOne, $providerTwo)));
         ObjectAccess::setProperty($instance, 'configurationService', $configurationServiceMock, true);
@@ -95,7 +95,7 @@ class PreviewTest extends AbstractTestCase
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $row['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
         Core::registerConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
-        $instance = $this->getMock($function, array('attachAssets'));
+        $instance = $this->getMockBuilder($function)->setMethods(array('attachAssets'))->getMock();
         $instance->preProcess($caller, $drawItem, $headerContent, $itemContent, $row);
         Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
     }

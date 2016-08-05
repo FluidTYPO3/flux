@@ -25,7 +25,7 @@ class AbstractPipeViewHelperTest extends UnitTestCase
     public function testPreparePipeInstanceDefaultReturnsStandardPipe()
     {
         $className = 'FluidTYPO3\\Flux\\ViewHelpers\\Pipe\\AbstractPipeViewHelper';
-        $instance = $this->getMockForAbstractClass($className);
+        $instance = $this->getMockBuilder($className)->getMock();
         $this->inject($instance, 'objectManager', GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
         $result = $this->callInaccessibleMethod($instance, 'preparePipeInstance', new RenderingContext(), array());
         $this->assertInstanceOf('FluidTYPO3\\Flux\\Outlet\\Pipe\\StandardPipe', $result);

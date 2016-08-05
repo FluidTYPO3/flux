@@ -106,7 +106,7 @@ class TemplatePathsTest extends BaseTestCase
      */
     public function testResolveFilesMethodCallsResolveFilesInFolders($method, $pathsMethod)
     {
-        $instance = $this->getMock('FluidTYPO3\\Flux\\View\\TemplatePaths', array('resolveFilesInFolders'));
+        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\View\\TemplatePaths')->setMethods(array('resolveFilesInFolders'))->getMock();
         $instance->$pathsMethod(array('foo'));
         $instance->expects($this->once())->method('resolveFilesInFolders')->with($this->anything(), 'format');
         $instance->$method('format', 'format');

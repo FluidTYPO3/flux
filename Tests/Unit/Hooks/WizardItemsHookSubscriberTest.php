@@ -30,14 +30,15 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase
      */
     public function processesWizardItems($items, $whitelist, $blacklist, $expectedList)
     {
-        $instance = $this->getMock(
-            'FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber',
+        $instance = $this->getMockBuilder(
+            'FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber')
+        ->setMethods(
             array('getAreaNameAndParentFromRelativeRecordOrDefaults')
-        );
+        )->getMock();
         $instance->expects($this->once())->method('getAreaNameAndParentFromRelativeRecordOrDefaults')
             ->willReturn(array(1, 'area'));
         $emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'area');
-        $controller = $this->getMock(NewContentElementController::class, array('init'), array(), '', false);
+        $controller = $this->getMockBuilder(NewContentElementController::class)->setMethods(array('init'))->disableOriginalConstructor()->getMock();
         $controller->colPos = 0;
         $controller->uid_pid = -1;
         $grid = new Grid();
@@ -53,12 +54,12 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase
         $provider1->setTemplatePaths(array());
         $provider1->setTemplateVariables(array());
         $provider1->setGrid($grid);
-        $provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
+        $provider2 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getGrid'))->getMock();
         $provider2->expects($this->exactly(2))->method('getGrid')->will($this->returnValue(null));
-        $configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+        $configurationService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
         $configurationService->expects($this->exactly(2))->method('resolveConfigurationProviders')
             ->will($this->returnValue(array($provider1, $provider2)));
-        $recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('getSingle'))->getMock();
         $recordService->expects($this->exactly(2))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
         $instance->injectConfigurationService($configurationService);
         $instance->injectRecordService($recordService);
@@ -140,20 +141,19 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase
         $items = array(
             array('tt_content_defValues' => '', 'params' => '')
         );
-        $instance = $this->getMock(
-            $this->createInstanceClassName(),
+        $instance = $this->getMockBuilder(
+            $this->createInstanceClassName()
+        )->setMethods(
             array(
                 'getDefaultValues', 'getWhiteAndBlackListsFromPageAndContentColumn',
                 'applyDefaultValues', 'applyWhitelist', 'applyBlacklist', 'trimItems'
             )
-        );
-        $GLOBALS['TYPO3_DB'] = $this->getMock(
-            'TYPO3\\CMS\\Core\\Database\\DatabaseConnection',
-            array('exec_SELECTgetSingleRow'),
-            array(),
-            '',
-            false
-        );
+        )->getMock();
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(
+            'TYPO3\\CMS\\Core\\Database\\DatabaseConnection'
+        )->setMethods(
+            array('exec_SELECTgetSingleRow')
+        )->disableOriginalConstructor()->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetSingleRow')->willReturn(null);
         $lists = array(array(), array());
         $instance->expects($this->once())->method('getWhiteAndBlackListsFromPageAndContentColumn')->will($this->returnValue($lists));
@@ -162,7 +162,7 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase
         $instance->expects($this->once())->method('applyBlacklist')->will($this->returnValue($items));
         $instance->expects($this->once())->method('trimItems')->will($this->returnValue($items));
         $instance->expects($this->once())->method('getDefaultValues')->will($this->returnValue($defaultValues));
-        $controller = $this->getMock(NewContentElementController::class, array('init'), array(), '', false);
+        $controller = $this->getMockBuilder(NewContentElementController::class)->setMethods(array('init'))->disableOriginalConstructor()->getMock();
         $instance->manipulateWizardItems($items, $controller);
         $this->assertNotEmpty($items);
     }
@@ -176,9 +176,9 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase
     {
         $defaults = array('tx_flux_column' => 'defaultarea', 'tx_flux_parent' => 999);
         $inRecord = array('tx_flux_column' => 'recordarea', 'tx_flux_parent' => 111);
-        $recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('getSingle'))->getMock();
         $recordService->expects($this->any())->method('getSingle')->willReturn($inRecord);
-        $instance = $this->getMock('FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber', array('getDefaultValues'));
+        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Hooks\\WizardItemsHookSubscriber')->setMethods(array('getDefaultValues'))->getMock();
         $instance->expects($this->once())->method('getDefaultValues')->willReturn($defaults);
         $instance->injectRecordService($recordService);
         $result = $this->callInaccessibleMethod($instance, 'getAreaNameAndParentFromRelativeRecordOrDefaults', $relativeUid);

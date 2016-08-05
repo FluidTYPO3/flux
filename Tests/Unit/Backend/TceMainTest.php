@@ -27,16 +27,14 @@ class TceMainTest extends AbstractTestCase
      */
     public function setUp()
     {
-        $configurationManager = $this->getMock('FluidTYPO3\Flux\Configuration\ConfigurationManager');
+        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
         $fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
         $fluxService->injectConfigurationManager($configurationManager);
-        $GLOBALS['TYPO3_DB'] = $this->getMock(
-            'TYPO3\\CMS\\Core\\Database\\DatabaseConnection',
-            array('exec_SELECTgetSingleRow', 'exec_SELECTgetRows'),
-            array(),
-            '',
-            false
-        );
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(
+            'TYPO3\\CMS\\Core\\Database\\DatabaseConnection'
+        )->setMethods(
+            array('exec_SELECTgetSingleRow', 'exec_SELECTgetRows')
+        )->disableOriginalConstructor()->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(false);
         $GLOBALS['TCA'] = array(
             'tt_content' => array(
@@ -53,8 +51,8 @@ class TceMainTest extends AbstractTestCase
     public function canExecuteClearAllCacheCommandAndPassToProvidersForEveryTcaTable()
     {
         $instance = $this->getInstance();
-        $mockedFluxService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
-        $mockedProvider = $this->getMock('FluidTYPO3\Flux\Provider\Provider', array('clearCacheCommand'));
+        $mockedFluxService = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
+        $mockedProvider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('clearCacheCommand'))->getMock();
         $expectedExecutions = count($GLOBALS['TCA']);
         $mockedProvider->expects($this->exactly($expectedExecutions))->method('clearCacheCommand')->with('all');
         $mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array($mockedProvider)));
@@ -68,7 +66,7 @@ class TceMainTest extends AbstractTestCase
     public function canExecuteClearAllCacheCommandTwiceWithoutDoubleCalling()
     {
         $instance = $this->getInstance();
-        $mockedFluxService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
+        $mockedFluxService = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
         $mockedFluxService->expects($this->atLeastOnce())->method('resolveConfigurationProviders')->will($this->returnValue(array()));
         ObjectAccess::setProperty($instance, 'configurationService', $mockedFluxService, true);
         $instance->clearCacheCommand('all');
@@ -229,7 +227,7 @@ class TceMainTest extends AbstractTestCase
     {
         $exception = new \RuntimeException();
         $mock = new TceMain();
-        $configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('debug', 'resolveConfigurationProviders'));
+        $configurationService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('debug', 'resolveConfigurationProviders'))->getMock();
         $configurationService->expects($this->once())->method('debug')->with($exception);
         $configurationService->expects($this->once())->method('resolveConfigurationProviders')->will($this->throwException($exception));
         $handler = new DataHandler();
@@ -257,16 +255,16 @@ class TceMainTest extends AbstractTestCase
     public function executeConfigurationProviderMethodCallsMethodOnProvidersAndTracksExecution()
     {
         $command = 'postProcessDatabaseOperation';
-        $mock = $this->getMock($this->createInstanceClassName(), array('resolveRecordUid', 'ensureRecordDataIsLoaded'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('resolveRecordUid', 'ensureRecordDataIsLoaded'))->getMock();
         $mock->expects($this->once())->method('resolveRecordUid')->willReturn(1);
         $mock->expects($this->once())->method('ensureRecordDataISLoaded')->willReturnArgument(2);
         $caller = $this->getCallerInstance();
         $row = array('uid' => 1);
         $arguments = array('status' => $command, 'id' => 1, 'row' => $row);
-        $provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array($command));
+        $provider = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array($command))->getMock();
         $provider->expects($this->exactly(1))->method($command);
         $providers = array($provider, $provider);
-        $configurationService = $this->getMock('FluidTYPO3\\Flux\\Service\\FluxService', array('resolveConfigurationProviders'));
+        $configurationService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
         $configurationService->expects($this->once())->method('resolveConfigurationProviders')->willReturn($providers);
         $mock->injectConfigurationService($configurationService);
         $result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, 'command', $row, $arguments, $caller);
@@ -282,7 +280,7 @@ class TceMainTest extends AbstractTestCase
      */
     public function testResolveRecordUid($input, $handlerInput, $expectedOutput)
     {
-        $instance = $this->getMock($this->createInstanceClassName(), array('dummy'), array(), '', true);
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->disableOriginalConstructor()->getMock();
         $dataHandler = new DataHandler();
         if (null !== $handlerInput) {
             $dataHandler->substNEWwithIDs[$input] = $handlerInput;
@@ -308,11 +306,11 @@ class TceMainTest extends AbstractTestCase
      */
     public function postProcessDatabaseOperationWithNewStatusAndContentTableCallsInitializeRecord()
     {
-        $contentService = $this->getMock('FluidTYPO3\\Flux\\Service\\ContentService', array('initializeRecord'));
+        $contentService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\ContentService')->setMethods(array('initializeRecord'))->getMock();
         $contentService->expects($this->once())->method('initializeRecord');
         /** @var DataHandler $tceMain */
         $tceMain = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
-        $instance = $this->getMock($this->createInstanceClassName(), array('executeConfigurationProviderMethod'), array(), '', true);
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('executeConfigurationProviderMethod'))->disableOriginalConstructor()->getMock();
         $instance->injectContentService($contentService);
         $row = array();
         $instance->processDatamap_afterDatabaseOperations('new', 'tt_content', 1, $row, $tceMain);

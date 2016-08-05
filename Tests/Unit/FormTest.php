@@ -374,7 +374,7 @@ class FormTest extends AbstractTestCase
     public function canSetAndGetOutlet()
     {
         /** @var StandardOutlet $outlet */
-        $outlet = $this->getMock('FluidTYPO3\Flux\Outlet\StandardOutlet');
+        $outlet = $this->getMockBuilder('FluidTYPO3\Flux\Outlet\StandardOutlet')->getMock();
         $form = Form::create();
         $form->setOutlet($outlet);
         $this->assertSame($outlet, $form->getOutlet());
@@ -385,9 +385,9 @@ class FormTest extends AbstractTestCase
      */
     public function dispatchesDebugMessageOnProblematicId()
     {
-        $service = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('message'));
+        $service = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('message'))->getMock();
         $service->expects($this->once())->method('message');
-        $instance = $this->getMock('FluidTYPO3\\Flux\\Form', array('getConfigurationService'));
+        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Form')->setMethods(array('getConfigurationService'))->getMock();
         $instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
         $instance->setId('I-am-not-valid');
     }

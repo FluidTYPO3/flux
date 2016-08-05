@@ -216,7 +216,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     public function canUseShorthandLanguageLabel()
     {
         $className = $this->getObjectClassName();
-        $instance = $this->getMock($className, array('getExtensionKey', 'getName', 'getRoot'));
+        $instance = $this->getMockBuilder($className)->setMethods(array('getExtensionKey', 'getName', 'getRoot'))->getMock();
         $instance->expects($this->never())->method('getExtensionKey');
         $instance->expects($this->any())->method('getRoot')->will($this->returnValue(null));
         $instance->expects($this->once())->method('getName')->will($this->returnValue('form'));
@@ -230,7 +230,7 @@ abstract class AbstractFormTest extends AbstractTestCase
      */
     public function canModifyProperties()
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('dummy'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
         $properties = array('enabled' => false);
         $mock->modify($properties);
         $result = $mock->getEnabled();
@@ -242,7 +242,7 @@ abstract class AbstractFormTest extends AbstractTestCase
      */
     public function canModifyVariablesSelectively()
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('dummy'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
         $mock->setVariables(array('foo' => 'baz', 'abc' => 'xyz'));
         $properties = array('options' => array('foo' => 'bar'));
         $mock->modify($properties);

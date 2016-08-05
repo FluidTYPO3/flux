@@ -27,18 +27,19 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function setUp()
     {
-        $GLOBALS['TYPO3_DB'] = $this->getMock(
-            'TYPO3\\CMS\\Core\\Database\\DatabaseConnection',
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(
+            'TYPO3\\CMS\\Core\\Database\\DatabaseConnection'
+        )->setMethods(
             array('exec_SELECTgetSingleRow', 'exec_SELECTgetRows', 'exec_SELECT_queryArray', 'fetch_assoc')
-        );
+        )->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetSingleRow')
             ->willReturn(Records::$contentRecordWithoutParentAndWithoutChildren);
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECT_queryArray')->willReturn($GLOBALS['TYPO3_DB']);
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('fetch_assoc')->willReturn(array());
-        $GLOBALS['BE_USER'] = $this->getMock('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication', array('calcPerms'));
+        $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->setMethods(array('calcPerms'))->getMock();
         $GLOBALS['BE_USER']->expects($this->any())->method('calcPerms');
-        $GLOBALS['LANG'] = $this->getMock('TYPO3\\CMS\\Lang\\LanguageService', array('sL'));
+        $GLOBALS['LANG'] = $this->getMockBuilder('TYPO3\\CMS\\Lang\\LanguageService')->setMethods(array('sL'))->getMock();
         $GLOBALS['LANG']->expects($this->any())->method('sL')->will($this->returnArgument(0));
         $GLOBALS['TCA'] = array(
             'tt_content' => array(
@@ -74,8 +75,9 @@ class PreviewViewTest extends AbstractTestCase
         $column = new Form\Container\Column();
         $column->setLabel('test');
         $record = array();
-        $instance = $this->getMock(
-            $this->createInstanceClassName(),
+        $instance = $this->getMockBuilder(
+            $this->createInstanceClassName()
+        )->setMethods(
             array(
                 'getRecords',
                 'drawRecord',
@@ -83,7 +85,7 @@ class PreviewViewTest extends AbstractTestCase
                 'drawNewIcon',
                 'getInitializedPageLayoutView'
             )
-        );
+        )->getMock();
         $instance->expects($this->once())->method('getRecords')->willReturn(array(array('foo' => 'bar'), array('bar' => 'foo')));
         $instance->expects($this->exactly(2))->method('drawRecord');
         $instance->expects($this->once())->method('getInitializedPageLayoutView')->willReturn(new PageLayoutView());
@@ -101,7 +103,7 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function testGetWorkspaceVersionOfRecordOrRecordItself(array $record, $workspaceId, array $expected)
     {
-        $instance = $this->getMock($this->createInstanceClassName(), array('getActiveWorkspaceId'));
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getActiveWorkspaceId'))->getMock();
         $instance->expects($this->once())->method('getActiveWorkspaceId')->willReturn($workspaceId);
         $result = $this->callInaccessibleMethod($instance, 'getWorkspaceVersionOfRecordOrRecordItself', $record);
         $this->assertEquals($expected, $result);
@@ -126,7 +128,7 @@ class PreviewViewTest extends AbstractTestCase
         $parentRow = array('bar' => 'foo');
         $record = array('foo' => 'bar');
         $column = new Form\Container\Column();
-        $view = $this->getMock('FluidTYPO3\\Flux\\View\\PageLayoutView', array('tt_content_drawHeader'));
+        $view = $this->getMockBuilder('FluidTYPO3\\Flux\\View\\PageLayoutView')->setMethods(array('tt_content_drawHeader'))->getMock();
         $view->expects($this->any())->method('tt_content_drawHeader')
             ->with($record, $this->anything(), $this->anything(), $this->anything());
         $instance = $this->createInstance();
@@ -152,7 +154,7 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function testProcessRecordOverlays(array $input, array $expected)
     {
-        $instance = $this->getMock($this->createInstanceClassName(), array('getWorkspaceVersionOfRecordOrRecordItself'));
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getWorkspaceVersionOfRecordOrRecordItself'))->getMock();
         $instance->expects($this->any())->method('getWorkspaceVersionOfRecordOrRecordItself')->willReturnArgument(0);
         $view = new PageLayoutView();
         $result = $this->callInaccessibleMethod($instance, 'processRecordOverlays', $input, $view);
@@ -208,7 +210,7 @@ class PreviewViewTest extends AbstractTestCase
         $provider->setForm($form);
         $provider->setTemplatePaths(array());
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
-        $previewView = $this->getMock($this->createInstanceClassName(), array('registerTargetContentAreaInSession'));
+        $previewView = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('registerTargetContentAreaInSession'))->getMock();
         $previewView->expects($this->any())->method('registerTargetContentAreaInSession');
         $previewView->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
         $previewView->injectConfigurationManager(
@@ -226,9 +228,9 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function avoidsRenderPreviewSectionIfTemplateFileDoesNotExist()
     {
-        $provider = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getTemplatePathAndFilename'));
+        $provider = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getTemplatePathAndFilename'))->getMock();
         $provider->expects($this->atLeastOnce())->method('getTemplatePathAndFilename')->willReturn(null);
-        $previewView = $this->getMock($this->createInstanceClassName(), array('dummy'));
+        $previewView = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
         $this->callInaccessibleMethod($previewView, 'renderPreviewSection', $provider, array());
     }
 
@@ -298,11 +300,11 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function configurePageLayoutViewForLanguageModeSetsSpecialVariablesInLanguageMode()
     {
-        $languageService = $this->getMock('TYPO3\\CMS\\Lang\\LanguageService', array('getLL'));
+        $languageService = $this->getMockBuilder('TYPO3\\CMS\\Lang\\LanguageService')->setMethods(array('getLL'))->getMock();
         $languageService->expects($this->once())->method('getLL');
-        $view = $this->getMock('FluidTYPO3\\Flux\\View\\PageLayoutView', array('initializeLanguages'));
+        $view = $this->getMockBuilder('FluidTYPO3\\Flux\\View\\PageLayoutView')->setMethods(array('initializeLanguages'))->getMock();
         $view->expects($this->once())->method('initializeLanguages');
-        $instance = $this->getMock($this->createInstanceClassName(), array('getPageModuleSettings', 'getLanguageService'));
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getPageModuleSettings', 'getLanguageService'))->getMock();
         $instance->expects($this->once())->method('getPageModuleSettings')->willReturn(array('function' => 2));
         $instance->expects($this->once())->method('getLanguageService')->willReturn($languageService);
         $result = $this->callInaccessibleMethod($instance, 'configurePageLayoutViewForLanguageMode', $view);
@@ -315,14 +317,14 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function testParseGridColumnTemplate()
     {
-        $column = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Column', array('getColspan', 'getRowspan', 'getStyle', 'getLabel'));
+        $column = $this->getMockBuilder('FluidTYPO3\\Flux\\Form\\Container\\Column')->setMethods(array('getColspan', 'getRowspan', 'getStyle', 'getLabel'))->getMock();
         $column->expects($this->once())->method('getColSpan')->willReturn('foobar-colSpan');
         $column->expects($this->once())->method('getRowSpan')->willReturn('foobar-rowSpan');
         $column->expects($this->once())->method('getStyle')->willReturn('foobar-style');
         $column->expects($this->once())->method('getLabel')->willReturn('foobar-label');
-        $subject = $this->getMock('FluidTYPO3\\Flux\\View\\PreviewView', array('drawNewIcon', 'drawPasteIcon'));
+        $subject = $this->getMockBuilder('FluidTYPO3\\Flux\\View\\PreviewView')->setMethods(array('drawNewIcon', 'drawPasteIcon'))->getMock();
         $subject->expects($this->once())->method('drawNewIcon');
-        $mockPageLayoutView = $this->getMock('TYPO3\\CMS\\Backend\\View\\PageLayoutView');
+        $mockPageLayoutView = $this->getMockBuilder('TYPO3\\CMS\\Backend\\View\\PageLayoutView')->getMock();
         $this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 1, $mockPageLayoutView, 'f-target', 2, 'f-content');
     }
 }

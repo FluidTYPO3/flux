@@ -36,7 +36,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
         $GLOBALS['TSFE']->sys_page = new PageRepository();
         $GLOBALS['TT'] = new NullTimeTracker();
-        $GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', false);
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
         $GLOBALS['TCA']['tt_content']['ctrl'] = array();
     }
@@ -156,11 +156,11 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canProcessRecords()
     {
-        $configurationManager = $this->getMock('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager', array('getContentObject'));
-        $contentObject = $this->getMock('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer', array('cObjGetSingle'));
+        $configurationManager = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager')->setMethods(array('getContentObject'))->getMock();
+        $contentObject = $this->getMockBuilder('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer')->setMethods(array('cObjGetSingle'))->getMock();
         $contentObject->expects($this->any())->method('cObjGetSingle');
         $configurationManager->expects($this->any())->method('getContentObject')->willReturn($contentObject);
-        $GLOBALS['TSFE']->sys_page = $this->getMock('TYPO3\\CMS\\Frontend\\Page\\PageRepository', array('dummy'), array(), '', false);
+        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder('TYPO3\\CMS\\Frontend\\Page\\PageRepository')->setMethods(array('dummy'))->disableOriginalConstructor()->getMock();
         $instance = $this->createInstance();
         $instance->injectConfigurationManager($configurationManager);
         $records = array(

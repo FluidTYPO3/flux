@@ -71,16 +71,12 @@ abstract class AbstractProviderTest extends AbstractTestCase
      */
     public function getPreviewUsesPreviewView()
     {
-        $instance = $this->getMockForAbstractClass(
-            $this->createInstanceClassName(),
-            array(),
-            '',
-            false,
-            true,
-            false,
+        $instance = $this->getMockBuilder(
+            $this->createInstanceClassName()
+        )->setMethods(
             array('getPreviewView')
-        );
-        $preview = $this->getMock('FluidTYPO3\\Flux\\View\\PreviewView', array('getPreview'));
+        )->getMock();
+        $preview = $this->getMockBuilder('FluidTYPO3\\Flux\\View\\PreviewView')->setMethods(array('getPreview'))->getMock();
         $preview->expects($this->once())->method('getPreview')->willReturn('previewcontent');
         $instance->expects($this->once())->method('getPreviewView')->willReturn($preview);
         $result = $instance->getPreview(array());
@@ -94,7 +90,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $row['pi_flexform'] = Xml::EXPECTING_FLUX_PRUNING;
-        $recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle', 'update'));
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('getSingle', 'update'))->getMock();
         $recordService->expects($this->once())->method('getSingle')->willReturn($row);
         $recordService->expects($this->once())->method('update');
         $provider = $this->getConfigurationProviderInstance();
@@ -243,7 +239,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
      */
     public function canGetForcedTemplateVariables()
     {
-        $provider = $this->getMock($this->createInstanceClassName(), array('getPageValues'));
+        $provider = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getPageValues'))->getMock();
         $record = $this->getBasicRecord();
         $variables = $provider->getTemplateVariables($record);
         $this->assertIsArray($variables);
@@ -255,8 +251,8 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function canGetFlexformValues()
     {
         $record = $this->getBasicRecord();
-        $provider = $this->getMock(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)), array('getForm'));
-        $mockConfigurationService = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('convertFlexFormContentToArray'));
+        $provider = $this->getMockBuilder(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)))->setMethods(array('getForm'))->getMock();
+        $mockConfigurationService = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('convertFlexFormContentToArray'))->getMock();
         $mockConfigurationService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(array('test' => 'test')));
         $provider->expects($this->once())->method('getForm')->will($this->returnValue(Form::create()));
         $provider->injectConfigurationService($mockConfigurationService);
@@ -272,7 +268,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
      */
     public function canGetTemplateVariables()
     {
-        $provider = $this->getMock($this->createInstanceClassName(), array('getPageValues', 'getGrid', 'getForm'));
+        $provider = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getPageValues', 'getGrid', 'getForm'))->getMock();
         $provider->expects($this->once())->method('getPageValues')->willReturnArgument(0);
         $provider->expects($this->once())->method('getForm')->willReturn(null);
         $provider->expects($this->once())->method('getGrid')->willReturn(null);
@@ -425,7 +421,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function canPostProcessRecord()
     {
         $provider = $this->getConfigurationProviderInstance();
-        $recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle', 'update'));
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('getSingle', 'update'))->getMock();
         $recordService->expects($this->once())->method('getSingle')->willReturn($row);
         $recordService->expects($this->once())->method('update');
         $provider->injectRecordService($recordService);
@@ -470,7 +466,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function canPostProcessRecordWithNullFieldName()
     {
         $provider = $this->getConfigurationProviderInstance();
-        $recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('getSingle'))->getMock();
         $recordService->expects($this->any())->method('getSingle')->willReturn($row);
         $provider->injectRecordService($recordService);
         $record = $this->getBasicRecord();
@@ -603,7 +599,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
      */
     public function canSetTemplateVariables()
     {
-        $provider = $this->getMock($this->createInstanceClassName(), array('getPageValues'));
+        $provider = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getPageValues'))->getMock();
         $provider->expects($this->once())->method('getPageValues')->willReturnArgument(0);
         $record = $this->getBasicRecord();
         $variables = array('test' => 'test');
@@ -617,7 +613,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function testApplyLocalisationToPageValues()
     {
         $GLOBALS['TSFE'] = (object) array('page' => array('title' => 'foo'), 'sys_language_uid' => 1);
-        $recordService = $this->getMock('FluidTYPO3\\Service\\RecordService', array('get'));
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Service\\RecordService')->setMethods(array('get'))->getMock();
         $recordService->expects($this->once())->method('get')->willReturn(array(array('title' => 'bar', 'subtitle' => 'baz')));
         $subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
         $subject->_set('recordService', $recordService);
@@ -630,7 +626,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function testDontApplyLocalisationToPageValuesInDefaultLanguage()
     {
         $GLOBALS['TSFE'] = (object) array('page' => array('title' => 'foo'), 'sys_language_uid' => 0);
-        $recordService = $this->getMock('FluidTYPO3\\Service\\RecordService', array('get'));
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Service\\RecordService')->setMethods(array('get'))->getMock();
         $recordService->expects($this->never())->method('get');
         $subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
         $subject->_set('recordService', $recordService);
@@ -648,7 +644,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
                 'uid' => 1,
                 'pid' => 0
             ), 'sys_language_uid' => 1);
-        $recordService = $this->getMock('FluidTYPO3\\Service\\RecordService', array('get'));
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Service\\RecordService')->setMethods(array('get'))->getMock();
         $recordService->expects($this->once())->method('get')->willReturn(array(
             array('title' => 'bar',
                 'subtitle' => 'baz',
@@ -743,7 +739,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $backup = $GLOBALS['TYPO3_DB'];
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
-        $GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\CMS\Core\Database\DatabaseConnection', array('exec_SELECTgetSingleRow'));
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\CMS\Core\Database\DatabaseConnection')->setMethods(array('exec_SELECTgetSingleRow'))->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->atLeastOnce())->method('exec_SELECTgetSingleRow')->will($this->returnValue($row));
         $provider = $this->getConfigurationProviderInstance();
         $result = $this->callInaccessibleMethod($provider, 'loadRecordFromDatabase', $row['uid']);
@@ -771,7 +767,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
      */
     public function getFormReturnsEarlyFormInstanceIfClassDefinedAndExists()
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('resolveFormClassName', 'getTemplateSource'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('resolveFormClassName', 'getTemplateSource'))->getMock();
         $mock->expects($this->never())->method('getTemplateSource');
         $mock->expects($this->once())->method('resolveFormClassName')->will($this->returnValue('FluidTYPO3\\Flux\\Form'));
         $mock->getForm(array());

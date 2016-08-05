@@ -54,14 +54,15 @@ class BackendConfigurationManagerTest extends AbstractTestCase
      */
     public function testGetPrioritizedPageUidsCallsExpectedMethodSequence()
     {
-        $instance = $this->getMock(
-            'FluidTYPO3\\Flux\\Configuration\\BackendConfigurationManager',
+        $instance = $this->getMockBuilder(
+            'FluidTYPO3\\Flux\\Configuration\\BackendConfigurationManager'
+        )->setMethods(
             array(
                 'getPageIdFromGet', 'getPageIdFromPost',
                 'getPageIdFromRecordIdentifiedInEditUrlArgument',
                 'getPageIdFromContentObject'
             )
-        );
+        )->getMock();
         $instance->setCurrentPageId(1);
         $instance->expects($this->at(0))->method('getPageIdFromGet')->willReturn(0);
         $instance->expects($this->at(1))->method('getPageIdFromPost')->willReturn(0);
@@ -79,7 +80,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
         $record = Records::$contentRecordWithParentAndWithoutChildren;
         $mockContentObject = new \stdClass();
         $mockContentObject->data = $record;
-        $mock = $this->getMock($this->createInstanceClassName(), array('getPageIdFromRecord', 'getContentObject'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getPageIdFromRecord', 'getContentObject'))->getMock();
         $mock->expects($this->at(0))->method('getContentObject')->will($this->returnValue($mockContentObject));
         $mock->expects($this->at(1))->method('getPageIdFromRecord')->with($record);
         $this->callInaccessibleMethod($mock, 'getPageIdFromContentObject');
@@ -92,7 +93,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
     {
         $record = Records::$contentRecordWithParentAndWithoutChildren;
         $record['pid'] = 123;
-        $mock = $this->getMock($this->createInstanceClassName());
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->getMock();
         $result = $this->callInaccessibleMethod($mock, 'getPageIdFromRecord', $record);
         $this->assertEquals(123, $result);
     }
@@ -104,7 +105,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
     {
         $record = Records::$contentRecordWithParentAndWithoutChildren;
         $record['pid'] = '';
-        $mock = $this->getMock($this->createInstanceClassName());
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->getMock();
         $result = $this->callInaccessibleMethod($mock, 'getPageIdFromRecord', $record);
         $this->assertEquals(0, $result);
     }
@@ -115,7 +116,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
     public function getPageIdFromGetReturnsExpectedValue()
     {
         $_GET['id'] = 123;
-        $mock = $this->getMock($this->createInstanceClassName());
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->getMock();
         $result = $this->callInaccessibleMethod($mock, 'getPageIdFromGet');
         $this->assertEquals(123, $result);
         unset($_GET['id']);
@@ -127,7 +128,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
     public function getPageIdFromPostReturnsExpectedValue()
     {
         $_POST['id'] = 123;
-        $mock = $this->getMock($this->createInstanceClassName());
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->getMock();
         $result = $this->callInaccessibleMethod($mock, 'getPageIdFromPost');
         $this->assertEquals(123, $result);
         unset($_POST['id']);
@@ -139,7 +140,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
     public function getCurrentPageIdReturnsProtectedPropertyOnlyIfSet()
     {
         $pageUid = 54642;
-        $mock = $this->getMock($this->createInstanceClassName(), array('getPrioritizedPageUids'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getPrioritizedPageUids'))->getMock();
         $mock->expects($this->never())->method('getPrioritizedPageUids');
         $mock->setCurrentPageId($pageUid);
         $result = $mock->getCurrentPageId();
@@ -151,7 +152,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
      */
     public function getCurrentPageIdCallsGetPrioritizedPageUids()
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('getPrioritizedPageUids'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getPrioritizedPageUids'))->getMock();
         $mock->expects($this->once())->method('getPrioritizedPageUids')->willReturn(array(0, 0, 0, 0, 123));
         $result = $mock->getCurrentPageId();
         $this->assertEquals(123, $result);
@@ -162,7 +163,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
      */
     public function getPageIdFromRecordUidDelegatesToRecordService()
     {
-        $recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\RecordService', array('getSingle'));
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\RecordService')->setMethods(array('getSingle'))->getMock();
         $recordService->expects($this->once())->method('getSingle')
             ->with('table', 'pid', 123)->will($this->returnValue(array('foo' => 'bar')));
         $mock = $this->objectManager->get($this->createInstanceClassName());
@@ -177,7 +178,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
      */
     public function testGetEditArguments(array $argument, array $expected)
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('getEditArgumentValuePair'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getEditArgumentValuePair'))->getMock();
         $mock->expects($this->once())->method('getEditArgumentValuePair')->willReturn($argument);
         $result = $this->callInaccessibleMethod($mock, 'getEditArguments');
         $this->assertEquals($expected, $result);
@@ -212,7 +213,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
      */
     public function testGetPageIdFromRecordIdentifiedInEditUrlArgument(array $arguments, $expectsRecordFetch)
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('getEditArguments', 'getPageIdFromRecordUid'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getEditArguments', 'getPageIdFromRecordUid'))->getMock();
         $mock->expects($this->once())->method('getEditArguments')->willReturn($arguments);
         $mock->expects($this->exactly((integer) $expectsRecordFetch))->method('getPageIdFromRecordUid')
             ->with($arguments[0], abs($arguments[1]))->willReturn($arguments[1]);

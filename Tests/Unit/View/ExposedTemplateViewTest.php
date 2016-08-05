@@ -30,9 +30,9 @@ class ExposedTemplateViewTest extends AbstractTestCase
      */
     public function getParsedTemplateReturnsCompiledTemplateIfFound()
     {
-        $instance = $this->getMock($this->createInstanceClassName(), array('getTemplateIdentifier'));
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getTemplateIdentifier'))->getMock();
         $instance->expects($this->once())->method('getTemplateIdentifier');
-        $compiler = $this->getMock('TYPO3\\CMS\\Fluid\\Core\\Compiler\\TemplateCompiler', array('has', 'get'));
+        $compiler = $this->getMockBuilder('TYPO3\\CMS\\Fluid\\Core\\Compiler\\TemplateCompiler')->setMethods(array('has', 'get'))->getMock();
         $compiler->expects($this->once())->method('has')->willReturn(true);
         $compiler->expects($this->once())->method('get')->willReturn('foobar');
         ObjectAccess::setProperty($instance, 'templateCompiler', $compiler, true);
@@ -192,9 +192,9 @@ class ExposedTemplateViewTest extends AbstractTestCase
     public function getTemplatePathAndFilenameCallsExpectedMethodSequenceInStandardTemplateViewMode()
     {
         $request = new Request();
-        $controllerContext = $this->getMock('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerContext', array('getRequest'));
+        $controllerContext = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerContext')->setMethods(array('getRequest'))->getMock();
         $controllerContext->expects($this->once())->method('getRequest')->will($this->returnValue($request));
-        $mock = $this->getMock($this->createInstanceClassName(), array('expandGenericPathPattern'), array(), '', false);
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('expandGenericPathPattern'))->disableOriginalConstructor()->getMock();
         $mock->expects($this->any())->method('expandGenericPathPattern')->will($this->returnValue(array('/dev/null/')));
         $mock->setControllerContext($controllerContext);
         $this->setExpectedException('TYPO3\\CMS\\Fluid\\View\\Exception\\InvalidTemplateResourceException');

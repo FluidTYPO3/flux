@@ -21,7 +21,7 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest
      */
     public function overlayRecordsCallsExpectedMethodSequence()
     {
-        $mock = $this->getMock($this->createInstanceClassName(), array('hasWorkspacesSupport', 'overlayRecord'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('hasWorkspacesSupport', 'overlayRecord'))->getMock();
         $mock->expects($this->once())->method('hasWorkspacesSupport')->will($this->returnValue(true));
         $mock->expects($this->exactly(2))->method('overlayRecord')->will($this->returnValue(array('foo')));
         $records = array(array(), array());

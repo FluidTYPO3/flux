@@ -33,28 +33,29 @@ class ContentViewHelperTest extends AbstractViewHelperTestCase
         /** @var ControllerContext $controllerContext */
         $controllerContext = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
         $controllerContext->setRequest($request);
-        $column = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Column', array('setName', 'setLabel'));
+        $column = $this->getMockBuilder('FluidTYPO3\\Flux\\Form\\Container\\Column')->setMethods(array('setName', 'setLabel'))->getMock();
         $column->expects($this->once())->method('setName');
         $column->expects($this->once())->method('setLabel');
-        $row = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Row', array('createContainer'));
-        $grid = $this->getMock('FluidTYPO3\\Flux\\Form\\Container\\Grid', array('createContainer'));
+        $row = $this->getMockBuilder('FluidTYPO3\\Flux\\Form\\Container\\Row')->setMethods(array('createContainer'))->getMock();
+        $grid = $this->getMockBuilder('FluidTYPO3\\Flux\\Form\\Container\\Grid')->setMethods(array('createContainer'))->getMock();
         $grid->expects($this->once())->method('createContainer')->will($this->returnValue($row));
         $row->expects($this->once())->method('createContainer')->will($this->returnValue($column));
-        $mock = $this->getMock($this->createInstanceClassName(), array('dummy'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
         $viewHelperContainer->addOrUpdate(
             AbstractFormViewHelper::SCOPE,
             AbstractFormViewHelper::SCOPE_VARIABLE_GRIDS,
             array('grid' => $grid)
         );
-        $renderingcontext = $this->getMock(
-            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface',
+        $renderingcontext = $this->getMockBuilder(
+            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface'
+        )->setMethods(
             array(
                 'getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext'
             )
-        );
+        )->getMock();
         $renderingcontext->expects($this->atLeastOnce())->method('getViewHelperVariableContainer')->willReturn($viewHelperContainer);
         $renderingcontext->expects($this->atLeastOnce())->method('getTemplateVariableContainer')->willReturn(
-            $this->getMock('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer')
+            $this->getMockBuilder('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer')->getMock()
         );
         $renderingcontext->expects($this->any())->method('getControllerContext')->willReturn($controllerContext);
         $mock->setRenderingContext($renderingcontext);
