@@ -28,7 +28,7 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 	\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
 		\FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::OPTION_HOOK_METHOD,
 		array(
-			'7.6.0' => \FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber . '->addSubIcon'
+			'7.6.0' => \FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::class . '->addSubIcon'
 		)
 	);
 
