@@ -115,7 +115,12 @@ class Select extends AbstractMultiValueFormField
         if (true === $this->items instanceof QueryInterface) {
             $items = $this->addOptionsFromResults($this->items);
         } elseif (true === is_string($this->items)) {
-            $itemNames = GeneralUtility::trimExplode(',', $this->items);
+            if (false !== strpos($this->items, '..')) {
+                list ($low, $high) = explode('..', $this->items);
+                $itemNames = range($low, $high, 1);
+            } else {
+                $itemNames = GeneralUtility::trimExplode(',', $this->items);
+            }
             if (!$this->getTranslateCsvItems()) {
                 foreach ($itemNames as $itemName) {
                     array_push($items, [$itemName, $itemName]);
