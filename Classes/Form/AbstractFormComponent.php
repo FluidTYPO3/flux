@@ -98,7 +98,7 @@ abstract class AbstractFormComponent implements FormInterface
     public static function create(array $settings = [])
     {
         /** @var ObjectManagerInterface $objectManager */
-        $objectManager = static::getObjectManager();
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $className = get_called_class();
         /** @var FormInterface $object */
         $object = $objectManager->get($className);
