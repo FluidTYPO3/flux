@@ -613,10 +613,12 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function testApplyLocalisationToPageValues()
     {
         $GLOBALS['TSFE'] = (object) array('page' => array('title' => 'foo'), 'sys_language_uid' => 1);
-        $recordService = $this->getMockBuilder('FluidTYPO3\\Service\\RecordService')->setMethods(array('get'))->getMock();
+        $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('get'))->getMock();
         $recordService->expects($this->once())->method('get')->willReturn(array(array('title' => 'bar', 'subtitle' => 'baz')));
-        $subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
-        $subject->_set('recordService', $recordService);
+        $subject = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\AbstractProvider')->getMockForAbstractClass();
+        #$subject->_set('recordService', $recordService);
+        $subject->injectRecordService($recordService);
+
         $this->assertEquals(array('title' => 'bar', 'subtitle' => 'baz'), $this->callInaccessibleMethod($subject, 'getPageValues'));
     }
 
