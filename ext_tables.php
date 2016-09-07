@@ -43,6 +43,7 @@ $GLOBALS['TCA']['tt_content']['ctrl']['useColumnsForDefaultValues'] .= ',tx_flux
 		),
 		'tx_flux_children' => array (
 			'exclude' => 0,
+			'displayCond' => 'FIELD:CType:=:fluidcontent_content',
 			'config' => array (
 				'type' => 'inline',
 				'foreign_table' => 'tt_content',
