@@ -58,7 +58,7 @@ class File extends AbstractMultiValueFormField
         $configuration['max_size'] = $this->getMaxSize();
         $configuration['uploadfolder'] = $this->getUploadFolder();
         $configuration['show_thumbs'] = $this->getShowThumbnails();
-        $configuration['internal_type'] = 'file';
+        $configuration['internal_type'] = 'file_reference';
 
         if ($this->getUseFalRelation() === true) {
             $configuration['internal_type'] = 'db';
