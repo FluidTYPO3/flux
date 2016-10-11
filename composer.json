@@ -22,6 +22,6 @@
         "fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
     },
     "require-dev": {
-        "fluidtypo3/development": "*"
+        "fluidtypo3/development": "1.3.5"
     }
 }
