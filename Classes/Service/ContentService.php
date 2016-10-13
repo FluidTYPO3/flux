@@ -309,6 +309,8 @@ class ContentService implements SingletonInterface
         DataHandler $tceMain
     ) {
         if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid) {
+            // Get the origin record of the current record to find out if it has any
+            // parameters we need to adapt in the current record.
             $oldRecord = $this->loadRecordFromDatabase($oldUid);
             if (
               $oldRecord[$languageFieldName] !== $newLanguageUid
@@ -316,9 +318,9 @@ class ContentService implements SingletonInterface
               && MathUtility::canBeInterpretedAsInteger($oldRecord['tx_flux_parent'])
               && $oldRecord['tx_flux_parent'] > 0
             ) {
-                // look for the translated version of the parent record indicated
-                // in this new, translated record. Below, we adjust the parent UID
-                // so it has the UID of the translated parent if one exists.
+                // If the origin record has a flux parent assigned, then look for the
+                // translated, very last version this parent record and, if any valid record was found,
+                // assign its UID as flux parent to the current record.
                 $translatedParents = (array) $this->workspacesAwareRecordService->get(
                     'tt_content',
                     'uid,sys_language_uid',
