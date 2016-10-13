@@ -258,15 +258,21 @@ class ContentServiceTest extends AbstractTestCase {
 	 * @param integer $newUid
 	 * @param integer $oldUid
 	 * @param integer $newLanguageUid
+	 * @param integer $fluxParentUid
 	 * @param boolean $expectsInitialization
 	 */
-	public function testInitializeRecordByNewAndOldAndLanguageUids($newUid, $oldUid, $newLanguageUid, $expectsInitialization) {
+	public function testInitializeRecordByNewAndOldAndLanguageUids($newUid, $oldUid, $newLanguageUid, $fluxParentUid, $expectsInitialization) {
 		$mock = $this->getMock($this->createInstanceClassName(), array('loadRecordFromDatabase', 'updateRecordInDatabase'));
 		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('get'));
 		$recordService->expects($this->any())->method('get')->willReturn(NULL);
 		$mock->injectWorkspacesAwareRecordService($recordService);
 		$dataHandler = $this->getMock('TYPO3\\CMS\\Core\\DataHandling\\DataHandler', array('resorting'));
-		$row = array('pid' => 1, 'uid' => 1, 'language' => 1);
+		$row = array(
+			'uid' => 2,
+			'pid' => 1,
+			'tx_flux_parent' => $fluxParentUid,
+			'language' => 1
+		);
 		$mock->expects($this->once())->method('loadRecordFromDatabase')->will($this->returnValue($row));
 		if (TRUE === $expectsInitialization) {
 			$mock->expects($this->once())->method('updateRecordInDatabase');
@@ -284,8 +290,10 @@ class ContentServiceTest extends AbstractTestCase {
 	 */
 	public function getLanguageInitializationTestValues() {
 		return array(
-			array(1, 2, 2, TRUE),
-			array(1, 2, 1, FALSE)
+			array(3, 2, 1, 0, FALSE),
+			array(3, 2, 1, 1, FALSE),
+			array(3, 2, 2, 0, FALSE),
+			array(3, 2, 2, 1, TRUE),
 		);
 	}
 
