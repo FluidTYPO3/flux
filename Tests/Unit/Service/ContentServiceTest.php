@@ -254,9 +254,10 @@ class ContentServiceTest extends AbstractTestCase
      * @param integer $newUid
      * @param integer $oldUid
      * @param integer $newLanguageUid
+     * @param integer $fluxParentUid
      * @param boolean $expectsInitialization
      */
-    public function testInitializeRecordByNewAndOldAndLanguageUids($newUid, $oldUid, $newLanguageUid, $expectsInitialization)
+    public function testInitializeRecordByNewAndOldAndLanguageUids($newUid, $oldUid, $newLanguageUid, $fluxParentUid, $expectsInitialization)
     {
         if (GeneralUtility::compat_version('8.4.0')) {
             $this->markTestSkipped(
@@ -269,7 +270,12 @@ class ContentServiceTest extends AbstractTestCase
         $recordService->expects($this->any())->method('get')->willReturn(null);
         $mock->injectWorkspacesAwareRecordService($recordService);
         $dataHandler = $this->getMockBuilder('TYPO3\\CMS\\Core\\DataHandling\\DataHandler')->setMethods(array('resorting'))->getMock();
-        $row = array('pid' => 1, 'uid' => 1, 'language' => 1);
+        $row = array(
+          'uid' => 2,
+          'pid' => 1,
+          'tx_flux_parent' => $fluxParentUid,
+          'language' => 1
+        );
         $mock->expects($this->once())->method('loadRecordFromDatabase')->will($this->returnValue($row));
         if (true === $expectsInitialization) {
             $mock->expects($this->once())->method('updateRecordInDataMap');
@@ -296,8 +302,10 @@ class ContentServiceTest extends AbstractTestCase
     public function getLanguageInitializationTestValues()
     {
         return array(
-            array(1, 2, 2, true),
-            array(1, 2, 1, false)
+            array(3, 2, 1, 0, false),
+            array(3, 2, 1, 1, false),
+            array(3, 2, 2, 0, false),
+            array(3, 2, 2, 1, true)
         );
     }
 
