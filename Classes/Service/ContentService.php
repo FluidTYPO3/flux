@@ -13,6 +13,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
  * Flux FlexForm integration Service
@@ -309,7 +310,12 @@ class ContentService implements SingletonInterface
     ) {
         if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid) {
             $oldRecord = $this->loadRecordFromDatabase($oldUid);
-            if ($oldRecord[$languageFieldName] !== $newLanguageUid && $oldRecord['pid'] === $row['pid']) {
+            if (
+              $oldRecord[$languageFieldName] !== $newLanguageUid
+              && $oldRecord['pid'] === $row['pid']
+              && MathUtility::canBeInterpretedAsInteger($oldRecord['tx_flux_parent'])
+              && $oldRecord['tx_flux_parent'] > 0
+            ) {
                 // look for the translated version of the parent record indicated
                 // in this new, translated record. Below, we adjust the parent UID
                 // so it has the UID of the translated parent if one exists.
