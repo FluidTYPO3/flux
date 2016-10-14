@@ -42,8 +42,11 @@ class MiscellaneousUtility
      */
     public static function generateUniqueIntegerForFluxArea($contentElementUid, $areaName)
     {
-        $integers = array_map('ord', str_split($areaName));
-        $integers[] = $contentElementUid;
+        foreach (str_split($areaName) as $index => $letter) {
+            $position = $index + 1;
+            $integers[] = $position*ord($letter);
+        }
+        $integers[] = (int) $contentElementUid;
         $integers[] = self::UNIQUE_INTEGER_OVERHEAD;
         return 0 - array_sum($integers);
     }
