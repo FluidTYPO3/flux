@@ -54,7 +54,11 @@ class RecordService implements SingletonInterface
     public function update($table, array $record)
     {
         $connection = $this->getDatabaseConnection();
-        return $connection->exec_UPDATEquery($table, "uid = '" . intval($record['uid']) . "'", $record);
+        if ($GLOBALS['BE_USER']->workspace > 0 && intval($record['t3ver_wsid']) != $GLOBALS['BE_USER']->workspace) {
+            return false;
+        } else {
+            return $connection->exec_UPDATEquery($table, "uid = '" . intval($record['uid']) . "'", $record);
+        }
     }
 
     /**
