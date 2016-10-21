@@ -327,7 +327,7 @@ class PreviewView
         $this->configurePageLayoutViewForLanguageMode($dblist);
         $records = $this->getRecords($dblist, $row, $columnName);
         $content = '';
-        if ($records) {
+        if (is_array($records)) {
             foreach ($records as $record) {
                 $content .= $this->drawRecord($row, $column, $record, $dblist);
             }
