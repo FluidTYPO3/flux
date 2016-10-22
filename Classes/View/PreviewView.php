@@ -326,11 +326,13 @@ class PreviewView
         $dblist = $this->getInitializedPageLayoutView($row);
         $this->configurePageLayoutViewForLanguageMode($dblist);
         $records = $this->getRecords($dblist, $row, $columnName);
-
         $content = '';
-        foreach ($records as $record) {
-            $content .= $this->drawRecord($row, $column, $record, $dblist);
+        if (is_array($records)) {
+            foreach ($records as $record) {
+                $content .= $this->drawRecord($row, $column, $record, $dblist);
+            }
         }
+
         // Add localize buttons for flux container elements
         if (isset($row['l18n_parent']) && 0 < $row['l18n_parent']) {
             if (true === empty($dblist->defLangBinding)) {
@@ -516,8 +518,11 @@ class PreviewView
         );
         $queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
         $result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
-        $rows = $view->getResult($result);
-        $rows = $this->processRecordOverlays($rows, $view);
+        $rows = [];
+        if ($result) {
+            $rows = $view->getResult($result);
+            $rows = $this->processRecordOverlays($rows, $view);
+        }
         return $rows;
     }
 
