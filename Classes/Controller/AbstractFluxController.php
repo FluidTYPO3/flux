@@ -306,7 +306,7 @@ abstract class AbstractFluxController extends ActionController
         $subRequest->setArguments($arguments);
         $subRequest->setControllerExtensionName($viewContext->getExtensionName());
         $subRequest->setControllerVendorName($viewContext->getVendorName());
-        $subRequest->setControllerActionName($this->provider->getControllerActionFromRecord($row));
+        $subRequest->setControllerActionName($controllerActionName);
         try {
             $potentialControllerInstance->processRequest($subRequest, $response);
         } catch (StopActionException $error) {
