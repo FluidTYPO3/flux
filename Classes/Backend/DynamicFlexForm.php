@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
@@ -24,6 +25,11 @@ class DynamicFlexForm
 {
 
     const OPTION_NEEDS_TCEFORMS_WRAPPER = 'needsTceformsWrapper';
+
+    /**
+     * @var array
+     */
+    protected static $generatedDataSources = [];
 
     /**
      * @var ObjectManagerInterface
@@ -81,6 +87,62 @@ class DynamicFlexForm
         $this->injectConfigurationService($this->objectManager->get(FluxService::class));
         $this->injectRecordService($this->objectManager->get(WorkspacesAwareRecordService::class));
         $this->cache = $this->objectManager->get(CacheManager::class, $this->objectManager)->getCache('flux');
+    }
+
+    /**
+     * Method to generate a custom idenfifier for a Flux-based DS.
+     * The custom identifier must include a record ID, which we
+     * can then use to restore the record.
+     *
+     * @param array $tca
+     * @param $tableName
+     * @param $fieldName
+     * @param array $record
+     * @return array
+     */
+    public function getDataStructureIdentifierPreProcess(array $tca, $tableName, $fieldName, array $record)
+    {
+        $dataStructArray = [];
+        $providers = $this->configurationService->resolveConfigurationProviders($tableName, $fieldName, $row);
+        if (count($providers) === 0) {
+            return [];
+        }
+        $identifier = [
+            'type' => 'flux',
+            'tableName' => $tableName,
+            'fieldName' => $fieldName,
+            'uid' => $record['uid']
+        ];
+        foreach ($providers as $provider) {
+            $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
+        }
+        if (empty($dataStructArray)) {
+            $dataStructArray = ['ROOT' => ['el' => []]];
+        }
+
+        // Trigger TCEforms dimension patching only if required by TYPO3 version according to CompatibilityRegistry.
+        if (CompatibilityRegistry::get(static::OPTION_NEEDS_TCEFORMS_WRAPPER)) {
+            $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
+        }
+
+        static::$generatedDataSources[$tableName . '.' . $fieldName . ':' . $record['uid']] = $dataStructArray;
+        return $identifier;
+    }
+
+    /**
+     * @param array $identifier
+     * @return array
+     */
+    public function parseDataStructureByIdentifierPreProcess(array $identifier)
+    {
+        if ($identifier['type'] !== 'flux') {
+            return [];
+        }
+        $dataSourceIdentity = $identifier['tableName'] . '.' . $identifier['fieldName'] . ':' . $identifier['uid'];
+        if (isset(static::$generatedDataSources[$dataSourceIdentity])) {
+            return static::$generatedDataSources[$dataSourceIdentity];
+        }
+        return [];
     }
 
     /**
@@ -149,6 +211,7 @@ class DynamicFlexForm
                 (time() + 31536000)
             );
         }
+
         // Trigger TCEforms dimension patching only if required by TYPO3 version according to CompatibilityRegistry.
         if (CompatibilityRegistry::get(static::OPTION_NEEDS_TCEFORMS_WRAPPER)) {
             $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
@@ -200,5 +263,13 @@ class DynamicFlexForm
             }
         }
         return $dataStructureArray;
+    }
+
+    /**
+     * @return VariableFrontend
+     */
+    protected function getCache()
+    {
+        return GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
     }
 }
