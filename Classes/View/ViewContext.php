@@ -237,4 +237,17 @@ class ViewContext
     {
         $this->request = $request;
     }
+
+    /**
+     * @return string
+     */
+    public function getHash()
+    {
+        return sha1(
+            $this->packageName .
+            $this->templatePathAndFilename .
+            serialize($this->variables) .
+            serialize($this->templatePaths)
+        );
+    }
 }
