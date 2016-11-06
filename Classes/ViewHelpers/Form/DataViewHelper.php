@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use NamelessCoder\FluidGap\Traits\CompileWithRenderStatic;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception;
@@ -21,6 +22,7 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Exception;
  */
 class DataViewHelper extends AbstractViewHelper
 {
+    use CompileWithRenderStatic;
 
     /**
      * @var FluxService
@@ -61,16 +63,6 @@ class DataViewHelper extends AbstractViewHelper
         $this->registerArgument('uid', 'integer', 'UID of record to load (used if "record" attribute not used)');
         $this->registerArgument('record', 'array', 'Record containing Flux field (used if "uid" attribute not used)');
         $this->registerArgument('as', 'string', 'Optional name of variable to assign in tag content rendering');
-    }
-
-    /**
-     * Render method
-     * @return mixed
-     * @throws Exception
-     */
-    public function render()
-    {
-        return static::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
     }
 
     /**

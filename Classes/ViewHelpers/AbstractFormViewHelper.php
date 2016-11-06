@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use NamelessCoder\FluidGap\Traits\CompileWithRenderStatic;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
@@ -22,20 +23,13 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
  */
 abstract class AbstractFormViewHelper extends AbstractViewHelper implements CompilableInterface
 {
+    use CompileWithRenderStatic;
 
     const SCOPE = FormViewHelper::class;
     const SCOPE_VARIABLE_EXTENSIONNAME = 'extensionName';
     const SCOPE_VARIABLE_FORM = 'form';
     const SCOPE_VARIABLE_CONTAINER = 'container';
     const SCOPE_VARIABLE_GRIDS = 'grids';
-
-    /**
-     * @return void
-     */
-    public function render()
-    {
-        return static::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
-    }
 
     /**
      * @param array $arguments

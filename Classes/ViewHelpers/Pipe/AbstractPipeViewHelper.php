@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use NamelessCoder\FluidGap\Traits\CompileWithRenderStatic;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
@@ -19,6 +20,7 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  */
 abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
 {
+    use CompileWithRenderStatic;
 
     const DIRECTION_IN = 'in';
     const DIRECTION_OUT = 'out';
