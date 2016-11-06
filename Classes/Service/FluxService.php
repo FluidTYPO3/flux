@@ -177,6 +177,11 @@ class FluxService implements SingletonInterface
      */
     public function getPreparedExposedTemplateView(ViewContext $viewContext)
     {
+        $viewContextHash = $viewContext->getHash();
+        static $cache = [];
+        if (isset($cache[$viewContextHash])) {
+            return $cache[$viewContextHash];
+        }
         $vendorName = $viewContext->getVendorName();
         $extensionKey = $viewContext->getExtensionKey();
         $qualifiedExtensionName = $viewContext->getExtensionName();
@@ -214,7 +219,7 @@ class FluxService implements SingletonInterface
         $exposedView->assignMultiple($variables);
         $exposedView->setTemplatePaths($viewContext->getTemplatePaths());
         $exposedView->setTemplatePathAndFilename($viewContext->getTemplatePathAndFilename());
-        return $exposedView;
+        return $cache[$viewContextHash] = $exposedView;
     }
 
     /**
@@ -224,6 +229,7 @@ class FluxService implements SingletonInterface
      */
     public function getFormFromTemplateFile(ViewContext $viewContext, $formName = 'form')
     {
+        static $cache = [];
         $templatePathAndFilename = $viewContext->getTemplatePathAndFilename();
         if (false === file_exists($templatePathAndFilename)) {
             return null;
@@ -232,24 +238,24 @@ class FluxService implements SingletonInterface
         $variables = $viewContext->getVariables();
         $extensionName = $viewContext->getExtensionName();
         $variableCheck = json_encode($variables);
-        $cacheKey = md5($templatePathAndFilename . $formName . $extensionName . $section . $variableCheck);
-        if (false === isset(self::$cache[$cacheKey])) {
+        $cacheKey = $viewContext->getHash();
+        if (false === isset($cache[$cacheKey])) {
             try {
                 $exposedView = $this->getPreparedExposedTemplateView($viewContext);
-                self::$cache[$cacheKey] = $exposedView->getForm($section, $formName);
+                $cache[$cacheKey] = $exposedView->getForm($section, $formName);
             } catch (\RuntimeException $error) {
                 $this->debug($error);
                 /** @var Form $form */
-                self::$cache[$cacheKey] = $this->objectManager->get(
+                $cache[$cacheKey] = $this->objectManager->get(
                     FluxPackageFactory::getPackageWithFallback($extensionName)
                         ->getImplementation(FluxPackage::IMPLEMENTATION_FORM)
                 );
-                self::$cache[$cacheKey]->createField('UserFunction', 'error')
+                $cache[$cacheKey]->createField('UserFunction', 'error')
                     ->setFunction(ErrorReporter::class . '->renderField')
                     ->setArguments([$error]);
             }
         }
-        return self::$cache[$cacheKey];
+        return $cache[$cacheKey];
     }
 
     /**
@@ -272,6 +278,11 @@ class FluxService implements SingletonInterface
      */
     public function getGridFromTemplateFile(ViewContext $viewContext, $gridName = 'grid')
     {
+        $hash = $viewContext->getHash() . $gridName;
+        static $cache = [];
+        if (isset($cache[$hash])) {
+            return $cache[$hash];
+        }
         $templatePathAndFilename = $viewContext->getTemplatePathAndFilename();
         $section = $viewContext->getSectionName();
         $grid = null;
@@ -283,7 +294,7 @@ class FluxService implements SingletonInterface
         if (null === $grid) {
             $grid = Grid::create(['name' => $gridName]);
         }
-        return $grid;
+        return $cache[$hash] = $grid;
     }
 
     /**
@@ -316,10 +327,14 @@ class FluxService implements SingletonInterface
      */
     public function getViewConfigurationForExtensionName($extensionName)
     {
+        static $cache = [];
+        if (isset($cache[$extensionName])) {
+            return $cache[$extensionName];
+        }
         $signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
         $defaults = (array) $this->getDefaultViewConfigurationForExtensionKey($extensionName);
         $configuration = (array) $this->getTypoScriptByPath('plugin.tx_' . $signature . '.view');
-        return RecursiveArrayUtility::mergeRecursiveOverrule($defaults, $configuration);
+        return $cache[$extensionName] = RecursiveArrayUtility::mergeRecursiveOverrule($defaults, $configuration);
     }
 
     /**
@@ -369,14 +384,18 @@ class FluxService implements SingletonInterface
      */
     public function getAllTypoScript()
     {
+        static $cache = [];
         $pageId = $this->getCurrentPageId();
-        if (false === isset(self::$typoScript[$pageId])) {
-            self::$typoScript[$pageId] = (array) $this->configurationManager->getConfiguration(
+        if (isset($cache[$pageId])) {
+            return $cache[$pageId];
+        }
+        if (false === isset($cache[$pageId])) {
+            $cache[$pageId] = (array) $this->configurationManager->getConfiguration(
                 ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
             );
-            self::$typoScript[$pageId] = GeneralUtility::removeDotsFromTS(self::$typoScript[$pageId]);
+            $cache[$pageId] = GeneralUtility::removeDotsFromTS($cache[$pageId]);
         }
-        return (array) self::$typoScript[$pageId];
+        return (array) $cache[$pageId];
     }
 
     /**
