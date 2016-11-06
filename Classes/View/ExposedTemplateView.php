@@ -149,8 +149,6 @@ class ExposedTemplateView extends TemplateView implements ViewInterface
     public function getParsedTemplate()
     {
         if (isset($this->templateParser)) {
-            // Note: this is for compatibility with Standalone Fluid as base;
-            // this package no longer requires this initialisation when rendering sections.
             $templateIdentifier = $this->getTemplateIdentifier();
             if (true === $this->templateCompiler->has($templateIdentifier)) {
                 $parsedTemplate = $this->templateCompiler->get($templateIdentifier);
@@ -162,8 +160,12 @@ class ExposedTemplateView extends TemplateView implements ViewInterface
                 }
             }
         } else {
-            $parsedTemplate = $this->baseRenderingContext->getTemplateParser()->parse(
-                $this->baseRenderingContext->getTemplatePaths()->getTemplateSource()
+            $parsedTemplate = $this->baseRenderingContext->getTemplateParser()->getOrParseAndStoreTemplate(
+                $this->baseRenderingContext->getTemplatePaths()->getTemplateIdentifier(),
+                function(\TYPO3Fluid\Fluid\Core\Parser\TemplateParser $parser, \TYPO3\CMS\Fluid\View\TemplatePaths $paths) {
+                    return $paths->getTemplateSource();
+                }
+
             );
         }
         return $parsedTemplate;
