@@ -96,6 +96,9 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'])) {
 	$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] = array(
 		'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
-		'groups' => array('system')
+		'groups' => array('system'),
+		'options' => [
+			'defaultLifetime' => 2592000,
+		],
 	);
 }
