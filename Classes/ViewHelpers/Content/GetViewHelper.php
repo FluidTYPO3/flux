@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use NamelessCoder\FluidGap\Traits\CompileWithRenderStatic;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -23,6 +24,7 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  */
 class GetViewHelper extends AbstractViewHelper
 {
+    use CompileWithRenderStatic;
 
     /**
      * @var FluxService
@@ -89,20 +91,6 @@ class GetViewHelper extends AbstractViewHelper
         );
         $this->registerArgument('loadRegister', 'array', 'List of LOAD_REGISTER variable');
         $this->registerArgument('render', 'boolean', 'Optional returning variable as original table rows', false, true);
-    }
-
-    /**
-     * Render
-     *
-     * @return string
-     */
-    public function render()
-    {
-        return static::renderStatic(
-            $this->arguments,
-            $this->buildRenderChildrenClosure(),
-            $this->renderingContext
-        );
     }
 
     /**
