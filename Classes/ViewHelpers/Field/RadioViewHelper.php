@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\Radio;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Radio FlexForm field ViewHelper
@@ -27,7 +28,7 @@ class RadioViewHelper extends SelectViewHelper
     public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
     {
         /** @var Radio $component */
-        $component = static::getPreparedComponent('Radio');
+        $component = static::getPreparedComponent('Radio', $renderingContext, $arguments);
         $component->setItems($arguments['items']);
         return $component;
     }
