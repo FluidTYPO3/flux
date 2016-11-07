@@ -114,7 +114,28 @@ class DynamicFlexForm
             'uid' => $record['uid']
         ];
         foreach ($providers as $provider) {
-            $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
+            $form = $provider->getForm($record);
+            $formId = $form->getId();
+            if ($form->getOption(Form::OPTION_STATIC)) {
+                $identifier['staticIdentity'] = $formId;
+                $cache = $this->getCache();
+                if ($cache->has('datatructure-' . $formId)) {
+                    static::$generatedDataSources[$formId] = $cache->get('datastructure-' . $formId);
+                } else {
+                    // This provider has requested static DS caching; stop attempting
+                    // to process any other DS and cache this DS as final result:
+                    if (isset(static::$generatedDataSources[$formId])) {
+                        // DS has already been generated, skip processing now and refer to existing DS.
+                        return $identifier;
+                    }
+                    $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
+                    $cache->set('datastructure-' . $formId, $dataStructArray);
+                    static::$generatedDataSources[$formId] = $dataStructArray;
+                }
+                return $identifier;
+            } else {
+                $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
+            }
         }
         if (empty($dataStructArray)) {
             $dataStructArray = ['ROOT' => ['el' => []]];
@@ -138,7 +159,11 @@ class DynamicFlexForm
         if ($identifier['type'] !== 'flux') {
             return [];
         }
-        $dataSourceIdentity = $identifier['tableName'] . '.' . $identifier['fieldName'] . ':' . $identifier['uid'];
+        if (isset($identifier['staticIdentity'])) {
+            $dataSourceIdentity = $identifier['staticIdentity'];
+        } else {
+            $dataSourceIdentity = $identifier['tableName'] . '.' . $identifier['fieldName'] . ':' . $identifier['uid'];
+        }
         if (isset(static::$generatedDataSources[$dataSourceIdentity])) {
             return static::$generatedDataSources[$dataSourceIdentity];
         }
@@ -198,7 +223,26 @@ class DynamicFlexForm
             }
             $providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
             foreach ($providers as $provider) {
-                $provider->postProcessDataStructure($row, $dataStructArray, $conf);
+                $form = $provider->getForm($row);
+                $formId = $form->getId();
+                if ($form->getOption(Form::OPTION_STATIC)) {
+                    $cache = $this->getCache();
+                    if ($cache->has('datatructure-' . $formId)) {
+                        $dataStructArray = $cache->get('datastructure-' . $formId);
+                        return;
+                    }
+                    // This provider has requested static DS caching; stop attempting
+                    // to process any other DS and cache this DS as final result:
+                    if (isset(static::$generatedDataSources[$formId])) {
+                        // DS has already been generated, skip processing now and refer to existing DS.
+                        return $identifier;
+                    }
+                    $provider->postProcessDataStructure($row, $dataStructArray, $conf);
+                    $cache->set('datastructure-' . $formId, $dataStructArray);
+                    return $dataStructArray;
+                } else {
+                    $provider->postProcessDataStructure($row, $dataStructArray, $conf);
+                }
             }
             if (empty($dataStructArray)) {
                 $dataStructArray = ['ROOT' => ['el' => []]];

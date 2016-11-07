@@ -24,6 +24,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface
 {
 
+    const OPTION_STATIC = 'static';
     const OPTION_SORTING = 'sorting';
     const OPTION_TRANSLATION = 'translation';
     const OPTION_GROUP = 'group';
