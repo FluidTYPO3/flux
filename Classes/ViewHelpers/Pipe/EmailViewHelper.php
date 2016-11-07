@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
+use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeTrait;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
@@ -29,6 +30,7 @@ class EmailViewHelper extends AbstractPipeViewHelper
     {
         parent::initializeArguments();
         $this->registerArgument('body', 'string', 'Message body. Can also be inserted as tag content');
+        $this->registerArgument('bodySection', 'string', 'Section to use for the body');
         $this->registerArgument('subject', 'string', 'Message subject', true);
         $this->registerArgument(
             'recipient',
@@ -64,6 +66,8 @@ class EmailViewHelper extends AbstractPipeViewHelper
         $pipe->setSender($arguments['sender']);
         $pipe->setRecipient($arguments['recipient']);
         $pipe->setBody($body);
+        $pipe->setBodySection($arguments['bodySection']);
+
         return $pipe;
     }
 }
