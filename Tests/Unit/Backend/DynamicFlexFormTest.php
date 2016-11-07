@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  */
 
 use FluidTYPO3\Flux\Backend\DynamicFlexForm;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -54,10 +55,12 @@ class DynamicFlexFormTest extends AbstractTestCase
         $config = array();
         $row = array($fieldName => '');
         $instance = new DynamicFlexForm();
-        $provider1 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('postProcessDataStructure'))->getMock();
-        $provider2 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('postProcessDataStructure'))->getMock();
+        $provider1 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('postProcessDataStructure', 'getForm'))->getMock();
+        $provider2 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('postProcessDataStructure', 'getForm'))->getMock();
         $provider1->expects($this->any())->method('postProcessDataStructure');
         $provider2->expects($this->any())->method('postProcessDataStructure');
+        $provider1->expects($this->any())->method('getForm')->with($row)->willReturn(Form::create());
+        $provider2->expects($this->any())->method('getForm')->with($row)->willReturn(Form::create());
         $providers = array($provider1, $provider2);
         $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
         $service->expects($this->any())->method('resolveConfigurationProviders')
