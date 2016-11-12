@@ -61,8 +61,13 @@ class ExtensionNamingUtility
      */
     public static function getExtensionSignature($qualifiedExtensionName)
     {
+        static $cache = [];
+        if (isset($cache[$qualifiedExtensionName])) {
+            return $cache[$qualifiedExtensionName];
+        }
         $extensionKey = self::getExtensionKey($qualifiedExtensionName);
-        return str_replace('_', '', $extensionKey);
+        $cache[$qualifiedExtensionName] = str_replace('_', '', $extensionKey);
+        return $cache[$qualifiedExtensionName];
     }
 
     /**
@@ -71,6 +76,10 @@ class ExtensionNamingUtility
      */
     public static function getVendorNameAndExtensionKey($qualifiedExtensionName)
     {
+        static $cache = [];
+        if (isset($cache[$qualifiedExtensionName])) {
+            return $cache[$qualifiedExtensionName];
+        }
         if (true === self::hasVendorName($qualifiedExtensionName)) {
             list($vendorName, $extensionKey) = GeneralUtility::trimExplode('.', $qualifiedExtensionName);
         } else {
@@ -78,6 +87,7 @@ class ExtensionNamingUtility
             $extensionKey = $qualifiedExtensionName;
         }
         $extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($extensionKey);
+        $cache[$qualifiedExtensionName] = [$vendorName, $extensionKey];
         return [$vendorName, $extensionKey];
     }
 
@@ -87,6 +97,10 @@ class ExtensionNamingUtility
      */
     public static function getVendorNameAndExtensionName($qualifiedExtensionName)
     {
+        static $cache = [];
+        if (isset($cache[$qualifiedExtensionName])) {
+            return $cache[$qualifiedExtensionName];
+        }
         if (true === self::hasVendorName($qualifiedExtensionName)) {
             list($vendorName, $extensionName) = GeneralUtility::trimExplode('.', $qualifiedExtensionName);
         } else {
@@ -98,6 +112,7 @@ class ExtensionNamingUtility
         } else {
             $extensionName = ucfirst($extensionName);
         }
+        $cache[$qualifiedExtensionName] = [$vendorName, $extensionName];
         return [$vendorName, $extensionName];
     }
 }
