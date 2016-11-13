@@ -18,6 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Fluid\Core\Parser\ParsedTemplateInterface;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
 use TYPO3\CMS\Fluid\View\AbstractTemplateView;
 use TYPO3\CMS\Fluid\View\TemplateView;
 
@@ -89,7 +90,12 @@ class ExposedTemplateView extends TemplateView implements ViewInterface
     {
         /** @var Grid[] $grids */
         /** @var Grid $grid */
-        $grids = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, 'grids', $sectionName);
+        try {
+            $grids = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, 'grids', $sectionName);
+        } catch(InvalidVariableException $exception) {
+            // TODO: Remove after dropping 7.6 LTS support
+            return null;
+        }
         $grid = null;
         if (true === isset($grids[$gridName])) {
             $grid = $grids[$gridName];
