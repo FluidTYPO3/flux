@@ -261,14 +261,12 @@ class AbstractProvider implements ProviderInterface
         // and must not be processed by the configuration service. This has limited support from
         // Flux (essentially: no Form instance which means no inheritance, transformation or
         // form options can be dependended upon at this stage).
-        $lang = $this->getCurrentLanguageName();
-        $value = $this->getCurrentValuePointerName();
         if (false === is_array($row[$fieldName])) {
             $recordVariables = $this->configurationService->convertFlexFormContentToArray(
                 $row[$fieldName],
                 null,
-                $lang,
-                $value
+                'lDEF',
+                'vDEF'
             );
             $variables = RecursiveArrayUtility::mergeRecursiveOverrule($variables, $recordVariables);
         }
@@ -452,13 +450,11 @@ class AbstractProvider implements ProviderInterface
     {
         $fieldName = $this->getFieldName($row);
         $form = $this->getForm($row);
-        $languageName = $this->getCurrentLanguageName();
-        $valuePointer = $this->getCurrentValuePointerName();
         return $this->configurationService->convertFlexFormContentToArray(
             $row[$fieldName],
             $form,
-            $languageName,
-            $valuePointer
+            'lDEF',
+            'vDEF'
         );
     }
 
