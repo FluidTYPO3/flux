@@ -23,6 +23,10 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  */
 class RenderViewHelper extends AbstractViewHelper
 {
+    /**
+     * @var boolean
+     */
+    protected $escapeOutput = false;
 
     /**
      * @var FluxService

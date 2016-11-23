@@ -18,6 +18,11 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 class RenderViewHelper extends GetViewHelper
 {
     /**
+     * @var boolean
+     */
+    protected $escapeOutput = false;
+
+    /**
      * Default implementation for use in compiled templates
      *
      * @param array $arguments
