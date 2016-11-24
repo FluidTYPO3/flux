@@ -8,17 +8,16 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler;
-use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\AbstractNode;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
  * Form option ViewHelper
  */
 class OptionViewHelper extends AbstractFormViewHelper
 {
+    use CompileWithContentArgumentAndRenderStatic;
 
     /**
      * @var string
@@ -31,8 +30,8 @@ class OptionViewHelper extends AbstractFormViewHelper
      */
     public function initializeArguments()
     {
-        $this->registerArgument('name', 'string', 'Name of the option to be set', true);
         $this->registerArgument('value', 'string', 'Option value');
+        $this->registerArgument('name', 'string', 'Name of the option to be set', true);
     }
 
     /**
@@ -47,39 +46,6 @@ class OptionViewHelper extends AbstractFormViewHelper
         RenderingContextInterface $renderingContext
     ) {
         $option = isset($arguments['name']) ? $arguments['name'] : static::$option;
-        $value = null === $arguments['value'] ? $renderChildrenClosure() : $arguments['value'];
-        static::getFormFromRenderingContext($renderingContext)->setOption($option, $value);
-    }
-
-    /**
-     * @param string $argumentsVariableName
-     * @param string $renderChildrenClosureVariableName
-     * @param string $initializationPhpCode
-     * @param AbstractNode $syntaxTreeNode
-     * @param TemplateCompiler $templateCompiler
-     * @return string
-     */
-    public function compile(
-        $argumentsVariableName,
-        $renderChildrenClosureVariableName,
-        &$initializationPhpCode,
-        AbstractNode $syntaxTreeNode,
-        TemplateCompiler $templateCompiler
-    ) {
-        $className = get_class($this);
-        $initializationPhpCode .= sprintf(
-            '%s::getFormFromRenderingContext($renderingContext)->setOption(' .
-            'isset(%s[\'name\']) ? %s[\'name\'] : %s::$option,' .
-            'isset(%s[\'value\']) ? %s[\'value\'] : %s()' .
-            ');',
-            $className,
-            $argumentsVariableName,
-            $argumentsVariableName,
-            $className,
-            $argumentsVariableName,
-            $argumentsVariableName,
-            $renderChildrenClosureVariableName
-        );
-        return '\'\'';
+        static::getFormFromRenderingContext($renderingContext)->setOption($option, $renderChildrenClosure());
     }
 }
