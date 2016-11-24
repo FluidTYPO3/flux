@@ -115,6 +115,9 @@ class DynamicFlexForm
         ];
         foreach ($providers as $provider) {
             $form = $provider->getForm($record);
+            if (!$form) {
+                continue;
+            }
             $formId = $form->getId();
             if ($form->getOption(Form::OPTION_STATIC)) {
                 $identifier['staticIdentity'] = $formId;
