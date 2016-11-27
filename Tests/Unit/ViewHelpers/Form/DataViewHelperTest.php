@@ -40,6 +40,19 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @return void
      */
+    protected function setUp()
+    {
+        parent::setUp();
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')
+            ->setMethods(array('exec_SELECTgetSingleRow'))
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+
+    /**
+     * @return void
+     */
     public static function tearDownAfterClass()
     {
         unset($GLOBALS['TCA']);
@@ -64,12 +77,11 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'uid' => 1
         );
         $viewHelper = $this->buildViewHelperInstance($arguments);
-        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\CMS\Core\Database\DatabaseConnection')->setMethods(array('exec_SELECTgetSingleRow'))->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->never())->method('exec_SELECTgetSingleRow');
-        $this->setExpectedException(
-            'TYPO3\CMS\Fluid\Core\ViewHelper\Exception',
+        $this->expectViewHelperException(
             'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
         );
+
         $viewHelper->initializeArgumentsAndRender();
     }
 
@@ -82,10 +94,8 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'table' => 'tt_content',
             'field' => 'pi_flexform',
         );
-        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\CMS\Core\Database\DatabaseConnection')->setMethods(array('exec_SELECTgetSingleRow'))->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
-        $this->setExpectedException(
-            'TYPO3\CMS\Fluid\Core\ViewHelper\Exception',
+        $this->expectViewHelperException(
             'Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.'
         );
         $output = $this->executeViewHelper($arguments);
@@ -101,8 +111,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'field' => 'invalid',
             'uid' => 1
         );
-        $this->setExpectedException(
-            'TYPO3\CMS\Fluid\Core\ViewHelper\Exception',
+        $this->expectViewHelperException(
             'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
         );
         $output = $this->executeViewHelper($arguments);
@@ -118,11 +127,8 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'field' => 'pi_flexform',
             'uid' => 1
         );
-        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\CMS\Core\Database\DatabaseConnection')->setMethods(array('exec_SELECTgetSingleRow'))->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
-        $this->setExpectedException(
-            'TYPO3\CMS\Fluid\Core\ViewHelper\Exception'
-        );
+        $this->expectViewHelperException();
         $this->executeViewHelper($arguments);
     }
 
@@ -170,7 +176,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'field' => 'pi_flexform',
             'as' => 'test'
         );
-        $output = $this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments);
+        $output = $this->executeViewHelperUsingTagContent('Some text', $arguments);
         $this->assertEquals($output, 'Some text');
     }
 
@@ -187,7 +193,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'field' => 'pi_flexform',
             'as' => 'test'
         );
-        $output = $this->executeViewHelperUsingTagContent('Text', 'Some text', $arguments, array('test' => 'somevar'));
+        $output = $this->executeViewHelperUsingTagContent('Some text', $arguments, array('test' => 'somevar'));
         $this->assertEquals($output, 'Some text');
     }
 

@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -276,6 +277,12 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function testInitializeRecordByNewAndOldAndLanguageUids($newUid, $oldUid, $newLanguageUid, $expectsInitialization)
     {
+        if (GeneralUtility::compat_version('8.4.0')) {
+            $this->markTestSkipped(
+                'Temporarily skipped; see https://review.typo3.org/#/c/50784/ - deleteClause uses DB connection also ' .
+                'when no delete field exists which it INTENTIONALLY does not do in our tests for this very reason.'
+            );
+        }
         $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('loadRecordFromDatabase', 'updateRecordInDatabase'))->getMock();
         $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('get'))->getMock();
         $recordService->expects($this->any())->method('get')->willReturn(null);

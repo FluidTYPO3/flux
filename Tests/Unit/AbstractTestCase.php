@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -231,5 +232,19 @@ abstract class AbstractTestCase extends BaseTestCase
         $form = $service->getFormFromTemplateFile($viewContext);
         $this->assertIsValidAndWorkingFormObject($form);
         return $form;
+    }
+
+    /**
+     * Indicate test is skipped on 8.x branch of TYPO3 ("master" as opposed to legacy/LTS)
+     *
+     * @param string|null $message
+     */
+    protected function markTestSkippedOnMaster($message = null)
+    {
+        if (GeneralUtility::compat_version('8.0.0')) {
+            $this->markTestSkipped(
+                $message ? : 'Test skipped on 8.x pending refactoring'
+            );
+        }
     }
 }

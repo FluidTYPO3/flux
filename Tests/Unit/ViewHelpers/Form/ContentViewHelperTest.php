@@ -47,7 +47,7 @@ class ContentViewHelperTest extends AbstractViewHelperTestCase
             array('grid' => $grid)
         );
         $renderingcontext = $this->getMockBuilder(
-            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface'
+            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContext'
         )->setMethods(
             array(
                 'getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext'

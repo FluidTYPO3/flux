@@ -55,8 +55,8 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
         foreach ($templateVariableContainerArguments as $name => $value) {
             $container->add($name, $value);
         }
-        $node = new ViewHelperNode($instance, $arguments);
-        $childNode = new TextNode('Hello world!');
+        $node = $this->createViewHelperNode($instance, $arguments);
+        $childNode = $this->createNode('Text', 'Hello world!');
         $node->addChildNode($childNode);
         $instance->setViewHelperNode($node);
         /** @var \Closure $closure */

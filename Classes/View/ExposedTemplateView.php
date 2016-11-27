@@ -18,6 +18,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Fluid\Core\Parser\ParsedTemplateInterface;
+use TYPO3\CMS\Fluid\Core\Parser\TemplateParser as LegacyTemplateParser;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
 use TYPO3\CMS\Fluid\View\AbstractTemplateView;
 use TYPO3\CMS\Fluid\View\TemplateView;
@@ -154,7 +156,7 @@ class ExposedTemplateView extends TemplateView implements ViewInterface
      */
     public function getParsedTemplate()
     {
-        if (isset($this->templateParser)) {
+        if (isset($this->templateParser) && $this->templateParser instanceof LegacyTemplateParser) {
             $templateIdentifier = $this->getTemplateIdentifier();
             if (true === $this->templateCompiler->has($templateIdentifier)) {
                 $parsedTemplate = $this->templateCompiler->get($templateIdentifier);
@@ -185,8 +187,25 @@ class ExposedTemplateView extends TemplateView implements ViewInterface
      */
     public function getTemplatePathAndFilename($actionName = null)
     {
-        return parent::getTemplatePathAndFilename($actionName);
+        if (method_exists(parent::class, 'getTemplatePathAndFilename')) {
+            return parent::getTemplatePathAndFilename($actionName);
+        }
+        return $this->baseRenderingContext->getTemplatePaths()->resolveTemplateFileForControllerAndActionAndFormat(
+            $this->baseRenderingContext->getControllerName(),
+            $actionName ? : $this->baseRenderingContext->getControllerAction()
+        );
     }
+
+    /**
+     * Public-access wrapper for parent's method
+     *
+     * @return RenderingContextInterface
+     */
+    public function getRenderingContext()
+    {
+        return $this->baseRenderingContext;
+    }
+
 
     /**
      * Renders a section from the specified template w/o requring a call to the

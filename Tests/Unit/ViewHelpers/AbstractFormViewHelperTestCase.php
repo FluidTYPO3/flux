@@ -35,7 +35,7 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
             array('exists', 'get', 'add')
         )->getMock();
         $this->renderingContext = $this->getMockBuilder(
-            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface'
+            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContext'
         )->setMethods(
             array('getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext')
         )->getMock();
