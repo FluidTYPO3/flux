@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use FluidTYPO3\Flux\Utility\ErrorUtility;
 use NamelessCoder\FluidGap\Traits\CompileWithRenderStatic;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -94,7 +95,7 @@ class DataViewHelper extends AbstractViewHelper
                 $record = static::$recordService->getSingle($table, 'uid,' . $field, $uid);
             }
             if (null === $record) {
-                throw new Exception(
+                ErrorUtility::throwViewHelperException(
                     sprintf(
                         'Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .
                         'provide the "record" attribute.',
@@ -108,7 +109,7 @@ class DataViewHelper extends AbstractViewHelper
             $providers = static::$configurationService->resolveConfigurationProviders($table, $field, $record);
             $dataArray = static::readDataArrayFromProvidersOrUsingDefaultMethod($providers, $record, $field);
         } else {
-            throw new Exception(
+            ErrorUtility::throwViewHelperException(
                 'Invalid table:field "' . $table . ':' . $field . '" - does not exist in TYPO3 TCA.',
                 1387049117
             );

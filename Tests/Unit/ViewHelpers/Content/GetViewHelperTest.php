@@ -34,7 +34,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         parent::setUp();
         $GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
         $GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
-        $GLOBALS['TSFE']->sys_page = new PageRepository();
+        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)->setMethods(['enableFields'])->getMock();
         $GLOBALS['TT'] = new NullTimeTracker();
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
@@ -54,7 +54,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $variables = array(
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
         );
-        $node = new TextNode('Hello loopy world!');
+        $node = $this->createNode('Text', 'Hello loopy world!');
         $output = $this->executeViewHelper($arguments, $variables, $node);
         $this->assertSame($node->getText(), $output);
     }
@@ -75,7 +75,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $variables = array(
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
         );
-        $node = new TextNode('Hello loopy world!');
+        $node = $this->createNode('Text', 'Hello loopy world!');
         $output = $this->executeViewHelper($arguments, $variables, $node);
         $this->assertSame($node->getText(), $output);
     }
@@ -94,7 +94,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
             'nameTaken' => 'taken',
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
         );
-        $node = new TextNode('Hello loopy world!');
+        $node = $this->createNode('Text', 'Hello loopy world!');
         $content = $this->executeViewHelper($arguments, $variables, $node);
         $this->assertIsString($content);
     }
@@ -112,7 +112,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $variables = array(
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
         );
-        $node = new TextNode('Hello loopy world!');
+        $node = $this->createNode('Text', 'Hello loopy world!');
         $output = $this->executeViewHelper($arguments, $variables, $node);
         $this->assertSame($node->getText(), $output);
     }
