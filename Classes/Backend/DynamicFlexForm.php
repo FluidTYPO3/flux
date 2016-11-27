@@ -103,7 +103,7 @@ class DynamicFlexForm
     public function getDataStructureIdentifierPreProcess(array $tca, $tableName, $fieldName, array $record)
     {
         $dataStructArray = [];
-        $providers = $this->configurationService->resolveConfigurationProviders($tableName, $fieldName, $row);
+        $providers = $this->configurationService->resolveConfigurationProviders($tableName, $fieldName, $record);
         if (count($providers) === 0) {
             return [];
         }
