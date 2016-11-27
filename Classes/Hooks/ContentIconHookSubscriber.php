@@ -99,7 +99,7 @@ class ContentIconHookSubscriber
             } elseif (null !== $record) {
                 $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
                 // filter 2: table must have one field defined as "flex" and record must include it.
-                if (null !== $field && true === array_key_exists($record[$field])) {
+                if (null !== $field && true === array_key_exists($field, $record)) {
                     // we check the cache here because at this point, the cache key is decidedly
                     // unique and we have not yet consulted the (potentially costly) Provider.
                     $provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
