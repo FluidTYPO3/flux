@@ -227,6 +227,9 @@ class DynamicFlexForm
             $providers = $this->configurationService->resolveConfigurationProviders($table, $fieldName, $row);
             foreach ($providers as $provider) {
                 $form = $provider->getForm($row);
+                if (!$form) {
+                    continue;
+                }
                 $formId = $form->getId();
                 if ($form->getOption(Form::OPTION_STATIC)) {
                     $cache = $this->getCache();
