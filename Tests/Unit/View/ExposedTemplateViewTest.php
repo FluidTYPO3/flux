@@ -18,6 +18,8 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Fluid\Core\Parser\TemplateParser as LegacyTemplateParser;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 
 /**
  * ExposedTemplateViewTest
@@ -30,11 +32,19 @@ class ExposedTemplateViewTest extends AbstractTestCase
      */
     public function getParsedTemplateReturnsCompiledTemplateIfFound()
     {
-        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getTemplateIdentifier'))->getMock();
-        $instance->expects($this->once())->method('getTemplateIdentifier');
-        $compiler = $this->getMockBuilder('TYPO3\\CMS\\Fluid\\Core\\Compiler\\TemplateCompiler')->setMethods(array('has', 'get'))->getMock();
-        $compiler->expects($this->once())->method('has')->willReturn(true);
-        $compiler->expects($this->once())->method('get')->willReturn('foobar');
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['getTemplateIdentifier'])->getMock();
+        $instance->expects($this->any())->method('getTemplateIdentifier');
+        $templateParserMock = $this->getMockBuilder(LegacyTemplateParser::class)->setMethods(['getOrParseAndStoreTemplate'])->getMock();
+        $templateParserMock->expects($this->any())->method('getOrParseAndStoreTemplate')->willReturn('foobar');
+        $templatePathsMock = $this->getMockBuilder(\TYPO3\CMS\Fluid\View\TemplatePaths::class)->setMethods(['getTemplateIdentifier'])->getMock();
+        $compiler = $this->getMockBuilder('TYPO3\\CMS\\Fluid\\Core\\Compiler\\TemplateCompiler')->setMethods(['has', 'get'])->getMock();
+        $compiler->expects($this->any())->method('has')->willReturn(true);
+        $compiler->expects($this->any())->method('get')->willReturn('foobar');
+        $context = $this->getMockBuilder(RenderingContext::class)->setMethods(['getTemplateParser', 'getTemplatePaths'])->getMock();
+        $context->expects($this->any())->method('getTemplateParser')->willReturn($templateParserMock);
+        $context->expects($this->any())->method('getTemplatePaths')->willReturn($templatePathsMock);
+
+        ObjectAccess::setProperty($instance, 'baseRenderingContext', $context, true);
         ObjectAccess::setProperty($instance, 'templateCompiler', $compiler, true);
         $result = $this->callInaccessibleMethod($instance, 'getParsedTemplate');
         $this->assertEquals('foobar', $result);
@@ -177,28 +187,25 @@ class ExposedTemplateViewTest extends AbstractTestCase
         $viewContext = new ViewContext(null, 'Flux', 'Content');
         $viewContext->setTemplatePaths(new TemplatePaths($templatePaths));
         $view = $service->getPreparedExposedTemplateView($viewContext);
-        $controllerContext = ObjectAccess::getProperty($view, 'controllerContext', true);
-        $controllerContext->getRequest()->setControllerActionName('dummy');
-        $controllerContext->getRequest()->setControllerName('Content');
-        $view->setControllerContext($controllerContext);
+        $renderingContext = $view->getRenderingContext();
+        if (method_exists($renderingContext, 'setControllerName')) {
+            $paths = $this->getMockBuilder(\TYPO3\CMS\Fluid\View\TemplatePaths::class)
+                ->setMethods(['resolveTemplateFileForControllerAndActionAndFormat'])
+                ->getMock();
+            $paths->expects($this->once())->method('resolveTemplateFileForControllerAndActionAndFormat')->willReturn(
+                ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Templates/Content/Dummy.html')
+            );
+            $renderingContext->setTemplatePaths($paths);
+        } else {
+            $controllerContext = ObjectAccess::getProperty($view, 'controllerContext', true);
+            $controllerContext->getRequest()->setControllerName('Content');
+            $controllerContext->getRequest()->setControllerActionName('dummy');
+            $view->setControllerContext($controllerContext);
+            $renderingContext->setControllerContext($controllerContext);
+        }
         $output = $view->getTemplatePathAndFilename('dummy');
         $this->assertNotEmpty($output);
         $this->assertFileExists($output);
-    }
-
-    /**
-     * @test
-     */
-    public function getTemplatePathAndFilenameCallsExpectedMethodSequenceInStandardTemplateViewMode()
-    {
-        $request = new Request();
-        $controllerContext = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerContext')->setMethods(array('getRequest'))->getMock();
-        $controllerContext->expects($this->once())->method('getRequest')->will($this->returnValue($request));
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('expandGenericPathPattern'))->disableOriginalConstructor()->getMock();
-        $mock->expects($this->any())->method('expandGenericPathPattern')->will($this->returnValue(array('/dev/null/')));
-        $mock->setControllerContext($controllerContext);
-        $this->setExpectedException('TYPO3\\CMS\\Fluid\\View\\Exception\\InvalidTemplateResourceException');
-        $mock->getTemplatePathAndFilename();
     }
 
     /**

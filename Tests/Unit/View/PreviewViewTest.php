@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Backend\Preview;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use FluidTYPO3\Flux\View\PreviewView;
 use FluidTYPO3\Flux\View\PageLayoutView;
 use TYPO3\CMS\Core\Versioning\VersionState;
@@ -21,12 +22,12 @@ use TYPO3\CMS\Core\Versioning\VersionState;
  */
 class PreviewViewTest extends AbstractTestCase
 {
-
     /**
      * @return void
      */
     public function setUp()
     {
+        $this->markTestSkippedOnMaster();
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(
             'TYPO3\\CMS\\Core\\Database\\DatabaseConnection'
         )->setMethods(

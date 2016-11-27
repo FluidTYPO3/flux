@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Utility;
 use TYPO3\CMS\Extbase\Reflection\ClassReflection;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Parser\TemplateParser;
+use TYPO3Fluid\Fluid\Core\Parser\Patterns;
 
 /**
  * Annotation Utility
@@ -77,7 +78,11 @@ class AnnotationUtility
      */
     protected static function parseAnnotationArguments($argumentsAsString)
     {
-        $pattern = TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_ARRAY_PARTS;
+        if (class_exists(TemplateParser::class)) {
+            $pattern = TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_ARRAY_PARTS;
+        } else {
+            $pattern = Patterns::$SPLIT_PATTERN_SHORTHANDSYNTAX_ARRAY_PARTS;
+        }
         $matches = [];
         preg_match_all($pattern, $argumentsAsString, $matches, PREG_SET_ORDER);
         $arguments = [];
@@ -112,7 +117,11 @@ class AnnotationUtility
             }
             return array_map([self, 'parseAnnotation'], $annotation);
         }
-        $pattern = TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
+        if (class_exists(TemplateParser::class)) {
+            $pattern = TemplateParser::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
+        } else {
+            $pattern = Patterns::$SPLIT_PATTERN_SHORTHANDSYNTAX_VIEWHELPER;
+        }
         $annotation = trim($annotation);
         if (true === empty($annotation)) {
             // simple indication that annotation does exist but has no attributes.
