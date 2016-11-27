@@ -91,7 +91,7 @@ class PreviewView
 							</div>
 							%s
 						</div>',
-        'link' => '<a href="#" onclick="window.location.href=\'%s\'" title="%s"
+        'link' => '<a href="%s" title="%s"
                       class="btn btn-default btn-sm">%s %s</a>'
     ];
 
