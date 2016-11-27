@@ -516,6 +516,12 @@ class PreviewView
             ContentService::COLPOS_FLUXCONTENT,
             $view->tt_contentConfig['showHidden'] ? '' : 'AND hidden = 0 '
         );
+        if (GeneralUtility::compat_version('8.4.0') && !GeneralUtility::compat_version('8.5.0')) {
+            // Patching to avoid http://forge.typo3.org/issues/78353 by specifically targeting only the 8.4.x branch
+            // which is the only branch to display the symptom. Bug is fixed in coming 8.5.0 and does not exist in
+            // LTS - @TODO: remove this patch when 8.4.x is no longer supported, but no need to hurry.
+            $condition .= ' AND ';
+        }
         $queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
         $result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
         $rows = [];
