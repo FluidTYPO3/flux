@@ -5,13 +5,11 @@ sudo: false
 php:
   - "5.5"
   - "5.6"
-  - "hhvm"
 
 env: TYPO3_VERSION=">=7.6.13, <7.6.99"
 
 matrix:
   allow_failures:
-    - php: "hhvm"
     - php: "7.1"
   include:
     - php: "7.0"
