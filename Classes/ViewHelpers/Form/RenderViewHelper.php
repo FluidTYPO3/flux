@@ -10,9 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
-use TYPO3\CMS\Backend\Form\FormEngine;
 use TYPO3\CMS\Backend\Form\NodeFactory;
-use TYPO3\CMS\Backend\Template\DocumentTemplate;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -29,7 +27,8 @@ class RenderViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
-     * @var FluxService
+     * @var \FluidTYPO3\Flux\Service\FluxService
+     * @inject
      */
     protected $configurationService;
 
@@ -65,10 +64,10 @@ class RenderViewHelper extends AbstractViewHelper
                 'fieldChangeFunc' => [],
                 'fieldConf' => [
                     'config' => [
-                        'ds' => $form->build()
-                    ]
-                ]
-            ]
+                        'ds' => $form->build(),
+                    ],
+                ],
+            ],
         ]);
         $output = $node->render();
         return $output['html'];

@@ -10,13 +10,13 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * ### Content: Get ViewHelper
@@ -33,12 +33,14 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
     protected $escapeOutput = false;
 
     /**
-     * @var FluxService
+     * @var \FluidTYPO3\Flux\Service\FluxService
+     * @inject
      */
     protected static $configurationService;
 
     /**
-     * @var ConfigurationManagerInterface
+     * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+     * @inject
      */
     protected static $configurationManager;
 
@@ -175,7 +177,6 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
         return $content;
     }
 
-
     /**
      * This function renders an array of tt_content record into an array of rendered content
      * it returns a list of elements rendered by typoscript RECORDS function
@@ -190,7 +191,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             $conf = [
                 'tables' => 'tt_content',
                 'source' => $row['uid'],
-                'dontCheckPid' => 1
+                'dontCheckPid' => 1,
             ];
             array_push($elements, static::$configurationManager->getContentObject()->cObjGetSingle('RECORDS', $conf));
         }

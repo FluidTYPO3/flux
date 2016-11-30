@@ -250,6 +250,10 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
     {
         foreach ($items as $name => $item) {
             if (false === empty($defaultValues['tx_flux_column'])) {
+                if (false === is_array($items[$name]['tt_content_defValues'])) {
+                    $items[$name]['tt_content_defValues'] = [];
+                }
+
                 $items[$name]['tt_content_defValues']['tx_flux_column'] = $defaultValues['tx_flux_column'];
                 $items[$name]['params'] .= '&defVals[tt_content][tx_flux_column]=' .
                     rawurlencode($defaultValues['tx_flux_column']);

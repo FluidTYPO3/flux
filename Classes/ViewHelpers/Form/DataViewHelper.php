@@ -11,13 +11,12 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\Utility\ErrorUtility;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Exception;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Converts raw flexform xml into an associative array
@@ -27,17 +26,18 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
     use CompileWithRenderStatic;
 
     /**
-     * @var FluxService
+     * @var \FluidTYPO3\Flux\Service\FluxService
+     * @inject
      */
     protected static $configurationService;
 
     /**
-     * @var WorkspacesAwareRecordService
+     * @var \FluidTYPO3\Flux\Service\WorkspacesAwareRecordService
+     * @inject
      */
     protected static $recordService;
 
     /**
-     * Inject Flux service
      * @param FluxService $configurationService
      * @return void
      */
