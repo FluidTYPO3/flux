@@ -26,14 +26,12 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
     use CompileWithRenderStatic;
 
     /**
-     * @var \FluidTYPO3\Flux\Service\FluxService
-     * @inject
+     * @var FluxService
      */
     protected static $configurationService;
 
     /**
-     * @var \FluidTYPO3\Flux\Service\WorkspacesAwareRecordService
-     * @inject
+     * @var WorkspacesAwareRecordService
      */
     protected static $recordService;
 
@@ -93,7 +91,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
         }
         if (true === isset($GLOBALS['TCA'][$table]) && true === isset($GLOBALS['TCA'][$table]['columns'][$field])) {
             if (null === $record) {
-                $record = static::$recordService->getSingle($table, 'uid,' . $field, $uid);
+                $record = static::getRecordService()->getSingle($table, 'uid,' . $field, $uid);
             }
             if (null === $record) {
                 ErrorUtility::throwViewHelperException(
@@ -107,7 +105,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
                     1358679983
                 );
             }
-            $providers = static::$configurationService->resolveConfigurationProviders($table, $field, $record);
+            $providers = static::getFluxService()->resolveConfigurationProviders($table, $field, $record);
             $dataArray = static::readDataArrayFromProvidersOrUsingDefaultMethod($providers, $record, $field);
         } else {
             ErrorUtility::throwViewHelperException(
@@ -157,6 +155,28 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
             }
         }
         return $dataArray;
+    }
+
+    /**
+     * @return FluxService
+     */
+    protected static function getFluxService()
+    {
+        if (!isset(static::$configurationService)) {
+            static::$configurationService = GeneralUtility::makeInstance(ObjectManager::class)->get(FluxService::class);
+        }
+        return static::$configurationService;
+    }
+
+    /**
+     * @return WorkspacesAwareRecordService
+     */
+    protected static function getRecordService()
+    {
+        if (!isset(static::$recordService)) {
+            static::$recordService = GeneralUtility::makeInstance(ObjectManager::class)->get(WorkspacesAwareRecordService::class);
+        }
+        return static::$recordService;
     }
 
     /**
