@@ -161,14 +161,6 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
     protected $showThumbnails = false;
 
     /**
-     * If not-FALSE, adds one empty option/value pair to the generated selector
-     * box and tries to use this property's value (cast to string) as label.
-     *
-     * @var boolean|string
-     */
-    protected $emptyOption = false;
-
-    /**
      * @param string $type
      * @return array
      */

@@ -153,14 +153,6 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
             false,
             ''
         );
-        $this->registerArgument(
-            'emptyOption',
-            'mixed',
-            'If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this ' .
-            'property\'s value (cast to string) as label.',
-            false,
-            false
-        );
     }
 
     /**
