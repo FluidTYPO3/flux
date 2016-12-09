@@ -302,11 +302,12 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * @param ViewContext $viewContext
-     * @return void
+     * @return ProviderInterface
      */
     public function setViewContext(ViewContext $viewContext)
     {
         $this->viewContext = $viewContext;
+        return $this;
     }
 
     /**
@@ -362,10 +363,12 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * @param string $listType
+     * @return ProviderInterface
      */
     public function setListType($listType)
     {
         $this->listType = $listType;
+        return $this;
     }
 
     /**
@@ -882,89 +885,102 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * @param string $tableName
-     * @return void
+     * @return ProviderInterface
      */
     public function setTableName($tableName)
     {
         $this->tableName = $tableName;
+        return $this;
     }
 
     /**
      * @param string $fieldName
-     * @return void
+     * @return ProviderInterface
      */
     public function setFieldName($fieldName)
     {
         $this->fieldName = $fieldName;
+        return $this;
     }
 
     /**
      * @param string $extensionKey
-     * @return void
+     * @return ProviderInterface
      */
     public function setExtensionKey($extensionKey)
     {
         $this->extensionKey = $extensionKey;
+        return $this;
     }
 
     /**
      * @param array|NULL $templateVariables
-     * @return void
+     * @return ProviderInterface
      */
     public function setTemplateVariables($templateVariables)
     {
         $this->templateVariables = $templateVariables;
+        return $this;
     }
 
     /**
      * @param string $templatePathAndFilename
-     * @return void
+     * @return ProviderInterface
      */
     public function setTemplatePathAndFilename($templatePathAndFilename)
     {
         $this->templatePathAndFilename = $templatePathAndFilename;
+        return $this;
     }
 
     /**
      * @param array|NULL $templatePaths
-     * @return void
+     * @return ProviderInterface
      */
     public function setTemplatePaths($templatePaths)
     {
         $this->templatePaths = $templatePaths;
+        return $this;
     }
 
     /**
      * @param string|NULL $configurationSectionName
-     * @return void
+     * @return ProviderInterface
      */
     public function setConfigurationSectionName($configurationSectionName)
     {
         $this->configurationSectionName = $configurationSectionName;
+        return $this;
     }
 
     /**
      * @param string $name
+     * @return ProviderInterface
      */
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
 
     /**
      * @param Form $form
+     * @return ProviderInterface
      */
     public function setForm(Form $form)
     {
         $this->form = $form;
+        return $this;
     }
 
     /**
      * @param Grid $grid
+     * @return ProviderInterface
      */
     public function setGrid(Grid $grid)
     {
         $this->grid = $grid;
+        return $this;
     }
 
     /**

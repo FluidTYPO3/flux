@@ -10,7 +10,9 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
 use FluidTYPO3\Flux\Helper\Resolver;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
@@ -49,7 +51,22 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     public function processData()
     {
         if (TYPO3_REQUESTTYPE_INSTALL !== (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
+            $this->spoolQueuedContentTypeRegistrations(Core::getQueuedContentTypeRegistrations());
             $this->generateTableConfigurationForProviderForms();
+        }
+    }
+
+    /**
+     * @param array $queue
+     * @return void
+     */
+    protected function spoolQueuedContentTypeRegistrations(array $queue)
+    {
+        $contentTypeBuilder = new ContentTypeBuilder();
+        foreach ($queue as $queuedRegistration) {
+            /** @var ProviderInterface $provider */
+            list ($providerExtensionName, $contentType, $provider, $pluginName) = $queuedRegistration;
+            $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
         }
     }
 

@@ -8,10 +8,11 @@ namespace FluidTYPO3\Flux;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
 use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -73,11 +74,25 @@ class Core
     private static $staticTypoScript = [];
 
     /**
+     * Contains queued instructions to call \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin in later hook
+     * @var array
+     */
+    private static $queuedContentTypeRegistrations = [];
+
+    /**
      * @return array
      */
     public static function getStaticTypoScript()
     {
         return self::$staticTypoScript;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getQueuedContentTypeRegistrations()
+    {
+        return static::$queuedContentTypeRegistrations;
     }
 
     /**
@@ -239,7 +254,7 @@ class Core
      * @param mixed|NULL Optional section name containing the configuration
      * @param mixed|NULL Optional paths array / Closure to return paths
      * @param string $fieldName Optional fieldname if not from pi_flexform
-     * @return void
+     * @return ProviderInterface
      */
     public static function registerFluidFlexFormPlugin(
         $extensionKey,
@@ -263,6 +278,7 @@ class Core
         $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
         self::registerConfigurationProvider($provider);
+        return $provider;
     }
 
     /**
@@ -277,7 +293,7 @@ class Core
      * @param mixed|NULL Optional section name containing the configuration
      * @param mixed|NULL Optional paths array / Closure to return paths
      * @param string $fieldName Optional fieldname if not from pi_flexform
-     * @return void
+     * @return ProviderInterface
      */
     public static function registerFluidFlexFormContentObject(
         $extensionKey,
@@ -301,6 +317,7 @@ class Core
         $provider->setConfigurationSectionName($section);
         $provider->setContentObjectType($contentObjectType);
         self::registerConfigurationProvider($provider);
+        return $provider;
     }
 
     /**
@@ -314,7 +331,7 @@ class Core
      * @param mixed $variables Optional array of variables to pass to Fluid template
      * @param mixed|NULL Optional section name containing the configuration
      * @param mixed|NULL Optional paths array / Closure to return paths
-     * @return void
+     * @return ProviderInterface
      */
     public static function registerFluidFlexFormTable(
         $table,
@@ -335,6 +352,56 @@ class Core
         $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
         self::registerConfigurationProvider($provider);
+        return $provider;
+    }
+
+    /**
+     * Register a template directly for use as a custom CType. Once registered
+     * the CType will appear in the "Flux content" tab in the new content
+     * wizard, and will be driven by either a custom controller if one is
+     * specified or detected by convention; or render through the vanilla
+     * ContentController provided with Flux.
+     *
+     * @param string $providerExtensionName Vendor.ExtensionName format of extension scope of the template file
+     * @param string $templateFilename Absolute path to template file containing Flux definition, EXT:... allowed
+     * @param array $variables Optional array of variables which are assigned when rendering the Flux definition
+     * @param null|string $section
+     * @param null|string $paths
+     * @return ProviderInterface
+     */
+    public static function registerTemplateAsContentType(
+        $providerExtensionName,
+        $templateFilename,
+        $variables = [],
+        $section = 'Configuration',
+        $paths = null
+    ) {
+
+        if (strpos($templateFilename, '/') !== 0) {
+            $templateFilename = GeneralUtility::getFileAbsFileName($templateFilename);
+        }
+
+        $provider = (new ContentTypeBuilder())->configureContentTypeFromTemplateFile(
+            $providerExtensionName,
+            $templateFilename,
+            $variables,
+            $section,
+            $paths
+        );
+
+        // Determine which plugin name and controller action to emulate with this CType, base on file name.
+        $emulatedPluginName = ucfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
+        $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
+        $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
+
+        static::$queuedContentTypeRegistrations[$fullContentType] = [
+            $providerExtensionName,
+            $fullContentType,
+            $provider,
+            $emulatedPluginName
+        ];
+
+        return $provider;
     }
 
     /**
