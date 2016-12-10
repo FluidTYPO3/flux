@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Outlet;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
 use TYPO3\CMS\Extbase\Error\Result;

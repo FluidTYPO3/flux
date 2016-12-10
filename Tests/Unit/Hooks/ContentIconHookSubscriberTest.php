@@ -9,12 +9,9 @@ namespace FluidTYPO3\Flux\Hooks;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Provider\Provider;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
