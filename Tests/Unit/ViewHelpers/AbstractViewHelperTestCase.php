@@ -118,6 +118,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
             $configurationManager->setContentObject($cObject);
             $instance->injectConfigurationManager($configurationManager);
         }
+        $instance->setRenderingContext($this->objectManager->get(RenderingContext::class));
         $instance->initialize();
         return $instance;
     }
