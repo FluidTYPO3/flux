@@ -94,7 +94,7 @@ class ExposedTemplateView extends TemplateView implements ViewInterface
         /** @var Grid $grid */
         try {
             $grids = $this->getStoredVariable(AbstractFormViewHelper::SCOPE, 'grids', $sectionName);
-        } catch(InvalidVariableException $exception) {
+        } catch (InvalidVariableException $exception) {
             // TODO: Remove after dropping 7.6 LTS support
             return null;
         }
@@ -170,10 +170,9 @@ class ExposedTemplateView extends TemplateView implements ViewInterface
         } else {
             $parsedTemplate = $this->baseRenderingContext->getTemplateParser()->getOrParseAndStoreTemplate(
                 $this->baseRenderingContext->getTemplatePaths()->getTemplateIdentifier(),
-                function(\TYPO3Fluid\Fluid\Core\Parser\TemplateParser $parser, \TYPO3\CMS\Fluid\View\TemplatePaths $paths) {
+                function (\TYPO3Fluid\Fluid\Core\Parser\TemplateParser $parser, \TYPO3\CMS\Fluid\View\TemplatePaths $paths) {
                     return $paths->getTemplateSource();
                 }
-
             );
         }
         return $parsedTemplate;
