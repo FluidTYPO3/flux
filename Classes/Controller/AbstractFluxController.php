@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -16,6 +17,7 @@ use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
+use FluidTYPO3\Flux\ViewHelpers\Outlet\FormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -179,11 +181,30 @@ abstract class AbstractFluxController extends ActionController
     /**
      * @return void
      */
+    protected function initializeViewHelperVariableContainer()
+    {
+        $viewHelperVariableContainer = $this->view->getRenderingContext()->getViewHelperVariableContainer();
+        $viewHelperVariableContainer->add(FormViewHelper::class, 'provider', $this->provider);
+        $viewHelperVariableContainer->add(
+            FormViewHelper::class,
+            'extensionName',
+            $this->request->getControllerExtensionKey()
+        );
+        $viewHelperVariableContainer->add(
+            FormViewHelper::class,
+            'pluginName',
+            $this->request->getPluginName()
+        );
+        $viewHelperVariableContainer->add(FormViewHelper::class, 'record', $this->getRecord());
+    }
+
+    /**
+     * @return void
+     */
     protected function initializeViewObject()
     {
         $row = $this->getRecord();
         $viewContext = $this->provider->getViewContext($row, $this->request);
-        $controllerActionName = $this->provider->getControllerActionFromRecord($row);
         $this->view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
     }
 
@@ -200,6 +221,22 @@ abstract class AbstractFluxController extends ActionController
         $this->initializeOverriddenSettings();
         $this->initializeViewObject();
         $this->initializeViewVariables();
+        $this->initializeViewHelperVariableContainer();
+    }
+
+    /**
+     * Default action, proxy for "render". Added in order to
+     * capture requests which use the Fluid-native "default"
+     * action name when no specific action name is set in the
+     * request. The "default" action is also returned by
+     * vanilla Provider instances when registering them for
+     * content object types or other ad-hoc registrations.
+     *
+     * @return void
+     */
+    public function defaultAction()
+    {
+        $this->forward('render');
     }
 
     /**
@@ -307,6 +344,7 @@ abstract class AbstractFluxController extends ActionController
         $subRequest->setControllerExtensionName($viewContext->getExtensionName());
         $subRequest->setControllerVendorName($viewContext->getVendorName());
         $subRequest->setControllerActionName($this->provider->getControllerActionFromRecord($row));
+        $subRequest->setPluginName($this->request->getPluginName());
         try {
             $potentialControllerInstance->processRequest($subRequest, $response);
         } catch (StopActionException $error) {
@@ -361,5 +399,54 @@ abstract class AbstractFluxController extends ActionController
     {
         $row = $this->configurationManager->getContentObject()->data;
         return (array) $row;
+    }
+
+    /**
+     * @return string
+     */
+    public function outletAction()
+    {
+        $record = $this->getRecord();
+        $input = $this->request->getArguments();
+        $targetConfiguration = $this->request->getInternalArguments()['__outlet'];
+        if (
+            $this->provider->getTableName($record) !== $targetConfiguration['table']
+            && $record['uid'] !== (integer) $targetConfiguration['recordUid']
+        ) {
+            // This instance does not match the instance that rendered the form. Forward the request
+            // to the default "render" action.
+            $this->forward('render');
+        }
+        $input['settings'] = $this->settings;
+        try {
+            $outlet = $this->provider->getForm($record)->getOutlet();
+            $outlet->setView($this->view);
+            $outlet->fill($input);
+            if (!$outlet->isValid()) {
+                $input = array_replace(
+                    $input,
+                    [
+                        'validationResults' => $outlet->getValidationResults()->getFlattenedErrors()
+                    ]
+                );
+
+                return $this->view->renderStandaloneSection('Main', $input, true);
+            } else {
+                // Pipes of Outlet get called in sequence to either return content or perform actions
+                // Outlet receives our local View which is pre-configured with paths. If one was not
+                // passed, a default StandaloneView is created with paths belonging to extension that
+                // contains the Form.
+                $input = array_replace(
+                    $input,
+                    $outlet->produce()
+                );
+
+                return $this->view->renderStandaloneSection('OutletSuccess', $input, true);
+            }
+        } catch (\RuntimeException $error) {
+            $input['error'] = $error;
+
+            return $this->view->renderStandaloneSection('OutletError', $input, true);
+        }
     }
 }

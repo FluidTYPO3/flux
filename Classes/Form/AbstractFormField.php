@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
@@ -96,8 +97,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public static function create(array $settings = [])
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = static::getObjectManager();
         if ('Section' === $settings['type']) {
             return Section::create($settings);
         } else {
@@ -120,7 +119,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             );
         }
         /** @var FormInterface $object */
-        $object = $objectManager->get($className);
+        $object = GeneralUtility::makeInstance(ObjectManager::class)->get($className);
         foreach ($settings as $settingName => $settingValue) {
             $setterMethodName = 'set' . ucfirst($settingName);
             if (true === method_exists($object, $setterMethodName)) {

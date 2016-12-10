@@ -222,13 +222,15 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder(
             $controllerClassName
         )->setMethods(
-            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewObject')
+            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewObject', 'initializeViewHelperVariableContainer'
+            )
         )->getMock();
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
         $instance->expects($this->at(2))->method('initializeOverriddenSettings');
         $instance->expects($this->at(3))->method('initializeViewVariables');
         $instance->expects($this->at(4))->method('initializeViewObject');
+        $instance->expects($this->at(5))->method('initializeViewHelperVariableContainer');
         $instance->initializeView($view);
     }
 
@@ -242,13 +244,14 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder(
             $controllerClassName
         )->setMethods(
-            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewObject')
+            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewObject', 'initializeViewHelperVariableContainer')
         )->getMock();
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
         $instance->expects($this->at(2))->method('initializeOverriddenSettings');
         $instance->expects($this->at(3))->method('initializeViewVariables');
         $instance->expects($this->at(4))->method('initializeViewObject');
+        $instance->expects($this->at(5))->method('initializeViewHelperVariableContainer');
         $instance->initializeView($view);
     }
 
@@ -421,7 +424,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
     public function callingSubControllerActionExecutesExpectedMethodsOnNestedObjects()
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-        $instance = $this->getMockBuilder($controllerClassName)->setMethods(array('processRequest', 'getRecord'))->getMock();
+        $instance = $this->getMockBuilder($controllerClassName)->setMethods(array('processRequest', 'getRecord', 'initializeViewHelperVariableContainer'))->getMock();
         $objectManager = $this->getMockBuilder(get_class($this->objectManager))->setMethods(array('get'))->getMock();
         $responseClassName = 'TYPO3\CMS\Extbase\Mvc\Web\Response';
         $response = $this->getMockBuilder($responseClassName)->setMethods(array('getContent'))->getMock();
@@ -454,7 +457,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder($controllerClassName)->setMethods(array('getRecord'))->getMock();
         $instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
         $view = $this->getMockBuilder('FluidTYPO3\Flux\View\ExposedTemplateView')->setMethods(array('assign', 'assignMultiple'))->getMock();
-        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getTemplatePaths', 'getTemplateVariables'))->getMock();
+        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getTemplatePaths', 'getTemplateVariables', 'initializeViewHelperVariableContainer'))->getMock();
         $provider->expects($this->once())->method('getTemplateVariables')->with($row)->will($this->returnValue($variables));
         $view->expects($this->atLeastOnce())->method('assignMultiple');
         $view->expects($this->atLeastOnce())->method('assign');
