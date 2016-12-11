@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Form\Field\Inline;
 
 /**
  * AbstractInlineFormField

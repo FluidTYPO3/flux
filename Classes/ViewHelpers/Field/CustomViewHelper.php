@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 use FluidTYPO3\Flux\Form\Field\Custom;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 
 /**
  * Custom FlexForm field ViewHelper

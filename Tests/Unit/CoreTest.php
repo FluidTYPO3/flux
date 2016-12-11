@@ -11,8 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**

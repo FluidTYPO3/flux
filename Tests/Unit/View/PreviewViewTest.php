@@ -8,13 +8,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\View;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Backend\Preview;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\VersionUtility;
-use FluidTYPO3\Flux\View\PreviewView;
 use FluidTYPO3\Flux\View\PageLayoutView;
+use FluidTYPO3\Flux\View\PreviewView;
 use TYPO3\CMS\Core\Versioning\VersionState;
 
 /**

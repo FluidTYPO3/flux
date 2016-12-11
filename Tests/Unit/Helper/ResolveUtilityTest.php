@@ -11,9 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Helpers;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * ResolveUtilityTest

@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Package\FluxPackageInterface;
 use FluidTYPO3\Flux\Package\PackageNotFoundException;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;

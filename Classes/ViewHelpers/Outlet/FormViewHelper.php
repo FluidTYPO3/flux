@@ -9,8 +9,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
  */
 
 use FluidTYPO3\Flux\Provider\AbstractProvider;
-use FluidTYPO3\Flux\Utility\ErrorUtility;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
 
 /**
  * Outlet Form Renderer
