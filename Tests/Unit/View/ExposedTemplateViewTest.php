@@ -8,15 +8,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\View;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\View\ExposedTemplateView;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Parser\TemplateParser as LegacyTemplateParser;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;

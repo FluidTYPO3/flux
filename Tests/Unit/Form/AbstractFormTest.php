@@ -8,14 +8,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\ContainerInterface;
-use FluidTYPO3\Flux\Form\FieldInterface;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * AbstractFormTest
