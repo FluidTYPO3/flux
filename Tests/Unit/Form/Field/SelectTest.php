@@ -25,7 +25,7 @@ class SelectTest extends AbstractFieldTest
         'label' => 'Test field',
         'itemListStyle' => 'color: red',
         'selectedListStyle' => 'color: blue',
-        'emptyOption' => true,
+        'emptyOption' => false,
         'minItems' => 1,
         'maxItems' => 3,
         'requestUpdate' => true,

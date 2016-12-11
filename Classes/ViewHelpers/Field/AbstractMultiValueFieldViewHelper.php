@@ -47,6 +47,26 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
             'Alternative rendering mode - default is an HTML select field but you can also use fx "checkbox" - ' .
             'see TCA "select" field "renderType" attribute'
         );
+        $this->registerArgument(
+            'items',
+            'mixed',
+            'Items for the selector; array / CSV / Traversable / Query supported'
+        );
+        $this->registerArgument(
+            'emptyOption',
+            'mixed',
+            'If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this ' .
+            'property\'s value (cast to string) as label.',
+            false,
+            false
+        );
+        $this->registerArgument(
+            'translateCsvItems',
+            'boolean',
+            'If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using ' .
+            'convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined ' .
+            'by normal Flux field name conventions'
+        );
     }
 
     /**
@@ -59,6 +79,9 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
     {
         /** @var MultiValueFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
+        $component->setItems($arguments['items']);
+        $component->setEmptyOption($arguments['emptyOption']);
+        $component->setTranslateCsvItems((boolean) $arguments['translateCsvItems']);
         $component->setMinItems($arguments['minItems']);
         $component->setMaxItems($arguments['maxItems']);
         $component->setSize($arguments['size']);
