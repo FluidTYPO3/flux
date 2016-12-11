@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -130,7 +131,7 @@ class CoreTest extends AbstractTestCase
             $configurationSectionName,
             $paths
         );
-        $this->assertNull($result);
+        $this->assertInstanceOf(ProviderInterface::class, $result);
     }
 
     /**
@@ -158,7 +159,7 @@ class CoreTest extends AbstractTestCase
             $configurationSectionName,
             $paths
         );
-        $this->assertNull($result);
+        $this->assertInstanceOf(ProviderInterface::class, $result);
     }
 
     /**
@@ -184,7 +185,22 @@ class CoreTest extends AbstractTestCase
             $configurationSectionName,
             $paths
         );
-        $this->assertNull($result);
+        $this->assertInstanceOf(ProviderInterface::class, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function canRegisterTemplateAsContentType()
+    {
+        $fieldName = null;
+        $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
+        $absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
+        $result = Core::registerTemplateAsContentType(
+            'FluidTYPO3.Flux',
+            $absoluteTemplatePathAndFilename
+        );
+        $this->assertInstanceOf(ProviderInterface::class, $result);
     }
 
     /**
