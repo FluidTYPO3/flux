@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
-use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeTrait;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;

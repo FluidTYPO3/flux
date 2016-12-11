@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
-use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;

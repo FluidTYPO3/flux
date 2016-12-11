@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**

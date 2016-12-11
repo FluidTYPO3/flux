@@ -8,10 +8,9 @@ namespace FluidTYPO3\Flux\ViewHelpers\Grid;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
-use FluidTYPO3\Flux\Form\Container\Row;
 
 /**
  * Flexform Grid Row ViewHelper

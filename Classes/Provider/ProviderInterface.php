@@ -196,31 +196,31 @@ interface ProviderInterface
 
     /**
      * @param string $extensionKey
-     * @return void
+     * @return ProviderInterface
      */
     public function setExtensionKey($extensionKey);
 
     /**
      * @param array|NULL $templateVariables
-     * @return void
+     * @return ProviderInterface
      */
     public function setTemplateVariables($templateVariables);
 
     /**
      * @param string $templatePathAndFilename
-     * @return void
+     * @return ProviderInterface
      */
     public function setTemplatePathAndFilename($templatePathAndFilename);
 
     /**
      * @param array|NULL $templatePaths
-     * @return void
+     * @return ProviderInterface
      */
     public function setTemplatePaths($templatePaths);
 
     /**
      * @param string|NULL $configurationSectionName
-     * @return void
+     * @return ProviderInterface
      */
     public function setConfigurationSectionName($configurationSectionName);
 

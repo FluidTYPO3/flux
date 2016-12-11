@@ -1,11 +1,8 @@
 <?php
 namespace FluidTYPO3\Flux\Backend\FormEngine;
 
-use FluidTYPO3\Flux\View\ViewContext;
-use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;

@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Hooks;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
