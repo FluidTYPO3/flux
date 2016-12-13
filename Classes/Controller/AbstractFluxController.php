@@ -181,18 +181,18 @@ abstract class AbstractFluxController extends ActionController
     protected function initializeViewHelperVariableContainer()
     {
         $viewHelperVariableContainer = $this->view->getRenderingContext()->getViewHelperVariableContainer();
-        $viewHelperVariableContainer->add(FormViewHelper::class, 'provider', $this->provider);
-        $viewHelperVariableContainer->add(
+        $viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'provider', $this->provider);
+        $viewHelperVariableContainer->addOrUpdate(
             FormViewHelper::class,
             'extensionName',
             $this->request->getControllerExtensionKey()
         );
-        $viewHelperVariableContainer->add(
+        $viewHelperVariableContainer->addOrUpdate(
             FormViewHelper::class,
             'pluginName',
             $this->request->getPluginName()
         );
-        $viewHelperVariableContainer->add(FormViewHelper::class, 'record', $this->getRecord());
+        $viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'record', $this->getRecord());
     }
 
     /**
