@@ -93,14 +93,14 @@ class ContentIconHookSubscriber
             $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
             $cacheIdentity = $table . $uid . sha1(serialize($record));
             // filter 1: icon must not already be cached and both record and caller must be provided.
+            // we check the cache here because at this point, the cache key is decidedly
+            // unique and we have not yet consulted the (potentially costly) Provider.
             if (true === $this->cache->has($cacheIdentity)) {
                 $icon = $this->cache->get($cacheIdentity);
             } elseif (null !== $record) {
                 $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
                 // filter 2: table must have one field defined as "flex" and record must include it.
                 if (null !== $field && true === array_key_exists($field, $record)) {
-                    // we check the cache here because at this point, the cache key is decidedly
-                    // unique and we have not yet consulted the (potentially costly) Provider.
                     $provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
                     // filter 3: a Provider must be resolved for the record.
                     if (null !== $provider) {
@@ -108,6 +108,9 @@ class ContentIconHookSubscriber
                         if (null !== $form) {
                             $icon = MiscellaneousUtility::getIconForTemplate($form);
                             if (null !== $icon) {
+                                if (strpos($icon, 'EXT:') === 0) {
+                                    $icon = '/' . substr(GeneralUtility::getFileAbsFileName($icon), strlen(PATH_site));
+                                }
                                 $label = trim($form->getLabel());
                                 $icon = '<img width="16" height="16" src="' . $icon . '" alt="' . $label . '"
 									title="' . $label . '" class="" />';
