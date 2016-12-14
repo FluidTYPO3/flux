@@ -60,7 +60,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * @var string
      * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#rendertype
      */
-    protected $renderType = 'selectSingle';
+    protected $renderType;
 
     /**
      * Mixed - string (CSV), Traversable or array of items. Format of key/value
