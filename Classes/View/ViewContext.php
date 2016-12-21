@@ -246,8 +246,8 @@ class ViewContext
         return sha1(
             $this->packageName .
             $this->templatePathAndFilename .
-            serialize($this->variables) .
-            serialize($this->templatePaths)
+            json_encode($this->variables) .
+            json_encode($this->templatePaths)
         );
     }
 }
