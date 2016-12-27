@@ -178,16 +178,13 @@ class FluxService implements SingletonInterface
         if (isset($cache[$viewContextHash])) {
             return $cache[$viewContextHash];
         }
-        $vendorName = $viewContext->getVendorName();
         $extensionKey = $viewContext->getExtensionKey();
         $qualifiedExtensionName = $viewContext->getExtensionName();
-        $controllerName = $viewContext->getControllerName();
         $variables = $viewContext->getVariables();
         if (null === $qualifiedExtensionName || false === ExtensionManagementUtility::isLoaded($extensionKey)) {
             // Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
             $qualifiedExtensionName = 'Flux';
         }
-        $extensionName = ExtensionNamingUtility::getExtensionName($qualifiedExtensionName);
         /** @var $context ControllerContext */
         $context = $this->objectManager->get(ControllerContext::class);
         $request = $viewContext->getRequest();
@@ -231,9 +228,7 @@ class FluxService implements SingletonInterface
             return null;
         }
         $section = $viewContext->getSectionName();
-        $variables = $viewContext->getVariables();
         $extensionName = $viewContext->getExtensionName();
-        $variableCheck = json_encode($variables);
         $cacheKey = $viewContext->getHash();
         if (false === isset($cache[$cacheKey])) {
             try {
