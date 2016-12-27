@@ -142,29 +142,16 @@ class FluxService implements SingletonInterface
      */
     public function sortObjectsByProperty(array $objects, $sortBy, $sortDirection = 'ASC')
     {
-        $sorted = [];
-        $sort = [];
-        foreach ($objects as $index => $object) {
-            $sortValue = ObjectAccess::getPropertyPath($object, $sortBy);
-            $sort[$index] = $sortValue;
-        }
-        if ('ASC' === strtoupper($sortDirection)) {
-            asort($sort);
-        } else {
-            arsort($sort);
-        }
-        $hasStringIndex = false;
-        foreach ($sort as $index => $value) {
-            $sorted[$index] = $objects[$index];
-            if (true === is_string($index)) {
-                $hasStringIndex = true;
+        $ascending = 'ASC' === strtoupper($sortDirection);
+        uasort($objects, function ($a, $b) use ($sortBy, $ascending) {
+            $a = ObjectAccess::getProperty($a, $sortBy);
+            $b = ObjectAccess::getProperty($b, $sortBy);
+            if ($a === $b) {
+                return 0;
             }
-        }
-        if (false === $hasStringIndex) {
-            // reset out-of-sequence indices if provided indices contain no strings
-            $sorted = array_values($sorted);
-        }
-        return $sorted;
+            return $a < $b ? ($ascending ? -1 : 1) : ($ascending ? 1 : -1);
+        });
+        return $objects;
     }
 
     /**

@@ -49,7 +49,7 @@ class FluxServiceTest extends AbstractTestCase
     {
         $service = new FluxService();
         $sorted = $service->sortObjectsByProperty($input, $sortBy, $direction);
-        $this->assertEquals($expectedOutput, $sorted);
+        $this->assertSame($expectedOutput, $sorted);
     }
 
     /**
@@ -61,7 +61,7 @@ class FluxServiceTest extends AbstractTestCase
             array(
                 array(array('foo' => 'b'), array('foo' => 'a')),
                 'foo', 'ASC',
-                array(array('foo' => 'a'), array('foo' => 'b'))
+                array(1 => array('foo' => 'a'), 0 => array('foo' => 'b'))
             ),
             array(
                 array('a1' => array('foo' => 'b'), 'a2' => array('foo' => 'a')),

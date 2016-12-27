@@ -66,18 +66,7 @@ class ProviderResolver implements SingletonInterface
      */
     public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = null, $extensionKey = null)
     {
-        if (is_array($row) === false) {
-            $row = [];
-        }
-        $providers = $this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
-        $priority = 0;
-        $providerWithTopPriority = null;
-        foreach ($providers as $provider) {
-            if ($provider->getPriority($row) >= $priority) {
-                $providerWithTopPriority = &$provider;
-            }
-        }
-        return $providerWithTopPriority;
+        return array_pop($this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey));
     }
 
     /**
@@ -95,24 +84,18 @@ class ProviderResolver implements SingletonInterface
     {
         $row = false === is_array($row) ? [] : $row;
         $providers = $this->getAllRegisteredProviderInstances();
-        $prioritizedProviders = [];
-        foreach ($providers as $provider) {
-            if (true === $provider->trigger($row, $table, $fieldName, $extensionKey)) {
-                $priority = $provider->getPriority($row);
-                if (false === is_array($prioritizedProviders[$priority])) {
-                    $prioritizedProviders[$priority] = [];
-                }
-                $prioritizedProviders[$priority][] = $provider;
+        usort($providers, function ($a, $b) use ($row) {
+            $priorityA = $a->getPriority($row);
+            $priorityB = $b->getPriority($row);
+            if ($priorityA === $priorityB) {
+                return 0;
             }
-        }
-        ksort($prioritizedProviders);
-        $providersToReturn = [];
-        foreach ($prioritizedProviders as $providerSet) {
-            foreach ($providerSet as $provider) {
-                array_push($providersToReturn, $provider);
-            }
-        }
-        return $providersToReturn;
+            return $priorityA < $priorityB ? -1 : 1;
+        });
+        $providers = array_filter($providers, function ($provider) use ($row, $table, $fieldName) {
+            return $provider->trigger($row, $table, $fieldName);
+        });
+        return $providers;
     }
 
     /**
