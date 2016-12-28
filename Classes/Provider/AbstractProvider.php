@@ -118,6 +118,16 @@ class AbstractProvider implements ProviderInterface
     protected $extensionKey = null;
 
     /**
+     * @var string
+     */
+    protected $controllerName;
+
+    /**
+     * @var string
+     */
+    protected $controllerAction = 'default';
+
+    /**
      * @var integer
      */
     protected $priority = 50;
@@ -207,7 +217,7 @@ class AbstractProvider implements ProviderInterface
     public function trigger(array $row, $table, $field, $extensionKey = null)
     {
         $providerFieldName = $this->getFieldName($row);
-        $providerTableName = $this->tableName;
+        $providerTableName = $this->getTableName($row);
         $providerExtensionKey = $this->extensionKey;
         $contentObjectType = $this->contentObjectType;
         $listType = $this->listType;
@@ -830,6 +840,9 @@ class AbstractProvider implements ProviderInterface
      */
     public function getControllerNameFromRecord(array $row)
     {
+        if (!empty($this->controllerName)) {
+            return $this->controllerName;
+        }
         $class = get_class($this);
         $separator = false !== strpos($class, '\\') ? '\\' : '_';
         $base = array_pop(explode($separator, $class));
@@ -869,7 +882,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function getControllerActionFromRecord(array $row)
     {
-        return 'default';
+        return $this->controllerAction;
     }
 
     /**
@@ -910,6 +923,26 @@ class AbstractProvider implements ProviderInterface
     public function setExtensionKey($extensionKey)
     {
         $this->extensionKey = $extensionKey;
+        return $this;
+    }
+
+    /**
+     * @param $controllerName
+     * @return ProviderInterface
+     */
+    public function setControllerName($controllerName)
+    {
+        $this->controllerName = $controllerName;
+        return $this;
+    }
+
+    /**
+     * @param $controllerAction
+     * @return ProviderInterface
+     */
+    public function setControllerAction($controllerAction)
+    {
+        $this->controllerAction = $controllerAction;
         return $this;
     }
 
@@ -994,76 +1027,4 @@ class AbstractProvider implements ProviderInterface
         return $this->recordService->getSingle($tableName, '*', $uid);
     }
 
-    /**
-     * Use by TceMain to track method calls to providers for a certain $id.
-     * Every provider should only be called once per method / $id / command.
-     * When TceMain has called the provider it will call this method afterwards.
-     *
-     * @param string $methodName
-     * @param mixed $id
-     * @param string command
-     * @return void
-     */
-    public function trackMethodCall($methodName, $id, $command = '')
-    {
-        self::trackMethodCallWithClassName(get_called_class(), $methodName, $id, $command);
-    }
-
-    /**
-     * Use by TceMain to track method calls to providers for a certain $id.
-     * Every provider should only be called once per method / $id.
-     * Before calling a provider, TceMain will call this method.
-     * If the provider hasn't been called for that method / $id before, it is.
-     *
-     *
-     * @param string $methodName
-     * @param mixed $id
-     * @param string $command
-     * @return boolean
-     */
-    public function shouldCall($methodName, $id, $command = '')
-    {
-        return self::shouldCallWithClassName(get_class($this), $methodName, $id, $command);
-    }
-
-    /**
-     * Internal method. See trackMethodCall.
-     * This is used by flux own provider to make sure on inheritance they are still only executed once.
-     *
-     * @param string $className
-     * @param string $methodName
-     * @param mixed $id
-     * @param string $command
-     * @return void
-     */
-    protected function trackMethodCallWithClassName($className, $methodName, $id, $command = '')
-    {
-        $cacheKey = $className . $methodName . $id . $command;
-        self::$trackedMethodCalls[$cacheKey] = true;
-    }
-
-    /**
-     * Internal method. See shouldCall.
-     * This is used by flux own provider to make sure on inheritance they are still only executed once.
-     *
-     * @param string $className
-     * @param string $methodName
-     * @param mixed $id
-     * @param string $command
-     * @return boolean
-     */
-    protected function shouldCallWithClassName($className, $methodName, $id, $command = '')
-    {
-        $cacheKey = $className . $methodName . $id . $command;
-        return empty(self::$trackedMethodCalls[$cacheKey]);
-    }
-
-    /**
-     * @return void
-     */
-    public function reset()
-    {
-        self::$cache = [];
-        self::$trackedMethodCalls = [];
-    }
 }

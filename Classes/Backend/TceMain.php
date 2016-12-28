@@ -106,19 +106,18 @@ class TceMain
      * @param string $command The TCEmain operation status, fx. 'update'
      * @param string $table The table TCEmain is currently processing
      * @param string $id The records id (if any)
-     * @param array $relativeTo Filled if command is relative to another element
+     * @param string $relativeTo Filled if command is relative to another element
      * @param DataHandler $reference Reference to the parent object (TCEmain)
      * @return void
      */
     public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference)
     {
-        $record = [];
+        $record = (array) $this->recordService->getSingle($table, '*', $id);
         $arguments = ['command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo];
         $this->executeConfigurationProviderMethod(
             'preProcessCommand',
             $table,
             $id,
-            $command,
             $record,
             $arguments,
             $reference
@@ -129,19 +128,22 @@ class TceMain
      * @param string $command The TCEmain operation status, fx. 'update'
      * @param string $table The table TCEmain is currently processing
      * @param string $id The records id (if any)
-     * @param array $relativeTo Filled if command is relative to another element
+     * @param string $relativeTo Filled if command is relative to another element
      * @param DataHandler $reference Reference to the parent object (TCEmain)
      * @return void
      */
     public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference)
     {
-        $record = [];
+        $record = (array) $this->recordService->getSingle($table, '*', $id);
+        if ('localize' === $command) {
+            $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
+        }
+
         $arguments = ['command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo];
         $this->executeConfigurationProviderMethod(
             'postProcessCommand',
             $table,
             $id,
-            $command,
             $record,
             $arguments,
             $reference
@@ -157,12 +159,14 @@ class TceMain
      */
     public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, $table, $id, &$reference)
     {
+        $parameters = GeneralUtility::_GET();
+        $this->contentService->affectRecordByRequestParameters($id, $incomingFieldArray, $parameters, $reference);
+
         $arguments = ['row' => &$incomingFieldArray, 'id' => $id];
         $incomingFieldArray = $this->executeConfigurationProviderMethod(
             'preProcessRecord',
             $table,
             $id,
-            '',
             $incomingFieldArray,
             $arguments,
             $reference
@@ -184,7 +188,6 @@ class TceMain
             'postProcessRecord',
             $table,
             $id,
-            '',
             $fieldArray,
             $arguments,
             $reference
@@ -209,7 +212,6 @@ class TceMain
             'postProcessDatabaseOperation',
             $table,
             $id,
-            '',
             $fieldArray,
             $arguments,
             $reference
@@ -217,6 +219,24 @@ class TceMain
     }
 
     /**
+     * @param string $table
+     * @param integer $uid
+     * @param integer $destPid
+     * @param array $propArr
+     * @param array $moveRec
+     * @param integer $resolvedPid
+     * @param boolean $recordWasMoved
+     * @param DataHandler $reference
+     */
+    public function moveRecord($table, $uid, $destPid, &$propArr, &$moveRec, $resolvedPid, &$recordWasMoved, DataHandler $reference)
+    {
+        $moveData = (array) $this->getMoveData();
+        $propArr['uid'] = $uid;
+        $this->contentService->moveRecord($propArr, $destPid, $moveData, $reference);
+        $recordWasMoved = true;
+    }
+
+    /*
      * Methods above are not covered by coding style checks due to needing
      * non-conforming method names.
      *
@@ -224,12 +244,42 @@ class TceMain
      */
 
     /**
+     * @param string $table
+     * @param integer $uid
+     * @param integer $destPid
+     * @param array $moveRec
+     * @param array $row
+     * @param DataHandler $reference
+     */
+    public function moveRecord_firstElementPostProcess($table, $uid, $destPid, $moveRec, &$row, DataHandler $reference)
+    {
+        $moveData = (array) $this->getMoveData();
+        $row['uid'] = $uid;
+        $this->contentService->moveRecord($row, $destPid, $moveData, $reference);
+    }
+
+    /**
+     * @param stringt $table
+     * @param integer $uid
+     * @param integer $destPid
+     * @param integer $origDestPid
+     * @param array $moveRec
+     * @param array $updateFields
+     * @param DataHandler $reference
+     */
+    public function moveRecord_afterAnotherElementPostProcess($table, $uid, $destPid, $origDestPid, $moveRec, &$updateFields, DataHandler $reference)
+    {
+        $moveData = $this->getMoveData();
+        $updateFields['uid'] = $uid;
+        $this->contentService->moveRecord($updateFields, $origDestPid, $moveData, $reference);
+    }
+
+    /**
      * Wrapper method to execute a ConfigurationProvider
      *
      * @param string $methodName
      * @param string $table
      * @param mixed $id
-     * @param string $command
      * @param array $record
      * @param array $arguments
      * @param DataHandler $reference
@@ -239,7 +289,6 @@ class TceMain
         $methodName,
         $table,
         $id,
-        $command,
         array $record,
         array $arguments,
         DataHandler $reference
@@ -251,10 +300,7 @@ class TceMain
             $arguments[] = &$reference;
             $detectedProviders = $this->configurationService->resolveConfigurationProviders($table, null, $record);
             foreach ($detectedProviders as $provider) {
-                if (true === $provider->shouldCall($methodName, $id, $command)) {
-                    call_user_func_array([$provider, $methodName], array_values($arguments));
-                    $provider->trackMethodCall($methodName, $id, $command);
-                }
+                call_user_func_array([$provider, $methodName], array_values($arguments));
             }
         } catch (\RuntimeException $error) {
             $this->configurationService->debug($error);
@@ -315,5 +361,39 @@ class TceMain
             }
         }
         self::$cachesCleared = true;
+    }
+
+    /**
+     * @return array|NULL
+     */
+    protected function getMoveData()
+    {
+        $return = null;
+        $rawPostData = $this->getRawPostData();
+        if (false === empty($rawPostData)) {
+            $request = (array) json_decode($rawPostData, true);
+            $hasRequestData = true === isset($request['method']) && true === isset($request['data']);
+            $isMoveMethod = 'moveContentElement' === $request['method'];
+            $return = (true === $hasRequestData && true === $isMoveMethod) ? $request['data'] : null;
+        }
+        return $return;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getClipboardCommand()
+    {
+        $command = GeneralUtility::_GET('CB');
+        return (array) $command;
+    }
+
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     */
+    protected function getRawPostData()
+    {
+        return file_get_contents('php://input');
     }
 }

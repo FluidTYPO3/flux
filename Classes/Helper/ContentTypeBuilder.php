@@ -9,14 +9,15 @@ namespace FluidTYPO3\Flux\Helper;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 /**
@@ -42,25 +43,31 @@ class ContentTypeBuilder
         $section = 'Configuration',
         $paths = null
     ) {
+        $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
-        $emulatedControllerAction = pathinfo($templateFilename, PATHINFO_FILENAME);
+        $emulatedControllerAction = lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
         $emulatedPluginName = ucfirst($emulatedControllerAction);
-        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\ContentController';
+        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
 
         $this->validateContentController($controllerClassName, $fullContentType);
         $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $emulatedControllerAction);
 
-        // Configure a Provider which reacts to our new CType:
-        return Core::registerFluidFlexFormContentObject(
-            $providerExtensionName,
-            $fullContentType,
-            $templateFilename,
-            $variables,
-            $section,
-            $paths
-        );
+        /** @var Provider $provider */
+        $provider = GeneralUtility::makeInstance(ObjectManager::class)->get(Provider::class);
+        $provider->setFieldName('pi_flexform');
+        $provider->setTableName('tt_content');
+        $provider->setExtensionKey($providerExtensionName);
+        $provider->setControllerName($controllerName);
+        $provider->setControllerAction($emulatedControllerAction);
+        $provider->setTemplatePathAndFilename($templateFilename);
+        $provider->setContentObjectType($fullContentType);
+        $provider->setTemplateVariables($variables);
+        $provider->setTemplatePaths($paths);
+        $provider->setConfigurationSectionName($section);
+
+        return $provider;
     }
 
     /**

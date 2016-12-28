@@ -306,8 +306,8 @@ class Core
     ) {
         /** @var $objectManager ObjectManagerInterface */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var $provider ContentProvider */
-        $provider = $objectManager->get(ContentProvider::class);
+        /** @var $provider ProviderInterface */
+        $provider = $objectManager->get(Provider::class);
         $provider->setTableName('tt_content');
         $provider->setFieldName($fieldName);
         $provider->setExtensionKey($extensionKey);
@@ -400,6 +400,8 @@ class Core
             $provider,
             $emulatedPluginName
         ];
+
+        static::registerConfigurationProvider($provider);
 
         return $provider;
     }
