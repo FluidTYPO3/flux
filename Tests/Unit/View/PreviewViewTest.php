@@ -95,31 +95,6 @@ class PreviewViewTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider getWorkspaceVersionOfRecordOrRecordItselfTestValues
-     * @param array $record
-     * @param $workspaceId
-     * @param array $expected
-     */
-    public function testGetWorkspaceVersionOfRecordOrRecordItself(array $record, $workspaceId, array $expected)
-    {
-        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getActiveWorkspaceId'))->getMock();
-        $instance->expects($this->once())->method('getActiveWorkspaceId')->willReturn($workspaceId);
-        $result = $this->callInaccessibleMethod($instance, 'getWorkspaceVersionOfRecordOrRecordItself', $record);
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * @return array
-     */
-    public function getWorkspaceVersionOfRecordOrRecordItselfTestValues()
-    {
-        return array(
-            array(array(), 0, array()),
-            array(array(), 1, array())
-        );
-    }
-
-    /**
      * @test
      */
     public function testDrawRecord()
@@ -144,39 +119,6 @@ class PreviewViewTest extends AbstractTestCase
         $result = $this->callInaccessibleMethod($instance, 'getNewLink', array(), 123, 'myareaname');
         $this->assertContains('123', $result);
         $this->assertContains('myareaname', $result);
-    }
-
-    /**
-     * @dataProvider getProcessRecordOverlaysTestValues
-     * @param array $input
-     * @param array $expected
-     */
-    public function testProcessRecordOverlays(array $input, array $expected)
-    {
-        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getWorkspaceVersionOfRecordOrRecordItself'))->getMock();
-        $instance->expects($this->any())->method('getWorkspaceVersionOfRecordOrRecordItself')->willReturnArgument(0);
-        $view = new PageLayoutView();
-        $result = $this->callInaccessibleMethod($instance, 'processRecordOverlays', $input, $view);
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * @return array
-     */
-    public function getProcessRecordOverlaysTestValues()
-    {
-        return array(
-            array(array(), array()),
-            array(array(array('foo' => 'bar')), array(array('foo' => 'bar', 'isDisabled' => false))),
-            array(
-                array(array('t3ver_state' => VersionState::MOVE_PLACEHOLDER)),
-                array(array('t3ver_state' => VersionState::MOVE_PLACEHOLDER, 'isDisabled' => false))
-            ),
-            array(
-                array(array('t3ver_state' => VersionState::DELETE_PLACEHOLDER)),
-                array()
-            ),
-        );
     }
 
     /**
