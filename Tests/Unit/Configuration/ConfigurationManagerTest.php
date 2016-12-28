@@ -25,7 +25,7 @@ class ConfigurationManagerTest extends AbstractTestCase
         $environmentServiceMock = $this->getMockBuilder('TYPO3\CMS\Extbase\Service\EnvironmentService')->setMethods(array('isEnvironmentInFrontendMode'))->getMock();
         $environmentServiceMock->expects($this->once())->method('isEnvironmentInFrontendMode')->will($this->returnValue(true));
         $objectManagerMock = $this->getMockBuilder('TYPO3\CMS\Extbase\Object\ObjectManager')->setMethods(array('get'))->getMock();
-        $objectManagerMock->expects($this->once())->method('get')->with('TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager');
+        $objectManagerMock->expects($this->once())->method('get')->with('FluidTYPO3\Flux\Configuration\FrontendConfigurationManager');
         $mock = $this->getMockBuilder($this->createInstanceClassName())->getMock();
         ObjectAccess::setProperty($mock, 'environmentService', $environmentServiceMock, true);
         ObjectAccess::setProperty($mock, 'objectManager', $objectManagerMock, true);
