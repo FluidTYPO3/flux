@@ -3,34 +3,45 @@ if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
 
+// Configure the CompatibilityRegistry so it will return the right values based on TYPO3 version:
+
+// Preview class name (expecting needed changes on TYPO3 8.0+)
+\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
+    \FluidTYPO3\Flux\Backend\Preview::class,
+    array(
+        '7.6.0' => \FluidTYPO3\Flux\Backend\Preview::class
+    )
+);
+
+// FormEngine requires "TCEforms" dimension (expecting change on future TYPO3 versions)
+\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
+    \FluidTYPO3\Flux\Backend\DynamicFlexForm::OPTION_NEEDS_TCEFORMS_WRAPPER,
+    array(
+        '7.6.0' => TRUE
+    )
+);
+
+// Hook class which generates icons for "tt_content" editing views
+\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
+    \FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::OPTION_HOOK_METHOD,
+    array(
+        '7.6.0' => \FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::class . '->addSubIcon'
+    )
+);
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_befunc.php']['getFlexFormDSClass']['flux'] = \FluidTYPO3\Flux\Backend\DynamicFlexForm::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][\TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools::class]['flexParsing']['flux'] = \FluidTYPO3\Flux\Backend\DynamicFlexForm::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = \FluidTYPO3\Flux\Backend\TceMain::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = \FluidTYPO3\Flux\Backend\TceMain::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['moveRecordClass'][] = \FluidTYPO3\Flux\Backend\TceMain::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] = \FluidTYPO3\Flux\Backend\TceMain::class . '->clearCacheCommand';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'] = \FluidTYPO3\Flux\Backend\TypoScriptTemplate::class . '->preprocessIncludeStaticTypoScriptSources';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux'] = \FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = \FluidTYPO3\Flux\Utility\CompatibilityRegistry::get(\FluidTYPO3\Flux\Backend\Preview::class);
+
+
 if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF);
-
-	// Configure the CompatibilityRegistry so it will return the right values based on TYPO3 version:
-
-	// Preview class name (expecting needed changes on TYPO3 8.0+)
-	\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
-		\FluidTYPO3\Flux\Backend\Preview::class,
-		array(
-			'7.6.0' => \FluidTYPO3\Flux\Backend\Preview::class
-		)
-	);
-
-	// FormEngine requires "TCEforms" dimension (expecting change on future TYPO3 versions)
-	\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
-		\FluidTYPO3\Flux\Backend\DynamicFlexForm::OPTION_NEEDS_TCEFORMS_WRAPPER,
-		array(
-			'7.6.0' => TRUE
-		)
-	);
-
-	// Hook class which generates icons for "tt_content" editing views
-	\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
-		\FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::OPTION_HOOK_METHOD,
-		array(
-			'7.6.0' => \FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::class . '->addSubIcon'
-		)
-	);
 
 	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin('FluidTYPO3.Flux', 'API', array('Flux' => 'renderChildContent'), array());
 
@@ -47,18 +58,7 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 		}
 	');
 
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_befunc.php']['getFlexFormDSClass']['flux'] = \FluidTYPO3\Flux\Backend\DynamicFlexForm::class;
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][\TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools::class]['flexParsing']['flux'] = \FluidTYPO3\Flux\Backend\DynamicFlexForm::class;
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = \FluidTYPO3\Flux\Backend\TceMain::class;
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = \FluidTYPO3\Flux\Backend\TceMain::class;
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['moveRecordClass'][] = \FluidTYPO3\Flux\Backend\TceMain::class;
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] = \FluidTYPO3\Flux\Backend\TceMain::class . '->clearCacheCommand';
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'] = \FluidTYPO3\Flux\Backend\TypoScriptTemplate::class . '->preprocessIncludeStaticTypoScriptSources';
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux'] = \FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor::class;
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = \FluidTYPO3\Flux\Utility\CompatibilityRegistry::get(\FluidTYPO3\Flux\Backend\Preview::class);
-
 	if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
-		\FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\ContentProvider::class);
 
 		// native Outlets, replaceable by short name in subsequent registerOutlet() calls by adding second argument (string, name of type)
 		\FluidTYPO3\Flux\Core::registerOutlet('standard');

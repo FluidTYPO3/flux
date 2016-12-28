@@ -106,16 +106,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canCallResetMethod()
-    {
-        $provider = $this->createInstance();
-        $result = $provider->reset();
-        $this->assertNull($result);
-    }
-
-    /**
-     * @test
-     */
     public function canExecuteClearCacheCommand()
     {
         $provider = $this->getConfigurationProviderInstance();
@@ -257,7 +247,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $provider->expects($this->once())->method('getForm')->will($this->returnValue(Form::create()));
         $provider->injectConfigurationService($mockConfigurationService);
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
-        $provider->reset();
         $values = $provider->getFlexformValues($record);
         $this->assertIsArray($values);
         $this->assertEquals($values, array('test' => 'test'));
@@ -381,7 +370,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $provider = $this->getConfigurationProviderInstance();
         $record = $this->getBasicRecord();
         $templatePathAndFilename = $provider->getTemplatePathAndFilename($record);
-        $this->assertEmpty($result);
+        $this->assertEmpty($templatePathAndFilename);
     }
 
     /**
