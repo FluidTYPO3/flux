@@ -166,16 +166,29 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testGenerateUniqueIntegerForFluxAreaDoesGenerateUniqueValues() {
+        $results[] = MiscellaneousUtility::generateUniqueIntegerForFluxArea("1832", "column1");
+        $results[] = MiscellaneousUtility::generateUniqueIntegerForFluxArea("1832", "column2");
+        $results[] = MiscellaneousUtility::generateUniqueIntegerForFluxArea("1832", "column3");
+        $results[] = MiscellaneousUtility::generateUniqueIntegerForFluxArea("1832", "row2column1");
+        $results[] = MiscellaneousUtility::generateUniqueIntegerForFluxArea("1832", "row2column2");
+        $results[] = MiscellaneousUtility::generateUniqueIntegerForFluxArea("1832", "row2column3");
+        $results[] = MiscellaneousUtility::generateUniqueIntegerForFluxArea("1832", "row3column1");
+        $results[] = MiscellaneousUtility::generateUniqueIntegerForFluxArea("1832", "row3column2");
+        $results[] = MiscellaneousUtility::generateUniqueIntegerForFluxArea("1832", "row3column3");
+        $this->assertCount(count($results), array_unique($results));
+	}
+
     /**
      * @return array
      */
     public function getGenerateUniqueIntegerForFluxAreaTestValues()
     {
         return array(
-            array(1, 'test', -10000000449),
-            array(321, 'foobar', -10000000954),
-            array(8, 'xyzbazbar', -10000000997),
-            array(123, 'verylongstringverylongstringverylongstring', -10000004770)
+            array(1, 'test', -10000001128),
+            array(321, 'foobar', -10000002539),
+            array(8, 'xyzbazbar', -10000004833),
+            array(123, 'verylongstringverylongstringverylongstring', -10000099762)
         );
     }
 
