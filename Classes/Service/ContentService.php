@@ -236,14 +236,14 @@ class ContentService implements SingletonInterface
                 $row['colPos'] = self::COLPOS_FLUXCONTENT;
                 $row['sorting'] = 0;
             } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
-                list($prefix, $column, $prefix2, , , , $relativeUid, $area) =
+                // Special case for clipboard commands only. This special case also requires a new
+                // sorting value to re-sort after a possibly invalid sorting value is received.
+                list($pageUid, , $relativeTo, $parentUid, $area, $column) =
                     GeneralUtility::trimExplode('-', $parameters[1]);
-                $relativeUid = (integer) $relativeUid;
-                if ('colpos' === $prefix && 'page' === $prefix2) {
-                    $row['colPos'] = $column;
-                    $row['tx_flux_parent'] = $relativeUid;
-                    $row['tx_flux_column'] = $area;
-                }
+                $row['colPos'] = $column;
+                $row['tx_flux_parent'] = $parentUid;
+                $row['tx_flux_column'] = $area;
+                $row['sorting'] = $tceMain->resorting('tt_content', $pageUid, 'sorting', $relativeTo);
             } elseif (0 > (integer) $relativeTo) {
                 // inserting a new element after another element. Check column position of that element.
                 $relativeToRecord = $this->loadRecordFromDatabase(abs($relativeTo));
