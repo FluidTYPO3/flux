@@ -241,27 +241,25 @@ class TceMain
         // only in DataHandler::$datamap, but 2) the value in that array is indexed by the original
         // record UID which 3) is not present in neither $row nor $moveRecord.
         // Effect: we have to perform a few extra (tiny) SQL queries here, sadly this cannot be avoided.
-        $potentialPlaceholderRecord = BackendUtility::getRecord(
-            $table,
-            $uid,
-            't3ver_move_id',
-            sprintf(
-                't3ver_state = 3 AND deleted = 0 AND uid = %d',
-                $uid
-            )
-        );
-        $resolveUid = $uid;
-        if ($potentialPlaceholderRecord) {
-            $resolveUid = (integer) $potentialPlaceholderRecord['t3ver_move_id'];
-        }
-
-        // Perform our post-processing, then update the record
-        $row['uid'] = $uid;
+        $resolveUid = $this->getOriginalRecordUid($table, $uid);
         $newColumnNumber = (integer) GeneralUtility::_GET('data')[$table][$resolveUid]['colPos'];
 
+        // Move the immediate record, which may itself be a placeholder or an original record.
+        $row['uid'] = $uid;
         $this->contentService->moveRecord($row, $newColumnNumber, [], $reference);
         $this->recordService->update($table, $row);
+
+        // Further: if we are moving a placeholder, this implies that a version exists of the original
+        // record, and this version will NOT have had the necessary fields updated either.
+        // To do this, we resolve the most recent versioned record for our original - and then also
+        // update it.
+        $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
+        if ($mostRecentVersionOfRecord) {
+            $this->contentService->moveRecord($mostRecentVersionOfRecord, $newColumnNumber, [], $reference);
+            $this->recordService->update($table, $mostRecentVersionOfRecord);
+        }
     }
+
 
     /**
      * @param string $table
@@ -274,10 +272,66 @@ class TceMain
      */
     public function moveRecord_afterAnotherElementPostProcess($table, $uid, $destPid, $origDestPid, $moveRec, &$updateFields, DataHandler $reference)
     {
+        // Following block takes care of updating the immediate record, be that a placeholder, an
+        // original or a versioned copy.
         $moveData = $this->getMoveData();
         $updateFields['uid'] = $uid;
         $this->contentService->moveRecord($updateFields, $origDestPid, $moveData, $reference);
         $this->recordService->update($table, $updateFields);
+
+        // Further: if we are moving a placeholder, this implies that a version exists of the original
+        // record, and this version will NOT have had the necessary fields updated either.
+        // To do this, we resolve the most recent versioned record for our original - and then also
+        // update it.
+        $resolveUid = $this->getOriginalRecordUid($table, $uid);
+        $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
+        if ($mostRecentVersionOfRecord) {
+            $this->contentService->moveRecord($mostRecentVersionOfRecord, $origDestPid, [], $reference);
+            $this->recordService->update($table, $mostRecentVersionOfRecord);
+        }
+    }
+
+    /**
+     * @param string $table
+     * @param integer $uid
+     * @return array|bool
+     */
+    protected function getMostRecentVersionOfRecord($table, $uid)
+    {
+        if (!$GLOBALS['BE_USER']->workspace) {
+            return false;
+        }
+
+        return BackendUtility::getWorkspaceVersionOfRecord(
+            $GLOBALS['BE_USER']->workspace,
+            $table,
+            $uid,
+            'uid,colPos,tx_flux_parent,tx_flux_column,sorting'
+        );
+    }
+
+    /**
+     * @param string $table
+     * @param integer $uid
+     * @return integer
+     */
+    protected function getOriginalRecordUid($table, $uid)
+    {
+        $placeholder = BackendUtility::getRecord(
+            $table,
+            $uid,
+            't3ver_move_id',
+            sprintf(
+                't3ver_state = 3 AND deleted = 0 AND uid = %d',
+                $uid
+            )
+        );
+
+        if ($placeholder) {
+            return (integer) $placeholder['t3ver_move_id'];
+        }
+
+        return $uid;
     }
 
     /**
