@@ -178,8 +178,15 @@ class ContentTypeBuilder
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.access;access,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.extended,rowDescription,
                 --div--;LLL:EXT:lang/locallang_tca.xlf:sys_category.tabs.category,categories, 
-                --div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tabs.relation, tx_flux_parent, tx_flux_column, tx_flux_children
+                --div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tabs.relation, tx_flux_parent, tx_flux_column
             ';
+        // Do not add the special IRRE nested content display (when editing parent) if workspaces is loaded.
+        // When workspaces is loaded, the IRRE may contain move placeholders which cause TYPO3 to throw errors
+        // if attempting to save the parent record, because new versions get created for all child records and
+        // this isn't allowed for move placeholders.
+        if (!ExtensionManagementUtility::isLoaded('workspaces')) {
+            $showItem .= ', tx_flux_children';
+        }
         $GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'] = $showItem;
         $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['ds']['*,' . $contentType] = [];
         ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'pi_flexform', $contentType);
