@@ -140,6 +140,46 @@ class TceMain
             $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
         }
 
+        if ('move' === $command) {
+            // Problem: resolve the potential original record if the passed record is a placeholder.
+            // This detection is necessary because 1) the colPos value is an emulated value and exists
+            // only in DataHandler::$datamap, but 2) the value in that array is indexed by the original
+            // record UID which 3) is not present in neither $row nor $moveRecord.
+            // Effect: we have to perform a few extra (tiny) SQL queries here, sadly this cannot be avoided.
+            $resolveUid = $this->getOriginalRecordUid($table, $id);
+
+            // Check if pasting is happening via clipboard; if so, extract the parameters for moveRecord.
+            // Do so only if we are pasting a content record from clip board.
+            $clipboardCommand = (array) $this->getClipboardCommand();
+            if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
+                $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
+            }
+
+            // Move the immediate record, but only do so if it was a clipboard-initiated command. Other types
+            // of move commands are handled by the specific moveRecord hook listeners below.
+            if (!empty($clipboardCommand)) {
+                $movePlaceholder = BackendUtility::getMovePlaceholder($table, $id);
+                if ($GLOBALS['BE_USER']->workspace && $movePlaceholder) {
+                    $record = $movePlaceholder;
+                    $resolveUid = $movePlaceholder['t3ver_move_id'];
+                } else {
+                    $record['uid'] = $id;
+                }
+                $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
+                $this->recordService->update($table, $record);
+            }
+
+            // Further: if we are moving a placeholder, this implies that a version exists of the original
+            // record, and this version will NOT have had the necessary fields updated either.
+            // To do this, we resolve the most recent versioned record for our original - and then also
+            // update it.
+            $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
+            if ($mostRecentVersionOfRecord) {
+                $this->contentService->moveRecord($mostRecentVersionOfRecord, $relativeTo, $clipboardCommand, $reference);
+                $this->recordService->update($table, $mostRecentVersionOfRecord);
+            }
+        }
+
         $arguments = ['command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo];
         $this->executeConfigurationProviderMethod(
             'postProcessCommand',

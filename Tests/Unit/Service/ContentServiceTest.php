@@ -359,7 +359,6 @@ class ContentServiceTest extends AbstractTestCase
         $methods = array('loadRecordFromDatabase', 'getTargetAreaStoredInSession');
         $mock = $this->createMock($methods);
         $row = array(
-            'pid' => 1,
             'uid' => 31264,
             'tx_flux_column' => 2,
             'tx_flux_parent' => 2,
@@ -367,18 +366,14 @@ class ContentServiceTest extends AbstractTestCase
         );
         $relativeTo = 2526;
         $newColPos = 0;
-        $parameters = array (
-            'element-tt_content-31264',
-            'colpos-'.$newColPos.'-page-'.$relativeTo.'-55fa7440556875.32732811',
-            '55fa744055675684544498',
-            'c3930735166bc98255fc33755fac2beb6ea705b8'
-        );
+        $parameters = [
+            'tt_content',
+            '1-paste-2526---0'
+        ];
         $tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
         $mock->moveRecord($row, $relativeTo, $parameters, $tceMain);
         $this->assertEquals(null, $row['tx_flux_column']);
         $this->assertEquals(null, $row['tx_flux_parent']);
         $this->assertEquals($newColPos, $row['colPos']);
-        // pid will be changed from TYPO3 Core
-        $this->assertEquals(1, $row['pid']);
     }
 }
