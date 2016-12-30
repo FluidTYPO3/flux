@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -150,11 +151,12 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
         // Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the
         // localized version or default version.
         $conditions = sprintf(
-            "(tx_flux_parent = '%s' AND tx_flux_column = '%s' AND pid = %d AND colPos = 18181) %s",
+            "(tx_flux_parent = '%s' AND tx_flux_column = '%s' AND pid = %d AND colPos = 18181) %s %s",
             $id,
             $area,
             $record['pid'],
-            $contentObjectRenderer->enableFields('tt_content')
+            $contentObjectRenderer->enableFields('tt_content'),
+            BackendUtility::versioningPlaceholderClause('tt_content')
         );
         $rows = static::$recordService->get('tt_content', '*', $conditions, '', $order, $offset . ',' . $limit);
 

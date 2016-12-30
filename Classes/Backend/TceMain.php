@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -218,24 +219,6 @@ class TceMain
         );
     }
 
-    /**
-     * @param string $table
-     * @param integer $uid
-     * @param integer $destPid
-     * @param array $propArr
-     * @param array $moveRec
-     * @param integer $resolvedPid
-     * @param boolean $recordWasMoved
-     * @param DataHandler $reference
-     */
-    public function moveRecord($table, $uid, $destPid, &$propArr, &$moveRec, $resolvedPid, &$recordWasMoved, DataHandler $reference)
-    {
-        $moveData = (array) $this->getMoveData();
-        $propArr['uid'] = $uid;
-        $this->contentService->moveRecord($propArr, $destPid, $moveData, $reference);
-        $recordWasMoved = true;
-    }
-
     /*
      * Methods above are not covered by coding style checks due to needing
      * non-conforming method names.
@@ -251,15 +234,37 @@ class TceMain
      * @param array $row
      * @param DataHandler $reference
      */
-    public function moveRecord_firstElementPostProcess($table, $uid, $destPid, $moveRec, &$row, DataHandler $reference)
+    public function moveRecord_firstElementPostProcess($table, $uid, $destPid, $moveRec, $row, DataHandler $reference)
     {
-        $moveData = (array) $this->getMoveData();
+        // Problem: resolve the potential original record if the passed record is a placeholder.
+        // This detection is necessary because 1) the colPos value is an emulated value and exists
+        // only in DataHandler::$datamap, but 2) the value in that array is indexed by the original
+        // record UID which 3) is not present in neither $row nor $moveRecord.
+        // Effect: we have to perform a few extra (tiny) SQL queries here, sadly this cannot be avoided.
+        $potentialPlaceholderRecord = BackendUtility::getRecord(
+            $table,
+            $uid,
+            't3ver_move_id',
+            sprintf(
+                't3ver_state = 3 AND deleted = 0 AND uid = %d',
+                $uid
+            )
+        );
+        $resolveUid = $uid;
+        if ($potentialPlaceholderRecord) {
+            $resolveUid = (integer) $potentialPlaceholderRecord['t3ver_move_id'];
+        }
+
+        // Perform our post-processing, then update the record
         $row['uid'] = $uid;
-        $this->contentService->moveRecord($row, $destPid, $moveData, $reference);
+        $newColumnNumber = (integer) GeneralUtility::_GET('data')[$table][$resolveUid]['colPos'];
+
+        $this->contentService->moveRecord($row, $newColumnNumber, [], $reference);
+        $this->recordService->update($table, $row);
     }
 
     /**
-     * @param stringt $table
+     * @param string $table
      * @param integer $uid
      * @param integer $destPid
      * @param integer $origDestPid
@@ -272,6 +277,7 @@ class TceMain
         $moveData = $this->getMoveData();
         $updateFields['uid'] = $uid;
         $this->contentService->moveRecord($updateFields, $origDestPid, $moveData, $reference);
+        $this->recordService->update($table, $updateFields);
     }
 
     /**

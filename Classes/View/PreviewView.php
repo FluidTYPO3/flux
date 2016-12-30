@@ -32,6 +32,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
@@ -503,25 +504,17 @@ class PreviewView
      */
     protected function getRecords(PageLayoutView $view, array $row, $area)
     {
-        $pidCondition = sprintf(' AND pid = %d ', (integer) $row['pid']);
-        $workspaceCondition = '';
-        $workspaceId = $this->getActiveWorkspaceId();
-        if ($workspaceId) {
-            $workspaceCondition = sprintf(' AND (t3ver_wsid = %d OR t3ver_wsid = 0)', $workspaceId);
-            $pidCondition = sprintf(' AND (pid = %d OR (pid = -1 AND t3ver_wsid > 0)) ', (integer) $row['pid']);
-        }
         // The following solution is half lifted from \TYPO3\CMS\Backend\View\PageLayoutView::getContentRecordsPerColumn
         // and relies on TYPO3 core query parts for enable-clause-, language- and versioning placeholders. All that
         // needs to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will
         // not remove records based on them having remove placeholders.
         $condition = sprintf(
-            "%s AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d' %s %s",
-            $pidCondition,
+            "AND (pid = %d AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d') %s",
+            (integer) $row['pid'],
             $this->getFluxParentUid($row),
             $area,
             ContentService::COLPOS_FLUXCONTENT,
-            BackendUtility::versioningPlaceholderClause('tt_content'),
-            $workspaceCondition
+            BackendUtility::versioningPlaceholderClause('tt_content')
         );
         if (GeneralUtility::compat_version('8.4.0') && !GeneralUtility::compat_version('8.5.0')) {
             // Patching to avoid http://forge.typo3.org/issues/78353 by specifically targeting only the 8.4.x branch
@@ -529,7 +522,7 @@ class PreviewView
             // LTS - @TODO: remove this patch when 8.4.x is no longer supported, but no need to hurry.
             $condition .= ' AND ';
         }
-        $queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
+        $queryParts = $view->makeQueryArray('tt_content', $row['uid'], $condition);
         $result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
         $rows = [];
         if ($result) {
@@ -760,11 +753,11 @@ class PreviewView
             $column->getColspan(),
             $column->getRowspan(),
             $column->getStyle(),
-            $colPosFluxContent,
+            $target,
             $templateClassJsSortableLanguageId,
             $templateDataLanguageUid,
             $label,
-            $target,
+            $row['uid'],
             $id,
             $this->drawNewIcon($row, $column),
             $this->drawPasteIcon($row, $column),
