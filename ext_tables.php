@@ -10,6 +10,7 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 	\FluidTYPO3\Flux\Service\ContentService::COLPOS_FLUXCONTENT
 );
 
+$GLOBALS['TCA']['tt_content']['ctrl']['shadowColumnsForNewPlaceholders'] .= ',tx_flux_column,tx_flux_parent';
 $GLOBALS['TCA']['tt_content']['ctrl']['useColumnsForDefaultValues'] .= ',tx_flux_column,tx_flux_parent';
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', array(

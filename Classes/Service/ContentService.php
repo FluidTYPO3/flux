@@ -228,12 +228,13 @@ class ContentService implements SingletonInterface
         // the $relativeTo variable was passed by EXT:gridelements in which case
         // it is invalid (not a negative/positive integer but a string).
         if (false === strpos($relativeTo, 'x')) {
-            if (0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD > $relativeTo) {
+            if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $relativeTo) {
                 // Fake relative to value - we can get the target from a session variable
                 list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
                 $row['tx_flux_parent'] = $parent;
                 $row['tx_flux_column'] = $column;
-                $row['sorting'] = $tceMain->getSortNumber('tt_content', 0, $row['pid']);
+                $row['colPos'] = self::COLPOS_FLUXCONTENT;
+                $row['sorting'] = 0;
             } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
                 list($prefix, $column, $prefix2, , , , $relativeUid, $area) =
                     GeneralUtility::trimExplode('-', $parameters[1]);

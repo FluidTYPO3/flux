@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Service\ContentService;
 use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -21,8 +22,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class MiscellaneousUtility
 {
 
-    /** Overhead used by unique integer generation. Allows 10 billion records before collision */
-    const UNIQUE_INTEGER_OVERHEAD = 10000000000;
+    /** Overhead used by unique integer generation. */
+    const UNIQUE_INTEGER_OVERHEAD = ContentService::COLPOS_FLUXCONTENT;
 
     /**
      * @var array
@@ -44,7 +45,7 @@ class MiscellaneousUtility
         $integers = array_map('ord', str_split($areaName));
         $integers[] = $contentElementUid;
         $integers[] = self::UNIQUE_INTEGER_OVERHEAD;
-        return 0 - array_sum($integers);
+        return array_sum($integers);
     }
 
     /**
