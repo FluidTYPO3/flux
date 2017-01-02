@@ -757,7 +757,7 @@ class PreviewView
             $templateClassJsSortableLanguageId,
             $templateDataLanguageUid,
             $label,
-            $row['uid'],
+            $row['pid'],
             $id,
             $this->drawNewIcon($row, $column),
             $this->drawPasteIcon($row, $column),
