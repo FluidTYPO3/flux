@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\PageLayoutView;
 use FluidTYPO3\Flux\View\PreviewView;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Versioning\VersionState;
 
 /**
@@ -29,13 +30,14 @@ class PreviewViewTest extends AbstractTestCase
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(
             'TYPO3\\CMS\\Core\\Database\\DatabaseConnection'
         )->setMethods(
-            array('exec_SELECTgetSingleRow', 'exec_SELECTgetRows', 'exec_SELECT_queryArray', 'fetch_assoc')
+            array('exec_SELECTgetSingleRow', 'exec_SELECTgetRows', 'exec_SELECT_queryArray', 'fetch_assoc', 'sql_fetch_assoc')
         )->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetSingleRow')
             ->willReturn(Records::$contentRecordWithoutParentAndWithoutChildren);
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECT_queryArray')->willReturn($GLOBALS['TYPO3_DB']);
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('fetch_assoc')->willReturn(array());
+        $GLOBALS['TYPO3_DB']->expects($this->any())->method('sql_fetch_assoc')->willReturn(array());
         $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->setMethods(array('calcPerms'))->getMock();
         $GLOBALS['BE_USER']->expects($this->any())->method('calcPerms');
         $GLOBALS['LANG'] = $this->getMockBuilder('TYPO3\\CMS\\Lang\\LanguageService')->setMethods(array('sL'))->getMock();
@@ -151,7 +153,10 @@ class PreviewViewTest extends AbstractTestCase
         $provider->setForm($form);
         $provider->setTemplatePaths(array());
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
-        $previewView = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('registerTargetContentAreaInSession'))->getMock();
+        $databaseConnectionMock = $this->getMockBuilder(DatabaseConnection::class)->getMock();
+        $databaseConnectionMock->expects($this->any())->method('sql_fetch_assoc')->willReturn([]);
+        $previewView = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('registerTargetContentAreaInSession', 'getDatabaseConnection'))->getMock();
+        $previewView->expects($this->any())->method('getDatabaseConnection')->willReturn($databaseConnectionMock);
         $previewView->expects($this->any())->method('registerTargetContentAreaInSession');
         $previewView->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
         $previewView->injectConfigurationManager(
