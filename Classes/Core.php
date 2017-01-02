@@ -365,29 +365,15 @@ class Core
      * @param string $providerExtensionName Vendor.ExtensionName format of extension scope of the template file
      * @param string $templateFilename Absolute path to template file containing Flux definition, EXT:... allowed
      * @param array $variables Optional array of variables which are assigned when rendering the Flux definition
-     * @param null|string $section
-     * @param null|string $paths
-     * @return ProviderInterface
      */
     public static function registerTemplateAsContentType(
         $providerExtensionName,
-        $templateFilename,
-        $variables = [],
-        $section = 'Configuration',
-        $paths = null
+        $templateFilename
     ) {
 
         if (strpos($templateFilename, '/') !== 0) {
             $templateFilename = GeneralUtility::getFileAbsFileName($templateFilename);
         }
-
-        $provider = (new ContentTypeBuilder())->configureContentTypeFromTemplateFile(
-            $providerExtensionName,
-            $templateFilename,
-            $variables,
-            $section,
-            $paths
-        );
 
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
         $emulatedPluginName = ucfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
@@ -397,13 +383,9 @@ class Core
         static::$queuedContentTypeRegistrations[$fullContentType] = [
             $providerExtensionName,
             $fullContentType,
-            $provider,
+            $templateFilename,
             $emulatedPluginName
         ];
-
-        static::registerConfigurationProvider($provider);
-
-        return $provider;
     }
 
     /**

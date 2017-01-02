@@ -193,7 +193,7 @@ class CoreTest extends AbstractTestCase
             'FluidTYPO3.Flux',
             $absoluteTemplatePathAndFilename
         );
-        $this->assertInstanceOf(ProviderInterface::class, $result);
+        $this->assertNull($result);
     }
 
     /**
