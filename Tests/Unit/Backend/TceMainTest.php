@@ -240,7 +240,6 @@ class TceMainTest extends AbstractTestCase
             'executeConfigurationProviderMethod',
             'method',
             'tt_content',
-            'command',
             'NEW123',
             $record,
             $parameters,
@@ -252,7 +251,7 @@ class TceMainTest extends AbstractTestCase
     /**
      * @test
      */
-    public function executeConfigurationProviderMethodCallsMethodOnProvidersAndTracksExecution()
+    public function executeConfigurationProviderMethodCallsMethodOnProviders()
     {
         $command = 'postProcessDatabaseOperation';
         $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('resolveRecordUid', 'ensureRecordDataIsLoaded'))->getMock();
@@ -262,12 +261,12 @@ class TceMainTest extends AbstractTestCase
         $row = array('uid' => 1);
         $arguments = array('status' => $command, 'id' => 1, 'row' => $row);
         $provider = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array($command))->getMock();
-        $provider->expects($this->exactly(1))->method($command);
+        $provider->expects($this->exactly(2))->method($command);
         $providers = array($provider, $provider);
         $configurationService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
         $configurationService->expects($this->once())->method('resolveConfigurationProviders')->willReturn($providers);
         $mock->injectConfigurationService($configurationService);
-        $result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, 'command', $row, $arguments, $caller);
+        $result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, $row, $arguments, $caller);
         $this->assertEquals($row, $result);
     }
 
@@ -314,5 +313,33 @@ class TceMainTest extends AbstractTestCase
         $instance->injectContentService($contentService);
         $row = array();
         $instance->processDatamap_afterDatabaseOperations('new', 'tt_content', 1, $row, $tceMain);
+    }
+
+    /**
+     * @test
+     * @dataProvider getMoveDataTestvalues
+     * @param mixed $postData
+     * @param string|NULL $expected
+     */
+    public function getMoveDataReturnsExpectedValues($postData, $expected)
+    {
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getRawPostData'))->getMock();
+        $instance->expects($this->once())->method('getRawPostData')->willReturn($postData);
+        $result = $this->callInaccessibleMethod($instance, 'getMoveData');
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getMoveDataTestvalues()
+    {
+        return array(
+            array(null, null),
+            array('{}', null),
+            array('{"method": "test"}', null),
+            array('{"method": "test", "data": []}', null),
+            array('{"method": "moveContentElement", "data": "test"}', 'test'),
+        );
     }
 }

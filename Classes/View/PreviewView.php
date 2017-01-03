@@ -32,6 +32,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
@@ -508,11 +509,12 @@ class PreviewView
         // needs to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will
         // not remove records based on them having remove placeholders.
         $condition = sprintf(
-            "AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d' %s",
+            "AND (pid = %d AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d') %s",
+            (integer) $row['pid'],
             $this->getFluxParentUid($row),
             $area,
             ContentService::COLPOS_FLUXCONTENT,
-            $view->tt_contentConfig['showHidden'] ? '' : 'AND hidden = 0 '
+            BackendUtility::versioningPlaceholderClause('tt_content')
         );
         if (GeneralUtility::compat_version('8.4.0') && !GeneralUtility::compat_version('8.5.0')) {
             // Patching to avoid http://forge.typo3.org/issues/78353 by specifically targeting only the 8.4.x branch
@@ -520,60 +522,19 @@ class PreviewView
             // LTS - @TODO: remove this patch when 8.4.x is no longer supported, but no need to hurry.
             $condition .= ' AND ';
         }
-        $queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
+        $queryParts = $view->makeQueryArray('tt_content', $row['uid'], $condition);
         $result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
         $rows = [];
         if ($result) {
-            $rows = $view->getResult($result);
-            $rows = $this->processRecordOverlays($rows, $view);
-        }
-        return $rows;
-    }
-
-    /**
-     * @param array $rows
-     * @param PageLayoutView $view
-     * @return array
-     */
-    protected function processRecordOverlays(array $rows, PageLayoutView $view)
-    {
-        foreach ($rows as $index => &$record) {
-            $record = $this->getWorkspaceVersionOfRecordOrRecordItself($record);
-            BackendUtility::movePlhOL('tt_content', $record);
-            if (true === $this->isDeleteOrMovePlaceholder($record)) {
-                unset($rows[$index]);
-            } else {
-                $record['isDisabled'] = $view->isDisabled('tt_content', $record);
+            while (($row = $this->getDatabaseConnection()->sql_fetch_assoc($result)) !== false) {
+                BackendUtility::workspaceOL('tt_content', $row, -99, false);
+                if ($row) {
+                    $rows[] = $row;
+                }
             }
+            $view->generateTtContentDataArray($rows);
         }
         return $rows;
-    }
-
-    /**
-     * @param array $record
-     * @return array
-     */
-    protected function getWorkspaceVersionOfRecordOrRecordItself(array $record)
-    {
-        $workspaceId = $this->getActiveWorkspaceId();
-        if (0 < $workspaceId) {
-            $workspaceRecord = BackendUtility::getWorkspaceVersionOfRecord(
-                $GLOBALS['BE_USER']->workspace,
-                'tt_content',
-                $record['uid']
-            );
-            $record = (false !== $workspaceRecord ? $workspaceRecord : $record);
-        }
-        return $record;
-    }
-
-    /**
-     * @param mixed $record
-     * @return boolean
-     */
-    protected function isDeleteOrMovePlaceholder($record)
-    {
-        return (true === empty($record) || VersionState::DELETE_PLACEHOLDER === (integer) $record['t3ver_state']);
     }
 
     /**
@@ -587,9 +548,9 @@ class PreviewView
 
         // For all elements to be shown in draft workspaces & to also show hidden elements by default if user hasn't
         // disabled the option analog behavior to the PageLayoutController at the end of menuConfig()
-        if ($this->getBackendUser()->workspace != 0
-            || !isset($this->moduleData['tt_content_showHidden'])
-            || $this->moduleData['tt_content_showHidden'] !== '0'
+        if ($this->getActiveWorkspaceId() != 0
+            || !isset($moduleData['tt_content_showHidden'])
+            || $moduleData['tt_content_showHidden'] !== '0'
         ) {
             $moduleData['tt_content_showHidden'] = 1;
         }
@@ -713,7 +674,7 @@ class PreviewView
      */
     protected function getFluxParentUid(array $row)
     {
-        return $row['t3ver_oid'] ?  $row['t3ver_oid'] : $row['uid'];
+        return $row['uid'];
     }
 
     /**
@@ -798,11 +759,11 @@ class PreviewView
             $column->getColspan(),
             $column->getRowspan(),
             $column->getStyle(),
-            $colPosFluxContent,
+            $target,
             $templateClassJsSortableLanguageId,
             $templateDataLanguageUid,
             $label,
-            $target,
+            $row['uid'],
             $id,
             $this->drawNewIcon($row, $column),
             $this->drawPasteIcon($row, $column),

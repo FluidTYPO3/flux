@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Configuration;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager as CoreConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager;
 
 /**
  * Flux ConfigurationManager implementation

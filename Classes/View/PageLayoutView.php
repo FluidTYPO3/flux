@@ -25,4 +25,16 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
     {
         return $this->pageinfo;
     }
+
+    /**
+     * Public access version of parent's method
+     *
+     * @param array $rowArray
+     */
+    public function generateTtContentDataArray(array $rowArray)
+    {
+        parent::generateTtContentDataArray($rowArray);
+    }
+
+
 }

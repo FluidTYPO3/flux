@@ -54,7 +54,7 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function canInitializeBlankRecord()
     {
-        $methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDatabase');
+        $methods = array('loadRecordsFromDatabase', 'loadRecordFromDatabase', 'updateRecordInDataMap');
         $mock = $this->createMock($methods);
         $row = array('uid' => -1);
         $tceMain = $this->getMockBuilder('TYPO3\CMS\Core\DataHandling\DataHandler')->getMock();
@@ -68,7 +68,7 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function moveRecordWithNegativeRelativeToLoadsRelativeCopiesValuesSetsColumnPositionAndUpdatesRelativeToValue()
     {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDatabase', 'getTargetAreaStoredInSession');
+        $methods = array('loadRecordFromDatabase', 'getTargetAreaStoredInSession');
         $mock = $this->createMock($methods);
         $row = array(
             'pid' => 1
@@ -81,7 +81,7 @@ class ContentServiceTest extends AbstractTestCase
         $relativeTo = -1;
         $tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
         $mock->expects($this->once())->method('loadRecordFromDatabase')->with(1)->will($this->returnValue($relativeRecord));
-        $mock->expects($this->once())->method('updateRecordInDatabase');
+        #$mock->expects($this->once())->method('updateRecordInDataMap');
         $mock->moveRecord($row, $relativeTo, array(), $tceMain);
         $this->assertEquals($relativeRecord['tx_flux_column'], $row['tx_flux_column']);
         $this->assertEquals($relativeRecord['tx_flux_parent'], $row['tx_flux_parent']);
@@ -91,7 +91,7 @@ class ContentServiceTest extends AbstractTestCase
 
     public function pasteAfterAsCopyRelativeToRecord()
     {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+        $methods = array('loadRecordFromDatabase', 'updateRecordInDataMap');
         $mock = $this->createMock($methods);
         $command = 'copy';
         $row = array(
@@ -120,7 +120,7 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function pasteAfterAsReferenceRelativeToRecord()
     {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+        $methods = array('loadRecordFromDatabase', 'updateRecordInDataMap');
         $mock = $this->createMock($methods);
 
         $command = 'copy';
@@ -157,7 +157,7 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function pasteAfterAsMoveRelativeToRecord()
     {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+        $methods = array('loadRecordFromDatabase', 'updateRecordInDataMap');
         $mock = $this->createMock($methods);
         $command = 'move';
         $row = array(
@@ -178,7 +178,7 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function pasteAfterAsMoveIntoContentArea()
     {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDatabase');
+        $methods = array('loadRecordFromDatabase', 'updateRecordInDataMap');
         $mock = $this->createMock($methods);
         $command = 'move';
         $row = array(
@@ -236,7 +236,7 @@ class ContentServiceTest extends AbstractTestCase
     /**
      * @test
      */
-    public function testUpdateRecordInDatabaseWithVersionedRecord()
+    public function testupdateRecordInDataMapWithVersionedRecord()
     {
         $row = array(
             'uid' => 123,
@@ -244,27 +244,8 @@ class ContentServiceTest extends AbstractTestCase
             'tx_flux_parent' => '3',
             'tx_flux_column' => 'area'
         );
-        $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\RecordService')->setMethods(array('getSingle'))->getMock();
-        $recordService->expects($this->at(0))->method('getSingle')->will($this->returnValue($row));
-        $recordService->expects($this->at(1))->method('getSingle')->will($this->returnValue(array()));
-        $workspaceSercice = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('update'))->getMock();
-        $workspaceSercice->expects($this->exactly(2))->method('update');
         $mock = $this->objectManager->get($this->createInstanceClassName());
-        $mock->injectRecordService($recordService);
-        $mock->injectWorkspacesAwareRecordService($workspaceSercice);
-        $this->callInaccessibleMethod($mock, 'updateRecordInDatabase', $row);
-    }
-
-    /**
-     * @test
-     */
-    public function testUpdateMovePlaceholderWithPlaceholder()
-    {
-        $row = array('tx_flux_parent' => '', 'tx_flux_column' => '', 'colPos' => 0, 'uid' => 123);
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getMovePlaceholder', 'updateRecordInDatabase'))->getMock();
-        $mock->expects($this->once())->method('getMovePlaceholder')->will($this->returnValue($row));
-        $mock->expects($this->once())->method('updateRecordInDatabase');
-        $this->callInaccessibleMethod($mock, 'updateMovePlaceholder', $row);
+        $this->callInaccessibleMethod($mock, 'updateRecordInDataMap', $row, null, $this->getMockBuilder(DataHandler::class)->getMock());
     }
 
     /**
@@ -283,7 +264,7 @@ class ContentServiceTest extends AbstractTestCase
                 'when no delete field exists which it INTENTIONALLY does not do in our tests for this very reason.'
             );
         }
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('loadRecordFromDatabase', 'updateRecordInDatabase'))->getMock();
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('loadRecordFromDatabase', 'updateRecordInDataMap'))->getMock();
         $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('get'))->getMock();
         $recordService->expects($this->any())->method('get')->willReturn(null);
         $mock->injectWorkspacesAwareRecordService($recordService);
@@ -291,10 +272,10 @@ class ContentServiceTest extends AbstractTestCase
         $row = array('pid' => 1, 'uid' => 1, 'language' => 1);
         $mock->expects($this->once())->method('loadRecordFromDatabase')->will($this->returnValue($row));
         if (true === $expectsInitialization) {
-            $mock->expects($this->once())->method('updateRecordInDatabase');
+            $mock->expects($this->once())->method('updateRecordInDataMap');
             $dataHandler->expects($this->once())->method('resorting');
         } else {
-            $mock->expects($this->never())->method('updateRecordInDatabase');
+            $mock->expects($this->never())->method('updateRecordInDataMap');
             $dataHandler->expects($this->never())->method('resorting');
         }
         $this->callInaccessibleMethod(
@@ -334,10 +315,10 @@ class ContentServiceTest extends AbstractTestCase
         $mock = $this->getMockBuilder(
             $this->createInstanceClassName()
         )->setMethods(
-            array('loadRecordFromDatabase', 'updateRecordInDatabase', 'updateMovePlaceholder', 'getTargetAreaStoredInSession')
+            array('loadRecordFromDatabase', 'updateRecordInDataMap', 'updateMovePlaceholder', 'getTargetAreaStoredInSession')
         )->getMock();
         $mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
-        $mock->expects($this->any())->method('updateRecordInDatabase');
+        $mock->expects($this->any())->method('updateRecordInDataMap');
         $mock->expects($this->any())->method('updateMovePlaceholder');
         $dataHandler = $this->getMockBuilder('TYPO3\\CMS\\Core\\DataHandling\\DataHandler')->setMethods(array('resorting'))->getMock();
         $dataHandler->expects($this->any())->method('resorting');
@@ -375,10 +356,9 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function moveRecordWithPositiveRelativeToLoadsRelativeCopiesValuesSetsColumnPositionAndUpdatesRelativeToValue()
     {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDatabase', 'getTargetAreaStoredInSession');
+        $methods = array('loadRecordFromDatabase', 'getTargetAreaStoredInSession');
         $mock = $this->createMock($methods);
         $row = array(
-            'pid' => 1,
             'uid' => 31264,
             'tx_flux_column' => 2,
             'tx_flux_parent' => 2,
@@ -386,19 +366,14 @@ class ContentServiceTest extends AbstractTestCase
         );
         $relativeTo = 2526;
         $newColPos = 0;
-        $parameters = array (
-            'element-tt_content-31264',
-            'colpos-'.$newColPos.'-page-'.$relativeTo.'-55fa7440556875.32732811',
-            '55fa744055675684544498',
-            'c3930735166bc98255fc33755fac2beb6ea705b8'
-        );
+        $parameters = [
+            'tt_content',
+            '1-paste-2526---0'
+        ];
         $tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
-        $mock->expects($this->once())->method('updateRecordInDatabase');
         $mock->moveRecord($row, $relativeTo, $parameters, $tceMain);
         $this->assertEquals(null, $row['tx_flux_column']);
         $this->assertEquals(null, $row['tx_flux_parent']);
         $this->assertEquals($newColPos, $row['colPos']);
-        // pid will be changed from TYPO3 Core
-        $this->assertEquals(1, $row['pid']);
     }
 }

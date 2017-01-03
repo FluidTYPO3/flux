@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Service;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * Service to wrap around record operations normally going through
@@ -69,7 +70,12 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
             return $records;
         }
         foreach ($records as $index => $record) {
-            $records[$index] = $this->overlayRecord($table, $record);
+            $overlay = $this->overlayRecord($table, $record);
+            if (!$overlay) {
+                unset($records[$index]);
+            } else {
+                $records[$index] = $overlay;
+            }
         }
         return $records;
     }
@@ -77,7 +83,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     /**
      * @param string $table
      * @param array $record
-     * @return array
+     * @return array|boolean
      */
     protected function overlayRecord($table, array $record)
     {
@@ -95,7 +101,10 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         $copy = false;
         if (null !== $GLOBALS['BE_USER']) {
             $copy = $record;
-            BackendUtility::workspaceOL($table, $copy);
+            BackendUtility::workspaceOL($table, $copy, -99, true);
+            if (!$copy) {
+                return false;
+            }
         }
         return $copy === false ? $record : $copy;
     }
@@ -106,6 +115,10 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
      */
     protected function hasWorkspacesSupport($table)
     {
-        return (null !== $GLOBALS['BE_USER'] && BackendUtility::isTableWorkspaceEnabled($table));
+        return (
+            null !== $GLOBALS['BE_USER']
+            && ExtensionManagementUtility::isLoaded('workspaces')
+            && BackendUtility::isTableWorkspaceEnabled($table)
+        );
     }
 }

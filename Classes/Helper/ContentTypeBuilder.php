@@ -9,14 +9,15 @@ namespace FluidTYPO3\Flux\Helper;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 /**
@@ -42,25 +43,31 @@ class ContentTypeBuilder
         $section = 'Configuration',
         $paths = null
     ) {
+        $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
-        $emulatedControllerAction = pathinfo($templateFilename, PATHINFO_FILENAME);
+        $emulatedControllerAction = lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
         $emulatedPluginName = ucfirst($emulatedControllerAction);
-        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\ContentController';
+        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
 
         $this->validateContentController($controllerClassName, $fullContentType);
         $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $emulatedControllerAction);
 
-        // Configure a Provider which reacts to our new CType:
-        return Core::registerFluidFlexFormContentObject(
-            $providerExtensionName,
-            $fullContentType,
-            $templateFilename,
-            $variables,
-            $section,
-            $paths
-        );
+        /** @var Provider $provider */
+        $provider = GeneralUtility::makeInstance(ObjectManager::class)->get(Provider::class);
+        $provider->setFieldName('pi_flexform');
+        $provider->setTableName('tt_content');
+        $provider->setExtensionKey($providerExtensionName);
+        $provider->setControllerName($controllerName);
+        $provider->setControllerAction($emulatedControllerAction);
+        $provider->setTemplatePathAndFilename($templateFilename);
+        $provider->setContentObjectType($fullContentType);
+        $provider->setTemplateVariables($variables);
+        $provider->setTemplatePaths($paths);
+        $provider->setConfigurationSectionName($section);
+
+        return $provider;
     }
 
     /**
@@ -171,8 +178,15 @@ class ContentTypeBuilder
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.access;access,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.extended,rowDescription,
                 --div--;LLL:EXT:lang/locallang_tca.xlf:sys_category.tabs.category,categories, 
-                --div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tabs.relation, tx_flux_parent, tx_flux_column, tx_flux_children
+                --div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tabs.relation, tx_flux_parent, tx_flux_column
             ';
+        // Do not add the special IRRE nested content display (when editing parent) if workspaces is loaded.
+        // When workspaces is loaded, the IRRE may contain move placeholders which cause TYPO3 to throw errors
+        // if attempting to save the parent record, because new versions get created for all child records and
+        // this isn't allowed for move placeholders.
+        if (!ExtensionManagementUtility::isLoaded('workspaces')) {
+            $showItem .= ', tx_flux_children';
+        }
         $GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'] = $showItem;
         $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['ds']['*,' . $contentType] = [];
         ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'pi_flexform', $contentType);
