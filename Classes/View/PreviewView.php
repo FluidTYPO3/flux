@@ -526,7 +526,13 @@ class PreviewView
         $result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
         $rows = [];
         if ($result) {
-            $rows = $view->getResult($result);
+            while (($row = $this->getDatabaseConnection()->sql_fetch_assoc($result)) !== false) {
+                BackendUtility::workspaceOL('tt_content', $row, -99, false);
+                if ($row) {
+                    $rows[] = $row;
+                }
+            }
+            $view->generateTtContentDataArray($rows);
         }
         return $rows;
     }

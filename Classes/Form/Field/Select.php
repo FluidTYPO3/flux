@@ -28,6 +28,11 @@ class Select extends AbstractMultiValueFormField
     protected $showIconTable = false;
 
     /**
+     * @var string
+     */
+    protected $renderType = 'selectSingle';
+
+    /**
      * @return array
      */
     public function buildConfiguration()
