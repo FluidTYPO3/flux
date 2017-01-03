@@ -65,7 +65,13 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         $contentTypeBuilder = new ContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
-            list ($providerExtensionName, $contentType, $provider, $pluginName) = $queuedRegistration;
+            list ($providerExtensionName, $contentType, $templateFilename, $pluginName) = $queuedRegistration;
+            $provider = (new ContentTypeBuilder())->configureContentTypeFromTemplateFile(
+                $providerExtensionName,
+                $templateFilename
+            );
+
+            Core::registerConfigurationProvider($provider);
             $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
         }
     }

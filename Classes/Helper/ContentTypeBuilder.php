@@ -31,18 +31,12 @@ class ContentTypeBuilder
     /**
      * @param string $providerExtensionName
      * @param string $templateFilename
-     * @param array $variables
-     * @param string $section
-     * @param array|null $paths
      * @return ProviderInterface
      */
-    public function configureContentTypeFromTemplateFile(
-        $providerExtensionName,
-        $templateFilename,
-        $variables = [],
-        $section = 'Configuration',
-        $paths = null
-    ) {
+    public function configureContentTypeFromTemplateFile($providerExtensionName, $templateFilename)
+    {
+        $variables = [];
+        $section = 'Configuration';
         $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
         $emulatedControllerAction = lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
@@ -240,7 +234,6 @@ class ContentTypeBuilder
      */
     protected function registerExtbasePluginForForm($providerExtensionName, $pluginName, Form $form)
     {
-        $formId = $form->getId();
         $icon = $form->getOption(Form::OPTION_ICON);
 
         ExtensionUtility::registerPlugin(
