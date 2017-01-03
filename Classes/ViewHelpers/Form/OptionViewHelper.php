@@ -10,12 +10,13 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
  * Form option ViewHelper
  */
-class OptionViewHelper extends AbstractFormViewHelper
+class OptionViewHelper extends AbstractFormViewHelper implements CompilableInterface
 {
     use CompileWithContentArgumentAndRenderStatic;
 
