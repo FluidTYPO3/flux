@@ -467,11 +467,10 @@ class FluxService implements SingletonInterface
         if (true === empty($flexFormContent)) {
             return [];
         }
-        $formTranslationDisabled = (null !== $form && false === (boolean) $form->getOption(Form::OPTION_TRANSLATION));
-        if (true === empty($languagePointer) || true === $formTranslationDisabled) {
+        if (true === empty($languagePointer)) {
             $languagePointer = 'lDEF';
         }
-        if (true === empty($valuePointer) || true === $formTranslationDisabled) {
+        if (true === empty($valuePointer)) {
             $valuePointer = 'vDEF';
         }
         $settings = $this->objectManager->get(FlexFormService::class)
