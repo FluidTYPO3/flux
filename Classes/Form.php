@@ -25,7 +25,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 
     const OPTION_STATIC = 'static';
     const OPTION_SORTING = 'sorting';
-    const OPTION_TRANSLATION = 'translation';
     const OPTION_GROUP = 'group';
     const OPTION_ICON = 'icon';
     const OPTION_TCA_LABELS = 'labels';
@@ -39,9 +38,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     const OPTION_RECORD_FIELD = 'recordField';
     const OPTION_RECORD_TABLE = 'recordTable';
     const OPTION_DEFAULT_VALUES = 'defaultValues';
-    const TRANSLATION_DISABLED = 'disabled';
-    const TRANSLATION_SEPARATE = 'separate';
-    const TRANSLATION_INHERIT = 'inherit';
     const POSITION_TOP = 'top';
     const POSITION_BOTTOM = 'bottom';
     const POSITION_BOTH = 'both';
@@ -152,10 +148,8 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     public function build()
     {
-        $translateOption = $this->getOption(self::OPTION_TRANSLATION);
-        $translateOption = true === empty($translateOption) ? self::TRANSLATION_DISABLED : $translateOption;
-        $disableLocalisation = self::TRANSLATION_DISABLED === $translateOption ? 1 : 0;
-        $inheritLocalisation = self::TRANSLATION_INHERIT === $translateOption ? 1 : 0;
+        $disableLocalisation = 1;
+        $inheritLocalisation = 0;
         $dataStructArray = [
             'meta' => [
                 'langDisable' => $disableLocalisation,
@@ -270,32 +264,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     {
         GeneralUtility::logDeprecatedFunction();
         return $this->getOption(self::OPTION_GROUP);
-    }
-
-    /**
-     * @param string $icon
-     * @return Form\FormInterface
-     * @deprecated
-     */
-    public function setIcon($icon)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $this->setOption(self::OPTION_ICON, $icon);
-        return $this;
-    }
-
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function getIcon()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $icon = $this->getOption(self::OPTION_ICON);
-        if (0 === strpos($icon, 'EXT:')) {
-            $icon = GeneralUtility::getFileAbsFileName($icon);
-        }
-        return $icon;
     }
 
     /**
