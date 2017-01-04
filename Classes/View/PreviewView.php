@@ -268,22 +268,12 @@ class PreviewView
         $grid = $provider->getGrid($row);
         $content = '';
         if (true === $grid->hasChildren()) {
-            $workspaceVersionOfRow = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $row['uid']);
-            if ((integer) $workspaceVersionOfRow['pid'] === -1 && !empty($workspaceVersionOfRow['t3ver_oid'])) {
-                $originalRecord = BackendUtility::getRecord(
-                    'tt_content',
-                    $workspaceVersionOfRow['t3ver_oid'],
-                    '*',
-                    '',
-                    false
-                );
-                $workspaceVersionOfRow['pid'] = $originalRecord['pid'];
-            }
-            $content = $this->drawGrid($workspaceVersionOfRow, $grid, $form);
+
+            $content = $this->drawGrid($row, $grid, $form);
 
             $options = $this->getPreviewOptions($form);
             if (true === $this->getOptionToggle($options)) {
-                $content = $this->drawGridToggle($workspaceVersionOfRow, $content);
+                $content = $this->drawGridToggle($row, $content);
             }
         }
         return $content;
@@ -540,7 +530,7 @@ class PreviewView
         $rows = [];
         if ($result) {
             while (($row = $this->getDatabaseConnection()->sql_fetch_assoc($result)) !== false) {
-                BackendUtility::workspaceOL('tt_content', $row, -99, false);
+                BackendUtility::workspaceOL('tt_content', $row, -99, true);
                 if ($row) {
                     $rows[] = $row;
                 }
