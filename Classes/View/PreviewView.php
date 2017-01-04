@@ -54,17 +54,20 @@ class PreviewView
      * @var array
      */
     protected $templates = [
-        'grid' => '<table cellspacing="0" cellpadding="0" id="content-grid-%s" class="flux-grid%s">
-						<tbody>
-							%s
-						</tbody>
-					</table>',
+        'grid' => '<div class="t3-grid-container">
+                        <table cellspacing="0" cellpadding="0" id="content-grid-%s" class="flux-grid%s" width="100%%" class="t3-page-columns t3-grid-table t3js-page-columns">
+                            <colgroup>
+                                %s
+                            </colgroup>
+                            <tbody>
+                                %s
+                            </tbody>
+					    </table>
+                    </div>
+					',
         'gridColumn' => '<td colspan="%s" rowspan="%s" style="%s">
                             <div data-colpos="%s" class="t3js-sortable t3js-sortable-lang t3js-sortable-lang-%s
                                 t3-page-ce-wrapper ui-sortable" data-language-uid="%s">
-                                <div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
-                                    <div>%s</div>
-                                </div>
                                 <div class="t3-page-ce t3js-page-ce" data-page="%s">
                                     <div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s"
                                         style="display: block;">
@@ -300,16 +303,26 @@ class PreviewView
         $collapsedClass = true === $canToggle && true === $isCollapsed ? ' flux-grid-hidden' : '';
         $gridRows = $grid->getRows();
         $content = '';
+        $maximumColumnCount = 0;
         foreach ($gridRows as $gridRow) {
             $content .= '<tr>';
             $columns = $gridRow->getColumns();
+            $columnCount = 0;
             foreach ($columns as $column) {
+                $columnCount += (integer) $column->getColspan();
                 $content .= $this->drawGridColumn($row, $column);
             }
             $content .= '</tr>';
+            $maximumColumnCount = max($maximumColumnCount, $columnCount);
         }
 
-        return sprintf($this->templates['grid'], $row['uid'], $collapsedClass, $content);
+        return sprintf(
+            $this->templates['grid'],
+            $row['uid'],
+            $collapsedClass,
+            str_repeat('<col />', $maximumColumnCount),
+            $content
+        );
     }
 
     /**
@@ -352,7 +365,7 @@ class PreviewView
         $id = 'colpos-' . $colPosFluxContent . '-page-' . $row['pid'] . '--top-' . $row['uid'] . '-' . $columnName;
         $target = $this->registerTargetContentAreaInSession($row['uid'], $columnName);
 
-        return $this->parseGridColumnTemplate($row, $column, $colPosFluxContent, $dblist, $target, $id, $content);
+        return $this->parseGridColumnTemplate($row, $column, $target, $id, $content);
     }
 
     /**
@@ -697,9 +710,7 @@ class PreviewView
     /**
      * @param array $row
      * @param Column $column
-     * @param integer $colPosFluxContent
-     * @param PageLayoutView $dblist
-     * @param integer $target
+     * @param string $target
      * @param string $id
      * @param string $content
      * @return string
@@ -707,23 +718,10 @@ class PreviewView
     protected function parseGridColumnTemplate(
         array $row,
         Column $column,
-        $colPosFluxContent,
-        $dblist,
         $target,
         $id,
         $content
     ) {
-        $label = $column->getLabel();
-        if (strpos($label, 'LLL:') === 0) {
-            $label = LocalizationUtility::translate(
-                $label,
-                ExtensionNamingUtility::getExtensionName($column->getExtensionName())
-            );
-            if (empty($label)) {
-                $label = $column->getLabel();
-            }
-        }
-
         // this variable defines if this drop-area gets activated on drag action
         // of a ce with the same data-language_uid
         $templateClassJsSortableLanguageId = $row['sys_language_uid'];
@@ -762,7 +760,6 @@ class PreviewView
             $target,
             $templateClassJsSortableLanguageId,
             $templateDataLanguageUid,
-            $label,
             $row['pid'],
             $id,
             $this->drawNewIcon($row, $column),
