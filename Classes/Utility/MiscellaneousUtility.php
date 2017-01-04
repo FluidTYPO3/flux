@@ -45,7 +45,13 @@ class MiscellaneousUtility
         $integers = array_map('ord', str_split($areaName));
         $integers[] = $contentElementUid;
         $integers[] = self::UNIQUE_INTEGER_OVERHEAD;
-        return array_sum($integers);
+        $integer = array_sum($integers);
+        // Loop + increment until a free position is found. The integer size is kept low by the logic above, but
+        // it also means that collisions are possible. This iteration prevents such collisions.
+        while (isset($_SESSION['target' . $integer])) {
+            $integer++;
+        }
+        return $integer;
     }
 
     /**
