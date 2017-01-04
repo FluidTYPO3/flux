@@ -263,14 +263,13 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function testParseGridColumnTemplate()
     {
-        $column = $this->getMockBuilder('FluidTYPO3\\Flux\\Form\\Container\\Column')->setMethods(array('getColspan', 'getRowspan', 'getStyle', 'getLabel'))->getMock();
+        $column = $this->getMockBuilder('FluidTYPO3\\Flux\\Form\\Container\\Column')->setMethods(array('getColspan', 'getRowspan', 'getStyle'))->getMock();
         $column->expects($this->once())->method('getColSpan')->willReturn('foobar-colSpan');
         $column->expects($this->once())->method('getRowSpan')->willReturn('foobar-rowSpan');
         $column->expects($this->once())->method('getStyle')->willReturn('foobar-style');
-        $column->expects($this->once())->method('getLabel')->willReturn('foobar-label');
         $subject = $this->getMockBuilder('FluidTYPO3\\Flux\\View\\PreviewView')->setMethods(array('drawNewIcon', 'drawPasteIcon'))->getMock();
         $subject->expects($this->once())->method('drawNewIcon');
         $mockPageLayoutView = $this->getMockBuilder('TYPO3\\CMS\\Backend\\View\\PageLayoutView')->getMock();
-        $this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 1, $mockPageLayoutView, 'f-target', 2, 'f-content');
+        $this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 'f-target', 2, 'f-content');
     }
 }
