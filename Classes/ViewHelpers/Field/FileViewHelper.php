@@ -41,7 +41,7 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper
         $this->registerArgument(
             'uploadFolder',
             'string',
-            'Upload folder. DEPRECATED, will be moved to the File field ViewHelper'
+            'Upload folder to use for copied/directly uploaded files'
         );
         $this->registerArgument(
             'showThumbnails',
