@@ -148,27 +148,36 @@ class TceMain
     {
         $record = $this->resolveRecordForOperation($table, $id);
 
-        if ('localize' === $command) {
-            $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
-        }
+        if ($table === 'tt_content') {
+            if ('localize' === $command) {
+                $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
+            }
 
-        $clipboardCommand = (array) $this->getClipboardCommand();
-        if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
-            $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
-        }
+            $clipboardCommand = (array) $this->getClipboardCommand();
+            if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
+                $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
+            }
 
-        // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
-        // and no other hooks catch copy operations.
-        if (!empty($clipboardCommand)) {
-            if ($command === 'copy' || $command === 'move') {
-                $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
-                $this->recordService->update($table, $record);
+            // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
+            // and no other hooks catch copy operations.
+            if (!empty($clipboardCommand)) {
+                if ($command === 'copy' || $command === 'move') {
 
-                $resolveUid = $this->getOriginalRecordUid($table, $id);
-                $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
-                if ($mostRecentVersionOfRecord) {
-                    $this->contentService->moveRecord($mostRecentVersionOfRecord, $relativeTo, $clipboardCommand, $reference);
-                    $this->recordService->update($table, $mostRecentVersionOfRecord);
+                    if ($command === 'copy') {
+                        // When "copy" is received as command, this method unfortunately receives the original
+                        // record and we now must attempt to find the newly created copy (or placeholder thereof) instead.
+                        $record = $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id]);
+                    }
+
+                    $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
+                    $this->recordService->update($table, $record);
+
+                    $resolveUid = $this->getOriginalRecordUid($table, $id);
+                    $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
+                    if ($mostRecentVersionOfRecord) {
+                        $this->contentService->moveRecord($mostRecentVersionOfRecord, $relativeTo, $clipboardCommand, $reference);
+                        $this->recordService->update($table, $mostRecentVersionOfRecord);
+                    }
                 }
             }
         }
