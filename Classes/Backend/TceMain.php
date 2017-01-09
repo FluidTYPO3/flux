@@ -127,6 +127,16 @@ class TceMain
     }
 
     /**
+     * Command post processing method
+     *
+     * Like other pre/post methods this method calls the corresponding
+     * method on Providers which match the table/id(record) being passed.
+     *
+     * In addition, this method also listens for paste commands executed
+     * via the TYPO3 clipboard, since such methods do not necessarily
+     * trigger the "normal" record move hooks (which we also subscribe
+     * to and react to in moveRecord_* methods).
+     *
      * @param string $command The TCEmain operation status, fx. 'update'
      * @param string $table The table TCEmain is currently processing
      * @param string $id The records id (if any)
@@ -136,7 +146,8 @@ class TceMain
      */
     public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference)
     {
-        $record = (array) $this->recordService->getSingle($table, '*', $id);
+        $record = $this->resolveRecordForOperation($table, $id);
+
         if ('localize' === $command) {
             $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
         }
@@ -149,98 +160,18 @@ class TceMain
         // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
         // and no other hooks catch copy operations.
         if (!empty($clipboardCommand)) {
-
-            // First of all, we need to know the exact original record's UID, since we may receive
-            // placeholders and versioned records in this hook.
-            $resolveUid = $this->getOriginalRecordUid($table, $id);
-
-            // Problem: resolve the potential original record if the passed record is a placeholder.
-            // This detection is necessary because 1) the colPos value is an emulated value and exists
-            // only in DataHandler::$datamap, but 2) the value in that array is indexed by the original
-            // record UID which 3) is not present in neither $row nor $moveRecord.
-            // Effect: we have to perform a few extra (tiny) SQL queries here, sadly this cannot be avoided.
-            $movePlaceholder = BackendUtility::getMovePlaceholder($table, $id);
-            if ($GLOBALS['BE_USER']->workspace && $movePlaceholder) {
-                // When a placeholder exists, the original UID is only available as a value in the placeholder.
-                $resolveUid = $movePlaceholder['t3ver_move_id'];
-                $record = $movePlaceholder;
-            } else {
-                $record['uid'] = $id;
-            }
-
-            // If we are moving a placeholder, this implies that a version exists of the original
-            // record, and this version will NOT have had the necessary fields updated either.
-            // To do this, we resolve the most recent versioned record for our original - and then also
-            // update it (which happens below.
-            $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
-
-            // Perform the necessary operations on the resoled record, as implied by command. If either
-            // case also has a "most recent version of record" then that must be operated on as well.
-            if ('move' === $command) {
-
-                // Update either the record itself (not-workspace) or the workspace move placeholder
+            if ($command === 'copy' || $command === 'move') {
                 $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
                 $this->recordService->update($table, $record);
 
-                // And update the most recent version of the record, if one exists, resolved in the
-                // currently selected workspace of the current user.
+                $resolveUid = $this->getOriginalRecordUid($table, $id);
+                $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
                 if ($mostRecentVersionOfRecord) {
                     $this->contentService->moveRecord($mostRecentVersionOfRecord, $relativeTo, $clipboardCommand, $reference);
+                    $this->recordService->update($table, $mostRecentVersionOfRecord);
                 }
-
-            } elseif ('copy' === $command) {
-
-                // When we are in an active workspace we need to process versioned record / versioned placeholder rather
-                // than the record itself. The following code substitutes $record in this case.
-                if ($GLOBALS['BE_USER']->workspace) {
-                    // Find the newly created copy of the record we received. We do not receive that copy
-                    // in this hook at any other time, so we must manually resolve it.
-                    $findCopyCondition = sprintf(
-                        't3_origuid = %d AND t3ver_wsid = %d AND pid = %d',
-                        (integer) $resolveUid,
-                        (integer) $GLOBALS['BE_USER']->workspace,
-                        (integer) $record['pid']
-                    );
-                    $copy = $this->recordService->get($table, '*', $findCopyCondition, '', 'tstamp DESC', '1');
-                    $copy = reset($copy);
-
-                    // Record is versioned in current workspace; attempt to detect placeholder or use versioned record.
-                    // If no version is found here, the operation is done on the input $record (which may itself be a
-                    // versioned record / placeholder).
-                    if ($copy) {
-                        // We need to know if the record has a move placeholder, just as above.
-                        $copyMovePlaceholder = BackendUtility::getMovePlaceholder($table, $copy['uid']);
-                        if ($copyMovePlaceholder) {
-                            // When a placeholder exists, the original UID is only available as a value in the placeholder.
-                            $record = $copyMovePlaceholder;
-                        } else {
-                            $record = $copy;
-                        }
-                    }
-                }
-
-                // We then need to move the copy of our original, or the placeholder of our copy.
-                $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
-                $this->recordService->update($table, $record);
-
-                // And we also need to re-resolve the newest version of that record (or the record itself).
-                // We *also* want this to overwrite any value of the previously resolved most recent version,
-                // since that resolved version will be an incorrect reference (to the original, not the copy).
-                $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $record['uid']);
-
-                // Which we then must also move, if it exists.
-                if ($mostRecentVersionOfRecord) {
-                    $this->contentService->moveRecord($mostRecentVersionOfRecord, $relativeTo, $clipboardCommand, $reference);
-                }
-
-            }
-
-            // Update the most recent version of the record, in the workspace used by current BE user.
-            if ($mostRecentVersionOfRecord) {
-                $this->recordService->update($table, $mostRecentVersionOfRecord);
             }
         }
-
 
         $arguments = ['command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo];
         $this->executeConfigurationProviderMethod(
@@ -329,6 +260,15 @@ class TceMain
      */
 
     /**
+     * Hook method which listens only to operations which move the record
+     * to the first position in a (page-level, not Flux nested) column.
+     * The method will only process the "root" record, e.g. the method
+     * gets called for every child record but only performs any operations
+     * on the parent record.
+     *
+     * Must use a slightly esoteric method of resolving the input argument
+     * value for "new column number" which gets passed only in GET.
+     *
      * @param string $table
      * @param integer $uid
      * @param integer $destPid
@@ -341,10 +281,18 @@ class TceMain
         // Problem: resolve the potential original record if the passed record is a placeholder.
         // This detection is necessary because 1) the colPos value is an emulated value and exists
         // only in DataHandler::$datamap, but 2) the value in that array is indexed by the original
-        // record UID which 3) is not present in neither $row nor $moveRecord.
+        // record UID which 3) is not present in neither $row nor $moveRec.
         // Effect: we have to perform a few extra (tiny) SQL queries here, sadly this cannot be avoided.
         $resolveUid = $this->getOriginalRecordUid($table, $uid);
-        $newColumnNumber = (integer) GeneralUtility::_GET('data')[$table][$resolveUid]['colPos'];
+        $newColumnNumber = GeneralUtility::_GET('data')[$table][$resolveUid]['colPos'];
+
+        // The following code must NOT execute if the new column number was not provided in the exact
+        // required place specified above. For all other cases we do NOT want to react to this hook,
+        // such other cases include cascaded operations on all child content. To put it shortly:
+        // this prevents performing moves on ANY other record than the exact input record itself.
+        if ($newColumnNumber === null) {
+            return;
+        }
 
         // Move the immediate record, which may itself be a placeholder or an original record.
         $row['uid'] = $uid;
@@ -362,8 +310,10 @@ class TceMain
         }
     }
 
-
     /**
+     * Hook method listening specifically for operations which move a
+     * record relative to (after) another element.
+     *
      * @param string $table
      * @param integer $uid
      * @param integer $destPid
@@ -394,9 +344,13 @@ class TceMain
     }
 
     /**
+     * If we are in a workspace, this method returns the most recent version
+     * of the original record - if we are not in a workspace or the record
+     * has not yet been versioned, `false` is returned.
+     *
      * @param string $table
      * @param integer $uid
-     * @return array|bool
+     * @return array|boolean
      */
     protected function getMostRecentVersionOfRecord($table, $uid)
     {
@@ -410,6 +364,35 @@ class TceMain
             $uid,
             'uid,colPos,tx_flux_parent,tx_flux_column,sorting'
         );
+    }
+
+    /**
+     * Returns either the record itself (if we are not in a workspace)
+     * or the move placeholder for the record if we are.
+     *
+     * Therefore, this method is only appropriate for "copy" and "move"
+     * operations which by nature must be done on placeholders in workspace.
+     *
+     * @param string $table
+     * @param integer $id
+     * @return array|boolean
+     */
+    protected function resolveRecordForOperation($table, $id)
+    {
+        $record = (array) $this->recordService->getSingle($table, '*', $id);
+
+        if ($GLOBALS['BE_USER']->workspace) {
+
+            $movePlaceholder = BackendUtility::getMovePlaceholder($table, $id);
+            if ($movePlaceholder) {
+                $record = $movePlaceholder;
+            } else {
+                $record['uid'] = $id;
+            }
+
+        }
+
+        return $record;
     }
 
     /**

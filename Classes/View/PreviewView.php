@@ -513,7 +513,7 @@ class PreviewView
         // not remove records based on them having remove placeholders.
         $condition = sprintf(
             "AND (pid = %d AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d') %s",
-            (integer) $row['pid'],
+            (integer) (isset($row['_MOVE_PLH_pid']) ? $row['_MOVE_PLH_pid'] : $row['pid']),
             $this->getFluxParentUid($row),
             $area,
             ContentService::COLPOS_FLUXCONTENT,
