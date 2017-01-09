@@ -243,6 +243,15 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         return array(
             array('<data><fields></fields></data>', array(), ''),
             array('<data><field index="columns">   <el index="el">   </el>   </field></data>', array(), ''),
+            array('
+                <data>
+                    <sheet index="emptySheet1"></sheet>
+                    <sheet index="emptySheet2"></sheet>
+                    <sheet index="emptySheet3"></sheet>
+                </data>',
+                array(),
+                ''
+            ),
         );
     }
 }
