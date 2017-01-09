@@ -195,11 +195,18 @@ class MiscellaneousUtility
             }
         }
         // Remove all sheets that no longer contain any fields.
+        $nodesToBeRemoved = [];
         foreach ($dom->getElementsByTagName('sheet') as $sheetNode) {
             if (0 === $sheetNode->getElementsByTagName('field')->length) {
-                $sheetNode->parentNode->removeChild($sheetNode);
+                $nodesToBeRemoved[] = $sheetNode;
             }
         }
+
+        foreach ($nodesToBeRemoved as $node) {
+            /** @var \DOMElement $node */
+            $node->parentNode->removeChild($node);
+        }
+
         // Return empty string in case remaining flexform XML is all empty
         $dataNode = $dom->getElementsByTagName('data')->item(0);
         if (0 === $dataNode->getElementsByTagName('sheet')->length) {
