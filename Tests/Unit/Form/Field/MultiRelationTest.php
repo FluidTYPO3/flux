@@ -11,22 +11,22 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /**
  * MultiRelationTest
  */
-class MultiRelationTest extends AbstractFieldTest {
+class MultiRelationTest extends AbstractFieldTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'table' => 'pages',
-		'foreignLabel' => 'uid',
-		'filter' => array(
-			'test' => 'test'
-		),
-		'matchFields' => array(
-			'field' => 'value'
-		)
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'table' => 'pages',
+        'foreignLabel' => 'uid',
+        'filter' => array(
+            'test' => 'test'
+        ),
+        'matchFields' => array(
+            'field' => 'value'
+        )
+    );
 }

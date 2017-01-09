@@ -13,19 +13,20 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 /**
  * DateTime
  */
-class DateTime extends Input implements FieldInterface {
+class DateTime extends Input implements FieldInterface
+{
 
-	/**
-	 * @var string
-	 */
-	protected $validate = 'date';
+    /**
+     * @var string
+     */
+    protected $validate = 'date';
 
-	/**
-	 * @param array $settings
-	 * @return FieldInterface
-	 */
-	public static function create(array $settings = array()) {
-		return parent::create($settings);
-	}
-
+    /**
+     * @param array $settings
+     * @return FieldInterface
+     */
+    public static function create(array $settings = [])
+    {
+        return parent::create($settings);
+    }
 }

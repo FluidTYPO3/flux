@@ -14,51 +14,55 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 /**
  * AbstractPipeTestCase
  */
-abstract class AbstractPipeTestCase extends AbstractTestCase {
+abstract class AbstractPipeTestCase extends AbstractTestCase
+{
 
-	/**
-	 * @var array
-	 */
-	protected $defaultData = array();
+    /**
+     * @var array
+     */
+    protected $defaultData = array();
 
-	/**
-	 * @test
-	 */
-	public function canConductData() {
-		$instance = $this->createInstance();
-		$output = $instance->conduct($this->defaultData);
-		$this->assertNotEmpty($output);
-	}
+    /**
+     * @test
+     */
+    public function canConductData()
+    {
+        $instance = $this->createInstance();
+        $output = $instance->conduct($this->defaultData);
+        $this->assertNotEmpty($output);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canGetLabel() {
-		$instance = $this->createInstance();
-		$label = $instance->getLabel();
-		$this->assertNotEmpty($label);
-	}
+    /**
+     * @test
+     */
+    public function canGetLabel()
+    {
+        $instance = $this->createInstance();
+        $label = $instance->getLabel();
+        $this->assertNotEmpty($label);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canGetFormFields() {
-		$fields = $this->createInstance()->getFormFields();
-		$this->assertIsArray($fields);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $fields['class']);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $fields['label']);
-	}
+    /**
+     * @test
+     */
+    public function canGetFormFields()
+    {
+        $fields = $this->createInstance()->getFormFields();
+        $this->assertIsArray($fields);
+        $this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $fields['class']);
+        $this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $fields['label']);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canLoadSettings() {
-		$instance = $this->createInstance();
-		$instance->loadSettings($this->defaultData);
-		foreach ($this->defaultData as $propertyName => $propertyValue) {
-			$result = ObjectAccess::getProperty($instance, $propertyName, TRUE);
-			$this->assertEquals($propertyValue, $result);
-		}
-	}
-
+    /**
+     * @test
+     */
+    public function canLoadSettings()
+    {
+        $instance = $this->createInstance();
+        $instance->loadSettings($this->defaultData);
+        foreach ($this->defaultData as $propertyName => $propertyValue) {
+            $result = ObjectAccess::getProperty($instance, $propertyName, true);
+            $this->assertEquals($propertyValue, $result);
+        }
+    }
 }

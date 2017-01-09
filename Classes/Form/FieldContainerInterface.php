@@ -11,11 +11,11 @@ namespace FluidTYPO3\Flux\Form;
 /**
  * FieldContainerInterface
  */
-interface FieldContainerInterface extends ContainerInterface {
+interface FieldContainerInterface extends ContainerInterface
+{
 
-	/**
-	 * @return FieldInterface[]
-	 */
-	public function getFields();
-
+    /**
+     * @return FieldInterface[]
+     */
+    public function getFields();
 }

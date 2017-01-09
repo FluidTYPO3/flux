@@ -13,26 +13,28 @@ use FluidTYPO3\Flux\Form\Container\Container;
 /**
  * ContainerTest
  */
-class ContainerTest extends AbstractContainerTest {
+class ContainerTest extends AbstractContainerTest
+{
 
-	/**
-	 * @test
-	 */
-	public function getFieldsGetsFields() {
-		$container = Container::create(array('name' => 'test'));
-		$container->createField('Input', 'test');
-		$this->assertCount(1, $container->getFields());
-	}
+    /**
+     * @test
+     */
+    public function getFieldsGetsFields()
+    {
+        $container = Container::create(array('name' => 'test'));
+        $container->createField('Input', 'test');
+        $this->assertCount(1, $container->getFields());
+    }
 
-	/**
-	 * @test
-	 */
-	public function ifObjectIsFieldContainerItSupportsFetchingFields() {
-		$instance = $this->createInstance();
-		$field = $instance->createField('Input', 'test');
-		$instance->add($field);
-		$fields = $instance->getFields();
-		$this->assertNotEmpty($fields, 'The class ' . $this->getObjectClassName() . ' does not appear to support the required FieldContainerInterface implementation');
-	}
-
+    /**
+     * @test
+     */
+    public function ifObjectIsFieldContainerItSupportsFetchingFields()
+    {
+        $instance = $this->createInstance();
+        $field = $instance->createField('Input', 'test');
+        $instance->add($field);
+        $fields = $instance->getFields();
+        $this->assertNotEmpty($fields, 'The class ' . $this->getObjectClassName() . ' does not appear to support the required FieldContainerInterface implementation');
+    }
 }

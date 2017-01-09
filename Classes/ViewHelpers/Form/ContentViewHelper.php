@@ -49,34 +49,46 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *         <!-- No use of flux:content is possible after this point -->
  *     </flux:form>
  */
-class ContentViewHelper extends AbstractFormViewHelper {
+class ContentViewHelper extends AbstractFormViewHelper
+{
 
-	/**
-	 * Initialize arguments
-	 * @return void
-	 */
-	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Name of the content area, FlexForm XML-valid tag name string', TRUE);
-		$this->registerArgument('label', 'string', 'Label for content area, can be LLL: value. Optional - if not specified, ' .
-			'Flux tries to detect an LLL label named "flux.fluxFormId.columns.foobar" based on column name, in scope of ' .
-			'extension rendering the Flux form.', FALSE, NULL);
-		$this->registerArgument('extensionName', 'string', 'If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.');
-	}
+    /**
+     * Initialize arguments
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument('name', 'string', 'Name of the content area, FlexForm XML-valid tag name string', true);
+        $this->registerArgument(
+            'label',
+            'string',
+            'Label for content area, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL ' .
+            'label named "flux.fluxFormId.columns.foobar" based on column name, in scope of extension rendering the ' .
+            'Flux form.'
+        );
+        $this->registerArgument(
+            'extensionName',
+            'string',
+            'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
+            'is otherwise automatically detected from rendering context.'
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return Column
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		// get the current Grid and check for existence of one row and one column, if missing then create them:
-		$grid = static::getGridFromRenderingContext($renderingContext, 'grid');;
-		$grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
-		$row = $grid->createContainer('Row', 'row');
-		$column = $row->createContainer('Column', 'column');
-		$column->setName($arguments['name']);
-		$column->setLabel($arguments['label']);
-		return $column;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return Column
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        // get the current Grid and check for existence of one row and one column, if missing then create them:
+        $grid = static::getGridFromRenderingContext($renderingContext, 'grid');
+        ;
+        $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+        $row = $grid->createContainer('Row', 'row');
+        $column = $row->createContainer('Column', 'column');
+        $column->setName($arguments['name']);
+        $column->setLabel($arguments['label']);
+        return $column;
+    }
 }

@@ -11,16 +11,16 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /**
  * UserFunctionTest
  */
-class UserFunctionTest extends AbstractFieldTest {
+class UserFunctionTest extends AbstractFieldTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'function' => 'FluidTYPO3\Flux\UserFunction\NoFields->renderField',
-		'arguments' => array(1, 2),
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'function' => 'FluidTYPO3\Flux\UserFunction\NoFields->renderField',
+        'arguments' => array(1, 2),
+    );
 }

@@ -11,14 +11,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 /**
  * ColumnTest
  */
-class ColumnTest extends AbstractContainerTest {
+class ColumnTest extends AbstractContainerTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'columnPosition' => 1
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'columnPosition' => 1
+    );
 }

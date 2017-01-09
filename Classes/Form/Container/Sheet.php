@@ -16,85 +16,91 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 /**
  * Sheet
  */
-class Sheet extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface {
+class Sheet extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
+{
 
-	/**
-	 * @var string
-	 */
-	protected $description;
+    /**
+     * @var string
+     */
+    protected $description;
 
-	/**
-	 * @var string
-	 */
-	protected $shortDescription;
+    /**
+     * @var string
+     */
+    protected $shortDescription;
 
-	/**
-	 * @param string $shortDescription
-	 * @return self
-	 */
-	public function setShortDescription($shortDescription) {
-		$this->shortDescription = $shortDescription;
-		return $this;
-	}
+    /**
+     * @param string $shortDescription
+     * @return self
+     */
+    public function setShortDescription($shortDescription)
+    {
+        $this->shortDescription = $shortDescription;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getShortDescription() {
-		return $this->resolveLocalLanguageValueOfLabel($this->shortDescription, $this->getPath() . '.shortDescription');
-	}
+    /**
+     * @return string
+     */
+    public function getShortDescription()
+    {
+        return $this->resolveLocalLanguageValueOfLabel($this->shortDescription, $this->getPath() . '.shortDescription');
+    }
 
-	/**
-	 * @param string $description
-	 * @return self
-	 */
-	public function setDescription($description) {
-		$this->description = $description;
-		return $this;
-	}
+    /**
+     * @param string $description
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getDescription() {
-		return $this->resolveLocalLanguageValueOfLabel($this->description, $this->getPath() . '.description');
-	}
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->resolveLocalLanguageValueOfLabel($this->description, $this->getPath() . '.description');
+    }
 
-	/**
-	 * @return array
-	 */
-	public function build() {
-		$sheetStructArray = array(
-			'ROOT' => array(
-				'sheetTitle' => $this->getLabel(),
-				'sheetDescription' => $this->getDescription(),
-				'sheetShortDescr' => $this->getShortDescription(),
-				'type' => 'array',
-				'el' => $this->buildChildren($this->getFields())
-			)
-		);
-		return $sheetStructArray;
-	}
+    /**
+     * @return array
+     */
+    public function build()
+    {
+        $sheetStructArray = [
+            'ROOT' => [
+                'sheetTitle' => $this->getLabel(),
+                'sheetDescription' => $this->getDescription(),
+                'sheetShortDescr' => $this->getShortDescription(),
+                'type' => 'array',
+                'el' => $this->buildChildren($this->getFields())
+            ]
+        ];
+        return $sheetStructArray;
+    }
 
-	/**
-	 * @return \FluidTYPO3\Flux\Form\FieldInterface[]
-	 */
-	public function getFields() {
-		$fields = array();
-		foreach ($this->children as $child) {
-			if (TRUE === $child->getEnabled()) {
-				$isSectionOrContainer = (TRUE === $child instanceof Section || TRUE === $child instanceof Container);
-				$isFieldEmulatorAndHasChildren = ($isSectionOrContainer && TRUE === $child->hasChildren());
-				$isActualField = (TRUE === $child instanceof FieldInterface);
-				$isNotInsideObject = (FALSE === $child->isChildOfType('Object'));
-				$isNotInsideContainer = (FALSE === $child->isChildOfType('Container'));
-				if (TRUE === $isFieldEmulatorAndHasChildren || (TRUE === $isActualField && TRUE === $isNotInsideObject && TRUE === $isNotInsideContainer)) {
-					$name = $child->getName();
-					$fields[$name] = $child;
-				}
-			}
-		}
-		return $fields;
-	}
-
+    /**
+     * @return \FluidTYPO3\Flux\Form\FieldInterface[]
+     */
+    public function getFields()
+    {
+        $fields = [];
+        foreach ($this->children as $child) {
+            if (true === $child->getEnabled()) {
+                $isSectionOrContainer = (true === $child instanceof Section || true === $child instanceof Container);
+                $isFieldEmulatorAndHasChildren = ($isSectionOrContainer && true === $child->hasChildren());
+                $isActualField = (true === $child instanceof FieldInterface);
+                $isNotInsideObject = (false === $child->isChildOfType('Object'));
+                $isNotInsideContainer = (false === $child->isChildOfType('Container'));
+                if ($isFieldEmulatorAndHasChildren || ($isActualField && $isNotInsideObject && $isNotInsideContainer)) {
+                    $name = $child->getName();
+                    $fields[$name] = $child;
+                }
+            }
+        }
+        return $fields;
+    }
 }

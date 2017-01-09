@@ -13,25 +13,27 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 /**
  * TypeConverterViewHelperTest
  */
-class TypeConverterViewHelperTest extends AbstractViewHelperTestCase {
+class TypeConverterViewHelperTest extends AbstractViewHelperTestCase
+{
 
-	/**
-	 * @dataProvider getTestArguments
-	 * @param array $arguments
-	 */
-	public function testWithArguments(array $arguments) {
-		$result = $this->executeViewHelper($arguments, array(), NULL, NULL, 'FakePlugin');
-		$this->assertNull($result);
-	}
+    /**
+     * @dataProvider getTestArguments
+     * @param array $arguments
+     */
+    public function testWithArguments(array $arguments)
+    {
+        $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
+        $this->assertNull($result);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getTestArguments() {
-		return array(
-			array(array('typeConverter' => 'Array')),
-			array(array('typeConverter' => 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\ArrayConverter')),
-		);
-	}
-
+    /**
+     * @return array
+     */
+    public function getTestArguments()
+    {
+        return array(
+            array(array('typeConverter' => 'Array')),
+            array(array('typeConverter' => 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\ArrayConverter')),
+        );
+    }
 }

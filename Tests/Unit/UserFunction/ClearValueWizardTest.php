@@ -11,20 +11,20 @@ namespace FluidTYPO3\Flux\Tests\Unit\UserFunction;
 /**
  * ClearValueWizardTest
  */
-class ClearValueWizardTest extends AbstractUserFunctionTest {
+class ClearValueWizardTest extends AbstractUserFunctionTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $parameters = array(
-		'parameters' => array(
-			'itemName' => 'test[foo][bar]'
-		)
-	);
+    /**
+     * @var array
+     */
+    protected $parameters = array(
+        'parameters' => array(
+            'itemName' => 'test[foo][bar]'
+        )
+    );
 
-	/**
-	 * @var string
-	 */
-	protected $methodName = 'renderField';
-
+    /**
+     * @var string
+     */
+    protected $methodName = 'renderField';
 }

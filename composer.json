@@ -2,7 +2,6 @@
     "name": "fluidtypo3/flux",
     "description": "The flux package from FluidTYPO3",
     "type": "typo3-cms-extension",
-    "version": "7.4.0",
     "homepage": "http://fluidtypo3.org",
     "license": "GPL-2.0+",
     "preferred-install": "dist",
@@ -21,7 +20,11 @@
         "fluidtypo3/fluidcontent": "Gives the ability to render Content Templates with pure fluid.",
         "fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
     },
+    "require": {
+        "php": ">=7.0.0",
+        "typo3/cms": ">=7.6.13, <7.6.99|^8.4.1"
+    },
     "require-dev": {
-        "fluidtypo3/development": "*"
+        "fluidtypo3/development": "^3.0"
     }
 }

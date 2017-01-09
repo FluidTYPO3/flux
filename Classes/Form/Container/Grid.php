@@ -14,25 +14,27 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
 /**
  * Grid
  */
-class Grid extends AbstractFormContainer implements ContainerInterface {
+class Grid extends AbstractFormContainer implements ContainerInterface
+{
 
-	/**
-	 * @return array
-	 */
-	public function build() {
-		$structure = array(
-			'name' => $this->getName(),
-			'label' => $this->getLabel(),
-			'rows' => $this->buildChildren($this->children)
-		);
-		return $structure;
-	}
+    /**
+     * @return array
+     */
+    public function build()
+    {
+        $structure = [
+            'name' => $this->getName(),
+            'label' => $this->getLabel(),
+            'rows' => $this->buildChildren($this->children)
+        ];
+        return $structure;
+    }
 
-	/**
-	 * @return Row[]
-	 */
-	public function getRows() {
-		return (array) iterator_to_array($this->children);
-	}
-
+    /**
+     * @return Row[]
+     */
+    public function getRows()
+    {
+        return (array) iterator_to_array($this->children);
+    }
 }

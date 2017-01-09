@@ -14,58 +14,63 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 /**
  * UserFunction
  */
-class UserFunction extends AbstractFormField implements FieldInterface {
+class UserFunction extends AbstractFormField implements FieldInterface
+{
 
-	/**
-	 * @var array
-	 */
-	protected $arguments = array();
+    /**
+     * @var array
+     */
+    protected $arguments = [];
 
-	/**
-	 * @var string
-	 */
-	protected $function;
+    /**
+     * @var string
+     */
+    protected $function;
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = $this->prepareConfiguration('user');
-		$configuration['userFunc'] = $this->getFunction();
-		$configuration['arguments'] = $this->getArguments();
-		return $configuration;
-	}
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = $this->prepareConfiguration('user');
+        $configuration['userFunc'] = $this->getFunction();
+        $configuration['arguments'] = $this->getArguments();
+        return $configuration;
+    }
 
-	/**
-	 * @param string $function
-	 * @return UserFunction
-	 */
-	public function setFunction($function) {
-		$this->function = $function;
-		return $this;
-	}
+    /**
+     * @param string $function
+     * @return UserFunction
+     */
+    public function setFunction($function)
+    {
+        $this->function = $function;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getFunction() {
-		return $this->function;
-	}
+    /**
+     * @return string
+     */
+    public function getFunction()
+    {
+        return $this->function;
+    }
 
-	/**
-	 * @param array $arguments
-	 * @return UserFunction
-	 */
-	public function setArguments($arguments) {
-		$this->arguments = $arguments;
-		return $this;
-	}
+    /**
+     * @param array $arguments
+     * @return UserFunction
+     */
+    public function setArguments($arguments)
+    {
+        $this->arguments = $arguments;
+        return $this;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getArguments() {
-		return $this->arguments;
-	}
-
+    /**
+     * @return array
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
 }

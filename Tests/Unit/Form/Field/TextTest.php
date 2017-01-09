@@ -15,67 +15,71 @@ use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 /**
  * TextTest
  */
-class TextTest extends InputTest {
+class TextTest extends InputTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'enable' => TRUE,
-		'maxCharacters' => 30,
-		'maximum' => 10,
-		'minimum' => 0,
-		'validate' => 'trim,int',
-		'default' => 'test',
-		'columns' => 85,
-		'rows' => 8,
-		'requestUpdate' => TRUE
-	);
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'enable' => true,
+        'maxCharacters' => 30,
+        'maximum' => 10,
+        'minimum' => 0,
+        'validate' => 'trim,int',
+        'default' => 'test',
+        'columns' => 85,
+        'rows' => 8,
+        'requestUpdate' => true
+    );
 
-	/**
-	 * @test
-	 */
-	public function canChainSetterForEnableRichText() {
-		/** @var Text $instance */
-		$instance = $this->createInstance();
-		$chained = $instance->setEnableRichText(TRUE);
-		$this->assertSame($instance, $chained);
-		$this->assertTrue($instance->getEnableRichText());
-	}
+    /**
+     * @test
+     */
+    public function canChainSetterForEnableRichText()
+    {
+        /** @var Text $instance */
+        $instance = $this->createInstance();
+        $chained = $instance->setEnableRichText(true);
+        $this->assertSame($instance, $chained);
+        $this->assertTrue($instance->getEnableRichText());
+    }
 
-	/**
-	 * @test
-	 */
-	public function canChainSetterForDefaultExtras() {
-		/** @var Text $instance */
-		$instance = $this->createInstance();
-		$chained = $instance->setDefaultExtras('void');
-		$this->assertSame($instance, $chained);
-		$this->assertSame('void', $instance->getDefaultExtras());
-	}
+    /**
+     * @test
+     */
+    public function canChainSetterForDefaultExtras()
+    {
+        /** @var Text $instance */
+        $instance = $this->createInstance();
+        $chained = $instance->setDefaultExtras('void');
+        $this->assertSame($instance, $chained);
+        $this->assertSame('void', $instance->getDefaultExtras());
+    }
 
-	/**
-	 * @test
-	 */
-	public function canBuildConfigurationWithoutDefaultExtrasWithEnableRichText() {
-		/** @var Text $instance */
-		$instance = $this->createInstance();
-		$instance->setDefaultExtras(NULL)->setEnableRichText(TRUE);
-		$result = $this->performTestBuild($instance);
-		$this->assertArrayHasKey('defaultExtras', $result['config']);
-	}
+    /**
+     * @test
+     */
+    public function canBuildConfigurationWithoutDefaultExtrasWithEnableRichText()
+    {
+        /** @var Text $instance */
+        $instance = $this->createInstance();
+        $instance->setDefaultExtras(null)->setEnableRichText(true);
+        $result = $this->performTestBuild($instance);
+        $this->assertArrayHasKey('defaultExtras', $result['config']);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canBuildConfigurationWithDefaultExtras() {
-		/** @var Text $instance */
-		$instance = $this->createInstance();
-		$instance->setDefaultExtras('richtext[*]');
-		$result = $this->performTestBuild($instance);
-		$this->assertNotEmpty($result['defaultExtras']);
-	}
-
+    /**
+     * @test
+     */
+    public function canBuildConfigurationWithDefaultExtras()
+    {
+        /** @var Text $instance */
+        $instance = $this->createInstance();
+        $instance->setDefaultExtras('richtext[*]');
+        $result = $this->performTestBuild($instance);
+        $this->assertNotEmpty($result['defaultExtras']);
+    }
 }

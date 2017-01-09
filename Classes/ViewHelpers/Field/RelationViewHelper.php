@@ -11,13 +11,14 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 /**
  * Select-type FlexForm field ViewHelper
  */
-class RelationViewHelper extends AbstractRelationFieldViewHelper {
+class RelationViewHelper extends AbstractRelationFieldViewHelper
+{
 
-	/**
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-	}
-
+    /**
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+    }
 }

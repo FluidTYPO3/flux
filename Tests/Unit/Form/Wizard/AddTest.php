@@ -11,18 +11,18 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 /**
  * AddTest
  */
-class AddTest extends AbstractWizardTest {
+class AddTest extends AbstractWizardTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'hideParent' => FALSE,
-		'table' => 'tt_content',
-		'storagePageUid' => 1,
-		'setValue' => FALSE,
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'hideParent' => false,
+        'table' => 'tt_content',
+        'storagePageUid' => 1,
+        'setValue' => false,
+    );
 }

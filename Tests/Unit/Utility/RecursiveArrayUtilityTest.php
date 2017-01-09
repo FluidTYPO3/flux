@@ -14,92 +14,95 @@ use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 /**
  * RecursiveArrayUtilityTest
  */
-class RecursiveArrayUtilityTest extends AbstractTestCase {
+class RecursiveArrayUtilityTest extends AbstractTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function canOperateArrayMergeFunction() {
-		$array1 = array(
-			'foo' => array(
-				'bar' => TRUE
-			)
-		);
-		$array2 = array(
-			'foo' => array(
-				'foo' => TRUE
-			)
-		);
-		$expected = array(
-			'foo' => array(
-				'bar' => TRUE,
-				'foo' => TRUE
-			)
-		);
-		$product = RecursiveArrayUtility::merge($array1, $array2);
-		$this->assertSame($expected, $product);
-	}
+    /**
+     * @test
+     */
+    public function canOperateArrayMergeFunction()
+    {
+        $array1 = array(
+            'foo' => array(
+                'bar' => true
+            )
+        );
+        $array2 = array(
+            'foo' => array(
+                'foo' => true
+            )
+        );
+        $expected = array(
+            'foo' => array(
+                'bar' => true,
+                'foo' => true
+            )
+        );
+        $product = RecursiveArrayUtility::merge($array1, $array2);
+        $this->assertSame($expected, $product);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canOperateArrayDiffFunction() {
-		$array1 = array(
-			'bar' => TRUE,
-			'baz' => TRUE,
-			'same' => array(
-				'foo' => TRUE
-			),
-			'foo' => array(
-				'bar' => TRUE,
-				'foo' => TRUE
-			)
-		);
-		$array2 = array(
-			'bar' => TRUE,
-			'baz' => FALSE,
-			'new' => TRUE,
-			'same' => array(
-				'foo' => TRUE
-			),
-			'foo' => array(
-				'bar' => TRUE
-			)
-		);
-		$expected = array(
-			'baz' => TRUE,
-			'foo' => array(
-				'foo' => TRUE
-			),
-			'new' => TRUE,
-		);
-		$product = RecursiveArrayUtility::diff($array1, $array2);
-		$this->assertSame($expected, $product);
-	}
+    /**
+     * @test
+     */
+    public function canOperateArrayDiffFunction()
+    {
+        $array1 = array(
+            'bar' => true,
+            'baz' => true,
+            'same' => array(
+                'foo' => true
+            ),
+            'foo' => array(
+                'bar' => true,
+                'foo' => true
+            )
+        );
+        $array2 = array(
+            'bar' => true,
+            'baz' => false,
+            'new' => true,
+            'same' => array(
+                'foo' => true
+            ),
+            'foo' => array(
+                'bar' => true
+            )
+        );
+        $expected = array(
+            'baz' => true,
+            'foo' => array(
+                'foo' => true
+            ),
+            'new' => true,
+        );
+        $product = RecursiveArrayUtility::diff($array1, $array2);
+        $this->assertSame($expected, $product);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canOperateMergeRecursiveOverruleFunction() {
-		$array1 = array(
-			'foo' => array(
-				'bar' => TRUE
-			)
-		);
-		$array2 = array(
-			'foo' => array(
-				'foo' => TRUE,
-				'bar' => FALSE
-			)
-		);
-		$expected = array(
-			'foo' => array(
-				'bar' => FALSE,
-				'foo' => TRUE
-			)
-		);
-		$product = RecursiveArrayUtility::mergeRecursiveOverrule($array1, $array2);
-		$this->assertSame($expected, $product);
-	}
-
+    /**
+     * @test
+     */
+    public function canOperateMergeRecursiveOverruleFunction()
+    {
+        $array1 = array(
+            'foo' => array(
+                'bar' => true
+            )
+        );
+        $array2 = array(
+            'foo' => array(
+                'foo' => true,
+                'bar' => false
+            )
+        );
+        $expected = array(
+            'foo' => array(
+                'bar' => false,
+                'foo' => true
+            )
+        );
+        $product = RecursiveArrayUtility::mergeRecursiveOverrule($array1, $array2);
+        $this->assertSame($expected, $product);
+    }
 }

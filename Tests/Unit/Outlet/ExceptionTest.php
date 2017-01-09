@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractExceptionTestCase;
 /**
  * ExceptionTest
  */
-class ExceptionTest extends AbstractExceptionTestCase {
+class ExceptionTest extends AbstractExceptionTestCase
+{
 
 }

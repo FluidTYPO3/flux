@@ -13,21 +13,23 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 /**
  * Renders nothing in case no template is selected
  */
-class NoTemplate {
+class NoTemplate
+{
 
-	/**
-	 * @param array $parameters Not used
-	 * @param object $pObj Not used
-	 * @return string|NULL
-	 */
-	public function renderField(&$parameters, &$pObj) {
-		unset($pObj);
-		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-			$message = LocalizationUtility::translate('user.no_template', 'Flux');
-			$parameterKeys = var_export(array_keys($parameters), TRUE);
-			return $message . '<pre>' . $parameterKeys . '</pre>';
-		}
-		unset($parameters);
-		return NULL;
-	}
+    /**
+     * @param array $parameters Not used
+     * @param object $pObj Not used
+     * @return string|NULL
+     */
+    public function renderField(&$parameters, &$pObj)
+    {
+        unset($pObj);
+        if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
+            $message = LocalizationUtility::translate('user.no_template', 'Flux');
+            $parameterKeys = var_export(array_keys($parameters), true);
+            return $message . '<pre>' . $parameterKeys . '</pre>';
+        }
+        unset($parameters);
+        return null;
+    }
 }

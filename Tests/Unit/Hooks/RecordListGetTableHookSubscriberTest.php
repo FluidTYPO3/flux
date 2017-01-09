@@ -13,30 +13,32 @@ use FluidTYPO3\Flux\Service\ContentService;
 /**
  * Class RecordListGetTableHookSubscriberTest
  */
-class RecordListGetTableHookSubscriberTest extends ContentIconHookSubscriberTest {
+class RecordListGetTableHookSubscriberTest extends ContentIconHookSubscriberTest
+{
 
-	/**
-	 * @test
-	 */
-	public function testModifiesClauseWhenTableIsMatched() {
-		$subject = new RecordListGetTableHookSubscriber();
-		$selectedFields = array();
-		$reference = NULL;
-		$clause = NULL;
-		$subject->getDBlistQuery('tt_content', 1, $clause, $selectedFields, $reference);
-		$this->assertEquals(' AND colPos <> ' . ContentService::COLPOS_FLUXCONTENT, $clause);
-	}
+    /**
+     * @test
+     */
+    public function testModifiesClauseWhenTableIsMatched()
+    {
+        $subject = new RecordListGetTableHookSubscriber();
+        $selectedFields = array();
+        $reference = null;
+        $clause = null;
+        $subject->getDBlistQuery('tt_content', 1, $clause, $selectedFields, $reference);
+        $this->assertEquals(' AND colPos <> ' . ContentService::COLPOS_FLUXCONTENT, $clause);
+    }
 
-	/**
-	 * @test
-	 */
-	public function testDoesNotModifyClauseIfTableIsNotMatched() {
-		$subject = new RecordListGetTableHookSubscriber();
-		$selectedFields = array();
-		$reference = NULL;
-		$clause = NULL;
-		$subject->getDBlistQuery('pages', 1, $clause, $selectedFields, $reference);
-		$this->assertNull($clause);
-	}
-
+    /**
+     * @test
+     */
+    public function testDoesNotModifyClauseIfTableIsNotMatched()
+    {
+        $subject = new RecordListGetTableHookSubscriber();
+        $selectedFields = array();
+        $reference = null;
+        $clause = null;
+        $subject->getDBlistQuery('pages', 1, $clause, $selectedFields, $reference);
+        $this->assertNull($clause);
+    }
 }

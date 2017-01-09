@@ -13,15 +13,16 @@ use FluidTYPO3\Flux\Form\Container\Object;
 /**
  * ObjectTest
  */
-class ObjectTest extends AbstractContainerTest {
+class ObjectTest extends AbstractContainerTest
+{
 
-	/**
-	 * @test
-	 */
-	public function getFieldsGetsFields() {
-		$container = Object::create(array('name' => 'test'));
-		$container->createField('Input', 'test');
-		$this->assertCount(1, $container->getFields());
-	}
-
+    /**
+     * @test
+     */
+    public function getFieldsGetsFields()
+    {
+        $container = Object::create(array('name' => 'test'));
+        $container->createField('Input', 'test');
+        $this->assertCount(1, $container->getFields());
+    }
 }

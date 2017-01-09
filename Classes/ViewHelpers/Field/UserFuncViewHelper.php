@@ -14,30 +14,44 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 /**
  * Flexform Userfunc field ViewHelper
  */
-class UserFuncViewHelper extends AbstractFieldViewHelper {
+class UserFuncViewHelper extends AbstractFieldViewHelper
+{
 
-	/**
-	 * Initialize
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('userFunc', 'string', 'Classname->function notation of UserFunc to be called, example "Tx_Myext_Configuration_FlexForms_MyField->renderField" - Extbase classes need autoload registry for this', TRUE);
-		$this->registerArgument('arguments', 'array', 'Optional array of arguments to pass to the UserFunction building this field');
-	}
+    /**
+     * Initialize
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument(
+            'userFunc',
+            'string',
+            'UserFunc to be called, example "MyExt\\MyVendor\\MySpecialClass->renderField"',
+            true
+        );
+        $this->registerArgument(
+            'arguments',
+            'array',
+            'Optional array of arguments to pass to the UserFunction building this field'
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @param \Closure $renderChildrenClosure
-	 * @return UserFunction
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments, \Closure $renderChildrenClosure) {
-		/** @var UserFunction $user */
-		$user = static::getPreparedComponent('UserFunction', $renderingContext, $arguments);
-		$user->setFunction($arguments['userFunc']);
-		$user->setArguments($arguments['arguments']);
-		return $user;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @return UserFunction
+     */
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        array $arguments,
+        \Closure $renderChildrenClosure
+    ) {
+        /** @var UserFunction $user */
+        $user = static::getPreparedComponent('UserFunction', $renderingContext, $arguments);
+        $user->setFunction($arguments['userFunc']);
+        $user->setArguments($arguments['arguments']);
+        return $user;
+    }
 }

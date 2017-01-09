@@ -13,26 +13,28 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 /**
  * ControllerViewHelperTest
  */
-class ControllerViewHelperTest extends AbstractViewHelperTestCase {
+class ControllerViewHelperTest extends AbstractViewHelperTestCase
+{
 
-	/**
-	 * @dataProvider getTestArguments
-	 * @param array $arguments
-	 */
-	public function testWithArguments(array $arguments) {
-		$result = $this->executeViewHelper($arguments, array(), NULL, NULL, 'FakePlugin');
-		$this->assertNull($result);
-	}
+    /**
+     * @dataProvider getTestArguments
+     * @param array $arguments
+     */
+    public function testWithArguments(array $arguments)
+    {
+        $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
+        $this->assertNull($result);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getTestArguments() {
-		return array(
-			array(array()),
-			array(array('controller' => 'SomeClass')),
-			array(array('controller' => 'SomeClass', 'action' => 'foobar')),
-		);
-	}
-
+    /**
+     * @return array
+     */
+    public function getTestArguments()
+    {
+        return array(
+            array(array()),
+            array(array('controller' => 'SomeClass')),
+            array(array('controller' => 'SomeClass', 'action' => 'foobar')),
+        );
+    }
 }

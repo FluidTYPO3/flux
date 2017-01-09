@@ -14,39 +14,72 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 /**
  * Tree (select supertype) FlexForm field ViewHelper
  */
-class TreeViewHelper extends AbstractRelationFieldViewHelper {
+class TreeViewHelper extends AbstractRelationFieldViewHelper
+{
 
-	/**
-	 * Initialize
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('parentField', 'string', 'Field containing UID of parent record', TRUE);
-		$this->registerArgument('allowRecursiveMode', 'boolean', 'If TRUE, the selection of a node will trigger the selection of all child nodes too (recursively)', FALSE, Tree::DEFAULT_ALLOW_RECURSIVE_MODE);
-		$this->registerArgument('expandAll', 'boolean', 'If TRUE, expands all branches', FALSE, Tree::DEFAULT_EXPAND_ALL);
-		$this->registerArgument('nonSelectableLevels', 'string', 'Comma-separated list of levels that will not be selectable, by default the root node (which is "0") cannot be selected', FALSE, Tree::DEFAULT_NON_SELECTABLE_LEVELS);
-		$this->registerArgument('maxLevels', 'integer', ' The maximal amount of levels to be rendered (can be used to stop possible recursions)', FALSE, Tree::DEFAULT_MAX_LEVELS);
-		$this->registerArgument('showHeader', 'boolean', 'If TRUE, displays tree header', FALSE, Tree::DEFAULT_SHOW_HEADER);
-		$this->registerArgument('width', 'integer', 'Width of TreeView component', FALSE, Tree::DEFAULT_WIDTH);
-	}
+    /**
+     * Initialize
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('parentField', 'string', 'Field containing UID of parent record', true);
+        $this->registerArgument(
+            'allowRecursiveMode',
+            'boolean',
+            'If TRUE, the selection of a node will trigger the selection of all child nodes too (recursively)',
+            false,
+            Tree::DEFAULT_ALLOW_RECURSIVE_MODE
+        );
+        $this->registerArgument(
+            'expandAll',
+            'boolean',
+            'If TRUE, expands all branches',
+            false,
+            Tree::DEFAULT_EXPAND_ALL
+        );
+        $this->registerArgument(
+            'nonSelectableLevels',
+            'string',
+            'Comma-separated list of levels that will not be selectable, by default the root node (which is "0") ' .
+            'cannot be selected',
+            false,
+            Tree::DEFAULT_NON_SELECTABLE_LEVELS
+        );
+        $this->registerArgument(
+            'maxLevels',
+            'integer',
+            'The maximal amount of levels to be rendered (can be used to stop possible recursions)',
+            false,
+            Tree::DEFAULT_MAX_LEVELS
+        );
+        $this->registerArgument(
+            'showHeader',
+            'boolean',
+            'If TRUE, displays tree header',
+            false,
+            Tree::DEFAULT_SHOW_HEADER
+        );
+        $this->registerArgument('width', 'integer', 'Width of TreeView component', false, Tree::DEFAULT_WIDTH);
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return Tree
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		/** @var Tree $tree */
-		$tree = static::getPreparedComponent('Tree', $renderingContext, $arguments);
-		$tree->setParentField($arguments['parentField']);
-		$tree->setAllowRecursiveMode($arguments['allowRecursiveMode']);
-		$tree->setExpandAll($arguments['expandAll']);
-		$tree->setNonSelectableLevels($arguments['nonSelectableLevels']);
-		$tree->setMaxLevels($arguments['maxLevels']);
-		$tree->setShowHeader($arguments['showHeader']);
-		$tree->setWidth($arguments['width']);
-		return $tree;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return Tree
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        /** @var Tree $tree */
+        $tree = static::getPreparedComponent('Tree', $renderingContext, $arguments);
+        $tree->setParentField($arguments['parentField']);
+        $tree->setAllowRecursiveMode($arguments['allowRecursiveMode']);
+        $tree->setExpandAll($arguments['expandAll']);
+        $tree->setNonSelectableLevels($arguments['nonSelectableLevels']);
+        $tree->setMaxLevels($arguments['maxLevels']);
+        $tree->setShowHeader($arguments['showHeader']);
+        $tree->setWidth($arguments['width']);
+        return $tree;
+    }
 }

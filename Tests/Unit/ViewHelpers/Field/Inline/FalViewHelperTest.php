@@ -14,53 +14,56 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 /**
  * FalViewHelperTest
  */
-class FalViewHelperTest extends AbstractFieldViewHelperTestCase {
+class FalViewHelperTest extends AbstractFieldViewHelperTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function createsExpectedComponent() {
-		$arguments = array(
-			'name' => 'test'
-		);
-		$instance = $this->buildViewHelperInstance($arguments, array());
-		$component = $instance->getComponent(
-			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
-			ObjectAccess::getProperty($instance, 'arguments', TRUE)
-		);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Field\Inline\Fal', $component);
-	}
+    /**
+     * @test
+     */
+    public function createsExpectedComponent()
+    {
+        $arguments = array(
+            'name' => 'test'
+        );
+        $instance = $this->buildViewHelperInstance($arguments, array());
+        $component = $instance->getComponent(
+            ObjectAccess::getProperty($instance, 'renderingContext', true),
+            ObjectAccess::getProperty($instance, 'arguments', true)
+        );
+        $this->assertInstanceOf('FluidTYPO3\Flux\Form\Field\Inline\Fal', $component);
+    }
 
-	/**
-	 * @test
-	 */
-	public function supportsHeaderThumbnail() {
-		$arguments = array(
-			'name' => 'test',
-			'headerThumbnail' => array('test' => 'test')
-		);
-		$instance = $this->buildViewHelperInstance($arguments, array());
-		$component = $instance->getComponent(
-			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
-			ObjectAccess::getProperty($instance, 'arguments', TRUE)
-		);
-		$this->assertEquals($arguments['headerThumbnail'], $component->getHeaderThumbnail());
-	}
+    /**
+     * @test
+     */
+    public function supportsHeaderThumbnail()
+    {
+        $arguments = array(
+            'name' => 'test',
+            'headerThumbnail' => array('test' => 'test')
+        );
+        $instance = $this->buildViewHelperInstance($arguments, array());
+        $component = $instance->getComponent(
+            ObjectAccess::getProperty($instance, 'renderingContext', true),
+            ObjectAccess::getProperty($instance, 'arguments', true)
+        );
+        $this->assertEquals($arguments['headerThumbnail'], $component->getHeaderThumbnail());
+    }
 
-	/**
-	 * @test
-	 */
-	public function supportsForeignMatchFields() {
-		$arguments = array(
-			'name' => 'test',
-			'foreignMatchFields' => array('test' => 'test')
-		);
-		$instance = $this->buildViewHelperInstance($arguments, array());
-		$component = $instance->getComponent(
-			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
-			ObjectAccess::getProperty($instance, 'arguments', TRUE)
-		);
-		$this->assertEquals($arguments['foreignMatchFields'], $component->getForeignMatchFields());
-	}
-
+    /**
+     * @test
+     */
+    public function supportsForeignMatchFields()
+    {
+        $arguments = array(
+            'name' => 'test',
+            'foreignMatchFields' => array('test' => 'test')
+        );
+        $instance = $this->buildViewHelperInstance($arguments, array());
+        $component = $instance->getComponent(
+            ObjectAccess::getProperty($instance, 'renderingContext', true),
+            ObjectAccess::getProperty($instance, 'arguments', true)
+        );
+        $this->assertEquals($arguments['foreignMatchFields'], $component->getForeignMatchFields());
+    }
 }

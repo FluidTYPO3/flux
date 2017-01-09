@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Package;
 /**
  * Class PackageNotFoundException
  */
-class PackageNotFoundException extends \RuntimeException {
+class PackageNotFoundException extends \RuntimeException
+{
 
 }

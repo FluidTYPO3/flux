@@ -14,17 +14,18 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 /**
  * Checkbox FlexForm field ViewHelper
  */
-class CheckboxViewHelper extends AbstractFieldViewHelper {
+class CheckboxViewHelper extends AbstractFieldViewHelper
+{
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return Checkbox
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		/** @var Checkbox $checkbox */
-		$checkbox = static::getPreparedComponent('Checkbox', $renderingContext, $arguments);
-		return $checkbox;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return Checkbox
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        /** @var Checkbox $checkbox */
+        $checkbox = static::getPreparedComponent('Checkbox', $renderingContext, $arguments);
+        return $checkbox;
+    }
 }

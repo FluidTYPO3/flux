@@ -3,6 +3,9 @@
 	<file source-language="en" datatype="plaintext" original="messages" product-name="flux" date="2014-01-05T14:38:32+01:00">
 		<header/>
 		<body>
+			<trans-unit id="newContentWizard.fluxContent">
+				<source>Flux content</source>
+			</trans-unit>
 			<trans-unit id="tt_content.tx_flux_container">
 				<source>Content Container</source>
 			</trans-unit>

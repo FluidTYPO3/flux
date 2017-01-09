@@ -11,14 +11,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /**
  * DateTimeTest
  */
-class DateTimeTest extends AbstractFieldTest {
+class DateTimeTest extends AbstractFieldTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+    );
 }

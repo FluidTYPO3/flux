@@ -11,43 +11,43 @@ namespace FluidTYPO3\Flux\Form;
 /**
  * ContainerInterface
  */
-interface ContainerInterface extends FormInterface {
+interface ContainerInterface extends FormInterface
+{
 
-	/**
-	 * @param string $childName
-	 * @param boolean $recursive
-	 * @param string $requiredClass
-	 * @return FormInterface|FALSE
-	 */
-	public function get($childName, $recursive = FALSE, $requiredClass = NULL);
+    /**
+     * @param string $childName
+     * @param boolean $recursive
+     * @param string $requiredClass
+     * @return FormInterface|FALSE
+     */
+    public function get($childName, $recursive = false, $requiredClass = null);
 
-	/**
-	 * @param FormInterface $child
-	 * @return FormInterface
-	 */
-	public function add(FormInterface $child);
+    /**
+     * @param FormInterface $child
+     * @return FormInterface
+     */
+    public function add(FormInterface $child);
 
-	/**
-	 * @param mixed $childOrChildName
-	 * @return boolean
-	 */
-	public function has($childOrChildName);
+    /**
+     * @param mixed $childOrChildName
+     * @return boolean
+     */
+    public function has($childOrChildName);
 
-	/**
-	 * @param string $childName
-	 * @return FormInterface|FALSE
-	 */
-	public function remove($childName);
+    /**
+     * @param string $childName
+     * @return FormInterface|FALSE
+     */
+    public function remove($childName);
 
-	/**
-	 * @param string $transform
-	 * @return ContainerInterface
-	 */
-	public function setTransform($transform);
+    /**
+     * @param string $transform
+     * @return ContainerInterface
+     */
+    public function setTransform($transform);
 
-	/**
-	 * @return string
-	 */
-	public function getTransform();
-
+    /**
+     * @return string
+     */
+    public function getTransform();
 }

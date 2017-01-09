@@ -11,35 +11,38 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 /**
  * RowTest
  */
-class RowTest extends AbstractContainerTest {
+class RowTest extends AbstractContainerTest
+{
 
-	/**
-	 * @test
-	 */
-	public function canUseGetColumnsMethod() {
-		/** @var Row $instance */
-		$instance = $this->createInstance();
-		$this->assertEmpty($instance->getColumns());
-	}
+    /**
+     * @test
+     */
+    public function canUseGetColumnsMethod()
+    {
+        /** @var Row $instance */
+        $instance = $this->createInstance();
+        $this->assertEmpty($instance->getColumns());
+    }
 
-	/**
-	 * Override: this Component does not support LLL rewriting
-	 * and must skip this test which it otherwise inherits
-	 *
-	 * @disabledtest
-	 */
-	public function canAutoWriteLabel() {
+    /**
+     * Override: this Component does not support LLL rewriting
+     * and must skip this test which it otherwise inherits
+     *
+     * @disabledtest
+     */
+    public function canAutoWriteLabel()
+    {
 
-	}
+    }
 
-	/**
-	 * Override: this Component does not support LLL rewriting
-	 * and must skip this test which it otherwise inherits
-	 *
-	 * @disabledtest
-	 */
-	public function canUseShorthandLanguageLabel() {
+    /**
+     * Override: this Component does not support LLL rewriting
+     * and must skip this test which it otherwise inherits
+     *
+     * @disabledtest
+     */
+    public function canUseShorthandLanguageLabel()
+    {
 
-	}
-
+    }
 }

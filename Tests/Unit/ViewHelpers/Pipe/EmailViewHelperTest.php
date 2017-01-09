@@ -13,24 +13,26 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 /**
  * EmailViewHelperTest
  */
-class EmailViewHelperTest extends AbstractViewHelperTestCase {
+class EmailViewHelperTest extends AbstractViewHelperTestCase
+{
 
-	/**
-	 * @dataProvider getTestArguments
-	 * @param array $arguments
-	 */
-	public function testWithArguments(array $arguments) {
-		$result = $this->executeViewHelper($arguments, array(), NULL, NULL, 'FakePlugin');
-		$this->assertNull($result);
-	}
+    /**
+     * @dataProvider getTestArguments
+     * @param array $arguments
+     */
+    public function testWithArguments(array $arguments)
+    {
+        $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
+        $this->assertNull($result);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getTestArguments() {
-		return array(
-			array(array()),
-		);
-	}
-
+    /**
+     * @return array
+     */
+    public function getTestArguments()
+    {
+        return array(
+            array(array()),
+        );
+    }
 }

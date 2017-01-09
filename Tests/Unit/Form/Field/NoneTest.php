@@ -11,14 +11,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /**
  * NoneTest
  */
-class NoneTest extends AbstractFieldTest {
+class NoneTest extends AbstractFieldTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'none',
-		'size' => 10
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'none',
+        'size' => 10
+    );
 }
