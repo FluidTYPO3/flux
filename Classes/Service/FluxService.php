@@ -142,29 +142,16 @@ class FluxService implements SingletonInterface
      */
     public function sortObjectsByProperty(array $objects, $sortBy, $sortDirection = 'ASC')
     {
-        $sorted = [];
-        $sort = [];
-        foreach ($objects as $index => $object) {
-            $sortValue = ObjectAccess::getPropertyPath($object, $sortBy);
-            $sort[$index] = $sortValue;
-        }
-        if ('ASC' === strtoupper($sortDirection)) {
-            asort($sort);
-        } else {
-            arsort($sort);
-        }
-        $hasStringIndex = false;
-        foreach ($sort as $index => $value) {
-            $sorted[$index] = $objects[$index];
-            if (true === is_string($index)) {
-                $hasStringIndex = true;
+        $ascending = 'ASC' === strtoupper($sortDirection);
+        uasort($objects, function ($a, $b) use ($sortBy, $ascending) {
+            $a = ObjectAccess::getProperty($a, $sortBy);
+            $b = ObjectAccess::getProperty($b, $sortBy);
+            if ($a === $b) {
+                return 0;
             }
-        }
-        if (false === $hasStringIndex) {
-            // reset out-of-sequence indices if provided indices contain no strings
-            $sorted = array_values($sorted);
-        }
-        return $sorted;
+            return $a < $b ? ($ascending ? -1 : 1) : ($ascending ? 1 : -1);
+        });
+        return $objects;
     }
 
     /**
@@ -178,16 +165,13 @@ class FluxService implements SingletonInterface
         if (isset($cache[$viewContextHash])) {
             return $cache[$viewContextHash];
         }
-        $vendorName = $viewContext->getVendorName();
         $extensionKey = $viewContext->getExtensionKey();
         $qualifiedExtensionName = $viewContext->getExtensionName();
-        $controllerName = $viewContext->getControllerName();
         $variables = $viewContext->getVariables();
         if (null === $qualifiedExtensionName || false === ExtensionManagementUtility::isLoaded($extensionKey)) {
             // Note here: a default value of the argument would not be adequate; outside callers could still pass NULL.
             $qualifiedExtensionName = 'Flux';
         }
-        $extensionName = ExtensionNamingUtility::getExtensionName($qualifiedExtensionName);
         /** @var $context ControllerContext */
         $context = $this->objectManager->get(ControllerContext::class);
         $request = $viewContext->getRequest();
@@ -231,9 +215,7 @@ class FluxService implements SingletonInterface
             return null;
         }
         $section = $viewContext->getSectionName();
-        $variables = $viewContext->getVariables();
         $extensionName = $viewContext->getExtensionName();
-        $variableCheck = json_encode($variables);
         $cacheKey = $viewContext->getHash();
         if (false === isset($cache[$cacheKey])) {
             try {
