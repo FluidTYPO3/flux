@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 /**
  * OptionViewHelperTest
  */
-class OptionViewHelperTest extends AbstractFormViewHelperTestCase {
+class OptionViewHelperTest extends AbstractFormViewHelperTestCase
+{
 
 }

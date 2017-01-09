@@ -13,25 +13,26 @@ use TYPO3\CMS\Backend\Form\FormEngine;
 /**
  * HtmlOutputTest
  */
-class HtmlOutputTest extends AbstractUserFunctionTest {
+class HtmlOutputTest extends AbstractUserFunctionTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $parameters = array(
-		'parameters' => array()
-	);
+    /**
+     * @var array
+     */
+    protected $parameters = array(
+        'parameters' => array()
+    );
 
-	/**
-	 * @return array
-	 */
-	protected function getParameters() {
-		$self = $this;
-		$parameters = $this->parameters;
-		$parameters['parameters']['closure'] = function($params) use ($self) {
-			return 'I am a closure: ' . var_export($params, TRUE);
-		};
-		return $parameters;
-	}
-
+    /**
+     * @return array
+     */
+    protected function getParameters()
+    {
+        $self = $this;
+        $parameters = $this->parameters;
+        $parameters['parameters']['closure'] = function ($params) use ($self) {
+            return 'I am a closure: ' . var_export($params, true);
+        };
+        return $parameters;
+    }
 }

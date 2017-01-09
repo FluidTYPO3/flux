@@ -11,7 +11,11 @@ trim_trailing_whitespace = true
 end_of_line = lf
 insert_final_newline = true
 
-[*.{php,html,js,css}]
+[*.{php}]
+indent_size = 4
+indent_style = space
+
+[*.{html,js,css}]
 indent_size = 4
 indent_style = tab
 

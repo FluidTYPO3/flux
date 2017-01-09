@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase
 /**
  * CheckboxViewHelperTest
  */
-class CheckboxViewHelperTest extends AbstractFieldViewHelperTestCase {
+class CheckboxViewHelperTest extends AbstractFieldViewHelperTestCase
+{
 
 }

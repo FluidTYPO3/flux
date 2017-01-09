@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 /**
  * GroupViewHelperTest
  */
-class GroupViewHelperTest extends AbstractFormViewHelperTestCase {
+class GroupViewHelperTest extends AbstractFormViewHelperTestCase
+{
 
 }

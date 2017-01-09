@@ -13,14 +13,15 @@ use FluidTYPO3\Flux\Form\AbstractRelationFormField;
 /**
  * Relation
  */
-class Relation extends AbstractRelationFormField {
+class Relation extends AbstractRelationFormField
+{
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = $this->prepareConfiguration('select');
-		return $configuration;
-	}
-
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = $this->prepareConfiguration('select');
+        return $configuration;
+    }
 }

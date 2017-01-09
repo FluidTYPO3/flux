@@ -18,48 +18,58 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 /**
  * Fetches a single variable from the template variables
  */
-class VariableViewHelper extends AbstractViewHelper implements CompilableInterface {
+class VariableViewHelper extends AbstractViewHelper implements CompilableInterface
+{
 
-	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Name (dotted path supported) of template variable to get', TRUE);
-	}
+    public function initializeArguments()
+    {
+        $this->registerArgument('name', 'string', 'Name (dotted path supported) of template variable to get', true);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function render() {
-		return static::renderStatic($this->arguments, $this->renderChildrenClosure, $this->renderingContext);
-	}
+    /**
+     * @return string
+     */
+    public function render()
+    {
+        return static::renderStatic($this->arguments, $this->renderChildrenClosure, $this->renderingContext);
+    }
 
-	/**
-	 * @param array $arguments
-	 * @param \Closure $renderChildrenClosure
-	 * @param RenderingContextInterface $renderingContext
-	 * @return mixed
-	 */
-	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-		return ObjectAccess::getPropertyPath($renderingContext->getTemplateVariableContainer()->getAll(), $arguments['name']);
-	}
+    /**
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param RenderingContextInterface $renderingContext
+     * @return mixed
+     */
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ) {
+        return ObjectAccess::getPropertyPath(
+            $renderingContext->getTemplateVariableContainer()->getAll(),
+            $arguments['name']
+        );
+    }
 
-	/**
-	 * @param string $argumentsVariableName
-	 * @param string $renderChildrenClosureVariableName
-	 * @param string $initializationPhpCode
-	 * @param AbstractNode $syntaxTreeNode
-	 * @param TemplateCompiler $templateCompiler
-	 * @return string
-	 */
-	public function compile(
-			$argumentsVariableName,
-			$renderChildrenClosureVariableName,
-			&$initializationPhpCode,
-			AbstractNode $syntaxTreeNode,
-			TemplateCompiler $templateCompiler) {
-		return sprintf(
-			'\\TYPO3\\CMS\\Extbase\\Reflection\\ObjectAccess::getPropertyPath(' .
-			'$renderingContext->getTemplateVariableContainer()->getAll(), %s[\'name\'])',
-			$argumentsVariableName
-		);
-	}
-
+    /**
+     * @param string $argumentsVariableName
+     * @param string $renderChildrenClosureVariableName
+     * @param string $initializationPhpCode
+     * @param AbstractNode $syntaxTreeNode
+     * @param TemplateCompiler $templateCompiler
+     * @return string
+     */
+    public function compile(
+        $argumentsVariableName,
+        $renderChildrenClosureVariableName,
+        &$initializationPhpCode,
+        AbstractNode $syntaxTreeNode,
+        TemplateCompiler $templateCompiler
+    ) {
+        return sprintf(
+            '%s::getPropertyPath($renderingContext->getTemplateVariableContainer()->getAll(), %s[\'name\'])',
+            ObjectAccess::class,
+            $argumentsVariableName
+        );
+    }
 }

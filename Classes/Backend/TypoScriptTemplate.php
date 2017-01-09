@@ -15,23 +15,24 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * TypoScriptTemplate
  */
-class TypoScriptTemplate {
+class TypoScriptTemplate
+{
 
-	/**
-	 * Includes static template from extensions
-	 *
-	 * @param array $params
-	 * @param TemplateService $pObj
-	 * @return void
-	 */
-	public function preprocessIncludeStaticTypoScriptSources(array &$params, TemplateService $pObj) {
-		unset($pObj);
-		if (TRUE === isset($params['row']['root']) && TRUE === (boolean) $params['row']['root']) {
-			$existingTemplates = GeneralUtility::trimExplode(',', $params['row']['include_static_file']);
-			$globalStaticTemplates = Core::getStaticTypoScript();
-			$staticTemplates = array_merge($globalStaticTemplates, $existingTemplates);
-			$params['row']['include_static_file'] = implode(',', array_unique($staticTemplates));
-		}
-	}
-
+    /**
+     * Includes static template from extensions
+     *
+     * @param array $params
+     * @param TemplateService $pObj
+     * @return void
+     */
+    public function preprocessIncludeStaticTypoScriptSources(array &$params, TemplateService $pObj)
+    {
+        unset($pObj);
+        if (true === isset($params['row']['root']) && true === (boolean) $params['row']['root']) {
+            $existingTemplates = GeneralUtility::trimExplode(',', $params['row']['include_static_file']);
+            $globalStaticTemplates = Core::getStaticTypoScript();
+            $staticTemplates = array_merge($globalStaticTemplates, $existingTemplates);
+            $params['row']['include_static_file'] = implode(',', array_unique($staticTemplates));
+        }
+    }
 }

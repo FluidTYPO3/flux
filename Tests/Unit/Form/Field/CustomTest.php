@@ -11,34 +11,35 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 /**
  * CustomTest
  */
-class CustomTest extends AbstractFieldTest {
+class CustomTest extends AbstractFieldTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'arguments' => array(
-			'foo' => 'bar'
-		)
-	);
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'arguments' => array(
+            'foo' => 'bar'
+        )
+    );
 
-	/**
-	 * @test
-	 */
-	public function canUseClosure() {
-		$self = $this;
-		$arguments = array(
-			'closure' => function($parameters) use ($self) {
-				return 'Hello world';
-			}
-		);
-		$instance = $this->canChainAllChainableSetters($arguments);
-		$closure = $instance->getClosure();
-		$this->assertSame($arguments['closure'], $closure);
-		$output = $closure($arguments);
-		$this->assertNotEmpty($output);
-	}
-
+    /**
+     * @test
+     */
+    public function canUseClosure()
+    {
+        $self = $this;
+        $arguments = array(
+            'closure' => function ($parameters) use ($self) {
+                return 'Hello world';
+            }
+        );
+        $instance = $this->canChainAllChainableSetters($arguments);
+        $closure = $instance->getClosure();
+        $this->assertSame($arguments['closure'], $closure);
+        $output = $closure($arguments);
+        $this->assertNotEmpty($output);
+    }
 }

@@ -13,29 +13,30 @@ use FluidTYPO3\Flux\Form\Container\Section;
 /**
  * SectionTest
  */
-class SectionTest extends AbstractContainerTest {
+class SectionTest extends AbstractContainerTest
+{
 
-	/**
-	 * @test
-	 */
-	public function canCreateFromDefinitionWithObjects() {
-		$definition = array(
-			'name' => 'test',
-			'label' => 'Test section',
-			'objects' => array(
-				'object1' => array(
-					'label' => 'Test object',
-					'fields' => array(
-						'foo' => array(
-							'type' => 'Input',
-							'label' => 'Foo input'
-						)
-					)
-				)
-			)
-		);
-		$section = Section::create($definition);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Section', $section);
-	}
-
+    /**
+     * @test
+     */
+    public function canCreateFromDefinitionWithObjects()
+    {
+        $definition = array(
+            'name' => 'test',
+            'label' => 'Test section',
+            'objects' => array(
+                'object1' => array(
+                    'label' => 'Test object',
+                    'fields' => array(
+                        'foo' => array(
+                            'type' => 'Input',
+                            'label' => 'Foo input'
+                        )
+                    )
+                )
+            )
+        );
+        $section = Section::create($definition);
+        $this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Section', $section);
+    }
 }

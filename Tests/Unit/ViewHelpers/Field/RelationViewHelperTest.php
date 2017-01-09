@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase
 /**
  * RelationViewHelperTest
  */
-class RelationViewHelperTest extends AbstractFieldViewHelperTestCase {
+class RelationViewHelperTest extends AbstractFieldViewHelperTestCase
+{
 
 }

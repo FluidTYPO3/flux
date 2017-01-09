@@ -13,16 +13,17 @@ use TYPO3\CMS\Backend\Form\FormEngine;
 /**
  * Renders HTML stored in a Fluid FlexForm HTML field
  */
-class HtmlOutput {
+class HtmlOutput
+{
 
-	/**
-	 * @param array $parameters
-	 * @param FormEngine $pObj
-	 * @return mixed
-	 */
-	public function renderField(array &$parameters, &$pObj) {
-		unset($pObj);
-		return trim($parameters['parameters']['closure']($parameters));
-	}
-
+    /**
+     * @param array $parameters
+     * @param FormEngine $pObj
+     * @return mixed
+     */
+    public function renderField(array &$parameters, &$pObj)
+    {
+        unset($pObj);
+        return trim($parameters['parameters']['closure']($parameters));
+    }
 }

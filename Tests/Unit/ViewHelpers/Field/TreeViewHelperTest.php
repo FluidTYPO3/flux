@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 /**
  * TreeViewHelperTest
  */
-class TreeViewHelperTest extends SelectViewHelperTest {
+class TreeViewHelperTest extends SelectViewHelperTest
+{
 
 }

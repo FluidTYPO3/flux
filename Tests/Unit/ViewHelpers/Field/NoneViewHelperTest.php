@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase
 /**
  * NoneViewHelperTest
  */
-class NoneViewHelperTest extends AbstractFieldViewHelperTestCase {
+class NoneViewHelperTest extends AbstractFieldViewHelperTestCase
+{
 
 }

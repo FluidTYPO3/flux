@@ -11,19 +11,19 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 /**
  * ListWizardTest
  */
-class ListWizardTest extends AbstractWizardTest {
+class ListWizardTest extends AbstractWizardTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'hideParent' => FALSE,
-		'table' => 'pages',
-		'height' => 600,
-		'width' => 600,
-		'storagePageUid' => 1
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'hideParent' => false,
+        'table' => 'pages',
+        'height' => 600,
+        'width' => 600,
+        'storagePageUid' => 1
+    );
 }

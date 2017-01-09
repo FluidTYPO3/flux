@@ -14,14 +14,15 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 /**
  * Flex
  */
-class Flex extends AbstractFormField implements FieldInterface {
+class Flex extends AbstractFormField implements FieldInterface
+{
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration() {
-		$configuration = $this->prepareConfiguration('flex');
-		return $configuration;
-	}
-
+    /**
+     * @return array
+     */
+    public function buildConfiguration()
+    {
+        $configuration = $this->prepareConfiguration('flex');
+        return $configuration;
+    }
 }

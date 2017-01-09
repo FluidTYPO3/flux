@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Wizard\AbstractWizardViewHelperTestCa
 /**
  * LinkViewHelperTest
  */
-class LinkViewHelperTest extends AbstractWizardViewHelperTestCase {
+class LinkViewHelperTest extends AbstractWizardViewHelperTestCase
+{
 
 }

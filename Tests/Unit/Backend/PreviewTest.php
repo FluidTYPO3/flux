@@ -18,97 +18,85 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 /**
  * PreviewTest
  */
-class PreviewTest extends AbstractTestCase {
+class PreviewTest extends AbstractTestCase
+{
 
-	/**
-	 * Setup
-	 */
-	public function setUp() {
-		$configurationManager = $this->getMock('FluidTYPO3\Flux\Configuration\ConfigurationManager');
-		$fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
-		$fluxService->injectConfigurationManager($configurationManager);
-		$GLOBALS['TYPO3_DB'] = $this->getMock('TYPO3\\CMS\\Core\\Database\\DatabaseConnection', array('exec_SELECTgetRows'), array(), '', FALSE);
-		$GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
-		$tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
-		foreach ($tempFiles as $tempFile) {
-			if (TRUE === file_exists($tempFile)) {
-				unlink($tempFile);
-			}
-		}
-	}
+    /**
+     * Setup
+     */
+    public function setUp()
+    {
+        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
+        $fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
+        $fluxService->injectConfigurationManager($configurationManager);
+        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
+        $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
+        $tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
+        foreach ($tempFiles as $tempFile) {
+            if (true === file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+        }
+    }
 
-	/**
-	 * @test
-	 */
-	public function canExecuteRenderer() {
-		$caller = $this->getMock('TYPO3\CMS\Backend\View\PageLayoutView', array('attachAssets'), array(), '', FALSE);
-		$function = 'FluidTYPO3\Flux\Backend\Preview';
-		$result = $this->callUserFunction($function, $caller);
-		$this->assertEmpty($result);
-	}
+    /**
+     * @test
+     */
+    public function canExecuteRenderer()
+    {
+        $caller = $this->getMockBuilder('TYPO3\CMS\Backend\View\PageLayoutView')->setMethods(array('attachAssets'))->disableOriginalConstructor()->getMock();
+        $function = 'FluidTYPO3\Flux\Backend\Preview';
+        $result = $this->callUserFunction($function, $caller);
+        $this->assertEmpty($result);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canGenerateShortcutIconAndLink() {
-		$className = 'FluidTYPO3\Flux\Backend\Preview';
-		$instance = $this->getMock($className, array('getPageTitleAndPidFromContentUid', 'attachAssets'));
-		$instance->expects($this->once())->method('getPageTitleAndPidFromContentUid')->with(1)->will($this->returnValue(array('pid' => 1, 'title' => 'test')));
-		$headerContent = '';
-		$itemContent = '';
-		$drawItem = TRUE;
-		$row = array('uid' => 1, 'CType' => 'shortcut', 'records' => 1);
-		$this->setup();
-		$instance->renderPreview($headerContent, $itemContent, $row, $drawItem);
-		$this->assertContains('href="?id=1#c1"', $itemContent);
-		$this->assertContains('<span class="t3-icon t3-icon-actions-insert t3-icon-insert-reference t3-icon-actions t3-icon-actions-insert-reference"></span>', $itemContent);
-	}
+    /**
+     * @test
+     */
+    public function canGetPageTitleAndPidFromContentUid()
+    {
+        $className = 'FluidTYPO3\Flux\Backend\Preview';
+        $instance = $this->getMockBuilder($className)->getMock();
+        $result = $this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
+        $this->assertEmpty($result);
+    }
 
-	/**
-	 * @test
-	 */
-	public function canGetPageTitleAndPidFromContentUid() {
-		$className = 'FluidTYPO3\Flux\Backend\Preview';
-		$instance = $this->getMock($className);
-		$result = $this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
-		$this->assertEmpty($result);
-	}
+    /**
+     * @test
+     */
+    public function stopsRenderingWhenProviderSaysStop()
+    {
+        $instance = $this->getMockBuilder('FluidTYPO3\Flux\Backend\Preview')->setMethods(array('createShortcutIcon', 'attachAssets'))->getMock();
+        $instance->expects($this->never())->method('createShortcutIcon');
+        $configurationServiceMock = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
+        $providerOne = $this->getMockBuilder('FluidTYPO3\Flux\Provider\ContentProvider')->setMethods(array('getPreview'))->getMock();
+        $providerOne->expects($this->once())->method('getPreview')->will($this->returnValue(array('test', 'test', false)));
+        $providerTwo = $this->getMockBuilder('FluidTYPO3\Flux\Provider\ContentProvider')->setMethods(array('getPreview'))->getMock();
+        $providerTwo->expects($this->never())->method('getPreview');
+        $configurationServiceMock->expects($this->once())->method('resolveConfigurationProviders')->will($this->returnValue(array($providerOne, $providerTwo)));
+        ObjectAccess::setProperty($instance, 'configurationService', $configurationServiceMock, true);
+        $header = 'test';
+        $item = 'test';
+        $record = Records::$contentRecordIsParentAndHasChildren;
+        $draw = true;
+        $this->setup();
+        $instance->renderPreview($header, $item, $record, $draw);
+    }
 
-	/**
-	 * @test
-	 */
-	public function stopsRenderingWhenProviderSaysStop() {
-		$instance = $this->getMock('FluidTYPO3\Flux\Backend\Preview', array('createShortcutIcon', 'attachAssets'));
-		$instance->expects($this->never())->method('createShortcutIcon');
-		$configurationServiceMock = $this->getMock('FluidTYPO3\Flux\Service\FluxService', array('resolveConfigurationProviders'));
-		$providerOne = $this->getMock('FluidTYPO3\Flux\Provider\ContentProvider', array('getPreview'));
-		$providerOne->expects($this->once())->method('getPreview')->will($this->returnValue(array('test', 'test', FALSE)));
-		$providerTwo = $this->getMock('FluidTYPO3\Flux\Provider\ContentProvider', array('getPreview'));
-		$providerTwo->expects($this->never())->method('getPreview');
-		$configurationServiceMock->expects($this->once())->method('resolveConfigurationProviders')->will($this->returnValue(array($providerOne, $providerTwo)));
-		ObjectAccess::setProperty($instance, 'configurationService', $configurationServiceMock, TRUE);
-		$header = 'test';
-		$item = 'test';
-		$record = Records::$contentRecordIsParentAndHasChildren;
-		$draw = TRUE;
-		$this->setup();
-		$instance->renderPreview($header, $item, $record, $draw);
-	}
-
-	/**
-	 * @param string $function
-	 * @param mixed $caller
-	 */
-	protected function callUserFunction($function, $caller) {
-		$drawItem = TRUE;
-		$headerContent = '';
-		$itemContent = '';
-		$row = Records::$contentRecordWithoutParentAndWithoutChildren;
-		$row['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
-		Core::registerConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
-		$instance = $this->getMock($function, array('attachAssets'));
-		$instance->preProcess($caller, $drawItem, $headerContent, $itemContent, $row);
-		Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
-	}
-
+    /**
+     * @param string $function
+     * @param mixed $caller
+     */
+    protected function callUserFunction($function, $caller)
+    {
+        $drawItem = true;
+        $headerContent = '';
+        $itemContent = '';
+        $row = Records::$contentRecordWithoutParentAndWithoutChildren;
+        $row['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+        Core::registerConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
+        $instance = $this->getMockBuilder($function)->setMethods(array('attachAssets'))->getMock();
+        $instance->preProcess($caller, $drawItem, $headerContent, $itemContent, $row);
+        Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
+    }
 }

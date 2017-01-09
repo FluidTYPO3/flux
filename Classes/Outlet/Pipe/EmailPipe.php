@@ -21,161 +21,212 @@ use TYPO3\CMS\Core\Mail\MailMessage;
  * Pipe if you want to - just as an example - create a proper
  * email body text containing a nice representaton of the data.
  */
-class EmailPipe extends AbstractPipe implements PipeInterface {
+class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInterface
+{
 
-	/**
-	 * @var string
-	 */
-	protected $subject;
+    use ViewAwarePipeTrait;
 
-	/**
-	 * @var mixed
-	 */
-	protected $recipient;
+    /**
+     * @var string
+     */
+    protected $subject;
 
-	/**
-	 * @var mixed
-	 */
-	protected $sender;
+    /**
+     * @var mixed
+     */
+    protected $recipient;
 
-	/**
-	 * @var string|NULL
-	 */
-	protected $body = NULL;
+    /**
+     * @var mixed
+     */
+    protected $sender;
 
-	/**
-	 * @return FieldInterface[]
-	 */
-	public function getFormFields() {
-		$fields = parent::getFormFields();
-		$fields['subject'] = Input::create(array('type' => 'Input'))
-			->setName('subject');
-		$fields['body'] = Text::create(array('type' => 'Text'))
-			->setName('body');
-		$fields['receipent'] = Input::create(array('type' => 'Input'))
-			->setName('recipient');
-		$fields['sender'] = Input::create(array('type' => 'Input'))
-			->setName('sender');
-		return $fields;
-	}
+    /**
+     * @var string|null
+     */
+    protected $body = null;
 
-	/**
-	 * @param string $recipient
-	 * @return EmailPipe
-	 */
-	public function setRecipient($recipient) {
-		$this->recipient = $recipient;
-		return $this;
-	}
+    /**
+     * The name of a section that will be rendered using
+     * the view set by the outlet and will be used instead of the body property
+     *
+     * @var string|null
+     */
+    protected $bodySection = null;
 
-	/**
-	 * @return string
-	 */
-	public function getRecipient() {
-		return $this->recipient;
-	}
+    /**
+     * @return FieldInterface[]
+     */
+    public function getFormFields()
+    {
+        $fields = parent::getFormFields();
+        $fields['subject'] = Input::create(['type' => 'Input'])
+            ->setName('subject');
+        $fields['body'] = Text::create(['type' => 'Text'])
+            ->setName('body');
+        $fields['receipent'] = Input::create(['type' => 'Input'])
+            ->setName('recipient');
+        $fields['sender'] = Input::create(['type' => 'Input'])
+            ->setName('sender');
 
-	/**
-	 * @param string $sender
-	 * @return EmailPipe
-	 */
-	public function setSender($sender) {
-		$this->sender = $sender;
-		return $this;
-	}
+        return $fields;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getSender() {
-		return $this->sender;
-	}
+    /**
+     * @param string $recipient
+     * @return EmailPipe
+     */
+    public function setRecipient($recipient)
+    {
+        $this->recipient = $recipient;
 
-	/**
-	 * @param string $subject
-	 * @return EmailPipe
-	 */
-	public function setSubject($subject) {
-		$this->subject = $subject;
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getSubject() {
-		return $this->subject;
-	}
+    /**
+     * @return string
+     */
+    public function getRecipient()
+    {
+        return $this->recipient;
+    }
 
-	/**
-	 * @param string|NULL $body
-	 * @return EmailPipe
-	 */
-	public function setBody($body) {
-		$this->body = $body;
-		return $this;
-	}
+    /**
+     * @param string $sender
+     * @return EmailPipe
+     */
+    public function setSender($sender)
+    {
+        $this->sender = $sender;
 
-	/**
-	 * @return string|NULL
-	 */
-	public function getBody() {
-		return $this->body;
-	}
+        return $this;
+    }
 
-	/**
-	 * @param mixed $data
-	 * @return mixed
-	 * @throws Exception
-	 */
-	public function conduct($data) {
-		try {
-			$message = $this->prepareEmail($data);
-			$this->sendEmail($message);
-		} catch (\Swift_RfcComplianceException $error) {
-			throw new Exception($error->getMessage(), $error->getCode());
-		}
-		return $data;
-	}
+    /**
+     * @return string
+     */
+    public function getSender()
+    {
+        return $this->sender;
+    }
 
-	/**
-	 * @param string $data
-	 * @return MailMessage
-	 */
-	protected function prepareEmail($data) {
-		$body = $this->getBody();
-		$sender = $this->getSender();
-		$recipient = $this->getRecipient();
-		if (TRUE === is_array($recipient)) {
-			list ($recipientAddress, $recipientName) = $recipient;
-		} else {
-			$recipientAddress = $recipient;
-			$recipientName = NULL;
-		}
-		if (TRUE === is_array($sender)) {
-			list ($senderAddress, $senderName) = $sender;
-		} else {
-			$senderAddress = $sender;
-			$senderName = NULL;
-		}
-		$subject = $this->getSubject();
-		if (TRUE === is_string($data)) {
-			$body = $data;
-		}
-		$message = new MailMessage();
-		$message->setSubject($subject);
-		$message->setFrom($senderAddress, $senderName);
-		$message->setTo($recipientAddress, $recipientName);
-		$message->setBody($body);
-		return $message;
-	}
+    /**
+     * @param string $subject
+     * @return EmailPipe
+     */
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
 
-	/**
-	 * @param MailMessage $message
-	 * @return void
-	 */
-	protected function sendEmail(MailMessage $message) {
-		$message->send();
-	}
+        return $this;
+    }
 
+    /**
+     * @return string
+     */
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
+    /**
+     * @param string|null $body
+     * @return EmailPipe
+     */
+    public function setBody($body)
+    {
+        $this->body = $body;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getBodySection()
+    {
+        return $this->bodySection;
+    }
+
+    /**
+     * @param null|string $bodySection
+     */
+    public function setBodySection($bodySection)
+    {
+        $this->bodySection = $bodySection;
+    }
+
+    /**
+     * @param mixed $data
+     * @return mixed
+     * @throws Exception
+     */
+    public function conduct($data)
+    {
+        try {
+            $message = $this->prepareEmail($data);
+            $this->sendEmail($message);
+        } catch (\Swift_RfcComplianceException $error) {
+            throw new Exception($error->getMessage(), $error->getCode());
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param string $data
+     * @return MailMessage
+     */
+    protected function prepareEmail($data)
+    {
+        $body = null;
+        if ($this->getBodySection() !== null) {
+            $body = $this->view->renderStandaloneSection($this->getBodySection(), $data, true);
+        }
+        if (empty($body)) {
+            $body = $this->getBody();
+        }
+        $sender = $this->getSender();
+        $recipient = $this->getRecipient();
+        if (true === is_array($recipient)) {
+            list ($recipientAddress, $recipientName) = $recipient;
+        } else {
+            $recipientAddress = $recipient;
+            $recipientName = null;
+        }
+        if (true === is_array($sender)) {
+            list ($senderAddress, $senderName) = $sender;
+        } else {
+            $senderAddress = $sender;
+            $senderName = null;
+        }
+        $subject = $this->getSubject();
+        if (true === is_string($data)) {
+            $body = $data;
+        }
+        $message = new MailMessage();
+        $message->setSubject($subject);
+        $message->setFrom($senderAddress, $senderName);
+        $message->setTo($recipientAddress, $recipientName);
+        $message->setBody($body);
+
+        return $message;
+    }
+
+    /**
+     * @param MailMessage $message
+     * @return void
+     */
+    protected function sendEmail(MailMessage $message)
+    {
+        $message->send();
+    }
 }

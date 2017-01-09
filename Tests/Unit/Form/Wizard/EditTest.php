@@ -11,18 +11,18 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 /**
  * EditTest
  */
-class EditTest extends AbstractWizardTest {
+class EditTest extends AbstractWizardTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'name' => 'test',
-		'label' => 'Test field',
-		'hideParent' => FALSE,
-		'openOnlyIfSelected' => FALSE,
-		'width' => 400,
-		'height' => 500
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'name' => 'test',
+        'label' => 'Test field',
+        'hideParent' => false,
+        'openOnlyIfSelected' => false,
+        'width' => 400,
+        'height' => 500
+    );
 }

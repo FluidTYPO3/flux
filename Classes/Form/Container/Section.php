@@ -11,52 +11,55 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * Section
  */
-class Section extends AbstractFormContainer implements ContainerInterface {
+class Section extends AbstractFormContainer implements ContainerInterface
+{
 
-	/**
-	 * @param array $settings
-	 * @return \FluidTYPO3\Flux\Form\Container\Section
-	 */
-	public static function create(array $settings = array()) {
-		/** @var ObjectManagerInterface $objectManager */
-		$objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-		/** @var Section */
-		$section = $objectManager->get('FluidTYPO3\Flux\Form\Container\Section');
-		foreach ($settings as $settingName => $settingValue) {
-			$setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
-			if (TRUE === method_exists($section, $setterMethodName)) {
-				ObjectAccess::setProperty($section, $settingName, $settingValue);
-			}
-		}
-		if (TRUE === isset($settings['objects'])) {
-			foreach ($settings['objects'] as $fieldName => $objectSettings) {
-				if (FALSE === isset($objectSettings['name'])) {
-					$objectSettings['name'] = $fieldName;
-				}
-				$object = Object::create($objectSettings);
-				$section->add($object);
-			}
-		}
-		return $section;
-	}
+    /**
+     * @param array $settings
+     * @return Section
+     */
+    public static function create(array $settings = [])
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var Section */
+        $section = $objectManager->get(Section::class);
+        foreach ($settings as $settingName => $settingValue) {
+            $setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
+            if (true === method_exists($section, $setterMethodName)) {
+                ObjectAccess::setProperty($section, $settingName, $settingValue);
+            }
+        }
+        if (true === isset($settings['objects'])) {
+            foreach ($settings['objects'] as $fieldName => $objectSettings) {
+                if (false === isset($objectSettings['name'])) {
+                    $objectSettings['name'] = $fieldName;
+                }
+                $object = Object::create($objectSettings);
+                $section->add($object);
+            }
+        }
+        return $section;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function build() {
-		$structureArray = array(
-			'type' => 'array',
-			'title' => $this->getLabel(),
-			'section' => '1',
-			'el' => $this->buildChildren($this->children)
-		);
-		return $structureArray;
-	}
-
+    /**
+     * @return array
+     */
+    public function build()
+    {
+        $structureArray = [
+            'type' => 'array',
+            'title' => $this->getLabel(),
+            'section' => '1',
+            'el' => $this->buildChildren($this->children)
+        ];
+        return $structureArray;
+    }
 }

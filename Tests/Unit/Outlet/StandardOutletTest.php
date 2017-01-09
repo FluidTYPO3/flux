@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\Outlet\AbstractOutletTestCase;
 /**
  * StandardOutletTest
  */
-class StandardOutletTest extends AbstractOutletTestCase {
+class StandardOutletTest extends AbstractOutletTestCase
+{
 
 }

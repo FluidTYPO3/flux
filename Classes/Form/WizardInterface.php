@@ -11,22 +11,22 @@ namespace FluidTYPO3\Flux\Form;
 /**
  * WizardInterface
  */
-interface WizardInterface extends FormInterface {
+interface WizardInterface extends FormInterface
+{
 
-	/**
-	 * @return array
-	 */
-	public function buildConfiguration();
+    /**
+     * @return array
+     */
+    public function buildConfiguration();
 
-	/**
-	 * @param boolean $hideParent
-	 * @return WizardInterface
-	 */
-	public function setHideParent($hideParent);
+    /**
+     * @param boolean $hideParent
+     * @return WizardInterface
+     */
+    public function setHideParent($hideParent);
 
-	/**
-	 * @return boolean
-	 */
-	public function getHideParent();
-
+    /**
+     * @return boolean
+     */
+    public function getHideParent();
 }

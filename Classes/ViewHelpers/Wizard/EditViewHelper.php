@@ -13,32 +13,43 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Edit
+ *
+ * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
+ * for details about the behaviors that are controlled by arguments.
  */
-class EditViewHelper extends AbstractWizardViewHelper {
+class EditViewHelper extends AbstractWizardViewHelper
+{
 
-	/**
-	 * Initialize arguments
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 580);
-		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 580);
-		$this->registerArgument('openOnlyIfSelected', 'boolean', 'Only open the edit dialog if an item is selected', FALSE, TRUE);
-	}
+    /**
+     * Initialize arguments
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('width', 'integer', 'Width of the popup window', false, 580);
+        $this->registerArgument('height', 'integer', 'height of the popup window', false, 580);
+        $this->registerArgument(
+            'openOnlyIfSelected',
+            'boolean',
+            'Only open the edit dialog if an item is selected',
+            false,
+            true
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return Edit
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		/** @var Edit $component */
-		$component = static::getPreparedComponent('Edit', $renderingContext, $arguments);
-		$component->setOpenOnlyIfSelected($arguments['openOnlyIfSelected']);
-		$component->setHeight($arguments['height']);
-		$component->setWidth($arguments['width']);
-		return $component;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return Edit
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        /** @var Edit $component */
+        $component = static::getPreparedComponent('Edit', $renderingContext, $arguments);
+        $component->setOpenOnlyIfSelected($arguments['openOnlyIfSelected']);
+        $component->setHeight($arguments['height']);
+        $component->setWidth($arguments['width']);
+        return $component;
+    }
 }

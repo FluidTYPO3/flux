@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Wizard\AbstractWizardViewHelperTestCa
 /**
  * ColorPickerViewHelperTest
  */
-class ColorPickerViewHelperTest extends AbstractWizardViewHelperTestCase {
+class ColorPickerViewHelperTest extends AbstractWizardViewHelperTestCase
+{
 
 }

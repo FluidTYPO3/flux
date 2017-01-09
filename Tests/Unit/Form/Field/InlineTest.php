@@ -13,36 +13,36 @@ use FluidTYPO3\Flux\Form;
 /**
  * InlineTest
  */
-class InlineTest extends AbstractFieldTest {
+class InlineTest extends AbstractFieldTest
+{
 
-	/**
-	 * @var array
-	 */
-	protected $chainProperties = array(
-		'collapseAll' => FALSE,
-		'expandSingle' => FALSE,
-		'newRecordLinkAddTitle' => FALSE,
-		'newRecordLinkPosition' => Form::POSITION_TOP,
-		'useCombination' => FALSE,
-		'useSortable' => FALSE,
-		'showPossibleLocalizationRecords' => FALSE,
-		'showRemovedLocalizationRecords' => FALSE,
-		'showAllLocalizationLink' => FALSE,
-		'showSynchronizationLink' => FALSE,
-		'enabledControls' => array(
-			Form::CONTROL_INFO => FALSE,
-			Form::CONTROL_NEW => TRUE,
-			Form::CONTROL_DRAGDROP => TRUE,
-			Form::CONTROL_SORT => TRUE,
-			Form::CONTROL_HIDE => TRUE,
-			Form::CONTROL_DELETE => FALSE,
-			Form::CONTROL_LOCALISE => FALSE,
-		),
-		'foreignTypes' => array(
-			0 => array(
-				'showitem' => 'a,b,c'
-			)
-		)
-	);
-
+    /**
+     * @var array
+     */
+    protected $chainProperties = array(
+        'collapseAll' => false,
+        'expandSingle' => false,
+        'newRecordLinkAddTitle' => false,
+        'newRecordLinkPosition' => Form::POSITION_TOP,
+        'useCombination' => false,
+        'useSortable' => false,
+        'showPossibleLocalizationRecords' => false,
+        'showRemovedLocalizationRecords' => false,
+        'showAllLocalizationLink' => false,
+        'showSynchronizationLink' => false,
+        'enabledControls' => array(
+            Form::CONTROL_INFO => false,
+            Form::CONTROL_NEW => true,
+            Form::CONTROL_DRAGDROP => true,
+            Form::CONTROL_SORT => true,
+            Form::CONTROL_HIDE => true,
+            Form::CONTROL_DELETE => false,
+            Form::CONTROL_LOCALISE => false,
+        ),
+        'foreignTypes' => array(
+            0 => array(
+                'showitem' => 'a,b,c'
+            )
+        )
+    );
 }

@@ -13,27 +13,29 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 /**
  * FlashMessageViewHelperTest
  */
-class FlashMessageViewHelperTest extends AbstractViewHelperTestCase {
+class FlashMessageViewHelperTest extends AbstractViewHelperTestCase
+{
 
-	/**
-	 * @dataProvider getTestArguments
-	 * @param array $arguments
-	 */
-	public function testWithArguments(array $arguments) {
-		$result = $this->executeViewHelper($arguments, array(), NULL, NULL, 'FakePlugin');
-		$this->assertNull($result);
-	}
+    /**
+     * @dataProvider getTestArguments
+     * @param array $arguments
+     */
+    public function testWithArguments(array $arguments)
+    {
+        $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
+        $this->assertNull($result);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getTestArguments() {
-		return array(
-			array(array()),
-			array(array('message' => 'Some message')),
-			array(array('message' => 'Some message', 'title' => 'Some title')),
-			array(array('message' => 'Some message', 'title' => 'Some title', 'storeInSession' => TRUE)),
-		);
-	}
-
+    /**
+     * @return array
+     */
+    public function getTestArguments()
+    {
+        return array(
+            array(array()),
+            array(array('message' => 'Some message')),
+            array(array('message' => 'Some message', 'title' => 'Some title')),
+            array(array('message' => 'Some message', 'title' => 'Some title', 'storeInSession' => true)),
+        );
+    }
 }

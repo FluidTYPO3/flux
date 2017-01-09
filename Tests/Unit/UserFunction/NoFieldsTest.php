@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\UserFunction;
 /**
  * NoFieldsTest
  */
-class NoFieldsTest extends AbstractUserFunctionTest {
+class NoFieldsTest extends AbstractUserFunctionTest
+{
 
 }

@@ -16,36 +16,38 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * TypoScriptTemplateTest
  */
-class TypoScriptTemplateTest extends AbstractTestCase {
+class TypoScriptTemplateTest extends AbstractTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function canPreProcessIncludeStaticTypoScriptResources() {
-		Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
-		$function = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
-		$template = $this->objectManager->get('TYPO3\\CMS\\Core\\TypoScript\\TemplateService');
-		$parameters = array(
-			'row' => Records::$sysTemplateRoot
-		);
-		GeneralUtility::callUserFunction($function, $parameters, $template);
-		$this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);
-	}
+    /**
+     * @test
+     */
+    public function canPreProcessIncludeStaticTypoScriptResources()
+    {
+        Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
+        $function = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
+        $template = $this->objectManager->get('TYPO3\\CMS\\Core\\TypoScript\\TemplateService');
+        $parameters = array(
+            'row' => Records::$sysTemplateRoot
+        );
+        GeneralUtility::callUserFunction($function, $parameters, $template);
+        $this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);
+    }
 
-	/**
-	 * @test
-	 */
-	public function leavesRecordsWhichAreNotRootsUntouched() {
-		Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
-		$function = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
-		$template = $this->objectManager->get('TYPO3\\CMS\\Core\\TypoScript\\TemplateService');
-		$parameters = array(
-			'row' => Records::$sysTemplateRoot
-		);
-		$parameters['row']['root'] = 0;
-		GeneralUtility::callUserFunction($function, $parameters, $template);
-		$this->assertNotContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);
-		$this->assertSame(Records::$sysTemplateRoot['include_static_file'], $parameters['row']['include_static_file']);
-	}
-
+    /**
+     * @test
+     */
+    public function leavesRecordsWhichAreNotRootsUntouched()
+    {
+        Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
+        $function = 'FluidTYPO3\Flux\Backend\TypoScriptTemplate->preprocessIncludeStaticTypoScriptSources';
+        $template = $this->objectManager->get('TYPO3\\CMS\\Core\\TypoScript\\TemplateService');
+        $parameters = array(
+            'row' => Records::$sysTemplateRoot
+        );
+        $parameters['row']['root'] = 0;
+        GeneralUtility::callUserFunction($function, $parameters, $template);
+        $this->assertNotContains(self::FIXTURE_TYPOSCRIPT_DIR, $parameters['row']['include_static_file']);
+        $this->assertSame(Records::$sysTemplateRoot['include_static_file'], $parameters['row']['include_static_file']);
+    }
 }

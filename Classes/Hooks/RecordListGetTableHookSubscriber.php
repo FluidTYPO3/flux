@@ -16,22 +16,23 @@ use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
  * This class removes all elements with colPos=18181 from db list view to avoid trouble with sorting
  * containers into child elements.
  */
-class RecordListGetTableHookSubscriber implements RecordListGetTableHookInterface {
+class RecordListGetTableHookSubscriber implements RecordListGetTableHookInterface
+{
 
-	/**
-	 * modifies the DB list query: no elements with colPos=18181 are shown, these are child elements
-	 *
-	 * @param string $table The current database table
-	 * @param integer $pageId The record's page ID
-	 * @param string $additionalWhereClause An additional WHERE clause
-	 * @param string $selectedFieldsList Comma separated list of selected fields
-	 * @param DatabaseRecordList $parentObject Parent localRecordList object
-	 * @return void
-	 */
-	public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject) {
-		if ('tt_content' === $table) {
-			$additionalWhereClause .= ' AND colPos <> ' . ContentService::COLPOS_FLUXCONTENT;
-		}
-	}
-
+    /**
+     * modifies the DB list query: no elements with colPos=18181 are shown, these are child elements
+     *
+     * @param string $table The current database table
+     * @param integer $pageId The record's page ID
+     * @param string $additionalWhereClause An additional WHERE clause
+     * @param string $selectedFieldsList Comma separated list of selected fields
+     * @param DatabaseRecordList $parentObject Parent localRecordList object
+     * @return void
+     */
+    public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject)
+    {
+        if ('tt_content' === $table) {
+            $additionalWhereClause .= ' AND colPos <> ' . ContentService::COLPOS_FLUXCONTENT;
+        }
+    }
 }

@@ -11,25 +11,27 @@ namespace FluidTYPO3\Flux\UserFunction;
 /**
  * Renders an exception error message in a nice way
  */
-class ErrorReporter {
+class ErrorReporter
+{
 
-	/**
-	 * @param array $parameters
-	 * @param object $pObj Not used
-	 * @return string
-	 */
-	public function renderField(&$parameters, &$pObj) {
-		unset($pObj);
-		$exception = reset($parameters['fieldConf']['config']['arguments']);
-		if ($exception instanceof \Exception) {
-			$code = $exception->getCode();
-			$message = $exception->getMessage();
-			$type = get_class($exception);
-			return 'An ' . $type . ' was encountered while rendering the FlexForm.<br /><br />
+    /**
+     * @param array $parameters
+     * @param object $pObj Not used
+     * @return string
+     */
+    public function renderField(&$parameters, &$pObj)
+    {
+        unset($pObj);
+        $exception = reset($parameters['fieldConf']['config']['arguments']);
+        if ($exception instanceof \Exception) {
+            $code = $exception->getCode();
+            $message = $exception->getMessage();
+            $type = get_class($exception);
+            return 'An ' . $type . ' was encountered while rendering the FlexForm.<br /><br />
 				The error code is ' . $code . ' and the message states: ' . $message;
-		} else {
-			return 'An error was encountered while rendering the FlexForm.<br /><br />
+        } else {
+            return 'An error was encountered while rendering the FlexForm.<br /><br />
 					The error message states: ' . $exception;
-		}
-	}
+        }
+    }
 }

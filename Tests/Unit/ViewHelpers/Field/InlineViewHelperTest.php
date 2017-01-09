@@ -13,22 +13,22 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase
 /**
  * InlineViewHelperTest
  */
-class InlineViewHelperTest extends AbstractFieldViewHelperTestCase {
+class InlineViewHelperTest extends AbstractFieldViewHelperTestCase
+{
 
-	/**
-	 * @var array
-	 */
-	protected $defaultArguments = array(
-		'name' => 'test',
-		'enabledControls' => array(
-			'new' => TRUE,
-			'hide' => TRUE
-		),
-		'foreignTypes' => array(
-			0 => array(
-				'showitem' => 'a,b,c'
-			)
-		)
-	);
-
+    /**
+     * @var array
+     */
+    protected $defaultArguments = array(
+        'name' => 'test',
+        'enabledControls' => array(
+            'new' => true,
+            'hide' => true
+        ),
+        'foreignTypes' => array(
+            0 => array(
+                'showitem' => 'a,b,c'
+            )
+        )
+    );
 }

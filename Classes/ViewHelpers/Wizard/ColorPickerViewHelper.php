@@ -13,39 +13,50 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Color Picker
+ *
+ * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
+ * for details about the behaviors that are controlled by arguments.
  */
-class ColorPickerViewHelper extends AbstractWizardViewHelper {
+class ColorPickerViewHelper extends AbstractWizardViewHelper
+{
 
-	/**
-	 * @var string
-	 */
-	protected $label = 'Choose color';
+    /**
+     * @var string
+     */
+    protected $label = 'Choose color';
 
-	/**
-	 * Initialize arguments
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('dim', 'string', 'Dimensions (WxH, e.g. 20x20) of color picker', FALSE, '20x20');
-		$this->registerArgument('width', 'integer', 'Width of the popup window', FALSE, 450);
-		$this->registerArgument('height', 'integer', 'height of the popup window', FALSE, 720);
-		$this->registerArgument('exampleImg', 'string', 'Example image from which to pick colors', FALSE, 'EXT:flux/Resources/Public/Icons/ColorWheel.png');
-	}
+    /**
+     * Initialize arguments
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('dim', 'string', 'Dimensions (WxH, e.g. 20x20) of color picker', false, '20x20');
+        $this->registerArgument('width', 'integer', 'Width of the popup window', false, 450);
+        $this->registerArgument('height', 'integer', 'height of the popup window', false, 720);
+        $this->registerArgument(
+            'exampleImg',
+            'string',
+            'Example image from which to pick colors',
+            false,
+            'EXT:flux/Resources/Public/Icons/ColorWheel.png'
+        );
+    }
 
-	/**
-	 * @param RenderingContextInterface $renderingContext
-	 * @param array $arguments
-	 * @return ColorPicker
-	 */
-	public static function getComponent(RenderingContextInterface $renderingContext, array $arguments) {
-		/** @var ColorPicker $component */
-		$component = static::getPreparedComponent('ColorPicker', $renderingContext, $arguments);
-		$component->setIcon($arguments['exampleImg']);
-		$component->setDimensions($arguments['dim']);
-		$component->setWidth($arguments['width']);
-		$component->setHeight($arguments['height']);
-		return $component;
-	}
-
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
+     * @return ColorPicker
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    {
+        /** @var ColorPicker $component */
+        $component = static::getPreparedComponent('ColorPicker', $renderingContext, $arguments);
+        $component->setIcon($arguments['exampleImg']);
+        $component->setDimensions($arguments['dim']);
+        $component->setWidth($arguments['width']);
+        $component->setHeight($arguments['height']);
+        return $component;
+    }
 }

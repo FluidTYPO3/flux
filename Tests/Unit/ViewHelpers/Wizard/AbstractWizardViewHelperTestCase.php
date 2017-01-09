@@ -14,19 +14,20 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 /**
  * AbstractWizardViewHelperTestCase
  */
-abstract class AbstractWizardViewHelperTestCase extends AbstractFormViewHelperTestCase {
+abstract class AbstractWizardViewHelperTestCase extends AbstractFormViewHelperTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function createsValidFieldInterfaceComponents() {
-		$instance = $this->buildViewHelperInstance($this->defaultArguments);
-		$instance->render();
-		$component = $instance->getComponent(
-			ObjectAccess::getProperty($instance, 'renderingContext', TRUE),
-			ObjectAccess::getProperty($instance, 'arguments', TRUE)
-		);
-		$this->assertInstanceOf('FluidTYPO3\Flux\Form\WizardInterface', $component);
-	}
-
+    /**
+     * @test
+     */
+    public function createsValidFieldInterfaceComponents()
+    {
+        $instance = $this->buildViewHelperInstance($this->defaultArguments);
+        $instance->render();
+        $component = $instance->getComponent(
+            ObjectAccess::getProperty($instance, 'renderingContext', true),
+            ObjectAccess::getProperty($instance, 'arguments', true)
+        );
+        $this->assertInstanceOf('FluidTYPO3\Flux\Form\WizardInterface', $component);
+    }
 }

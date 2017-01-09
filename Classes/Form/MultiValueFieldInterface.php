@@ -11,82 +11,82 @@ namespace FluidTYPO3\Flux\Form;
 /**
  * MultiValueFieldInterface
  */
-interface MultiValueFieldInterface extends FieldInterface {
+interface MultiValueFieldInterface extends FieldInterface
+{
 
-	/**
-	 * @param integer $size
-	 * @return MultiValueFieldInterface
-	 */
-	public function setSize($size);
+    /**
+     * @param integer $size
+     * @return MultiValueFieldInterface
+     */
+    public function setSize($size);
 
-	/**
-	 * @return integer
-	 */
-	public function getSize();
+    /**
+     * @return integer
+     */
+    public function getSize();
 
-	/**
-	 * @param boolean $multiple
-	 */
-	public function setMultiple($multiple);
+    /**
+     * @param boolean $multiple
+     */
+    public function setMultiple($multiple);
 
-	/**
-	 * @return boolean
-	 */
-	public function getMultiple();
+    /**
+     * @return boolean
+     */
+    public function getMultiple();
 
-	/**
-	 * @param integer $maxItems
-	 * @return MultiValueFieldInterface
-	 */
-	public function setMaxItems($maxItems);
+    /**
+     * @param integer $maxItems
+     * @return MultiValueFieldInterface
+     */
+    public function setMaxItems($maxItems);
 
-	/**
-	 * @return integer
-	 */
-	public function getMaxItems();
+    /**
+     * @return integer
+     */
+    public function getMaxItems();
 
-	/**
-	 * @param integer $minItems
-	 * @return MultiValueFieldInterface
-	 */
-	public function setMinItems($minItems);
+    /**
+     * @param integer $minItems
+     * @return MultiValueFieldInterface
+     */
+    public function setMinItems($minItems);
 
-	/**
-	 * @return integer
-	 */
-	public function getMinItems();
+    /**
+     * @return integer
+     */
+    public function getMinItems();
 
-	/**
-	 * @param string $itemListStyle
-	 * @return MultiValueFieldInterface
-	 */
-	public function setItemListStyle($itemListStyle);
+    /**
+     * @param string $itemListStyle
+     * @return MultiValueFieldInterface
+     */
+    public function setItemListStyle($itemListStyle);
 
-	/**
-	 * @return string
-	 */
-	public function getItemListStyle();
+    /**
+     * @return string
+     */
+    public function getItemListStyle();
 
-	/**
-	 * @param string $selectedListStyle
-	 * @return MultiValueFieldInterface
-	 */
-	public function setSelectedListStyle($selectedListStyle);
+    /**
+     * @param string $selectedListStyle
+     * @return MultiValueFieldInterface
+     */
+    public function setSelectedListStyle($selectedListStyle);
 
-	/**
-	 * @return string
-	 */
-	public function getSelectedListStyle();
+    /**
+     * @return string
+     */
+    public function getSelectedListStyle();
 
-	/**
-	 * @param string $renderMode
-	 * @return MultiValueFieldInterface
-	 */
-	public function setRenderMode($renderMode);
+    /**
+     * @param string $renderMode
+     * @return MultiValueFieldInterface
+     */
+    public function setRenderMode($renderMode);
 
-	/**
-	 * @return string
-	 */
-	public function getRenderMode();
-
+    /**
+     * @return string
+     */
+    public function getRenderMode();
 }

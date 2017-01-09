@@ -16,28 +16,28 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 /**
  * Object
  */
-class Object extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface {
+class Object extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
+{
 
-	/**
-	 * @return array
-	 */
-	public function build() {
-		$label = $this->getLabel();
-		$structureArray = array(
-			'title' => $label,
-			'type' => 'array',
-			'el' => $this->buildChildren($this->children)
-		);
-		// patch: TYPO3 core legacy required for section objects.
-		$structureArray['tx_templavoila'] = array('title' => $structureArray['title']);
-		return $structureArray;
-	}
+    /**
+     * @return array
+     */
+    public function build()
+    {
+        $label = $this->getLabel();
+        $structureArray = [
+            'title' => $label,
+            'type' => 'array',
+            'el' => $this->buildChildren($this->children)
+        ];
+        return $structureArray;
+    }
 
-	/**
-	 * @return FieldInterface[]
-	 */
-	public function getFields() {
-		return (array) iterator_to_array($this->children);
-	}
-
+    /**
+     * @return FieldInterface[]
+     */
+    public function getFields()
+    {
+        return (array) iterator_to_array($this->children);
+    }
 }

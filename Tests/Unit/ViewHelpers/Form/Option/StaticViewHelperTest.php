@@ -11,8 +11,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form\Option;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 
 /**
- * TranslationViewHelperTest
+ * StaticViewHelperTest
  */
-class TranslationViewHelperTest extends AbstractFormViewHelperTestCase {
+class StaticViewHelperTest extends AbstractFormViewHelperTestCase
+{
 
 }

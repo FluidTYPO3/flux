@@ -14,22 +14,24 @@ use FluidTYPO3\Flux\Utility\VersionUtility;
 /**
  * VersionUtilityTest
  */
-class VersionUtilityTest extends AbstractTestCase {
+class VersionUtilityTest extends AbstractTestCase
+{
 
-	/**
-	 * @test
-	 */
-	public function canGetExtensionVersionNumbers() {
-		$version = VersionUtility::assertExtensionVersionIsAtLeastVersion('flux', 6, 0, 0);
-		$this->assertIsBoolean($version);
-	}
+    /**
+     * @test
+     */
+    public function canGetExtensionVersionNumbers()
+    {
+        $version = VersionUtility::assertExtensionVersionIsAtLeastVersion('flux', 6, 0, 0);
+        $this->assertIsBoolean($version);
+    }
 
-	/**
-	 * @test
-	 */
-	public function returnsFalseIfExtensionKeyIsNotLoaded() {
-		$isFalseResponse = VersionUtility::assertExtensionVersionIsAtLeastVersion('void', 1, 0, 0);
-		$this->assertFalse($isFalseResponse);
-	}
-
+    /**
+     * @test
+     */
+    public function returnsFalseIfExtensionKeyIsNotLoaded()
+    {
+        $isFalseResponse = VersionUtility::assertExtensionVersionIsAtLeastVersion('void', 1, 0, 0);
+        $this->assertFalse($isFalseResponse);
+    }
 }

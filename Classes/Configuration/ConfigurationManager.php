@@ -18,48 +18,51 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  * More context-sensitive ConfigurationManager with TS resolve
  * methods optimised for use in the backend.
  */
-class ConfigurationManager extends CoreConfigurationManager implements ConfigurationManagerInterface, SingletonInterface {
+class ConfigurationManager extends CoreConfigurationManager implements ConfigurationManagerInterface, SingletonInterface
+{
 
-	/**
-	 * @var BackendConfigurationManager
-	 */
-	protected $concreteConfigurationManager;
+    /**
+     * @var BackendConfigurationManager
+     */
+    protected $concreteConfigurationManager;
 
-	/**
-	 * @return void
-	 */
-	protected function initializeConcreteConfigurationManager() {
-		if (TRUE === $this->environmentService->isEnvironmentInFrontendMode()) {
-			$this->concreteConfigurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager');
-		} else {
-			$this->concreteConfigurationManager = $this->objectManager->get('FluidTYPO3\Flux\Configuration\BackendConfigurationManager');
-		}
-	}
+    /**
+     * @return void
+     */
+    protected function initializeConcreteConfigurationManager()
+    {
+        if (true === $this->environmentService->isEnvironmentInFrontendMode()) {
+            $this->concreteConfigurationManager = $this->objectManager->get(FrontendConfigurationManager::class);
+        } else {
+            $this->concreteConfigurationManager = $this->objectManager->get(BackendConfigurationManager::class);
+        }
+    }
 
-	/**
-	 * @param integer $currentPageId
-	 * @return void
-	 */
-	public function setCurrentPageUid($currentPageId) {
-		if (TRUE === $this->concreteConfigurationManager instanceof BackendConfigurationManager) {
-			$this->concreteConfigurationManager->setCurrentPageId($currentPageId);
-		}
-	}
+    /**
+     * @param integer $currentPageId
+     * @return void
+     */
+    public function setCurrentPageUid($currentPageId)
+    {
+        if (true === $this->concreteConfigurationManager instanceof BackendConfigurationManager) {
+            $this->concreteConfigurationManager->setCurrentPageId($currentPageId);
+        }
+    }
 
-	/**
-	 * Extended page UID fetch
-	 *
-	 * Uses a range of additional page UID resolve methods to
-	 * find the currently active page UID from URL, active
-	 * record, etc.
-	 *
-	 * @return integer
-	 */
-	public function getCurrentPageId() {
-		if (TRUE === $this->concreteConfigurationManager instanceof BackendConfigurationManager) {
-			return $this->concreteConfigurationManager->getCurrentPageId();
-		}
-		return 0;
-	}
-
+    /**
+     * Extended page UID fetch
+     *
+     * Uses a range of additional page UID resolve methods to
+     * find the currently active page UID from URL, active
+     * record, etc.
+     *
+     * @return integer
+     */
+    public function getCurrentPageId()
+    {
+        if (true === $this->concreteConfigurationManager instanceof BackendConfigurationManager) {
+            return $this->concreteConfigurationManager->getCurrentPageId();
+        }
+        return 0;
+    }
 }

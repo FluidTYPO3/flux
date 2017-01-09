@@ -14,25 +14,37 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 /**
  * Sets an option in the Form instance
  */
-class VariableViewHelper extends AbstractFormViewHelper {
+class VariableViewHelper extends AbstractFormViewHelper
+{
 
-	/**
-	 * Initialize arguments
-	 * @return void
-	 */
-	public function initializeArguments() {
-		$this->registerArgument('name', 'string', 'Name of the option - valid values and their behaviours depend entirely on the consumer that will handle the Form instance', TRUE);
-		$this->registerArgument('value', 'mixed', 'Value of the option', TRUE);
-	}
+    /**
+     * Initialize arguments
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument(
+            'name',
+            'string',
+            'Name of the option - valid values and their behaviours depend entirely on the consumer that will ' .
+            'handle the Form instance',
+            true
+        );
+        $this->registerArgument('value', 'mixed', 'Value of the option', true);
+    }
 
-	/**
-	 * @param array $arguments
-	 * @param \Closure $renderChildrenClosure
-	 * @param RenderingContextInterface $renderingContext
-	 * @return void
-	 */
-	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext) {
-		static::getContainerFromRenderingContext($renderingContext)->setVariable($arguments['name'], $arguments['value']);
-	}
-
+    /**
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param RenderingContextInterface $renderingContext
+     * @return void
+     */
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ) {
+        static::getContainerFromRenderingContext($renderingContext)
+            ->setVariable($arguments['name'], $arguments['value']);
+    }
 }
