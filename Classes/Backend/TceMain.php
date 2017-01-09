@@ -190,24 +190,33 @@ class TceMain
 
             } elseif ('copy' === $command) {
 
-                // Find the newly created copy of the record we received. We do not receive that copy
-                // in this hook at any other time, so we must manually resolve it.
-                $findCopyCondition = sprintf(
-                    't3_origuid = %d AND t3ver_wsid = %d AND pid = %d',
-                    (integer) $resolveUid,
-                    (integer) $GLOBALS['BE_USER']->workspace,
-                    (integer) $record['pid']
-                );
-                $copy = $this->recordService->get($table, '*', $findCopyCondition, '', 'tstamp DESC', '1');
-                $copy = reset($copy);
+                // When we are in an active workspace we need to process versioned record / versioned placeholder rather
+                // than the record itself. The following code substitutes $record in this case.
+                if ($GLOBALS['BE_USER']->workspace) {
+                    // Find the newly created copy of the record we received. We do not receive that copy
+                    // in this hook at any other time, so we must manually resolve it.
+                    $findCopyCondition = sprintf(
+                        't3_origuid = %d AND t3ver_wsid = %d AND pid = %d',
+                        (integer) $resolveUid,
+                        (integer) $GLOBALS['BE_USER']->workspace,
+                        (integer) $record['pid']
+                    );
+                    $copy = $this->recordService->get($table, '*', $findCopyCondition, '', 'tstamp DESC', '1');
+                    $copy = reset($copy);
 
-                // We need to know if the record has a move placeholder, just as above.
-                $copyMovePlaceholder = BackendUtility::getMovePlaceholder($table, $copy['uid']);
-                if ($GLOBALS['BE_USER']->workspace && $copyMovePlaceholder) {
-                    // When a placeholder exists, the original UID is only available as a value in the placeholder.
-                    $record = $copyMovePlaceholder;
-                } else {
-                    $record = $copy;
+                    // Record is versioned in current workspace; attempt to detect placeholder or use versioned record.
+                    // If no version is found here, the operation is done on the input $record (which may itself be a
+                    // versioned record / placeholder).
+                    if ($copy) {
+                        // We need to know if the record has a move placeholder, just as above.
+                        $copyMovePlaceholder = BackendUtility::getMovePlaceholder($table, $copy['uid']);
+                        if ($copyMovePlaceholder) {
+                            // When a placeholder exists, the original UID is only available as a value in the placeholder.
+                            $record = $copyMovePlaceholder;
+                        } else {
+                            $record = $copy;
+                        }
+                    }
                 }
 
                 // We then need to move the copy of our original, or the placeholder of our copy.
