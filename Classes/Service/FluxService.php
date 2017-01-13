@@ -144,8 +144,8 @@ class FluxService implements SingletonInterface
     {
         $ascending = 'ASC' === strtoupper($sortDirection);
         uasort($objects, function ($a, $b) use ($sortBy, $ascending) {
-            $a = ObjectAccess::getProperty($a, $sortBy);
-            $b = ObjectAccess::getProperty($b, $sortBy);
+            $a = ObjectAccess::getPropertyPath($a, $sortBy);
+            $b = ObjectAccess::getPropertyPath($b, $sortBy);
             if ($a === $b) {
                 return 0;
             }
