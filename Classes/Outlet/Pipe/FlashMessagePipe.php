@@ -53,10 +53,10 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface
     {
         $queue = new FlashMessageQueue(self::FLASHMESSAGE_QUEUE);
         $flashMessage = new FlashMessage(
-            $this->getMessage(),
-            $this->getTitle(),
-            $this->getSeverity(),
-            $this->getStoreInSession()
+            (string) $this->getMessage(),
+            (string) $this->getTitle(),
+            (integer) $this->getSeverity(),
+            (boolean) $this->getStoreInSession()
         );
         $queue->enqueue($flashMessage);
         return $data;
