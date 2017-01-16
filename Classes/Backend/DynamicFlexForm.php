@@ -78,6 +78,9 @@ class DynamicFlexForm
         $this->recordService = $recordService;
     }
 
+    /**
+     * DynamicFlexForm constructor.
+     */
     public function __construct()
     {
         $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
