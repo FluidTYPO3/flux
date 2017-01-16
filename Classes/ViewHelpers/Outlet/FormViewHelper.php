@@ -43,8 +43,6 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
     protected $record;
 
     /**
-     * Initialize.
-     *
      * NB: We use this method because 7.6 LTS FormViewHelper uses render() method
      * arguments which cannot be overridden by other means while preserving
      * compatibility between 7.6 and 8.x branches. Once 8.x LTS is the only
@@ -69,7 +67,7 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
             $this->arguments['action'] = 'outlet';
         }
 
-        return parent::initialize();
+        parent::initialize();
     }
 
     /**
