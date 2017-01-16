@@ -79,6 +79,14 @@ class ViewContext
     }
 
     /**
+     * To string.
+     */
+    public function __toString():string
+    {
+        return sprintf('EXT:%s, %s (%s)', $this->getExtensionKey(), $this->templatePathAndFilename, $this->getHash());
+    }
+
+    /**
      * @return string
      */
     public function getExtensionKey()
