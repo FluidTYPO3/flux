@@ -8,9 +8,6 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * RelationFieldInterface
- */
 interface RelationFieldInterface extends MultiValueFieldInterface
 {
 
@@ -214,7 +211,7 @@ interface RelationFieldInterface extends MultiValueFieldInterface
 
     /**
      * @param boolean|string $emptyOption
-     * @return Select
+     * @return RelationFieldInterface
      */
     public function setEmptyOption($emptyOption);
 
