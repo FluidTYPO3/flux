@@ -191,7 +191,7 @@ class DynamicFlexForm
     public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, &$row, $table, $fieldName)
     {
         // @codingStandardsIgnoreEnd This comment ends CGL exemption to ensure only the signature is exempted!
-
+        $cache = $this->getCache();
         if (empty($fieldName) === true) {
             // Cast NULL if an empty but not-NULL field name was passed. This has significance to the Flux internals in
             // respect to which ConfigurationProvider(s) are returned.
@@ -214,7 +214,7 @@ class DynamicFlexForm
             // configuration provided. Whenever we are then unable to fetch a record, we can at least attempt to
             // locate a default data source in previously cached content. NB: we enforce a VERY high cache lifetime
             // and continually refresh it every time it is possible to render a new DS that can serve as default.
-            $dataStructArray = (array) $this->getCache()->get($defaultDataSourceCacheIdentifier);
+            $dataStructArray = (array) $cache->get($defaultDataSourceCacheIdentifier);
         } else {
             if (false === is_array($dataStructArray)) {
                 $dataStructArray = [];
@@ -227,7 +227,7 @@ class DynamicFlexForm
                 }
                 $formId = $form->getId();
                 if ($form->getOption(Form::OPTION_STATIC)) {
-                    $cache = $this->getCache();
+                    
                     $cacheKey = $this->calculateFormCacheKey($formId);
                     if ($cache->has($cacheKey)) {
                         $dataStructArray = $cache->get($cacheKey);
@@ -250,7 +250,7 @@ class DynamicFlexForm
                 $dataStructArray = ['ROOT' => ['el' => []]];
             }
             $evaluationParameters = [];
-            $this->getCache()->set(
+            $cache->set(
                 $defaultDataSourceCacheIdentifier,
                 $this->recursivelyEvaluateClosures($dataStructArray, $evaluationParameters),
                 [],
