@@ -276,6 +276,7 @@ class DynamicFlexForm
      * rendering in flex form containers.
      *
      * @param array $dataStructure
+     * @param null $parentIndex
      * @return array
      */
     protected function patchTceformsWrapper(array $dataStructure, $parentIndex = null)
