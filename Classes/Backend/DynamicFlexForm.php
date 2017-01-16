@@ -78,9 +78,6 @@ class DynamicFlexForm
         $this->recordService = $recordService;
     }
 
-    /**
-     * CONSTRUCTOR
-     */
     public function __construct()
     {
         $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
@@ -90,7 +87,7 @@ class DynamicFlexForm
     }
 
     /**
-     * Method to generate a custom idenfifier for a Flux-based DS.
+     * Method to generate a custom identifier for a Flux-based DS.
      * The custom identifier must include a record ID, which we
      * can then use to restore the record.
      *
@@ -243,11 +240,11 @@ class DynamicFlexForm
                     // to process any other DS and cache this DS as final result:
                     if (isset(static::$generatedDataSources[$formId])) {
                         // DS has already been generated, skip processing now and refer to existing DS.
-                        return $identifier;
+                        return;
                     }
                     $provider->postProcessDataStructure($row, $dataStructArray, $conf);
                     $cache->set($cacheKey, $dataStructArray);
-                    return $dataStructArray;
+                    return;
                 } else {
                     $provider->postProcessDataStructure($row, $dataStructArray, $conf);
                 }
@@ -323,7 +320,10 @@ class DynamicFlexForm
      */
     protected function getCache()
     {
-        return GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
+        if ($this->cache !== null) {
+            return $this->cache;
+        }
+        return $this->cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
     }
 
     /**
