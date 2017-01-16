@@ -283,7 +283,7 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * @param array $row
-     * @param RequestInterface $request
+     * @param RequestInterface|null $request
      * @return ViewContext
      */
     public function getViewContext(array $row, RequestInterface $request = null)
