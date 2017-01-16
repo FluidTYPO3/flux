@@ -8,6 +8,9 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+/**
+ * Public contract for relation-capable fields
+ */
 interface RelationFieldInterface extends MultiValueFieldInterface
 {
 
