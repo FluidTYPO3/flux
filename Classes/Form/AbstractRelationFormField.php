@@ -161,6 +161,11 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
     protected $showThumbnails = false;
 
     /**
+     * @var string
+     */
+    protected $oppositeField;
+
+    /**
      * @param string $type
      * @return array
      */
