@@ -47,11 +47,6 @@ class DynamicFlexForm
     protected $recordService;
 
     /**
-     * @var VariableFrontend
-     */
-    protected $cache;
-
-    /**
      * @param ObjectManagerInterface $objectManager
      * @return void
      */
@@ -86,7 +81,6 @@ class DynamicFlexForm
         $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
         $this->injectConfigurationService($this->objectManager->get(FluxService::class));
         $this->injectRecordService($this->objectManager->get(WorkspacesAwareRecordService::class));
-        $this->cache = $this->objectManager->get(CacheManager::class, $this->objectManager)->getCache('flux');
     }
 
     /**
@@ -220,7 +214,7 @@ class DynamicFlexForm
             // configuration provided. Whenever we are then unable to fetch a record, we can at least attempt to
             // locate a default data source in previously cached content. NB: we enforce a VERY high cache lifetime
             // and continually refresh it every time it is possible to render a new DS that can serve as default.
-            $dataStructArray = (array) $this->cache->get($defaultDataSourceCacheIdentifier);
+            $dataStructArray = (array) $this->getCache()->get($defaultDataSourceCacheIdentifier);
         } else {
             if (false === is_array($dataStructArray)) {
                 $dataStructArray = [];
@@ -256,7 +250,7 @@ class DynamicFlexForm
                 $dataStructArray = ['ROOT' => ['el' => []]];
             }
             $evaluationParameters = [];
-            $this->cache->set(
+            $this->getCache()->set(
                 $defaultDataSourceCacheIdentifier,
                 $this->recursivelyEvaluateClosures($dataStructArray, $evaluationParameters),
                 [],
@@ -323,10 +317,11 @@ class DynamicFlexForm
      */
     protected function getCache()
     {
-        if ($this->cache !== null) {
-            return $this->cache;
+        static $cache;
+        if (!$cache) {
+            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
         }
-        return $this->cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
+        return $cache;
     }
 
     /**
@@ -336,6 +331,6 @@ class DynamicFlexForm
      */
     private function calculateFormCacheKey($formId): string
     {
-        return 'datastructure-'.$formId;
+        return 'datastructure-' . $formId;
     }
 }
