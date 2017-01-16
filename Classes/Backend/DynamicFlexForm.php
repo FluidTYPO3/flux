@@ -122,8 +122,9 @@ class DynamicFlexForm
             if ($form->getOption(Form::OPTION_STATIC)) {
                 $identifier['staticIdentity'] = $formId;
                 $cache = $this->getCache();
-                if ($cache->has('datatructure-' . $formId)) {
-                    static::$generatedDataSources[$formId] = $cache->get('datastructure-' . $formId);
+                $cacheKey = $this->calculateFormCacheKey($formId);
+                if ($cache->has($cacheKey)) {
+                    static::$generatedDataSources[$formId] = $cache->get($cacheKey);
                 } else {
                     // This provider has requested static DS caching; stop attempting
                     // to process any other DS and cache this DS as final result:
@@ -132,7 +133,7 @@ class DynamicFlexForm
                         return $identifier;
                     }
                     $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
-                    $cache->set('datastructure-' . $formId, $dataStructArray);
+                    $cache->set($cacheKey, $dataStructArray);
                     static::$generatedDataSources[$formId] = $dataStructArray;
                 }
                 return $identifier;
@@ -233,8 +234,9 @@ class DynamicFlexForm
                 $formId = $form->getId();
                 if ($form->getOption(Form::OPTION_STATIC)) {
                     $cache = $this->getCache();
-                    if ($cache->has('datatructure-' . $formId)) {
-                        $dataStructArray = $cache->get('datastructure-' . $formId);
+                    $cacheKey = $this->calculateFormCacheKey($formId);
+                    if ($cache->has($cacheKey)) {
+                        $dataStructArray = $cache->get($cacheKey);
                         return;
                     }
                     // This provider has requested static DS caching; stop attempting
@@ -244,7 +246,7 @@ class DynamicFlexForm
                         return $identifier;
                     }
                     $provider->postProcessDataStructure($row, $dataStructArray, $conf);
-                    $cache->set('datastructure-' . $formId, $dataStructArray);
+                    $cache->set($cacheKey, $dataStructArray);
                     return $dataStructArray;
                 } else {
                     $provider->postProcessDataStructure($row, $dataStructArray, $conf);
@@ -321,5 +323,15 @@ class DynamicFlexForm
     protected function getCache()
     {
         return GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
+    }
+
+    /**
+     * @param string $formId
+     *
+     * @return string
+     */
+    private function calculateFormCacheKey($formId): string
+    {
+        return 'datastructure-'.$formId;
     }
 }
