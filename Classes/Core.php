@@ -364,13 +364,9 @@ class Core
      *
      * @param string $providerExtensionName Vendor.ExtensionName format of extension scope of the template file
      * @param string $templateFilename Absolute path to template file containing Flux definition, EXT:... allowed
-     * @param array $variables Optional array of variables which are assigned when rendering the Flux definition
      */
-    public static function registerTemplateAsContentType(
-        $providerExtensionName,
-        $templateFilename
-    ) {
-
+    public static function registerTemplateAsContentType($providerExtensionName, $templateFilename)
+    {
         if (strpos($templateFilename, '/') !== 0) {
             $templateFilename = GeneralUtility::getFileAbsFileName($templateFilename);
         }

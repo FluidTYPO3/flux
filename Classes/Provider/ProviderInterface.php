@@ -311,6 +311,7 @@ interface ProviderInterface
      * of the configuration array manipulated to the Provider's needs.
      *
      * @param array $row The record being edited/created
+     * @param array $configuration
      * @return array The large FormEngine configuration array - see FormEngine documentation!
      */
     public function processTableConfiguration(array $row, array $configuration);
