@@ -25,3 +25,9 @@
 .t3-page-lang-column .flux-grid td {
 	min-width: 100% !important;
 }
+.flux-grid-column > .t3-grid-cell {
+	margin-left: 10px;
+}
+.flux-grid-column:last-child > .t3-grid-cell {
+	margin-right: 10px;
+}

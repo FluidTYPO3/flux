@@ -62,17 +62,20 @@ class PreviewView
 					    </table>
                     </div>
 					',
-        'gridColumn' => '<td colspan="%s" rowspan="%s" style="%s">
-                            <div data-colpos="%s" class="t3js-sortable t3js-sortable-lang t3js-sortable-lang-%s
-                                t3-page-ce-wrapper ui-sortable" data-language-uid="%s">
-                                <div class="t3-page-ce t3js-page-ce" data-page="%s">
-                                    <div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s"
-                                        style="display: block;">
-                                        %s %s %s
+        'gridColumn' => '<td class="flux-grid-column" colspan="%s" rowspan="%s" style="%s">
+                            <div class="t3-grid-cell">
+                                <div class="t3-page-column-header"><div class="t3-page-column-header-label">%s</div></div>
+                                <div data-colpos="%s" class="t3js-sortable t3js-sortable-lang t3js-sortable-lang-%s
+                                    t3-page-ce-wrapper ui-sortable" data-language-uid="%s">
+                                    <div class="t3-page-ce t3js-page-ce" data-page="%s">
+                                        <div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s"
+                                            style="display: block;">
+                                            %s %s %s
+                                        </div>
+                                        <div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available" ></div>
                                     </div>
-                                    <div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available" ></div>
+                                    %s
                                 </div>
-                                %s
                             </div>
                         </td>',
         'record' => '<div class="t3-page-ce%s %s t3js-page-ce t3js-page-ce-sortable" id="element-tt_content-%s"
@@ -744,6 +747,7 @@ class PreviewView
             $column->getColspan(),
             $column->getRowspan(),
             $column->getStyle(),
+            $column->getLabel(),
             $target,
             $templateClassJsSortableLanguageId,
             $templateDataLanguageUid,
