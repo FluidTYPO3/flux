@@ -11,7 +11,7 @@
  ***************************************************************/
 
 $EM_CONF[$_EXTKEY] = array(
-	'title' => 'Flux: Fluid FlexForms',
+	'title' => 'Flux: Fluid FlexForms (Legacy Branch)',
 	'description' => 'Backend form and frontend content rendering assistance API with focus on productivity.',
 	'category' => 'misc',
 	'shy' => 0,

@@ -5,6 +5,14 @@ Flux: Fluid FlexForms
 
 [![Build Status](https://img.shields.io/travis/FluidTYPO3/flux.svg?style=flat-square&label=package)](https://travis-ci.org/FluidTYPO3/flux/) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/flux/development.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/flux)  [![Documentation](http://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://fluidtypo3.org/documentation/templating-manual/introduction.html) [![Build Status](https://img.shields.io/travis/FluidTYPO3/fluidtypo3-testing.svg?style=flat-square&label=framework)](https://travis-ci.org/FluidTYPO3/fluidtypo3-testing/) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/fluidtypo3-testing/master.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/fluidtypo3-testing)
 
+---
+
+:bangbang: **Legacy branch** :hand:
+
+*Please note that this is a legacy branch for flux in TYPO3 6.2. This version is no longer supported by the Flux team, but we are happy to keep [merging pull requests into the legacy branch](https://github.com/FluidTYPO3/flux/issues/1149#issuecomment-223269520) as long as users keep making them.*
+
+---
+
 > Flux is a replacement API for TYPO3 FlexForms - with interfaces for Fluid, PHP and TypoScript
 
 Flux lets you build and modify forms in Fluid:
