@@ -340,12 +340,23 @@ class FluxService implements SingletonInterface {
 	 * @return array
 	 */
 	public function getAllTypoScript() {
-		$pageId = $this->configurationManager->getCurrentPageId();
+		$pageId = $this->getCurrentPageId();
 		if (FALSE === isset(self::$typoScript[$pageId])) {
 			self::$typoScript[$pageId] = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			self::$typoScript[$pageId] = GeneralUtility::removeDotsFromTS(self::$typoScript[$pageId]);
 		}
 		return (array) self::$typoScript[$pageId];
+	}
+
+	/**
+	 * @return integer
+	 */
+	protected function getCurrentPageId() {
+		if ($this->configurationManager instanceof BackendConfigurationManager) {
+			return (integer) $this->configurationManager->getCurrentPageId();
+		} else {
+			return (integer) $GLOBALS['TSFE']->id;
+		}
 	}
 
 	/**
