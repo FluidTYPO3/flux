@@ -87,10 +87,7 @@ class PreviewView
 						</div>
 						<div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available"></div>
 					</div>',
-        'gridToggle' => '<div class="grid-visibility-toggle">
-							<div class="toggle-content" data-uid="%s">
-								<span class="t3-icon t3-icon-actions t3-icon-view-table-%s"></span>
-							</div>
+        'gridToggle' => '<div class="grid-visibility-toggle" data-toggle-uid="%s">
 							%s
 						</div>',
         'link' => '<a href="%s" title="%s"
@@ -472,8 +469,7 @@ class PreviewView
      */
     protected function drawGridToggle(array $row, $content)
     {
-        $collapsedClass = true === $this->isRowCollapsed($row) ? 'expand' : 'collapse';
-        return sprintf($this->templates['gridToggle'], $row['uid'], $collapsedClass, $content);
+        return sprintf($this->templates['gridToggle'], $row['uid'], $content);
     }
 
     /**

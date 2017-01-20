@@ -72,6 +72,9 @@
 			<trans-unit id="paste_reference">
 				<source>Paste as reference in this position</source>
 			</trans-unit>
+			<trans-unit id="toggle_content">
+				<source>Show or hide the grid</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
