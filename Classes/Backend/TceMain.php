@@ -287,6 +287,10 @@ class TceMain
      */
     public function moveRecord_firstElementPostProcess($table, $uid, $destPid, $moveRec, $row, DataHandler $reference)
     {
+        if ($table !== 'tt_content') {
+            return;
+        }
+
         // Problem: resolve the potential original record if the passed record is a placeholder.
         // This detection is necessary because 1) the colPos value is an emulated value and exists
         // only in DataHandler::$datamap, but 2) the value in that array is indexed by the original
@@ -333,6 +337,10 @@ class TceMain
      */
     public function moveRecord_afterAnotherElementPostProcess($table, $uid, $destPid, $origDestPid, $moveRec, &$updateFields, DataHandler $reference)
     {
+        if ($table !== 'tt_content') {
+            return;
+        }
+
         // Following block takes care of updating the immediate record, be that a placeholder, an
         // original or a versioned copy.
         $moveData = $this->getMoveData();
