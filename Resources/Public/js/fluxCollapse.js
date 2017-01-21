@@ -55,38 +55,44 @@ define(['jquery'], function ($) {
     var FluxCollapse = {
 
         init: function () {
-            $('.toggle-content').on('click', this.fluxCollapse);
+            $('[data-toggler-uid]').on('click', this.fluxCollapse);
         },
 
         fluxCollapse: function (event) {
             var cookie = Cookies.get('fluxCollapseStates');
-            if (cookie == '') {
+            if (!Array.isArray(cookie)) {
                 cookie = [];
             }
 
-            var toggle = $(event.target),
-                toggleContent = toggle.closest('.toggle-content', null, true),
-                fluxGrid = toggleContent.next('.t3-grid-container').find('> .flux-grid'),
-                uid = toggleContent.data('uid');
-
+            var i, toggle = $(this),
+                toggleContent = $('[data-toggle-uid='+toggle.data('togglerUid')+']'),
+                fluxGrid = toggleContent.find('> .t3-grid-container > .flux-grid'),
+                uid = toggleContent.data('toggleUid');
             if (fluxGrid.hasClass('flux-grid-hidden')) {
                 fluxGrid.removeClass('flux-grid-hidden');
-                toggle.removeClass('t3-icon-view-table-expand').addClass('t3-icon-view-table-collapse');
-                for (var i in cookie) {
+                toggle.removeClass('toggler-expand').addClass('toggler-collapse');
+                for (i in cookie) {
                     if (cookie.hasOwnProperty(i)) {
                         if (cookie[i] == uid) {
-                            delete(cookie[i]);
+                            delete cookie[i];
                         }
                     }
                 }
             } else {
                 fluxGrid.addClass('flux-grid-hidden');
-                toggle.removeClass('t3-icon-view-table-collapse').addClass('t3-icon-view-table-expand');
+                toggle.removeClass('toggler-collapse').addClass('toggler-expand');
                 if (cookie.indexOf(uid) < 0) {
                     cookie.push(uid);
                 }
             }
-            Cookies.set('fluxCollapseStates', cookie);
+            // remove deleted uids
+            var cookieCompress = [];
+            for (i in cookie) {
+                if (cookie[i] !== null && cookie[i] !== undefined) {
+                    cookieCompress.push(cookie[i]);
+                }
+            }
+            Cookies.set('fluxCollapseStates', cookieCompress);
         }
     };
 

@@ -1,9 +1,6 @@
-.toggle-content { cursor: pointer; float: right; margin-top: -15px; }
 .flux-grid { width: 100%; }
 .flux-grid td { vertical-align: top; }
 .flux-grid-hidden { display: none; }
-.t3-page-ce .toggle-content { visibility: hidden; }
-.t3-page-ce:hover .toggle-content { visibility: visible; }
 .t3-page-ce-dragitem:hover .t3-page-ce-wrapper-new-ce { cursor: move; }
 
 .flux-grid tr:first-child:last-child td:first-child:last-child {

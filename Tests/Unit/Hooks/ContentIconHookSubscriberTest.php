@@ -53,15 +53,28 @@ class ContentIconHookSubscriberTest extends UnitTestCase
      */
     public function testAddSubIcon(array $parameters, $provider, $expected)
     {
+        $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->setMethods(array('calcPerms'))->getMock();
+        $GLOBALS['BE_USER']->expects($this->any())->method('calcPerms');
+        $GLOBALS['LANG'] = $this->getMockBuilder('TYPO3\\CMS\\Lang\\LanguageService')->setMethods(array('sL'))->getMock();
+        $GLOBALS['LANG']->expects($this->any())->method('sL')->will($this->returnArgument(0));
+
         $GLOBALS['TCA']['tt_content']['columns']['field']['config']['type'] = 'flex';
         $cache = $this->getMockBuilder('TYPO3\\CMS\\Core\\Cache\\CacheManager')->setMethods(array('has', 'set'))->getMock();
         $cache->expects($this->once())->method('has')->willReturn(false);
         $cache->expects($this->once())->method('set')->willReturn('icon');
-        $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolvePrimaryConfigurationProvider'))->getMock();
+        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
+        $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolvePrimaryConfigurationProvider','getConfiguration'))->getMock();
+        $service->injectConfigurationManager($configurationManager);
         $service->expects($this->any())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $instance = new ContentIconHookSubscriber();
         $instance->injectFluxService($service);
         ObjectAccess::setProperty($instance, 'cache', $cache, true);
+        if ($provider !== null) {
+            $configurationServiceMock = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(['resolveConfigurationProviders'])->getMock();
+            ObjectAccess::setProperty($configurationServiceMock, 'configurationManager', $configurationManager, true);
+            ObjectAccess::setProperty($provider, 'configurationService', $configurationServiceMock, true);
+        }
+
         $result = $instance->addSubIcon($parameters, new PageLayoutView());
         if (null === $expected) {
             $this->assertNull($result);
