@@ -58,7 +58,6 @@ class ContentTypeBuilder
         $provider->setTemplatePathAndFilename($templateFilename);
         $provider->setContentObjectType($fullContentType);
         $provider->setTemplateVariables($variables);
-        $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
 
         return $provider;
