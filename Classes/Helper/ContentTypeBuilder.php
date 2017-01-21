@@ -195,6 +195,11 @@ class ContentTypeBuilder
     {
         $formId = $form->getId();
         $icon = $form->getOption(Form::OPTION_ICON);
+        $group = $form->getOption(Form::OPTION_GROUP);
+        if (!$group) {
+            $group = 'fluxContent';
+        }
+        $group = $this->sanitizeString($group);
 
         // Icons required solely for use in the "new content element" wizard
         $extensionKey = ExtensionNamingUtility::getExtensionKey($providerExtensionName);
@@ -206,7 +211,7 @@ class ContentTypeBuilder
         // Registration for "new content element" wizard to show our new CType (otherwise, only selectable via "Content type" drop-down)
         ExtensionManagementUtility::addPageTSConfig(
             sprintf(
-                'mod.wizards.newContentElement.wizardItems.fluxContent.elements.%s {
+                'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
                     iconIdentifier = %s
                     title = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s
                     description = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s.description
@@ -214,6 +219,7 @@ class ContentTypeBuilder
                         CType = %s
                     }
                 }',
+                $group,
                 $formId,
                 $iconIdentifier,
                 $extensionKey,
@@ -223,6 +229,18 @@ class ContentTypeBuilder
                 $contentType
             )
         );
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    protected function sanitizeString($string)
+    {
+        $pattern = '/([^a-z0-9\-]){1,}/i';
+        $replaced = preg_replace($pattern, '_', $string);
+        $replaced = trim($replaced, '_');
+        return empty($replaced) ? md5($string) : $replaced;
     }
 
     /**
