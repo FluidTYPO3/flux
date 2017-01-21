@@ -738,12 +738,17 @@ class PreviewView
             }
         }
 
+        $label = $column->getLabel();
+        if (strpos($label, 'LLL:EXT') === 0) {
+            $label = LocalizationUtility::translate($label, $column->getExtensionName());
+        }
+
         return sprintf(
             $this->templates['gridColumn'],
             $column->getColspan(),
             $column->getRowspan(),
             $column->getStyle(),
-            $column->getLabel(),
+            $label,
             $target,
             $templateClassJsSortableLanguageId,
             $templateDataLanguageUid,
