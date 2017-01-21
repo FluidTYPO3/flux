@@ -525,10 +525,18 @@ class PreviewView
         $result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
         $rows = [];
         if ($result) {
-            while (($row = $this->getDatabaseConnection()->sql_fetch_assoc($result)) !== false) {
-                BackendUtility::workspaceOL('tt_content', $row, -99, true);
-                if ($row) {
-                    $rows[] = $row;
+            while (($contentRecord = $this->getDatabaseConnection()->sql_fetch_assoc($result)) !== false) {
+                BackendUtility::workspaceOL('tt_content', $contentRecord, -99, true);
+
+                // The following logic fixes unsetting of move placeholders whose new location no longer matches the
+                // provided column name and parent UID, and sits in a Flux column.
+                if (
+                    $contentRecord
+                    && (integer) $contentRecord['colPos'] === ContentService::COLPOS_FLUXCONTENT
+                    && $contentRecord['tx_flux_column'] === $area
+                    && (integer) $contentRecord['tx_flux_parent'] === (integer) $row['uid']
+                ) {
+                    $rows[] = $contentRecord;
                 }
             }
             $view->generateTtContentDataArray($rows);
