@@ -97,7 +97,7 @@ class ContentIconHookSubscriber
         $icon = null;
         if (null !== $caller) {
             $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
-            $cacheIdentity = $table . $uid . sha1(serialize($record));
+            $cacheIdentity = $table . $uid . sha1(serialize($record)) . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
             // filter 1: icon must not already be cached and both record and caller must be provided.
             // we check the cache here because at this point, the cache key is decidedly
             // unique and we have not yet consulted the (potentially costly) Provider.
