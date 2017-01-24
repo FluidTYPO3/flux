@@ -66,7 +66,7 @@ class ViewContext
             $this->request = new Request();
             $this->request->setFormat(TemplatePaths::DEFAULT_FORMAT);
             $this->request->setControllerName($controllerName);
-            $this->request->setControllerActionName(strtolower(pathinfo($templatePathAndFilename, PATHINFO_FILENAME)));
+            $this->request->setControllerActionName(lcfirst(pathinfo($templatePathAndFilename, PATHINFO_FILENAME)));
         }
         $this->setTemplatePathAndFilename($templatePathAndFilename);
         $this->setTemplatePaths(new TemplatePaths($packageName));
