@@ -172,8 +172,7 @@ class TceMain
                     $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
                     $this->recordService->update($table, $record);
 
-                    $resolveUid = $this->getOriginalRecordUid($table, $id);
-                    $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
+                    $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $record['uid']);
                     if ($mostRecentVersionOfRecord) {
                         $this->contentService->moveRecord($mostRecentVersionOfRecord, $relativeTo, $clipboardCommand, $reference);
                         $this->recordService->update($table, $mostRecentVersionOfRecord);
