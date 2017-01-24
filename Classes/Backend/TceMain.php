@@ -135,7 +135,10 @@ class TceMain
                 }
 
                 // Guard: do not allow records to become children of themselves at any recursion level.
-                if ($command === 'move') {
+                // Only perform this check if the "relativeTo" target is a negative integer meaning
+                // "insert after the record with uid=abs($relativeTo)". When moving to a page column
+                // the $relativeTo value is a positive integer and we will skip it.
+                if ($command === 'move' && $relativeTo >= 0) {
                     // Perform an unpersisted record moving to perform assertions on the result.
                     $temporaryRecord = $record;
                     $this->contentService->moveRecord($temporaryRecord, $relativeTo, $clipboardCommand, $reference);
