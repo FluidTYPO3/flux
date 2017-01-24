@@ -78,7 +78,7 @@ class PreviewView
                                 </div>
                             </div>
                         </td>',
-        'record' => '<div class="t3-page-ce%s %s t3js-page-ce t3js-page-ce-sortable" id="element-tt_content-%s"
+        'record' => '<div class="t3-page-ce%s %s t3js-page-ce t3js-page-ce-sortable" %s id="element-tt_content-%s"
                         data-table="tt_content" data-uid="%s">
 						%s
 						<div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="colpos-%s-page-%s-%s-after-%s"
@@ -365,7 +365,10 @@ class PreviewView
     protected function drawRecord(array $parentRow, Column $column, array $record, PageLayoutView $dblist)
     {
         $colPosFluxContent = ContentService::COLPOS_FLUXCONTENT;
-        $disabledClass = false === empty($record['isDisabled']) ? ' t3-page-ce-hidden' : '';
+        $isDisabled = $dblist->isDisabled('tt_content', $record);
+        $disabledClass = $isDisabled ? ' t3-page-ce-hidden  t3js-hidden-record' : '';
+        $displayNone = !$dblist->tt_contentConfig['showHidden'] && $isDisabled ? ' style="display: none;"' : '';
+
         $element = $this->drawElement($record, $dblist);
         if (0 === (integer) $dblist->tt_contentConfig['languageMode']) {
             $element = '<div class="t3-page-ce-dragitem">' . $element . '</div>';
@@ -375,6 +378,7 @@ class PreviewView
             $this->templates['record'],
             $disabledClass,
             $record['_CSSCLASS'],
+            $displayNone,
             $record['uid'],
             $record['uid'],
             $element,
