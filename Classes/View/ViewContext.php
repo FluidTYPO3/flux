@@ -245,10 +245,15 @@ class ViewContext
      */
     public function getHash()
     {
+        // Removes the form and grid objects from $variables
+        // This prevents avoiding errors during serialization with \Closure objects in the form or grid objects
+        // Also they are not necessary to create a unique hash
+        $variables = $this->variables;
+        unset($variables['form'], $variables['grid'] );
         return sha1(
             $this->packageName .
             $this->templatePathAndFilename .
-            serialize($this->variables) .
+            serialize($variables) .
             serialize($this->templatePaths)
         );
     }
