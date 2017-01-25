@@ -1,4 +1,4 @@
-/* Hack icon iinto page and list */
+/* Hack icon into page and list */
 .t3-js-clickmenutrigger {
 	z-index: 2;
 	position: relative
@@ -30,4 +30,20 @@
 .t3-page-ce-header .fluidcontent-icon {
 	margin-top: 3px;
 	left: 10px;
+}
+.fluidcontent-toggler {
+	opacity: 0.3;
+	float: right;
+	margin-left: 10px;
+}
+.t3-page-ce:hover .fluidcontent-toggler {
+	opacity: 1;
+}
+
+.toggle-content { cursor: pointer; }
+[data-toggler-uid].toggler-expand .icon-actions-view-list-collapse {
+	display :none;
+}
+[data-toggler-uid].toggler-collapse .icon-actions-view-list-expand {
+	display :none;
 }

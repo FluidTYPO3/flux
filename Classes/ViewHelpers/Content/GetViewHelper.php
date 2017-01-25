@@ -10,12 +10,14 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
@@ -127,11 +129,11 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             }
         }
         $templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+        $contentObjectRenderer = static::getContentObjectRenderer();
 
         $loadRegister = false;
         if (empty($arguments['loadRegister']) === false) {
-            static::$configurationManager->getContentObject()
-                ->cObjGetSingle('LOAD_REGISTER', $arguments['loadRegister']);
+            $contentObjectRenderer->cObjGetSingle('LOAD_REGISTER', $arguments['loadRegister']);
             $loadRegister = true;
         }
         $record = $templateVariableContainer->get('record');
@@ -142,16 +144,18 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
         $offset = intval($arguments['offset']);
         $sortDirection = $arguments['sortDirection'];
         $order .= ' ' . $sortDirection;
+
         // Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and column.
         // The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.
         // Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the
         // localized version or default version.
         $conditions = sprintf(
-            "(tx_flux_parent = '%s' AND tx_flux_column = '%s' AND pid = '%d') %s",
+            "(tx_flux_parent = '%s' AND tx_flux_column = '%s' AND pid = %d AND colPos = 18181) %s %s",
             $id,
             $area,
             $record['pid'],
-            $GLOBALS['TSFE']->cObj->enableFields('tt_content')
+            $contentObjectRenderer->enableFields('tt_content'),
+            BackendUtility::versioningPlaceholderClause('tt_content')
         );
         $rows = static::$recordService->get('tt_content', '*', $conditions, '', $order, $offset . ',' . $limit);
 
@@ -172,9 +176,17 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             }
         }
         if ($loadRegister) {
-            static::$configurationManager->getContentObject()->cObjGetSingle('RESTORE_REGISTER', '');
+            $contentObjectRenderer->cObjGetSingle('RESTORE_REGISTER', '');
         }
         return $content;
+    }
+
+    /**
+     * @return ContentObjectRenderer
+     */
+    protected static function getContentObjectRenderer()
+    {
+        return $GLOBALS['TSFE']->cObj;
     }
 
     /**

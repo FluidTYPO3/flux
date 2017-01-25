@@ -16,7 +16,6 @@ use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ClipBoardUtility;
-use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
@@ -27,7 +26,6 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Versioning\VersionState;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -53,28 +51,34 @@ class PreviewView
      * @var array
      */
     protected $templates = [
-        'grid' => '<table cellspacing="0" cellpadding="0" id="content-grid-%s" class="flux-grid%s">
-						<tbody>
-							%s
-						</tbody>
-					</table>',
-        'gridColumn' => '<td colspan="%s" rowspan="%s" style="%s">
-                            <div data-colpos="%s" class="t3js-sortable t3js-sortable-lang t3js-sortable-lang-%s
-                                t3-page-ce-wrapper ui-sortable" data-language-uid="%s">
-                                <div class="fce-header t3-row-header t3-page-colHeader t3-page-colHeader-label">
-                                    <div>%s</div>
-                                </div>
-                                <div class="t3-page-ce t3js-page-ce" data-page="%s">
-                                    <div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s"
-                                        style="display: block;">
-                                        %s %s %s
-                                    </div>
-                                    <div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available" ></div>
-                                </div>
+        'grid' => '<div class="t3-grid-container">
+                        <table cellspacing="0" cellpadding="0" id="content-grid-%s" class="flux-grid%s" width="100%%" class="t3-page-columns t3-grid-table t3js-page-columns">
+                            <colgroup>
                                 %s
+                            </colgroup>
+                            <tbody>
+                                %s
+                            </tbody>
+					    </table>
+                    </div>
+					',
+        'gridColumn' => '<td class="flux-grid-column" colspan="%s" rowspan="%s" style="%s">
+                            <div class="t3-grid-cell">
+                                <div class="t3-page-column-header"><div class="t3-page-column-header-label">%s</div></div>
+                                <div data-colpos="%s" class="t3js-sortable t3js-sortable-lang t3js-sortable-lang-%s
+                                    t3-page-ce-wrapper ui-sortable" data-language-uid="%s">
+                                    <div class="t3-page-ce t3js-page-ce" data-page="%s">
+                                        <div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s"
+                                            style="display: block;">
+                                            %s %s %s
+                                        </div>
+                                        <div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available" ></div>
+                                    </div>
+                                    %s
+                                </div>
                             </div>
                         </td>',
-        'record' => '<div class="t3-page-ce%s %s t3js-page-ce t3js-page-ce-sortable" id="element-tt_content-%s"
+        'record' => '<div class="t3-page-ce%s %s t3js-page-ce t3js-page-ce-sortable" %s id="element-tt_content-%s"
                         data-table="tt_content" data-uid="%s">
 						%s
 						<div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="colpos-%s-page-%s-%s-after-%s"
@@ -83,10 +87,7 @@ class PreviewView
 						</div>
 						<div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available"></div>
 					</div>',
-        'gridToggle' => '<div class="grid-visibility-toggle">
-							<div class="toggle-content" data-uid="%s">
-								<span class="t3-icon t3-icon-actions t3-icon-view-table-%s"></span>
-							</div>
+        'gridToggle' => '<div class="grid-visibility-toggle" data-toggle-uid="%s">
 							%s
 						</div>',
         'link' => '<a href="%s" title="%s"
@@ -264,22 +265,12 @@ class PreviewView
         $grid = $provider->getGrid($row);
         $content = '';
         if (true === $grid->hasChildren()) {
-            $workspaceVersionOfRow = $this->workspacesAwareRecordService->getSingle('tt_content', '*', $row['uid']);
-            if ((integer) $workspaceVersionOfRow['pid'] === -1 && !empty($workspaceVersionOfRow['t3ver_oid'])) {
-                $originalRecord = BackendUtility::getRecord(
-                    'tt_content',
-                    $workspaceVersionOfRow['t3ver_oid'],
-                    '*',
-                    '',
-                    false
-                );
-                $workspaceVersionOfRow['pid'] = $originalRecord['pid'];
-            }
-            $content = $this->drawGrid($workspaceVersionOfRow, $grid, $form);
+
+            $content = $this->drawGrid($row, $grid, $form);
 
             $options = $this->getPreviewOptions($form);
             if (true === $this->getOptionToggle($options)) {
-                $content = $this->drawGridToggle($workspaceVersionOfRow, $content);
+                $content = $this->drawGridToggle($row, $content);
             }
         }
         return $content;
@@ -299,16 +290,26 @@ class PreviewView
         $collapsedClass = true === $canToggle && true === $isCollapsed ? ' flux-grid-hidden' : '';
         $gridRows = $grid->getRows();
         $content = '';
+        $maximumColumnCount = 0;
         foreach ($gridRows as $gridRow) {
             $content .= '<tr>';
             $columns = $gridRow->getColumns();
+            $columnCount = 0;
             foreach ($columns as $column) {
+                $columnCount += (integer) $column->getColspan();
                 $content .= $this->drawGridColumn($row, $column);
             }
             $content .= '</tr>';
+            $maximumColumnCount = max($maximumColumnCount, $columnCount);
         }
 
-        return sprintf($this->templates['grid'], $row['uid'], $collapsedClass, $content);
+        return sprintf(
+            $this->templates['grid'],
+            $row['uid'],
+            $collapsedClass,
+            str_repeat('<col />', $maximumColumnCount),
+            $content
+        );
     }
 
     /**
@@ -351,7 +352,7 @@ class PreviewView
         $id = 'colpos-' . $colPosFluxContent . '-page-' . $row['pid'] . '--top-' . $row['uid'] . '-' . $columnName;
         $target = $this->registerTargetContentAreaInSession($row['uid'], $columnName);
 
-        return $this->parseGridColumnTemplate($row, $column, $colPosFluxContent, $dblist, $target, $id, $content);
+        return $this->parseGridColumnTemplate($row, $column, $target, $id, $content);
     }
 
     /**
@@ -364,7 +365,10 @@ class PreviewView
     protected function drawRecord(array $parentRow, Column $column, array $record, PageLayoutView $dblist)
     {
         $colPosFluxContent = ContentService::COLPOS_FLUXCONTENT;
-        $disabledClass = false === empty($record['isDisabled']) ? ' t3-page-ce-hidden' : '';
+        $isDisabled = $dblist->isDisabled('tt_content', $record);
+        $disabledClass = $isDisabled ? ' t3-page-ce-hidden  t3js-hidden-record' : '';
+        $displayNone = !$dblist->tt_contentConfig['showHidden'] && $isDisabled ? ' style="display: none;"' : '';
+
         $element = $this->drawElement($record, $dblist);
         if (0 === (integer) $dblist->tt_contentConfig['languageMode']) {
             $element = '<div class="t3-page-ce-dragitem">' . $element . '</div>';
@@ -374,6 +378,7 @@ class PreviewView
             $this->templates['record'],
             $disabledClass,
             $record['_CSSCLASS'],
+            $displayNone,
             $record['uid'],
             $record['uid'],
             $element,
@@ -468,8 +473,7 @@ class PreviewView
      */
     protected function drawGridToggle(array $row, $content)
     {
-        $collapsedClass = true === $this->isRowCollapsed($row) ? 'expand' : 'collapse';
-        return sprintf($this->templates['gridToggle'], $row['uid'], $collapsedClass, $content);
+        return sprintf($this->templates['gridToggle'], $row['uid'], $content);
     }
 
     /**
@@ -508,11 +512,12 @@ class PreviewView
         // needs to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will
         // not remove records based on them having remove placeholders.
         $condition = sprintf(
-            "AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d' %s",
+            "AND (pid = %d AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d') %s",
+            (integer) (isset($row['_MOVE_PLH_pid']) ? $row['_MOVE_PLH_pid'] : $row['pid']),
             $this->getFluxParentUid($row),
             $area,
             ContentService::COLPOS_FLUXCONTENT,
-            $view->tt_contentConfig['showHidden'] ? '' : 'AND hidden = 0 '
+            BackendUtility::versioningPlaceholderClause('tt_content')
         );
         if (GeneralUtility::compat_version('8.4.0') && !GeneralUtility::compat_version('8.5.0')) {
             // Patching to avoid http://forge.typo3.org/issues/78353 by specifically targeting only the 8.4.x branch
@@ -520,60 +525,27 @@ class PreviewView
             // LTS - @TODO: remove this patch when 8.4.x is no longer supported, but no need to hurry.
             $condition .= ' AND ';
         }
-        $queryParts = $view->makeQueryArray('tt_content', $row['pid'], $condition);
+        $queryParts = $view->makeQueryArray('tt_content', $row['uid'], $condition);
         $result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
         $rows = [];
         if ($result) {
-            $rows = $view->getResult($result);
-            $rows = $this->processRecordOverlays($rows, $view);
-        }
-        return $rows;
-    }
+            while (($contentRecord = $this->getDatabaseConnection()->sql_fetch_assoc($result)) !== false) {
+                BackendUtility::workspaceOL('tt_content', $contentRecord, -99, true);
 
-    /**
-     * @param array $rows
-     * @param PageLayoutView $view
-     * @return array
-     */
-    protected function processRecordOverlays(array $rows, PageLayoutView $view)
-    {
-        foreach ($rows as $index => &$record) {
-            $record = $this->getWorkspaceVersionOfRecordOrRecordItself($record);
-            BackendUtility::movePlhOL('tt_content', $record);
-            if (true === $this->isDeleteOrMovePlaceholder($record)) {
-                unset($rows[$index]);
-            } else {
-                $record['isDisabled'] = $view->isDisabled('tt_content', $record);
+                // The following logic fixes unsetting of move placeholders whose new location no longer matches the
+                // provided column name and parent UID, and sits in a Flux column.
+                if (
+                    $contentRecord
+                    && (integer) $contentRecord['colPos'] === ContentService::COLPOS_FLUXCONTENT
+                    && $contentRecord['tx_flux_column'] === $area
+                    && (integer) $contentRecord['tx_flux_parent'] === (integer) $row['uid']
+                ) {
+                    $rows[] = $contentRecord;
+                }
             }
+            $view->generateTtContentDataArray($rows);
         }
         return $rows;
-    }
-
-    /**
-     * @param array $record
-     * @return array
-     */
-    protected function getWorkspaceVersionOfRecordOrRecordItself(array $record)
-    {
-        $workspaceId = $this->getActiveWorkspaceId();
-        if (0 < $workspaceId) {
-            $workspaceRecord = BackendUtility::getWorkspaceVersionOfRecord(
-                $GLOBALS['BE_USER']->workspace,
-                'tt_content',
-                $record['uid']
-            );
-            $record = (false !== $workspaceRecord ? $workspaceRecord : $record);
-        }
-        return $record;
-    }
-
-    /**
-     * @param mixed $record
-     * @return boolean
-     */
-    protected function isDeleteOrMovePlaceholder($record)
-    {
-        return (true === empty($record) || VersionState::DELETE_PLACEHOLDER === (integer) $record['t3ver_state']);
     }
 
     /**
@@ -587,9 +559,9 @@ class PreviewView
 
         // For all elements to be shown in draft workspaces & to also show hidden elements by default if user hasn't
         // disabled the option analog behavior to the PageLayoutController at the end of menuConfig()
-        if ($this->getBackendUser()->workspace != 0
-            || !isset($this->moduleData['tt_content_showHidden'])
-            || $this->moduleData['tt_content_showHidden'] !== '0'
+        if ($this->getActiveWorkspaceId() != 0
+            || !isset($moduleData['tt_content_showHidden'])
+            || $moduleData['tt_content_showHidden'] !== '0'
         ) {
             $moduleData['tt_content_showHidden'] = 1;
         }
@@ -713,7 +685,7 @@ class PreviewView
      */
     protected function getFluxParentUid(array $row)
     {
-        return $row['t3ver_oid'] ?  $row['t3ver_oid'] : $row['uid'];
+        return $row['uid'];
     }
 
     /**
@@ -736,9 +708,7 @@ class PreviewView
     /**
      * @param array $row
      * @param Column $column
-     * @param integer $colPosFluxContent
-     * @param PageLayoutView $dblist
-     * @param integer $target
+     * @param string $target
      * @param string $id
      * @param string $content
      * @return string
@@ -746,23 +716,10 @@ class PreviewView
     protected function parseGridColumnTemplate(
         array $row,
         Column $column,
-        $colPosFluxContent,
-        $dblist,
         $target,
         $id,
         $content
     ) {
-        $label = $column->getLabel();
-        if (strpos($label, 'LLL:') === 0) {
-            $label = LocalizationUtility::translate(
-                $label,
-                ExtensionNamingUtility::getExtensionName($column->getExtensionName())
-            );
-            if (empty($label)) {
-                $label = $column->getLabel();
-            }
-        }
-
         // this variable defines if this drop-area gets activated on drag action
         // of a ce with the same data-language_uid
         $templateClassJsSortableLanguageId = $row['sys_language_uid'];
@@ -793,16 +750,21 @@ class PreviewView
             }
         }
 
+        $label = $column->getLabel();
+        if (strpos($label, 'LLL:EXT') === 0) {
+            $label = LocalizationUtility::translate($label, $column->getExtensionName());
+        }
+
         return sprintf(
             $this->templates['gridColumn'],
             $column->getColspan(),
             $column->getRowspan(),
             $column->getStyle(),
-            $colPosFluxContent,
-            $templateClassJsSortableLanguageId,
-            $templateDataLanguageUid,
             $label,
             $target,
+            $templateClassJsSortableLanguageId,
+            $templateDataLanguageUid,
+            $row['pid'],
             $id,
             $this->drawNewIcon($row, $column),
             $this->drawPasteIcon($row, $column),

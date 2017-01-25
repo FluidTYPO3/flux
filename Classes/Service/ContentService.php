@@ -13,6 +13,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
  * Flux FlexForm integration Service
@@ -178,7 +179,7 @@ class ContentService implements SingletonInterface
             if (0 > $relativeUid) {
                 $record['sorting'] = $tceMain->resorting($table, $relativeRecord['pid'], 'sorting', abs($relativeUid));
             }
-            $this->updateRecordInDatabase($record);
+            $this->updateRecordInDataMap($record, null, $tceMain);
             $tceMain->registerDBList[$table][$record['uid']];
         }
     }
@@ -228,36 +229,30 @@ class ContentService implements SingletonInterface
         // the $relativeTo variable was passed by EXT:gridelements in which case
         // it is invalid (not a negative/positive integer but a string).
         if (false === strpos($relativeTo, 'x')) {
-            if (0 - MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD > $relativeTo) {
+            if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $relativeTo) {
                 // Fake relative to value - we can get the target from a session variable
                 list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
                 $row['tx_flux_parent'] = $parent;
                 $row['tx_flux_column'] = $column;
-                $row['sorting'] = $tceMain->getSortNumber('tt_content', 0, $row['pid']);
+                $row['colPos'] = self::COLPOS_FLUXCONTENT;
+                $row['sorting'] = 0;
             } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
-                list($prefix, $column, $prefix2, , , $relativePosition, $relativeUid, $area) =
+                // Special case for clipboard commands only. This special case also requires a new
+                // sorting value to re-sort after a possibly invalid sorting value is received.
+                list($pageUid, , $relativeTo, $parentUid, $area, $column) =
                     GeneralUtility::trimExplode('-', $parameters[1]);
-                $relativeUid = (integer) $relativeUid;
-                if ('colpos' === $prefix && 'page' === $prefix2) {
-                    $row['colPos'] = $column;
-                    $row['tx_flux_parent'] = $relativeUid;
-                    $row['tx_flux_column'] = $area;
-                }
+                $row['colPos'] = $column;
+                $row['tx_flux_parent'] = $parentUid;
+                $row['tx_flux_column'] = $area;
+                $row['sorting'] = $tceMain->resorting('tt_content', $pageUid, 'sorting', $relativeTo);
             } elseif (0 > (integer) $relativeTo) {
                 // inserting a new element after another element. Check column position of that element.
                 $relativeToRecord = $this->loadRecordFromDatabase(abs($relativeTo));
                 $row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
                 $row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
                 $row['colPos'] = $relativeToRecord['colPos'];
-                $row['sorting'] = $tceMain->resorting(
-                    'tt_content',
-                    $relativeToRecord['pid'],
-                    'sorting',
-                    abs($relativeTo)
-                );
             } elseif (0 < (integer) $relativeTo) {
                 // moving to first position in colPos, means that $relativeTo is the pid of the containing page
-                $row['sorting'] = $tceMain->getSortNumber('tt_content', 0, $relativeTo);
                 $row['tx_flux_parent'] = null;
                 $row['tx_flux_column'] = null;
             } else {
@@ -272,32 +267,6 @@ class ContentService implements SingletonInterface
         if (0 < $row['tx_flux_parent']) {
             $row['colPos'] = self::COLPOS_FLUXCONTENT;
         }
-        $this->updateRecordInDatabase($row);
-        $this->updateMovePlaceholder($row);
-    }
-
-    /**
-     * @param array $row
-     * @return void
-     */
-    protected function updateMovePlaceholder(array $row)
-    {
-        $movePlaceholder = $this->getMovePlaceholder($row['uid']);
-        if (false !== $movePlaceholder) {
-            $movePlaceholder['tx_flux_parent'] = $row['tx_flux_parent'];
-            $movePlaceholder['tx_flux_column'] = $row['tx_flux_column'];
-            $movePlaceholder['colPos'] = $row['colPos'];
-            $this->updateRecordInDatabase($movePlaceholder);
-        }
-    }
-
-    /**
-     * @param integer $recordUid
-     * @return array
-     */
-    protected function getMovePlaceholder($recordUid)
-    {
-        return BackendUtility::getMovePlaceholder('tt_content', $recordUid);
     }
 
     /**
@@ -340,15 +309,22 @@ class ContentService implements SingletonInterface
         DataHandler $tceMain
     ) {
         if (0 < $newUid && 0 < $oldUid && 0 < $newLanguageUid) {
+            // Get the origin record of the current record to find out if it has any
+            // parameters we need to adapt in the current record.
             $oldRecord = $this->loadRecordFromDatabase($oldUid);
-            if ($oldRecord[$languageFieldName] !== $newLanguageUid && $oldRecord['pid'] === $row['pid']) {
-                // look for the translated version of the parent record indicated
-                // in this new, translated record. Below, we adjust the parent UID
-                // so it has the UID of the translated parent if one exists.
+            if (
+              $oldRecord[$languageFieldName] !== $newLanguageUid
+              && $oldRecord['pid'] === $row['pid']
+              && MathUtility::canBeInterpretedAsInteger($oldRecord['tx_flux_parent'])
+              && $oldRecord['tx_flux_parent'] > 0
+            ) {
+                // If the origin record has a flux parent assigned, then look for the
+                // translated, very last version this parent record and, if any valid record was found,
+                // assign its UID as flux parent to the current record.
                 $translatedParents = (array) $this->workspacesAwareRecordService->get(
                     'tt_content',
                     'uid,sys_language_uid',
-                    "t3_origuid = '" . $oldRecord['tx_flux_parent'] . "'" . BackendUtility::deleteClause('tt_content')
+                    BackendUtility::deleteClause('tt_content')
                 );
                 foreach ($translatedParents as $translatedParent) {
                     if ($translatedParent['sys_language_uid'] == $newLanguageUid) {
@@ -363,7 +339,7 @@ class ContentService implements SingletonInterface
                     $sortbyFieldName => $tceMain->resorting('tt_content', $row['pid'], $sortbyFieldName, $oldUid),
                     'tx_flux_parent' => $translatedParent ? $translatedParent['uid'] : $oldRecord['tx_flux_parent']
                 ];
-                $this->updateRecordInDatabase($overrideValues, $newUid);
+                $this->updateRecordInDataMap($overrideValues, $newUid, $tceMain);
             }
         }
     }
@@ -399,28 +375,26 @@ class ContentService implements SingletonInterface
     /**
      * @param array $row
      * @param integer $uid
+     * @param DataHandler $dataHandler
      * @return void
      */
-    protected function updateRecordInDatabase(array $row, $uid = null)
+    protected function updateRecordInDataMap(array $row, $uid = null, DataHandler $dataHandler)
     {
         if (null === $uid) {
             $uid = $row['uid'];
         }
         $uid = (integer) $uid;
-        if (false === empty($uid)) {
-            $row['uid'] = $uid;
-            $this->workspacesAwareRecordService->update('tt_content', $row);
-            // reload our record for the next bits to have access to all fields
-            $row = $this->recordService->getSingle('tt_content', '*', $uid);
+        if (empty($uid)) {
+            throw new \RuntimeException('Attempt to update unidentified record in data map');
         }
-        $versionedRecordUid = (integer) (isset($row['t3ver_oid']) && !empty($row['t3ver_oid']) ? $row['t3ver_oid'] : 0);
-        if (0 < $versionedRecordUid) {
-            // temporary record; duplicate key values of original record into temporary one.
-            // Note: will continue to call this method until all temporary records in chain have been processed.
-            $placeholder = $this->recordService->getSingle('tt_content', '*', $row['t3ver_oid']);
-            $placeholder['tx_flux_parent'] = (integer) $row['tx_flux_parent'];
-            $placeholder['tx_flux_column'] = $row['tx_flux_column'];
-            $this->updateRecordInDatabase($placeholder, $row['t3ver_oid']);
+        unset($row['uid']);
+        if (isset($dataHandler->datamap['tt_content'][$uid])) {
+            $dataHandler->datamap['tt_content'][$uid] = array_replace(
+                $dataHandler->datamap['tt_content'][$uid],
+                $row
+            );
+        } else {
+            $dataHandler->datamap['tt_content'][$uid] = $row;
         }
     }
 
@@ -445,6 +419,7 @@ class ContentService implements SingletonInterface
     {
         $previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
         $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
+        $sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
         if (null === $previousLocalizedRecordUid) {
             // moving to first position in tx_flux_column
             $localizedRecord[0][$sortingRow] = $reference->getSortNumber(
@@ -453,7 +428,6 @@ class ContentService implements SingletonInterface
                 $defaultLanguageRecord['pid']
             );
         } else {
-            $sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
             $localizedRecord[0][$sortingRow] = $reference->resorting(
                 'tt_content',
                 $defaultLanguageRecord['pid'],
@@ -461,7 +435,7 @@ class ContentService implements SingletonInterface
                 $previousLocalizedRecordUid
             );
         }
-        $this->updateRecordInDatabase($localizedRecord[0]);
+        $this->updateRecordInDataMap($localizedRecord[0], null, $reference);
     }
 
     /**
@@ -473,7 +447,7 @@ class ContentService implements SingletonInterface
      *
      * @param integer $uid Uid of default language record
      * @param integer $language Language of localization
-     * @param TYPO3\CMS\Core\DataHandling\DataHandler $datahandler
+     * @param DataHandler $reference
      * @return integer uid of record after which the localized record should be inserted
      */
     protected function getPreviousLocalizedRecordUid($uid, $language, DataHandler $reference)

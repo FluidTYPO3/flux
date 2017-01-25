@@ -70,8 +70,8 @@ class ColumnViewHelper extends AbstractFormViewHelper
             false,
             -1
         );
-        $this->registerArgument('colspan', 'integer', 'Column span');
-        $this->registerArgument('rowspan', 'integer', 'Row span');
+        $this->registerArgument('colspan', 'integer', 'Column span', false, 1);
+        $this->registerArgument('rowspan', 'integer', 'Row span', false, 1);
         $this->registerArgument('style', 'string', 'Inline style to add when rendering the column');
         $this->registerArgument(
             'variables',

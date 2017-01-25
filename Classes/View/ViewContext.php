@@ -65,6 +65,8 @@ class ViewContext
         } else {
             $this->request = new Request();
             $this->request->setFormat(TemplatePaths::DEFAULT_FORMAT);
+            $this->request->setControllerName($controllerName);
+            $this->request->setControllerActionName(lcfirst(pathinfo($templatePathAndFilename, PATHINFO_FILENAME)));
         }
         $this->setTemplatePathAndFilename($templatePathAndFilename);
         $this->setTemplatePaths(new TemplatePaths($packageName));
@@ -243,11 +245,16 @@ class ViewContext
      */
     public function getHash()
     {
+        // Removes the form and grid objects from $variables
+        // This prevents avoiding errors during serialization with \Closure objects in the form or grid objects
+        // Also they are not necessary to create a unique hash
+        $variables = $this->variables;
+        unset($variables['form'], $variables['grid'] );
         return sha1(
             $this->packageName .
             $this->templatePathAndFilename .
-            json_encode($this->variables) .
-            json_encode($this->templatePaths)
+            serialize($variables) .
+            serialize($this->templatePaths)
         );
     }
 }

@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Service\ContentService;
 use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -21,8 +22,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class MiscellaneousUtility
 {
 
-    /** Overhead used by unique integer generation. Allows 10 billion records before collision */
-    const UNIQUE_INTEGER_OVERHEAD = 10000000000;
+    /** Overhead used by unique integer generation. */
+    const UNIQUE_INTEGER_OVERHEAD = ContentService::COLPOS_FLUXCONTENT;
 
     /**
      * @var array
@@ -44,7 +45,13 @@ class MiscellaneousUtility
         $integers = array_map('ord', str_split($areaName));
         $integers[] = $contentElementUid;
         $integers[] = self::UNIQUE_INTEGER_OVERHEAD;
-        return 0 - array_sum($integers);
+        $integer = array_sum($integers);
+        // Loop + increment until a free position is found. The integer size is kept low by the logic above, but
+        // it also means that collisions are possible. This iteration prevents such collisions.
+        while (isset($_SESSION['target' . $integer])) {
+            $integer++;
+        }
+        return $integer;
     }
 
     /**
@@ -188,11 +195,18 @@ class MiscellaneousUtility
             }
         }
         // Remove all sheets that no longer contain any fields.
+        $nodesToBeRemoved = [];
         foreach ($dom->getElementsByTagName('sheet') as $sheetNode) {
             if (0 === $sheetNode->getElementsByTagName('field')->length) {
-                $sheetNode->parentNode->removeChild($sheetNode);
+                $nodesToBeRemoved[] = $sheetNode;
             }
         }
+
+        foreach ($nodesToBeRemoved as $node) {
+            /** @var \DOMElement $node */
+            $node->parentNode->removeChild($node);
+        }
+
         // Return empty string in case remaining flexform XML is all empty
         $dataNode = $dom->getElementsByTagName('data')->item(0);
         if (0 === $dataNode->getElementsByTagName('sheet')->length) {

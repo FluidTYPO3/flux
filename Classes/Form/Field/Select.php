@@ -9,9 +9,6 @@ namespace FluidTYPO3\Flux\Form\Field;
  */
 
 use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Persistence\QueryInterface;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * Select
@@ -26,6 +23,11 @@ class Select extends AbstractMultiValueFormField
      * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#showicontable
      */
     protected $showIconTable = false;
+
+    /**
+     * @var string
+     */
+    protected $renderType = 'selectSingle';
 
     /**
      * @return array

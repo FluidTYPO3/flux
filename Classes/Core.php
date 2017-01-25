@@ -8,8 +8,6 @@ namespace FluidTYPO3\Flux;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
-use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -18,8 +16,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
- * FLUX CORE
- *
  * Quick-access API methods to easily integrate with Flux
  */
 class Core
@@ -306,8 +302,8 @@ class Core
     ) {
         /** @var $objectManager ObjectManagerInterface */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var $provider ContentProvider */
-        $provider = $objectManager->get(ContentProvider::class);
+        /** @var $provider ProviderInterface */
+        $provider = $objectManager->get(Provider::class);
         $provider->setTableName('tt_content');
         $provider->setFieldName($fieldName);
         $provider->setExtensionKey($extensionKey);
@@ -364,30 +360,12 @@ class Core
      *
      * @param string $providerExtensionName Vendor.ExtensionName format of extension scope of the template file
      * @param string $templateFilename Absolute path to template file containing Flux definition, EXT:... allowed
-     * @param array $variables Optional array of variables which are assigned when rendering the Flux definition
-     * @param null|string $section
-     * @param null|string $paths
-     * @return ProviderInterface
      */
-    public static function registerTemplateAsContentType(
-        $providerExtensionName,
-        $templateFilename,
-        $variables = [],
-        $section = 'Configuration',
-        $paths = null
-    ) {
-
+    public static function registerTemplateAsContentType($providerExtensionName, $templateFilename)
+    {
         if (strpos($templateFilename, '/') !== 0) {
             $templateFilename = GeneralUtility::getFileAbsFileName($templateFilename);
         }
-
-        $provider = (new ContentTypeBuilder())->configureContentTypeFromTemplateFile(
-            $providerExtensionName,
-            $templateFilename,
-            $variables,
-            $section,
-            $paths
-        );
 
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
         $emulatedPluginName = ucfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
@@ -397,11 +375,9 @@ class Core
         static::$queuedContentTypeRegistrations[$fullContentType] = [
             $providerExtensionName,
             $fullContentType,
-            $provider,
+            $templateFilename,
             $emulatedPluginName
         ];
-
-        return $provider;
     }
 
     /**

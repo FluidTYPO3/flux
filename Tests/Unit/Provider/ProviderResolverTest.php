@@ -88,9 +88,7 @@ class ProviderResolverTest extends AbstractTestCase
         return array(
             array(array()),
             array(array('FluidTYPO3\\Flux\\Provider\\Provider')),
-            array(array('FluidTYPO3\\Flux\\Provider\\Provider', 'FluidTYPO3\\Flux\\Provider\\ContentProvider')),
             array(array(new Provider())),
-            array(array(new Provider(), new ContentProvider())),
         );
     }
 

@@ -112,12 +112,10 @@ class CoreTest extends AbstractTestCase
      */
     public function canRegisterStandaloneTemplateForContentObject()
     {
-        $service = $this->createFluxServiceInstance();
         $variables = array('test' => 'test');
         $paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
         $extensionKey = 'fake';
         $contentObjectType = 'void';
-        $providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $record['CType'] = $contentObjectType;
@@ -126,7 +124,7 @@ class CoreTest extends AbstractTestCase
         $result = Core::registerFluidFlexFormContentObject(
             $extensionKey,
             $contentObjectType,
-            $relativeTemplatePathAndFilename,
+            $absoluteTemplatePathAndFilename,
             $variables,
             $configurationSectionName,
             $paths
@@ -139,13 +137,11 @@ class CoreTest extends AbstractTestCase
      */
     public function canRegisterStandaloneTemplateForPlugin()
     {
-        $service = $this->createFluxServiceInstance();
         $variables = array('test' => 'test');
         $paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
         $extensionKey = 'more_fake';
         $pluginType = 'void';
         $fieldName = null;
-        $providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $record['list_type'] = $pluginType;
@@ -154,7 +150,7 @@ class CoreTest extends AbstractTestCase
         $result = Core::registerFluidFlexFormPlugin(
             $extensionKey,
             $pluginType,
-            $relativeTemplatePathAndFilename,
+            $absoluteTemplatePathAndFilename,
             $variables,
             $configurationSectionName,
             $paths
@@ -167,20 +163,17 @@ class CoreTest extends AbstractTestCase
      */
     public function canRegisterStandaloneTemplateForTable()
     {
-        $service = $this->createFluxServiceInstance();
         $variables = array('test' => 'test');
         $paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
         $table = 'fake';
         $fieldName = null;
-        $providerClassName = 'FluidTYPO3\Flux\Provider\ProviderInterface';
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
-        $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
         $configurationSectionName = 'Configuration';
         $result = Core::registerFluidFlexFormTable(
             $table,
             $fieldName,
-            $relativeTemplatePathAndFilename,
+            $absoluteTemplatePathAndFilename,
             $variables,
             $configurationSectionName,
             $paths
@@ -200,7 +193,7 @@ class CoreTest extends AbstractTestCase
             'FluidTYPO3.Flux',
             $absoluteTemplatePathAndFilename
         );
-        $this->assertInstanceOf(ProviderInterface::class, $result);
+        $this->assertNull($result);
     }
 
     /**

@@ -172,10 +172,10 @@ class MiscellaneousUtilityTest extends AbstractTestCase
     public function getGenerateUniqueIntegerForFluxAreaTestValues()
     {
         return array(
-            array(1, 'test', -10000000449),
-            array(321, 'foobar', -10000000954),
-            array(8, 'xyzbazbar', -10000000997),
-            array(123, 'verylongstringverylongstringverylongstring', -10000004770)
+            array(1, 'test', 18630),
+            array(321, 'foobar', 19135),
+            array(8, 'xyzbazbar', 19178),
+            array(123, 'verylongstringverylongstringverylongstring', 22951)
         );
     }
 
@@ -243,6 +243,15 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         return array(
             array('<data><fields></fields></data>', array(), ''),
             array('<data><field index="columns">   <el index="el">   </el>   </field></data>', array(), ''),
+            array('
+                <data>
+                    <sheet index="emptySheet1"></sheet>
+                    <sheet index="emptySheet2"></sheet>
+                    <sheet index="emptySheet3"></sheet>
+                </data>',
+                array(),
+                ''
+            ),
         );
     }
 }

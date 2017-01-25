@@ -19,34 +19,6 @@ use TYPO3\CMS\Extbase\Mvc\RequestInterface;
  */
 interface ProviderInterface
 {
-
-    /**
-     * Use by TceMain to track method calls to providers for a certain $id.
-     * Every provider should only be called once per method / $id / command.
-     * Before calling a provider, TceMain will call this method.
-     * If the provider hasn't been called for that method / $id / command
-     * before, it is.
-     *
-     *
-     * @param string $methodName
-     * @param mixed $id
-     * @param string $command
-     * @return boolean
-     */
-    public function shouldCall($methodName, $id, $command = '');
-
-    /**
-     * Use by TceMain to track method calls to providers for a certain $id.
-     * Every provider should only be called once per method / $id.
-     * When TceMain has called the provider it will call this method afterwards.
-     *
-     * @param string $methodName
-     * @param mixed $id
-     * @param string $command
-     * @return void
-     */
-    public function trackMethodCall($methodName, $id, $command = '');
-
     /**
      * @param array $settings
      * @return void
@@ -201,6 +173,18 @@ interface ProviderInterface
     public function setExtensionKey($extensionKey);
 
     /**
+     * @param string $controllerName
+     * @return ProviderInterface
+     */
+    public function setControllerName($controllerName);
+
+    /**
+     * @param string $controllerAction
+     * @return ProviderInterface
+     */
+    public function setControllerAction($controllerAction);
+
+    /**
      * @param array|NULL $templateVariables
      * @return ProviderInterface
      */
@@ -327,6 +311,7 @@ interface ProviderInterface
      * of the configuration array manipulated to the Provider's needs.
      *
      * @param array $row The record being edited/created
+     * @param array $configuration
      * @return array The large FormEngine configuration array - see FormEngine documentation!
      */
     public function processTableConfiguration(array $row, array $configuration);
@@ -394,9 +379,4 @@ interface ProviderInterface
      * @param Grid $grid
      */
     public function setGrid(Grid $grid);
-
-    /**
-     * @return void
-     */
-    public function reset();
 }

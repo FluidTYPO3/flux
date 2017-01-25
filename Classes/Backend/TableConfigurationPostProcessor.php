@@ -10,12 +10,12 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
 use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -65,7 +65,13 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         $contentTypeBuilder = new ContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
-            list ($providerExtensionName, $contentType, $provider, $pluginName) = $queuedRegistration;
+            list ($providerExtensionName, $contentType, $templateFilename, $pluginName) = $queuedRegistration;
+            $provider = (new ContentTypeBuilder())->configureContentTypeFromTemplateFile(
+                $providerExtensionName,
+                $templateFilename
+            );
+
+            Core::registerConfigurationProvider($provider);
             $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
         }
     }
@@ -164,7 +170,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     /**
      * @param string $class
      * @param string $table
-     * @return Form
+     * @return FormInterface
      */
     public function generateFormInstanceFromClassName($class, $table)
     {

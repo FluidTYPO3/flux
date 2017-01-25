@@ -9,14 +9,15 @@ namespace FluidTYPO3\Flux\Helper;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 /**
@@ -30,37 +31,36 @@ class ContentTypeBuilder
     /**
      * @param string $providerExtensionName
      * @param string $templateFilename
-     * @param array $variables
-     * @param string $section
-     * @param array|null $paths
      * @return ProviderInterface
      */
-    public function configureContentTypeFromTemplateFile(
-        $providerExtensionName,
-        $templateFilename,
-        $variables = [],
-        $section = 'Configuration',
-        $paths = null
-    ) {
+    public function configureContentTypeFromTemplateFile($providerExtensionName, $templateFilename)
+    {
+        $variables = [];
+        $section = 'Configuration';
+        $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
-        $emulatedControllerAction = pathinfo($templateFilename, PATHINFO_FILENAME);
+        $emulatedControllerAction = lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
         $emulatedPluginName = ucfirst($emulatedControllerAction);
-        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\ContentController';
+        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
 
         $this->validateContentController($controllerClassName, $fullContentType);
         $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $emulatedControllerAction);
 
-        // Configure a Provider which reacts to our new CType:
-        return Core::registerFluidFlexFormContentObject(
-            $providerExtensionName,
-            $fullContentType,
-            $templateFilename,
-            $variables,
-            $section,
-            $paths
-        );
+        /** @var Provider $provider */
+        $provider = GeneralUtility::makeInstance(ObjectManager::class)->get(Provider::class);
+        $provider->setFieldName('pi_flexform');
+        $provider->setTableName('tt_content');
+        $provider->setExtensionKey($providerExtensionName);
+        $provider->setControllerName($controllerName);
+        $provider->setControllerAction($emulatedControllerAction);
+        $provider->setTemplatePathAndFilename($templateFilename);
+        $provider->setContentObjectType($fullContentType);
+        $provider->setTemplateVariables($variables);
+        $provider->setConfigurationSectionName($section);
+
+        return $provider;
     }
 
     /**
@@ -171,8 +171,15 @@ class ContentTypeBuilder
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.access;access,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.extended,rowDescription,
                 --div--;LLL:EXT:lang/locallang_tca.xlf:sys_category.tabs.category,categories, 
-                --div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tabs.relation, tx_flux_parent, tx_flux_column, tx_flux_children
+                --div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tabs.relation, tx_flux_parent, tx_flux_column
             ';
+        // Do not add the special IRRE nested content display (when editing parent) if workspaces is loaded.
+        // When workspaces is loaded, the IRRE may contain move placeholders which cause TYPO3 to throw errors
+        // if attempting to save the parent record, because new versions get created for all child records and
+        // this isn't allowed for move placeholders.
+        if (!ExtensionManagementUtility::isLoaded('workspaces')) {
+            $showItem .= ', tx_flux_children';
+        }
         $GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'] = $showItem;
         $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['ds']['*,' . $contentType] = [];
         ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'pi_flexform', $contentType);
@@ -188,6 +195,11 @@ class ContentTypeBuilder
     {
         $formId = $form->getId();
         $icon = $form->getOption(Form::OPTION_ICON);
+        $group = $form->getOption(Form::OPTION_GROUP);
+        if (!$group) {
+            $group = 'fluxContent';
+        }
+        $group = $this->sanitizeString($group);
 
         // Icons required solely for use in the "new content element" wizard
         $extensionKey = ExtensionNamingUtility::getExtensionKey($providerExtensionName);
@@ -199,7 +211,7 @@ class ContentTypeBuilder
         // Registration for "new content element" wizard to show our new CType (otherwise, only selectable via "Content type" drop-down)
         ExtensionManagementUtility::addPageTSConfig(
             sprintf(
-                'mod.wizards.newContentElement.wizardItems.fluxContent.elements.%s {
+                'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
                     iconIdentifier = %s
                     title = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s
                     description = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s.description
@@ -207,6 +219,7 @@ class ContentTypeBuilder
                         CType = %s
                     }
                 }',
+                $group,
                 $formId,
                 $iconIdentifier,
                 $extensionKey,
@@ -219,6 +232,18 @@ class ContentTypeBuilder
     }
 
     /**
+     * @param string $string
+     * @return string
+     */
+    protected function sanitizeString($string)
+    {
+        $pattern = '/([^a-z0-9\-]){1,}/i';
+        $replaced = preg_replace($pattern, '_', $string);
+        $replaced = trim($replaced, '_');
+        return empty($replaced) ? md5($string) : $replaced;
+    }
+
+    /**
      * @param string $providerExtensionName
      * @param string $pluginName
      * @param Form $form
@@ -226,7 +251,6 @@ class ContentTypeBuilder
      */
     protected function registerExtbasePluginForForm($providerExtensionName, $pluginName, Form $form)
     {
-        $formId = $form->getId();
         $icon = $form->getOption(Form::OPTION_ICON);
 
         ExtensionUtility::registerPlugin(
