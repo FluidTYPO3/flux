@@ -120,6 +120,7 @@ class TceMain
         $record = $this->resolveRecordForOperation($table, $id);
         $clipboardCommand = (array) $this->getClipboardCommand();
         if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
+            $properties = (array) $clipboardCommand['update'];
             $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
         }
 
@@ -134,11 +135,15 @@ class TceMain
                     $record = $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id]);
                 }
 
+                foreach ($properties as $propertyName => $propertyValue) {
+                    $record[$propertyName] = $propertyValue;
+                }
+
                 // Guard: do not allow records to become children of themselves at any recursion level.
                 // Only perform this check if the "relativeTo" target is a negative integer meaning
                 // "insert after the record with uid=abs($relativeTo)". When moving to a page column
                 // the $relativeTo value is a positive integer and we will skip it.
-                if ($command === 'move' && $relativeTo >= 0) {
+                if ($command === 'move' && $relativeTo <= 0) {
                     // Perform an unpersisted record moving to perform assertions on the result.
                     $temporaryRecord = $record;
                     $this->contentService->moveRecord($temporaryRecord, $relativeTo, $clipboardCommand, $reference);
@@ -215,6 +220,7 @@ class TceMain
 
             $clipboardCommand = (array) $this->getClipboardCommand();
             if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
+                $properties = (array) $clipboardCommand['update'];
                 $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
             }
 
@@ -229,10 +235,18 @@ class TceMain
                         $record = $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id]);
                     }
 
+                    foreach ($properties as $propertyName => $propertyValue) {
+                        $record[$propertyName] = $propertyValue;
+                    }
+
                     $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
                     $this->recordService->update($table, $record);
 
                     $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $record['uid']);
+                    $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord(
+                        $table,
+                        $record['t3ver_move_id'] > 0 ? $record['t3ver_move_id'] : $record['uid']
+                    );
                     if ($mostRecentVersionOfRecord) {
                         $this->contentService->moveRecord($mostRecentVersionOfRecord, $relativeTo, $clipboardCommand, $reference);
                         $this->recordService->update($table, $mostRecentVersionOfRecord);
