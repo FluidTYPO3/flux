@@ -389,7 +389,10 @@ class TceMain
         // record, and this version will NOT have had the necessary fields updated either.
         // To do this, we resolve the most recent versioned record for our original - and then also
         // update it.
-        $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
+        $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord(
+            $table,
+            $row['t3ver_move_id'] > 0 ? $row['t3ver_move_id'] : $resolveUid
+        );
         if ($mostRecentVersionOfRecord) {
             $this->contentService->moveRecord($mostRecentVersionOfRecord, $newColumnNumber, [], $reference);
             $this->recordService->update($table, $mostRecentVersionOfRecord);
@@ -486,7 +489,7 @@ class TceMain
             $GLOBALS['BE_USER']->workspace,
             $table,
             $uid,
-            'uid,colPos,tx_flux_parent,tx_flux_column,sorting'
+            'uid,colPos,tx_flux_parent,tx_flux_column,sorting,t3ver_move_id'
         );
     }
 

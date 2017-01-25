@@ -349,7 +349,14 @@ class PreviewView
                 $content .= $localizeButton;
             }
         }
-        $id = 'colpos-' . $colPosFluxContent . '-page-' . $row['pid'] . '--top-' . $row['uid'] . '-' . $columnName;
+        $pageUid = $row['pid'];
+        if ($GLOBALS['BE_USER']->workspace) {
+            $placeholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid'], 'pid');
+            if ($placeholder) {
+                $pageUid = $placeholder['pid'];
+            }
+        }
+        $id = 'colpos-' . $colPosFluxContent . '-page-' . $pageUid . '--top-' . $row['uid'] . '-' . $columnName;
         $target = $this->registerTargetContentAreaInSession($row['uid'], $columnName);
 
         return $this->parseGridColumnTemplate($row, $column, $target, $id, $content);
@@ -755,6 +762,14 @@ class PreviewView
             $label = LocalizationUtility::translate($label, $column->getExtensionName());
         }
 
+        $pageUid = $row['pid'];
+        if ($GLOBALS['BE_USER']->workspace) {
+            $placeholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid'], 'pid');
+            if ($placeholder) {
+                $pageUid = $placeholder['pid'];
+            }
+        }
+
         return sprintf(
             $this->templates['gridColumn'],
             $column->getColspan(),
@@ -764,7 +779,7 @@ class PreviewView
             $target,
             $templateClassJsSortableLanguageId,
             $templateDataLanguageUid,
-            $row['pid'],
+            $pageUid,
             $id,
             $this->drawNewIcon($row, $column),
             $this->drawPasteIcon($row, $column),
