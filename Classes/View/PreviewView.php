@@ -70,7 +70,7 @@ class PreviewView
                                     <div class="t3-page-ce t3js-page-ce" data-page="%s">
                                         <div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s"
                                             style="display: block;">
-                                            %s %s %s
+                                            %s%s%s
                                         </div>
                                         <div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available" ></div>
                                     </div>

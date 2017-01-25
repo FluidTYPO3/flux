@@ -373,7 +373,6 @@ class ContentServiceTest extends AbstractTestCase
             'colPos' => ContentService::COLPOS_FLUXCONTENT
         );
         $relativeTo = 2526;
-        $newColPos = 0;
         $parameters = [
             'tt_content',
             '1-paste-2526---0'
@@ -382,6 +381,5 @@ class ContentServiceTest extends AbstractTestCase
         $mock->moveRecord($row, $relativeTo, $parameters, $tceMain);
         $this->assertEquals(null, $row['tx_flux_column']);
         $this->assertEquals(null, $row['tx_flux_parent']);
-        $this->assertEquals($newColPos, $row['colPos']);
     }
 }
