@@ -239,9 +239,8 @@ class ContentService implements SingletonInterface
             } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
                 // Special case for clipboard commands only. This special case also requires a new
                 // sorting value to re-sort after a possibly invalid sorting value is received.
-                list($pageUid, , $relativeTo, $parentUid, $area, $column) =
+                list ($pageUid, , $relativeTo, $parentUid, $area, $column) =
                     GeneralUtility::trimExplode('-', $parameters[1]);
-                $row['colPos'] = $column;
                 $row['tx_flux_parent'] = $parentUid;
                 $row['tx_flux_column'] = $area;
                 $row['sorting'] = $tceMain->resorting('tt_content', $pageUid, 'sorting', $relativeTo);
