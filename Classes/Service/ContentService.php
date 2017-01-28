@@ -241,18 +241,20 @@ class ContentService implements SingletonInterface
                 // sorting value to re-sort after a possibly invalid sorting value is received.
                 list ($pageUid, , $relativeTo, $parentUid, $area, $column) =
                     GeneralUtility::trimExplode('-', $parameters[1]);
+                $sorting = $tceMain->getSortNumber('tt_content', $relativeTo, $pageUid);
                 $row['tx_flux_parent'] = $parentUid;
                 $row['tx_flux_column'] = $area;
-                $row['sorting'] = $tceMain->getSortNumber('tt_content', $relativeTo, $pageUid)['sortNumber'];
+                $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
             } elseif (0 > (integer) $relativeTo) {
                 // inserting a new element after another element. Check column position of that element.
                 // Get the desired sorting value after the relative record.
                 $relativeUid = abs($relativeTo);
                 $relativeToRecord = $this->loadRecordFromDatabase($relativeUid);
+                $sorting = $tceMain->getSortNumber('tt_content', $relativeUid, $relativeToRecord['pid']);
                 $row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
                 $row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
                 $row['colPos'] = $relativeToRecord['colPos'];
-                $row['sorting'] = $tceMain->getSortNumber('tt_content', $relativeUid, $relativeToRecord['pid'])['sortNumber'];
+                $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
             } elseif (0 < (integer) $relativeTo) {
                 // moving to first position in colPos, means that $relativeTo is the pid of the containing page
                 $row['tx_flux_parent'] = null;
