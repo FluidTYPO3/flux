@@ -218,6 +218,7 @@ class TceMain
                 $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
             }
 
+            $properties = [];
             $clipboardCommand = (array) $this->getClipboardCommand();
             if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
                 $properties = (array) $clipboardCommand['update'];
