@@ -242,7 +242,6 @@ class TceMain
                     $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
                     $this->recordService->update($table, $record);
 
-                    $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $record['uid']);
                     $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord(
                         $table,
                         $record['t3ver_move_id'] > 0 ? $record['t3ver_move_id'] : $record['uid']
