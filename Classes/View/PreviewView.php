@@ -519,7 +519,7 @@ class PreviewView
         // needs to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will
         // not remove records based on them having remove placeholders.
         $condition = sprintf(
-            "AND (pid = %d AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d') %s",
+            "(pid = %d AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d') %s",
             (integer) (isset($row['_MOVE_PLH_pid']) ? $row['_MOVE_PLH_pid'] : $row['pid']),
             $this->getFluxParentUid($row),
             $area,
@@ -532,11 +532,10 @@ class PreviewView
             // LTS - @TODO: remove this patch when 8.4.x is no longer supported, but no need to hurry.
             $condition .= ' AND ';
         }
-        $queryParts = $view->makeQueryArray('tt_content', $row['uid'], $condition);
-        $result = $this->getDatabaseConnection()->exec_SELECT_queryArray($queryParts);
+        $result = $this->getDatabaseConnection()->exec_SELECTgetRows('*', 'tt_content', $condition, '', 'sorting');
         $rows = [];
         if ($result) {
-            while (($contentRecord = $this->getDatabaseConnection()->sql_fetch_assoc($result)) !== false) {
+            foreach ($result as $contentRecord) {
                 BackendUtility::workspaceOL('tt_content', $contentRecord, -99, true);
 
                 // The following logic fixes unsetting of move placeholders whose new location no longer matches the
