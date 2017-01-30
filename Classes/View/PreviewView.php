@@ -26,6 +26,7 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Versioning\VersionState;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -519,7 +520,7 @@ class PreviewView
         // needs to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will
         // not remove records based on them having remove placeholders.
         $condition = sprintf(
-            "(pid = %d AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d') %s",
+            "(deleted = 0 AND pid = %d AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d') %s",
             (integer) (isset($row['_MOVE_PLH_pid']) ? $row['_MOVE_PLH_pid'] : $row['pid']),
             $this->getFluxParentUid($row),
             $area,
@@ -545,6 +546,7 @@ class PreviewView
                     && (integer) $contentRecord['colPos'] === ContentService::COLPOS_FLUXCONTENT
                     && $contentRecord['tx_flux_column'] === $area
                     && (integer) $contentRecord['tx_flux_parent'] === (integer) $row['uid']
+                    && (integer) $contentRecord['t3ver_state'] !== VersionState::DELETE_PLACEHOLDER
                 ) {
                     $rows[] = $contentRecord;
                 }
