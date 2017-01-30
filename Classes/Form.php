@@ -352,7 +352,23 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     public function setOption($name, $value)
     {
-        $this->options[$name] = $value;
+        if (strpos($name, '.') === false) {
+            $this->options[$name] = $value;
+        } else {
+            $subject = &$this->options;
+            $segments = explode('.', $name);
+            while ($segment = array_shift($segments)) {
+                if (isset($subject[$segment])) {
+                    $subject = &$subject[$segment];
+                } elseif (count($segments) === 0) {
+                    $subject = $value;
+                } else {
+                    $subject[$segment] = [];
+                    $subject = &$subject[$segment];
+                }
+            }
+        }
+
         return $this;
     }
 
