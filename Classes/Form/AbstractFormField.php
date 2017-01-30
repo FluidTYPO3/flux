@@ -438,8 +438,9 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public function modify(array $structure)
     {
-        if (true === isset($structure['wizards'])) {
-            foreach ((array) $structure['wizards'] as $index => $wizardData) {
+        if (isset($structure['wizards']) || isset($structure['children'])) {
+            $data = isset($structure['children']) ? $structure['children'] : $structure['wizards'];
+            foreach ((array) $data as $index => $wizardData) {
                 $wizardName = true === isset($wizardData['name']) ? $wizardData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
                 if (true === $this->has($wizardName)) {
@@ -450,6 +451,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
                 }
                 $field->modify($wizardData);
             }
+            unset($structure['children'], $structure['wizards']);
         }
         return parent::modify($structure);
     }

@@ -427,15 +427,17 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     public function modify(array $structure)
     {
-        if (true === isset($structure['options']) && true === is_array($structure['options'])) {
+        if (isset($structure['options']) && is_array($structure['options'])) {
             foreach ($structure['options'] as $name => $value) {
                 $this->setOption($name, $value);
             }
             unset($structure['options']);
         }
-        if (true === isset($structure['sheets'])) {
-            foreach ((array) $structure['sheets'] as $index => $sheetData) {
-                $sheetName = true === isset($sheetData['name']) ? $sheetData['name'] : $index;
+        if (isset($structure['sheets']) || isset($structure['children'])) {
+            $this->children = new \SplObjectStorage();
+            $data = isset($structure['children']) ? $structure['children'] : $structure['sheets'];
+            foreach ((array) $data as $index => $sheetData) {
+                $sheetName = isset($sheetData['name']) ? $sheetData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
                 if (true === $this->has($sheetName)) {
                     $sheet = $this->get($sheetName);
@@ -444,6 +446,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 }
                 $sheet->modify($sheetData);
             }
+            unset($structure['sheets'], $structure['children']);
         }
         return parent::modify($structure);
     }

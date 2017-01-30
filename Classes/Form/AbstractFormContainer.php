@@ -177,8 +177,9 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      */
     public function modify(array $structure)
     {
-        if (true === isset($structure['fields'])) {
-            foreach ((array) $structure['fields'] as $index => $fieldData) {
+        if (isset($structure['fields']) || isset($structure['children'])) {
+            $data = isset($structure['children']) ? $structure['children'] : $structure['fields'];
+            foreach ((array) $data as $index => $fieldData) {
                 $fieldName = true === isset($fieldData['name']) ? $fieldData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
                 if (true === $this->has($fieldName)) {
@@ -189,6 +190,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
                 }
                 $field->modify($fieldData);
             }
+            unset($structure['children'], $structure['fields']);
         }
         return parent::modify($structure);
     }
