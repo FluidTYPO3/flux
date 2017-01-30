@@ -250,7 +250,7 @@ class ContentService implements SingletonInterface
                 // Get the desired sorting value after the relative record.
                 $relativeUid = abs($relativeTo);
                 $relativeToRecord = $this->loadRecordFromDatabase($relativeUid);
-                $sorting = $tceMain->getSortNumber('tt_content', $relativeUid, $relativeToRecord['pid']);
+                $sorting = $tceMain->getSortNumber('tt_content', $relativeUid, $relativeTo);
                 $row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
                 $row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
                 $row['colPos'] = $relativeToRecord['colPos'];
