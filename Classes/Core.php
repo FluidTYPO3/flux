@@ -440,7 +440,7 @@ class Core
 
     /**
      * Gets the defined FlexForms configuration providers based on parameters
-     * @return array
+     * @return ProviderInterface[]
      */
     public static function getRegisteredFlexFormProviders()
     {
