@@ -125,6 +125,10 @@ class FormViewHelper extends AbstractFormViewHelper
         $templateVariableContainer->add(static::SCOPE_VARIABLE_FORM, $form);
 
         static::setContainerInRenderingContext($renderingContext, $container);
+        static::setExtensionNameInRenderingContext(
+            $renderingContext,
+            static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
+        );
         $renderChildrenClosure();
 
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
