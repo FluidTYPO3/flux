@@ -60,13 +60,26 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      * @param array $queue
      * @return void
      */
-    protected function spoolQueuedContentTypeRegistrations(array $queue)
+    public static function spoolQueuedContentTypeTableConfigurations(array $queue)
     {
         $contentTypeBuilder = new ContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
+            list (, $contentType) = $queuedRegistration;
+            $contentTypeBuilder->addBoilerplateTableConfiguration($contentType);
+        }
+    }
+
+    /**
+     * @param array $queue
+     * @return void
+     */
+    protected function spoolQueuedContentTypeRegistrations(array $queue)
+    {
+        foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
             list ($providerExtensionName, $contentType, $templateFilename, $pluginName) = $queuedRegistration;
-            $provider = (new ContentTypeBuilder())->configureContentTypeFromTemplateFile(
+            $contentTypeBuilder = new ContentTypeBuilder();
+            $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
                 $providerExtensionName,
                 $templateFilename
             );

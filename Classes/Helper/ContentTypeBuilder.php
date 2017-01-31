@@ -151,7 +151,6 @@ class ContentTypeBuilder
         $this->initializeIfRequired();
         $this->registerExtbasePluginForForm($providerExtensionName, $pluginName, $form);
         $this->addPageTsConfig($providerExtensionName, $form, $contentType);
-        $this->addBoilerplateTableConfiguration($contentType);
     }
 
     /**
@@ -160,7 +159,7 @@ class ContentTypeBuilder
      * @param string $contentType
      * @return void
      */
-    protected function addBoilerplateTableConfiguration($contentType)
+    public function addBoilerplateTableConfiguration($contentType)
     {
         $showItem = '
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.general;general,

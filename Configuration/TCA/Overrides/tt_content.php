@@ -77,3 +77,7 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('workspaces')) 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('tt_content', ',--div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tabs.relation,tx_flux_parent,tx_flux_column,tx_flux_children;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_children,');
 }
 
+// Initialize the TCA needed by "template as CType" integrations
+\FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor::spoolQueuedContentTypeTableConfigurations(
+    \FluidTYPO3\Flux\Core::getQueuedContentTypeRegistrations()
+);
