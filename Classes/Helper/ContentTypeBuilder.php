@@ -45,11 +45,14 @@ class ContentTypeBuilder
         $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
-
-        if (!$this->validateContentController($controllerClassName, $fullContentType)) {
+        if ($this->validateContentController($controllerClassName, $fullContentType)) {
+            $controllerExtensionName = $providerExtensionName;
+        } else {
             $controllerClassName = ContentController::class;
+            $controllerExtensionName = 'FluidTYPO3.Flux';
+            $fullContentType = 'flux_' . strtolower($emulatedPluginName);
         }
-        $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $emulatedControllerAction);
+        $this->configureContentTypeForController($controllerExtensionName, $controllerClassName, $emulatedControllerAction);
 
         /** @var Provider $provider */
         $provider = GeneralUtility::makeInstance(ObjectManager::class)->get(Provider::class);
@@ -162,8 +165,14 @@ class ContentTypeBuilder
         }
 
         $this->initializeIfRequired();
-        $this->registerExtbasePluginForForm($providerExtensionName, $pluginName, $form);
-        $this->addPageTsConfig($providerExtensionName, $form, $contentType);
+        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $provider->getControllerNameFromRecord([]) . 'Controller';
+        if ($this->validateContentController($controllerClassName, $contentType)) {
+            $controllerExtensionName = $providerExtensionName;
+        } else {
+            $controllerExtensionName = 'FluidTYPO3.Flux';
+        }
+        $this->registerExtbasePluginForForm($controllerExtensionName, $pluginName, $form);
+        $this->addPageTsConfig($controllerExtensionName, $form, $contentType);
     }
 
     /**
