@@ -82,7 +82,8 @@ class FluxServiceTest extends AbstractTestCase
     public function dispatchesMessageOnInvalidPathsReturned()
     {
         $className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-        $instance = $this->getMockBuilder($className)->setMethods(array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptByPath'))->getMock();
+        $instance = $this->getMockBuilder($className)->setMethods(array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptByPath', 'getAllTypoScript'))->getMock();
+        $instance->expects($this->once())->method('getAllTypoScript')->willReturn(['foo' => 'bar']);
         $instance->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue(null));
         $instance->expects($this->once())->method('getDefaultViewConfigurationForExtensionKey')->will($this->returnValue(null));
         $instance->getViewConfigurationForExtensionName('Flux');
@@ -374,7 +375,7 @@ class FluxServiceTest extends AbstractTestCase
 
         $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->setMethods(array('getConfiguration'))->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
-        $configurationManager->expects($this->once())->method('getConfiguration');
+        $configurationManager->expects($this->once(0))->method('getConfiguration')->willReturn(['foo' => 'bar']);
 
         $this->assertNotNull($fluxService->getAllTypoScript());
         $this->assertNotNull($fluxService->getAllTypoScript());
