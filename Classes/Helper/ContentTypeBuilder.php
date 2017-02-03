@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Helper;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
+use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -45,7 +46,9 @@ class ContentTypeBuilder
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
 
-        $this->validateContentController($controllerClassName, $fullContentType);
+        if (!$this->validateContentController($controllerClassName, $fullContentType)) {
+            $controllerClassName = ContentController::class;
+        }
         $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $emulatedControllerAction);
 
         /** @var Provider $provider */
@@ -59,6 +62,9 @@ class ContentTypeBuilder
         $provider->setContentObjectType($fullContentType);
         $provider->setTemplateVariables($variables);
         $provider->setConfigurationSectionName($section);
+
+        // We now cheat a little bit to achieve the next goal: giving the Provider a proper TS resolving context by
+        // attempting to resolve the page UID
 
         return $provider;
     }
@@ -95,30 +101,37 @@ class ContentTypeBuilder
     /**
      * @param string $controllerClassName
      * @param string $contentType
-     * @throws \RuntimeException
-     * @return void
+     * @return boolean
      */
     protected function validateContentController($controllerClassName, $contentType)
     {
         // Sanity check:
         if (!class_exists($controllerClassName)) {
-            throw new \RuntimeException(
+            GeneralUtility::devLog(
                 sprintf(
-                    'Class "%s" not found; Flux cannot render desired custom content type "%s"!',
+                    'Class "%s" not found as controller for CType "%s"; Flux will use the default which is "%s"',
                     $controllerClassName,
-                    $contentType
-                )
+                    $contentType,
+                    ContentController::class
+                ),
+                '',
+                GeneralUtility::SYSLOG_SEVERITY_INFO
             );
+            return false;
         }
         if (!is_a($controllerClassName, AbstractFluxController::class, true)) {
-            throw new \RuntimeException(
+            GeneralUtility::devLog(
                 sprintf(
                     'Class "%s" exists but is not a subclass of "%s", please switch parent class!',
                     $controllerClassName,
                     AbstractFluxController::class
-                )
+                ),
+                '',
+                GeneralUtility::SYSLOG_SEVERITY_WARNING
             );
+            return false;
         }
+        return true;
     }
 
     /**
