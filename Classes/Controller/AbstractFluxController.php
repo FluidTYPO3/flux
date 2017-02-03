@@ -12,7 +12,6 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
-use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\ViewHelpers\Outlet\FormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -345,6 +344,7 @@ abstract class AbstractFluxController extends ActionController
         try {
             $potentialControllerInstance->processRequest($subRequest, $response);
         } catch (StopActionException $error) {
+            // intentionally left blank
         }
         return $response->getContent();
     }

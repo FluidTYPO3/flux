@@ -239,18 +239,22 @@ class ContentService implements SingletonInterface
             } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
                 // Special case for clipboard commands only. This special case also requires a new
                 // sorting value to re-sort after a possibly invalid sorting value is received.
-                list($pageUid, , $relativeTo, $parentUid, $area, $column) =
+                list ($pageUid, , $relativeTo, $parentUid, $area, $column) =
                     GeneralUtility::trimExplode('-', $parameters[1]);
-                $row['colPos'] = $column;
+                $sorting = $tceMain->getSortNumber('tt_content', $relativeTo, $pageUid);
                 $row['tx_flux_parent'] = $parentUid;
                 $row['tx_flux_column'] = $area;
-                $row['sorting'] = $tceMain->resorting('tt_content', $pageUid, 'sorting', $relativeTo);
+                $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
             } elseif (0 > (integer) $relativeTo) {
                 // inserting a new element after another element. Check column position of that element.
-                $relativeToRecord = $this->loadRecordFromDatabase(abs($relativeTo));
+                // Get the desired sorting value after the relative record.
+                $relativeUid = abs($relativeTo);
+                $relativeToRecord = $this->loadRecordFromDatabase($relativeUid);
+                $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], $relativeTo);
                 $row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
                 $row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
                 $row['colPos'] = $relativeToRecord['colPos'];
+                $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
             } elseif (0 < (integer) $relativeTo) {
                 // moving to first position in colPos, means that $relativeTo is the pid of the containing page
                 $row['tx_flux_parent'] = null;

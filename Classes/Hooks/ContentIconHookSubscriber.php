@@ -14,6 +14,8 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -32,8 +34,11 @@ class ContentIconHookSubscriber
      * @var array
      */
     protected $templates = [
-        'iconWrapper' => '</div><span class="t3-icon t3-icon-empty t3-icon-empty-empty fluidcontent-icon">%s</span>
-            <div class="fluidcontent-hack">'
+        'iconWrapper' => '</div><span class="t3-icon t3-icon-empty t3-icon-empty-empty fluidcontent-icon">%s</span><div class="fluidcontent-hack">',
+        'gridToggle' => '</div><div class="fluidcontent-toggler">
+                            <div class="btn-group btn-group-sm" role="group">
+                            <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a> 
+                        </div>'
     ];
 
     /**
@@ -86,12 +91,13 @@ class ContentIconHookSubscriber
      */
     public function addSubIcon(array $parameters, $caller = null)
     {
+        $provider = null;
         $this->attachAssets();
         list ($table, $uid, $record) = $parameters;
         $icon = null;
         if (null !== $caller) {
             $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
-            $cacheIdentity = $table . $uid . sha1(serialize($record));
+            $cacheIdentity = $table . $uid . sha1(serialize($record)) . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
             // filter 1: icon must not already be cached and both record and caller must be provided.
             // we check the cache here because at this point, the cache key is decidedly
             // unique and we have not yet consulted the (potentially costly) Provider.
@@ -111,11 +117,14 @@ class ContentIconHookSubscriber
                                 if (strpos($icon, 'EXT:') === 0) {
                                     $icon = '/' . substr(GeneralUtility::getFileAbsFileName($icon), strlen(PATH_site));
                                 }
-                                $label = trim($form->getLabel());
+                                $label = $GLOBALS['LANG']->sL(trim($form->getLabel()));
                                 $icon = '<img width="16" height="16" src="' . $icon . '" alt="' . $label . '"
 									title="' . $label . '" class="" />';
                                 $icon = sprintf($this->templates['iconWrapper'], $icon);
                             }
+                        }
+                        if ($provider->getGrid($record)->hasChildren()) {
+                            $icon .= $this->drawGridToggle($record);
                         }
                     }
                 }
@@ -123,6 +132,46 @@ class ContentIconHookSubscriber
             }
         }
         return $icon;
+    }
+
+    /**
+     * @param array $row
+     *
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    protected function drawGridToggle(array $row)
+    {
+        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+
+        $icon = $iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
+        $icon .= $iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
+        $label = $GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
+
+        return sprintf($this->templates['gridToggle'], $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
+    }
+
+    /**
+     * @param array $row
+     * @return string
+     */
+    protected function isRowCollapsed(array $row)
+    {
+        $collapsed = false;
+        $cookie = $this->getCookie();
+        if (null !== $_COOKIE) {
+            $cookie = json_decode(urldecode($cookie));
+            $collapsed = in_array($row['uid'], (array) $cookie);
+        }
+        return $collapsed;
+    }
+
+    /**
+     * @return string|NULL
+     */
+    protected function getCookie()
+    {
+        return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
     }
 
     /**
@@ -145,8 +194,6 @@ class ContentIconHookSubscriber
      */
     protected function attachAssets()
     {
-        $GLOBALS['TBE_STYLES']['stylesheet'] = $doc->backPath .
-            ExtensionManagementUtility::extRelPath('flux') .
-            'Resources/Public/css/icon.css';
+        $GLOBALS['TBE_STYLES']['stylesheet'] = ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/icon.css';
     }
 }

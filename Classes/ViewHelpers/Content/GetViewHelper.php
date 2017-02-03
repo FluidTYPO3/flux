@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -145,6 +144,15 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
         $offset = intval($arguments['offset']);
         $sortDirection = $arguments['sortDirection'];
         $order .= ' ' . $sortDirection;
+
+        if ($GLOBALS['BE_USER']->workspace) {
+            $placeholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid']);
+            if ($placeholder) {
+                // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
+                // from the workspace-only placeholder.
+                $record = $placeholder;
+            }
+        }
 
         // Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and column.
         // The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.

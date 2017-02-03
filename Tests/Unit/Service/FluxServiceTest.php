@@ -8,16 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -82,7 +79,8 @@ class FluxServiceTest extends AbstractTestCase
     public function dispatchesMessageOnInvalidPathsReturned()
     {
         $className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-        $instance = $this->getMockBuilder($className)->setMethods(array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptByPath'))->getMock();
+        $instance = $this->getMockBuilder($className)->setMethods(array('getDefaultViewConfigurationForExtensionKey', 'getTypoScriptByPath', 'getAllTypoScript'))->getMock();
+        $instance->expects($this->once())->method('getAllTypoScript')->willReturn(['foo' => 'bar']);
         $instance->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue(null));
         $instance->expects($this->once())->method('getDefaultViewConfigurationForExtensionKey')->will($this->returnValue(null));
         $instance->getViewConfigurationForExtensionName('Flux');
@@ -374,7 +372,7 @@ class FluxServiceTest extends AbstractTestCase
 
         $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->setMethods(array('getConfiguration'))->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
-        $configurationManager->expects($this->once())->method('getConfiguration');
+        $configurationManager->expects($this->once(0))->method('getConfiguration')->willReturn(['foo' => 'bar']);
 
         $this->assertNotNull($fluxService->getAllTypoScript());
         $this->assertNotNull($fluxService->getAllTypoScript());

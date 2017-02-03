@@ -147,15 +147,12 @@ class Preview implements PageLayoutViewDrawItemHookInterface
             $pageRenderer->addRequireJsConfiguration([
                 'paths' => [
                     'FluidTypo3/Flux/DragDrop' => $fullJsPath . 'DragDrop',
+                    'FluidTypo3/Flux/FluxCollapse' => $fullJsPath . 'fluxCollapse',
                 ],
             ]);
             $pageRenderer->loadRequireJsModule('FluidTypo3/Flux/DragDrop');
+            $pageRenderer->loadRequireJsModule('FluidTypo3/Flux/FluxCollapse');
 
-            // This is necessary for fluxCollapse.js
-            $pageRenderer->loadExtJS();
-            $pageRenderer->addJsFile(
-                $doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/js/fluxCollapse.js'
-            );
             self::$assetsIncluded = true;
         }
     }

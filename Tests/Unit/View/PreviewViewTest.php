@@ -213,7 +213,7 @@ class PreviewViewTest extends AbstractTestCase
      */
     protected function assertPreviewContainsToggle($preview)
     {
-        $this->assertStringStartsWith('<div class="grid-visibility-toggle">', $preview);
+        $this->assertStringStartsWith('<div class="grid-visibility-toggle" ', $preview);
     }
 
     /**

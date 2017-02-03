@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Helper;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
+use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -44,9 +45,14 @@ class ContentTypeBuilder
         $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
-
-        $this->validateContentController($controllerClassName, $fullContentType);
-        $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $emulatedControllerAction);
+        if ($this->validateContentController($controllerClassName, $fullContentType)) {
+            $controllerExtensionName = $providerExtensionName;
+        } else {
+            $controllerClassName = ContentController::class;
+            $controllerExtensionName = 'FluidTYPO3.Flux';
+            $fullContentType = 'flux_' . strtolower($emulatedPluginName);
+        }
+        $this->configureContentTypeForController($controllerExtensionName, $controllerClassName, $emulatedControllerAction);
 
         /** @var Provider $provider */
         $provider = GeneralUtility::makeInstance(ObjectManager::class)->get(Provider::class);
@@ -58,8 +64,10 @@ class ContentTypeBuilder
         $provider->setTemplatePathAndFilename($templateFilename);
         $provider->setContentObjectType($fullContentType);
         $provider->setTemplateVariables($variables);
-        $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
+
+        // We now cheat a little bit to achieve the next goal: giving the Provider a proper TS resolving context by
+        // attempting to resolve the page UID
 
         return $provider;
     }
@@ -96,30 +104,37 @@ class ContentTypeBuilder
     /**
      * @param string $controllerClassName
      * @param string $contentType
-     * @throws \RuntimeException
-     * @return void
+     * @return boolean
      */
     protected function validateContentController($controllerClassName, $contentType)
     {
         // Sanity check:
         if (!class_exists($controllerClassName)) {
-            throw new \RuntimeException(
+            GeneralUtility::devLog(
                 sprintf(
-                    'Class "%s" not found; Flux cannot render desired custom content type "%s"!',
+                    'Class "%s" not found as controller for CType "%s"; Flux will use the default which is "%s"',
                     $controllerClassName,
-                    $contentType
-                )
+                    $contentType,
+                    ContentController::class
+                ),
+                '',
+                GeneralUtility::SYSLOG_SEVERITY_INFO
             );
+            return false;
         }
         if (!is_a($controllerClassName, AbstractFluxController::class, true)) {
-            throw new \RuntimeException(
+            GeneralUtility::devLog(
                 sprintf(
                     'Class "%s" exists but is not a subclass of "%s", please switch parent class!',
                     $controllerClassName,
                     AbstractFluxController::class
-                )
+                ),
+                '',
+                GeneralUtility::SYSLOG_SEVERITY_WARNING
             );
+            return false;
         }
+        return true;
     }
 
     /**
@@ -150,9 +165,14 @@ class ContentTypeBuilder
         }
 
         $this->initializeIfRequired();
-        $this->registerExtbasePluginForForm($providerExtensionName, $pluginName, $form);
-        $this->addPageTsConfig($providerExtensionName, $form, $contentType);
-        $this->addBoilerplateTableConfiguration($contentType);
+        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $provider->getControllerNameFromRecord([]) . 'Controller';
+        if ($this->validateContentController($controllerClassName, $contentType)) {
+            $controllerExtensionName = $providerExtensionName;
+        } else {
+            $controllerExtensionName = 'FluidTYPO3.Flux';
+        }
+        $this->registerExtbasePluginForForm($controllerExtensionName, $pluginName, $form);
+        $this->addPageTsConfig($controllerExtensionName, $form, $contentType);
     }
 
     /**
@@ -161,7 +181,7 @@ class ContentTypeBuilder
      * @param string $contentType
      * @return void
      */
-    protected function addBoilerplateTableConfiguration($contentType)
+    public function addBoilerplateTableConfiguration($contentType)
     {
         $showItem = '
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.general;general,
@@ -196,6 +216,11 @@ class ContentTypeBuilder
     {
         $formId = $form->getId();
         $icon = $form->getOption(Form::OPTION_ICON);
+        $group = $form->getOption(Form::OPTION_GROUP);
+        if (!$group) {
+            $group = 'fluxContent';
+        }
+        $group = $this->sanitizeString($group);
 
         // Icons required solely for use in the "new content element" wizard
         $extensionKey = ExtensionNamingUtility::getExtensionKey($providerExtensionName);
@@ -207,7 +232,7 @@ class ContentTypeBuilder
         // Registration for "new content element" wizard to show our new CType (otherwise, only selectable via "Content type" drop-down)
         ExtensionManagementUtility::addPageTSConfig(
             sprintf(
-                'mod.wizards.newContentElement.wizardItems.fluxContent.elements.%s {
+                'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
                     iconIdentifier = %s
                     title = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s
                     description = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s.description
@@ -215,6 +240,7 @@ class ContentTypeBuilder
                         CType = %s
                     }
                 }',
+                $group,
                 $formId,
                 $iconIdentifier,
                 $extensionKey,
@@ -224,6 +250,18 @@ class ContentTypeBuilder
                 $contentType
             )
         );
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    protected function sanitizeString($string)
+    {
+        $pattern = '/([^a-z0-9\-]){1,}/i';
+        $replaced = preg_replace($pattern, '_', $string);
+        $replaced = trim($replaced, '_');
+        return empty($replaced) ? md5($string) : $replaced;
     }
 
     /**

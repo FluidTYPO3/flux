@@ -29,7 +29,7 @@ class InputViewHelper extends AbstractFieldViewHelper
             'string',
             'FlexForm-type validation configuration for this input',
             false,
-            'trim'
+            Input::DEFAULT_VALIDATE
         );
         $this->registerArgument('size', 'integer', 'Size of field', false, 32);
         $this->registerArgument('maxCharacters', 'integer', 'Maximum number of characters allowed', false);

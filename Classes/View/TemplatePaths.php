@@ -337,16 +337,13 @@ class TemplatePaths
         // Modern plural paths configurations: sorted reverse by key to
         // check the path with the highest number first.
         if (isset($paths[self::CONFIG_TEMPLATEROOTPATHS]) && is_array($paths[self::CONFIG_TEMPLATEROOTPATHS])) {
-            krsort($paths[self::CONFIG_TEMPLATEROOTPATHS], SORT_NUMERIC);
-            $templateRootPaths = array_merge($templateRootPaths, array_values($paths[self::CONFIG_TEMPLATEROOTPATHS]));
+            $templateRootPaths = array_merge($templateRootPaths, $paths[self::CONFIG_TEMPLATEROOTPATHS]);
         }
         if (isset($paths[self::CONFIG_LAYOUTROOTPATHS]) && is_array($paths[self::CONFIG_LAYOUTROOTPATHS])) {
-            krsort($paths[self::CONFIG_LAYOUTROOTPATHS], SORT_NUMERIC);
-            $layoutRootPaths = array_merge($layoutRootPaths, array_values($paths[self::CONFIG_LAYOUTROOTPATHS]));
+            $layoutRootPaths = array_merge($layoutRootPaths, $paths[self::CONFIG_LAYOUTROOTPATHS]);
         }
         if (isset($paths[self::CONFIG_PARTIALROOTPATHS]) && is_array($paths[self::CONFIG_PARTIALROOTPATHS])) {
-            krsort($paths[self::CONFIG_PARTIALROOTPATHS], SORT_NUMERIC);
-            $partialRootPaths = array_merge($partialRootPaths, array_values($paths[self::CONFIG_PARTIALROOTPATHS]));
+            $partialRootPaths = array_merge($partialRootPaths, $paths[self::CONFIG_PARTIALROOTPATHS]);
         }
         // translate all paths to absolute paths
         $templateRootPaths = array_map([$this, 'ensureAbsolutePath'], $templateRootPaths);
