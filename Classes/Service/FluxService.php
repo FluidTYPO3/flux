@@ -312,6 +312,14 @@ class FluxService implements SingletonInterface
         $signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
         $defaults = (array) $this->getDefaultViewConfigurationForExtensionKey($extensionName);
         $configuration = (array) $this->getTypoScriptByPath('plugin.tx_' . $signature . '.view');
+        $typoScript = $this->getAllTypoScript();
+        // We probe $typoScript here, determining if any TS was loaded. If none was loaded we
+        // avoid caching the result so that future calls (after TS gets loaded) will receive the
+        // TS-configured paths. The result will then get cached as soon as TS becomes available.
+        if (empty($typoScript)) {
+            // Special case: when $configuration is empty this means
+            return $defaults;
+        }
         return $cache[$extensionName] = RecursiveArrayUtility::mergeRecursiveOverrule($defaults, $configuration);
     }
 
@@ -368,10 +376,16 @@ class FluxService implements SingletonInterface
             return $cache[$pageId];
         }
         if (false === isset($cache[$pageId])) {
-            $cache[$pageId] = (array) $this->configurationManager->getConfiguration(
+            $typoScript = (array) $this->configurationManager->getConfiguration(
                 ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
             );
-            $cache[$pageId] = GeneralUtility::removeDotsFromTS($cache[$pageId]);
+            if (!empty($typoScript)) {
+                $cache[$pageId] = GeneralUtility::removeDotsFromTS($typoScript);
+            } else {
+                // Special case: the TS is empty, meaning the template is not yet initialized.
+                // We avoid caching this result so future calls won't read an empty array.
+                return [];
+            }
         }
         return (array) $cache[$pageId];
     }
