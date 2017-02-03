@@ -8,16 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
