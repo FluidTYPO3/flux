@@ -40,12 +40,13 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php'][
 
 // The following is a dual registration of the same TCA-manipulating hook; the reason for registering it twice for two
 // different hooks is that extTablesInclusion-PostProcessing does not get executed in FE, resulting in errors due to
-// features provided by this hook subscriber not being loaded. We use the postBeUser since it gets executed also when
-// no user is logged in, and sits sufficiently early to load TCA as well as for the necessary context to be available.
+// features provided by this hook subscriber not being loaded. We use the includeStaticTypoScriptSourcesAtEnd since this
+// is the absolutely last possible place we can configure plugins before causing a "Content type XYZ has no rendering
+// definition" error in FE output.
 if (TYPO3_MODE === 'BE') {
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux'] = \FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor::class;
 } else {
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/index_ts.php']['postBeUser']['flux'] = \FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor::class . '->processData';
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSourcesAtEnd'][] = \FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor::class . '->processData';
 }
 
 
