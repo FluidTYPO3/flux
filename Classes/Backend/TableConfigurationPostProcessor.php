@@ -10,12 +10,12 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
 use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -60,19 +60,70 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      * @param array $queue
      * @return void
      */
+    public static function spoolQueuedContentTypeTableConfigurations(array $queue)
+    {
+        $contentTypeBuilder = new ContentTypeBuilder();
+        foreach ($queue as $queuedRegistration) {
+            list ($providerExtensionName, $templatePathAndFilename) = $queuedRegistration;
+            $contentType = static::determineContentType($providerExtensionName, $templatePathAndFilename);
+            $contentTypeBuilder->addBoilerplateTableConfiguration($contentType);
+        }
+    }
+
+    /**
+     * @param string $providerExtensionName
+     * @param string $templatePathAndFilename
+     * @return string
+     */
+    protected static function determineContentType($providerExtensionName, $templatePathAndFilename)
+    {
+        // Determine which plugin name and controller action to emulate with this CType, base on file name.
+        $controllerExtensionName = $providerExtensionName;
+        if (!static::controllerExistsInExtension($providerExtensionName, 'Content')) {
+            $controllerExtensionName = 'FluidTYPO3.Flux';
+        }
+        $emulatedPluginName = ucfirst(pathinfo($templatePathAndFilename, PATHINFO_FILENAME));
+        $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($controllerExtensionName));
+        $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
+        return $fullContentType;
+    }
+
+    /**
+     * @param string $providerExtensionName
+     * @param string $controllerName
+     * @return boolean
+     */
+    protected static function controllerExistsInExtension($providerExtensionName, $controllerName)
+    {
+        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
+        return class_exists($controllerClassName);
+    }
+
+    /**
+     * @param array $queue
+     * @return void
+     */
     protected function spoolQueuedContentTypeRegistrations(array $queue)
     {
         $contentTypeBuilder = new ContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
-            list ($providerExtensionName, $contentType, $templateFilename, $pluginName) = $queuedRegistration;
-            $provider = (new ContentTypeBuilder())->configureContentTypeFromTemplateFile(
+            list ($providerExtensionName, $templateFilename) = $queuedRegistration;
+            $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
                 $providerExtensionName,
                 $templateFilename
             );
 
             Core::registerConfigurationProvider($provider);
-            $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
+
+            $controllerExtensionName = $providerExtensionName;
+            if (!static::controllerExistsInExtension($providerExtensionName, 'Content')) {
+                $controllerExtensionName = 'FluidTYPO3.Flux';
+            }
+
+            $contentType = static::determineContentType($providerExtensionName, $templateFilename);
+            $pluginName = ucfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
+            $contentTypeBuilder->registerContentType($controllerExtensionName, $contentType, $provider, $pluginName);
         }
     }
 
@@ -170,7 +221,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     /**
      * @param string $class
      * @param string $table
-     * @return Form
+     * @return FormInterface
      */
     public function generateFormInstanceFromClassName($class, $table)
     {

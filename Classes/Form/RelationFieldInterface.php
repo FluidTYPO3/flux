@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 /**
- * RelationFieldInterface
+ * Public contract for relation-capable fields
  */
 interface RelationFieldInterface extends MultiValueFieldInterface
 {
@@ -214,7 +214,7 @@ interface RelationFieldInterface extends MultiValueFieldInterface
 
     /**
      * @param boolean|string $emptyOption
-     * @return Select
+     * @return RelationFieldInterface
      */
     public function setEmptyOption($emptyOption);
 

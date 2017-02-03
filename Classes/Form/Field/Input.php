@@ -17,6 +17,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Input extends AbstractFormField implements FieldInterface
 {
+    const DEFAULT_VALIDATE = 'trim';
 
     /**
      * @var integer
@@ -42,6 +43,11 @@ class Input extends AbstractFormField implements FieldInterface
      * @var string
      */
     protected $placeholder;
+
+    /**
+     * @var string
+     */
+    protected $validate = self::DEFAULT_VALIDATE;
 
     /**
      * @return array

@@ -9,12 +9,15 @@ namespace FluidTYPO3\Flux;
  */
 
 use FluidTYPO3\Flux\Form\Container\Sheet;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Package\FluxPackageFactory;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -349,7 +352,23 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     public function setOption($name, $value)
     {
-        $this->options[$name] = $value;
+        if (strpos($name, '.') === false) {
+            $this->options[$name] = $value;
+        } else {
+            $subject = &$this->options;
+            $segments = explode('.', $name);
+            while ($segment = array_shift($segments)) {
+                if (isset($subject[$segment])) {
+                    $subject = &$subject[$segment];
+                } elseif (count($segments) === 0) {
+                    $subject = $value;
+                } else {
+                    $subject[$segment] = [];
+                    $subject = &$subject[$segment];
+                }
+            }
+        }
+
         return $this;
     }
 
@@ -408,15 +427,17 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     public function modify(array $structure)
     {
-        if (true === isset($structure['options']) && true === is_array($structure['options'])) {
+        if (isset($structure['options']) && is_array($structure['options'])) {
             foreach ($structure['options'] as $name => $value) {
                 $this->setOption($name, $value);
             }
             unset($structure['options']);
         }
-        if (true === isset($structure['sheets'])) {
-            foreach ((array) $structure['sheets'] as $index => $sheetData) {
-                $sheetName = true === isset($sheetData['name']) ? $sheetData['name'] : $index;
+        if (isset($structure['sheets']) || isset($structure['children'])) {
+            $this->children = new \SplObjectStorage();
+            $data = isset($structure['children']) ? $structure['children'] : $structure['sheets'];
+            foreach ((array) $data as $index => $sheetData) {
+                $sheetName = isset($sheetData['name']) ? $sheetData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
                 if (true === $this->has($sheetName)) {
                     $sheet = $this->get($sheetName);
@@ -425,6 +446,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 }
                 $sheet->modify($sheetData);
             }
+            unset($structure['sheets'], $structure['children']);
         }
         return parent::modify($structure);
     }

@@ -68,6 +68,8 @@ class TextViewHelper extends AbstractFieldViewHelper
     }
 
     /**
+     * @param RenderingContextInterface $renderingContext
+     * @param array $arguments
      * @return Text
      */
     public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)

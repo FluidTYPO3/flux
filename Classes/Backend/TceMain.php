@@ -14,6 +14,8 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -114,7 +116,69 @@ class TceMain
      */
     public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference)
     {
-        $record = (array) $this->recordService->getSingle($table, '*', $id);
+        $record = $this->resolveRecordForOperation($table, $id);
+        $clipboardCommand = (array) $this->getClipboardCommand();
+        if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
+            $properties = (array) $clipboardCommand['update'];
+            $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
+        }
+
+        // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
+        // and no other hooks catch copy operations.
+        if (!empty($clipboardCommand)) {
+            if ($command === 'copy' || $command === 'move') {
+
+                if ($command === 'copy') {
+                    // When "copy" is received as command, this method unfortunately receives the original
+                    // record and we now must attempt to find the newly created copy (or placeholder thereof) instead.
+                    $record = $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id]);
+                }
+
+                foreach ($properties as $propertyName => $propertyValue) {
+                    $record[$propertyName] = $propertyValue;
+                }
+
+                // Guard: do not allow records to become children of themselves at any recursion level.
+                // Only perform this check if the "relativeTo" target is a negative integer meaning
+                // "insert after the record with uid=abs($relativeTo)". When moving to a page column
+                // the $relativeTo value is a positive integer and we will skip it.
+                if ($command === 'move' && $relativeTo <= 0) {
+                    // Perform an unpersisted record moving to perform assertions on the result.
+                    $temporaryRecord = $record;
+                    $this->contentService->moveRecord($temporaryRecord, $relativeTo, $clipboardCommand, $reference);
+
+                    $relativeRecord = BackendUtility::getRecordRaw($table, sprintf('uid = %d', abs($reference->cmdmap[$table][$id]['move'])), 'tx_flux_parent');
+
+                    if ($this->isRecordChildOfItself($table, $temporaryRecord, $relativeRecord['tx_flux_parent'])) {
+                        $message = new FlashMessage(
+                            sprintf(
+                                'Attempt to move record %s:%d into a column of a child of itself. Move aborted.',
+                                $table,
+                                $id
+                            ),
+                            'Error during ' . $command,
+                            FlashMessage::ERROR,
+                            true
+                        );
+
+                        /** @var FlashMessageService $flashMessageService */
+                        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+                        $flashMessageService->getMessageQueueByIdentifier()->enqueue($message);
+
+                        // Remove the mapped command in order to avoid DataHandler calling "processcmdmap" hooks which may
+                        // attempt to perform the command.
+                        unset($reference->cmdmap[$table][$id]);
+
+                        // Nullify the command so DataHandler will not process the command either.
+                        $command = null;
+
+                        // Return from this hook to avoid calling Flux Providers with an invalid command setup.
+                        return;
+                    }
+                }
+            }
+        }
+
         $arguments = ['command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo];
         $this->executeConfigurationProviderMethod(
             'preProcessCommand',
@@ -153,8 +217,10 @@ class TceMain
                 $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
             }
 
+            $properties = [];
             $clipboardCommand = (array) $this->getClipboardCommand();
             if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
+                $properties = (array) $clipboardCommand['update'];
                 $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
             }
 
@@ -169,11 +235,17 @@ class TceMain
                         $record = $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id]);
                     }
 
+                    foreach ($properties as $propertyName => $propertyValue) {
+                        $record[$propertyName] = $propertyValue;
+                    }
+
                     $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
                     $this->recordService->update($table, $record);
 
-                    $resolveUid = $this->getOriginalRecordUid($table, $id);
-                    $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
+                    $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord(
+                        $table,
+                        $record['t3ver_move_id'] > 0 ? $record['t3ver_move_id'] : $record['uid']
+                    );
                     if ($mostRecentVersionOfRecord) {
                         $this->contentService->moveRecord($mostRecentVersionOfRecord, $relativeTo, $clipboardCommand, $reference);
                         $this->recordService->update($table, $mostRecentVersionOfRecord);
@@ -287,6 +359,10 @@ class TceMain
      */
     public function moveRecord_firstElementPostProcess($table, $uid, $destPid, $moveRec, $row, DataHandler $reference)
     {
+        if ($table !== 'tt_content') {
+            return;
+        }
+
         // Problem: resolve the potential original record if the passed record is a placeholder.
         // This detection is necessary because 1) the colPos value is an emulated value and exists
         // only in DataHandler::$datamap, but 2) the value in that array is indexed by the original
@@ -312,7 +388,10 @@ class TceMain
         // record, and this version will NOT have had the necessary fields updated either.
         // To do this, we resolve the most recent versioned record for our original - and then also
         // update it.
-        $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
+        $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord(
+            $table,
+            $row['t3ver_move_id'] > 0 ? $row['t3ver_move_id'] : $resolveUid
+        );
         if ($mostRecentVersionOfRecord) {
             $this->contentService->moveRecord($mostRecentVersionOfRecord, $newColumnNumber, [], $reference);
             $this->recordService->update($table, $mostRecentVersionOfRecord);
@@ -333,11 +412,24 @@ class TceMain
      */
     public function moveRecord_afterAnotherElementPostProcess($table, $uid, $destPid, $origDestPid, $moveRec, &$updateFields, DataHandler $reference)
     {
+        if ($table !== 'tt_content') {
+            return;
+        }
+
         // Following block takes care of updating the immediate record, be that a placeholder, an
         // original or a versioned copy.
         $moveData = $this->getMoveData();
         $updateFields['uid'] = $uid;
+
         $this->contentService->moveRecord($updateFields, $origDestPid, $moveData, $reference);
+
+        // Guard: do not allow records to become children of themselves at any recursion level.
+        // Must be performed after the "moveRecord" above, which does *not* update the DB. We
+        // validate on the result of the (unpersisted) move operation.
+        if ($this->isRecordChildOfItself($table, $updateFields, $origDestPid)) {
+            return;
+        }
+
         $this->recordService->update($table, $updateFields);
 
         // Further: if we are moving a placeholder, this implies that a version exists of the original
@@ -350,6 +442,31 @@ class TceMain
             $this->contentService->moveRecord($mostRecentVersionOfRecord, $origDestPid, [], $reference);
             $this->recordService->update($table, $mostRecentVersionOfRecord);
         }
+    }
+
+    /**
+     * Validates that $record was not requested to be moved (only move,
+     * not copy) into a child column of itself, or a child column of a
+     * child column, etc.
+     *
+     * Returns true if record would become a child of itself.
+     *
+     * @param string $table
+     * @param array $record
+     * @param integer $parentId
+     * @return boolean
+     */
+    protected function isRecordChildOfItself($table, array $record, $parentId)
+    {
+        do {
+            // Loop through records starting with the input record, verifying that none
+            // of the records' parents are the same as the input record.
+            if ((integer) $parentId === (integer) $record['uid']) {
+                return true;
+            }
+        } while (($record = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $record['tx_flux_parent']), 'uid')));
+
+        return false;
     }
 
     /**
@@ -371,7 +488,7 @@ class TceMain
             $GLOBALS['BE_USER']->workspace,
             $table,
             $uid,
-            'uid,colPos,tx_flux_parent,tx_flux_column,sorting'
+            'uid,colPos,tx_flux_parent,tx_flux_column,sorting,t3ver_move_id'
         );
     }
 

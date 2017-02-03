@@ -26,7 +26,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
      * @param string $groupBy
      * @param string $orderBy
      * @param string $limit
-     * @return array|NULL
+     * @return array|null
      */
     public function get($table, $fields, $clause = '1=1', $groupBy = '', $orderBy = '', $limit = '')
     {
@@ -38,12 +38,18 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
      * @param string $table
      * @param string $fields
      * @param string $uid
-     * @return array|NULL
+     * @return array|null
      */
     public function getSingle($table, $fields, $uid)
     {
         $record = parent::getSingle($table, $fields, $uid);
-        return null === $record ? null : $this->overlayRecord($table, $record);
+        if ($record) {
+            $overlay = $this->overlayRecord($table, $record);
+            if ($overlay) {
+                return $overlay;
+            }
+        }
+        return $record;
     }
 
     /**
