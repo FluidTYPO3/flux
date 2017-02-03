@@ -75,10 +75,10 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function spoolQueuedContentTypeRegistrations(array $queue)
     {
+        $contentTypeBuilder = new ContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
             list ($providerExtensionName, $contentType, $templateFilename, $pluginName) = $queuedRegistration;
-            $contentTypeBuilder = new ContentTypeBuilder();
             $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
                 $providerExtensionName,
                 $templateFilename
