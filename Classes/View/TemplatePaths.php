@@ -67,6 +67,11 @@ class TemplatePaths
     protected $partialRootPaths = [];
 
     /**
+     * @var boolean|null
+     */
+    protected static $needReverseOrder;
+
+    /**
      * @param string|NULL $packageOrPaths
      */
     public function __construct($packageOrPaths = null)
@@ -78,6 +83,11 @@ class TemplatePaths
         ) {
             $this->fillDefaultsByPackageName($packageOrPaths);
         }
+        // initiliaze the flag for sorting templatePaths
+        if (static::$needReverseOrder === null) {
+            static::$needReverseOrder = version_compare(TYPO3_version, '8.0', '<');
+        }
+
     }
 
     /**
@@ -312,6 +322,28 @@ class TemplatePaths
     }
 
     /**
+     * Initalize rootPaths
+     * TYPO3 < 8.0 we need the rootpaths sorted reverse by key to check the path with the highest number first.
+     * TYPO3 >= 8.0 the highest priority paths must come last.
+     *
+     * @param mixed $paths
+     * @return array
+     */
+    protected function initializeRootPaths($paths)  {
+        $rootPaths = [];
+        if (is_array($paths)) {
+            // reverse order is needed for TYPO3 Verion < 8.0
+            if (static::$needReverseOrder) {
+                krsort($paths, SORT_NUMERIC);
+            } else {
+                ksort($paths, SORT_NUMERIC);
+            }
+            $rootPaths = array_merge($rootPaths, $paths);
+        }
+        return $rootPaths;
+    }
+
+    /**
      * Extract an array of three arrays of paths, one
      * for each of the types of Fluid file resources.
      * Accepts one or both of the singular and plural
@@ -331,20 +363,10 @@ class TemplatePaths
      */
     protected function extractPathArrays(array $paths)
     {
-        $templateRootPaths = [];
-        $layoutRootPaths = [];
-        $partialRootPaths = [];
-        // Modern plural paths configurations: sorted reverse by key to
-        // check the path with the highest number first.
-        if (isset($paths[self::CONFIG_TEMPLATEROOTPATHS]) && is_array($paths[self::CONFIG_TEMPLATEROOTPATHS])) {
-            $templateRootPaths = array_merge($templateRootPaths, $paths[self::CONFIG_TEMPLATEROOTPATHS]);
-        }
-        if (isset($paths[self::CONFIG_LAYOUTROOTPATHS]) && is_array($paths[self::CONFIG_LAYOUTROOTPATHS])) {
-            $layoutRootPaths = array_merge($layoutRootPaths, $paths[self::CONFIG_LAYOUTROOTPATHS]);
-        }
-        if (isset($paths[self::CONFIG_PARTIALROOTPATHS]) && is_array($paths[self::CONFIG_PARTIALROOTPATHS])) {
-            $partialRootPaths = array_merge($partialRootPaths, $paths[self::CONFIG_PARTIALROOTPATHS]);
-        }
+        // The modern plural paths configurations:
+        $templateRootPaths = $this->initializeRootPaths($paths[self::CONFIG_TEMPLATEROOTPATHS]);
+        $layoutRootPaths = $this->initializeRootPaths($paths[self::CONFIG_LAYOUTROOTPATHS]);
+        $partialRootPaths = $this->initializeRootPaths($paths[self::CONFIG_PARTIALROOTPATHS]);
         // translate all paths to absolute paths
         $templateRootPaths = array_map([$this, 'ensureAbsolutePath'], $templateRootPaths);
         $layoutRootPaths = array_map([$this, 'ensureAbsolutePath'], $layoutRootPaths);
