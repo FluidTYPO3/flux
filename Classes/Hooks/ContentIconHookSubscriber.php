@@ -37,7 +37,7 @@ class ContentIconHookSubscriber
         'iconWrapper' => '</div><span class="t3-icon t3-icon-empty t3-icon-empty-empty fluidcontent-icon">%s</span><div class="fluidcontent-hack">',
         'gridToggle' => '</div><div class="fluidcontent-toggler">
                             <div class="btn-group btn-group-sm" role="group">
-                            <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a> 
+                            <a class="btn btn-default %%s" title="%s" data-toggler-uid="%s">%s</a> 
                         </div>'
     ];
 
@@ -118,17 +118,20 @@ class ContentIconHookSubscriber
                                     $icon = '/' . substr(GeneralUtility::getFileAbsFileName($icon), strlen(PATH_site));
                                 }
                                 $label = $GLOBALS['LANG']->sL(trim($form->getLabel()));
-                                $icon = '<img width="16" height="16" src="' . $icon . '" alt="' . $label . '"
-									title="' . $label . '" class="" />';
+                                $icon = '<img width="16" height="16" src="' . $icon . '" alt="' . $label . '" title="' . $label . '" class="" />';
                                 $icon = sprintf($this->templates['iconWrapper'], $icon);
                             }
-                        }
-                        if ($provider->getGrid($record)->hasChildren()) {
-                            $icon .= $this->drawGridToggle($record);
+                            if ($provider->getGrid($record)->hasChildren()) {
+                                $icon .= $this->drawGridToggle($record);
+                            }
                         }
                     }
                 }
                 $this->cache->set($cacheIdentity, $icon);
+            }
+
+            if (is_array($record) && count($record) > 0 && strpos($icon,'%s') !== false) {
+                $icon = sprintf($icon, $this->isRowCollapsed($record)?  'toggler-expand' : 'toggler-collapse');
             }
         }
         return $icon;
@@ -148,7 +151,7 @@ class ContentIconHookSubscriber
         $icon .= $iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
         $label = $GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
 
-        return sprintf($this->templates['gridToggle'], $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
+        return sprintf($this->templates['gridToggle'], $label, $row['uid'], $icon);
     }
 
     /**
