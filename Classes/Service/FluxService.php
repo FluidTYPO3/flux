@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Configuration\BackendConfigurationManager;
+use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\FluxPackage;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
@@ -395,7 +395,7 @@ class FluxService implements SingletonInterface
      */
     protected function getCurrentPageId()
     {
-        if ($this->configurationManager instanceof BackendConfigurationManager) {
+        if ($this->configurationManager instanceof ConfigurationManager) {
             return (integer) $this->configurationManager->getCurrentPageId();
         } else {
             return (integer) $GLOBALS['TSFE']->id;
