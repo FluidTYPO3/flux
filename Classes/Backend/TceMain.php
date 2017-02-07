@@ -117,6 +117,7 @@ class TceMain
     public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference)
     {
         $record = $this->resolveRecordForOperation($table, $id);
+	    $properties = [];
         $clipboardCommand = (array) $this->getClipboardCommand();
         if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
             $properties = (array) $clipboardCommand['update'];
