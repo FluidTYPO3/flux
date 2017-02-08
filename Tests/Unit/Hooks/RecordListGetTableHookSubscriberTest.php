@@ -9,11 +9,12 @@ namespace FluidTYPO3\Flux\Hooks;
  */
 
 use FluidTYPO3\Flux\Service\ContentService;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 /**
  * Class RecordListGetTableHookSubscriberTest
  */
-class RecordListGetTableHookSubscriberTest extends ContentIconHookSubscriberTest
+class RecordListGetTableHookSubscriberTest extends AbstractTestCase
 {
 
     /**

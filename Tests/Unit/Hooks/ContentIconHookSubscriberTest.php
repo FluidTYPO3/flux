@@ -36,12 +36,11 @@ class ContentIconHookSubscriberTest extends UnitTestCase
      */
     public function testAddSubIconUsesCache()
     {
-        $cache = $this->getMockBuilder('TYPO3\\CMS\\Core\\Cache\\CacheManager')->setMethods(array('has', 'get'))->getMock();
-        $cache->expects($this->once())->method('has')->willReturn(true);
+        $cache = $this->getMockBuilder('TYPO3\\CMS\\Core\\Cache\\Frontend\\VariableFrontend')->disableOriginalConstructor()->setMethods(array('get', 'set'))->getMock();
         $cache->expects($this->once())->method('get')->willReturn('icon');
         $instance = new ContentIconHookSubscriber();
         ObjectAccess::setProperty($instance, 'cache', $cache, true);
-        $result = $instance->addSubIcon(array('tt_content', 123, []), new PageLayoutView());
+        $result = $instance->addSubIcon(array('tt_content', 123, ['foo' => 'bar']), new PageLayoutView());
         $this->assertEquals('icon', $result);
     }
 
@@ -59,9 +58,10 @@ class ContentIconHookSubscriberTest extends UnitTestCase
         $GLOBALS['LANG']->expects($this->any())->method('sL')->will($this->returnArgument(0));
 
         $GLOBALS['TCA']['tt_content']['columns']['field']['config']['type'] = 'flex';
-        $cache = $this->getMockBuilder('TYPO3\\CMS\\Core\\Cache\\CacheManager')->setMethods(array('has', 'set'))->getMock();
-        $cache->expects($this->once())->method('has')->willReturn(false);
-        $cache->expects($this->once())->method('set')->willReturn('icon');
+        $cache = $this->getMockBuilder('TYPO3\\CMS\\Core\\Cache\\Frontend\\VariableFrontend')->disableOriginalConstructor()->setMethods(array('get', 'set'))->getMock();
+        $cache->expects($this->once())->method('get')->willReturn(null);
+        $cache->expects($this->once())->method('set')->with($this->anything());
+
         $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
         $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolvePrimaryConfigurationProvider','getConfiguration'))->getMock();
         $service->injectConfigurationManager($configurationManager);
@@ -77,7 +77,7 @@ class ContentIconHookSubscriberTest extends UnitTestCase
 
         $result = $instance->addSubIcon($parameters, new PageLayoutView());
         if (null === $expected) {
-            $this->assertNull($result);
+            $this->assertEmpty($result);
         } else {
             $this->assertNotNull($result);
         }
@@ -98,7 +98,6 @@ class ContentIconHookSubscriberTest extends UnitTestCase
         $providerWithFormWithIcon = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getForm'))->getMock();
         $providerWithFormWithIcon->expects($this->any())->method('getForm')->willReturn($formWithIcon);
         return array(
-            array(array('pages', 1, array()), null, null),
             array(array('tt_content', 1, array()), null, null),
             array(array('tt_content', 1, array()), $providerWithoutForm, null),
             array(array('tt_content', 1, array('field' => 'test')), $providerWithoutForm, null),
