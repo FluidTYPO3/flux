@@ -34,11 +34,10 @@ class ContentIconHookSubscriber
      * @var array
      */
     protected $templates = [
-        'iconWrapper' => '</div><span class="t3-icon t3-icon-empty t3-icon-empty-empty fluidcontent-icon">%s</span><div class="fluidcontent-hack">',
         'gridToggle' => '</div><div class="fluidcontent-toggler">
                             <div class="btn-group btn-group-sm" role="group">
                             <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a> 
-                        </div>'
+                        </div></div><div>'
     ];
 
     /**
@@ -94,42 +93,36 @@ class ContentIconHookSubscriber
         $provider = null;
         $this->attachAssets();
         list ($table, $uid, $record) = $parameters;
-        $icon = null;
+        if ($table !== 'tt_content') {
+            return '';
+        }
+        $contentType = $record['CType'];
+        if ($contentType === 'list') {
+            return '';
+        }
+        $icon = '';
         if (null !== $caller) {
             $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
             $cacheIdentity = $table . $uid . sha1(serialize($record)) . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
             // filter 1: icon must not already be cached and both record and caller must be provided.
             // we check the cache here because at this point, the cache key is decidedly
             // unique and we have not yet consulted the (potentially costly) Provider.
-            if (true === $this->cache->has($cacheIdentity)) {
+            if ($this->cache->has($cacheIdentity)) {
                 $icon = $this->cache->get($cacheIdentity);
-            } elseif (null !== $record) {
+            } elseif ($record) {
                 $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
                 // filter 2: table must have one field defined as "flex" and record must include it.
-                if (null !== $field && true === array_key_exists($field, $record)) {
+                if ($field && array_key_exists($field, $record)) {
                     $provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
                     // filter 3: a Provider must be resolved for the record.
-                    if (null !== $provider) {
-                        $form = $provider->getForm((array) $record);
-                        if (null !== $form) {
-                            $icon = MiscellaneousUtility::getIconForTemplate($form);
-                            if (null !== $icon) {
-                                if (strpos($icon, 'EXT:') === 0) {
-                                    $icon = '/' . substr(GeneralUtility::getFileAbsFileName($icon), strlen(PATH_site));
-                                }
-                                $label = $GLOBALS['LANG']->sL(trim($form->getLabel()));
-                                $icon = '<img width="16" height="16" src="' . $icon . '" alt="' . $label . '"
-									title="' . $label . '" class="" />';
-                                $icon = sprintf($this->templates['iconWrapper'], $icon);
-                            }
-                        }
+                    if ($provider) {
                         if ($provider->getGrid($record)->hasChildren()) {
-                            $icon .= $this->drawGridToggle($record);
+                            $icon = $this->drawGridToggle($record);
                         }
                     }
                 }
-                $this->cache->set($cacheIdentity, $icon);
             }
+            $this->cache->set($cacheIdentity, $icon);
         }
         return $icon;
     }
