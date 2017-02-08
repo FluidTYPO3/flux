@@ -101,29 +101,30 @@ class ContentIconHookSubscriber
             return '';
         }
         $icon = '';
-        if (null !== $caller) {
-            $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
-            $cacheIdentity = $table . $uid . sha1(serialize($record)) . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
-            // filter 1: icon must not already be cached and both record and caller must be provided.
-            // we check the cache here because at this point, the cache key is decidedly
-            // unique and we have not yet consulted the (potentially costly) Provider.
-            if ($this->cache->has($cacheIdentity)) {
-                $icon = $this->cache->get($cacheIdentity);
-            } elseif ($record) {
-                $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
-                // filter 2: table must have one field defined as "flex" and record must include it.
-                if ($field && array_key_exists($field, $record)) {
-                    $provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
-                    // filter 3: a Provider must be resolved for the record.
-                    if ($provider) {
-                        if ($provider->getGrid($record)->hasChildren()) {
-                            $icon = $this->drawGridToggle($record);
-                        }
+
+        $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
+        $cacheIdentity = $table . $uid . sha1(serialize($record)) . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
+        // filter 1: icon must not already be cached and both record and caller must be provided.
+        // we check the cache here because at this point, the cache key is decidedly
+        // unique and we have not yet consulted the (potentially costly) Provider.
+        $cachedIconIdentifier = $this->cache->get($cacheIdentity);
+        if ($cachedIconIdentifier) {
+            $icon = $cachedIconIdentifier;
+        } elseif ($record) {
+            $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
+            // filter 2: table must have one field defined as "flex" and record must include it.
+            if ($field && array_key_exists($field, $record)) {
+                $provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
+                // filter 3: a Provider must be resolved for the record.
+                if ($provider) {
+                    if ($provider->getGrid($record)->hasChildren()) {
+                        $icon = $this->drawGridToggle($record);
                     }
                 }
             }
-            $this->cache->set($cacheIdentity, $icon);
         }
+
+        $this->cache->set($cacheIdentity, $icon);
         return $icon;
     }
 
