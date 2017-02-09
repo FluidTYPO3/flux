@@ -21,6 +21,11 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 class VariableViewHelper extends AbstractViewHelper implements CompilableInterface
 {
 
+    /**
+     * @var boolean
+     */
+    protected $escapeOutput = false;
+
     public function initializeArguments()
     {
         $this->registerArgument('name', 'string', 'Name (dotted path supported) of template variable to get', true);
