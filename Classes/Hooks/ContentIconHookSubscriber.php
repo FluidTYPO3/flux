@@ -90,6 +90,9 @@ class ContentIconHookSubscriber
      */
     public function addSubIcon(array $parameters, $caller = null)
     {
+        if (!$caller instanceof PageLayoutView) {
+            return '';
+        }
         $provider = null;
         $this->attachAssets();
         list ($table, $uid, $record) = $parameters;
