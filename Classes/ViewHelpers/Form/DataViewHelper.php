@@ -28,6 +28,11 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
     use CompileWithRenderStatic;
 
     /**
+     * @var boolean
+     */
+    protected $escapeOutput = false;
+
+    /**
      * @var FluxService
      */
     protected static $configurationService;
