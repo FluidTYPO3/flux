@@ -116,7 +116,7 @@ class DynamicFlexForm
         }
         $fieldName = $identifier['fieldName'];
         $dataStructArray = [];
-        $providers = $this->configurationService->resolveConfigurationProviders($tableName, $fieldName, $record);
+        $providers = $this->configurationService->resolveConfigurationProviders($identifier['tableName'], $fieldName, $record);
         if (count($providers) === 0) {
             return [];
         }
