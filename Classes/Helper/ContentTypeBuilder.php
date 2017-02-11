@@ -66,9 +66,6 @@ class ContentTypeBuilder
         $provider->setTemplateVariables($variables);
         $provider->setConfigurationSectionName($section);
 
-        // We now cheat a little bit to achieve the next goal: giving the Provider a proper TS resolving context by
-        // attempting to resolve the page UID
-
         return $provider;
     }
 
