@@ -99,15 +99,24 @@ class MiscellaneousUtility
             $templatePathParts = explode('/', $fullTemplatePathAndName);
             $templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
             $controllerName = array_pop($templatePathParts);
-            $allowedExtensions = implode(',', self::$allowedIconTypes);
             $iconFolder = ExtensionManagementUtility::extPath(
                 $extensionKey,
                 'Resources/Public/Icons/' . $controllerName . '/'
             );
             $iconAbsoluteUrl = '/' . str_replace(PATH_site, '', $iconFolder);
             $iconPathAndName = $iconFolder . $templateName;
-            $iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
-            $filesInFolder = (true === is_dir($iconFolder) ? glob($iconMatchPattern, GLOB_BRACE) : []);
+            $filesInFolder = array();
+            if (true === is_dir($iconFolder)) {
+                if (true === defined(GLOB_BRACE)) {
+                    $allowedExtensions = implode(',', self::$allowedIconTypes);
+                    $iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
+                    $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);
+                } else {
+                    foreach (self::$allowedIconTypes as $allowedIconType) {
+                        $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType));
+                    }
+                }
+            }
             $iconFile = (is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : null);
             $iconRelPathAndFilename = $iconFile ? $iconAbsoluteUrl . str_replace($iconFolder, '', $iconFile) : null;
             return $iconRelPathAndFilename;
