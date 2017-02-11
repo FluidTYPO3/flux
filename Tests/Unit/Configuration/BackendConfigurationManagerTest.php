@@ -228,7 +228,7 @@ class BackendConfigurationManagerTest extends AbstractTestCase
     {
         return array(
             array(array('tt_content', 1, 'update'), true),
-            array(array('tt_content', -1, 'new'), true),
+            array(array('tt_content', -1, 'new'), false),
             array(array('pages', 0, 'update'), false),
             array(array('pages', 1, 'update'), false),
             array(array('pages', 1, 'delete'), false),
