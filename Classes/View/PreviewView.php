@@ -574,8 +574,7 @@ class PreviewView
             $moduleData['tt_content_showHidden'] = 1;
         }
 
-        /** @var $dblist PageLayoutView */
-        $dblist = GeneralUtility::makeInstance(ObjectManager::class)->get(PageLayoutView::class);
+        $dblist = $this->getPageLayoutView();
 
         $dblist->backPath = $GLOBALS['BACK_PATH'];
         $dblist->script = 'db_layout.php';
@@ -624,6 +623,15 @@ class PreviewView
             $view->tt_contentConfig['languageColsPointer'] = $modSettings['language'];
         }
         return $view;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return PageLayoutView
+     */
+    protected function getPageLayoutView()
+    {
+        return GeneralUtility::makeInstance(ObjectManager::class)->get(PageLayoutView::class);
     }
 
     /**
