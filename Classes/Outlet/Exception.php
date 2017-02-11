@@ -16,23 +16,4 @@ namespace FluidTYPO3\Flux\Outlet;
 class Exception extends \Exception
 {
 
-    /**
-     * @var string
-     */
-    protected $message;
-
-    /**
-     * @var integer
-     */
-    protected $code;
-
-    /**
-     * @var string
-     */
-    protected $file;
-
-    /**
-     * @var integer
-     */
-    protected $line;
 }
