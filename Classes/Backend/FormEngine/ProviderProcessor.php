@@ -12,7 +12,7 @@ class ProviderProcessor implements FormDataProviderInterface
 
     /**
      * @param array $result
-     * @return void
+     * @return array
      */
     public function addData(array $result)
     {

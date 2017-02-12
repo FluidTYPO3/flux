@@ -23,6 +23,11 @@ class EmailViewHelper extends AbstractPipeViewHelper
 {
 
     /**
+     * @var boolean
+     */
+    protected $escapeChildren = false;
+
+    /**
      * @return void
      */
     public function initializeArguments()

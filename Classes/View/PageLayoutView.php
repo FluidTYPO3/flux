@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\View;
 class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
 {
     /**
-     * @param $pageinfo
+     * @param array $pageinfo
      */
     public function setPageinfo($pageinfo)
     {
@@ -35,6 +35,4 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
     {
         parent::generateTtContentDataArray($rowArray);
     }
-
-
 }

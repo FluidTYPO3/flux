@@ -10,6 +10,7 @@ $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
 
 $GLOBALS['TCA']['tt_content']['ctrl']['shadowColumnsForNewPlaceholders'] .= ',tx_flux_column,tx_flux_parent';
 $GLOBALS['TCA']['tt_content']['ctrl']['useColumnsForDefaultValues'] .= ',tx_flux_column,tx_flux_parent';
+$GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['userFunc'] = \FluidTYPO3\Flux\UserFunction\ContentIconUserFunction::class . '->getIcon';
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', array(
         'tx_flux_column' => array (
