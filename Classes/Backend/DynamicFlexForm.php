@@ -111,6 +111,10 @@ class DynamicFlexForm
             $limitedRecordData = array_intersect_key($record, $defaultFields);
             $limitedRecordData[$fieldName] = $record[$fieldName];
         }
+        $providers = $this->configurationService->resolveConfigurationProviders($tableName, $fieldName, $record);
+        if (count($providers) === 0) {
+            return [];
+        }
         return [
             'type' => 'flux',
             'tableName' => $tableName,
