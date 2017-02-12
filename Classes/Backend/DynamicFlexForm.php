@@ -106,6 +106,17 @@ class DynamicFlexForm
         if ((integer) $record['uid']) {
             $limitedRecordData = ['uid' => $record['uid']];
         } else {
+            if (is_array($tca['config']['ds']) && count($tca['config']['ds']) > 0) {
+                // check if for CType exists a registered data structure
+                // then we don't need to build the custom identifier
+                $searchFor = ',' . $record['CType'];
+                $searchForLen = -strlen($searchFor);
+                foreach($tca['config']['ds'] as $ds => $value ) {
+                    if (substr($ds, $searchForLen) === $searchFor) {
+                        return [];
+                    }
+                }
+            }
             $defaultFields = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues']);
             $defaultFields = array_combine($defaultFields, $defaultFields);
             $limitedRecordData = array_intersect_key($record, $defaultFields);
