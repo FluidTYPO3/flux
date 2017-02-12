@@ -241,7 +241,7 @@ class ContentService implements SingletonInterface
                 // sorting value to re-sort after a possibly invalid sorting value is received.
                 list ($pageUid, , $relativeTo, $parentUid, $area, $column) =
                     GeneralUtility::trimExplode('-', $parameters[1]);
-                $sorting = $tceMain->getSortNumber('tt_content', $relativeTo, $pageUid);
+                $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], -$relativeTo);
                 $row['tx_flux_parent'] = $parentUid;
                 $row['tx_flux_column'] = $area;
                 $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
