@@ -187,7 +187,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         $graphicsClassName = 'TYPO3\\CMS\\Core\\Imaging\\GraphicalFunctions';
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][$graphicsClassName]['className'] =
             'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyGraphicalFunctions';
-        $this->assertEquals('foobar-3', MiscellaneousUtility::createIcon('foobar-icon', 1, 2));
+        $this->assertEquals('icon-b7c9dc75b2c29a9a52e8c1f7a996348b', MiscellaneousUtility::createIcon('foobar-icon', 1, 2));
     }
 
     /**

@@ -96,17 +96,52 @@ class DynamicFlexForm
      */
     public function getDataStructureIdentifierPreProcess(array $tca, $tableName, $fieldName, array $record)
     {
-        $dataStructArray = [];
+        // Select a limited set of the $record being passed. When the $record is a new record, it will have
+        // no UID but will contain a list of default values, in which case we extract a smaller list of
+        // values based on the "useColumnsForDefaultValues" TCA control (we mimic the amount of data that
+        // would be available via the new content wizard). If the record has a UID we record only the UID.
+        // In the latter case we sacrifice some performance (having to reload the record by UID) in order
+        // to pass an identifier small enough to be part of GET parameters. This class will then "thaw" the
+        // record identified by UID to ensure that for all existing records, Providers receive the FULL data.
+        if ((integer) $record['uid']) {
+            $limitedRecordData = ['uid' => $record['uid']];
+        } else {
+            $defaultFields = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues']);
+            $defaultFields = array_combine($defaultFields, $defaultFields);
+            $limitedRecordData = array_intersect_key($record, $defaultFields);
+            $limitedRecordData[$fieldName] = $record[$fieldName];
+        }
         $providers = $this->configurationService->resolveConfigurationProviders($tableName, $fieldName, $record);
         if (count($providers) === 0) {
             return [];
         }
-        $identifier = [
+        return [
             'type' => 'flux',
             'tableName' => $tableName,
             'fieldName' => $fieldName,
-            'uid' => $record['uid']
+            'record' => $limitedRecordData
         ];
+    }
+
+    /**
+     * @param array $identifier
+     * @return array
+     */
+    protected function resolveDataStructureByIdentifier(array $identifier)
+    {
+        $record = $identifier['record'];
+        if (!$record) {
+            return [];
+        }
+        if (count($record) === 1 && isset($record['uid'])) {
+            $record = $this->recordService->getSingle($identifier['tableName'], '*', $record['uid']);
+        }
+        $fieldName = $identifier['fieldName'];
+        $dataStructArray = [];
+        $providers = $this->configurationService->resolveConfigurationProviders($identifier['tableName'], $fieldName, $record);
+        if (count($providers) === 0) {
+            return [];
+        }
         foreach ($providers as $provider) {
             $form = $provider->getForm($record);
             if (!$form) {
@@ -114,23 +149,20 @@ class DynamicFlexForm
             }
             $formId = $form->getId();
             if ($form->getOption(Form::OPTION_STATIC)) {
-                $identifier['staticIdentity'] = $formId;
                 $cache = $this->getCache();
                 $cacheKey = $this->calculateFormCacheKey($formId);
                 if ($cache->has($cacheKey)) {
-                    static::$generatedDataSources[$formId] = $cache->get($cacheKey);
-                } else {
-                    // This provider has requested static DS caching; stop attempting
-                    // to process any other DS and cache this DS as final result:
-                    if (isset(static::$generatedDataSources[$formId])) {
-                        // DS has already been generated, skip processing now and refer to existing DS.
-                        return $identifier;
-                    }
-                    $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
-                    $cache->set($cacheKey, $dataStructArray);
-                    static::$generatedDataSources[$formId] = $dataStructArray;
+                    return $cache->get($cacheKey);
                 }
-                return $identifier;
+                // This provider has requested static DS caching; stop attempting
+                // to process any other DS and cache this DS as final result:
+                if (isset(static::$generatedDataSources[$formId])) {
+                    // DS has already been generated, skip processing now and refer to existing DS.
+                    return $dataStructArray;
+                }
+                $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
+                $cache->set($cacheKey, $dataStructArray);
+                return $dataStructArray;
             } else {
                 $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
             }
@@ -144,8 +176,7 @@ class DynamicFlexForm
             $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
         }
 
-        static::$generatedDataSources[$tableName . '.' . $fieldName . ':' . $record['uid']] = $dataStructArray;
-        return $identifier;
+        return $dataStructArray;
     }
 
     /**
@@ -160,12 +191,13 @@ class DynamicFlexForm
         if (isset($identifier['staticIdentity'])) {
             $dataSourceIdentity = $identifier['staticIdentity'];
         } else {
-            $dataSourceIdentity = $identifier['tableName'] . '.' . $identifier['fieldName'] . ':' . $identifier['uid'];
+            $dataSourceIdentity = $identifier['tableName'] . '.' . $identifier['fieldName'] . ':' . $identifier['record']['uid'];
         }
         if (isset(static::$generatedDataSources[$dataSourceIdentity])) {
             return static::$generatedDataSources[$dataSourceIdentity];
         }
-        return [];
+        static::$generatedDataSources[$dataSourceIdentity] = $this->resolveDataStructureByIdentifier($identifier);
+        return static::$generatedDataSources[$dataSourceIdentity];
     }
 
     /**
@@ -227,7 +259,7 @@ class DynamicFlexForm
                 }
                 $formId = $form->getId();
                 if ($form->getOption(Form::OPTION_STATIC)) {
-                    
+
                     $cacheKey = $this->calculateFormCacheKey($formId);
                     if ($cache->has($cacheKey)) {
                         $dataStructArray = $cache->get($cacheKey);
@@ -329,7 +361,7 @@ class DynamicFlexForm
      *
      * @return string
      */
-    private function calculateFormCacheKey($formId): string
+    private function calculateFormCacheKey($formId)
     {
         return 'datastructure-' . $formId;
     }

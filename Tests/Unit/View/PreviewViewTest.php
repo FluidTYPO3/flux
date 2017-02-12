@@ -26,7 +26,6 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function setUp()
     {
-        $this->markTestSkippedOnMaster();
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(
             'TYPO3\\CMS\\Core\\Database\\DatabaseConnection'
         )->setMethods(
@@ -84,7 +83,8 @@ class PreviewViewTest extends AbstractTestCase
                 'drawRecord',
                 'registerTargetContentAreaInSession',
                 'drawNewIcon',
-                'getInitializedPageLayoutView'
+                'getInitializedPageLayoutView',
+                'configurePageLayoutViewForLanguageMode'
             )
         )->getMock();
         $instance->expects($this->once())->method('getRecords')->willReturn(array(array('foo' => 'bar'), array('bar' => 'foo')));
@@ -155,9 +155,13 @@ class PreviewViewTest extends AbstractTestCase
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
         $databaseConnectionMock = $this->getMockBuilder(DatabaseConnection::class)->getMock();
         $databaseConnectionMock->expects($this->any())->method('sql_fetch_assoc')->willReturn([]);
-        $previewView = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('registerTargetContentAreaInSession', 'getDatabaseConnection'))->getMock();
+        $pageLayoutView = $this->getMockBuilder(PageLayoutView::class)->setMethods(['initializeLanguages'])->getMock();
+        $previewView = $this->getMockBuilder($this->createInstanceClassName())
+            ->setMethods(array('registerTargetContentAreaInSession', 'getDatabaseConnection', 'getPageLayoutView'))
+            ->getMock();
         $previewView->expects($this->any())->method('getDatabaseConnection')->willReturn($databaseConnectionMock);
         $previewView->expects($this->any())->method('registerTargetContentAreaInSession');
+        $previewView->expects($this->any())->method('getPageLayoutView')->willReturn($pageLayoutView);
         $previewView->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
         $previewView->injectConfigurationManager(
             $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager')
@@ -271,5 +275,15 @@ class PreviewViewTest extends AbstractTestCase
         $subject->expects($this->once())->method('drawNewIcon');
         $mockPageLayoutView = $this->getMockBuilder('TYPO3\\CMS\\Backend\\View\\PageLayoutView')->getMock();
         $this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 'f-target', 2, 'f-content');
+    }
+
+    /**
+     * @return object
+     */
+    protected function createInstance()
+    {
+        $instance = $this->getMockBuilder(PreviewView::class)->setMethods(['configurePageLayoutViewForLanguageMode'])->getMock();
+        $instance->expects($this->any())->method('configurePageLayoutViewForLanguageMode')->willReturnArgument(0);
+        return $instance;
     }
 }

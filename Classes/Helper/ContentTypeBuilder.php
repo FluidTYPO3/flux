@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -65,9 +66,6 @@ class ContentTypeBuilder
         $provider->setContentObjectType($fullContentType);
         $provider->setTemplateVariables($variables);
         $provider->setConfigurationSectionName($section);
-
-        // We now cheat a little bit to achieve the next goal: giving the Provider a proper TS resolving context by
-        // attempting to resolve the page UID
 
         return $provider;
     }
@@ -272,7 +270,7 @@ class ContentTypeBuilder
      */
     protected function registerExtbasePluginForForm($providerExtensionName, $pluginName, Form $form)
     {
-        $icon = $form->getOption(Form::OPTION_ICON);
+        $icon = MiscellaneousUtility::getIconForTemplate($form);
 
         ExtensionUtility::registerPlugin(
             $providerExtensionName,
