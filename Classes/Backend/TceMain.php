@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -253,6 +254,19 @@ class TceMain
                     }
                 }
             }
+
+            if ($command === 'copy') {
+                // We now check if we're doing a copy command once again. Due to internals of TYPO3, child
+                // records of the parent being moved (if child records exist) have now gotten their sorting
+                // values reset. The only way currently to patch this is a semi-expensive recursive operation
+                // to copy the sorting value from the original record to the copy (and to the placeholder and
+                // versioned records if those exist). This is less than ideal but the alternative is
+                // consistently wrong (read: sql insertion order based, to end user same as random) sorting of
+                // *all* child records after a copy operation - so we compromise.
+                $this->copySortingValueOfChildrenFromOriginalsToCopies(
+                    $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id])
+                );
+            }
         }
 
         $arguments = ['command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo];
@@ -264,6 +278,67 @@ class TceMain
             $arguments,
             $reference
         );
+    }
+
+    /**
+     * Fixes an issue with records after they have been copied. Sorting numbers
+     * of all child records (to infinite recursion depth) have been completely
+     * mangled by TYPO3 and are now a series of sequential numbers rather than
+     * the generously spaced sorting values the `tt_content` table needs.
+     *
+     * The function iterates recursively to perform SQL queries which override
+     * the new sorting values, copying the ones from the original record.
+     *
+     * @param array $parentRecord
+     * @return void
+     */
+    protected function copySortingValueOfChildrenFromOriginalsToCopies(array $parentRecord)
+    {
+        $children = $this->recordService->get(
+            'tt_content',
+            'uid',
+            sprintf('tx_flux_parent = %d', $parentRecord['uid'])
+        );
+
+        if (!count($children)) {
+            return;
+        }
+
+        foreach ($children as $child) {
+
+            // Perform an SQL query which directly copies the original record's sorting number to the copy.
+            // When not in a workspace: copy the sorting field value from original to copy.
+            // When in a workspace: copy the sorting field value from original to versioned record and move placeholder.
+            if ($GLOBALS['BE_USER']->workspace) {
+
+                // Update versioned record (which is what $parentRecord is when copy happens in workspace mode)
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
+                        $child['uid']
+                    )
+                );
+
+                // Update the move placeholder that was automatically created for the versioned record we updated above.
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.t3ver_oid = %d AND s.uid = t.t3ver_oid AND t.t3ver_state = -1',
+                        $child['uid']
+                    )
+                );
+
+            } else {
+
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
+                        $child['uid']
+                    )
+                );
+
+            }
+            $this->copySortingValueOfChildrenFromOriginalsToCopies($child);
+        }
     }
 
     /**
@@ -668,5 +743,13 @@ class TceMain
     protected function getRawPostData()
     {
         return file_get_contents('php://input');
+    }
+
+    /**
+     * @return DatabaseConnection
+     */
+    protected function getDatabaseConnection()
+    {
+        return $GLOBALS['TYPO3_DB'];
     }
 }
