@@ -9,15 +9,15 @@ namespace FluidTYPO3\Flux\Hooks;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\PageLayoutView;
-use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * Class ContentIconHookSubscriberTest
  */
-class ContentIconHookSubscriberTest extends UnitTestCase
+class ContentIconHookSubscriberTest extends AbstractTestCase
 {
 
     /**

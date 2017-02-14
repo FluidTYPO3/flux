@@ -619,8 +619,8 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $GLOBALS['TSFE'] = (object) array('page' => array('title' => 'foo'), 'sys_language_uid' => 0);
         $recordService = $this->getMockBuilder('FluidTYPO3\\Service\\RecordService')->setMethods(array('get'))->getMock();
         $recordService->expects($this->never())->method('get');
-        $subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
-        $subject->_set('recordService', $recordService);
+        $subject = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\AbstractProvider')->getMockForAbstractClass();
+        ObjectAccess::setProperty($subject, 'recordService', $recordService, true);
         $this->assertEquals(array('title' => 'foo'), $this->callInaccessibleMethod($subject, 'getPageValues'));
     }
 
@@ -643,8 +643,8 @@ abstract class AbstractProviderTest extends AbstractTestCase
                 'pid' => 20
             )
         ));
-        $subject = $this->getAccessibleMockForAbstractClass('FluidTYPO3\\Flux\\Provider\\AbstractProvider');
-        $subject->_set('recordService', $recordService);
+        $subject = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\AbstractProvider')->getMock();
+        ObjectAccess::setProperty($subject, 'recordService', $recordService, true);
         $this->assertEquals(array('title' => 'bar', 'subtitle' => 'baz', 'uid' => 1, 'pid' => 0), $this->callInaccessibleMethod($subject, 'getPageValues'));
     }
 

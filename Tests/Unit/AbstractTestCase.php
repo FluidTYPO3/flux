@@ -20,7 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * AbstractTestCase
  */
-abstract class AbstractTestCase extends BaseTestCase
+abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
 
     const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
@@ -46,6 +46,22 @@ abstract class AbstractTestCase extends BaseTestCase
         $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
         $this->objectManager = clone $objectManager;
         parent::__construct($name, $data, $dataName);
+    }
+
+    /**
+     * Helper function to call protected or private methods
+     *
+     * @param object $object The object to be invoked
+     * @param string $name the name of the method to call
+     * @param mixed $arguments
+     * @return mixed
+     */
+    protected function callInaccessibleMethod($object, $name, ...$arguments)
+    {
+        $reflectionObject = new \ReflectionObject($object);
+        $reflectionMethod = $reflectionObject->getMethod($name);
+        $reflectionMethod->setAccessible(true);
+        return $reflectionMethod->invokeArgs($object, $arguments);
     }
 
     /**
