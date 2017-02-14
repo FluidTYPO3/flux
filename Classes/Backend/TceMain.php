@@ -149,7 +149,9 @@ class TceMain
                     $temporaryRecord = $record;
                     $this->contentService->moveRecord($temporaryRecord, $relativeTo, $clipboardCommand, $reference);
 
-                    $relativeRecord = BackendUtility::getRecordRaw($table, sprintf('uid = %d', abs($reference->cmdmap[$table][$id]['move'])), 'tx_flux_parent');
+                    $relativeRecordUid = abs($reference->cmdmap[$table][$id]['move']);
+                    $relativeRecord = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $relativeRecordUid), 'uid,pid,tx_flux_parent');
+                    BackendUtility::workspaceOL($table, $relativeRecord);
 
                     if ($this->isRecordChildOfItself($table, $temporaryRecord, $relativeRecord['tx_flux_parent'])) {
                         $message = new FlashMessage(
@@ -534,13 +536,20 @@ class TceMain
      */
     protected function isRecordChildOfItself($table, array $record, $parentId)
     {
+        if ((integer) $parentId === 0) {
+            return false;
+        }
         do {
+            $movePlaceholder = BackendUtility::getMovePlaceholder($table, $parentId);
+            if ($movePlaceholder) {
+                $record = $movePlaceholder;
+            }
             // Loop through records starting with the input record, verifying that none
             // of the records' parents are the same as the input record.
             if ((integer) $parentId === (integer) $record['uid']) {
                 return true;
             }
-        } while (($record = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $record['tx_flux_parent']), 'uid')));
+        } while ($record['uid'] > 0 && ($record = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $record['tx_flux_parent']), 'uid,tx_flux_parent')));
 
         return false;
     }
