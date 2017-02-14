@@ -108,6 +108,42 @@ class TceMain
      */
 
     /**
+     * Method to initialize the command processing map with a single purpose:
+     * to re-sort any "swap" operations to put the operation happening to the
+     * parent record, after all operations happening to child records, and
+     * do so only for the tt_content table.
+     *
+     * @param DataHandler $reference
+     * @return void
+     */
+    public function processCmdmap_beforeStart(&$reference)
+    {
+        if (empty($reference->cmdmap['tt_content'])) {
+            return;
+        }
+        $parents = [];
+        $children = [];
+        $others = [];
+        foreach ($reference->cmdmap['tt_content'] as $uid => $command) {
+            if (empty($command['version'])) {
+                $others[$uid] = $command;
+            } elseif ($command['version']['action'] === 'swap') {
+                if ($this->getDatabaseConnection()->exec_SELECTcountRows(
+                    'uid',
+                    'tt_content',
+                    sprintf('tx_flux_parent = %d', $uid))
+                ) {
+                    $parents[$uid] = $command;
+                } else {
+                    $children[$uid] = $command;
+                }
+            }
+        }
+
+        $reference->cmdmap['tt_content'] = $children + $parents + $others;
+    }
+
+    /**
      * @param string $command The TCEmain operation status, fx. 'update'
      * @param string $table The table TCEmain is currently processing
      * @param string $id The records id (if any)
