@@ -461,6 +461,7 @@ class TceMain
         $row['uid'] = $uid;
         $this->contentService->moveRecord($row, $newColumnNumber, [], $reference);
         $this->recordService->update($table, $row);
+        $reference->updateRefIndex($table, $uid);
 
         // Further: if we are moving a placeholder, this implies that a version exists of the original
         // record, and this version will NOT have had the necessary fields updated either.
@@ -473,6 +474,7 @@ class TceMain
         if ($mostRecentVersionOfRecord) {
             $this->contentService->moveRecord($mostRecentVersionOfRecord, $newColumnNumber, [], $reference);
             $this->recordService->update($table, $mostRecentVersionOfRecord);
+            $reference->updateRefIndex($table, $mostRecentVersionOfRecord['uid']);
         }
     }
 
@@ -509,6 +511,7 @@ class TceMain
         }
 
         $this->recordService->update($table, $updateFields);
+        $reference->updateRefIndex($table, $uid);
 
         // Further: if we are moving a placeholder, this implies that a version exists of the original
         // record, and this version will NOT have had the necessary fields updated either.
@@ -519,6 +522,7 @@ class TceMain
         if ($mostRecentVersionOfRecord) {
             $this->contentService->moveRecord($mostRecentVersionOfRecord, $origDestPid, [], $reference);
             $this->recordService->update($table, $mostRecentVersionOfRecord);
+            $reference->updateRefIndex($table, $mostRecentVersionOfRecord['uid']);
         }
     }
 
