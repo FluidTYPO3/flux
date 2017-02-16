@@ -48,6 +48,7 @@ $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['userFunc'] = \FluidTY
                 'foreign_table' => 'tt_content',
                 'foreign_field' => 'tx_flux_parent',
                 'foreign_sortby' => 'sorting',
+                'foreign_default_sortby' => 'sorting ASC',
                 'appearance' => array(
                     'collapseAll' => TRUE,
                     'showPossibleLocalizationRecords' => TRUE,
