@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
+use TYPO3\CMS\Core\Charset\CharsetConverter;
 use TYPO3\CMS\Core\Tests\UnitTestCase as BaseTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -46,6 +47,14 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
         $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
         $this->objectManager = clone $objectManager;
         parent::__construct($name, $data, $dataName);
+    }
+
+    /**
+     * @return void
+     */
+    protected function setUp()
+    {
+        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
     }
 
     /**

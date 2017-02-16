@@ -22,11 +22,8 @@ use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\Variables\CmsVariableProvider;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\ChildNodeAccessInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
-use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper;
-use TYPO3\CMS\Fluid\Core\Widget\WidgetContext;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
@@ -52,6 +49,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
      */
     protected function setUp()
     {
+        parent::setUp();
         $this->renderingContext = new RenderingContext();
     }
 

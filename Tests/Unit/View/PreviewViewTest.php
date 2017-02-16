@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\PageLayoutView;
 use FluidTYPO3\Flux\View\PreviewView;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
-use TYPO3\CMS\Core\Versioning\VersionState;
 
 /**
  * PreviewViewTest
