@@ -58,8 +58,7 @@ abstract class FluxPackageFactory
             );
         }
         if (!array_key_exists($extensionKey, static::$packages)) {
-            $manifestPath = ExtensionManagementUtility::extPath($extensionKey, 'flux.json');
-            static::$packages[$extensionKey] = FluxPackage::create($manifestPath)->upcast();
+            static::$packages[$extensionKey] = FluxPackage::create($qualifiedExtensionName)->upcast();
         }
         return static::$packages[$extensionKey];
     }
