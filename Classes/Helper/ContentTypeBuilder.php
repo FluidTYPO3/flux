@@ -185,6 +185,7 @@ class ContentTypeBuilder
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.general;general,
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.header;header,pi_flexform,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.appearance,layout;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:layout_formlabel,
+                --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.frames;frames,
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.appearanceLinks;appearanceLinks,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,hidden;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:field.default.hidden,
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.access;access,
@@ -237,7 +238,8 @@ class ContentTypeBuilder
                     tt_content_defValues {
                         CType = %s
                     }
-                }',
+                }
+                mod.wizards.newContentElement.wizardItems.%s.show := addToList(%s)',
                 $group,
                 $formId,
                 $iconIdentifier,
@@ -245,7 +247,9 @@ class ContentTypeBuilder
                 $formId,
                 $extensionKey,
                 $formId,
-                $contentType
+                $contentType,
+                $group,
+                $formId
             )
         );
     }
@@ -300,7 +304,8 @@ class ContentTypeBuilder
                     header = LLL:EXT:flux/Resources/Private/Language/locallang.xlf:newContentWizard.fluxContent
                     show = *
                     elements {
-                    }'
+                    }
+                 }'
             );
             $initialized = true;
         }
