@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Backend;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -23,8 +22,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class DynamicFlexForm
 {
-
-    const OPTION_NEEDS_TCEFORMS_WRAPPER = 'needsTceformsWrapper';
 
     /**
      * @var array
@@ -171,10 +168,7 @@ class DynamicFlexForm
             $dataStructArray = ['ROOT' => ['el' => []]];
         }
 
-        // Trigger TCEforms dimension patching only if required by TYPO3 version according to CompatibilityRegistry.
-        if (CompatibilityRegistry::get(static::OPTION_NEEDS_TCEFORMS_WRAPPER)) {
-            $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
-        }
+        $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
 
         return $dataStructArray;
     }
@@ -290,10 +284,7 @@ class DynamicFlexForm
             );
         }
 
-        // Trigger TCEforms dimension patching only if required by TYPO3 version according to CompatibilityRegistry.
-        if (CompatibilityRegistry::get(static::OPTION_NEEDS_TCEFORMS_WRAPPER)) {
-            $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
-        }
+        $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
     }
 
     /**
