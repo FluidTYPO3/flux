@@ -3,6 +3,17 @@ if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
 
+// Configure the CompatibilityRegistry so it will return the right values based on TYPO3 version:
+
+// We need different stylesheets for the pageLayout
+\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
+    \FluidTYPO3\Flux\Backend\Preview::GRID_CSS,
+    array(
+        '7.6.0' => 'grid.7.6.css',
+        '8.4.1' => 'grid.css'
+    )
+);
+
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_befunc.php']['getFlexFormDSClass']['flux'] = \FluidTYPO3\Flux\Backend\DynamicFlexForm::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][\TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools::class]['flexParsing']['flux'] = \FluidTYPO3\Flux\Backend\DynamicFlexForm::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = \FluidTYPO3\Flux\Backend\TceMain::class;

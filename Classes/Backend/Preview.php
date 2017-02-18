@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Backend;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
+use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
@@ -26,6 +27,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class Preview implements PageLayoutViewDrawItemHookInterface
 {
+
+    const GRID_CSS = 'flux_grid.css';
 
     /**
      * @var boolean
@@ -131,7 +134,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
             /** @var PageRenderer $pageRenderer */
             $pageRenderer = $doc->getPageRenderer();
             $pageRenderer->addCssFile(
-                $doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css'
+                $doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/' . CompatibilityRegistry::get(self::GRID_CSS)
             );
 
             // /typo3/sysext/backend/Resources/Public/JavaScript/LayoutModule/DragDrop.js
