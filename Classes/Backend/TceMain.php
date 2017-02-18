@@ -149,9 +149,10 @@ class TceMain
      * @param string $id The records id (if any)
      * @param string $relativeTo Filled if command is relative to another element
      * @param DataHandler $reference Reference to the parent object (TCEmain)
+     * @param array $pasteUpdate Extended paste command
      * @return void
      */
-    public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference)
+    public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference, $pasteUpdate)
     {
         $record = $this->resolveRecordForOperation($table, $id);
         $properties = [];
@@ -159,6 +160,9 @@ class TceMain
         if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
             $properties = (array) $clipboardCommand['update'];
             $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
+        } elseif ($pasteUpdate !== false) {
+            $copyCommand = $this->getCopyPasteCommand();
+            $clipboardCommand = $copyCommand[$table][abs($id)];
         }
 
         // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
@@ -246,9 +250,11 @@ class TceMain
      * @param string $id The records id (if any)
      * @param string $relativeTo Filled if command is relative to another element
      * @param DataHandler $reference Reference to the parent object (TCEmain)
+     * @param array $pasteUpdate Extended paste command
+     * @param array $pasteDataMap Reference to the additional data, which is inserted to the record after processCmdmap_postProcess
      * @return void
      */
-    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference)
+    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, $pasteUpdate, &$pasteDataMap)
     {
         $record = $this->resolveRecordForOperation($table, $id);
 
@@ -262,6 +268,16 @@ class TceMain
             if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
                 $properties = (array) $clipboardCommand['update'];
                 $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
+            } elseif ($pasteUpdate !== false) {
+                $copyCommand = $this->getCopyPasteCommand();
+                $clipboardCommand = $copyCommand[$table][abs($id)];
+                if ((integer) $pasteDataMap[$table][$reference->copyMappingArray[$table][$id]]['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
+                    // remove colPos from pasteDataMap if greater than 18181
+                    // to avoid merging the colPos after finished the processCmdmap_postProcess
+                    // in the DataHandler
+                    // if colPos < 18181 then the target is outside of a flux:grid
+                    unset ($pasteDataMap[$table][$reference->copyMappingArray[$table][$id]]['colPos']);
+                }
             }
 
             // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
@@ -782,6 +798,15 @@ class TceMain
     protected function getClipboardCommand()
     {
         $command = GeneralUtility::_GET('CB');
+        return (array) $command;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getCopyPasteCommand()
+    {
+        $command = GeneralUtility::_GET('cmd');
         return (array) $command;
     }
 
