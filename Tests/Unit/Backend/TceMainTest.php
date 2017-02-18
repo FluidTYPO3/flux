@@ -168,7 +168,8 @@ class TceMainTest extends AbstractTestCase
         $tceMainParent = $this->getCallerInstance();
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $command = 'update';
-        $result = $instance->processCmdmap_preProcess($command, 'tt_content', $record['uid'], $record, $tceMainParent);
+        $pasteUpdate = false;
+        $result = $instance->processCmdmap_preProcess($command, 'tt_content', $record['uid'], $record, $tceMainParent, $pasteUpdate);
         $this->assertNull($result);
     }
 
@@ -181,7 +182,8 @@ class TceMainTest extends AbstractTestCase
         $tceMainParent = $this->getCallerInstance();
         $record = null;
         $command = 'update';
-        $result = $instance->processCmdmap_preProcess($command, 'tt_content', 'NEW532cf4', $record, $tceMainParent);
+        $pasteUpdate = false;
+        $result = $instance->processCmdmap_preProcess($command, 'tt_content', 'NEW532cf4', $record, $tceMainParent, $pasteUpdate);
         $this->assertNull($result);
     }
 
@@ -194,7 +196,9 @@ class TceMainTest extends AbstractTestCase
         $tceMainParent = $this->getCallerInstance();
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $command = 'update';
-        $result = $instance->processCmdmap_postProcess($command, 'tt_content', $record['uid'], $record, $tceMainParent);
+        $pasteUpdate = false;
+        $dataMao = [];
+        $result = $instance->processCmdmap_postProcess($command, 'tt_content', $record['uid'], $record, $tceMainParent, $pasteUpdate, $dataMao);
         $this->assertNull($result);
     }
 

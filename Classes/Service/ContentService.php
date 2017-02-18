@@ -264,10 +264,25 @@ class ContentService implements SingletonInterface
                 $row['colPos'] = $relativeToRecord['colPos'];
                 $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
             } elseif (0 < (integer) $relativeTo) {
-                // moving to first position in colPos, means that $relativeTo is the target colPos. PID is already set!
-                $row['tx_flux_parent'] = null;
-                $row['tx_flux_column'] = null;
-                $row['colPos'] = $relativeTo;
+                if (empty($parameters['copy']['paste']) === false) {
+                    // Special case for drag and drop on first position of a column.
+                    // The $parameters['copy']['paste'] contains the values for flux specific fields
+                    // and the correct colPos
+                    list ($pageUid, , $relativeTo, $parentUid, $area, $column) =
+                        GeneralUtility::trimExplode('-', $parameters['copy']['paste']);
+                    // get sorting number - between current top element and zero
+                    // $uid = 0 to fetch the lowest sortnumber
+                    $sorting = $tceMain->getSortNumber('tt_content', 0, $pageUid);
+                    $row['tx_flux_parent'] = $parentUid;
+                    $row['tx_flux_column'] = $area;
+                    $row['colPos'] = $column;
+                    $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
+                } else {
+                    // moving to first position in colPos, means that $relativeTo is the pid of the containing page
+                    $row['tx_flux_parent'] = null;
+                    $row['tx_flux_column'] = null;
+                    $row['colPos'] = $relativeTo;
+                }
             } else {
                 $row['tx_flux_parent'] = null;
                 $row['tx_flux_column'] = null;
