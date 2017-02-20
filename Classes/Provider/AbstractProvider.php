@@ -19,6 +19,8 @@ use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\PreviewView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
@@ -33,16 +35,6 @@ class AbstractProvider implements ProviderInterface
     const FORM_CLASS_PATTERN = '%s\\Form\\%s\\%sForm';
 
     const CONTENT_OBJECT_TYPE_LIST = 'list';
-
-    /**
-     * @var array
-     */
-    private static $cache = [];
-
-    /**
-     * @var array
-     */
-    private static $trackedMethodCalls = [];
 
     /**
      * @var string
@@ -327,25 +319,31 @@ class AbstractProvider implements ProviderInterface
         }
         $formName = 'form';
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $formName);
-        if (false === array_key_exists($cacheKey, self::$cache)) {
-            $formClassName = $this->resolveFormClassName($row);
-            if (null !== $formClassName) {
-                $form = call_user_func_array([$formClassName, 'create'], [$row]);
-            } else {
-                $viewContext = $this->getViewContext($row);
-                if (null !== $viewContext->getTemplatePathAndFilename()) {
-                    $view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
-                    $form = $view->getForm($viewContext->getSectionName(), $formName);
-                }
-            }
-            if (null !== $form) {
-                $form->setOption(Form::OPTION_RECORD, $row);
-                $form->setOption(Form::OPTION_RECORD_TABLE, $this->getTableName($row));
-                $form->setOption(Form::OPTION_RECORD_FIELD, $this->getFieldName($row));
-            }
-            self::$cache[$cacheKey] = $form;
+        $runtimeCache = $this->getRuntimeCache();
+        $fromCache = $runtimeCache->get($cacheKey);
+        if ($fromCache) {
+            return $fromCache;
         }
-        return self::$cache[$cacheKey];
+
+        $formClassName = $this->resolveFormClassName($row);
+        if (null !== $formClassName) {
+            $form = call_user_func_array([$formClassName, 'create'], [$row]);
+        } else {
+            $viewContext = $this->getViewContext($row);
+            if (null !== $viewContext->getTemplatePathAndFilename()) {
+                $view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
+                $form = $view->getForm($viewContext->getSectionName(), $formName);
+            }
+        }
+
+        if (null !== $form) {
+            $form->setOption(Form::OPTION_RECORD, $row);
+            $form->setOption(Form::OPTION_RECORD_TABLE, $this->getTableName($row));
+            $form->setOption(Form::OPTION_RECORD_FIELD, $this->getFieldName($row));
+            $runtimeCache->set($cacheKey, $form);
+        }
+
+        return $form;
     }
 
     /**
@@ -359,12 +357,16 @@ class AbstractProvider implements ProviderInterface
         }
         $gridName = 'grid';
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $gridName);
-        if (false === array_key_exists($cacheKey, self::$cache)) {
-            $viewContext = $this->getViewContext($row);
-            $grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
-            self::$cache[$cacheKey] = $grid;
+        $runtimeCache = $this->getRuntimeCache();
+        $fromCache = $runtimeCache->get($cacheKey);
+        if ($fromCache) {
+            return $fromCache;
         }
-        return self::$cache[$cacheKey];
+
+        $viewContext = $this->getViewContext($row);
+        $grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
+        $runtimeCache->set($cacheKey, $grid);
+        return $grid;
     }
 
     /**
@@ -823,9 +825,8 @@ class AbstractProvider implements ProviderInterface
     {
         $table = $this->getTableName($row);
         $field = $this->getFieldName($row);
-        $uid = (true === isset($row['uid']) ? $row['uid'] : uniqid());
-        return $table . $this->getListType() . $this->getContentObjectType() .
-            md5(serialize($row[$field])) . $uid . $variable . get_class($this);
+        $uid = $row['uid'] ?? 0;
+        return 'flux-storedvariable-' . $table . '-' . $field . '-' . $uid . '-' . $variable;
     }
 
     /**
@@ -1022,6 +1023,14 @@ class AbstractProvider implements ProviderInterface
         $uid = intval($uid);
         $tableName = $this->tableName;
         return $this->recordService->getSingle($tableName, '*', $uid);
+    }
+
+    /**
+     * @return VariableFrontend
+     */
+    protected function getRuntimeCache()
+    {
+        return GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
     }
 
 }
