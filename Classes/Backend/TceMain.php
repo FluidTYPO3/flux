@@ -140,7 +140,7 @@ class TceMain
             }
         }
 
-        $reference->cmdmap['tt_content'] = $children + $parents + $others;
+        $reference->cmdmap['tt_content'] = array_merge($children, $parents, $others);
     }
 
     /**
