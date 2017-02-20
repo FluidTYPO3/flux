@@ -100,7 +100,6 @@ class FormViewHelper extends AbstractFormViewHelper
         $formClassName = FluxPackageFactory::getPackageWithFallback($extensionName)
             ->getImplementation(FluxPackage::IMPLEMENTATION_FORM);
         $form = call_user_func_array([$formClassName, 'create'], []);
-        $container = $form->last();
         // configure Form instance
         $form->setId($arguments['id']);
         $form->setName($arguments['id']);
@@ -124,7 +123,7 @@ class FormViewHelper extends AbstractFormViewHelper
         $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
         $templateVariableContainer->add(static::SCOPE_VARIABLE_FORM, $form);
 
-        static::setContainerInRenderingContext($renderingContext, $container);
+        static::setContainerInRenderingContext($renderingContext, $form);
         static::setExtensionNameInRenderingContext(
             $renderingContext,
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
