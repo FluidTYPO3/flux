@@ -124,10 +124,12 @@ class TceMain
         $parents = [];
         $children = [];
         $others = [];
+        $remap = false;
         foreach ($reference->cmdmap['tt_content'] as $uid => $command) {
             if (empty($command['version'])) {
                 $others[$uid] = $command;
             } elseif ($command['version']['action'] === 'swap') {
+                $remap = true;
                 if ($this->getDatabaseConnection()->exec_SELECTcountRows(
                     'uid',
                     'tt_content',
@@ -139,8 +141,9 @@ class TceMain
                 }
             }
         }
-
-        $reference->cmdmap['tt_content'] = array_merge($children, $parents, $others);
+        if ($remap) {
+            $reference->cmdmap['tt_content'] = $children + $parents + $others;
+        }
     }
 
     /**
