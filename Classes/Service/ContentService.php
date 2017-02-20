@@ -263,7 +263,7 @@ class ContentService implements SingletonInterface
                 $row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
                 $row['colPos'] = $relativeToRecord['colPos'];
                 $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
-            } elseif (0 < (integer) $relativeTo) {
+            } elseif (0 <= (integer) $relativeTo) {
                 // moving to first position in colPos, means that $relativeTo is the target colPos. PID is already set!
                 $row['tx_flux_parent'] = null;
                 $row['tx_flux_column'] = null;
