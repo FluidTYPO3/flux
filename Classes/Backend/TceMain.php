@@ -439,6 +439,27 @@ class TceMain
         if ('new' === $status && 'tt_content' === $table) {
             $this->contentService->initializeRecord($id, $fieldArray, $reference);
         }
+        if ($status === 'update' && $table === 'tt_content' && $GLOBALS['BE_USER']->workspace) {
+
+            // We fix a side effect caused by the IRRE relation between parent and child. When a parent is
+            // moved and we are inside a workspace, the parent UID remains the same which causes TYPO3 to
+            // update the live records with an incorrect (sequential) sorting number.
+
+            // Unfortunately we cannot prevent the live child records from receiving a new sorting value,
+            // but at least the new values are in the correct order. The best we can do is to update the
+            // workspace move placeholder with sorting values from the versioned record - this causes the
+            // workspace preview to be in the correct sorting order, and restores the proper sorting value
+            // to child records when the workspace is published.
+            $originalUid = BackendUtility::getLiveVersionIdOfRecord($table, $id);
+            $this->getDatabaseConnection()->sql_query(
+                sprintf(
+                    'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.sorting != s.sorting ' .
+                    'AND t.t3ver_move_id = s.t3ver_oid AND s.t3ver_state = 4 AND s.tx_flux_parent = %d AND s.t3ver_wsid = %d',
+                    $originalUid,
+                    $GLOBALS['BE_USER']->workspace
+                )
+            );
+        }
         $arguments = ['status' => $status, 'id' => $id, 'row' => &$fieldArray];
         $fieldArray = $this->executeConfigurationProviderMethod(
             'postProcessDatabaseOperation',
