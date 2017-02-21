@@ -96,10 +96,6 @@ class ContentIconHookSubscriber
         if ($table !== 'tt_content') {
             return '';
         }
-        $contentType = $record['CType'];
-        if ($contentType === 'list') {
-            return '';
-        }
         $icon = '';
 
         $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
