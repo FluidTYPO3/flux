@@ -1,4 +1,4 @@
-.flux-grid { width: 100%; }
+.flux-grid { width: 100%; table-layout:fixed; }
 .flux-grid td { vertical-align: top; }
 .flux-grid-hidden { display: none; }
 .t3-page-ce-dragitem:hover .t3-page-ce-wrapper-new-ce { cursor: move; }
