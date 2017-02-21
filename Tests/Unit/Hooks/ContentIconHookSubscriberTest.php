@@ -102,7 +102,7 @@ class ContentIconHookSubscriberTest extends AbstractTestCase
             array(array('tt_content', 1, array()), $providerWithoutForm, null),
             array(array('tt_content', 1, array('field' => 'test')), $providerWithoutForm, null),
             array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon, null),
-            array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon, 'icon'),
+            array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon, null),
         );
     }
 }

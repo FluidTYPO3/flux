@@ -108,7 +108,7 @@ class ContentIconHookSubscriber
         // we check the cache here because at this point, the cache key is decidedly
         // unique and we have not yet consulted the (potentially costly) Provider.
         $cachedIconIdentifier = $this->cache->get($cacheIdentity);
-        if ($cachedIconIdentifier) {
+        if ($cachedIconIdentifier !== false) {
             $icon = $cachedIconIdentifier;
         } elseif ($record) {
             $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
