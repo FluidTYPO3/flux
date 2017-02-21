@@ -28,3 +28,6 @@
 .flux-grid-column:last-child > .t3-grid-cell {
 	margin-right: 10px;
 }
+.t3-is-dragged .t3-page-ce-body {
+	max-height: none;
+}
