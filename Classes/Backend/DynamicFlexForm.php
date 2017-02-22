@@ -24,11 +24,6 @@ class DynamicFlexForm
 {
 
     /**
-     * @var array
-     */
-    protected static $generatedDataSources = [];
-
-    /**
      * @var ObjectManagerInterface
      */
     protected $objectManager;
@@ -126,51 +121,6 @@ class DynamicFlexForm
      */
     protected function resolveDataStructureByIdentifier(array $identifier)
     {
-        $record = $identifier['record'];
-        if (!$record) {
-            return [];
-        }
-        if (count($record) === 1 && isset($record['uid'])) {
-            $record = $this->recordService->getSingle($identifier['tableName'], '*', $record['uid']);
-        }
-        $fieldName = $identifier['fieldName'];
-        $dataStructArray = [];
-        $providers = $this->configurationService->resolveConfigurationProviders($identifier['tableName'], $fieldName, $record);
-        if (count($providers) === 0) {
-            return [];
-        }
-        foreach ($providers as $provider) {
-            $form = $provider->getForm($record);
-            if (!$form) {
-                continue;
-            }
-            $formId = $form->getId();
-            if ($form->getOption(Form::OPTION_STATIC)) {
-                $cache = $this->getCache();
-                $cacheKey = $this->calculateFormCacheKey($formId);
-                if ($cache->has($cacheKey)) {
-                    return $cache->get($cacheKey);
-                }
-                // This provider has requested static DS caching; stop attempting
-                // to process any other DS and cache this DS as final result:
-                if (isset(static::$generatedDataSources[$formId])) {
-                    // DS has already been generated, skip processing now and refer to existing DS.
-                    return $dataStructArray;
-                }
-                $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
-                $cache->set($cacheKey, $dataStructArray);
-                return $dataStructArray;
-            } else {
-                $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
-            }
-        }
-        if (empty($dataStructArray)) {
-            $dataStructArray = ['ROOT' => ['el' => []]];
-        }
-
-        $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
-
-        return $dataStructArray;
     }
 
     /**
@@ -182,16 +132,51 @@ class DynamicFlexForm
         if ($identifier['type'] !== 'flux') {
             return [];
         }
-        if (isset($identifier['staticIdentity'])) {
-            $dataSourceIdentity = $identifier['staticIdentity'];
-        } else {
-            $dataSourceIdentity = $identifier['tableName'] . '.' . $identifier['fieldName'] . ':' . $identifier['record']['uid'];
+        $record = $identifier['record'];
+        if (!$record) {
+            return [];
         }
-        if (isset(static::$generatedDataSources[$dataSourceIdentity])) {
-            return static::$generatedDataSources[$dataSourceIdentity];
+        $cache = $this->getCache();
+        $runtimeCache = $this->getRuntimeCache();
+        $cacheKey = 'ds-' . md5(serialize($identifier));
+        $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $cache->get($cacheKey);
+        if ($fromCache) {
+            return $fromCache;
         }
-        static::$generatedDataSources[$dataSourceIdentity] = $this->resolveDataStructureByIdentifier($identifier);
-        return static::$generatedDataSources[$dataSourceIdentity];
+        if (count($record) === 1 && isset($record['uid'])) {
+            $record = $this->recordService->getSingle($identifier['tableName'], '*', $record['uid']);
+        }
+        $fieldName = $identifier['fieldName'];
+        $dataStructArray = [];
+        $providers = $this->configurationService->resolveConfigurationProviders($identifier['tableName'], $fieldName, $record);
+        if (count($providers) === 0) {
+            // No Providers detected - we will cache this response
+            $cache->set($cacheKey, []);
+            $runtimeCache->set($cacheKey, []);
+            return [];
+        }
+        foreach ($providers as $provider) {
+            $form = $provider->getForm($record);
+            if (!$form) {
+                continue;
+            }
+            $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
+            if ($form->getOption(Form::OPTION_STATIC)) {
+                // This provider has requested static DS caching; stop attempting
+                // to process any other DS, cache and return this DS as final result:
+                $cache->set($cacheKey, $dataStructArray);
+                $runtimeCache->set($cacheKey, $dataStructArray);
+                return $dataStructArray;
+            }
+        }
+        if (empty($dataStructArray)) {
+            $dataStructArray = ['ROOT' => ['el' => []]];
+        }
+
+        $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
+
+        $runtimeCache->set($cacheKey, $dataStructArray);
+        return $dataStructArray;
     }
 
     /**
@@ -261,10 +246,6 @@ class DynamicFlexForm
                     }
                     // This provider has requested static DS caching; stop attempting
                     // to process any other DS and cache this DS as final result:
-                    if (isset(static::$generatedDataSources[$formId])) {
-                        // DS has already been generated, skip processing now and refer to existing DS.
-                        return;
-                    }
                     $provider->postProcessDataStructure($row, $dataStructArray, $conf);
                     $cache->set($cacheKey, $dataStructArray);
                     return;
@@ -337,12 +318,26 @@ class DynamicFlexForm
 
     /**
      * @return VariableFrontend
+     * @codeCoverageIgnore
      */
     protected function getCache()
     {
         static $cache;
         if (!$cache) {
             $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
+        }
+        return $cache;
+    }
+
+    /**
+     * @return VariableFrontend
+     * @codeCoverageIgnore
+     */
+    protected function getRuntimeCache()
+    {
+        static $cache;
+        if (!$cache) {
+            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
         }
         return $cache;
     }
