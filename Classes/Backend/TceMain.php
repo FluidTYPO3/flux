@@ -127,6 +127,13 @@ class TceMain
         $remap = false;
         foreach ($reference->cmdmap['tt_content'] as $uid => $command) {
             if (empty($command['version'])) {
+                if (is_array($command['copy']) && isset($command['copy']['update']['colPos']) && $command['copy']['update']['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
+                    // copy during drag and drop in flux grid columns
+                    '' !== session_id() ? : session_start();
+                    list($command['copy']['update']['tx_flux_parent'], $command['copy']['update']['tx_flux_column']) = $_SESSION['target' . $command['copy']['update']['colPos']];
+                    $command['copy']['update']['colPos'] = ContentService::COLPOS_FLUXCONTENT;
+                    $remap = true;
+                }
                 $others[$uid] = $command;
             } elseif ($command['version']['action'] === 'swap') {
                 $remap = true;
