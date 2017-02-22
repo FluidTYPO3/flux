@@ -416,7 +416,7 @@ class ContentService implements SingletonInterface
      * @param integer $relativeTo
      * @return array
      */
-    protected function getTargetAreaStoredInSession($relativeTo)
+    public function getTargetAreaStoredInSession($relativeTo)
     {
         '' !== session_id() ? : session_start();
         return $_SESSION['target' . $relativeTo];

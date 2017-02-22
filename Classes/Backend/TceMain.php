@@ -129,8 +129,8 @@ class TceMain
             if (empty($command['version'])) {
                 if (isset($command['copy']['update']['colPos']) && $command['copy']['update']['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
                     // copy during drag and drop in flux grid columns
-                    '' !== session_id() ? : session_start();
-                    list($command['copy']['update']['tx_flux_parent'], $command['copy']['update']['tx_flux_column']) = $_SESSION['target' . $command['copy']['update']['colPos']];
+                    list($command['copy']['update']['tx_flux_parent'], $command['copy']['update']['tx_flux_column']) =
+                        $this->contentService->getTargetAreaStoredInSession($command['copy']['update']['colPos']);
                     $command['copy']['update']['colPos'] = ContentService::COLPOS_FLUXCONTENT;
                     $remap = true;
                 }
