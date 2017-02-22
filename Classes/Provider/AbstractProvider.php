@@ -320,13 +320,14 @@ class AbstractProvider implements ProviderInterface
         $formName = 'form';
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $formName);
         $runtimeCache = $this->getRuntimeCache();
-        $fromCache = $runtimeCache->get($cacheKey);
+        $persistentCache = $this->getPersistentCache();
+        $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $persistentCache->get($cacheKey);
         if ($fromCache) {
             return $fromCache;
         }
 
         $formClassName = $this->resolveFormClassName($row);
-        if (null !== $formClassName) {
+        if ($formClassName) {
             $form = call_user_func_array([$formClassName, 'create'], [$row]);
         } else {
             $viewContext = $this->getViewContext($row);
@@ -336,11 +337,14 @@ class AbstractProvider implements ProviderInterface
             }
         }
 
-        if (null !== $form) {
+        if ($form) {
             $form->setOption(Form::OPTION_RECORD, $row);
             $form->setOption(Form::OPTION_RECORD_TABLE, $this->getTableName($row));
             $form->setOption(Form::OPTION_RECORD_FIELD, $this->getFieldName($row));
             $runtimeCache->set($cacheKey, $form);
+            if ($form->getOption(Form::OPTION_STATIC)) {
+                $persistentCache->set($cacheKey, $form);
+            }
         }
 
         return $form;
@@ -358,7 +362,8 @@ class AbstractProvider implements ProviderInterface
         $gridName = 'grid';
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $gridName);
         $runtimeCache = $this->getRuntimeCache();
-        $fromCache = $runtimeCache->get($cacheKey);
+        $persistentCache = $this->getPersistentCache();
+        $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $persistentCache->get($cacheKey);
         if ($fromCache) {
             return $fromCache;
         }
@@ -366,6 +371,10 @@ class AbstractProvider implements ProviderInterface
         $viewContext = $this->getViewContext($row);
         $grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
         $runtimeCache->set($cacheKey, $grid);
+        $form = $this->getForm($row);
+        if ($form && $form->getOption(Form::OPTION_STATIC)) {
+            $persistentCache->set($cacheKey, $grid);
+        }
         return $grid;
     }
 
@@ -825,8 +834,9 @@ class AbstractProvider implements ProviderInterface
     {
         $table = $this->getTableName($row);
         $field = $this->getFieldName($row);
+        $contentType = $this->getContentObjectType();
         $uid = $row['uid'] ?? 0;
-        return 'flux-storedvariable-' . $table . '-' . $field . '-' . $uid . '-' . $variable;
+        return 'flux-storedvariable-' . $table . '-' . $field . '-' . $uid . '-' . $variable . '-' . $contentType;
     }
 
     /**
@@ -1031,6 +1041,14 @@ class AbstractProvider implements ProviderInterface
     protected function getRuntimeCache()
     {
         return GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
+    }
+
+    /**
+     * @return VariableFrontend
+     */
+    protected function getPersistentCache()
+    {
+        return GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
     }
 
 }
