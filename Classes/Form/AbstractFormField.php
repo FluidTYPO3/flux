@@ -212,7 +212,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         $configuration = $this->buildConfiguration();
         $fieldStructureArray = [
             'label' => $this->getLabel(),
-            'exclude' => intval($this->getExclude()),
+            'exclude' =>                                                                                                                                intval($this->getExclude()),
             'config' => $configuration,
             'displayCond' => $this->getDisplayCondition()
         ];
