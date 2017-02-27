@@ -314,6 +314,15 @@ class TceMain
                 $this->copySortingValueOfChildrenFromOriginalsToCopies(
                     $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id])
                 );
+            } elseif ($command === 'move') {
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.sorting != s.sorting ' .
+                        'AND t.t3ver_move_id = s.t3ver_oid AND s.t3ver_state = 4 AND s.tx_flux_parent = %d AND s.t3ver_wsid = %d',
+                        $id,
+                        $GLOBALS['BE_USER']->workspace
+                    )
+                );
             }
         }
 
