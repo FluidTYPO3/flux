@@ -13,6 +13,9 @@ use FluidTYPO3\Flux\Service\ContentService;
 use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
+use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
+use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -133,13 +136,19 @@ class MiscellaneousUtility
      */
     public static function createIcon($originalFile, $width, $height)
     {
-        /** @var GraphicalFunctions $image */
-        $image = GeneralUtility::makeInstance(GraphicalFunctions::class);
-        $image->absPrefix = PATH_site;
-        $image->png_truecolor = true;
-        $image->init();
-        $newResource = $image->imageMagickConvert($originalFile, 'png', $width, $height, '', '', [], true);
-        return str_replace(PATH_site, '/', $newResource[3]);
+        $extension = pathinfo($originalFile, PATHINFO_EXTENSION);
+        switch (strtolower($extension)) {
+            case 'svg':
+            case 'svgz':
+                $iconProvider = SvgIconProvider::class;
+                break;
+            default:
+                $iconProvider = BitmapIconProvider::class;
+        }
+        $iconIdentifier = 'icon-' . md5($originalFile);
+        $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
+        $iconRegistry->registerIcon($iconIdentifier, $iconProvider, ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]);
+        return $iconIdentifier;
     }
 
     /**

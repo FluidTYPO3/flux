@@ -3,32 +3,6 @@ if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
 
-// Configure the CompatibilityRegistry so it will return the right values based on TYPO3 version:
-
-// Preview class name (expecting needed changes on TYPO3 8.0+)
-\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
-    \FluidTYPO3\Flux\Backend\Preview::class,
-    array(
-        '7.6.0' => \FluidTYPO3\Flux\Backend\Preview::class
-    )
-);
-
-// FormEngine requires "TCEforms" dimension (expecting change on future TYPO3 versions)
-\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
-    \FluidTYPO3\Flux\Backend\DynamicFlexForm::OPTION_NEEDS_TCEFORMS_WRAPPER,
-    array(
-        '7.6.0' => TRUE
-    )
-);
-
-// Hook class which generates icons for "tt_content" editing views
-\FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
-    \FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::OPTION_HOOK_METHOD,
-    array(
-        '7.6.0' => \FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::class . '->addSubIcon'
-    )
-);
-
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_befunc.php']['getFlexFormDSClass']['flux'] = \FluidTYPO3\Flux\Backend\DynamicFlexForm::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][\TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools::class]['flexParsing']['flux'] = \FluidTYPO3\Flux\Backend\DynamicFlexForm::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = \FluidTYPO3\Flux\Backend\TceMain::class;
@@ -36,7 +10,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['moveRecordClass'][] = \FluidTYPO3\Flux\Backend\TceMain::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] = \FluidTYPO3\Flux\Backend\TceMain::class . '->clearCacheCommand';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources']['flux'] = \FluidTYPO3\Flux\Backend\TypoScriptTemplate::class . '->preprocessIncludeStaticTypoScriptSources';
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = \FluidTYPO3\Flux\Utility\CompatibilityRegistry::get(\FluidTYPO3\Flux\Backend\Preview::class);
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] = \FluidTYPO3\Flux\Backend\Preview::class;
 
 // The following is a dual registration of the same TCA-manipulating hook; the reason for registering it twice for two
 // different hooks is that extTablesInclusion-PostProcessing does not get executed in FE, resulting in errors due to
@@ -86,7 +60,7 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 	$extbaseObjectContainer->registerImplementation(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::class, \FluidTYPO3\Flux\Configuration\ConfigurationManager::class);
 	unset($extbaseObjectContainer);
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] = \FluidTYPO3\Flux\Hooks\WizardItemsHookSubscriber::class;
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] = \FluidTYPO3\Flux\Utility\CompatibilityRegistry::get(\FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::OPTION_HOOK_METHOD);
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] =  \FluidTYPO3\Flux\Hooks\ContentIconHookSubscriber::class . '->addSubIcon';
 
 	if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['listNestedContent']) && !(boolean)$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['listNestedContent']) {
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable']['flux'] = \FluidTYPO3\Flux\Hooks\RecordListGetTableHookSubscriber::class;

@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Core\Tests\UnitTestCase;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
@@ -16,7 +16,7 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 /**
  * AbstractPipeViewHelperTest
  */
-class AbstractPipeViewHelperTest extends UnitTestCase
+class AbstractPipeViewHelperTest extends AbstractTestCase
 {
 
     /**
@@ -26,7 +26,7 @@ class AbstractPipeViewHelperTest extends UnitTestCase
     {
         $className = 'FluidTYPO3\\Flux\\ViewHelpers\\Pipe\\AbstractPipeViewHelper';
         $instance = $this->getMockBuilder($className)->getMock();
-        $this->inject($instance, 'objectManager', GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
+        $instance->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
         $result = $this->callInaccessibleMethod($instance, 'preparePipeInstance', new RenderingContext(), array());
         $this->assertInstanceOf('FluidTYPO3\\Flux\\Outlet\\Pipe\\StandardPipe', $result);
     }

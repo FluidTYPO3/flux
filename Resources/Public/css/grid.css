@@ -1,4 +1,4 @@
-.flux-grid { width: 100%; }
+.flux-grid { width: 100%; table-layout:fixed; }
 .flux-grid td { vertical-align: top; }
 .flux-grid-hidden { display: none; }
 .t3-page-ce-dragitem:hover .t3-page-ce-wrapper-new-ce { cursor: move; }
@@ -27,4 +27,7 @@
 }
 .flux-grid-column:last-child > .t3-grid-cell {
 	margin-right: 10px;
+}
+.t3-is-dragged .t3-page-ce-body {
+	max-height: none;
 }

@@ -241,7 +241,7 @@ class ContentService implements SingletonInterface
                 // sorting value to re-sort after a possibly invalid sorting value is received.
                 list ($pageUid, , $relativeTo, $parentUid, $area, $column) =
                     GeneralUtility::trimExplode('-', $parameters[1]);
-                $sorting = $tceMain->getSortNumber('tt_content', $relativeTo, $pageUid);
+                $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], -(integer) $relativeTo);
                 $row['tx_flux_parent'] = $parentUid;
                 $row['tx_flux_column'] = $area;
                 $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
@@ -250,15 +250,24 @@ class ContentService implements SingletonInterface
                 // Get the desired sorting value after the relative record.
                 $relativeUid = abs($relativeTo);
                 $relativeToRecord = $this->loadRecordFromDatabase($relativeUid);
+
+                if ((integer) $relativeToRecord['t3ver_oid'] === 0) {
+                    BackendUtility::workspaceOL('tt_content', $relativeToRecord);
+                    $movePlaceholder = BackendUtility::getMovePlaceholder('tt_content', $relativeUid);
+                    if ($movePlaceholder) {
+                        $relativeToRecord = $movePlaceholder;
+                    }
+                }
                 $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], $relativeTo);
                 $row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
                 $row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
                 $row['colPos'] = $relativeToRecord['colPos'];
                 $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
-            } elseif (0 < (integer) $relativeTo) {
-                // moving to first position in colPos, means that $relativeTo is the pid of the containing page
+            } elseif (0 <= (integer) $relativeTo) {
+                // moving to first position in colPos, means that $relativeTo is the target colPos. PID is already set!
                 $row['tx_flux_parent'] = null;
                 $row['tx_flux_column'] = null;
+                $row['colPos'] = $relativeTo;
             } else {
                 $row['tx_flux_parent'] = null;
                 $row['tx_flux_column'] = null;
@@ -407,7 +416,7 @@ class ContentService implements SingletonInterface
      * @param integer $relativeTo
      * @return array
      */
-    protected function getTargetAreaStoredInSession($relativeTo)
+    public function getTargetAreaStoredInSession($relativeTo)
     {
         '' !== session_id() ? : session_start();
         return $_SESSION['target' . $relativeTo];

@@ -146,11 +146,9 @@ class Preview implements PageLayoutViewDrawItemHookInterface
             // requirejs
             $pageRenderer->addRequireJsConfiguration([
                 'paths' => [
-                    'FluidTypo3/Flux/DragDrop' => $fullJsPath . 'DragDrop',
                     'FluidTypo3/Flux/FluxCollapse' => $fullJsPath . 'fluxCollapse',
                 ],
             ]);
-            $pageRenderer->loadRequireJsModule('FluidTypo3/Flux/DragDrop');
             $pageRenderer->loadRequireJsModule('FluidTypo3/Flux/FluxCollapse');
 
             self::$assetsIncluded = true;

@@ -134,8 +134,12 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             $last = $this->last();
             $last->add($child);
         } else {
-            $children = $this->children;
-            foreach ($children as $existingChild) {
+            $this->children->rewind();
+            if ($this->children->count() === 1 && $this->children->current()->getName() === 'options' && !$this->children->current()->hasChildren()) {
+                // Form has a single sheet, it's the default sheet and it has no fields. Replace it.
+                $this->children->detach($this->children->current());
+            }
+            foreach ($this->children as $existingChild) {
                 if ($child->getName() === $existingChild->getName()) {
                     return $this;
                 }
@@ -159,21 +163,15 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 'langChildren' => $inheritLocalisation
             ],
         ];
-        $copy = clone $this;
-        foreach ($this->getSheets(true) as $sheet) {
-            if (false === $sheet->hasChildren()) {
-                $copy->remove($sheet->getName());
-            }
-        }
-        $sheets = $copy->getSheets();
+        $sheets = $this->getSheets(false);
         $compactExtensionToggleOn = 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'];
-        $compactConfigurationToggleOn = 0 < $copy->getCompact();
+        $compactConfigurationToggleOn = 0 < $this->getCompact();
         if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets)) {
-            $dataStructArray = $copy->last()->build();
+            $dataStructArray = $this->last()->build();
             $dataStructArray['meta'] = ['langDisable' => $disableLocalisation];
             unset($dataStructArray['ROOT']['TCEforms']);
         } elseif (0 < count($sheets)) {
-            $dataStructArray['sheets'] = $copy->buildChildren($this->children);
+            $dataStructArray['sheets'] = $this->buildChildren($sheets);
         } else {
             $dataStructArray['ROOT'] = [
                 'type' => 'array',
