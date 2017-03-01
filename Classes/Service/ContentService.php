@@ -423,27 +423,32 @@ class ContentService implements SingletonInterface
     }
 
     /**
-     * @param integer $uid uid of record in default language
+     * @param integer $uid uid of record in chosen source language
      * @param integer $languageUid sys_language_uid of language for the localized record
-     * @param array $defaultLanguageRecord record in default language (from table tt_content)
+     * @param array $sourceRecord record in chosen source language (from table tt_content)
      * @param DataHandler $reference
      */
-    public function fixPositionInLocalization($uid, $languageUid, &$defaultLanguageRecord, DataHandler $reference)
+    public function fixPositionInLocalization($uid, $languageUid, &$sourceRecord, DataHandler $reference)
     {
         $previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
-        $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
+        if (!empty($sourceRecord['l18n_parent'])) {
+            $defaultRecordUid = $sourceRecord['l18n_parent'];
+        } else {
+            $defaultRecordUid = $uid;
+        }
+        $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $defaultRecordUid, $languageUid);
         $sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
         if (null === $previousLocalizedRecordUid) {
             // moving to first position in tx_flux_column
             $localizedRecord[0][$sortingRow] = $reference->getSortNumber(
                 'tt_content',
                 0,
-                $defaultLanguageRecord['pid']
+                $sourceRecord['pid']
             );
         } else {
             $localizedRecord[0][$sortingRow] = $reference->resorting(
                 'tt_content',
-                $defaultLanguageRecord['pid'],
+                $sourceRecord['pid'],
                 $sortingRow,
                 $previousLocalizedRecordUid
             );
