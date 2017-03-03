@@ -241,6 +241,11 @@ class ContentService implements SingletonInterface
                 // sorting value to re-sort after a possibly invalid sorting value is received.
                 list ($pageUid, , $relativeTo, $parentUid, $area, $column) =
                     GeneralUtility::trimExplode('-', $parameters[1]);
+                // if $area is null and $row['colPos'] > 18181 then we have a move to an empty row
+                if ($area === null && $row['colPos'] > self::COLPOS_FLUXCONTENT) {
+                    list($parentUid, $area) = $this->getTargetAreaStoredInSession($row['colPos']);
+                }
+
                 $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], -(integer) $relativeTo);
                 $row['tx_flux_parent'] = $parentUid;
                 $row['tx_flux_column'] = $area;
