@@ -274,6 +274,11 @@ class TceMain
             if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
                 $properties = (array) $clipboardCommand['update'];
                 if ($properties['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
+                    // check if $relativeTo > 0 and < 18181
+                    // then we have detected a paste to the top of a column
+                    if ($relativeTo > 0 && $relativeTo < ContentService::COLPOS_FLUXCONTENT) {
+                        $relativeTo = $properties['colPos'];
+                    }
                     $properties['colPos'] = ContentService::COLPOS_FLUXCONTENT;
                     $pasteDataMap[$table][$id]['colPos'] = ContentService::COLPOS_FLUXCONTENT;
                 }
