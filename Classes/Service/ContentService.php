@@ -239,12 +239,15 @@ class ContentService implements SingletonInterface
             } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
                 // Special case for clipboard commands only. This special case also requires a new
                 // sorting value to re-sort after a possibly invalid sorting value is received.
-                list ($pageUid, , $relativeTo, $parentUid, $area, $column) =
-                    GeneralUtility::trimExplode('-', $parameters[1]);
-                $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], -(integer) $relativeTo);
+                list (, , $relativeTo, $parentUid, $area, ) = GeneralUtility::trimExplode('-', $parameters[1]);
+                if ($relativeTo <> 0) {
+                    $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], -(integer) $relativeTo);
+                    $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
+                } else {
+                    $row['sorting'] = 0;
+                }
                 $row['tx_flux_parent'] = $parentUid;
                 $row['tx_flux_column'] = $area;
-                $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
             } elseif (0 > (integer) $relativeTo) {
                 // inserting a new element after another element. Check column position of that element.
                 // Get the desired sorting value after the relative record.
