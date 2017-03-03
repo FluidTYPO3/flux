@@ -234,7 +234,7 @@ class ContentService implements SingletonInterface
                 list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
                 $row['tx_flux_parent'] = $parent;
                 $row['tx_flux_column'] = $column;
-                $row['colPos'] = self::COLPOS_FLUXCONTENT;
+                $row['colPos'] = static::COLPOS_FLUXCONTENT;
                 $row['sorting'] = 0;
             } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
                 // Special case for clipboard commands only. This special case also requires a new
@@ -278,7 +278,7 @@ class ContentService implements SingletonInterface
             $row['tx_flux_column'] = null;
         }
         if (0 < $row['tx_flux_parent']) {
-            $row['colPos'] = self::COLPOS_FLUXCONTENT;
+            $row['colPos'] = static::COLPOS_FLUXCONTENT;
         }
     }
 

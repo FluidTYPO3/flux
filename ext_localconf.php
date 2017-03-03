@@ -30,7 +30,7 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
     // Configure the CompatibilityRegistry so it will return the right values based on TYPO3 version:
     // PreviewView class name (expecting needed changes on TYPO3 8.6+)
     \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
-        \FluidTYPO3\Flux\View\PreviewView::class,
+        \FluidTYPO3\Flux\View\PreviewView::class . '->drawPasteIcon',
         array(
             '7.6.0' => true,
             '8.6.0' => false

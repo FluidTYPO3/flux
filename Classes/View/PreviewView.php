@@ -396,7 +396,7 @@ class PreviewView
             $parentRow['uid'],
             $record['uid'],
             $this->drawNewIcon($parentRow, $column, $record['uid']).
-            (CompatibilityRegistry::get(self::class) ? $this->drawPasteIcon($parentRow, $column, false, $record) : '').
+            (CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($parentRow, $column, false, $record) : '').
             $this->drawPasteIcon($parentRow, $column, true, $record)
         );
     }
@@ -792,7 +792,7 @@ class PreviewView
             $pageUid,
             $id,
             $this->drawNewIcon($row, $column),
-            CompatibilityRegistry::get(self::class) ? $this->drawPasteIcon($row, $column) : '',
+            CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($row, $column) : '',
             $this->drawPasteIcon($row, $column, true),
             $content
         );
