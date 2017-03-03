@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ClipBoardUtility;
+use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
@@ -394,8 +395,8 @@ class PreviewView
             $parentRow['pid'],
             $parentRow['uid'],
             $record['uid'],
-            $this->drawNewIcon($parentRow, $column, $record['uid']).
-            $this->drawPasteIcon($parentRow, $column, false, $record).
+            $this->drawNewIcon($parentRow, $column, $record['uid']) .
+            (CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($parentRow, $column, false, $record) : '') .
             $this->drawPasteIcon($parentRow, $column, true, $record)
         );
     }
@@ -791,7 +792,7 @@ class PreviewView
             $pageUid,
             $id,
             $this->drawNewIcon($row, $column),
-            $this->drawPasteIcon($row, $column),
+            CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($row, $column) : '',
             $this->drawPasteIcon($row, $column, true),
             $content
         );
