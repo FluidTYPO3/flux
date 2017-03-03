@@ -194,7 +194,9 @@ class TceMainTest extends AbstractTestCase
         $tceMainParent = $this->getCallerInstance();
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $command = 'update';
-        $result = $instance->processCmdmap_postProcess($command, 'tt_content', $record['uid'], $record, $tceMainParent);
+        $pasteUpdate = false;
+        $pasteDataMap = [];
+        $result = $instance->processCmdmap_postProcess($command, 'tt_content', $record['uid'], $record, $tceMainParent, $pasteUpdate, $pasteDataMap);
         $this->assertNull($result);
     }
 

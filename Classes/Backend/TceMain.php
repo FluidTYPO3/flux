@@ -256,9 +256,11 @@ class TceMain
      * @param string $id The records id (if any)
      * @param string $relativeTo Filled if command is relative to another element
      * @param DataHandler $reference Reference to the parent object (TCEmain)
+     * @param array $pasteUpdate Extended paste command
+     * @param array $pasteDataMap Reference to the additional data, which is inserted to the record after processCmdmap_postProcess
      * @return void
      */
-    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference)
+    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, $pasteUpdate, &$pasteDataMap)
     {
         $record = $this->resolveRecordForOperation($table, $id);
 
@@ -299,6 +301,12 @@ class TceMain
                     if ($mostRecentVersionOfRecord) {
                         $this->contentService->moveRecord($mostRecentVersionOfRecord, $relativeTo, $clipboardCommand, $reference);
                         $this->recordService->update($table, $mostRecentVersionOfRecord);
+                    }
+
+                    if ($command === 'move') {
+                        // important! we must unset the colPos in the pasteDataMap
+                        // otherwise it will be use later in the DataHandler
+                        unset($pasteDataMap[$table][$id]['colPos']);
                     }
                 }
             }
