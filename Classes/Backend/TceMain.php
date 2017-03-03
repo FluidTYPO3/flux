@@ -256,11 +256,11 @@ class TceMain
      * @param string $id The records id (if any)
      * @param string $relativeTo Filled if command is relative to another element
      * @param DataHandler $reference Reference to the parent object (TCEmain)
-     * @param boolean $pasteUpdate
+     * @param array $pasteUpdate
      * @param array $pasteDataMap
      * @return void
      */
-    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, $pasteUpdate, &$pasteDataMap)
+    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
     {
         $record = $this->resolveRecordForOperation($table, $id);
 
@@ -273,11 +273,19 @@ class TceMain
             $clipboardCommand = (array) $this->getClipboardCommand();
             if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
                 $properties = (array) $clipboardCommand['update'];
-                if ($properties['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
-                    $properties['colPos'] = ContentService::COLPOS_FLUXCONTENT;
-                    $pasteDataMap[$table][$id]['colPos'] = ContentService::COLPOS_FLUXCONTENT;
-                }
                 $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
+
+                // Special case: 8.6 sends clipboard pasting commands in a way that matches this case.
+                // When we encounter a Flux-handled colPos value we perform a move on the input maps
+                // and reset the clipboard command and relatveTo so ContentService resolves from colPos.
+                if ($properties['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
+                    $relativeTo = $properties['colPos'];
+                    $clipboardCommand = [];
+
+                    $this->contentService->moveRecord($pasteDataMap[$table][$id], $relativeTo, $clipboardCommand, $reference);
+                    $this->contentService->moveRecord($properties, $relativeTo, $clipboardCommand, $reference);
+
+                }
             }
 
             // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
@@ -530,6 +538,9 @@ class TceMain
         // Effect: we have to perform a few extra (tiny) SQL queries here, sadly this cannot be avoided.
         $resolveUid = $this->getOriginalRecordUid($table, $uid);
         $newColumnNumber = GeneralUtility::_GET('data')[$table][$resolveUid]['colPos'];
+        if ($newColumnNumber === null) {
+            $newColumnNumber = $reference->cmdmap[$table][$resolveUid]['move']['update']['colPos'];
+        }
 
         // The following code must NOT execute if the new column number was not provided in the exact
         // required place specified above. For all other cases we do NOT want to react to this hook,
