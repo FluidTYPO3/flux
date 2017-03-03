@@ -256,9 +256,11 @@ class TceMain
      * @param string $id The records id (if any)
      * @param string $relativeTo Filled if command is relative to another element
      * @param DataHandler $reference Reference to the parent object (TCEmain)
+     * @param boolean $pasteUpdate
+     * @param array $pasteDataMap
      * @return void
      */
-    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference)
+    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, $pasteUpdate, &$pasteDataMap)
     {
         $record = $this->resolveRecordForOperation($table, $id);
 
@@ -271,6 +273,10 @@ class TceMain
             $clipboardCommand = (array) $this->getClipboardCommand();
             if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
                 $properties = (array) $clipboardCommand['update'];
+                if ($properties['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
+                    $properties['colPos'] = ContentService::COLPOS_FLUXCONTENT;
+                    $pasteDataMap[$table][$id]['colPos'] = ContentService::COLPOS_FLUXCONTENT;
+                }
                 $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
             }
 
