@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
@@ -30,6 +31,8 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
  */
 class ContentTypeBuilder
 {
+    const DEFAULT_SHOWITEM = 'defaultShowItem';
+
     /**
      * @param string $providerExtensionName
      * @param string $templateFilename
@@ -181,18 +184,9 @@ class ContentTypeBuilder
      */
     public function addBoilerplateTableConfiguration($contentType)
     {
-        $showItem = '
-                --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.general;general,
-                --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.header;header,pi_flexform,
-                --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.appearance,layout;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:layout_formlabel,
-                --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.frames;frames,
-                --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.appearanceLinks;appearanceLinks,
-                --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,hidden;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:field.default.hidden,
-                --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.access;access,
-                --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.extended,rowDescription,
-                --div--;LLL:EXT:lang/locallang_tca.xlf:sys_category.tabs.category,categories, 
-                --div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tabs.relation, tx_flux_parent, tx_flux_column
-            ';
+        // use CompatibilityRegistry for correct DefaultData class
+        $showItem = CompatibilityRegistry::get(self::DEFAULT_SHOWITEM);
+
         // Do not add the special IRRE nested content display (when editing parent) if workspaces is loaded.
         // When workspaces is loaded, the IRRE may contain move placeholders which cause TYPO3 to throw errors
         // if attempting to save the parent record, because new versions get created for all child records and
@@ -201,7 +195,6 @@ class ContentTypeBuilder
             $showItem .= ', tx_flux_children';
         }
         $GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'] = $showItem;
-        $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['ds']['*,' . $contentType] = [];
         ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'pi_flexform', $contentType);
     }
 

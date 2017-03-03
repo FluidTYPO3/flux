@@ -199,7 +199,7 @@ class TceMain
                     $relativeRecord = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $relativeRecordUid), 'uid,pid,tx_flux_parent');
                     BackendUtility::workspaceOL($table, $relativeRecord);
 
-                    if ($this->isRecordChildOfItself($table, $temporaryRecord, $relativeRecord['tx_flux_parent'])) {
+                    if ($this->isRecordChildOfItself($table, $temporaryRecord)) {
                         $message = new FlashMessage(
                             sprintf(
                                 'Attempt to move record %s:%d into a column of a child of itself. Move aborted.',
@@ -319,6 +319,15 @@ class TceMain
                 // *all* child records after a copy operation - so we compromise.
                 $this->copySortingValueOfChildrenFromOriginalsToCopies(
                     $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id])
+                );
+            } elseif ($command === 'move') {
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.sorting != s.sorting ' .
+                        'AND t.t3ver_move_id = s.t3ver_oid AND s.t3ver_state = 4 AND s.tx_flux_parent = %d AND s.t3ver_wsid = %d',
+                        $id,
+                        $GLOBALS['BE_USER']->workspace
+                    )
                 );
             }
         }
@@ -579,7 +588,7 @@ class TceMain
         // Guard: do not allow records to become children of themselves at any recursion level.
         // Must be performed after the "moveRecord" above, which does *not* update the DB. We
         // validate on the result of the (unpersisted) move operation.
-        if ($this->isRecordChildOfItself($table, $updateFields, $origDestPid)) {
+        if ($this->isRecordChildOfItself($table, $updateFields)) {
             return;
         }
 
@@ -608,25 +617,29 @@ class TceMain
      *
      * @param string $table
      * @param array $record
-     * @param integer $parentId
      * @return boolean
      */
-    protected function isRecordChildOfItself($table, array $record, $parentId)
+    protected function isRecordChildOfItself($table, array $record)
     {
-        if ((integer) $parentId === 0) {
-            return false;
-        }
+        $childUid = $record['uid'];
         do {
-            $movePlaceholder = BackendUtility::getMovePlaceholder($table, $parentId);
+            $movePlaceholder = BackendUtility::getMovePlaceholder($table, $record['uid']);
             if ($movePlaceholder) {
                 $record = $movePlaceholder;
             }
             // Loop through records starting with the input record, verifying that none
             // of the records' parents are the same as the input record.
-            if ((integer) $parentId === (integer) $record['uid']) {
+            if ((integer) $childUid === (integer) $record['tx_flux_parent']) {
                 return true;
             }
-        } while ($record['uid'] > 0 && ($record = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $record['tx_flux_parent']), 'uid,tx_flux_parent')));
+        } while (
+            $record['tx_flux_parent'] > 0
+            && ($record = BackendUtility::getRecordRaw(
+                $table,
+                sprintf('uid = %d', $record['tx_flux_parent']),
+                'uid,tx_flux_parent')
+            )
+        );
 
         return false;
     }

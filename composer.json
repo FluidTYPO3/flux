@@ -14,6 +14,11 @@
             "FluidTYPO3\\Flux\\": "Classes/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "FluidTYPO3\\Flux\\Tests\\": "Tests/"
+        }
+    },
     "suggest": {
         "fluidtypo3/vhs": "ViewHelper library for Fluid templates.",
         "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid.",
@@ -23,6 +28,10 @@
     "require": {
         "php": ">=7.0.0",
         "typo3/cms": ">=7.6.13, <7.6.99|^8.4.1"
+    },
+    "replace": {
+        "flux": "self.version",
+        "typo3-ter/flux": "self.version"
     },
     "require-dev": {
         "fluidtypo3/development": "^3.0"
