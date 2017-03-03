@@ -395,8 +395,8 @@ class PreviewView
             $parentRow['pid'],
             $parentRow['uid'],
             $record['uid'],
-            $this->drawNewIcon($parentRow, $column, $record['uid']).
-            (CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($parentRow, $column, false, $record) : '').
+            $this->drawNewIcon($parentRow, $column, $record['uid']) .
+            (CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($parentRow, $column, false, $record) : '') .
             $this->drawPasteIcon($parentRow, $column, true, $record)
         );
     }
