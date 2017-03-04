@@ -234,31 +234,43 @@ class ContentService implements SingletonInterface
                 list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
                 $row['tx_flux_parent'] = $parent;
                 $row['tx_flux_column'] = $column;
-                $row['colPos'] = self::COLPOS_FLUXCONTENT;
+                $row['colPos'] = static::COLPOS_FLUXCONTENT;
                 $row['sorting'] = 0;
             } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
                 // Special case for clipboard commands only. This special case also requires a new
                 // sorting value to re-sort after a possibly invalid sorting value is received.
-                list ($pageUid, , $relativeTo, $parentUid, $area, $column) =
-                    GeneralUtility::trimExplode('-', $parameters[1]);
-                $sorting = $tceMain->getSortNumber('tt_content', $relativeTo, $pageUid);
+                list (, , $relativeTo, $parentUid, $area, ) = GeneralUtility::trimExplode('-', $parameters[1]);
+                if ($relativeTo <> 0) {
+                    $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], -(integer) $relativeTo);
+                    $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
+                } else {
+                    $row['sorting'] = 0;
+                }
                 $row['tx_flux_parent'] = $parentUid;
                 $row['tx_flux_column'] = $area;
-                $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
             } elseif (0 > (integer) $relativeTo) {
                 // inserting a new element after another element. Check column position of that element.
                 // Get the desired sorting value after the relative record.
                 $relativeUid = abs($relativeTo);
                 $relativeToRecord = $this->loadRecordFromDatabase($relativeUid);
+
+                if ((integer) $relativeToRecord['t3ver_oid'] === 0) {
+                    BackendUtility::workspaceOL('tt_content', $relativeToRecord);
+                    $movePlaceholder = BackendUtility::getMovePlaceholder('tt_content', $relativeUid);
+                    if ($movePlaceholder) {
+                        $relativeToRecord = $movePlaceholder;
+                    }
+                }
                 $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], $relativeTo);
                 $row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
                 $row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
                 $row['colPos'] = $relativeToRecord['colPos'];
                 $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
-            } elseif (0 < (integer) $relativeTo) {
-                // moving to first position in colPos, means that $relativeTo is the pid of the containing page
+            } elseif (0 <= (integer) $relativeTo) {
+                // moving to first position in colPos, means that $relativeTo is the target colPos. PID is already set!
                 $row['tx_flux_parent'] = null;
                 $row['tx_flux_column'] = null;
+                $row['colPos'] = $relativeTo;
             } else {
                 $row['tx_flux_parent'] = null;
                 $row['tx_flux_column'] = null;
@@ -269,7 +281,7 @@ class ContentService implements SingletonInterface
             $row['tx_flux_column'] = null;
         }
         if (0 < $row['tx_flux_parent']) {
-            $row['colPos'] = self::COLPOS_FLUXCONTENT;
+            $row['colPos'] = static::COLPOS_FLUXCONTENT;
         }
     }
 
@@ -407,34 +419,39 @@ class ContentService implements SingletonInterface
      * @param integer $relativeTo
      * @return array
      */
-    protected function getTargetAreaStoredInSession($relativeTo)
+    public function getTargetAreaStoredInSession($relativeTo)
     {
         '' !== session_id() ? : session_start();
         return $_SESSION['target' . $relativeTo];
     }
 
     /**
-     * @param integer $uid uid of record in default language
+     * @param integer $uid uid of record in chosen source language
      * @param integer $languageUid sys_language_uid of language for the localized record
-     * @param array $defaultLanguageRecord record in default language (from table tt_content)
+     * @param array $sourceRecord record in chosen source language (from table tt_content)
      * @param DataHandler $reference
      */
-    public function fixPositionInLocalization($uid, $languageUid, &$defaultLanguageRecord, DataHandler $reference)
+    public function fixPositionInLocalization($uid, $languageUid, &$sourceRecord, DataHandler $reference)
     {
         $previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
-        $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $uid, $languageUid);
+        if (!empty($sourceRecord['l18n_parent'])) {
+            $defaultRecordUid = $sourceRecord['l18n_parent'];
+        } else {
+            $defaultRecordUid = $uid;
+        }
+        $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $defaultRecordUid, $languageUid);
         $sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
         if (null === $previousLocalizedRecordUid) {
             // moving to first position in tx_flux_column
             $localizedRecord[0][$sortingRow] = $reference->getSortNumber(
                 'tt_content',
                 0,
-                $defaultLanguageRecord['pid']
+                $sourceRecord['pid']
             );
         } else {
             $localizedRecord[0][$sortingRow] = $reference->resorting(
                 'tt_content',
-                $defaultLanguageRecord['pid'],
+                $sourceRecord['pid'],
                 $sortingRow,
                 $previousLocalizedRecordUid
             );

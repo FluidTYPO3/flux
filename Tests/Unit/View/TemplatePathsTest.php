@@ -8,15 +8,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\View;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\TemplatePaths;
-use TYPO3\CMS\Core\Tests\BaseTestCase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class TemplatePathsTest
  */
-class TemplatePathsTest extends BaseTestCase
+class TemplatePathsTest extends AbstractTestCase
 {
 
     /**
