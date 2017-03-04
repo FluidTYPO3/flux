@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\View;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Backend\Domain\Repository\LocalizationRepository;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
@@ -110,6 +111,34 @@ class PreviewView
      * @var WorkspacesAwareRecordService
      */
     protected $workspacesAwareRecordService;
+
+    /**
+     * @var boolean
+     */
+    protected $showNewContentButton;
+
+    /**
+     * @var integer
+     */
+    protected $templateClassJsSortableLanguageId;
+
+    /**
+     * @var integer
+     */
+    protected $templateDataLanguageUid;
+
+    /**
+     * @var LocalizationRepository
+     */
+    protected $localizationRepository;
+
+    /**
+     * PreviewView constructor
+     */
+    public function __construct()
+    {
+        $this->localizationRepository = GeneralUtility::makeInstance(CompatibilityRegistry::get(LocalizationRepository::class, null, LocalizationRepository::class));
+    }
 
     /**
      * @param ConfigurationManagerInterface $configurationManager
@@ -327,30 +356,37 @@ class PreviewView
         $dblist = $this->getInitializedPageLayoutView($row);
         $this->configurePageLayoutViewForLanguageMode($dblist);
         $records = $this->getRecords($dblist, $row, $columnName);
-        $content = '';
-        if (is_array($records)) {
-            foreach ($records as $record) {
-                $content .= $this->drawRecord($row, $column, $record, $dblist);
+
+        // this variable defines if this drop-area gets activated on drag action
+        // of a ce with the same data-language_uid
+        $this->templateClassJsSortableLanguageId = $row['sys_language_uid'];
+
+        // this variable defines which drop-areas will be activated
+        // with a drag action of this element
+        $this->templateDataLanguageUid = $row['sys_language_uid'];
+
+        // but for language mode all (uid -1):
+        if ((integer)$row['sys_language_uid'] === -1) {
+            /** @var PageLayoutController $pageLayoutController */
+            $pageLayoutController = $GLOBALS['SOBE'];
+            $isColumnView = ((integer)$pageLayoutController->MOD_SETTINGS['function'] === 1);
+            $isLanguagesView = ((integer)$pageLayoutController->MOD_SETTINGS['function'] === 2);
+            if ($isColumnView) {
+                $this->templateClassJsSortableLanguageId = $pageLayoutController->current_sys_language;
+                $this->templateDataLanguageUid = $pageLayoutController->current_sys_language;
+            } elseif ($isLanguagesView) {
+                // If this is a language-all (uid -1) grid-element in languages-view
+                // we use language-uid 0 for this elements drop-areas.
+                // This can be done because a ce with language-uid -1 in languages view
+                // is in TYPO3 7.6.4 only displayed in the default-language-column (maybe a bug atm.?).
+                // Additionally there is no access to the information which
+                // language column is currently rendered from here!
+                // ($lP in typo3/cms/typo3/sysext/backend/Classes/View/PageLayoutView.php L485)
+                $this->templateClassJsSortableLanguageId = 0;
+                $this->templateDataLanguageUid = 0;
             }
         }
 
-        // Add localize buttons for flux container elements
-        if (isset($row['l18n_parent']) && 0 < $row['l18n_parent']) {
-            if (true === empty($dblist->defLangBinding)) {
-                $partialOriginalRecord = ['uid' => $row['l18n_parent'], 'pid' => $row['pid']];
-                $childrenInDefaultLanguage = $this->getRecords($dblist, $partialOriginalRecord, $columnName);
-                $childrenUids = [];
-                foreach ($childrenInDefaultLanguage as $child) {
-                    $childrenUids[] = $child['uid'];
-                }
-                $langPointer = $row['sys_language_uid'];
-                $localizeButton = $dblist->newLanguageButton(
-                    $dblist->getNonTranslatedTTcontentUids($childrenUids, $dblist->id, $langPointer),
-                    $langPointer
-                );
-                $content .= $localizeButton;
-            }
-        }
         $pageUid = $row['pid'];
         if ($GLOBALS['BE_USER']->workspace) {
             $placeholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid'], 'pid');
@@ -358,10 +394,77 @@ class PreviewView
                 $pageUid = $placeholder['pid'];
             }
         }
-        $id = 'colpos-' . $colPosFluxContent . '-page-' . $pageUid . '--top-' . $row['uid'] . '-' . $columnName;
+
+        $langList = $dblist->tt_contentConfig['sys_language_uid'];
+        if ($this->tt_contentConfig['languageMode']) {
+            if ($dblist->tt_contentConfig['languageColsPointer']) {
+                $langList = '0,' . $dblist->tt_contentConfig['languageColsPointer'];
+            } else {
+                $langList = implode(',', array_keys($dblist->tt_contentConfig['languageCols']));
+            }
+        }
+        $langListArr = GeneralUtility::intExplode(',', $langList);
+        if (count($langListArr) === 1 || $this->templateDataLanguageUid === 0) {
+            $showLanguage = ' sys_language_uid IN (' . $this->templateDataLanguageUid . ',-1)';
+        } else {
+            $showLanguage = ' sys_language_uid=' . $this->templateDataLanguageUid;
+        }
+
+        $this->configurePageLayoutViewForLanguageMode($dblist);
+        $contentRecordsPerColumn = $dblist->getContentRecordsPerFluxColumn($pageUid, $row['uid'], $columnName, $showLanguage);
+
+        $this->showNewContentButton = $dblist->getPageLayoutController()->contentIsNotLockedForEditors()
+            && $this->getBackendUser()->checkLanguageAccess($this->templateDataLanguageUid)
+            && (!$dblist->checkIfTranslationsExistInLanguage($contentRecordsPerColumn, $this->templateDataLanguageUid));
+
+        $content = '';
+        if (is_array($records)) {
+            foreach ($records as $record) {
+                $content .= $this->drawRecord($row, $column, $record, $dblist);
+            }
+        }
+
         $target = $this->registerTargetContentAreaInSession($row['uid'], $columnName);
 
+        // Add localize buttons for flux container elements
+        if (isset($row['l18n_parent']) && 0 < $row['l18n_parent']) {
+            if (true === empty($dblist->defLangBinding)) {
+                $childrenUids = $this->getChildrenUidsOfLanguageParentInColumn($dblist, $row, $columnName);
+                $langPointer = $row['sys_language_uid'];
+
+                // the third parameter $target is for the colPos in the new translation button
+                // so we can used the session-stored target area information indicated by colPos
+                $localizeButton = $dblist->newLanguageButton(
+                    $dblist->getNonTranslatedTTcontentUids($childrenUids, $dblist->id, $langPointer),
+                    $langPointer,
+                    $target
+
+                );
+                $content .= $localizeButton;
+            }
+        }
+        $id = 'colpos-' . $colPosFluxContent . '-page-' . $pageUid . '--top-' . $row['uid'] . '-' . $columnName;
+
         return $this->parseGridColumnTemplate($row, $column, $target, $id, $content);
+    }
+
+    /**
+     * @param PageLayoutView $dblist
+     * @param array $row
+     * @param string $columnName
+     *
+     * @return array
+     */
+    public function getChildrenUidsOfLanguageParentInColumn($dblist, $row, $columnName) {
+
+        $partialOriginalRecord = ['uid' => $row['l18n_parent'], 'pid' => $row['pid']];
+        $childrenInDefaultLanguage = $this->getRecords($dblist, $partialOriginalRecord, $columnName);
+        $childrenUids = [];
+        foreach ($childrenInDefaultLanguage as $child) {
+            $childrenUids[] = $child['uid'];
+        }
+
+        return $childrenUids;
     }
 
     /**
@@ -395,9 +498,9 @@ class PreviewView
             $parentRow['pid'],
             $parentRow['uid'],
             $record['uid'],
-            $this->drawNewIcon($parentRow, $column, $record['uid']) .
-            (CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($parentRow, $column, false, $record) : '') .
-            $this->drawPasteIcon($parentRow, $column, true, $record)
+            ($this->showNewContentButton ? $this->drawNewIcon($parentRow, $column, $record['uid']) : '') .
+            ($this->showNewContentButton && CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($parentRow, $column, false, $record) : '').
+            ($this->showNewContentButton ? $this->drawPasteIcon($parentRow, $column, true, $record) : '')
         );
     }
 
@@ -736,37 +839,8 @@ class PreviewView
         $target,
         $id,
         $content
-    ) {
-        // this variable defines if this drop-area gets activated on drag action
-        // of a ce with the same data-language_uid
-        $templateClassJsSortableLanguageId = $row['sys_language_uid'];
-
-        // this variable defines which drop-areas will be activated
-        // with a drag action of this element
-        $templateDataLanguageUid = $row['sys_language_uid'];
-
-        // but for language mode all (uid -1):
-        if ((integer) $row['sys_language_uid'] === -1) {
-            /** @var PageLayoutController $pageLayoutController */
-            $pageLayoutController = $GLOBALS['SOBE'];
-            $isColumnView = ((integer) $pageLayoutController->MOD_SETTINGS['function'] === 1);
-            $isLanguagesView = ((integer) $pageLayoutController->MOD_SETTINGS['function'] === 2);
-            if ($isColumnView) {
-                $templateClassJsSortableLanguageId = $pageLayoutController->current_sys_language;
-                $templateDataLanguageUid = $pageLayoutController->current_sys_language;
-            } elseif ($isLanguagesView) {
-                // If this is a language-all (uid -1) grid-element in languages-view
-                // we use language-uid 0 for this elements drop-areas.
-                // This can be done because a ce with language-uid -1 in languages view
-                // is in TYPO3 7.6.4 only displayed in the default-language-column (maybe a bug atm.?).
-                // Additionally there is no access to the information which
-                // language column is currently rendered from here!
-                // ($lP in typo3/cms/typo3/sysext/backend/Classes/View/PageLayoutView.php L485)
-                $templateClassJsSortableLanguageId = 0;
-                $templateDataLanguageUid = 0;
-            }
-        }
-
+    )
+    {
         $label = $column->getLabel();
         if (strpos($label, 'LLL:EXT') === 0) {
             $label = LocalizationUtility::translate($label, $column->getExtensionName());
@@ -787,13 +861,13 @@ class PreviewView
             $column->getStyle(),
             $label,
             $target,
-            $templateClassJsSortableLanguageId,
-            $templateDataLanguageUid,
+            $this->templateClassJsSortableLanguageId,
+            $this->templateDataLanguageUid,
             $pageUid,
             $id,
-            $this->drawNewIcon($row, $column),
-            CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($row, $column) : '',
-            $this->drawPasteIcon($row, $column, true),
+            $this->showNewContentButton ? $this->drawNewIcon($row, $column) :'',
+            $this->showNewContentButton && CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($row, $column) : '',
+            $this->showNewContentButton ? $this->drawPasteIcon($row, $column, true) : '',
             $content
         );
     }

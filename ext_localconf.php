@@ -37,6 +37,24 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         )
     );
 
+    // PreviewView class name (expecting needed changes on TYPO3 8.6+)
+    \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
+        \FluidTYPO3\Flux\Service\ContentService::LANGUAGE_SOURCE_FIELD,
+        array(
+            '7.6.0' => 't3_origuid',
+            '8.6.0' => 'l10n_source'
+        )
+    );
+
+    // We need For Localization in TYPO3 7.6 a modified Version see comments in LegacyLocalizationRepository
+    \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
+        \FluidTYPO3\Flux\Backend\Domain\Repository\LocalizationRepository::class,
+        [
+            '7.6.0' => \FluidTYPO3\Flux\Backend\Domain\Repository\LegacyLocalizationRepository::class,
+            '8.6.0' => \FluidTYPO3\Flux\Backend\Domain\Repository\LocalizationRepository::class
+        ]
+    );
+
 	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin('FluidTYPO3.Flux', 'API', array('Flux' => 'renderChildContent'), array());
 
 	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript($_EXTKEY, 'setup', '
