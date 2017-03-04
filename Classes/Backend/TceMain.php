@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -107,6 +108,52 @@ class TceMain
      */
 
     /**
+     * Method to initialize the command processing map with a single purpose:
+     * to re-sort any "swap" operations to put the operation happening to the
+     * parent record, after all operations happening to child records, and
+     * do so only for the tt_content table.
+     *
+     * @param DataHandler $reference
+     * @return void
+     */
+    public function processCmdmap_beforeStart(&$reference)
+    {
+        if (empty($reference->cmdmap['tt_content'])) {
+            return;
+        }
+        $parents = [];
+        $children = [];
+        $others = [];
+        $remap = false;
+        foreach ($reference->cmdmap['tt_content'] as $uid => $command) {
+            if (empty($command['version'])) {
+                if (isset($command['copy']['update']['colPos']) && $command['copy']['update']['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
+                    // copy during drag and drop in flux grid columns
+                    list($command['copy']['update']['tx_flux_parent'], $command['copy']['update']['tx_flux_column']) =
+                        $this->contentService->getTargetAreaStoredInSession($command['copy']['update']['colPos']);
+                    $command['copy']['update']['colPos'] = ContentService::COLPOS_FLUXCONTENT;
+                    $remap = true;
+                }
+                $others[$uid] = $command;
+            } elseif ($command['version']['action'] === 'swap') {
+                $remap = true;
+                if ($this->getDatabaseConnection()->exec_SELECTcountRows(
+                    'uid',
+                    'tt_content',
+                    sprintf('tx_flux_parent = %d', $uid))
+                ) {
+                    $parents[$uid] = $command;
+                } else {
+                    $children[$uid] = $command;
+                }
+            }
+        }
+        if ($remap) {
+            $reference->cmdmap['tt_content'] = $children + $parents + $others;
+        }
+    }
+
+    /**
      * @param string $command The TCEmain operation status, fx. 'update'
      * @param string $table The table TCEmain is currently processing
      * @param string $id The records id (if any)
@@ -148,9 +195,11 @@ class TceMain
                     $temporaryRecord = $record;
                     $this->contentService->moveRecord($temporaryRecord, $relativeTo, $clipboardCommand, $reference);
 
-                    $relativeRecord = BackendUtility::getRecordRaw($table, sprintf('uid = %d', abs($reference->cmdmap[$table][$id]['move'])), 'tx_flux_parent');
+                    $relativeRecordUid = abs($reference->cmdmap[$table][$id]['move']);
+                    $relativeRecord = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $relativeRecordUid), 'uid,pid,tx_flux_parent');
+                    BackendUtility::workspaceOL($table, $relativeRecord);
 
-                    if ($this->isRecordChildOfItself($table, $temporaryRecord, $relativeRecord['tx_flux_parent'])) {
+                    if ($this->isRecordChildOfItself($table, $temporaryRecord)) {
                         $message = new FlashMessage(
                             sprintf(
                                 'Attempt to move record %s:%d into a column of a child of itself. Move aborted.',
@@ -207,9 +256,11 @@ class TceMain
      * @param string $id The records id (if any)
      * @param string $relativeTo Filled if command is relative to another element
      * @param DataHandler $reference Reference to the parent object (TCEmain)
+     * @param array $pasteUpdate
+     * @param array $pasteDataMap
      * @return void
      */
-    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference)
+    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
     {
         $record = $this->resolveRecordForOperation($table, $id);
 
@@ -223,6 +274,18 @@ class TceMain
             if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
                 $properties = (array) $clipboardCommand['update'];
                 $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
+
+                // Special case: 8.6 sends clipboard pasting commands in a way that matches this case.
+                // When we encounter a Flux-handled colPos value we perform a move on the input maps
+                // and reset the clipboard command and relatveTo so ContentService resolves from colPos.
+                if ($properties['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
+                    $relativeTo = $properties['colPos'];
+                    $clipboardCommand = [];
+
+                    $this->contentService->moveRecord($pasteDataMap[$table][$id], $relativeTo, $clipboardCommand, $reference);
+                    $this->contentService->moveRecord($properties, $relativeTo, $clipboardCommand, $reference);
+
+                }
             }
 
             // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
@@ -253,6 +316,28 @@ class TceMain
                     }
                 }
             }
+
+            if ($command === 'copy') {
+                // We now check if we're doing a copy command once again. Due to internals of TYPO3, child
+                // records of the parent being moved (if child records exist) have now gotten their sorting
+                // values reset. The only way currently to patch this is a semi-expensive recursive operation
+                // to copy the sorting value from the original record to the copy (and to the placeholder and
+                // versioned records if those exist). This is less than ideal but the alternative is
+                // consistently wrong (read: sql insertion order based, to end user same as random) sorting of
+                // *all* child records after a copy operation - so we compromise.
+                $this->copySortingValueOfChildrenFromOriginalsToCopies(
+                    $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id])
+                );
+            } elseif ($command === 'move') {
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.sorting != s.sorting ' .
+                        'AND t.t3ver_move_id = s.t3ver_oid AND s.t3ver_state = 4 AND s.tx_flux_parent = %d AND s.t3ver_wsid = %d',
+                        $id,
+                        $GLOBALS['BE_USER']->workspace
+                    )
+                );
+            }
         }
 
         $arguments = ['command' => $command, 'id' => $id, 'row' => &$record, 'relativeTo' => &$relativeTo];
@@ -264,6 +349,67 @@ class TceMain
             $arguments,
             $reference
         );
+    }
+
+    /**
+     * Fixes an issue with records after they have been copied. Sorting numbers
+     * of all child records (to infinite recursion depth) have been completely
+     * mangled by TYPO3 and are now a series of sequential numbers rather than
+     * the generously spaced sorting values the `tt_content` table needs.
+     *
+     * The function iterates recursively to perform SQL queries which override
+     * the new sorting values, copying the ones from the original record.
+     *
+     * @param array $parentRecord
+     * @return void
+     */
+    protected function copySortingValueOfChildrenFromOriginalsToCopies(array $parentRecord)
+    {
+        $children = $this->recordService->get(
+            'tt_content',
+            'uid',
+            sprintf('tx_flux_parent = %d', $parentRecord['uid'])
+        );
+
+        if (!count($children)) {
+            return;
+        }
+
+        foreach ($children as $child) {
+
+            // Perform an SQL query which directly copies the original record's sorting number to the copy.
+            // When not in a workspace: copy the sorting field value from original to copy.
+            // When in a workspace: copy the sorting field value from original to versioned record and move placeholder.
+            if ($GLOBALS['BE_USER']->workspace) {
+
+                // Update versioned record (which is what $parentRecord is when copy happens in workspace mode)
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
+                        $child['uid']
+                    )
+                );
+
+                // Update the move placeholder that was automatically created for the versioned record we updated above.
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.t3ver_oid = %d AND s.uid = t.t3ver_oid AND t.t3ver_state = -1',
+                        $child['uid']
+                    )
+                );
+
+            } else {
+
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
+                        $child['uid']
+                    )
+                );
+
+            }
+            $this->copySortingValueOfChildrenFromOriginalsToCopies($child);
+        }
     }
 
     /**
@@ -323,6 +469,27 @@ class TceMain
         if ('new' === $status && 'tt_content' === $table) {
             $this->contentService->initializeRecord($id, $fieldArray, $reference);
         }
+        if ($status === 'update' && $table === 'tt_content' && $GLOBALS['BE_USER']->workspace) {
+
+            // We fix a side effect caused by the IRRE relation between parent and child. When a parent is
+            // moved and we are inside a workspace, the parent UID remains the same which causes TYPO3 to
+            // update the live records with an incorrect (sequential) sorting number.
+
+            // Unfortunately we cannot prevent the live child records from receiving a new sorting value,
+            // but at least the new values are in the correct order. The best we can do is to update the
+            // workspace move placeholder with sorting values from the versioned record - this causes the
+            // workspace preview to be in the correct sorting order, and restores the proper sorting value
+            // to child records when the workspace is published.
+            $originalUid = BackendUtility::getLiveVersionIdOfRecord($table, $id);
+            $this->getDatabaseConnection()->sql_query(
+                sprintf(
+                    'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.sorting != s.sorting ' .
+                    'AND t.t3ver_move_id = s.t3ver_oid AND s.t3ver_state = 4 AND s.tx_flux_parent = %d AND s.t3ver_wsid = %d',
+                    $originalUid,
+                    $GLOBALS['BE_USER']->workspace
+                )
+            );
+        }
         $arguments = ['status' => $status, 'id' => $id, 'row' => &$fieldArray];
         $fieldArray = $this->executeConfigurationProviderMethod(
             'postProcessDatabaseOperation',
@@ -371,6 +538,9 @@ class TceMain
         // Effect: we have to perform a few extra (tiny) SQL queries here, sadly this cannot be avoided.
         $resolveUid = $this->getOriginalRecordUid($table, $uid);
         $newColumnNumber = GeneralUtility::_GET('data')[$table][$resolveUid]['colPos'];
+        if ($newColumnNumber === null) {
+            $newColumnNumber = $reference->cmdmap[$table][$resolveUid]['move']['update']['colPos'];
+        }
 
         // The following code must NOT execute if the new column number was not provided in the exact
         // required place specified above. For all other cases we do NOT want to react to this hook,
@@ -384,6 +554,7 @@ class TceMain
         $row['uid'] = $uid;
         $this->contentService->moveRecord($row, $newColumnNumber, [], $reference);
         $this->recordService->update($table, $row);
+        $reference->updateRefIndex($table, $uid);
 
         // Further: if we are moving a placeholder, this implies that a version exists of the original
         // record, and this version will NOT have had the necessary fields updated either.
@@ -396,6 +567,7 @@ class TceMain
         if ($mostRecentVersionOfRecord) {
             $this->contentService->moveRecord($mostRecentVersionOfRecord, $newColumnNumber, [], $reference);
             $this->recordService->update($table, $mostRecentVersionOfRecord);
+            $reference->updateRefIndex($table, $mostRecentVersionOfRecord['uid']);
         }
     }
 
@@ -427,11 +599,12 @@ class TceMain
         // Guard: do not allow records to become children of themselves at any recursion level.
         // Must be performed after the "moveRecord" above, which does *not* update the DB. We
         // validate on the result of the (unpersisted) move operation.
-        if ($this->isRecordChildOfItself($table, $updateFields, $origDestPid)) {
+        if ($this->isRecordChildOfItself($table, $updateFields)) {
             return;
         }
 
         $this->recordService->update($table, $updateFields);
+        $reference->updateRefIndex($table, $uid);
 
         // Further: if we are moving a placeholder, this implies that a version exists of the original
         // record, and this version will NOT have had the necessary fields updated either.
@@ -442,6 +615,7 @@ class TceMain
         if ($mostRecentVersionOfRecord) {
             $this->contentService->moveRecord($mostRecentVersionOfRecord, $origDestPid, [], $reference);
             $this->recordService->update($table, $mostRecentVersionOfRecord);
+            $reference->updateRefIndex($table, $mostRecentVersionOfRecord['uid']);
         }
     }
 
@@ -454,18 +628,29 @@ class TceMain
      *
      * @param string $table
      * @param array $record
-     * @param integer $parentId
      * @return boolean
      */
-    protected function isRecordChildOfItself($table, array $record, $parentId)
+    protected function isRecordChildOfItself($table, array $record)
     {
+        $childUid = $record['uid'];
         do {
+            $movePlaceholder = BackendUtility::getMovePlaceholder($table, $record['uid']);
+            if ($movePlaceholder) {
+                $record = $movePlaceholder;
+            }
             // Loop through records starting with the input record, verifying that none
             // of the records' parents are the same as the input record.
-            if ((integer) $parentId === (integer) $record['uid']) {
+            if ((integer) $childUid === (integer) $record['tx_flux_parent']) {
                 return true;
             }
-        } while (($record = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $record['tx_flux_parent']), 'uid')));
+        } while (
+            $record['tx_flux_parent'] > 0
+            && ($record = BackendUtility::getRecordRaw(
+                $table,
+                sprintf('uid = %d', $record['tx_flux_parent']),
+                'uid,tx_flux_parent')
+            )
+        );
 
         return false;
     }
@@ -668,5 +853,13 @@ class TceMain
     protected function getRawPostData()
     {
         return file_get_contents('php://input');
+    }
+
+    /**
+     * @return DatabaseConnection
+     */
+    protected function getDatabaseConnection()
+    {
+        return $GLOBALS['TYPO3_DB'];
     }
 }

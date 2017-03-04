@@ -16,7 +16,9 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * Use `<flux:grid.row>` with nested `<flux:grid.column>` tags
  * to define a tablular layout.
  *
- * Preview rendering can be done with `<flux:widget.grid>`.
+ * The grid is then rendered automatically in the preview section
+ * of the content element, or as page columns if used in page templates.
+ *
  * For frontend rendering, use `flux:content.render`.
  *
  * ### Content elements
@@ -32,10 +34,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *         </flux:grid.row>
  *     </flux:grid>
  *
- * #### Container element preview rendering
- *
- *     <flux:widget.grid />
- *
  * #### Container element frontend rendering
  *
  *     <flux:content.render area="left" />
@@ -44,8 +42,6 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  * ### Pages
  *
  * Use the `colPos` and `column` attributes.
- *
- * #### Two-colum page template
  *
  *     <flux:grid>
  *         <flux:grid.row>

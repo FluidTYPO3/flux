@@ -8,13 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
-use TYPO3\CMS\Core\Tests\UnitTestCase;
 
 /**
  * Class CompatibilityRegistryTest
  */
-class CompatibilityRegistryTest extends UnitTestCase
+class CompatibilityRegistryTest extends AbstractTestCase
 {
 
     /**

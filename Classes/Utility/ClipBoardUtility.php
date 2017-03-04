@@ -80,7 +80,7 @@ class ClipBoardUtility
             $icon = MiscellaneousUtility::getIcon('actions-insert-reference');
             $title = LocalizationUtility::translate('paste_reference', 'Flux');
         } else {
-            $icon = MiscellaneousUtility::getIcon('actions-document-paste-after');
+            $icon = MiscellaneousUtility::getIcon('actions-document-paste-into');
             $title = LocalizationUtility::translate('paste', 'Flux');
         }
 

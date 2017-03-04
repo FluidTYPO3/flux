@@ -27,9 +27,6 @@ use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
  */
 class ContentIconHookSubscriber
 {
-
-    const OPTION_HOOK_METHOD = 'FluidTYPO3\\Flux\\Hooks\\ContentIconHookSubscriber->addSubIcon';
-
     /**
      * @var array
      */
@@ -99,10 +96,6 @@ class ContentIconHookSubscriber
         if ($table !== 'tt_content') {
             return '';
         }
-        $contentType = $record['CType'];
-        if ($contentType === 'list') {
-            return '';
-        }
         $icon = '';
 
         $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
@@ -111,7 +104,7 @@ class ContentIconHookSubscriber
         // we check the cache here because at this point, the cache key is decidedly
         // unique and we have not yet consulted the (potentially costly) Provider.
         $cachedIconIdentifier = $this->cache->get($cacheIdentity);
-        if ($cachedIconIdentifier) {
+        if ($cachedIconIdentifier !== false) {
             $icon = $cachedIconIdentifier;
         } elseif ($record) {
             $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));

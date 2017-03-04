@@ -9,15 +9,15 @@ namespace FluidTYPO3\Flux\Hooks;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\PageLayoutView;
-use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * Class ContentIconHookSubscriberTest
  */
-class ContentIconHookSubscriberTest extends UnitTestCase
+class ContentIconHookSubscriberTest extends AbstractTestCase
 {
 
     /**
@@ -102,7 +102,7 @@ class ContentIconHookSubscriberTest extends UnitTestCase
             array(array('tt_content', 1, array()), $providerWithoutForm, null),
             array(array('tt_content', 1, array('field' => 'test')), $providerWithoutForm, null),
             array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon, null),
-            array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon, 'icon'),
+            array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon, null),
         );
     }
 }

@@ -8,15 +8,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\View;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
-use TYPO3\CMS\Core\Tests\BaseTestCase;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 
 /**
  * Class ViewContextTest
  */
-class ViewContextTest extends BaseTestCase
+class ViewContextTest extends AbstractTestCase
 {
 
     /**

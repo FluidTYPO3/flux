@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -191,6 +192,16 @@ class Core
      */
     public static function registerProviderExtensionKey($extensionKey, $providesControllerName = self::CONTROLLER_ALL)
     {
+        if ($providesControllerName === 'Content' && !ExtensionManagementUtility::isLoaded('fluidcontent')) {
+            // Special temporary case - when fluidcontent is not installed, Flux takes over and registers all
+            // detected template files as native CTypes. Remove if/when fluidcontent is discontinued.
+            $legacyKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
+            $templateRootPath = ExtensionManagementUtility::extPath($legacyKey, 'Resources/Private/Templates/Content/');
+            foreach (GeneralUtility::getFilesInDir($templateRootPath, 'html') as $file) {
+                static::registerTemplateAsContentType($extensionKey, $templateRootPath . $file);
+            }
+            return;
+        }
         if (false === isset(self::$extensions[$providesControllerName])) {
             self::$extensions[$providesControllerName] = [];
         }

@@ -212,6 +212,7 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function testLoadRecordFromDatabaseWithLanguageUidZero()
     {
+        $this->markTestSkippedOnMaster('Skipped on master');
         $mock = new ContentService();
         /** @var WorkspacesAwareRecordService $mockService */
         $mockService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('getSingle'))->getMock();
