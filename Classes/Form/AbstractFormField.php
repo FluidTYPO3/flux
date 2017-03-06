@@ -30,11 +30,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     protected $default;
 
     /**
-     * @var string
-     */
-    protected $transform;
-
-    /**
      * Display condition - see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
      *
      * @var string
@@ -285,24 +280,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     public function getDefault()
     {
         return $this->default;
-    }
-
-    /**
-     * @param string $transform
-     * @return FieldInterface
-     */
-    public function setTransform($transform)
-    {
-        $this->transform = $transform;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTransform()
-    {
-        return $this->transform;
     }
 
     /**

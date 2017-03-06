@@ -124,7 +124,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
     /**
      * @param RenderingContextInterface $renderingContext
      * @throws InvalidVariableException
-     * @return FormInterface
+     * @return Form
      */
     public static function getFormFromRenderingContext(RenderingContextInterface $renderingContext)
     {

@@ -41,6 +41,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     const OPTION_RECORD_FIELD = 'recordField';
     const OPTION_RECORD_TABLE = 'recordTable';
     const OPTION_DEFAULT_VALUES = 'defaultValues';
+    const OPTION_TRANSFORM = 'transform';
     const POSITION_TOP = 'top';
     const POSITION_BOTTOM = 'bottom';
     const POSITION_BOTH = 'both';
