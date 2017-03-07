@@ -164,66 +164,69 @@ class TceMain
     public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference)
     {
         $record = $this->resolveRecordForOperation($table, $id);
-        $properties = [];
-        $clipboardCommand = (array) $this->getClipboardCommand();
-        if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
-            $properties = (array) $clipboardCommand['update'];
-            $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
-        }
 
-        // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
-        // and no other hooks catch copy operations.
-        if (!empty($clipboardCommand)) {
-            if ($command === 'copy' || $command === 'move') {
+        if ($table === 'tt_content') {
+            $properties = [];
+            $clipboardCommand = (array) $this->getClipboardCommand();
+            if (!empty($clipboardCommand['paste']) && strpos($clipboardCommand['paste'], 'tt_content|') === 0) {
+                $properties = (array) $clipboardCommand['update'];
+                $clipboardCommand = GeneralUtility::trimExplode('|', $clipboardCommand['paste']);
+            }
 
-                if ($command === 'copy') {
-                    // When "copy" is received as command, this method unfortunately receives the original
-                    // record and we now must attempt to find the newly created copy (or placeholder thereof) instead.
-                    $record = $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id]);
-                }
+            // We only want to process clipboard commands, since these do not trigger the moveRecord hooks below
+            // and no other hooks catch copy operations.
+            if (!empty($clipboardCommand)) {
+                if ($command === 'copy' || $command === 'move') {
 
-                foreach ($properties as $propertyName => $propertyValue) {
-                    $record[$propertyName] = $propertyValue;
-                }
+                    if ($command === 'copy') {
+                        // When "copy" is received as command, this method unfortunately receives the original
+                        // record and we now must attempt to find the newly created copy (or placeholder thereof) instead.
+                        $record = $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id]);
+                    }
 
-                // Guard: do not allow records to become children of themselves at any recursion level.
-                // Only perform this check if the "relativeTo" target is a negative integer meaning
-                // "insert after the record with uid=abs($relativeTo)". When moving to a page column
-                // the $relativeTo value is a positive integer and we will skip it.
-                if ($command === 'move' && $relativeTo <= 0) {
-                    // Perform an unpersisted record moving to perform assertions on the result.
-                    $temporaryRecord = $record;
-                    $this->contentService->moveRecord($temporaryRecord, $relativeTo, $clipboardCommand, $reference);
+                    foreach ($properties as $propertyName => $propertyValue) {
+                        $record[$propertyName] = $propertyValue;
+                    }
 
-                    $relativeRecordUid = abs($reference->cmdmap[$table][$id]['move']);
-                    $relativeRecord = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $relativeRecordUid), 'uid,pid,tx_flux_parent');
-                    BackendUtility::workspaceOL($table, $relativeRecord);
+                    // Guard: do not allow records to become children of themselves at any recursion level.
+                    // Only perform this check if the "relativeTo" target is a negative integer meaning
+                    // "insert after the record with uid=abs($relativeTo)". When moving to a page column
+                    // the $relativeTo value is a positive integer and we will skip it.
+                    if ($command === 'move' && $relativeTo <= 0) {
+                        // Perform an unpersisted record moving to perform assertions on the result.
+                        $temporaryRecord = $record;
+                        $this->contentService->moveRecord($temporaryRecord, $relativeTo, $clipboardCommand, $reference);
 
-                    if ($this->isRecordChildOfItself($table, $temporaryRecord)) {
-                        $message = new FlashMessage(
-                            sprintf(
-                                'Attempt to move record %s:%d into a column of a child of itself. Move aborted.',
-                                $table,
-                                $id
-                            ),
-                            'Error during ' . $command,
-                            FlashMessage::ERROR,
-                            true
-                        );
+                        $relativeRecordUid = abs($reference->cmdmap[$table][$id]['move']);
+                        $relativeRecord = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $relativeRecordUid), 'uid,pid,tx_flux_parent');
+                        BackendUtility::workspaceOL($table, $relativeRecord);
 
-                        /** @var FlashMessageService $flashMessageService */
-                        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-                        $flashMessageService->getMessageQueueByIdentifier()->enqueue($message);
+                        if ($this->isRecordChildOfItself($table, $temporaryRecord)) {
+                            $message = new FlashMessage(
+                                sprintf(
+                                    'Attempt to move record %s:%d into a column of a child of itself. Move aborted.',
+                                    $table,
+                                    $id
+                                ),
+                                'Error during ' . $command,
+                                FlashMessage::ERROR,
+                                true
+                            );
 
-                        // Remove the mapped command in order to avoid DataHandler calling "processcmdmap" hooks which may
-                        // attempt to perform the command.
-                        unset($reference->cmdmap[$table][$id]);
+                            /** @var FlashMessageService $flashMessageService */
+                            $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+                            $flashMessageService->getMessageQueueByIdentifier()->enqueue($message);
 
-                        // Nullify the command so DataHandler will not process the command either.
-                        $command = null;
+                            // Remove the mapped command in order to avoid DataHandler calling "processcmdmap" hooks which may
+                            // attempt to perform the command.
+                            unset($reference->cmdmap[$table][$id]);
 
-                        // Return from this hook to avoid calling Flux Providers with an invalid command setup.
-                        return;
+                            // Nullify the command so DataHandler will not process the command either.
+                            $command = null;
+
+                            // Return from this hook to avoid calling Flux Providers with an invalid command setup.
+                            return;
+                        }
                     }
                 }
             }
