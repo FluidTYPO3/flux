@@ -308,6 +308,7 @@ class TceMain
 
                     $this->contentService->moveRecord($record, $relativeTo, $clipboardCommand, $reference);
                     $this->recordService->update($table, $record);
+                    $this->moveChildPlaceholdersToPageUid([$id], $record['pid']);
 
                     $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord(
                         $table,
@@ -352,67 +353,6 @@ class TceMain
             $arguments,
             $reference
         );
-    }
-
-    /**
-     * Fixes an issue with records after they have been copied. Sorting numbers
-     * of all child records (to infinite recursion depth) have been completely
-     * mangled by TYPO3 and are now a series of sequential numbers rather than
-     * the generously spaced sorting values the `tt_content` table needs.
-     *
-     * The function iterates recursively to perform SQL queries which override
-     * the new sorting values, copying the ones from the original record.
-     *
-     * @param array $parentRecord
-     * @return void
-     */
-    protected function copySortingValueOfChildrenFromOriginalsToCopies(array $parentRecord)
-    {
-        $children = $this->recordService->get(
-            'tt_content',
-            'uid',
-            sprintf('tx_flux_parent = %d', $parentRecord['uid'])
-        );
-
-        if (!count($children)) {
-            return;
-        }
-
-        foreach ($children as $child) {
-
-            // Perform an SQL query which directly copies the original record's sorting number to the copy.
-            // When not in a workspace: copy the sorting field value from original to copy.
-            // When in a workspace: copy the sorting field value from original to versioned record and move placeholder.
-            if ($GLOBALS['BE_USER']->workspace) {
-
-                // Update versioned record (which is what $parentRecord is when copy happens in workspace mode)
-                $this->getDatabaseConnection()->sql_query(
-                    sprintf(
-                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
-                        $child['uid']
-                    )
-                );
-
-                // Update the move placeholder that was automatically created for the versioned record we updated above.
-                $this->getDatabaseConnection()->sql_query(
-                    sprintf(
-                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.t3ver_oid = %d AND s.uid = t.t3ver_oid AND t.t3ver_state = -1',
-                        $child['uid']
-                    )
-                );
-
-            } else {
-
-                $this->getDatabaseConnection()->sql_query(
-                    sprintf(
-                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
-                        $child['uid']
-                    )
-                );
-
-            }
-            $this->copySortingValueOfChildrenFromOriginalsToCopies($child);
-        }
     }
 
     /**
@@ -504,13 +444,6 @@ class TceMain
         );
     }
 
-    /*
-     * Methods above are not covered by coding style checks due to needing
-     * non-conforming method names.
-     *
-     * @codingStandardsIgnoreEnd
-     */
-
     /**
      * Hook method which listens only to operations which move the record
      * to the first position in a (page-level, not Flux nested) column.
@@ -558,6 +491,8 @@ class TceMain
         $this->contentService->moveRecord($row, $newColumnNumber, [], $reference);
         $this->recordService->update($table, $row);
         $reference->updateRefIndex($table, $uid);
+
+        $this->moveChildPlaceholdersToPageUid([$resolveUid], $destPid);
 
         // Further: if we are moving a placeholder, this implies that a version exists of the original
         // record, and this version will NOT have had the necessary fields updated either.
@@ -614,11 +549,117 @@ class TceMain
         // To do this, we resolve the most recent versioned record for our original - and then also
         // update it.
         $resolveUid = $this->getOriginalRecordUid($table, $uid);
+        $this->moveChildPlaceholdersToPageUid([$resolveUid], $destPid);
         $mostRecentVersionOfRecord = $this->getMostRecentVersionOfRecord($table, $resolveUid);
         if ($mostRecentVersionOfRecord) {
             $this->contentService->moveRecord($mostRecentVersionOfRecord, $origDestPid, [], $reference);
             $this->recordService->update($table, $mostRecentVersionOfRecord);
             $reference->updateRefIndex($table, $mostRecentVersionOfRecord['uid']);
+        }
+    }
+
+    /*
+     * Methods above are not covered by coding style checks due to needing
+     * non-conforming method names.
+     *
+     * @codingStandardsIgnoreEnd
+     */
+
+    /**
+     * Moves all placeholder children of $parentUid to $pageUid. This method
+     * solves a TYPO3 core bug in which child records' PID value is not updated
+     * when the parent record is moved.
+     *
+     * Only targets move placeholders since only move placeholders are affected.
+     *
+     * @param array $parentUids
+     * @param integer $pageUid
+     * @return void
+     */
+    protected function moveChildPlaceholdersToPageUid(array $parentUids, $pageUid)
+    {
+        $databaseConnection = $this->getDatabaseConnection();
+        $childMovePlaceholders = $databaseConnection->exec_SELECTgetRows(
+            'uid',
+            'tt_content',
+            sprintf(
+                'tx_flux_parent IN (%s) AND t3ver_state = 3 AND t3ver_wsid > 0',
+                implode(', ', $parentUids)
+            )
+        );
+        if (empty($childMovePlaceholders)) {
+            return;
+        }
+        $childMovePlaceholderUids = array_column($childMovePlaceholders, 'uid');
+        $databaseConnection->exec_UPDATEquery(
+            'tt_content',
+            sprintf(
+                'uid IN (%s)',
+                implode(', ', $childMovePlaceholderUids)
+            ),
+            ['pid' => $pageUid]
+        );
+        $this->moveChildPlaceholdersToPageUid($childMovePlaceholderUids, $pageUid);
+    }
+
+    /**
+     * Fixes an issue with records after they have been copied. Sorting numbers
+     * of all child records (to infinite recursion depth) have been completely
+     * mangled by TYPO3 and are now a series of sequential numbers rather than
+     * the generously spaced sorting values the `tt_content` table needs.
+     *
+     * The function iterates recursively to perform SQL queries which override
+     * the new sorting values, copying the ones from the original record.
+     *
+     * @param array $parentRecord
+     * @return void
+     */
+    protected function copySortingValueOfChildrenFromOriginalsToCopies(array $parentRecord)
+    {
+        $children = $this->recordService->get(
+            'tt_content',
+            'uid',
+            sprintf('tx_flux_parent = %d', $parentRecord['uid'])
+        );
+
+        if (!count($children)) {
+            return;
+        }
+
+        foreach ($children as $child) {
+
+            // Perform an SQL query which directly copies the original record's sorting number to the copy.
+            // When not in a workspace: copy the sorting field value from original to copy.
+            // When in a workspace: copy the sorting field value from original to versioned record and move placeholder.
+            if ($GLOBALS['BE_USER']->workspace) {
+
+                // Update versioned record (which is what $parentRecord is when copy happens in workspace mode)
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
+                        $child['uid']
+                    )
+                );
+
+                // Update the move placeholder that was automatically created for the versioned record we updated above.
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.t3ver_oid = %d AND s.uid = t.t3ver_oid AND t.t3ver_state = -1',
+                        $child['uid']
+                    )
+                );
+
+            } else {
+
+                $this->getDatabaseConnection()->sql_query(
+                    sprintf(
+                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
+                        $child['uid']
+                    )
+                );
+
+            }
+            $this->copySortingValueOfChildrenFromOriginalsToCopies($child);
         }
     }
 
