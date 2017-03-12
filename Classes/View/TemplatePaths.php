@@ -323,20 +323,25 @@ class TemplatePaths
 
     /**
      * Initalize rootPaths
-     * TYPO3 < 8.0 we need the rootpaths sorted reverse by key to check the path with the highest number first.
+     * TYPO3 < 8.0 we need the rootpaths sorted by key in reverse order to check the path with the highest number first.
      * TYPO3 >= 8.0 the highest priority paths must come last.
+     * internal special case for flux: the templateRootPaths must be alway sorted by key in reverse order
      *
      * @param mixed $paths
      * @return array
      */
-    protected function initializeRootPaths($paths)  {
+    protected function initializeRootPaths($paths, $reverseorder = false)  {
         $rootPaths = [];
         if (is_array($paths)) {
             // reverse order is needed for TYPO3 Verion < 8.0
             if (static::$needReverseOrder) {
                 krsort($paths, SORT_NUMERIC);
             } else {
-                ksort($paths, SORT_NUMERIC);
+                if ($reverseorder) {
+                    krsort($paths, SORT_NUMERIC);
+                } else {
+                    ksort($paths, SORT_NUMERIC);
+                }
             }
             $rootPaths = array_merge($rootPaths, $paths);
         }
@@ -364,7 +369,7 @@ class TemplatePaths
     protected function extractPathArrays(array $paths)
     {
         // The modern plural paths configurations:
-        $templateRootPaths = $this->initializeRootPaths($paths[self::CONFIG_TEMPLATEROOTPATHS]);
+        $templateRootPaths = $this->initializeRootPaths($paths[self::CONFIG_TEMPLATEROOTPATHS], true);
         $layoutRootPaths = $this->initializeRootPaths($paths[self::CONFIG_LAYOUTROOTPATHS]);
         $partialRootPaths = $this->initializeRootPaths($paths[self::CONFIG_PARTIALROOTPATHS]);
         // translate all paths to absolute paths
