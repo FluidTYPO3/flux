@@ -9,11 +9,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  */
 
 use FluidTYPO3\Flux\Backend\TceMain;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -91,6 +91,10 @@ class TceMainTest extends AbstractTestCase
     public function canExecuteDataPreProcessHookWithoutRecord()
     {
         $instance = $this->getInstance();
+        $recordService = $this->getMockBuilder(RecordService::class)->setMethods(['getSingle'])->getMock();
+        $recordService->expects($this->once())->method('getSingle')->willReturn(['foo']);
+        ObjectAccess::setProperty($instance, 'recordService', $recordService, true);
+
         $tceMainParent = $this->getCallerInstance();
         $record = array();
         $result = $instance->processDatamap_preProcessFieldArray($record, 'tt_content', null, $tceMainParent);
@@ -115,6 +119,10 @@ class TceMainTest extends AbstractTestCase
     public function canExecuteDataPostProcessHookWithoutRecord()
     {
         $instance = $this->getInstance();
+        $recordService = $this->getMockBuilder(RecordService::class)->setMethods(['getSingle'])->getMock();
+        $recordService->expects($this->once())->method('getSingle')->willReturn(['foo']);
+        ObjectAccess::setProperty($instance, 'recordService', $recordService, true);
+
         $tceMainParent = $this->getCallerInstance();
         $record = array();
         $result = $instance->processDatamap_postProcessFieldArray('update', 'tt_content', null, $record, $tceMainParent);
@@ -139,6 +147,10 @@ class TceMainTest extends AbstractTestCase
     public function canExecuteAfterDatabaseOperationHookWithoutRecord()
     {
         $instance = $this->getInstance();
+        $recordService = $this->getMockBuilder(RecordService::class)->setMethods(['getSingle'])->getMock();
+        $recordService->expects($this->once())->method('getSingle')->willReturn(['foo']);
+        ObjectAccess::setProperty($instance, 'recordService', $recordService, true);
+
         $tceMainParent = $this->getCallerInstance();
         $record = array();
         $result = $instance->processDatamap_afterDatabaseOperations('update', 'tt_content', null, $record, $tceMainParent);
@@ -165,6 +177,10 @@ class TceMainTest extends AbstractTestCase
     public function canExecuteCommandPreProcessHook()
     {
         $instance = $this->getInstance();
+        $recordService = $this->getMockBuilder(RecordService::class)->setMethods(['getSingle'])->getMock();
+        $recordService->expects($this->once())->method('getSingle')->willReturn(['foo']);
+        ObjectAccess::setProperty($instance, 'recordService', $recordService, true);
+
         $tceMainParent = $this->getCallerInstance();
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $command = 'update';
@@ -178,6 +194,10 @@ class TceMainTest extends AbstractTestCase
     public function canExecuteCommandPreProcessHookWithNullRecord()
     {
         $instance = $this->getInstance();
+        $recordService = $this->getMockBuilder(RecordService::class)->setMethods(['getSingle'])->getMock();
+        $recordService->expects($this->once())->method('getSingle')->willReturn(['foo']);
+        ObjectAccess::setProperty($instance, 'recordService', $recordService, true);
+
         $tceMainParent = $this->getCallerInstance();
         $record = null;
         $command = 'update';
@@ -191,6 +211,10 @@ class TceMainTest extends AbstractTestCase
     public function canExecuteCommandPostProcessHook()
     {
         $instance = $this->getInstance();
+        $recordService = $this->getMockBuilder(RecordService::class)->setMethods(['getSingle'])->getMock();
+        $recordService->expects($this->once())->method('getSingle')->willReturn(['foo']);
+        ObjectAccess::setProperty($instance, 'recordService', $recordService, true);
+
         $tceMainParent = $this->getCallerInstance();
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $command = 'update';
@@ -215,39 +239,9 @@ class TceMainTest extends AbstractTestCase
      */
     protected function getInstance()
     {
-        /** @var ObjectManager $objectManager */
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
         $tceMainInstance = new TceMain();
         ObjectAccess::setProperty($tceMainInstance, 'cachesCleared', false, true);
         return $tceMainInstance;
-    }
-
-    /**
-     * @test
-     */
-    public function executeConfigurationProviderMethodDebugsOnException()
-    {
-        $exception = new \RuntimeException();
-        $mock = new TceMain();
-        $configurationService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('debug', 'resolveConfigurationProviders'))->getMock();
-        $configurationService->expects($this->once())->method('debug')->with($exception);
-        $configurationService->expects($this->once())->method('resolveConfigurationProviders')->will($this->throwException($exception));
-        $handler = new DataHandler();
-        $record = array();
-        $parameters = array();
-        $handler->substNEWwithIDs['NEW123'] = 123;
-        $mock->injectConfigurationService($configurationService);
-        $result = $this->callInaccessibleMethod(
-            $mock,
-            'executeConfigurationProviderMethod',
-            'method',
-            'tt_content',
-            'NEW123',
-            $record,
-            $parameters,
-            $handler
-        );
-        $this->assertEmpty($result);
     }
 
     /**

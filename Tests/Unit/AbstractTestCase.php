@@ -11,11 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\View\TemplatePaths;
-use FluidTYPO3\Flux\View\ViewContext;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
-use TYPO3\CMS\Core\Tests\UnitTestCase as BaseTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -24,17 +20,17 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
 
-    const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/AbsolutelyMinimal.html';
-    const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/WithoutForm.html';
-    const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Sheets.html';
-    const FIXTURE_TEMPLATE_COMPACTED = 'EXT:flux/Tests/Fixtures/Templates/CompactToggledOn.html';
-    const FIXTURE_TEMPLATE_USESPARTIAL = 'EXT:flux/Tests/Fixtures/Templates/UsesPartial.html';
-    const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/CustomSection.html';
-    const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/EmptyPreview.html';
-    const FIXTURE_TEMPLATE_PREVIEW = 'EXT:flux/Tests/Fixtures/Templates/Preview.html';
-    const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/BasicGrid.html';
-    const FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/DualGrid.html';
-    const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/CollidingGrid.html';
+    const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/Content/AbsolutelyMinimal.html';
+    const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/Content/WithoutForm.html';
+    const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Content/Sheets.html';
+    const FIXTURE_TEMPLATE_COMPACTED = 'EXT:flux/Tests/Fixtures/Templates/Content/CompactToggledOn.html';
+    const FIXTURE_TEMPLATE_USESPARTIAL = 'EXT:flux/Tests/Fixtures/Templates/Content/UsesPartial.html';
+    const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/Content/CustomSection.html';
+    const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/Content/EmptyPreview.html';
+    const FIXTURE_TEMPLATE_PREVIEW = 'EXT:flux/Tests/Fixtures/Templates/Content/Preview.html';
+    const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/BasicGrid.html';
+    const FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/DualGrid.html';
+    const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/CollidingGrid.html';
     const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
     /**
@@ -168,27 +164,6 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $templateName
-     * @param array $variables
-     */
-    protected function assertFluxTemplateLoadsWithoutErrors($templateName, $variables = array())
-    {
-        if (0 === count($variables)) {
-            $variables = array('row' => Records::$contentRecordWithoutParentAndWithoutChildren);
-        }
-        $templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($templateName);
-        $service = $this->createFluxServiceInstance();
-        $viewContext = new ViewContext($templatePathAndFilename, 'Flux');
-        $viewContext->setVariables($variables);
-        $viewContext->setSectionName('Configuration');
-        $form = $service->getFormFromTemplateFile($viewContext);
-        if (null !== $form) {
-            $this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
-            $this->assertIsArray($form->build());
-        }
-    }
-
-    /**
      * @return string
      */
     protected function getShorthandFixtureTemplatePathAndFilename()
@@ -236,37 +211,4 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
         return $instance;
     }
 
-    /**
-     * @param string $templatePathAndFilename
-     * @return array
-     */
-    protected function performBasicTemplateReadTest($templatePathAndFilename)
-    {
-        $service = $this->createFluxServiceInstance();
-        $paths = array(
-            'templateRootPath' => 'EXT:flux/Tests/Fixtures/Templates/',
-            'partialRootPath' => 'EXT:flux/Tests/Fixtures/Partials/',
-            'layoutRootPath' => 'EXT:flux/Tests/Fixtures/Layouts/'
-        );
-        $viewContext = new ViewContext($templatePathAndFilename);
-        $viewContext->setTemplatePaths(new TemplatePaths($paths));
-        $viewContext->setSectionName('Configuration');
-        $form = $service->getFormFromTemplateFile($viewContext);
-        $this->assertIsValidAndWorkingFormObject($form);
-        return $form;
-    }
-
-    /**
-     * Indicate test is skipped on 8.x branch of TYPO3 ("master" as opposed to legacy/LTS)
-     *
-     * @param string|null $message
-     */
-    protected function markTestSkippedOnMaster($message = null)
-    {
-        if (GeneralUtility::compat_version('8.0.0')) {
-            $this->markTestSkipped(
-                $message ? : 'Test skipped on 8.x pending refactoring'
-            );
-        }
-    }
 }

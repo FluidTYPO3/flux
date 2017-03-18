@@ -9,14 +9,12 @@ namespace FluidTYPO3\Flux\Hooks;
  */
 
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -184,6 +182,6 @@ class ContentIconHookSubscriber
      */
     protected function attachAssets()
     {
-        $GLOBALS['TBE_STYLES']['stylesheet'] = ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/icon.css';
+        $GLOBALS['TBE_STYLES']['stylesheet'] = GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/css/icon.css');
     }
 }

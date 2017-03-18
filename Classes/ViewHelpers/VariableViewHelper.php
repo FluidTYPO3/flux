@@ -51,7 +51,7 @@ class VariableViewHelper extends AbstractViewHelper implements CompilableInterfa
         RenderingContextInterface $renderingContext
     ) {
         return ObjectAccess::getPropertyPath(
-            $renderingContext->getTemplateVariableContainer()->getAll(),
+            $renderingContext->getVariableProvider()->getAll(),
             $arguments['name']
         );
     }
@@ -72,7 +72,7 @@ class VariableViewHelper extends AbstractViewHelper implements CompilableInterfa
         TemplateCompiler $templateCompiler
     ) {
         return sprintf(
-            '%s::getPropertyPath($renderingContext->getTemplateVariableContainer()->getAll(), %s[\'name\'])',
+            '%s::getPropertyPath($renderingContext->getVariableProvider()->getAll(), %s[\'name\'])',
             ObjectAccess::class,
             $argumentsVariableName
         );

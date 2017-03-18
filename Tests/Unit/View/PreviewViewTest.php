@@ -9,11 +9,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\View;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\PageLayoutView;
 use FluidTYPO3\Flux\View\PreviewView;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
  * PreviewViewTest
@@ -25,17 +29,6 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function setUp()
     {
-        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(
-            'TYPO3\\CMS\\Core\\Database\\DatabaseConnection'
-        )->setMethods(
-            array('exec_SELECTgetSingleRow', 'exec_SELECTgetRows', 'exec_SELECT_queryArray', 'fetch_assoc', 'sql_fetch_assoc')
-        )->getMock();
-        $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetSingleRow')
-            ->willReturn(Records::$contentRecordWithoutParentAndWithoutChildren);
-        $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
-        $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECT_queryArray')->willReturn($GLOBALS['TYPO3_DB']);
-        $GLOBALS['TYPO3_DB']->expects($this->any())->method('fetch_assoc')->willReturn(array());
-        $GLOBALS['TYPO3_DB']->expects($this->any())->method('sql_fetch_assoc')->willReturn(array());
         $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->setMethods(array('calcPerms'))->getMock();
         $GLOBALS['BE_USER']->expects($this->any())->method('calcPerms');
         $GLOBALS['LANG'] = $this->getMockBuilder('TYPO3\\CMS\\Lang\\LanguageService')->setMethods(array('sL'))->getMock();
@@ -148,25 +141,35 @@ class PreviewViewTest extends AbstractTestCase
         $form = Form::create(array('name' => 'test', 'options' => array('preview' => $options)));
         $grid = Form\Container\Grid::create(array());
         $grid->createContainer('Row', 'row')->createContainer('Column', 'column');
+        $templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW);
+        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(['get', 'getSingle'])->getMock();
+        $recordService->expects($this->any())->method('get')->willReturn([]);
+        $recordService->expects($this->any())->method('getSingle')->willReturn(['foo' => 'bar']);
         $provider->setGrid($grid);
         $provider->setForm($form);
-        $provider->setTemplatePaths(array());
-        $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW));
-        $databaseConnectionMock = $this->getMockBuilder(DatabaseConnection::class)->getMock();
-        $databaseConnectionMock->expects($this->any())->method('sql_fetch_assoc')->willReturn([]);
+        $provider->setTemplatePathAndFilename($templatePathAndFilename);
+        $provider->injectRecordService($recordService);
         $pageLayoutView = $this->getMockBuilder(PageLayoutView::class)->setMethods(['initializeLanguages'])->getMock();
         $previewView = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(array('registerTargetContentAreaInSession', 'getDatabaseConnection', 'getPageLayoutView'))
+            ->setMethods(array('registerTargetContentAreaInSession', 'getPageLayoutView'))
             ->getMock();
-        $previewView->expects($this->any())->method('getDatabaseConnection')->willReturn($databaseConnectionMock);
+        $context = $this->objectManager->get(RenderingContext::class);
+        $controllerContext = new ControllerContext();
+        $controllerContext->setRequest(new Request());
+        $context->setControllerContext($controllerContext);
+        $templatePaths = $this->getMockBuilder(TemplatePaths::class)->setMethods(['resolveTemplateFileForControllerAndActionAndFormat'])->getMock();
+        $templatePaths->expects($this->atLeastOnce())->method('resolveTemplateFileForControllerAndActionAndFormat')->willReturn(
+            $templatePathAndFilename
+        );
+        $context->setTemplatePaths($templatePaths);
+        $previewView->setRenderingContext($context);
         $previewView->expects($this->any())->method('registerTargetContentAreaInSession');
         $previewView->expects($this->any())->method('getPageLayoutView')->willReturn($pageLayoutView);
+        $previewView->injectWorkspacesAwareRecordService($recordService);
+        $previewView->injectRecordService($recordService);
         $previewView->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
         $previewView->injectConfigurationManager(
             $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager')
-        );
-        $previewView->injectWorkspacesAwareRecordService(
-            $this->objectManager->get('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')
         );
         $preview = $previewView->getPreview($provider, Records::$contentRecordIsParentAndHasChildren);
         $this->$finalAssertionMethod($preview);
@@ -189,7 +192,7 @@ class PreviewViewTest extends AbstractTestCase
      */
     protected function assertPreviewIsEmpty($preview)
     {
-        $this->assertEquals('Preview text', $preview);
+        $this->assertEquals('Preview text', trim($preview));
     }
 
     /**
@@ -198,7 +201,7 @@ class PreviewViewTest extends AbstractTestCase
      */
     protected function assertPreviewComesAfterGrid($preview)
     {
-        $this->assertStringStartsNotWith('Preview text', $preview);
+        $this->assertStringStartsNotWith('Preview text', trim($preview));
     }
 
     /**
@@ -207,7 +210,7 @@ class PreviewViewTest extends AbstractTestCase
      */
     protected function assertPreviewComesBeforeGrid($preview)
     {
-        $this->assertStringStartsWith('Preview text', $preview);
+        $this->assertStringStartsWith('Preview text', trim($preview));
     }
 
     /**
@@ -216,7 +219,7 @@ class PreviewViewTest extends AbstractTestCase
      */
     protected function assertPreviewContainsToggle($preview)
     {
-        $this->assertStringStartsWith('<div class="grid-visibility-toggle" ', $preview);
+        $this->assertStringStartsWith('<div class="grid-visibility-toggle" ', trim($preview));
     }
 
     /**

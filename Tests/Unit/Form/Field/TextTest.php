@@ -8,10 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\FormInterface;
-use FluidTYPO3\Flux\Service\FluxService;
-use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
-
 /**
  * TextTest
  */
@@ -24,7 +20,7 @@ class TextTest extends InputTest
     protected $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
-        'enable' => true,
+        'enabled' => true,
         'maxCharacters' => 30,
         'maximum' => 10,
         'minimum' => 0,

@@ -83,7 +83,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
-        $templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+        $templateVariableContainer = $renderingContext->getVariableProvider();
         $as = $arguments['as'];
         $record = $arguments['record'];
         $uid = $arguments['uid'];
@@ -100,7 +100,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
             if (null === $record) {
                 $record = static::getRecordService()->getSingle($table, 'uid,' . $field, $uid);
             }
-            if (null === $record) {
+            if (!$record) {
                 ErrorUtility::throwViewHelperException(
                     sprintf(
                         'Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .

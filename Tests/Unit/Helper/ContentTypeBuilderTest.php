@@ -53,7 +53,6 @@ class ContentTypeBuilderTest extends AbstractTestCase
     {
         $subject = new ContentTypeBuilder();
         $form = Form::create([]);
-        $provider = $this->getMockBuilder(Provider::class)->getMock();
         $provider = $this->getMockBuilder(Provider::class)->setMethods(['getForm'])->getMock();
         $provider->expects($this->once())->method('getForm')->willReturn($form);
 
@@ -76,9 +75,8 @@ class ContentTypeBuilderTest extends AbstractTestCase
         $subject = new ContentTypeBuilder();
         $result = $subject->configureContentTypeFromTemplateFile(
             'FluidTYPO3.Flux',
-            $this->getAbsoluteFixtureTemplatePathAndFilename(static::FIXTURE_TEMPLATE_BASICGRID)
+            $this->getAbsoluteFixtureTemplatePathAndFilename(static::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL)
         );
         $this->assertInstanceOf(Provider::class, $result);
-        $this->assertSame('test', $result->getForm([])->getId());
     }
 }

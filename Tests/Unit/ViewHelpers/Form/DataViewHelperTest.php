@@ -8,9 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use Doctrine\DBAL\Statement;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * DataViewHelperTest
@@ -40,30 +44,9 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @return void
      */
-    protected function setUp()
-    {
-        parent::setUp();
-        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')
-            ->setMethods(array('exec_SELECTgetSingleRow'))
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-
-    /**
-     * @return void
-     */
     public static function tearDownAfterClass()
     {
         unset($GLOBALS['TCA']);
-    }
-
-    /**
-     * @return void
-     */
-    public function tearDown()
-    {
-        unset($GLOBALS['TYPO3_DB']);
     }
 
     /**
@@ -77,7 +60,10 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'uid' => 1
         );
         $viewHelper = $this->buildViewHelperInstance($arguments);
-        $GLOBALS['TYPO3_DB']->expects($this->never())->method('exec_SELECTgetSingleRow');
+        $prophecy = $this->prophesize(RecordService::class);
+        $prophecy->getSingle()->shouldNotBeCalled();
+        $prophecy->reveal();
+
         $this->expectViewHelperException(
             'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
         );
@@ -94,7 +80,14 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'table' => 'tt_content',
             'field' => 'pi_flexform',
         );
-        $GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
+        $statement = $this->prophesize(Statement::class);
+        $statement->fetchAll()->willReturn([]);
+        $queryBuilder = $this->prophesize(QueryBuilder::class);
+        $prophecy = $this->prophesize(ConnectionPool::class);
+        $prophecy->getQueryBuilderForTable('tt_content')->willReturn($queryBuilder->reveal());
+
+        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
+
         $this->expectViewHelperException(
             'Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.'
         );
@@ -125,10 +118,15 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         $arguments = array(
             'table' => 'tt_content',
             'field' => 'pi_flexform',
-            'uid' => 1
+            'record' => [
+                'foo' => 'bar'
+            ]
         );
-        $GLOBALS['TYPO3_DB']->expects($this->once())->method('exec_SELECTgetSingleRow');
-        $this->expectViewHelperException();
+
+        $prophecy = $this->prophesize(RecordService::class);
+        $prophecy->getSingle()->shouldNotBeCalled();
+        $prophecy->reveal();
+
         $this->executeViewHelper($arguments);
     }
 

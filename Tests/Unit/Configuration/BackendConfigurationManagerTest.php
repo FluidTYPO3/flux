@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Configuration;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * BackendConfigurationManagerTest

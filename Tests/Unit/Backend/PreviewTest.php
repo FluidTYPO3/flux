@@ -8,7 +8,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Backend\Preview;
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -29,8 +31,6 @@ class PreviewTest extends AbstractTestCase
         $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
         $fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
         $fluxService->injectConfigurationManager($configurationManager);
-        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
-        $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
         $tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
         foreach ($tempFiles as $tempFile) {
             if (true === file_exists($tempFile)) {
@@ -55,10 +55,12 @@ class PreviewTest extends AbstractTestCase
      */
     public function canGetPageTitleAndPidFromContentUid()
     {
-        $className = 'FluidTYPO3\Flux\Backend\Preview';
-        $instance = $this->getMockBuilder($className)->getMock();
+        $instance = new Preview();
+        $recordService = $this->getMockBuilder(RecordService::class)->setMethods(['get'])->getMock();
+        $recordService->expects($this->once())->method('get')->willReturn([['foo']]);
+        ObjectAccess::setProperty($instance, 'recordService', $recordService, true);
         $result = $this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
-        $this->assertEmpty($result);
+        $this->assertSame(['foo'], $result);
     }
 
     /**

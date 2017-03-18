@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\UserFunction;
  */
 
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * AbstractUserFunctionTest

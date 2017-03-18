@@ -8,10 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\ViewHelpers\Content\RenderViewHelper;
+use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-use TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
+use Prophecy\Argument;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -32,10 +35,31 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
         $GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
         $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)->setMethods(['enableFields'])->getMock();
-        $GLOBALS['TT'] = new NullTimeTracker();
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
         $GLOBALS['TCA']['tt_content']['ctrl'] = array();
+    }
+
+    /**
+     * @return void
+     */
+    protected function createAndRegisterMockForQueryBuilder()
+    {
+        $statement = $this->prophesize(Statement::class);
+        $statement->fetchAll()->willReturn([]);
+
+        $queryBuilder = $this->prophesize(QueryBuilder::class);
+        $queryBuilder->from('tt_content')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->select('*')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->where(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->orderBy('sorting', '');
+        $queryBuilder->setMaxResults(0);
+        $queryBuilder->execute()->willReturn($statement->reveal());
+
+        $prophecy = $this->prophesize(ConnectionPool::class);
+        $prophecy->getQueryBuilderForTable('tt_content')->willReturn($queryBuilder->reveal());
+
+        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
     }
 
     /**
@@ -43,6 +67,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelper()
     {
+        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',
@@ -61,6 +86,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
      */
     public function isUnaffectedByRenderArgumentBeingFalse()
     {
+        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'render' => false,
@@ -78,6 +104,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithLoadRegister()
     {
+        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',

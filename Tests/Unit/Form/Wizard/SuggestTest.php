@@ -8,8 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use FluidTYPO3\Flux\Form\Wizard\Suggest;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * SuggestTest

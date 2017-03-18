@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 
@@ -104,24 +103,6 @@ class ProviderTest extends AbstractProviderTest
         $extensionKey = $result->getExtensionKey($record);
         $this->assertNotEmpty($extensionKey);
         $this->assertRegExp('/[a-z_]+/', $extensionKey);
-    }
-
-    /**
-     * @test
-     */
-    public function canReturnPathSetByRecordWithoutParentAndWithoutChildren()
-    {
-        $row = Records::$contentRecordWithoutParentAndWithoutChildren;
-        $service = $this->createFluxServiceInstance();
-        $provider = new Provider();
-        $provider->setTemplatePaths(array());
-        $resolver = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\ProviderResolver')->setMethods(array('resolvePrimaryConfigurationProvider'))->getMock();
-        $resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
-        $service->injectProviderResolver($resolver);
-        $result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', $row);
-        $this->assertSame($result, $provider);
-        $paths = $result->getTemplatePaths($row);
-        $this->assertIsArray($paths);
     }
 
     /**

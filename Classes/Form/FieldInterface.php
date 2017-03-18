@@ -97,19 +97,6 @@ interface FieldInterface extends FormInterface
     public function getExclude();
 
     /**
-     * @param boolean $enable
-     * @return FieldInterface
-     * @deprecated To be removed in next major release
-     */
-    public function setEnable($enable);
-
-    /**
-     * @return boolean
-     * @deprecated To be removed in next major release
-     */
-    public function getEnable();
-
-    /**
      * @param string $validate
      * @return FieldInterface
      */

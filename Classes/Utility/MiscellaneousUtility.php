@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Utility;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\ContentService;
-use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;

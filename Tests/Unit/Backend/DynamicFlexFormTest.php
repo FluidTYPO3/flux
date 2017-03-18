@@ -11,8 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
 use FluidTYPO3\Flux\Backend\DynamicFlexForm;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * DynamicFlexFormTest
