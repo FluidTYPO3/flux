@@ -226,8 +226,8 @@ class ContentTypeBuilder
             sprintf(
                 'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
                     iconIdentifier = %s
-                    title = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s
-                    description = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s.description
+                    title = %s
+                    description = %s
                     tt_content_defValues {
                         CType = %s
                     }
@@ -236,10 +236,8 @@ class ContentTypeBuilder
                 $group,
                 $formId,
                 $iconIdentifier,
-                $extensionKey,
-                $formId,
-                $extensionKey,
-                $formId,
+                $form->getLabel(),
+                $form->getDescription(),
                 $contentType,
                 $group,
                 $formId
@@ -272,11 +270,7 @@ class ContentTypeBuilder
         ExtensionUtility::registerPlugin(
             $providerExtensionName,
             $pluginName,
-            sprintf(
-                'LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s',
-                ExtensionNamingUtility::getExtensionKey($providerExtensionName),
-                $form->getId()
-            ),
+            $form->getLabel(),
             $icon
         );
     }

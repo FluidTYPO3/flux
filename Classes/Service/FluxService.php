@@ -471,7 +471,7 @@ class FluxService implements SingletonInterface
         }
         $settings = $this->objectManager->get(FlexFormService::class)
             ->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
-        if (null !== $form) {
+        if (null !== $form && $form->getOption(Form::OPTION_TRANSFORM)) {
             /** @var FormDataTransformer $transformer */
             $transformer = $this->objectManager->get(FormDataTransformer::class);
             $settings = $transformer->transformAccordingToConfiguration($settings, $form);
