@@ -319,11 +319,13 @@ class AbstractProvider implements ProviderInterface
         }
         $formName = 'form';
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $formName);
-        $runtimeCache = $this->getRuntimeCache();
-        $persistentCache = $this->getPersistentCache();
-        $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $persistentCache->get($cacheKey);
-        if ($fromCache) {
-            return $fromCache;
+        if ($cacheKey) {
+            $runtimeCache = $this->getRuntimeCache();
+            $persistentCache = $this->getPersistentCache();
+            $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $persistentCache->get($cacheKey);
+            if ($fromCache) {
+                return $fromCache;
+            }
         }
 
         $formClassName = $this->resolveFormClassName($row);
@@ -341,9 +343,11 @@ class AbstractProvider implements ProviderInterface
             $form->setOption(Form::OPTION_RECORD, $row);
             $form->setOption(Form::OPTION_RECORD_TABLE, $this->getTableName($row));
             $form->setOption(Form::OPTION_RECORD_FIELD, $this->getFieldName($row));
-            $runtimeCache->set($cacheKey, $form);
-            if ($form->getOption(Form::OPTION_STATIC)) {
-                $persistentCache->set($cacheKey, $form);
+            if ($cacheKey) {
+                $runtimeCache->set($cacheKey, $form);
+                if ($form->getOption(Form::OPTION_STATIC)) {
+                    $persistentCache->set($cacheKey, $form);
+                }
             }
         }
 
@@ -361,18 +365,22 @@ class AbstractProvider implements ProviderInterface
         }
         $gridName = 'grid';
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $gridName);
-        $runtimeCache = $this->getRuntimeCache();
-        $persistentCache = $this->getPersistentCache();
-        $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $persistentCache->get($cacheKey);
-        if ($fromCache) {
-            return $fromCache;
+        if ($cacheKey) {
+            $runtimeCache = $this->getRuntimeCache();
+            $persistentCache = $this->getPersistentCache();
+            $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $persistentCache->get($cacheKey);
+            if ($fromCache) {
+                return $fromCache;
+            }
         }
 
         $viewContext = $this->getViewContext($row);
         $grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
-        $runtimeCache->set($cacheKey, $grid);
+        if ($cacheKey) {
+            $runtimeCache->set($cacheKey, $grid);
+        }
         $form = $this->getForm($row);
-        if ($form && $form->getOption(Form::OPTION_STATIC)) {
+        if ($form && $form->getOption(Form::OPTION_STATIC) && $cacheKey) {
             $persistentCache->set($cacheKey, $grid);
         }
         return $grid;
@@ -826,17 +834,26 @@ class AbstractProvider implements ProviderInterface
     }
 
     /**
+     * Hands back the cache key for the given
+     * stored variable for the given row.
+     *
+     * If the row contains no uid it returns false.
+     *
      * @param array $row
      * @param string $variable
-     * @return string
+     * @return string|boolean
      */
     protected function getCacheKeyForStoredVariable(array $row, $variable)
     {
-        $table = $this->getTableName($row);
-        $field = $this->getFieldName($row);
-        $contentType = $this->getContentObjectType();
-        $uid = $row['uid'] ?? 0;
-        return 'flux-storedvariable-' . $table . '-' . $field . '-' . $uid . '-' . $variable . '-' . $contentType;
+        if (key_exists('uid', $row)) {
+            $table = $this->getTableName($row);
+            $field = $this->getFieldName($row);
+            $contentType = $this->getContentObjectType();
+            $uid = $row['uid'];
+            return 'flux-storedvariable-' . $table . '-' . $field . '-' . $uid . '-' . $variable . '-' . $contentType;
+        } else {
+            return false;
+        }
     }
 
     /**
