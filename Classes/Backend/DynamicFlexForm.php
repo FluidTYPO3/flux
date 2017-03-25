@@ -102,6 +102,13 @@ class DynamicFlexForm
             $defaultFields = array_combine($defaultFields, $defaultFields);
             $limitedRecordData = array_intersect_key($record, $defaultFields);
             $limitedRecordData[$fieldName] = $record[$fieldName];
+
+            // this gets called when a plugin with typoscript provider is copied
+            // in the later process of resolving a flux flex form provider for this new list record without
+            // uid we need the list type to resolve the provider:
+            if (!isset($record['uid']) && $record['CType'] == 'list') {
+                $limitedRecordData['list_type'] = $record['list_type'];
+            }
         }
         $providers = $this->configurationService->resolveConfigurationProviders($tableName, $fieldName, $record);
         if (count($providers) === 0) {
