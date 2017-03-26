@@ -142,10 +142,8 @@ class DynamicFlexForm
         if (!$record) {
             return [];
         }
-        $cache = $this->getCache();
-        $runtimeCache = $this->getRuntimeCache();
-        $cacheKey = 'ds-' . md5(serialize($identifier));
-        $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $cache->get($cacheKey);
+
+        $fromCache = $this->configurationService->getFromCaches($identifier);
         if ($fromCache) {
             return $fromCache;
         }
@@ -157,8 +155,7 @@ class DynamicFlexForm
         $providers = $this->configurationService->resolveConfigurationProviders($identifier['tableName'], $fieldName, $record);
         if (count($providers) === 0) {
             // No Providers detected - we will cache this response
-            $cache->set($cacheKey, []);
-            $runtimeCache->set($cacheKey, []);
+            $this->configurationService->setInCaches([], true, $identifier);
             return [];
         }
         foreach ($providers as $provider) {
@@ -170,8 +167,7 @@ class DynamicFlexForm
             if ($form->getOption(Form::OPTION_STATIC)) {
                 // This provider has requested static DS caching; stop attempting
                 // to process any other DS, cache and return this DS as final result:
-                $cache->set($cacheKey, $dataStructArray);
-                $runtimeCache->set($cacheKey, $dataStructArray);
+                $this->configurationService->setInCaches($dataStructArray, true, $identifier);
                 return $dataStructArray;
             }
         }
@@ -180,8 +176,8 @@ class DynamicFlexForm
         }
 
         $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
+        $this->configurationService->setInCaches($dataStructArray, false, $identifier);
 
-        $runtimeCache->set($cacheKey, $dataStructArray);
         return $dataStructArray;
     }
 
