@@ -98,9 +98,15 @@ class DynamicFlexForm
         if ((integer) $record['uid']) {
             $limitedRecordData = ['uid' => $record['uid']];
         } else {
-            $defaultFields = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues']);
-            $defaultFields = array_combine($defaultFields, $defaultFields);
-            $limitedRecordData = array_intersect_key($record, $defaultFields);
+            $fields = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues']);
+            if ($GLOBALS['TCA'][$tableName]['ctrl']['type'] ?? false) {
+                $fields[] = $GLOBALS['TCA'][$tableName]['ctrl']['type'];
+                if ($GLOBALS['TCA'][$tableName]['ctrl'][$GLOBALS['TCA'][$tableName]['ctrl']['type']]['subtype_value_field'] ?? false) {
+                    $fields[] = $GLOBALS['TCA'][$tableName]['ctrl'][$GLOBALS['TCA'][$tableName]['ctrl']['type']]['subtype_value_field'];
+                }
+            }
+            $fields = array_combine($fields, $fields);
+            $limitedRecordData = array_intersect_key($record, $fields);
             $limitedRecordData[$fieldName] = $record[$fieldName];
         }
         $providers = $this->configurationService->resolveConfigurationProviders($tableName, $fieldName, $record);
