@@ -352,18 +352,37 @@ class FluxService implements SingletonInterface {
 	 *
 	 * @return array
 	 */
-	public function getAllTypoScript() {
-		if (!$this->configurationManager instanceof BackendConfigurationManager) {
-			$typoScript = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-			$typoScript = GeneralUtility::removeDotsFromTS($typoScript);
-			return $typoScript;
-		} else {
-			$pageId = $this->configurationManager->getCurrentPageId();
-			if (FALSE === isset(self::$typoScript[$pageId])) {
-				self::$typoScript[$pageId] = (array) $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-				self::$typoScript[$pageId] = GeneralUtility::removeDotsFromTS(self::$typoScript[$pageId]);
+	public function getAllTypoScript()
+	{
+		static $cache = [];
+		$pageId = $this->getCurrentPageId();
+		if (isset($cache[$pageId])) {
+			return $cache[$pageId];
+		}
+		if (false === isset($cache[$pageId])) {
+			$typoScript = (array) $this->configurationManager->getConfiguration(
+				ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
+			);
+			if (!empty($typoScript)) {
+				$cache[$pageId] = GeneralUtility::removeDotsFromTS($typoScript);
+			} else {
+				// Special case: the TS is empty, meaning the template is not yet initialized.
+				// We avoid caching this result so future calls won't read an empty array.
+				return [];
 			}
-			return (array) self::$typoScript[$pageId];
+		}
+		return (array) $cache[$pageId];
+	}
+
+	/**
+	 * @return integer
+	 */
+	protected function getCurrentPageId()
+	{
+		if ($this->configurationManager instanceof ConfigurationManager) {
+			return (integer) $this->configurationManager->getCurrentPageId();
+		} else {
+			return (integer) $GLOBALS['TSFE']->id;
 		}
 	}
 
