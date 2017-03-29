@@ -70,8 +70,7 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
         $this->registerArgument(
             'itemsProcFunc',
             'string',
-            'Function for serving items' .
-            'see TCA "select" field "itemsProcFunc" attribute'
+            'Function for serving items. See TCA "select" field "itemsProcFunc" attribute'
         );
     }
 
