@@ -335,11 +335,19 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         return $items;
     }
 
+    /**
+     * @param string $itemsProcFunc
+     * @return MultiValueFieldInterface
+     */
     public function setItemsProcFunc($itemsProcFunc)
     {
         $this->itemsProcFunc = $itemsProcFunc;
+        return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getItemsProcFunc()
     {
         return $this->itemsProcFunc;
