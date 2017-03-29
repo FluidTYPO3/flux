@@ -80,7 +80,6 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      */
     protected $itemsProcFunc;
 
-
     /**
      * If not-FALSE, adds one empty option/value pair to the generated selector
      * box and tries to use this property's value (cast to string) as label.
