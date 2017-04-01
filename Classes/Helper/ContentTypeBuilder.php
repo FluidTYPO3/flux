@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -174,6 +175,25 @@ class ContentTypeBuilder
         }
         $this->registerExtbasePluginForForm($controllerExtensionName, $pluginName, $form);
         $this->addPageTsConfig($controllerExtensionName, $form, $contentType);
+        $this->addIcon($form, $contentType);
+    }
+
+    /**
+     * @param Form $form
+     * @param string $contentType
+     * @return void
+     */
+    protected function addIcon(Form $form, $contentType)
+    {
+        $icon = MiscellaneousUtility::getIconForTemplate($form);
+        if (strpos($icon, 'EXT:') === 0 || $icon{0} !== '/') {
+            $icon = GeneralUtility::getFileAbsFileName($icon);
+        }
+        $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType] = MiscellaneousUtility::createIcon(
+            $icon,
+            Icon::SIZE_DEFAULT,
+            Icon::SIZE_DEFAULT
+        );
     }
 
     /**
@@ -263,13 +283,10 @@ class ContentTypeBuilder
      */
     protected function registerExtbasePluginForForm($providerExtensionName, $pluginName, Form $form)
     {
-        $icon = MiscellaneousUtility::getIconForTemplate($form);
-
         ExtensionUtility::registerPlugin(
             $providerExtensionName,
             $pluginName,
-            $form->getLabel(),
-            $icon
+            $form->getLabel()
         );
     }
 
