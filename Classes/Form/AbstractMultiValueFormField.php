@@ -75,6 +75,12 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     protected $items = null;
 
     /**
+     * @var string
+     * @see https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#itemsprocfunc
+     */
+    protected $itemsProcFunc;
+
+    /**
      * If not-FALSE, adds one empty option/value pair to the generated selector
      * box and tries to use this property's value (cast to string) as label.
      *
@@ -109,6 +115,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         $configuration['selectedListStyle'] = $this->getSelectedListStyle();
         $configuration['renderType'] = $this->getRenderType();
         $configuration['items'] = $this->getItems();
+        $configuration['itemsProcFunc'] = $this->getItemsProcFunc();
         return $configuration;
     }
 
@@ -326,6 +333,24 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
             array_unshift($items, [$emptyOption, '']);
         }
         return $items;
+    }
+
+    /**
+     * @param string $itemsProcFunc
+     * @return MultiValueFieldInterface
+     */
+    public function setItemsProcFunc($itemsProcFunc)
+    {
+        $this->itemsProcFunc = $itemsProcFunc;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getItemsProcFunc()
+    {
+        return $this->itemsProcFunc;
     }
 
     /**

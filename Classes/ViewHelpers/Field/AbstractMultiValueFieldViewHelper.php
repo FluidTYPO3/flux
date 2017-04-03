@@ -67,6 +67,11 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
             'convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined ' .
             'by normal Flux field name conventions'
         );
+        $this->registerArgument(
+            'itemsProcFunc',
+            'string',
+            'Function for serving items. See TCA "select" field "itemsProcFunc" attribute'
+        );
     }
 
     /**
@@ -80,6 +85,7 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
         /** @var MultiValueFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setItems($arguments['items']);
+        $component->setItemsProcFunc($arguments['itemsProcFunc']);
         $component->setEmptyOption($arguments['emptyOption']);
         $component->setTranslateCsvItems((boolean) $arguments['translateCsvItems']);
         $component->setMinItems($arguments['minItems']);

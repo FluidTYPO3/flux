@@ -48,19 +48,70 @@ class FormDataTransformer
     public function transformAccordingToConfiguration($values, Form $form, $prefix = '')
     {
         foreach ((array) $values as $index => $value) {
-            if (true === is_array($value)) {
+            if (is_array($value)) {
                 $value = $this->transformAccordingToConfiguration($value, $form, $prefix . $index . '.');
             } else {
                 /** @var FieldInterface|ContainerInterface $object */
-                $object = $form->get($prefix . $index, true);
-                if (false !== $object) {
+                $object = $this->extractTransformableObjectByPath($form, $prefix . $index);
+                if (is_object($object)) {
                     $transformType = $object->getTransform();
-                    $value = $this->transformValueToType($value, $transformType);
+
+                    if ($transformType) {
+                        $value = $this->transformValueToType($value, $transformType);
+                    }
                 }
             }
             $values[$index] = $value;
         }
         return $values;
+    }
+
+    /**
+     * @param mixed $value
+     * @param Form $form
+     * @param string $path
+     * @return mixed
+     */
+    protected function transformValueAtPath($value, Form $form, $path)
+    {
+        /** @var FieldInterface|ContainerInterface $object */
+        $object = $this->extractTransformableObjectByPath($form, $path);
+        if ($object instanceof Form\FormInterface) {
+            $transformType = $object->getTransform();
+            if ($transformType) {
+                return $this->transformValueToType($value, $transformType);
+            }
+        }
+        return $value;
+    }
+
+    /**
+     * @param ContainerInterface $subject
+     * @param string $path
+     * @return mixed
+     */
+    protected function extractTransformableObjectByPath(ContainerInterface $subject, $path)
+    {
+        if (is_scalar($subject) || is_null($subject)) {
+            return $subject;
+        }
+        $pathAsArray = explode('.', $path);
+        $subPath = array_shift($pathAsArray);
+        $child = null;
+        while (count($pathAsArray)) {
+            $child = $subject->get($subPath, $subject instanceof Form);
+            if ($child) {
+                if ($child instanceof Form\Container\Section) {
+                    array_shift($pathAsArray);
+                }
+                if ($child instanceof ContainerInterface && count($pathAsArray)) {
+                    return $this->extractTransformableObjectByPath($child, implode('.', $pathAsArray));
+                }
+
+            }
+            $subPath .= '.' . array_shift($pathAsArray);
+        }
+        return $subject->get($path, true);
     }
 
     /**

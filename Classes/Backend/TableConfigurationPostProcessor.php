@@ -16,10 +16,12 @@ use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3Fluid\Fluid\Exception;
 
 /**
  * Table Configuration (TCA) post processor
@@ -109,21 +111,36 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
             list ($providerExtensionName, $templateFilename) = $queuedRegistration;
-            $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
-                $providerExtensionName,
-                $templateFilename
-            );
+            try {
+                $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
+                    $providerExtensionName,
+                    $templateFilename
+                );
 
-            Core::registerConfigurationProvider($provider);
+                Core::registerConfigurationProvider($provider);
 
-            $controllerExtensionName = $providerExtensionName;
-            if (!static::controllerExistsInExtension($providerExtensionName, 'Content')) {
-                $controllerExtensionName = 'FluidTYPO3.Flux';
+                $controllerExtensionName = $providerExtensionName;
+                if (!static::controllerExistsInExtension($providerExtensionName, 'Content')) {
+                    $controllerExtensionName = 'FluidTYPO3.Flux';
+                }
+
+                $contentType = static::determineContentType($providerExtensionName, $templateFilename);
+                $pluginName = ucfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
+                $contentTypeBuilder->registerContentType($controllerExtensionName, $contentType, $provider, $pluginName);
+
+            } catch (Exception $error) {
+                if (!Bootstrap::getInstance()->getApplicationContext()->isProduction()) {
+                    throw $error;
+                }
+                GeneralUtility::sysLog(
+                    sprintf(
+                        'Template %s count not be used as content type: %s',
+                        $templateFilename,
+                        $error->getMessage()
+                    ),
+                    'flux'
+                );
             }
-
-            $contentType = static::determineContentType($providerExtensionName, $templateFilename);
-            $pluginName = ucfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
-            $contentTypeBuilder->registerContentType($controllerExtensionName, $contentType, $provider, $pluginName);
         }
     }
 

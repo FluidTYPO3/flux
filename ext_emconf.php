@@ -4,7 +4,7 @@ $EM_CONF[$_EXTKEY] = array (
   'description' => 'Backend form and frontend content rendering assistance API with focus on productivity.',
   'category' => 'misc',
   'shy' => 0,
-  'version' => '8.0.2',
+  'version' => '8.1.0',
   'dependencies' => 'cms',
   'conflicts' => '',
   'priority' => 'top',
@@ -44,6 +44,13 @@ $EM_CONF[$_EXTKEY] = array (
       'psr-4' =>
       array(
           'FluidTYPO3\\Flux\\' => 'Classes/'
+      ),
+  ),
+  'autoload-dev' =>
+  array(
+      'psr-4' =>
+      array(
+          'FluidTYPO3\\Flux\\Tests\\' => 'Tests/'
       ),
   ),
 );
