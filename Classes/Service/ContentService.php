@@ -267,7 +267,7 @@ class ContentService implements SingletonInterface
                 $translatedParents = (array) $this->workspacesAwareRecordService->get(
                     'tt_content',
                     'uid,sys_language_uid',
-                    BackendUtility::deleteClause('tt_content')
+                    '1=1 ' . BackendUtility::deleteClause('tt_content')
                 );
                 foreach ($translatedParents as $translatedParent) {
                     if ($translatedParent['sys_language_uid'] == $newLanguageUid) {
