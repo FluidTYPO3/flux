@@ -134,10 +134,6 @@ class Preview implements PageLayoutViewDrawItemHookInterface
                 $doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css'
             );
 
-            // /typo3/sysext/backend/Resources/Public/JavaScript/LayoutModule/DragDrop.js
-            // is not the perfect solution for Flux Grids!
-            // an adapted version of DragDrop.js is used - Resources/Public/js/VersionSevenPointTwo/DragDrop.js
-            // Also fluxCollapse.js is updated.
             $fullJsPath = PathUtility::getRelativePath(
                 PATH_typo3,
                 GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/js/')
