@@ -1,8 +1,8 @@
 <?php
 // Register composer autoloader
 $autoloaderFolders = [
-    __DIR__ . '/../vendor/',
-    trim(shell_exec('pwd')) . '/vendor/'
+    trim(shell_exec('pwd')) . '/vendor/',
+    __DIR__ . '/../vendor/'
 ];
 foreach ($autoloaderFolders as $autoloaderFolder) {
     if (file_exists($autoloaderFolder . 'autoload.php')) {
