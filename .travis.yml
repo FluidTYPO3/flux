@@ -12,9 +12,9 @@ matrix:
     - env: COVERAGE="NO" TYPO3_VERSION="dev-master"
   include:
     - php: "7.0"
-      env: COVERAGE="YES" TYPO3_VERSION="8.5.*"
+      env: COVERAGE="YES" TYPO3_VERSION="8.7.*"
     - php: "7.1"
-      env: COVERAGE="NO" TYPO3_VERSION="8.5.*"
+      env: COVERAGE="NO" TYPO3_VERSION="8.7.*"
     - php: "7.0"
       env: COVERAGE="NO" TYPO3_VERSION="dev-master"
     - php: "7.1"
