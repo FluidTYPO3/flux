@@ -67,6 +67,7 @@ class Core
     /**
      * Contains all programatically added TypoScript configuration files for auto-inclusion
      * @var array
+     * @deprecated To be removed in next major release
      */
     private static $staticTypoScript = [];
 
@@ -98,6 +99,7 @@ class Core
      */
     public static function addStaticTypoScript($locationOrLocations)
     {
+        GeneralUtility::logDeprecatedFunction();
         if (true === is_array($locationOrLocations) || true === $locationOrLocations instanceof \Traversable) {
             foreach ($locationOrLocations as $location) {
                 self::addStaticTypoScript($location);
@@ -133,6 +135,7 @@ class Core
      */
     public static function registerAutoFormForModelObjectClassName($className)
     {
+        GeneralUtility::logDeprecatedFunction();
         self::registerFormForModelObjectClassName($className);
     }
 
@@ -145,6 +148,7 @@ class Core
      */
     public static function registerFormForModelObjectClassName($className, Form $form = null)
     {
+        GeneralUtility::logDeprecatedFunction();
         if (null !== $form && true === isset($GLOBALS['_EXTKEY']) && null === $form->getExtensionName()) {
             $form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
         }
@@ -157,6 +161,7 @@ class Core
      */
     public static function unregisterFormForModelObjectClassName($className)
     {
+        GeneralUtility::logDeprecatedFunction();
         if (true === isset(self::$forms['models'][$className])) {
             unset(self::$forms['models'][$className]);
         }
@@ -171,6 +176,7 @@ class Core
      */
     public static function registerFluxDomainFormPackage($packageName)
     {
+        GeneralUtility::logDeprecatedFunction();
         self::$forms['packages'][$packageName] = true;
     }
 
@@ -180,6 +186,7 @@ class Core
      */
     public static function unregisterFluxDomainFormPackage($packageName)
     {
+        GeneralUtility::logDeprecatedFunction();
         if (true === isset(self::$forms['packages'][$packageName])) {
             unset(self::$forms['packages'][$packageName]);
         }
@@ -477,6 +484,7 @@ class Core
      */
     public static function getRegisteredFormsForModelObjectClasses()
     {
+        GeneralUtility::logDeprecatedFunction();
         return self::$forms['models'];
     }
 
@@ -485,6 +493,7 @@ class Core
      */
     public static function getRegisteredPackagesForAutoForms()
     {
+        GeneralUtility::logDeprecatedFunction();
         return self::$forms['packages'];
     }
 
@@ -494,6 +503,7 @@ class Core
      */
     public static function getRegisteredFormForModelObjectClass($class)
     {
+        GeneralUtility::logDeprecatedFunction();
         if (true === isset(self::$forms['models'][$class])) {
             return self::$forms['models'][$class];
         }

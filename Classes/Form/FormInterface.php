@@ -30,6 +30,17 @@ interface FormInterface
     public function getName();
 
     /**
+     * @param string $transform
+     * @return FormInterface
+     */
+    public function setTransform($transform);
+
+    /**
+     * @return string
+     */
+    public function getTransform();
+
+    /**
      * @return boolean
      */
     public function getEnabled();

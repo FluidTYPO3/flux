@@ -8,9 +8,7 @@ namespace FluidTYPO3\Flux\Configuration;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager as CoreConfigurationManager;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Flux ConfigurationManager implementation
@@ -18,7 +16,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  * More context-sensitive ConfigurationManager with TS resolve
  * methods optimised for use in the backend.
  */
-class ConfigurationManager extends CoreConfigurationManager implements ConfigurationManagerInterface, SingletonInterface
+class ConfigurationManager extends CoreConfigurationManager
 {
 
     /**

@@ -23,6 +23,8 @@ use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\ExposedTemplateView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -47,6 +49,7 @@ class FluxService implements SingletonInterface
 
     /**
      * @var array
+     * @deprecated To be removed in next major release
      */
     protected static $cache = [];
 
@@ -160,6 +163,7 @@ class FluxService implements SingletonInterface
      */
     public function getPreparedExposedTemplateView(ViewContext $viewContext)
     {
+        GeneralUtility::logDeprecatedFunction();
         $viewContextHash = $viewContext->getHash();
         static $cache = [];
         if (isset($cache[$viewContextHash])) {
@@ -209,6 +213,7 @@ class FluxService implements SingletonInterface
      */
     public function getFormFromTemplateFile(ViewContext $viewContext, $formName = 'form')
     {
+        GeneralUtility::logDeprecatedFunction();
         static $cache = [];
         $templatePathAndFilename = $viewContext->getTemplatePathAndFilename();
         if (false === file_exists($templatePathAndFilename)) {
@@ -256,6 +261,7 @@ class FluxService implements SingletonInterface
      */
     public function getGridFromTemplateFile(ViewContext $viewContext, $gridName = 'grid')
     {
+        GeneralUtility::logDeprecatedFunction();
         $hash = $viewContext->getHash() . $gridName;
         static $cache = [];
         if (isset($cache[$hash])) {
@@ -287,6 +293,7 @@ class FluxService implements SingletonInterface
      */
     protected function getDefaultViewConfigurationForExtensionKey($extensionKey)
     {
+        GeneralUtility::logDeprecatedFunction();
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
         return [
             TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [0 => 'EXT:' . $extensionKey . '/Resources/Private/Templates/'],
@@ -305,6 +312,7 @@ class FluxService implements SingletonInterface
      */
     public function getViewConfigurationForExtensionName($extensionName)
     {
+        GeneralUtility::logDeprecatedFunction();
         static $cache = [];
         if (isset($cache[$extensionName])) {
             return $cache[$extensionName];
@@ -332,6 +340,7 @@ class FluxService implements SingletonInterface
      */
     public function getBackendViewConfigurationForExtensionName($extensionName)
     {
+        GeneralUtility::logDeprecatedFunction();
         $signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
         return $this->getTypoScriptByPath('module.tx_' . $signature . '.view');
     }
@@ -471,7 +480,7 @@ class FluxService implements SingletonInterface
         }
         $settings = $this->objectManager->get(FlexFormService::class)
             ->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
-        if (null !== $form) {
+        if (null !== $form && $form->getOption(Form::OPTION_TRANSFORM)) {
             /** @var FormDataTransformer $transformer */
             $transformer = $this->objectManager->get(FormDataTransformer::class);
             $settings = $transformer->transformAccordingToConfiguration($settings, $form);
@@ -487,6 +496,7 @@ class FluxService implements SingletonInterface
      */
     public function debug($instance, $plainText = true, $depth = 2)
     {
+        GeneralUtility::logDeprecatedFunction();
         $text = DebuggerUtility::var_dump($instance, null, $depth, $plainText, false, true);
         GeneralUtility::devLog(
             'Flux variable dump: ' . gettype($instance),
@@ -520,7 +530,60 @@ class FluxService implements SingletonInterface
      */
     public function flushCache()
     {
+        GeneralUtility::logDeprecatedFunction();
         self::$cache = [];
+    }
+
+    /**
+     * @param mixed $value
+     * @param boolean $persistent
+     * @param array ...$identifyingValues
+     * @return void
+     */
+    public function setInCaches($value, $persistent, ...$identifyingValues)
+    {
+        $cacheKey = $this->createCacheIdFromValues($identifyingValues);
+        $this->getRuntimeCache()->set($cacheKey, $value);
+        if ($persistent) {
+            $this->getPersistentCache()->set($cacheKey, $value);
+        }
+    }
+
+    /**
+     * @param array ...$identifyingValues
+     * @return mixed|false
+     */
+    public function getFromCaches(...$identifyingValues)
+    {
+        $cacheKey = $this->createCacheIdFromValues($identifyingValues);
+        return $this->getRuntimeCache()->get($cacheKey) ?: $this->getPersistentCache()->get($cacheKey);
+    }
+
+    /**
+     * @param array $identifyingValues
+     * @return string
+     */
+    protected function createCacheIdFromValues(array $identifyingValues)
+    {
+        return 'flux-' . md5(serialize($identifyingValues));
+    }
+
+    /**
+     * @return VariableFrontend
+     */
+    protected function getRuntimeCache()
+    {
+        static $cache;
+        return $cache ?? ($cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime'));
+    }
+
+    /**
+     * @return VariableFrontend
+     */
+    protected function getPersistentCache()
+    {
+        static $cache;
+        return $cache ?? ($cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('flux'));
     }
 
     /**
@@ -531,6 +594,7 @@ class FluxService implements SingletonInterface
      */
     protected function logMessage($message, $severity)
     {
+        GeneralUtility::logDeprecatedFunction();
         GeneralUtility::sysLog($message, 'flux', $severity);
     }
 }

@@ -19,8 +19,6 @@ use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\PreviewView;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use FluidTYPO3\Flux\View\ViewContext;
-use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
@@ -131,6 +129,7 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * @var ViewContext
+     * @deprecated To be removed in next major release
      */
     protected $viewContext;
 
@@ -280,6 +279,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function getViewContext(array $row, RequestInterface $request = null)
     {
+        GeneralUtility::logDeprecatedFunction();
         if (false === $this->viewContext instanceof ViewContext) {
             // Note: we do *not* store a local property because we do *not* want this function
             // to re-use the ViewContext unless explicitly set from the outside or initialised
@@ -319,17 +319,16 @@ class AbstractProvider implements ProviderInterface
         }
         $formName = 'form';
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $formName);
-        $runtimeCache = $this->getRuntimeCache();
-        $persistentCache = $this->getPersistentCache();
-        $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $persistentCache->get($cacheKey);
-        if ($fromCache) {
-            return $fromCache;
-        }
 
+        $form = null;
         $formClassName = $this->resolveFormClassName($row);
         if ($formClassName) {
-            $form = call_user_func_array([$formClassName, 'create'], [$row]);
+            return call_user_func_array([$formClassName, 'create'], [$row]);
         } else {
+            $fromCache = $this->configurationService->getFromCaches($cacheKey);
+            if ($fromCache) {
+                return $fromCache;
+            }
             $viewContext = $this->getViewContext($row);
             if (null !== $viewContext->getTemplatePathAndFilename()) {
                 $view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
@@ -341,10 +340,7 @@ class AbstractProvider implements ProviderInterface
             $form->setOption(Form::OPTION_RECORD, $row);
             $form->setOption(Form::OPTION_RECORD_TABLE, $this->getTableName($row));
             $form->setOption(Form::OPTION_RECORD_FIELD, $this->getFieldName($row));
-            $runtimeCache->set($cacheKey, $form);
-            if ($form->getOption(Form::OPTION_STATIC)) {
-                $persistentCache->set($cacheKey, $form);
-            }
+            $this->configurationService->setInCaches($form, $form->getOption(Form::OPTION_STATIC), $cacheKey);
         }
 
         return $form;
@@ -361,20 +357,15 @@ class AbstractProvider implements ProviderInterface
         }
         $gridName = 'grid';
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $gridName);
-        $runtimeCache = $this->getRuntimeCache();
-        $persistentCache = $this->getPersistentCache();
-        $fromCache = $runtimeCache->get($cacheKey) or $fromCache = $persistentCache->get($cacheKey);
+        $fromCache = $this->configurationService->getFromCaches($cacheKey);
         if ($fromCache) {
             return $fromCache;
         }
 
         $viewContext = $this->getViewContext($row);
-        $grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
-        $runtimeCache->set($cacheKey, $grid);
         $form = $this->getForm($row);
-        if ($form && $form->getOption(Form::OPTION_STATIC)) {
-            $persistentCache->set($cacheKey, $grid);
-        }
+        $grid = $this->configurationService->getGridFromTemplateFile($viewContext, $gridName);
+        $this->configurationService->setInCaches($grid, $form && $form->getOption(Form::OPTION_STATIC), $cacheKey);
         return $grid;
     }
 
@@ -563,6 +554,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function getTemplatePaths(array $row)
     {
+        GeneralUtility::logDeprecatedFunction();
         $paths = $this->templatePaths;
         if (false === is_array($paths)) {
             $extensionKey = $this->getExtensionKey($row);
@@ -633,7 +625,7 @@ class AbstractProvider implements ProviderInterface
             foreach ($row[$fieldName]['data']['options']['lDEF'] as $key => $value) {
                 if (0 === strpos($key, $tableName)) {
                     $realKey = array_pop(explode('.', $key));
-                    if (isset($row[$realKey])) {
+                    if (isset($GLOBALS['TCA'][$tableName]['columns'][$realKey])) {
                         $row[$realKey] = $value['vDEF'];
                     }
                 }
@@ -800,6 +792,7 @@ class AbstractProvider implements ProviderInterface
      */
     protected function getPreviewView()
     {
+        GeneralUtility::logDeprecatedFunction();
         $preview = 'FluidTYPO3\\Flux\\View\\PreviewView';
         return GeneralUtility::makeInstance(ObjectManager::class)->get($preview);
     }
@@ -832,11 +825,18 @@ class AbstractProvider implements ProviderInterface
      */
     protected function getCacheKeyForStoredVariable(array $row, $variable)
     {
-        $table = $this->getTableName($row);
-        $field = $this->getFieldName($row);
-        $contentType = $this->getContentObjectType();
-        $uid = $row['uid'] ?? 0;
-        return 'flux-storedvariable-' . $table . '-' . $field . '-' . $uid . '-' . $variable . '-' . $contentType;
+        return implode(
+            '-',
+            [
+                'flux',
+                'storedvariable',
+                $this->getTableName($row),
+                $this->getFieldName($row),
+                $row['uid'] ?? 0,
+                $this->getControllerActionFromRecord($row),
+                $variable
+            ]
+        );
     }
 
     /**
@@ -1033,22 +1033,6 @@ class AbstractProvider implements ProviderInterface
         $uid = intval($uid);
         $tableName = $this->tableName;
         return $this->recordService->getSingle($tableName, '*', $uid);
-    }
-
-    /**
-     * @return VariableFrontend
-     */
-    protected function getRuntimeCache()
-    {
-        return GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
-    }
-
-    /**
-     * @return VariableFrontend
-     */
-    protected function getPersistentCache()
-    {
-        return GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
     }
 
 }

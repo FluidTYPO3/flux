@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
+
 /**
  * AbstractFormContainer
  */
@@ -18,11 +20,6 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      * @var FormInterface[]
      */
     protected $children;
-
-    /**
-     * @var string
-     */
-    protected $transform;
 
     /**
      * @var boolean
@@ -65,6 +62,12 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
         if (false === $this->children->contains($child)) {
             $this->children->attach($child);
             $child->setParent($this);
+            if ($child->getTransform()) {
+                $root = $this->getRoot();
+                if ($root instanceof Form) {
+                    $root->setOption(Form::OPTION_TRANSFORM, true);
+                }
+            }
         }
         return $this;
     }
@@ -119,14 +122,15 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      */
     public function get($childName, $recursive = false, $requiredClass = null)
     {
-        foreach ($this->children as $existingChild) {
-            if ($childName === $existingChild->getName()
+        foreach ($this->children as $index => $existingChild) {
+            if (
+                ($childName === $existingChild->getName() || $childName === $index)
                 && (!$requiredClass || $existingChild instanceof $requiredClass)
             ) {
                 return $existingChild;
             }
             if (true === $recursive && true === $existingChild instanceof ContainerInterface) {
-                $candidate = $existingChild->get($childName, $recursive);
+                $candidate = $existingChild->get($childName, $recursive, $requiredClass);
                 if (false !== $candidate) {
                     return $candidate;
                 }
@@ -151,24 +155,6 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     public function hasChildren()
     {
         return 0 < $this->children->count();
-    }
-
-    /**
-     * @param string $transform
-     * @return ContainerInterface
-     */
-    public function setTransform($transform)
-    {
-        $this->transform = $transform;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTransform()
-    {
-        return $this->transform;
     }
 
     /**

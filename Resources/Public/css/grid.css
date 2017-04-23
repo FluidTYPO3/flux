@@ -31,3 +31,27 @@
 .t3-is-dragged .t3-page-ce-body {
 	max-height: none;
 }
+
+/* override default hover with default values: */
+.t3-page-ce:hover .t3-page-ce-header {
+  background: #eaeaea;
+}
+.t3-page-ce:hover .t3-page-ce-header,
+.t3-page-ce:hover .t3-page-ce-body {
+  border-color: #ccc;
+}
+.t3-page-ce:hover .t3-page-ce-header-icons-right {
+    opacity: 0.3;
+}
+
+/* only target current ce with hover-styles: */
+.t3-page-ce:hover > .t3-page-ce-dragitem > .t3-page-ce-header {
+  background: #d0d0d0;
+}
+.t3-page-ce:hover > .t3-page-ce-dragitem > .t3-page-ce-header,
+.t3-page-ce:hover > .t3-page-ce-dragitem > .t3-page-ce-body {
+  border-color: #aaa;
+}
+.t3-page-ce:hover > .t3-page-ce-dragitem > .t3-page-ce-header > .t3-page-ce-header-icons-right {
+    opacity: 1;
+}

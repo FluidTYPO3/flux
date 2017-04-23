@@ -12,10 +12,8 @@ use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
-use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * ContentServiceTest
@@ -87,111 +85,6 @@ class ContentServiceTest extends AbstractTestCase
         $this->assertEquals($relativeRecord['tx_flux_parent'], $row['tx_flux_parent']);
         $this->assertEquals($relativeRecord['colPos'], $row['colPos']);
         $this->assertEquals(-1, $relativeTo);
-    }
-
-    public function pasteAfterAsCopyRelativeToRecord()
-    {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDataMap');
-        $mock = $this->createMock($methods);
-        $command = 'copy';
-        $row = array(
-            'uid' => 1
-        );
-        $copiedRow = array(
-            'uid' => 3,
-            'sorting' => 0,
-            'pid' => 1,
-            'tx_flux_column' => '',
-            'tx_flux_parent' => ''
-        );
-        $parameters = array(
-            1,
-            -2
-        );
-        $tceMain = new DataHandler();
-        $tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
-        $mock->expects($this->at(0))->method('loadRecordFromDatabase')->with($copiedRow['uid'])->will($this->returnValue($copiedRow));
-        $result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
-        $this->assertNull($result);
-    }
-
-    /**
-     * @test
-     */
-    public function pasteAfterAsReferenceRelativeToRecord()
-    {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDataMap');
-        $mock = $this->createMock($methods);
-
-        $command = 'copy';
-        $row = array(
-            'uid' => 1
-        );
-        $copiedRow = array(
-            'uid' => 3,
-            'sorting' => 0,
-            'pid' => 1,
-            'tx_flux_column' => '',
-            'tx_flux_parent' => ''
-        );
-        $parameters = array(
-            1,
-            '1-reference-2-2-0'
-        );
-        $cmdMap = array(
-            'tt_content' => array(
-                $copiedRow['uid'] => array(
-                    $row['uid'] => 'copy'),
-            ),
-        );
-        $tceMain = new DataHandler();
-        $tceMain->copyMappingArray['tt_content'][1] = $copiedRow['uid'];
-        $tceMain->cmdmap = $cmdMap;
-        $mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($copiedRow));
-        $result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
-        $this->assertNull($result);
-    }
-
-    /**
-     * @test
-     */
-    public function pasteAfterAsMoveRelativeToRecord()
-    {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDataMap');
-        $mock = $this->createMock($methods);
-        $command = 'move';
-        $row = array(
-            'uid' => 1
-        );
-        $parameters = array(
-            1,
-            1,
-        );
-        $tceMain = new DataHandler();
-        $mock->expects($this->never())->method('loadRecordFromDatabase');
-        $result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
-        $this->assertNull($result);
-    }
-
-    /**
-     * @test
-     */
-    public function pasteAfterAsMoveIntoContentArea()
-    {
-        $methods = array('loadRecordFromDatabase', 'updateRecordInDataMap');
-        $mock = $this->createMock($methods);
-        $command = 'move';
-        $row = array(
-            'uid' => 1
-        );
-        $parameters = array(
-            1,
-            '1-move-2-2-area-1',
-        );
-        $tceMain = new DataHandler();
-        $mock->expects($this->any())->method('loadRecordFromDatabase')->will($this->returnValue($row));
-        $result = $mock->pasteAfter($command, $row, $parameters, $tceMain);
-        $this->assertNull($result);
     }
 
     /**

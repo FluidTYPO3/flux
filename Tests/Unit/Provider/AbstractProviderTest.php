@@ -492,6 +492,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
             $fieldName = 'pi_flexform';
             $provider->setFieldName($fieldName);
         }
+        $GLOBALS['TCA'][$tableName]['columns']['header'] = true;
         $record['header'] = 'old';
         $record[$fieldName] = array(
             'data' => array(

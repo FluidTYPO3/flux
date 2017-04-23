@@ -70,6 +70,12 @@ class ObjectViewHelper extends AbstractFormViewHelper
             false,
             false
         );
+        $this->registerArgument(
+            'transform',
+            'string',
+            'Set this to transform your value to this type - integer, array (for csv values), float, DateTime, ' .
+            'Vendor\\MyExt\\Domain\\Model\\Object or ObjectStorage with type hint. '
+        );
     }
 
     /**
@@ -88,6 +94,7 @@ class ObjectViewHelper extends AbstractFormViewHelper
         $object->setVariables($arguments['variables']);
         $object->setInherit($arguments['inherit']);
         $object->setInheritEmpty($arguments['inheritEmpty']);
+        $object->setTransform($arguments['transform']);
         return $object;
     }
 }

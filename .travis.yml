@@ -8,11 +8,13 @@ php:
   - "7.0"
 
 matrix:
+  allow_failures:
+    - env: COVERAGE="NO" TYPO3_VERSION="dev-master"
   include:
     - php: "7.0"
-      env: COVERAGE="YES" TYPO3_VERSION="8.5.*"
+      env: COVERAGE="YES" TYPO3_VERSION="8.7.*"
     - php: "7.1"
-      env: COVERAGE="NO" TYPO3_VERSION="8.5.*"
+      env: COVERAGE="NO" TYPO3_VERSION="8.7.*"
     - php: "7.0"
       env: COVERAGE="NO" TYPO3_VERSION="dev-master"
     - php: "7.1"
@@ -27,7 +29,7 @@ install:
 
 before_script: mkdir -p build/logs
 
-script: if [[ "$COVERAGE" != "NO" ]]; then ./vendor/bin/phpunit --coverage-clover=build/logs/clover.xml; else ./vendor/bin/phpunit; fi
+script: if [[ "$COVERAGE" != "NO" ]]; then TYPO3_PATH_ROOT=`pwd` ./vendor/bin/phpunit --coverage-clover=build/logs/clover.xml; else TYPO3_PATH_ROOT=`pwd` ./vendor/bin/phpunit; fi
 
 after_script:
   - ln -s Classes src

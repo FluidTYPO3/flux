@@ -89,6 +89,7 @@ class Resolver
      */
     public function resolveDomainFormClassInstancesFromPackages(array $packageNames = null)
     {
+        GeneralUtility::logDeprecatedFunction();
         $packageNames = null === $packageNames ? Core::getRegisteredPackagesForAutoForms() : $packageNames;
         $models = (array) Core::getRegisteredFormsForModelObjectClasses();
         foreach ($packageNames as $packageName) {
