@@ -8,6 +8,8 @@ php:
   - "7.0"
 
 matrix:
+  allow_failures:
+    - env: COVERAGE="NO" TYPO3_VERSION="dev-master"
   include:
     - php: "7.0"
       env: COVERAGE="YES" TYPO3_VERSION="8.5.*"

@@ -199,30 +199,6 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     }
 
     /**
-     * @param array $arguments
-     * @param array $variables
-     * @param NodeInterface $childNode
-     * @param string $extensionName
-     * @param string $pluginName
-     * @return mixed
-     */
-    protected function executeViewHelperStatic($arguments = [], $variables = [], $childNode = null, $extensionName = null, $pluginName = null)
-    {
-        $instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
-
-        if ($childNode !== null) {
-            $childClosure = function () use ($childNode) {
-                return $childNode->evaluate($this->renderingContext);
-            };
-        } else {
-            $childClosure = function () {
-            };
-        }
-        $viewHelperClassName = $this->getViewHelperClassName();
-        return $viewHelperClassName::renderStatic($arguments, $childClosure, $this->renderingContext);
-    }
-
-    /**
      * @param mixed $nodeValue
      * @param array $arguments
      * @param array $variables
@@ -258,10 +234,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
      */
     protected function createViewHelperNode($instance, array $arguments)
     {
-        if (class_exists(\TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode::class)) {
-            $className = get_class($instance);
-            $cutoff = strpos($className, '\\ViewHelpers\\');
-            $viewHelperName = substr($className, $cutoff + 13, -10);
+        if (version_compare(TYPO3_version, 8.0, '>=')) {
             $resolver = $this->getMockBuilder(\TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolver::class)
                 ->setMethods(['getUninitializedViewHelper'])
                 ->getMock();
@@ -284,7 +257,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
      * @return \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode|\TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode
      */
     protected function createObjectAccessorNode($accessor) {
-        if (class_exists(\TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode::class)) {
+        if (version_compare(TYPO3_version, 8.0, '>=')) {
             return new \TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode($accessor);
         }
         return new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode($accessor);
@@ -296,7 +269,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
      */
     protected function expectViewHelperException($message = null, $code = null)
     {
-        if (class_exists(\TYPO3Fluid\Fluid\Core\ViewHelper\Exception::class)) {
+        if (version_compare(TYPO3_version, 8.0, '>=')) {
             $this->setExpectedException(\TYPO3Fluid\Fluid\Core\ViewHelper\Exception::class, $message, $code);
         } else {
             $this->setExpectedException(\TYPO3\CMS\Fluid\Core\ViewHelper\Exception::class, $message, $code);

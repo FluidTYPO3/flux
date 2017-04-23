@@ -98,7 +98,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         $this->expectViewHelperException(
             'Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.'
         );
-        $output = $this->executeViewHelper($arguments);
+        $this->executeViewHelper($arguments);
     }
 
     /**
@@ -114,7 +114,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         $this->expectViewHelperException(
             'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
         );
-        $output = $this->executeViewHelper($arguments);
+        $this->executeViewHelper($arguments);
     }
 
     /**
