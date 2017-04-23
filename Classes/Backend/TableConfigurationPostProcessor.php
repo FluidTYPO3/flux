@@ -149,6 +149,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function generateTableConfigurationForProviderForms()
     {
+        GeneralUtility::logDeprecatedFunction();
         $resolver = new Resolver();
         $forms = Core::getRegisteredFormsForTables();
         $packages = $this->getInstalledFluxPackages();
@@ -173,6 +174,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function getInstalledFluxPackages()
     {
+        GeneralUtility::logDeprecatedFunction();
         return array_keys(Core::getRegisteredPackagesForAutoForms());
     }
 
@@ -182,6 +184,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function processFormForTable($table, Form $form)
     {
+        GeneralUtility::logDeprecatedFunction();
         $extensionName = $form->getExtensionName();
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
         $tableConfiguration = self::$tableTemplate;
@@ -242,6 +245,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     public function generateFormInstanceFromClassName($class, $table)
     {
+        GeneralUtility::logDeprecatedFunction();
         $labelFields = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Label', false);
         $iconAnnotation = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Icon');
         $extensionName = $this->getExtensionNameFromModelClassName($class);
@@ -314,6 +318,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function getExtensionNameFromModelClassName($class)
     {
+        GeneralUtility::logDeprecatedFunction();
         if (false !== strpos($class, '_')) {
             $parts = explode('_Domain_Model_', $class);
             $extensionName = substr($parts[0], 3);
@@ -335,6 +340,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function buildShowItemList(Form $form)
     {
+        GeneralUtility::logDeprecatedFunction();
         $parts = [];
         foreach ($form->getSheets(false) as $sheet) {
             array_push($parts, '--div--;' . $sheet->getLabel());

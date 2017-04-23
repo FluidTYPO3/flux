@@ -371,6 +371,7 @@ abstract class AbstractFluxController extends ActionController
      */
     protected function getSetup()
     {
+        GeneralUtility::logDeprecatedFunction();
         return $this->setup;
     }
 

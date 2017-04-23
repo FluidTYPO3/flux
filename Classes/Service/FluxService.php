@@ -49,6 +49,7 @@ class FluxService implements SingletonInterface
 
     /**
      * @var array
+     * @deprecated To be removed in next major release
      */
     protected static $cache = [];
 
@@ -162,6 +163,7 @@ class FluxService implements SingletonInterface
      */
     public function getPreparedExposedTemplateView(ViewContext $viewContext)
     {
+        GeneralUtility::logDeprecatedFunction();
         $viewContextHash = $viewContext->getHash();
         static $cache = [];
         if (isset($cache[$viewContextHash])) {
@@ -211,6 +213,7 @@ class FluxService implements SingletonInterface
      */
     public function getFormFromTemplateFile(ViewContext $viewContext, $formName = 'form')
     {
+        GeneralUtility::logDeprecatedFunction();
         static $cache = [];
         $templatePathAndFilename = $viewContext->getTemplatePathAndFilename();
         if (false === file_exists($templatePathAndFilename)) {
@@ -258,6 +261,7 @@ class FluxService implements SingletonInterface
      */
     public function getGridFromTemplateFile(ViewContext $viewContext, $gridName = 'grid')
     {
+        GeneralUtility::logDeprecatedFunction();
         $hash = $viewContext->getHash() . $gridName;
         static $cache = [];
         if (isset($cache[$hash])) {
@@ -289,6 +293,7 @@ class FluxService implements SingletonInterface
      */
     protected function getDefaultViewConfigurationForExtensionKey($extensionKey)
     {
+        GeneralUtility::logDeprecatedFunction();
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
         return [
             TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [0 => 'EXT:' . $extensionKey . '/Resources/Private/Templates/'],
@@ -307,6 +312,7 @@ class FluxService implements SingletonInterface
      */
     public function getViewConfigurationForExtensionName($extensionName)
     {
+        GeneralUtility::logDeprecatedFunction();
         static $cache = [];
         if (isset($cache[$extensionName])) {
             return $cache[$extensionName];
@@ -334,6 +340,7 @@ class FluxService implements SingletonInterface
      */
     public function getBackendViewConfigurationForExtensionName($extensionName)
     {
+        GeneralUtility::logDeprecatedFunction();
         $signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
         return $this->getTypoScriptByPath('module.tx_' . $signature . '.view');
     }
@@ -489,6 +496,7 @@ class FluxService implements SingletonInterface
      */
     public function debug($instance, $plainText = true, $depth = 2)
     {
+        GeneralUtility::logDeprecatedFunction();
         $text = DebuggerUtility::var_dump($instance, null, $depth, $plainText, false, true);
         GeneralUtility::devLog(
             'Flux variable dump: ' . gettype($instance),
@@ -522,6 +530,7 @@ class FluxService implements SingletonInterface
      */
     public function flushCache()
     {
+        GeneralUtility::logDeprecatedFunction();
         self::$cache = [];
     }
 
@@ -585,6 +594,7 @@ class FluxService implements SingletonInterface
      */
     protected function logMessage($message, $severity)
     {
+        GeneralUtility::logDeprecatedFunction();
         GeneralUtility::sysLog($message, 'flux', $severity);
     }
 }

@@ -63,6 +63,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @var boolean
+     * @deprecated To be removed in next major release
      */
     protected $enable = true;
 
@@ -342,6 +343,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public function setEnable($enable)
     {
+        GeneralUtility::logDeprecatedFunction();
         $this->enable = (boolean) $enable;
         return $this;
     }
@@ -351,6 +353,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public function getEnable()
     {
+        GeneralUtility::logDeprecatedFunction();
         return (boolean) $this->enable;
     }
 

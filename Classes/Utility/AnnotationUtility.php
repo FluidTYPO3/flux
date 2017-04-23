@@ -15,6 +15,7 @@ use TYPO3Fluid\Fluid\Core\Parser\Patterns;
 
 /**
  * Annotation Utility
+ * @deprecated To be removed in next major release
  */
 class AnnotationUtility
 {

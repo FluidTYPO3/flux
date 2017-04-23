@@ -129,6 +129,7 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * @var ViewContext
+     * @deprecated To be removed in next major release
      */
     protected $viewContext;
 
@@ -278,6 +279,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function getViewContext(array $row, RequestInterface $request = null)
     {
+        GeneralUtility::logDeprecatedFunction();
         if (false === $this->viewContext instanceof ViewContext) {
             // Note: we do *not* store a local property because we do *not* want this function
             // to re-use the ViewContext unless explicitly set from the outside or initialised
@@ -552,6 +554,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function getTemplatePaths(array $row)
     {
+        GeneralUtility::logDeprecatedFunction();
         $paths = $this->templatePaths;
         if (false === is_array($paths)) {
             $extensionKey = $this->getExtensionKey($row);
@@ -789,6 +792,7 @@ class AbstractProvider implements ProviderInterface
      */
     protected function getPreviewView()
     {
+        GeneralUtility::logDeprecatedFunction();
         $preview = 'FluidTYPO3\\Flux\\View\\PreviewView';
         return GeneralUtility::makeInstance(ObjectManager::class)->get($preview);
     }
