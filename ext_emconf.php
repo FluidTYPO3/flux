@@ -4,13 +4,13 @@ $EM_CONF[$_EXTKEY] = array (
   'description' => 'Backend form and frontend content rendering assistance API with focus on productivity.',
   'category' => 'misc',
   'shy' => 0,
-  'version' => '8.1.0',
+  'version' => '8.2.0',
   'dependencies' => 'cms',
   'conflicts' => '',
   'priority' => 'top',
   'loadOrder' => '',
   'module' => '',
-  'state' => 'beta',
+  'state' => 'stable',
   'uploadfolder' => 0,
   'createDirs' => '',
   'modify_tables' => '',
@@ -21,36 +21,36 @@ $EM_CONF[$_EXTKEY] = array (
   'author_company' => '',
   'CGLcompliance' => '',
   'CGLcompliance_note' => '',
-  'constraints' =>
+  'constraints' => 
   array (
-    'depends' =>
+    'depends' => 
     array (
       'typo3' => '7.6.13-8.7.99',
       'php' => '7.0.0-7.1.99',
     ),
-    'conflicts' =>
+    'conflicts' => 
     array (
     ),
-    'suggests' =>
+    'suggests' => 
     array (
     ),
   ),
   '_md5_values_when_last_written' => '',
-  'suggests' =>
+  'suggests' => 
   array (
   ),
-  'autoload' =>
-  array(
-      'psr-4' =>
-      array(
-          'FluidTYPO3\\Flux\\' => 'Classes/'
-      ),
+  'autoload' => 
+  array (
+    'psr-4' => 
+    array (
+      'FluidTYPO3\\Flux\\' => 'Classes/',
+    ),
   ),
-  'autoload-dev' =>
-  array(
-      'psr-4' =>
-      array(
-          'FluidTYPO3\\Flux\\Tests\\' => 'Tests/'
-      ),
+  'autoload-dev' => 
+  array (
+    'psr-4' => 
+    array (
+      'FluidTYPO3\\Flux\\Tests\\' => 'Tests/',
+    ),
   ),
 );
