@@ -107,7 +107,12 @@ class AreaListItemsProcessor
             $gridConfiguration = $grid->build();
             foreach ($gridConfiguration['rows'] as $row) {
                 foreach ($row['columns'] as $column) {
-                    array_push($columns, [$column['label'] . ' (' . $column['name'] . ')', $column['name']]);
+                    if (strpos($column['label'], 'LLL:') !== 0) {
+                        $label = $column['label'] . ' (' . $column['name'] . ')';
+                    } else {
+                        $label = $column['label'];
+                    }
+                    array_push($columns, [$label, $column['name']]);
                 }
             }
         }

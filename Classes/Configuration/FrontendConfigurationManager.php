@@ -23,4 +23,17 @@ class FrontendConfigurationManager extends \TYPO3\CMS\Extbase\Configuration\Fron
     {
         return (array) parent::getTypoScriptSetup();
     }
+
+    /**
+     * @return array
+     */
+    protected function getExtbaseConfiguration()
+    {
+        static $configuration;
+        if (!$configuration) {
+            $configuration = parent::getExtbaseConfiguration();
+        }
+        return $configuration;
+    }
+
 }

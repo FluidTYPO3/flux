@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * TypoScriptTemplate
+ * @deprecated To be removed in next major release
  */
 class TypoScriptTemplate
 {

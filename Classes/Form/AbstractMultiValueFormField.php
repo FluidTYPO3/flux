@@ -49,11 +49,6 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     protected $selectedListStyle;
 
     /**
-     * @var string
-     */
-    protected $renderMode = 'default';
-
-    /**
      * Special rendering type of this component - supports all values normally
      * supported by TCA of the "select" field type.
      *
@@ -73,6 +68,12 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * @var mixed
      */
     protected $items = null;
+
+    /**
+     * @var string
+     * @see https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#itemsprocfunc
+     */
+    protected $itemsProcFunc;
 
     /**
      * If not-FALSE, adds one empty option/value pair to the generated selector
@@ -104,11 +105,11 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         $configuration['maxitems'] = $this->getMaxItems();
         $configuration['minitems'] = $this->getMinItems();
         $configuration['multiple'] = $this->getMultiple();
-        $configuration['renderMode'] = $this->getRenderMode();
         $configuration['itemListStyle'] = $this->getItemListStyle();
         $configuration['selectedListStyle'] = $this->getSelectedListStyle();
         $configuration['renderType'] = $this->getRenderType();
         $configuration['items'] = $this->getItems();
+        $configuration['itemsProcFunc'] = $this->getItemsProcFunc();
         return $configuration;
     }
 
@@ -221,24 +222,6 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     }
 
     /**
-     * @param string $renderMode
-     * @return MultiValueFieldInterface
-     */
-    public function setRenderMode($renderMode)
-    {
-        $this->renderMode = $renderMode;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRenderMode()
-    {
-        return $this->renderMode;
-    }
-
-    /**
      * @return string
      */
     public function getRenderType()
@@ -326,6 +309,24 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
             array_unshift($items, [$emptyOption, '']);
         }
         return $items;
+    }
+
+    /**
+     * @param string $itemsProcFunc
+     * @return MultiValueFieldInterface
+     */
+    public function setItemsProcFunc($itemsProcFunc)
+    {
+        $this->itemsProcFunc = $itemsProcFunc;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getItemsProcFunc()
+    {
+        return $this->itemsProcFunc;
     }
 
     /**

@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
@@ -73,6 +74,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
      */
     protected function getExtensionName()
     {
+        GeneralUtility::logDeprecatedFunction();
         return static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments);
     }
 
@@ -118,13 +120,14 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
      */
     protected function getForm()
     {
+        GeneralUtility::logDeprecatedFunction();
         return static::getFormFromRenderingContext($this->renderingContext);
     }
 
     /**
      * @param RenderingContextInterface $renderingContext
      * @throws InvalidVariableException
-     * @return FormInterface
+     * @return Form
      */
     public static function getFormFromRenderingContext(RenderingContextInterface $renderingContext)
     {
@@ -149,6 +152,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
      */
     protected function getGrid($gridName = 'grid')
     {
+        GeneralUtility::logDeprecatedFunction();
         return static::getGridFromRenderingContext($this->renderingContext, $gridName);
     }
 
@@ -186,6 +190,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
      */
     protected function getContainer()
     {
+        GeneralUtility::logDeprecatedFunction();
         return static::getContainerFromRenderingContext($this->renderingContext);
     }
 

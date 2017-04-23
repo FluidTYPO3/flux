@@ -39,6 +39,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Either method can also be called after instance
  * is created, but both will overwrite any paths
  * you have previously configured.
+ *
+ * @deprecated To be removed in next major release
  */
 class TemplatePaths
 {

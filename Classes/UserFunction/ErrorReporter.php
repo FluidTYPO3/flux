@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\UserFunction;
 
 /**
  * Renders an exception error message in a nice way
+ * @deprecated To be removed in next major release
  */
 class ErrorReporter
 {

@@ -16,10 +16,12 @@ use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\AnnotationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3Fluid\Fluid\Exception;
 
 /**
  * Table Configuration (TCA) post processor
@@ -109,21 +111,36 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
             list ($providerExtensionName, $templateFilename) = $queuedRegistration;
-            $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
-                $providerExtensionName,
-                $templateFilename
-            );
+            try {
+                $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
+                    $providerExtensionName,
+                    $templateFilename
+                );
 
-            Core::registerConfigurationProvider($provider);
+                Core::registerConfigurationProvider($provider);
 
-            $controllerExtensionName = $providerExtensionName;
-            if (!static::controllerExistsInExtension($providerExtensionName, 'Content')) {
-                $controllerExtensionName = 'FluidTYPO3.Flux';
+                $controllerExtensionName = $providerExtensionName;
+                if (!static::controllerExistsInExtension($providerExtensionName, 'Content')) {
+                    $controllerExtensionName = 'FluidTYPO3.Flux';
+                }
+
+                $contentType = static::determineContentType($providerExtensionName, $templateFilename);
+                $pluginName = ucfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
+                $contentTypeBuilder->registerContentType($controllerExtensionName, $contentType, $provider, $pluginName);
+
+            } catch (Exception $error) {
+                if (!Bootstrap::getInstance()->getApplicationContext()->isProduction()) {
+                    throw $error;
+                }
+                GeneralUtility::sysLog(
+                    sprintf(
+                        'Template %s count not be used as content type: %s',
+                        $templateFilename,
+                        $error->getMessage()
+                    ),
+                    'flux'
+                );
             }
-
-            $contentType = static::determineContentType($providerExtensionName, $templateFilename);
-            $pluginName = ucfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
-            $contentTypeBuilder->registerContentType($controllerExtensionName, $contentType, $provider, $pluginName);
         }
     }
 
@@ -132,6 +149,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function generateTableConfigurationForProviderForms()
     {
+        GeneralUtility::logDeprecatedFunction();
         $resolver = new Resolver();
         $forms = Core::getRegisteredFormsForTables();
         $packages = $this->getInstalledFluxPackages();
@@ -156,6 +174,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function getInstalledFluxPackages()
     {
+        GeneralUtility::logDeprecatedFunction();
         return array_keys(Core::getRegisteredPackagesForAutoForms());
     }
 
@@ -165,6 +184,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function processFormForTable($table, Form $form)
     {
+        GeneralUtility::logDeprecatedFunction();
         $extensionName = $form->getExtensionName();
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
         $tableConfiguration = self::$tableTemplate;
@@ -225,6 +245,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     public function generateFormInstanceFromClassName($class, $table)
     {
+        GeneralUtility::logDeprecatedFunction();
         $labelFields = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Label', false);
         $iconAnnotation = AnnotationUtility::getAnnotationValueFromClass($class, 'Flux\Icon');
         $extensionName = $this->getExtensionNameFromModelClassName($class);
@@ -297,6 +318,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function getExtensionNameFromModelClassName($class)
     {
+        GeneralUtility::logDeprecatedFunction();
         if (false !== strpos($class, '_')) {
             $parts = explode('_Domain_Model_', $class);
             $extensionName = substr($parts[0], 3);
@@ -318,6 +340,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function buildShowItemList(Form $form)
     {
+        GeneralUtility::logDeprecatedFunction();
         $parts = [];
         foreach ($form->getSheets(false) as $sheet) {
             array_push($parts, '--div--;' . $sheet->getLabel());

@@ -14,6 +14,8 @@ use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 
 /**
  * Class ViewContext
+ *
+ * @deprecated To be removed in next major release
  */
 class ViewContext
 {

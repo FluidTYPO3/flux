@@ -44,6 +44,7 @@ interface ProviderInterface
      * @param array $row
      * @param RequestInterface|NULL $request
      * @return ViewContext
+     * @deprecated To be removed in next major release
      */
     public function getViewContext(array $row, RequestInterface $request = null);
 
@@ -52,6 +53,7 @@ interface ProviderInterface
      *
      * @param array $row
      * @return Form|NULL
+     * @deprecated To be removed in next major release
      */
     public function getForm(array $row);
 
@@ -60,6 +62,7 @@ interface ProviderInterface
      *
      * @param array $row
      * @return Grid
+     * @deprecated To be removed in next major release
      */
     public function getGrid(array $row);
 
@@ -95,6 +98,7 @@ interface ProviderInterface
      *
      * @param array $row
      * @return array
+     * @deprecated To be removed in next major release
      */
     public function getTemplatePaths(array $row);
 

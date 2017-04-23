@@ -13,6 +13,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * PathUtility
+ * @deprecated To be removed in next major release
  */
 class PathUtility
 {

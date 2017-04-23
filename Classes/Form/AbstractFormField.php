@@ -30,11 +30,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     protected $default;
 
     /**
-     * @var string
-     */
-    protected $transform;
-
-    /**
      * Display condition - see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
      *
      * @var string
@@ -68,6 +63,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @var boolean
+     * @deprecated To be removed in next major release
      */
     protected $enable = true;
 
@@ -288,24 +284,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     }
 
     /**
-     * @param string $transform
-     * @return FieldInterface
-     */
-    public function setTransform($transform)
-    {
-        $this->transform = $transform;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTransform()
-    {
-        return $this->transform;
-    }
-
-    /**
      * @param string $displayCondition
      * @return FieldInterface
      */
@@ -365,6 +343,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public function setEnable($enable)
     {
+        GeneralUtility::logDeprecatedFunction();
         $this->enable = (boolean) $enable;
         return $this;
     }
@@ -374,6 +353,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public function getEnable()
     {
+        GeneralUtility::logDeprecatedFunction();
         return (boolean) $this->enable;
     }
 

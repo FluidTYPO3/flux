@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -174,6 +175,28 @@ class ContentTypeBuilder
         }
         $this->registerExtbasePluginForForm($controllerExtensionName, $pluginName, $form);
         $this->addPageTsConfig($controllerExtensionName, $form, $contentType);
+        $this->addIcon($form, $contentType);
+    }
+
+    /**
+     * @param Form $form
+     * @param string $contentType
+     * @return void
+     */
+    protected function addIcon(Form $form, $contentType)
+    {
+        $icon = MiscellaneousUtility::getIconForTemplate($form);
+        if (strpos($icon, 'EXT:') === 0 || $icon{0} !== '/') {
+            $icon = GeneralUtility::getFileAbsFileName($icon);
+        }
+        if (!$icon) {
+            $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Plugin.png');
+        }
+        $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType] = MiscellaneousUtility::createIcon(
+            $icon,
+            Icon::SIZE_DEFAULT,
+            Icon::SIZE_DEFAULT
+        );
     }
 
     /**
@@ -206,40 +229,36 @@ class ContentTypeBuilder
      */
     protected function addPageTsConfig($providerExtensionName, Form $form, $contentType)
     {
-        $formId = $form->getId();
-        $icon = $form->getOption(Form::OPTION_ICON);
-        $group = $form->getOption(Form::OPTION_GROUP);
-        if (!$group) {
-            $group = 'fluxContent';
-        }
-        $group = $this->sanitizeString($group);
-
         // Icons required solely for use in the "new content element" wizard
         $extensionKey = ExtensionNamingUtility::getExtensionKey($providerExtensionName);
         $defaultIcon = ExtensionManagementUtility::extPath($extensionKey, 'ext_icon.gif');
+
+        $formId = $form->getId();
+        $icon = $form->getOption(Form::OPTION_ICON) ?? $defaultIcon;
+        $group = $form->getOption(Form::OPTION_GROUP) ?? 'fluxContent';
+        $this->initializeNewContentWizardGroup($this->sanitizeString($group), $group);
+
         $iconIdentifier = $extensionKey . '-' . $formId;
         $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
-        $iconRegistry->registerIcon($iconIdentifier, BitmapIconProvider::class, ['source' => $icon ?: $defaultIcon]);
+        $iconRegistry->registerIcon($iconIdentifier, BitmapIconProvider::class, ['source' => $icon]);
 
         // Registration for "new content element" wizard to show our new CType (otherwise, only selectable via "Content type" drop-down)
         ExtensionManagementUtility::addPageTSConfig(
             sprintf(
                 'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
                     iconIdentifier = %s
-                    title = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s
-                    description = LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s.description
+                    title = %s
+                    description = %s
                     tt_content_defValues {
                         CType = %s
                     }
                 }
                 mod.wizards.newContentElement.wizardItems.%s.show := addToList(%s)',
-                $group,
+                $this->sanitizeString($group),
                 $formId,
                 $iconIdentifier,
-                $extensionKey,
-                $formId,
-                $extensionKey,
-                $formId,
+                $form->getLabel(),
+                $form->getDescription(),
                 $contentType,
                 $group,
                 $formId
@@ -267,18 +286,36 @@ class ContentTypeBuilder
      */
     protected function registerExtbasePluginForForm($providerExtensionName, $pluginName, Form $form)
     {
-        $icon = MiscellaneousUtility::getIconForTemplate($form);
-
         ExtensionUtility::registerPlugin(
             $providerExtensionName,
             $pluginName,
-            sprintf(
-                'LLL:EXT:%s/Resources/Private/Language/locallang.xlf:flux.%s',
-                ExtensionNamingUtility::getExtensionKey($providerExtensionName),
-                $form->getId()
-            ),
-            $icon
+            $form->getLabel()
         );
+    }
+
+    /**
+     * @param string $groupName
+     * @param string $groupLabel
+     */
+    protected function initializeNewContentWizardGroup($groupName, $groupLabel)
+    {
+        static $groups = [];
+        if (isset($groups[$groupName])) {
+            return;
+        }
+        ExtensionManagementUtility::addPageTSConfig(
+            sprintf(
+                'mod.wizards.newContentElement.wizardItems.%s {
+                    header = %s
+                    show = *
+                    elements {
+                    }
+                }',
+                $groupName,
+                $groupLabel
+            )
+        );
+        $groups[$groupName] = true;
     }
 
     /**
@@ -292,13 +329,9 @@ class ContentTypeBuilder
             // Register the stub/group/tab which will store all elements added this way. We wrap this in our Core
             // registration class to avoid this tab being added unless elements are used. Then toggle the static
             // initialized flag to avoid repeating this insertion.
-            ExtensionManagementUtility::addPageTSConfig(
-                'mod.wizards.newContentElement.wizardItems.fluxContent {
-                    header = LLL:EXT:flux/Resources/Private/Language/locallang.xlf:newContentWizard.fluxContent
-                    show = *
-                    elements {
-                    }
-                 }'
+            $this->initializeNewContentWizardGroup(
+                'fluxContent',
+                'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:newContentWizard.fluxContent'
             );
             $initialized = true;
         }

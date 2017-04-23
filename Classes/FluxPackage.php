@@ -89,7 +89,7 @@ class FluxPackage implements FluxPackageInterface
             $possibleExtensionKey = ExtensionNamingUtility::getExtensionKey($seedArrayOrExtensionKeyOrManifestPath);
             if (ExtensionManagementUtility::isLoaded($possibleExtensionKey)) {
                 $this->manifest = $this->loadManifestFile(
-                    GeneralUtility::getFileAbsFileName(sprintf('EXT:%s/flux.json', $possibleExtensionKey))
+                    ExtensionManagementUtility::extPath($possibleExtensionKey, 'flux.json')
                 );
             } else {
                 $this->manifest = $this->loadManifestFile($seedArrayOrExtensionKeyOrManifestPath);
