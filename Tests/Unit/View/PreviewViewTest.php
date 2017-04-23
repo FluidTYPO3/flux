@@ -272,7 +272,6 @@ class PreviewViewTest extends AbstractTestCase
         $column->expects($this->once())->method('getStyle')->willReturn('foobar-style');
         $subject = $this->getMockBuilder('FluidTYPO3\\Flux\\View\\PreviewView')->setMethods(array('drawNewIcon', 'drawPasteIcon'))->getMock();
         $subject->expects($this->once())->method('drawNewIcon');
-        $mockPageLayoutView = $this->getMockBuilder('TYPO3\\CMS\\Backend\\View\\PageLayoutView')->getMock();
         $this->callInaccessibleMethod($subject, 'parseGridColumnTemplate', array(), $column, 'f-target', 2, 'f-content');
     }
 
