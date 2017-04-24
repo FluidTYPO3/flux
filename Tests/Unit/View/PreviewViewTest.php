@@ -155,6 +155,7 @@ class PreviewViewTest extends AbstractTestCase
         $databaseConnectionMock = $this->getMockBuilder(DatabaseConnection::class)->getMock();
         $databaseConnectionMock->expects($this->any())->method('sql_fetch_assoc')->willReturn([]);
         $pageLayoutView = $this->getMockBuilder(PageLayoutView::class)->setMethods(['initializeLanguages'])->getMock();
+        $pageLayoutView->expects($this->any())->method('getDatabase')->willReturn($databaseConnectionMock);
         $previewView = $this->getMockBuilder($this->createInstanceClassName())
             ->setMethods(array('registerTargetContentAreaInSession', 'getDatabaseConnection', 'getPageLayoutView'))
             ->getMock();

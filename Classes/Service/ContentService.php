@@ -24,6 +24,7 @@ class ContentService implements SingletonInterface
 {
 
     const COLPOS_FLUXCONTENT = 18181;
+    const LANGUAGE_SOURCE_FIELD = 'l10n_source';
 
     /**
      * @var RecordService
@@ -321,7 +322,7 @@ class ContentService implements SingletonInterface
      * @param DataHandler $dataHandler
      * @return void
      */
-    protected function updateRecordInDataMap(array $row, $uid = null, DataHandler $dataHandler)
+    public function updateRecordInDataMap(array $row, $uid = null, DataHandler $dataHandler)
     {
         if (null === $uid) {
             $uid = $row['uid'];
@@ -367,23 +368,31 @@ class ContentService implements SingletonInterface
             $defaultRecordUid = $uid;
         }
         $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $defaultRecordUid, $languageUid);
+
+        // if localize elements which were localized with the copy mode the 'l18n_parent' is 0
+        // so we can't get the localizedRecord here
+        if (count($localizedRecord) > 0) {
         $sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
+            $sorting = [
+                'uid' => $localizedRecord[0]['uid']
+            ];
         if (null === $previousLocalizedRecordUid) {
             // moving to first position in tx_flux_column
-            $localizedRecord[0][$sortingRow] = $reference->getSortNumber(
+                $sorting[$sortingRow] = $reference->getSortNumber(
                 'tt_content',
                 0,
                 $sourceRecord['pid']
             );
         } else {
-            $localizedRecord[0][$sortingRow] = $reference->resorting(
+                $sorting[$sortingRow] = $reference->resorting(
                 'tt_content',
                 $sourceRecord['pid'],
                 $sortingRow,
                 $previousLocalizedRecordUid
             );
         }
-        $this->updateRecordInDataMap($localizedRecord[0], null, $reference);
+            $this->updateRecordInDataMap($sorting, null, $reference);
+        }
     }
 
     /**
@@ -439,5 +448,56 @@ class ContentService implements SingletonInterface
             $GLOBALS['TYPO3_DB']->sql_free_result($res);
         }
         return $previousLocalizedRecordUid;
+    }
+
+    /**
+     * Builds an additional where clause to exclude deleted records and setting the versioning placeholders
+     *
+     * @return string
+     */
+    public function getExcludeQueryPart()
+    {
+        return BackendUtility::deleteClause('tt_content') . BackendUtility::versioningPlaceholderClause('tt_content');
+    }
+
+    /**
+     * Builds an additional where clause to exclude hidden languages and limit a backend user to its allowed languages,
+     * if the user is not an admin.
+     *
+     * @return string
+     */
+    public function getAllowedLanguagesForBackendUser()
+    {
+        $backendUser = $this->getBackendUser();
+        $additionalWhere = '';
+        if (!$backendUser->isAdmin()) {
+            $additionalWhere .= ' AND sys_language.hidden=0';
+
+            if (!empty($backendUser->user['allowed_languages'])) {
+                $additionalWhere .= ' AND sys_language.uid IN(' . implode(',', GeneralUtility::intExplode(',', $backendUser->user['allowed_languages'])) . ')';
+            }
+        }
+
+        return $additionalWhere;
+    }
+
+    /**
+     * Returns the database connection
+     *
+     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
+     */
+    protected function getDatabaseConnection()
+    {
+        return $GLOBALS['TYPO3_DB'];
+    }
+
+    /**
+     * Returns the current BE user.
+     *
+     * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+     */
+    protected function getBackendUser()
+    {
+        return $GLOBALS['BE_USER'];
     }
 }

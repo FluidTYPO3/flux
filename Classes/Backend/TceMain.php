@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
+use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -47,6 +48,11 @@ class TceMain
      * @var ContentService
      */
     protected $contentService;
+
+    /**
+     * @var array
+     */
+    protected $datamap = [];
 
     /**
      * @var boolean
@@ -244,6 +250,63 @@ class TceMain
     }
 
     /**
+     * Command map process method
+     *
+     * Listen for localization commands for creating localized elements in flux columns
+     *
+     * @param string $command The TCEmain operation status, fx. 'update'
+     * @param string $table The table TCEmain is currently processing
+     * @param string $id The records id (if any)
+     * @param mixed $value
+     * @param boolean $commandIsProcessed
+     * @param DataHandler $reference Reference to the parent object (TCEmain)
+     * @param array $pasteUpdate Extended paste command
+     */
+    public function processCmdmap($command, $table, $id, &$value, &$commandIsProcessed, &$reference, $pasteUpdate) {
+        // unset internal datamap
+        $this->datamap = [];
+
+        if ($table === 'tt_content' && ($command === 'localize' || $command === 'copyToLanguage')) {
+
+            $sourceRecord = $this->resolveRecordForOperation($table, $id);
+
+            // check if a flux_parent exists
+            if ((integer)$sourceRecord['tx_flux_parent'] > 0) {
+                // to identicate the correct flux_parent:
+                // Get the record which t3_origuid|l10n_source is related to the flux_parent of the current record
+                $fluxParentRecord = $this->getDatabaseConnection()->exec_SELECTgetSingleRow('*', 'tt_content',
+                    CompatibilityRegistry::get(ContentService::LANGUAGE_SOURCE_FIELD) . ' = ' . (integer)$sourceRecord['tx_flux_parent']
+                    . ' AND sys_language_uid = ' . (integer)$value
+                    . $this->contentService->getExcludeQueryPart()
+                    . $this->contentService->getAllowedLanguagesForBackendUser());
+
+                if ($fluxParentRecord !== null) {
+
+                    // now create the localized element
+                    // we need the new uid of the localized element
+                    $newId = $reference->localize($table, $id, $value);
+                    if (!empty($newId)) {
+                        // we create an internal datamap to use it later for the DataHandler's $pasteDataMap
+                        // in the processCmdmap_postProcess
+                        //
+                        // the array contains the necessary values for flux
+                        // - uid of the new localized element
+                        // - tx_flux_parent of $fluxParentRecord
+                        $this->datamap = [
+                            'uid' => $newId,
+                            'tx_flux_parent' => $fluxParentRecord['uid'],
+                        ];
+                    } else {
+                        // todo: throw an error here?
+                    }
+                    $commandIsProcessed = true;
+                }
+            }
+
+        }
+    }
+
+    /**
      * Command post processing method
      *
      * Like other pre/post methods this method calls the corresponding
@@ -270,6 +333,18 @@ class TceMain
         if ($table === 'tt_content') {
             if ('localize' === $command) {
                 $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
+            }
+
+            if ('localize' === $command|| 'copyToLanguage' === $command)  {
+
+                if (count($this->datamap) > 0) {
+                    // update DataHandler->datamap with $this->datamap values
+                    $this->contentService->updateRecordInDataMap($this->datamap, null, $reference);
+                    // we must set here $pasteDataMap, because the overlaying values stored in DataHandler->datamap
+                    // are ignored later in the DataHandler
+                    // see https://github.com/TYPO3/TYPO3.CMS/blob/5ef31ecdde74ae11e33290d59751c5292291e303/typo3/sysext/core/Classes/DataHandling/DataHandler.php#L3248
+                    $pasteDataMap = $reference->datamap;
+                }
             }
 
             $properties = [];
