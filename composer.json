@@ -27,7 +27,7 @@
     },
     "require": {
         "php": ">=7.0.0",
-        "typo3/cms": ">=7.6.13, <7.6.99|^8.4.1"
+        "typo3/cms": ">=7.6.13, <7.6.99|^8.4.1|8.x-dev"
     },
     "replace": {
         "flux": "self.version",
