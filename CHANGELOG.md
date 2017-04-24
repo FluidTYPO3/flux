@@ -1,7 +1,8 @@
-Latest release: 8.2.0 (2017/04/23)
+Latest release: 8.2.1 (2017/04/24)
 
 All previous release change logs:
 
+* [8.2.1 (2017/04/24)](Documentation/Changelog/8.2.1.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/8.2.0...8.2.1)
 * [8.2.0 (2017/04/23)](Documentation/Changelog/8.2.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/8.1.0...8.2.0)
 * [8.1.0 (2017/03/04)](Documentation/Changelog/8.1.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/8.0.2...8.1.0)
 * [8.0.2 (2017/02/12)](Documentation/Changelog/8.0.2.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/8.0.1...8.0.2)
