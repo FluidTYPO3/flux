@@ -8,8 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Tests\Unit\Outlet\AbstractOutletTestCase;
-
 /**
  * StandardOutletTest
  */

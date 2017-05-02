@@ -424,9 +424,10 @@ class ContentService implements SingletonInterface
                 );
             }
             $where .= $reference->deleteClause($table);
-            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select, $table, $where, '', $sortRow . ' DESC', '1');
+            $res = $this->recordService->get($table, $select, $where, '', $sortRow . ' DESC', 1);
+            $previousRow = $res[0] ?? false;
             // If there is an element, find its localized record in specified localization language
-            if ($previousRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+            if ($previousRow) {
                 $previousLocalizedRecord = BackendUtility::getRecordLocalization(
                     $table,
                     $previousRow['uid'],
@@ -436,7 +437,6 @@ class ContentService implements SingletonInterface
                     $previousLocalizedRecordUid = $previousLocalizedRecord[0]['uid'];
                 }
             }
-            $GLOBALS['TYPO3_DB']->sql_free_result($res);
         }
         return $previousLocalizedRecordUid;
     }

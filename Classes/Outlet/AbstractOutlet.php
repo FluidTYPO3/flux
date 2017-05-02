@@ -60,6 +60,36 @@ abstract class AbstractOutlet implements OutletInterface
     protected $validationResults;
 
     /**
+     * @param array $settings
+     * @return OutletInterface
+     */
+    public static function create(array $settings)
+    {
+        $instance = new static();
+        if (isset($settings['pipesIn'])) {
+            foreach ($settings['pipesIn'] as $pipeSettings) {
+                $instance->addPipeIn($pipeSettings['type']::create($pipeSettings));
+            }
+        }
+        if (isset($settings['pipesOut'])) {
+            foreach ($settings['pipesOut'] as $pipeSettings) {
+                $instance->addPipeOut($pipeSettings['type']::create($pipeSettings));
+            }
+        }
+        return $instance;
+    }
+
+    /**
+     * @param string $class
+     * @param array $settings
+     * @return PipeInterface
+     */
+    protected static function createPipeInstance($class, array $settings)
+    {
+        return $class::create($settings);
+    }
+
+    /**
      * @param boolean $enabled
      * @return OutletInterface
      */

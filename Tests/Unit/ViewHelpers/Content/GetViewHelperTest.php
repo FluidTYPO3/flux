@@ -8,14 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Container\Object;
-use FluidTYPO3\Flux\ViewHelpers\Content\GetViewHelper;
+use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
+use Prophecy\Argument;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageRepository;
@@ -35,10 +34,31 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
         $GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
         $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)->setMethods(['enableFields'])->getMock();
-        $GLOBALS['TT'] = new NullTimeTracker();
-        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
-        $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
         $GLOBALS['TCA']['tt_content']['ctrl'] = array();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    protected function createAndRegisterMockForQueryBuilder()
+    {
+        $statement = $this->prophesize(Statement::class);
+        $statement->fetchAll()->willReturn([]);
+
+        $queryBuilder = $this->prophesize(QueryBuilder::class);
+        $queryBuilder->from('tt_content')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->select('*')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->select('uid', 'pi_flexform')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->where(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->orderBy('sorting', '');
+        $queryBuilder->setMaxResults(Argument::type('int'));
+        $queryBuilder->execute()->willReturn($statement->reveal());
+
+        $prophecy = $this->prophesize(ConnectionPool::class);
+        $prophecy->getQueryBuilderForTable('tt_content')->willReturn($queryBuilder->reveal());
+
+        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
+        return $queryBuilder;
     }
 
     /**
@@ -46,6 +66,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelper()
     {
+        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',
@@ -64,6 +85,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithLoadRegister()
     {
+        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',
@@ -85,6 +107,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup()
     {
+        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'nameTaken',
@@ -104,6 +127,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithNonExistingAsArgument()
     {
+        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'freevariablename',
@@ -122,6 +146,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canReturnArrayOfUnrenderedContentElements()
     {
+        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'render' => false,
@@ -139,6 +164,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canReturnArrayOfRenderedContentElements()
     {
+        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'render' => true,
@@ -156,13 +182,8 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canProcessRecords()
     {
-        $configurationManager = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager')->setMethods(array('getContentObject'))->getMock();
-        $contentObject = $this->getMockBuilder('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer')->setMethods(array('cObjGetSingle'))->getMock();
-        $contentObject->expects($this->any())->method('cObjGetSingle');
-        $configurationManager->expects($this->any())->method('getContentObject')->willReturn($contentObject);
         $GLOBALS['TSFE']->sys_page = $this->getMockBuilder('TYPO3\\CMS\\Frontend\\Page\\PageRepository')->setMethods(array('dummy'))->disableOriginalConstructor()->getMock();
         $instance = $this->createInstance();
-        $instance->injectConfigurationManager($configurationManager);
         $records = array(
             array('uid' => 0),
             array('uid' => 99999999999),

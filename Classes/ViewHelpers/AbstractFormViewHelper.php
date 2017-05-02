@@ -10,9 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
@@ -52,10 +50,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
         static::setContainerInRenderingContext($renderingContext, $component);
         $renderChildrenClosure();
         static::setContainerInRenderingContext($renderingContext, $container);
-        static::setExtensionNameInRenderingContext(
-            $renderingContext,
-            static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
-        );
     }
 
     /**
@@ -64,18 +58,12 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
     public function renderChildren()
     {
         // Make sure the current extension name always propagates to child nodes
-        static::setExtensionNameInRenderingContext($this->renderingContext, $this->getExtensionName());
+        static::setExtensionNameInRenderingContext(
+            $this->renderingContext,
+            static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments)
+        );
 
         return parent::renderChildren();
-    }
-
-    /**
-     * @return string
-     */
-    protected function getExtensionName()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments);
     }
 
     /**
@@ -116,44 +104,20 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
     }
 
     /**
-     * @return Form
-     */
-    protected function getForm()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return static::getFormFromRenderingContext($this->renderingContext);
-    }
-
-    /**
      * @param RenderingContextInterface $renderingContext
      * @throws InvalidVariableException
      * @return Form
      */
     public static function getFormFromRenderingContext(RenderingContextInterface $renderingContext)
     {
-        $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
-        $templateVariableContainer = $renderingContext->getTemplateVariableContainer();
-        if (true === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_FORM)) {
-            $form = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_FORM);
-        } elseif (true === $templateVariableContainer->exists(static::SCOPE_VARIABLE_FORM)) {
-            $form = $templateVariableContainer->get(static::SCOPE_VARIABLE_FORM);
-        } else {
+        $form = $renderingContext->getViewHelperVariableContainer()->get(static::SCOPE, static::SCOPE_VARIABLE_FORM);
+        if (!$form) {
             $form = Form::create([
                 'extensionName' => $renderingContext->getControllerContext()->getRequest()->getControllerExtensionName()
             ]);
-            $viewHelperVariableContainer->add(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
+            $renderingContext->getViewHelperVariableContainer()->add(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
         }
         return $form;
-    }
-
-    /**
-     * @param string $gridName
-     * @return Grid
-     */
-    protected function getGrid($gridName = 'grid')
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return static::getGridFromRenderingContext($this->renderingContext, $gridName);
     }
 
     /**
@@ -167,62 +131,25 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
         $gridName = 'grid'
     ) {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
-        $form = static::getFormFromRenderingContext($renderingContext);
-        if (false === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_GRIDS)) {
-            $grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
-            $grids = [$gridName => $grid];
-            $viewHelperVariableContainer->add(static::SCOPE, static::SCOPE_VARIABLE_GRIDS, $grids);
-        } else {
-            $grids = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_GRIDS);
-            if (true === isset($grids[$gridName])) {
-                $grid = $grids[$gridName];
-            } else {
-                $grid = $form->createContainer('Grid', $gridName, 'Grid: ' . $gridName);
-                $grids[$gridName] = $grid;
-                $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_GRIDS, $grids);
-            }
-        }
-        return $grid;
-    }
+        $grids = (array) $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_GRIDS);
 
-    /**
-     * @return ContainerInterface
-     */
-    protected function getContainer()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return static::getContainerFromRenderingContext($this->renderingContext);
+        if (!isset($grids[$gridName])) {
+            $grids[$gridName] = Grid::create(['name' => $gridName]);
+            $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_GRIDS, $grids);
+        }
+        return $grids[$gridName];
     }
 
     /**
      * @param RenderingContextInterface $renderingContext
      * @throws InvalidVariableException
-     * @return mixed
+     * @return Form\ContainerInterface
      */
     protected static function getContainerFromRenderingContext(RenderingContextInterface $renderingContext)
     {
-        $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
-        $templateVariableContainer = $renderingContext->getTemplateVariableContainer();
-        if (true === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER)) {
-            $container = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
-        } elseif (true === $templateVariableContainer->exists(static::SCOPE_VARIABLE_CONTAINER)) {
-            $container = $templateVariableContainer->get(static::SCOPE_VARIABLE_CONTAINER);
-        } else {
-            $form = static::getFormFromRenderingContext($renderingContext);
-            $container = $form->last();
-            static::setContainerInRenderingContext($renderingContext, $container);
-        }
-        return $container;
-    }
-
-    /**
-     * @param FormInterface $container
-     * @throws InvalidVariableException
-     * @return void
-     */
-    protected function setContainer(FormInterface $container)
-    {
-        static::setContainerInRenderingContext($this->renderingContext, $container);
+        return $renderingContext->getViewHelperVariableContainer()
+            ->get(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER)
+            ?? static::getFormFromRenderingContext($renderingContext);
     }
 
     /**
@@ -235,11 +162,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
         RenderingContextInterface $renderingContext,
         FormInterface $container
     ) {
-        $renderingContext->getViewHelperVariableContainer()
-            ->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER, $container);
-        if (true === $renderingContext->getTemplateVariableContainer()->exists(static::SCOPE_VARIABLE_CONTAINER)) {
-            $renderingContext->getTemplateVariableContainer()->remove(static::SCOPE_VARIABLE_CONTAINER);
-        }
-        $renderingContext->getTemplateVariableContainer()->add(static::SCOPE_VARIABLE_CONTAINER, $container);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER, $container);
     }
 }

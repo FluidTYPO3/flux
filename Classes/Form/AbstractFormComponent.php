@@ -164,8 +164,7 @@ abstract class AbstractFormComponent implements FormInterface
     public function createComponent($namespace, $type, $name, $label = null)
     {
         /** @var FormInterface $component */
-        $className = $this->createComponentClassName($type, $namespace);
-        $component = $this->getObjectManager()->get($className);
+        $component = GeneralUtility::makeInstance($this->createComponentClassName($type, $namespace));
         if (null === $component->getName()) {
             $component->setName($name);
         }

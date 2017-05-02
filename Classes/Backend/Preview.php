@@ -15,7 +15,6 @@ use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -131,7 +130,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
             /** @var PageRenderer $pageRenderer */
             $pageRenderer = $doc->getPageRenderer();
             $pageRenderer->addCssFile(
-                $doc->backPath . ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/grid.css'
+                $doc->backPath . GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/css/grid.css')
             );
 
             $fullJsPath = PathUtility::getRelativePath(

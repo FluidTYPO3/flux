@@ -8,8 +8,6 @@ namespace FluidTYPO3\Flux\Helper;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Core;
-use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -78,33 +76,6 @@ class Resolver
             }
         }
         return $classNames;
-    }
-
-    /**
-     * Resolves a list (array) of instances of Form implementations
-     * from the provided package names, or all package names if empty.
-     *
-     * @param array $packageNames
-     * @return Form[]
-     */
-    public function resolveDomainFormClassInstancesFromPackages(array $packageNames = null)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $packageNames = null === $packageNames ? Core::getRegisteredPackagesForAutoForms() : $packageNames;
-        $models = (array) Core::getRegisteredFormsForModelObjectClasses();
-        foreach ($packageNames as $packageName) {
-            $classNames = $this->resolveClassNamesInPackageSubNamespace($packageName, 'Domain/Form', 'Form');
-            foreach ($classNames as $formClassName) {
-                // convert form class name to model class name by convention
-                $modelClassName = str_replace('\\Domain\\Form\\', '\\Domain\\Model\\', $formClassName);
-                $modelClassName = substr($modelClassName, 0, -4);
-                $fullTableName = $this->resolveDatabaseTableName($modelClassName);
-                $models[$modelClassName] = $formClassName::create();
-                $models[$modelClassName]->setName($fullTableName);
-                $models[$modelClassName]->setExtensionName($packageName);
-            }
-        }
-        return $models;
     }
 
     /**

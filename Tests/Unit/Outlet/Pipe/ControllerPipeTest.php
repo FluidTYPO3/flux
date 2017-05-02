@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  */
 
 use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
-use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 use TYPO3\CMS\Extbase\Mvc\Controller\Argument;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
@@ -66,7 +65,8 @@ class ControllerPipeTest extends AbstractPipeTestCase
         )->setMockClassName($controllerClassName)->setMethods(
             array(
                 'renderAction', 'initializeActionMethodArguments', 'initializeActionMethodValidators', 'canProcessRequest', 'mapRequestArgumentsToControllerArguments',
-                'checkRequestHash', 'buildControllerContext', 'setViewConfiguration', 'resolveView'
+                'checkRequestHash', 'buildControllerContext', 'setViewConfiguration', 'resolveView', 'getRecord', 'initializeProvider', 'initializeSettings',
+                'initializeOverriddenSettings'
             )
         )->disableOriginalConstructor()->getMock();
         $controllerMock->expects($this->once())->method('initializeActionMethodArguments');
