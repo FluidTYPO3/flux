@@ -150,8 +150,8 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
             $dataArray = static::$configurationService->convertFlexFormContentToArray(
                 $record[$field],
                 null,
-                $lang,
-                $pointer
+                'lDEF',
+                'vDEF'
             );
         } else {
             $dataArray = [];
