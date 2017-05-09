@@ -147,12 +147,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
         if (0 === count($providers)) {
             $lang = static::getCurrentLanguageName();
             $pointer = static::getCurrentValuePointerName();
-            $dataArray = static::$configurationService->convertFlexFormContentToArray(
-                $record[$field],
-                null,
-                $lang,
-                $pointer
-            );
+            $dataArray = static::$configurationService->convertFlexFormContentToArray($record[$field]);
         } else {
             $dataArray = [];
             /** @var ProviderInterface $provider */
