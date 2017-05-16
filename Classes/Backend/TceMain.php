@@ -612,6 +612,11 @@ class TceMain
      */
     protected function copySortingValueOfChildrenFromOriginalsToCopies(array $parentRecord)
     {
+        if (!$parentRecord['uid']) {
+            // make sure value is set (#1407)
+            return;
+        }
+
         $children = $this->recordService->get(
             'tt_content',
             'uid',
