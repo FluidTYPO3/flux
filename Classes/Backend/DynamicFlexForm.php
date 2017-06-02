@@ -243,12 +243,13 @@ class DynamicFlexForm
 
                     $cacheKey = $this->calculateFormCacheKey($formId);
                     if ($cache->has($cacheKey)) {
-                        $dataStructArray = $this->patchTceformsWrapper($cache->get($cacheKey));
+                        $dataStructArray = $cache->get($cacheKey);
                         return;
                     }
                     // This provider has requested static DS caching; stop attempting
                     // to process any other DS and cache this DS as final result:
                     $provider->postProcessDataStructure($row, $dataStructArray, $conf);
+                    $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
                     $cache->set($cacheKey, $dataStructArray);
                     return;
                 } else {
