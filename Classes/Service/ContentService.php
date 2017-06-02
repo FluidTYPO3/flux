@@ -71,46 +71,6 @@ class ContentService implements SingletonInterface
         }
     }
 
-   /**
-     * @param array $mappingArray
-     * @param integer $pid
-     * @param integer $colPos
-     * @param string $area
-     * @param integer $parentUid
-     * @param string $table
-     * @param integer $relativeUid
-     * @param array|NULL $relativeRecord
-     * @param DataHandler $tceMain
-     * @return void
-     */
-    protected function applyMappingArray(
-        $mappingArray,
-        $pid,
-        $colPos,
-        $area,
-        $parentUid,
-        $table,
-        $relativeUid,
-        $relativeRecord,
-        DataHandler $tceMain
-    ) {
-        foreach ($mappingArray as $record) {
-            if (0 < $pid) {
-                $record['pid'] = $pid;
-            }
-            if ((false === empty($colPos) || 0 === $colPos || '0' === $colPos)) {
-                $record['colPos'] = $colPos;
-            }
-            $record['tx_flux_column'] = (string) (self::COLPOS_FLUXCONTENT === (integer) $colPos ? $area : '');
-            $record['tx_flux_parent'] = (integer) (self::COLPOS_FLUXCONTENT === (integer) $colPos ? $parentUid : 0);
-            if (0 > $relativeUid) {
-                $record['sorting'] = $tceMain->resorting($table, $relativeRecord['pid'], 'sorting', abs($relativeUid));
-            }
-            $this->updateRecordInDataMap($record, null, $tceMain);
-            $tceMain->registerDBList[$table][$record['uid']];
-        }
-    }
-
     /**
      * @param string $command
      * @param string $subCommand
