@@ -72,36 +72,6 @@ class ContentService implements SingletonInterface
     }
 
     /**
-     * @param string $command
-     * @param string $subCommand
-     * @param integer $id
-     * @param array $row
-     * @param DataHandler $tceMain
-     * @return array
-     */
-    protected function createMappingArray($command, $subCommand, $id, array $row, DataHandler $tceMain)
-    {
-        $mappingArray = [];
-        if ('copy' !== $command) {
-            $mappingArray[$id] = $row;
-        } else {
-            // Only override values from content elements in cmdmap to prevent that child elements "inherits"
-            // tx_flux_parent and tx_flux_column which would position them outside their tx_flux_parent.
-            foreach ($tceMain->cmdmap['tt_content'] as $copyFromUid => $cmdMapValues) {
-                $copyToUid = $tceMain->copyMappingArray['tt_content'][$copyFromUid];
-                $record = $this->loadRecordFromDatabase($copyToUid);
-                if ('reference' === $subCommand) {
-                    $record['CType'] = 'shortcut';
-                    $record['records'] = $id;
-                }
-
-                $mappingArray[$copyFromUid] = $record;
-            }
-        }
-        return $mappingArray;
-    }
-
-    /**
      * Move the content element depending on various request/row parameters.
      *
      * @param array $row The row which may, may not, trigger moving.
