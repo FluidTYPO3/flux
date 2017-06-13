@@ -45,11 +45,6 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 			partialRootPath = EXT:flux/Resources/Private/Partials/
 			layoutRootPath = EXT:flux/Resources/Private/Layouts/
 		}
-		plugin.tx_flux.settings {
-			flexform {
-				rteDefaults = richtext:rte_transform[flag=rte_enabled|mode=ts_css]
-			}
-		}
 	');
 
 	if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
