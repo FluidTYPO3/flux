@@ -45,9 +45,7 @@ class Core
      * @var array
      */
     private static $forms = [
-        'models' => [],
         'tables' => [],
-        'packages' => []
     ];
 
     /**
@@ -65,13 +63,6 @@ class Core
     ];
 
     /**
-     * Contains all programatically added TypoScript configuration files for auto-inclusion
-     * @var array
-     * @deprecated To be removed in next major release
-     */
-    private static $staticTypoScript = [];
-
-    /**
      * Contains queued instructions to call \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin in later hook
      * @var array
      */
@@ -80,35 +71,9 @@ class Core
     /**
      * @return array
      */
-    public static function getStaticTypoScript()
-    {
-        return self::$staticTypoScript;
-    }
-
-    /**
-     * @return array
-     */
     public static function getQueuedContentTypeRegistrations()
     {
         return static::$queuedContentTypeRegistrations;
-    }
-
-    /**
-     * @param mixed $locationOrLocations
-     * @return void
-     */
-    public static function addStaticTypoScript($locationOrLocations)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (true === is_array($locationOrLocations) || true === $locationOrLocations instanceof \Traversable) {
-            foreach ($locationOrLocations as $location) {
-                self::addStaticTypoScript($location);
-            }
-        } else {
-            if (false === in_array($locationOrLocations, self::$staticTypoScript)) {
-                array_push(self::$staticTypoScript, $locationOrLocations);
-            }
-        }
     }
 
     /**
@@ -125,71 +90,6 @@ class Core
             $form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
         }
         self::$forms['tables'][$table] = $form;
-    }
-
-    /**
-     * Registers automatic Form instance building and use as TCA for a model object class/table.
-     *
-     * @param string $className
-     * @return void
-     */
-    public static function registerAutoFormForModelObjectClassName($className)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        self::registerFormForModelObjectClassName($className);
-    }
-
-    /**
-     * Registers a Form instance to use when TCA for a model object class/table is requested.
-     *
-     * @param string $className
-     * @param Form $form
-     * @return void
-     */
-    public static function registerFormForModelObjectClassName($className, Form $form = null)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (null !== $form && true === isset($GLOBALS['_EXTKEY']) && null === $form->getExtensionName()) {
-            $form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
-        }
-        self::$forms['models'][$className] = $form;
-    }
-
-    /**
-     * @param string $className
-     * @return void
-     */
-    public static function unregisterFormForModelObjectClassName($className)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (true === isset(self::$forms['models'][$className])) {
-            unset(self::$forms['models'][$className]);
-        }
-    }
-
-    /**
-     * Registers a package key (Vendor.ExtensionName) which is expected to
-     * contain Domain/Form/{$modelName}Form classes.
-     *
-     * @param string $packageName
-     * @return void
-     */
-    public static function registerFluxDomainFormPackage($packageName)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        self::$forms['packages'][$packageName] = true;
-    }
-
-    /**
-     * @param string $packageName
-     * @return void
-     */
-    public static function unregisterFluxDomainFormPackage($packageName)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (true === isset(self::$forms['packages'][$packageName])) {
-            unset(self::$forms['packages'][$packageName]);
-        }
     }
 
     /**
@@ -475,37 +375,6 @@ class Core
     {
         if (true === isset(self::$forms['tables'][$table])) {
             return self::$forms['tables'][$table];
-        }
-        return null;
-    }
-
-    /**
-     * @return Form[]
-     */
-    public static function getRegisteredFormsForModelObjectClasses()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return self::$forms['models'];
-    }
-
-    /**
-     * @return Form[]
-     */
-    public static function getRegisteredPackagesForAutoForms()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return self::$forms['packages'];
-    }
-
-    /**
-     * @param string $class
-     * @return Form|NULL
-     */
-    public static function getRegisteredFormForModelObjectClass($class)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (true === isset(self::$forms['models'][$class])) {
-            return self::$forms['models'][$class];
         }
         return null;
     }

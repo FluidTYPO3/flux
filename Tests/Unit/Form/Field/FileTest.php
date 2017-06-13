@@ -22,7 +22,7 @@ class FileTest extends AbstractFieldTest
     protected $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
-        'enable' => true,
+        'enabled' => true,
         'maxSize' => 135153542,
         'allowed' => 'jpg,gif',
         'disallowed' => 'doc,docx',

@@ -62,12 +62,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     protected $exclude = true;
 
     /**
-     * @var boolean
-     * @deprecated To be removed in next major release
-     */
-    protected $enable = true;
-
-    /**
      * @var string
      */
     protected $validate;
@@ -202,7 +196,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public function build()
     {
-        if (false === $this->getEnable()) {
+        if (false === $this->getEnabled()) {
             return [];
         }
         $configuration = $this->buildConfiguration();
@@ -335,26 +329,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     public function getExclude()
     {
         return (boolean) $this->exclude;
-    }
-
-    /**
-     * @param boolean $enable
-     * @return FieldInterface
-     */
-    public function setEnable($enable)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $this->enable = (boolean) $enable;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getEnable()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return (boolean) $this->enable;
     }
 
     /**

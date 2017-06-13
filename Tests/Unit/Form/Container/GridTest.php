@@ -8,10 +8,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Tests\Unit\Form\Container\AbstractContainerTest;
 use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
-use FluidTYPO3\Flux\View\ViewContext;
+use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * GridTest
@@ -27,12 +26,10 @@ class GridTest extends AbstractContainerTest
     protected function getDummyGridFromTemplate($gridName = 'grid', $template = self::FIXTURE_TEMPLATE_BASICGRID)
     {
         $templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($template);
-        $service = $this->createFluxServiceInstance();
-        $viewContext = new ViewContext($templatePathAndFilename, 'Flux');
-        $viewContext->setSectionName('Configuration');
-
-        $grid = $service->getGridFromTemplateFile($viewContext, $gridName);
-        return $grid;
+        $view = $this->objectManager->get(StandaloneView::class);
+        $view->setTemplatePathAndFilename($templatePathAndFilename);
+        $view->renderSection('Configuration', []);
+        return $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, 'grids')[$gridName] ?? Grid::create();
     }
 
     /**

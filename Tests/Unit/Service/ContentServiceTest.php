@@ -79,7 +79,6 @@ class ContentServiceTest extends AbstractTestCase
         $relativeTo = -1;
         $tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
         $mock->expects($this->once())->method('loadRecordFromDatabase')->with(1)->will($this->returnValue($relativeRecord));
-        #$mock->expects($this->once())->method('updateRecordInDataMap');
         $mock->moveRecord($row, $relativeTo, array(), $tceMain);
         $this->assertEquals($relativeRecord['tx_flux_column'], $row['tx_flux_column']);
         $this->assertEquals($relativeRecord['tx_flux_parent'], $row['tx_flux_parent']);
@@ -98,33 +97,6 @@ class ContentServiceTest extends AbstractTestCase
         $mockService->expects($this->once())->method('get')->with('tt_content', '*', "tx_flux_parent = '123'");
         $mock->injectWorkspacesAwareRecordService($mockService);
         $this->callInaccessibleMethod($mock, 'loadRecordsFromDatabase', 123);
-    }
-
-    /**
-     * @test
-     */
-    public function testLoadRecordFromDatabaseWithLanguageUidZero()
-    {
-        $this->markTestSkippedOnMaster('Skipped on master');
-        $mock = new ContentService();
-        /** @var WorkspacesAwareRecordService $mockService */
-        $mockService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('getSingle'))->getMock();
-        $mockService->expects($this->once())->method('getSingle')->with('tt_content', '*');
-        $mock->injectWorkspacesAwareRecordService($mockService);
-        $this->callInaccessibleMethod($mock, 'loadRecordFromDatabase', 123, 0);
-    }
-
-    /**
-     * @test
-     */
-    public function testLoadRecordFromDatabaseWithLanguageUidNotZero()
-    {
-        $mock = new ContentService();
-        /** @var WorkspacesAwareRecordService $mockService */
-        $mockService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('getSingle'))->getMock();
-        $mockService->expects($this->once())->method('getSingle')->with('tt_content', '*');
-        $mock->injectWorkspacesAwareRecordService($mockService);
-        $this->callInaccessibleMethod($mock, 'loadRecordFromDatabase', 123, 321);
     }
 
     /**
@@ -153,12 +125,12 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function testInitializeRecordByNewAndOldAndLanguageUids($newUid, $oldUid, $newLanguageUid, $fluxParentUid, $expectsInitialization)
     {
-        if (GeneralUtility::compat_version('8.4.0')) {
-            $this->markTestSkipped(
-                'Temporarily skipped; see https://review.typo3.org/#/c/50784/ - deleteClause uses DB connection also ' .
-                'when no delete field exists which it INTENTIONALLY does not do in our tests for this very reason.'
-            );
-        }
+        /*
+        $this->markTestSkipped(
+            'Temporarily skipped; see https://review.typo3.org/#/c/50784/ - deleteClause uses DB connection also ' .
+            'when no delete field exists which it INTENTIONALLY does not do in our tests for this very reason.'
+        );
+        */
         $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('loadRecordFromDatabase', 'updateRecordInDataMap'))->getMock();
         $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('get'))->getMock();
         $recordService->expects($this->any())->method('get')->willReturn(null);

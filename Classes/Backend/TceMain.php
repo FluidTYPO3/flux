@@ -137,11 +137,7 @@ class TceMain
                 $others[$uid] = $command;
             } elseif ($command['version']['action'] === 'swap') {
                 $remap = true;
-                if ($this->getDatabaseConnection()->exec_SELECTcountRows(
-                    'uid',
-                    'tt_content',
-                    sprintf('tx_flux_parent = %d', $uid))
-                ) {
+                if (count($this->recordService->get('tt_content', 'uid', sprintf('tx_flux_parent = %d', $uid)))) {
                     $parents[$uid] = $command;
                 } else {
                     $children[$uid] = $command;
@@ -616,6 +612,11 @@ class TceMain
      */
     protected function copySortingValueOfChildrenFromOriginalsToCopies(array $parentRecord)
     {
+        if (!$parentRecord['uid']) {
+            // make sure value is set (#1407)
+            return;
+        }
+
         $children = $this->recordService->get(
             'tt_content',
             'uid',
@@ -758,10 +759,10 @@ class TceMain
      */
     protected function getOriginalRecordUid($table, $uid)
     {
-        $placeholder = BackendUtility::getRecord(
+        $placeholder = $this->recordService->get(
             $table,
-            $uid,
             't3ver_move_id',
+            $uid,
             sprintf(
                 ' %s t3ver_state = 3 AND deleted = 0 AND uid = %d',
                 version_compare(ExtensionManagementUtility::getExtensionVersion('workspaces'), '8.0.0', '<') ? 'AND' : '',
@@ -769,8 +770,8 @@ class TceMain
             )
         );
 
-        if ($placeholder) {
-            return (integer) $placeholder['t3ver_move_id'];
+        if ($placeholder[0] ?? false) {
+            return (integer) $placeholder[0]['t3ver_move_id'];
         }
 
         return $uid;
@@ -795,17 +796,13 @@ class TceMain
         array $arguments,
         DataHandler $reference
     ) {
-        try {
-            $id = $this->resolveRecordUid($id, $reference);
-            $record = $this->ensureRecordDataIsLoaded($table, $id, $record);
-            $arguments['row'] = &$record;
-            $arguments[] = &$reference;
-            $detectedProviders = $this->configurationService->resolveConfigurationProviders($table, null, $record);
-            foreach ($detectedProviders as $provider) {
-                call_user_func_array([$provider, $methodName], array_values($arguments));
-            }
-        } catch (\RuntimeException $error) {
-            $this->configurationService->debug($error);
+        $id = $this->resolveRecordUid($id, $reference);
+        $record = $this->ensureRecordDataIsLoaded($table, $id, $record);
+        $arguments['row'] = &$record;
+        $arguments[] = &$reference;
+        $detectedProviders = $this->configurationService->resolveConfigurationProviders($table, null, $record);
+        foreach ($detectedProviders as $provider) {
+            call_user_func_array([$provider, $methodName], array_values($arguments));
         }
         return $record;
     }

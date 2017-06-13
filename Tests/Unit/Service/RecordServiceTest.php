@@ -8,43 +8,53 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use Prophecy\Argument;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * RecordServiceTest
  */
 class RecordServiceTest extends AbstractTestCase
 {
-
-    /**
-     * @var DatabaseConnection
-     */
-    private static $connectionMock;
-
     /**
      * @param array $methods
-     * @return DatabaseConnection
+     * @return RecordService
      */
-    protected function getMockDatabaseConnection(array $methods)
+    protected function getMockServiceInstance(array $methods = [])
     {
-        self::$connectionMock = $this->getMockBuilder($this->createInstanceClassName())->setMethods($methods)->getMock();
-        return self::$connectionMock;
+        return $this->getMockBuilder($this->createInstanceClassName())->setMethods($methods)->getMock();
     }
 
     /**
-     * @param array $methods
-     * @param array $connectionMethods
-     * @return RecordService
+     * @return QueryBuilder
      */
-    protected function getMockServiceInstance(array $methods, array $connectionMethods)
+    protected function createAndRegisterMockForQueryBuilder()
     {
-        $methods[] = 'getDatabaseConnection';
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods($methods)->getMock();
-        $connectionMock = $this->getMockDatabaseConnection($connectionMethods);
-        $mock->expects($this->atLeastOnce())->method('getDatabaseConnection')->will($this->returnValue($connectionMock));
-        return $mock;
+        $statement = $this->prophesize(Statement::class);
+        $statement->fetchAll()->willReturn([]);
+
+        $queryBuilder = $this->prophesize(QueryBuilder::class);
+        $queryBuilder->from(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->where(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->select(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
+        $queryBuilder->orderBy('sorting', '');
+        $queryBuilder->delete(Argument::type('string'));
+        $queryBuilder->setMaxResults(0);
+        $queryBuilder->setMaxResults(60);
+        $queryBuilder->execute()->willReturn($statement->reveal());
+
+        $prophecy = $this->prophesize(ConnectionPool::class);
+        $prophecy->getQueryBuilderForTable(Argument::type('string'))->willReturn($queryBuilder->reveal());
+
+        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
+
+        return $queryBuilder;
     }
 
     /**
@@ -58,8 +68,10 @@ class RecordServiceTest extends AbstractTestCase
         $groupBy = 'foo';
         $orderBy = 'bar';
         $limit = 60;
-        $mock = $this->getMockServiceInstance(array(), array('exec_SELECTgetRows'));
-        self::$connectionMock->expects($this->once())->method('exec_SELECTgetRows')->with($fields, $table, $clause, $groupBy, $orderBy, $limit);
+        $mock = $this->getMockServiceInstance();
+
+        $this->createAndRegisterMockForQueryBuilder();
+
         $mock->get($table, $fields, $clause, $groupBy, $orderBy, $limit);
     }
 
@@ -71,8 +83,10 @@ class RecordServiceTest extends AbstractTestCase
         $table = 'test';
         $fields = 'a,b';
         $uid = 123;
-        $mock = $this->getMockServiceInstance(array(), array('exec_SELECTgetSingleRow'));
-        self::$connectionMock->expects($this->once())->method('exec_SELECTgetSingleRow')->with($fields, $table, "uid = '" . $uid . "'");
+        $mock = $this->getMockServiceInstance();
+
+        $this->createAndRegisterMockForQueryBuilder();
+
         $mock->getSingle($table, $fields, $uid);
     }
 
@@ -84,8 +98,10 @@ class RecordServiceTest extends AbstractTestCase
         $table = 'test';
         $uid = 123;
         $fields = array('foo' => 'bar', 'uid' => $uid);
-        $mock = $this->getMockServiceInstance(array(), array('exec_UPDATEquery'));
-        self::$connectionMock->expects($this->once())->method('exec_UPDATEquery')->with($table, "uid = '" . $uid . "'", $fields);
+        $mock = $this->getMockServiceInstance();
+
+        $this->createAndRegisterMockForQueryBuilder();
+
         $mock->update($table, $fields);
     }
 
@@ -96,8 +112,10 @@ class RecordServiceTest extends AbstractTestCase
     {
         $table = 'test';
         $uid = 123;
-        $mock = $this->getMockServiceInstance(array(), array('exec_DELETEquery'));
-        self::$connectionMock->expects($this->once())->method('exec_DELETEquery')->with($table, "uid = '" . $uid . "'");
+        $mock = $this->getMockServiceInstance();
+
+        $this->createAndRegisterMockForQueryBuilder();
+
         $mock->delete($table, $uid);
     }
 
@@ -107,39 +125,11 @@ class RecordServiceTest extends AbstractTestCase
     public function deleteMethodCallsExpectedDatabaseMethodWithRecord()
     {
         $table = 'test';
-        $uid = 123;
         $record = array('uid' => 123);
-        $mock = $this->getMockServiceInstance(array(), array('exec_DELETEquery'));
-        self::$connectionMock->expects($this->once())->method('exec_DELETEquery')->with($table, "uid = '" . $uid . "'");
+        $mock = $this->getMockServiceInstance();
+
+        $this->createAndRegisterMockForQueryBuilder();
+
         $mock->delete($table, $record);
-    }
-
-    /**
-     * @test
-     */
-    public function returnsDatabaseConnection()
-    {
-        $instance = $this->createInstance();
-        $this->assertSame($GLOBALS['TYPO3_DB'], $this->callInaccessibleMethod($instance, 'getDatabaseConnection'));
-    }
-
-    /**
-     * @test
-     */
-    public function preparedGetCallsExpectedMethodSequence()
-    {
-        $query = $this->getMockBuilder(
-            'TYPO3\\CMS\\Core\\Database\\PreparedStatement'
-        )->setMethods(
-            array('execute', 'fetchAll', 'free')
-        )->disableOriginalConstructor()->getMock();
-        $connection = $this->getMockDatabaseConnection(array('prepare_SELECTquery'));
-        $connection->expects($this->once())->method('prepare_SELECTquery')->will($this->returnValue($query));
-        $query->expects($this->once())->method('execute');
-        $query->expects($this->once())->method('fetchAll')->will($this->returnValue(array()));
-        $query->expects($this->once())->method('free');
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getDatabaseConnection'))->getMock();
-        $mock->expects($this->once())->method('getDatabaseConnection')->will($this->returnValue($connection));
-        $mock->preparedGet('table', '', '', array());
     }
 }

@@ -8,8 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 use FluidTYPO3\Flux\Form\WizardInterface;
+use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
 /**
  * AbstractWizardTest

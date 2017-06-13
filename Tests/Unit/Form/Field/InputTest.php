@@ -20,7 +20,7 @@ class InputTest extends AbstractFieldTest
     protected $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
-        'enable' => true,
+        'enabled' => true,
         'maxCharacters' => 30,
         'maximum' => 10,
         'minimum' => 0,

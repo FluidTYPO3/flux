@@ -64,7 +64,7 @@ class CustomViewHelper extends UserFuncViewHelper
         array $arguments,
         \Closure $renderChildrenClosure
     ) {
-        $container = $renderingContext->getTemplateVariableContainer();
+        $container = $renderingContext->getVariableProvider();
         $closure = function ($parameters) use ($container, $renderingContext, $renderChildrenClosure) {
             $backupParameters = null;
             $backupParameters = null;

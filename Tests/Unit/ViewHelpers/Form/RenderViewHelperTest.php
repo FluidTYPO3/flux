@@ -10,8 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-use TYPO3\CMS\Backend\Form\NodeInterface;
 use TYPO3\CMS\Backend\Form\NodeFactory;
+use TYPO3\CMS\Backend\Form\NodeInterface;
 
 /**
  * RenderViewHelperTest

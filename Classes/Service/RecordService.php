@@ -8,8 +8,11 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Service to wrap around record operations normally going through
@@ -24,13 +27,27 @@ class RecordService implements SingletonInterface
      * @param string $clause
      * @param string $groupBy
      * @param string $orderBy
-     * @param string $limit
+     * @param integer $limit
      * @return array|NULL
      */
-    public function get($table, $fields, $clause = '1=1', $groupBy = '', $orderBy = '', $limit = '')
+    public function get($table, $fields, $clause = null, $groupBy = null, $orderBy = null, $limit = 0)
     {
-        $connection = $this->getDatabaseConnection();
-        return $connection->exec_SELECTgetRows($fields, $table, $clause, $groupBy, $orderBy, $limit);
+        $statement = $this->getQueryBuilder($table)->from($table)->select(...explode(',', $fields));
+
+        if ($groupBy) {
+            $statement->groupBy($groupBy);
+        }
+        if ($orderBy) {
+            $statement->orderBy(...explode(' ', $orderBy));
+        }
+        if ($clause) {
+            $statement->where($clause);
+        }
+        if ($limit) {
+            $statement->setMaxResults($limit);
+        }
+
+        return $statement->execute()->fetchAll();
     }
 
     /**
@@ -41,9 +58,14 @@ class RecordService implements SingletonInterface
      */
     public function getSingle($table, $fields, $uid)
     {
-        $connection = $this->getDatabaseConnection();
-        $record = $connection->exec_SELECTgetSingleRow($fields, $table, "uid = '" . intval($uid) . "'");
-        return false !== $record ? $record : null;
+        return reset(
+            $this->getQueryBuilder($table)
+                ->from($table)
+                ->select(...explode(',', $fields))
+                ->where(sprintf('uid = %d', $uid))
+                ->execute()
+                ->fetchAll()
+        );
     }
 
     /**
@@ -53,8 +75,7 @@ class RecordService implements SingletonInterface
      */
     public function update($table, array $record)
     {
-        $connection = $this->getDatabaseConnection();
-        return $connection->exec_UPDATEquery($table, "uid = '" . intval($record['uid']) . "'", $record);
+        return $this->getQueryBuilder($table)->update($table)->where(sprintf('uid = %d', $record['uid']))->setParameters($record)->execute();
     }
 
     /**
@@ -64,10 +85,9 @@ class RecordService implements SingletonInterface
      */
     public function delete($table, $recordOrUid)
     {
-        $connection = $this->getDatabaseConnection();
         $clauseUid = true === is_array($recordOrUid) ? $recordOrUid['uid'] : $recordOrUid;
         $clause = "uid = '" . intval($clauseUid) . "'";
-        return $connection->exec_DELETEquery($table, $clause);
+        return (bool) $this->getQueryBuilder($table)->delete($table)->where($clause)->execute();
     }
 
     /**
@@ -79,19 +99,16 @@ class RecordService implements SingletonInterface
      */
     public function preparedGet($table, $fields, $condition, $values = [])
     {
-        $connection = $this->getDatabaseConnection();
-        $query = $connection->prepare_SELECTquery($fields, $table, $condition);
-        $query->execute($values);
-        $result = $query->fetchAll();
-        $query->free();
-        return $result;
+        return $this->getQueryBuilder($table)->select(...$fields)->from($table)->where($condition)->execute()->fetchAll();
     }
 
     /**
-     * @return DatabaseConnection
+     * @param $table
+     * @return QueryBuilder
      */
-    protected function getDatabaseConnection()
+    protected function getQueryBuilder($table)
     {
-        return $GLOBALS['TYPO3_DB'];
+        return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
     }
+
 }

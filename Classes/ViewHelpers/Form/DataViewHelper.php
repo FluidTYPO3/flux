@@ -83,7 +83,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
-        $templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+        $templateVariableContainer = $renderingContext->getVariableProvider();
         $as = $arguments['as'];
         $record = $arguments['record'];
         $uid = $arguments['uid'];
@@ -100,7 +100,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
             if (null === $record) {
                 $record = static::getRecordService()->getSingle($table, 'uid,' . $field, $uid);
             }
-            if (null === $record) {
+            if (!$record) {
                 ErrorUtility::throwViewHelperException(
                     sprintf(
                         'Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .
@@ -147,12 +147,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
         if (0 === count($providers)) {
             $lang = static::getCurrentLanguageName();
             $pointer = static::getCurrentValuePointerName();
-            $dataArray = static::$configurationService->convertFlexFormContentToArray(
-                $record[$field],
-                null,
-                $lang,
-                $pointer
-            );
+            $dataArray = static::$configurationService->convertFlexFormContentToArray($record[$field]);
         } else {
             $dataArray = [];
             /** @var ProviderInterface $provider */

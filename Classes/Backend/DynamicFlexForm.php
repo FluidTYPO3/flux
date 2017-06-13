@@ -249,6 +249,7 @@ class DynamicFlexForm
                     // This provider has requested static DS caching; stop attempting
                     // to process any other DS and cache this DS as final result:
                     $provider->postProcessDataStructure($row, $dataStructArray, $conf);
+                    $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
                     $cache->set($cacheKey, $dataStructArray);
                     return;
                 } else {
