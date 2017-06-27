@@ -8,15 +8,18 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Configuration\BackendConfigurationManager;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FieldInterface;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Text
  */
 class Text extends Input implements FieldInterface
 {
-
     /**
      * @var integer
      */
@@ -40,6 +43,11 @@ class Text extends Input implements FieldInterface
     /**
      * @var string
      */
+    protected $richtextConfiguration;
+
+    /**
+     * @var string
+     */
     protected $renderType = '';
 
     /**
@@ -56,12 +64,9 @@ class Text extends Input implements FieldInterface
         $configuration['rows'] = $this->getRows();
         $configuration['cols'] = $this->getColumns();
         $configuration['eval'] = $this->getValidate();
-        $defaultExtras = $this->getDefaultExtras();
-        if (true === $this->getEnableRichText() && true === empty($defaultExtras)) {
-            $typoScript = $this->getConfigurationService()->getAllTypoScript();
-            $configuration['defaultExtras'] = $typoScript['plugin']['tx_flux']['settings']['flexform']['rteDefaults'];
-        } else {
-            $configuration['defaultExtras'] = $defaultExtras;
+        if (true === $this->getEnableRichText()) {
+            $configuration['enableRichtext'] = true;
+            $configuration['richtextConfiguration'] = $this->getRichtextConfiguration();
         }
         $renderType = $this->getRenderType();
         if (false === empty($renderType)) {
@@ -175,5 +180,50 @@ class Text extends Input implements FieldInterface
     public function setFormat($format)
     {
         $this->format = $format;
+    }
+
+    /**
+     * Fetch richtext editor configuration preset
+     *
+     * The following places are looked at:
+     *
+     * 1. 'richtextConfiguration' attribute of the current tag
+     * 2. PageTSconfig: "RTE.tx_flux.preset"
+     * 3. PageTSconfig: "RTE.default.preset"
+     *
+     * @return string
+     */
+    public function getRichtextConfiguration()
+    {
+        return $this->richtextConfiguration ?: $this->getPageTsConfigForRichTextEditor();
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPageTsConfigForRichTextEditor()
+    {
+        $configurationManager = $this->getObjectManager()->get(ConfigurationManagerInterface::class);
+        if ($configurationManager instanceof BackendConfigurationManager) {
+            $pageUid = $configurationManager->getCurrentPageId();
+        } else {
+            $root = $this->getRoot();
+            $pageUid = $root instanceof Form ? $root->getOption('record')['pid'] ?? 0 : 0;
+        }
+
+        if ($pageUid) {
+            return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
+        }
+        return 'default';
+    }
+
+    /**
+     * @param string $richtextConfiguration
+     * @return Text
+     */
+    public function setRichtextConfiguration($richtextConfiguration)
+    {
+        $this->richtextConfiguration = $richtextConfiguration;
+        return $this;
     }
 }
