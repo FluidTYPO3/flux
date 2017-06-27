@@ -65,6 +65,15 @@ class TextViewHelper extends AbstractFieldViewHelper
             false,
             ''
         );
+        $this->registerArgument(
+            'richtextConfiguration',
+            'string',
+            'Specifies which configuration to use in combination with EXT:rte_ckeditor.' .
+            'The default value is \'default\', since that\'s the standard configuration the CMS uses. ' .
+            'More information: https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Properties/TextRichtextConfiugration.html',
+            false,
+            'default'
+        );
     }
 
     /**
@@ -81,6 +90,7 @@ class TextViewHelper extends AbstractFieldViewHelper
         $text->setRows($arguments['rows']);
         $text->setDefaultExtras($arguments['defaultExtras']);
         $text->setEnableRichText($arguments['enableRichText']);
+        $text->setRichtextConfiguration($arguments['richtextConfiguration']);
         $text->setRenderType($arguments['renderType']);
         $text->setFormat($arguments['format']);
         return $text;

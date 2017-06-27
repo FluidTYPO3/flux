@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Form\FieldInterface;
  */
 class Text extends Input implements FieldInterface
 {
+    const DEFAULT_RTE_CONFIG = 'default';
 
     /**
      * @var integer
@@ -39,6 +40,11 @@ class Text extends Input implements FieldInterface
     /**
      * @var string
      */
+    protected $richtextConfiguration;
+
+    /**
+     * @var string
+     */
     protected $renderType = '';
 
     /**
@@ -56,11 +62,14 @@ class Text extends Input implements FieldInterface
         $configuration['cols'] = $this->getColumns();
         $configuration['eval'] = $this->getValidate();
         $defaultExtras = $this->getDefaultExtras();
+        $this->computeRichtextConfiguration();
         if (true === $this->getEnableRichText() && true === empty($defaultExtras)) {
             $typoScript = $this->getConfigurationService()->getAllTypoScript();
             $configuration['defaultExtras'] = $typoScript['plugin']['tx_flux']['settings']['flexform']['rteDefaults'];
+            $configuration['richtextConfiguration'] = $this->getRichtextConfiguration();
         } else {
             $configuration['defaultExtras'] = $defaultExtras;
+            $configuration['richtextConfiguration'] = $this->getRichtextConfiguration();
         }
         $renderType = $this->getRenderType();
         if (false === empty($renderType)) {
@@ -172,5 +181,42 @@ class Text extends Input implements FieldInterface
     public function setFormat($format)
     {
         $this->format = $format;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRichtextConfiguration()
+    {
+        return $this->richtextConfiguration;
+    }
+
+    /**
+     * @param string $richtextConfiguration
+     * @return Text
+     */
+    public function setRichtextConfiguration($richtextConfiguration)
+    {
+        $this->richtextConfiguration = $richtextConfiguration;
+        return $this;
+    }
+
+    /**
+     * @return void
+     */
+    protected function computeRichtextConfiguration()
+    {
+        if (true === empty($this->richtextConfiguration)) {
+            $typoScript = $this->getConfigurationService()->getAllTypoScript();
+            $richtextConfigurationFromTS = $typoScript['plugin']['tx_flux']['settings']['flexform']['richtextConfiguration'];
+
+            if (true === empty($richtextConfigurationFromTS)) {
+                $this->richtextConfiguration = static::DEFAULT_RTE_CONFIG;
+
+                return;
+            }
+
+            $this->richtextConfiguration = $richtextConfigurationFromTS;
+        }
     }
 }
