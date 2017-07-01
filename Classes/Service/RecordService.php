@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -58,14 +59,16 @@ class RecordService implements SingletonInterface
      */
     public function getSingle($table, $fields, $uid)
     {
-        return reset(
-            $this->getQueryBuilder($table)
-                ->from($table)
-                ->select(...explode(',', $fields))
-                ->where(sprintf('uid = %d', $uid))
-                ->execute()
-                ->fetchAll()
-        );
+        if (TYPO3_MODE === 'BE') {
+            return BackendUtility::getRecord($table, $uid, $fields);
+        }
+        $results = $this->getQueryBuilder($table)
+            ->from($table)
+            ->select(...explode(',', $fields))
+            ->where(sprintf('uid = %d', $uid))
+            ->execute()
+            ->fetchAll() ?: [];
+        return reset($results);
     }
 
     /**
