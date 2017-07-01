@@ -21,7 +21,8 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
- * Converts raw flexform xml into an associative array.
+ * Converts raw flexform xml into an associative array, and applies any
+ * transformation that may be configured for fields/objects.
  *
  * ### Example: Fetch page configuration inside content element
  *
