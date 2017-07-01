@@ -21,7 +21,15 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
- * Converts raw flexform xml into an associative array
+ * Converts raw flexform xml into an associative array, and applies any
+ * transformation that may be configured for fields/objects.
+ *
+ * ### Example: Fetch page configuration inside content element
+ *
+ * Since the `page` variable is available in fluidcontent elements, we
+ * can use it to access page configuration data:
+ *
+ *     <flux:form.data table="pages" field="tx_fed_page_flexform" record="{page}" />
  */
 class DataViewHelper extends AbstractViewHelper implements CompilableInterface
 {
