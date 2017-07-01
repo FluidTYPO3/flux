@@ -304,7 +304,7 @@ class AbstractProvider implements ProviderInterface
     /**
      * @param array $row
      * @param string|null $name
-     * @return array
+     * @return array|false
      */
     protected function extractConfiguration(array $row, $name = null)
     {
@@ -336,6 +336,7 @@ class AbstractProvider implements ProviderInterface
 
         } catch (Exception $error) {
             GeneralUtility::sysLog($error->getMessage(), 'flux');
+            return false;
         }
 
         return $variables;
