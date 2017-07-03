@@ -78,7 +78,11 @@ class RecordService implements SingletonInterface
      */
     public function update($table, array $record)
     {
-        return $this->getQueryBuilder($table)->update($table)->where(sprintf('uid = %d', $record['uid']))->setParameters($record)->execute();
+        $builder = $this->getQueryBuilder($table)->update($table)->where(sprintf('uid = %d', $record['uid']));
+        foreach ($record as $name => $value) {
+            $builder->set($name, $value);
+        }
+        return $builder->execute();
     }
 
     /**
