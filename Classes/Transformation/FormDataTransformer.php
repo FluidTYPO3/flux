@@ -131,6 +131,9 @@ class FormDataTransformer
             return explode(',', $value);
         } elseif ('bool' === $dataType || 'boolean' === $dataType) {
             return boolval($value);
+        } elseif (strpos($dataType, '->')) {
+            list ($class, $function) = explode('->', $dataType);
+            return call_user_func_array([$this->objectManager->get($class), $function], [$value]);
         } else {
             return $this->getObjectOfType($dataType, $value);
         }
