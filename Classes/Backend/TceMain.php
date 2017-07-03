@@ -470,7 +470,7 @@ class TceMain
         // Effect: we have to perform a few extra (tiny) SQL queries here, sadly this cannot be avoided.
         $resolveUid = $this->getOriginalRecordUid($table, $uid);
         $newColumnNumber = GeneralUtility::_GET('data')[$table][$resolveUid]['colPos'];
-        if ($newColumnNumber === null) {
+        if ($newColumnNumber === null && is_array($reference->cmdmap[$table][$resolveUid]['move']['update'] ?? null)) {
             $newColumnNumber = $reference->cmdmap[$table][$resolveUid]['move']['update']['colPos'];
         }
 
