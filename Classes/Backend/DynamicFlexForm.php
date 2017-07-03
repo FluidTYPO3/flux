@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Backend;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -148,7 +149,7 @@ class DynamicFlexForm
             return $fromCache;
         }
         if (count($record) === 1 && isset($record['uid'])) {
-            $record = $this->recordService->getSingle($identifier['tableName'], '*', $record['uid']);
+            $record = BackendUtility::getRecord($identifier['tableName'], $record['uid'], '*', '', false);
         }
         $fieldName = $identifier['fieldName'];
         $dataStructArray = [];

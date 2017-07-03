@@ -600,7 +600,7 @@ class AbstractProvider implements ProviderInterface
     {
         if ('update' === $operation || 'new' === $operation) {
             $record = $reference->datamap[$this->tableName][$id];
-            $stored = $this->recordService->getSingle($this->tableName, '*', $record['uid']);
+            $stored = $this->recordService->getSingle($this->tableName, '*', $record['uid']) ?? $record;
             $fieldName = $this->getFieldName((array) $record);
             $dontProcess = (
                 null === $fieldName
@@ -629,7 +629,9 @@ class AbstractProvider implements ProviderInterface
             $stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($row[$fieldName], $removals);
             $row[$fieldName] = $stored[$fieldName];
             $reference->datamap[$this->tableName][$id][$fieldName] = $row[$fieldName];
-            $this->recordService->update($this->tableName, $stored);
+            if ($stored['uid']) {
+                $this->recordService->update($this->tableName, $stored);
+            }
         }
     }
 
