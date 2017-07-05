@@ -709,9 +709,19 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessDataStructure(array &$row, &$dataStructure, array $conf)
     {
+        $defaultDataStructure = ['sheets' => ['sDEF' => ['ROOT' => ['type' => 'array', 'el' => ['xmlTitle' => ['TCEforms' => ['label' => 'The Title:', 'config' => ['type' => 'input', 'size' => '48']]]]]]]];
         $form = $this->getForm($row);
         if (null !== $form) {
-            $dataStructure = $form->build();
+            $newDataStructure = $form->build();
+            if ($dataStructure === $defaultDataStructure) {
+                $dataStructure = $newDataStructure;
+            } else {
+                if ($newDataStructure !== ['meta' => ['langDisable' => 1, 'langChildren' => 0], 'ROOT' => ['type' => 'array', 'el' => []]]) {
+                    $dataStructure = array_replace_recursive($dataStructure, $newDataStructure);
+                } else {
+                    $dataStructure = $newDataStructure;
+                }
+            }
         }
     }
 

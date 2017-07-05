@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
+use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -21,7 +22,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 /**
  * Dynamic FlexForm insertion hook class
  */
-class DynamicFlexForm
+class DynamicFlexForm extends FlexFormTools
 {
 
     /**
@@ -38,6 +39,11 @@ class DynamicFlexForm
      * @var WorkspacesAwareRecordService
      */
     protected $recordService;
+
+    /**
+     * @var boolean
+     */
+    protected static $recursed = false;
 
     /**
      * @param ObjectManagerInterface $objectManager
@@ -89,6 +95,10 @@ class DynamicFlexForm
      */
     public function getDataStructureIdentifierPreProcess(array $tca, $tableName, $fieldName, array $record)
     {
+        if (static::$recursed) {
+            return [];
+        }
+
         // Select a limited set of the $record being passed. When the $record is a new record, it will have
         // no UID but will contain a list of default values, in which case we extract a smaller list of
         // values based on the "useColumnsForDefaultValues" TCA control (we mimic the amount of data that
@@ -114,12 +124,21 @@ class DynamicFlexForm
         if (count($providers) === 0) {
             return [];
         }
-        return [
+        static::$recursed = true;
+        $identifier = [
             'type' => 'flux',
             'tableName' => $tableName,
             'fieldName' => $fieldName,
-            'record' => $limitedRecordData
+            'record' => $limitedRecordData,
+            'originalIdentifier' => $this->getDataStructureIdentifier(
+                [ 'config' => $GLOBALS['TCA'][$tableName]['columns'][$fieldName]['config']],
+                $tableName,
+                $fieldName,
+                $record
+            )
         ];
+        static::$recursed = false;
+        return $identifier;
     }
 
     /**
@@ -152,7 +171,7 @@ class DynamicFlexForm
             $record = BackendUtility::getRecord($identifier['tableName'], $record['uid'], '*', '', false);
         }
         $fieldName = $identifier['fieldName'];
-        $dataStructArray = [];
+        $dataStructArray = $dataStructureArray = $this->parseDataStructureByIdentifier($identifier['originalIdentifier']);;
         $providers = $this->configurationService->resolveConfigurationProviders($identifier['tableName'], $fieldName, $record);
         if (count($providers) === 0) {
             // No Providers detected - we will cache this response
