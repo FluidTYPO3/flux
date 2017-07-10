@@ -32,7 +32,7 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
             'trim'
         );
         $this->registerArgument('size', 'integer', 'Size of the selector box', false, 1);
-        $this->registerArgument('multiple', 'boolean', 'If TRUE, allows multiple selections', false, false);
+        $this->registerArgument('multiple', 'boolean', 'If TRUE, allows selecting the same value multiple times', false, false);
         $this->registerArgument('minItems', 'integer', 'Minimum required number of items to be selected', false, 0);
         $this->registerArgument('maxItems', 'integer', 'Maxium allowed number of items to be selected', false, 1);
         $this->registerArgument('itemListStyle', 'string', 'Overrides the default list style when maxItems > 1');

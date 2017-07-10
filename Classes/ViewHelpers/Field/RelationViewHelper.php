@@ -9,7 +9,13 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 /**
- * Select one or multiple database records
+ * Select one or multiple database records from one table.
+ *
+ * Features a two-list style that shows all selectable items
+ * in a list on the right side,
+ * and all selected items in a list on the left side.
+ *
+ * Related: ``MultiRelationViewHelper``.
  *
  * ### Example: Select a content element
  *
