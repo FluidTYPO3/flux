@@ -106,7 +106,7 @@ class RecordService implements SingletonInterface
      */
     public function preparedGet($table, $fields, $condition, $values = [])
     {
-        return $this->getQueryBuilder($table)->select(...explode(',', $fields))->from($table)->where($condition)->execute()->fetchAll();
+        return $this->getQueryBuilder($table)->select(...explode(',', $fields))->from($table)->where($condition)->setParameters($values)->execute()->fetchAll();
     }
 
     /**
