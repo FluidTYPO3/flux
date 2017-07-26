@@ -149,6 +149,7 @@ class PreviewViewTest extends AbstractTestCase
         $provider->setForm($form);
         $provider->setTemplatePathAndFilename($templatePathAndFilename);
         $provider->injectRecordService($recordService);
+        $provider->setExtensionKey('test');
         $pageLayoutView = $this->getMockBuilder(PageLayoutView::class)->setMethods(['initializeLanguages'])->getMock();
         $previewView = $this->getMockBuilder($this->createInstanceClassName())
             ->setMethods(array('registerTargetContentAreaInSession', 'getPageLayoutView'))
