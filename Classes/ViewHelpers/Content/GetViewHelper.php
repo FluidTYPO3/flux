@@ -23,9 +23,30 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 
 /**
- * ### Content: Get ViewHelper
- *
  * Gets all child content of a record based on area.
+ *
+ * The elements are already rendered, they just need to be output.
+ *
+ * ### Example: Render all child elements with a border
+ *
+ * `fluidcontent` element with one column of child elements.
+ * Each element gets a red border:
+ *
+ *     <f:section name="Configuration">
+ *      <flux:grid>
+ *       <flux:grid.row>
+ *        <flux:grid.column name="teaser"/>
+ *       </flux:grid.row>
+ *      </flux:grid>
+ *     </f:section>
+ *
+ *     <f:section name="Main">
+ *      <f:for each="{flux:content.get(area:'teaser')}" as="element">
+ *       <div style="border: 1px solid red">
+ *        <f:format.raw>{element}</f:format.raw>
+ *       </div>
+ *      </f:for>
+ *     </f:section>
  */
 class GetViewHelper extends AbstractViewHelper implements CompilableInterface
 {
