@@ -304,15 +304,15 @@ class AbstractProvider implements ProviderInterface
     /**
      * @param array $row
      * @param string|null $name
-     * @return array|false
+     * @return mixed|null
      */
     protected function extractConfiguration(array $row, $name = null)
     {
-        $cacheKey = $this->getCacheKeyForStoredVariable($row, '_all');
+        $cacheKey = $this->getCacheKeyForStoredVariable($row, $name ?: '_all');
 
         $fromCache = $this->configurationService->getFromCaches($cacheKey);
         if ($fromCache) {
-            return $fromCache;
+            return $name ? $fromCache[$name] ?? null : $fromCache;
         }
         $configurationSectionName = $this->getConfigurationSectionName($row);
         $variables = $this->getViewVariables($row);
@@ -326,7 +326,7 @@ class AbstractProvider implements ProviderInterface
                 $view->render();
             }
             if ($name) {
-                return $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, $name) ?? false;
+                return $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, $name);
             } else {
                 $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class) ?? [];
                 if (isset($variables['form']) && $variables['form']->getOption(Form::OPTION_STATIC)) {
@@ -336,7 +336,7 @@ class AbstractProvider implements ProviderInterface
 
         } catch (Exception $error) {
             GeneralUtility::sysLog($error->getMessage(), 'flux');
-            return false;
+            return null;
         }
 
         return $variables;
