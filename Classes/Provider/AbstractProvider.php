@@ -784,7 +784,7 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * Get preview chunks - header and content - as
-     * [string $headerContent, string $previewContent, boolean $continueRendering)
+     * [string $headerContent, string $previewContent, boolean $continueRendering]
      *
      * Default implementation renders the Preview section from the template
      * file that the actual Provider returns for $row, using paths also
