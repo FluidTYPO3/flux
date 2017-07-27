@@ -61,7 +61,10 @@ class TextTest extends InputTest
     public function canBuildConfigurationWithoutDefaultExtrasWithEnableRichText()
     {
         /** @var Text $instance */
-        $instance = $this->createInstance();
+        $className = $this->getObjectClassName();
+        $instance = $this->getMockBuilder($className)->setMethods(['isCkEditorActive'])->getMock();
+        $instance->expects($this->any())->method('isCkEditorActive')->will($this->returnValue(false));
+
         $instance->setDefaultExtras(null)->setEnableRichText(true);
         $result = $this->performTestBuild($instance);
         $this->assertArrayHasKey('defaultExtras', $result['config']);
@@ -73,7 +76,10 @@ class TextTest extends InputTest
     public function canBuildConfigurationWithDefaultExtras()
     {
         /** @var Text $instance */
-        $instance = $this->createInstance();
+        $className = $this->getObjectClassName();
+        $instance = $this->getMockBuilder($className)->setMethods(['isCkEditorActive'])->getMock();
+        $instance->expects($this->any())->method('isCkEditorActive')->will($this->returnValue(false));
+
         $instance->setDefaultExtras('richtext[*]');
         $result = $this->performTestBuild($instance);
         $this->assertNotEmpty($result['defaultExtras']);
