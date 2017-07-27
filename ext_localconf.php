@@ -50,10 +50,10 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 	}
 
 	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript($_EXTKEY, 'setup', '
-		plugin.tx_flux.settings {
-			flexform {
-				rteDefaults = richtext:rte_transform[flag=rte_enabled|mode=ts_css]
-			}
+		plugin.tx_flux.view {
+			templateRootPath = EXT:flux/Resources/Private/Templates/
+			partialRootPath = EXT:flux/Resources/Private/Partials/
+			layoutRootPath = EXT:flux/Resources/Private/Layouts/
 		}
 	');
 
