@@ -201,21 +201,16 @@ abstract class AbstractFluxController extends ActionController
     protected function initializeView(ViewInterface $view)
     {
         $record = $this->getRecord();
+        $extensionKey = ExtensionNamingUtility::getExtensionKey($this->provider->getControllerExtensionKeyFromRecord($record));
 
         /** @var RenderingContextInterface $renderingContext */
         $renderingContext = $view->getRenderingContext();
-        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
-            ExtensionNamingUtility::getExtensionKey(
-                $this->provider->getControllerExtensionKeyFromRecord($record)
-            )
-        );
+        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName($extensionKey);
 
         $renderingContext->setControllerAction(
             $this->provider->getControllerActionFromRecord($record)
         );
-        $this->controllerContext->getRequest()->setControllerExtensionName(
-            ExtensionNamingUtility::getExtensionKey($this->provider->getControllerExtensionKeyFromRecord($record))
-        );
+        $this->controllerContext->getRequest()->setControllerExtensionName($extensionKey);
         $this->initializeViewVariables();
         $this->initializeViewHelperVariableContainer();
     }
