@@ -775,6 +775,7 @@ class AbstractProvider implements ProviderInterface
         $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
             ExtensionNamingUtility::getExtensionKey($this->getExtensionKey($row))
         );
+        $renderingContext->getTemplatePaths()->setTemplatePathAndFilename($this->getTemplatePathAndFilename($row));
         $renderingContext->setControllerName($this->getControllerNameFromRecord($row));
         $renderingContext->setControllerAction($this->getControllerActionFromRecord($row));
         /** @var TemplateView $view */

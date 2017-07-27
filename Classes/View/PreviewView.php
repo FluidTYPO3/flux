@@ -236,7 +236,7 @@ class PreviewView extends TemplateView
     protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null)
     {
         $templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
-        if (null === $templatePathAndFilename) {
+        if (!$templatePathAndFilename) {
             return null;
         }
         $extensionKey = $provider->getExtensionKey($row);
@@ -258,6 +258,7 @@ class PreviewView extends TemplateView
         $this->getRenderingContext()->getTemplatePaths()->fillDefaultsByPackageName(
             ExtensionNamingUtility::getExtensionKey($extensionKey)
         );
+        $this->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
         return $this->renderSection('Preview', $variables, true);
     }
 
