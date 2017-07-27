@@ -108,10 +108,12 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function messageIgnoresRepeatedMessages()
     {
-        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('logMessage'))->getMock();
-        $instance->expects($this->once())->method('logMessage');
+        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(['dummy'])->getMock();
+        $expected = ['TestTest' => true];
         $instance->message('Test', 'Test', 2);
+        $this->assertAttributeSame($expected, 'sentDebugMessages', $instance);
         $instance->message('Test', 'Test', 2);
+        $this->assertAttributeSame($expected, 'sentDebugMessages', $instance);
     }
 
     /**
