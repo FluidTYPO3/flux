@@ -53,6 +53,7 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 		plugin.tx_flux.settings {
 			flexform {
 				rteDefaults = richtext:rte_transform[flag=rte_enabled|mode=ts_css]
+				richtextConfiguration = default
 			}
 		}
 	');

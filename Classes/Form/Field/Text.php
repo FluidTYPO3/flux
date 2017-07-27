@@ -58,7 +58,13 @@ class Text extends Input implements FieldInterface
         $defaultExtras = $this->getDefaultExtras();
         if (true === $this->getEnableRichText() && true === empty($defaultExtras)) {
             $typoScript = $this->getConfigurationService()->getAllTypoScript();
-            $configuration['defaultExtras'] = $typoScript['plugin']['tx_flux']['settings']['flexform']['rteDefaults'];
+            if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('rte_ckeditor')) {
+                // New CK editor in RTE requires different configuration
+                $configuration['enableRichtext'] = 1;
+                $configuration['richtextConfiguration'] = $typoScript['plugin']['tx_flux']['settings']['flexform']['richtextConfiguration'] ? : 'default';
+            } else {
+                $configuration['defaultExtras'] = $typoScript['plugin']['tx_flux']['settings']['flexform']['rteDefaults'];
+            }
         } else {
             $configuration['defaultExtras'] = $defaultExtras;
         }
