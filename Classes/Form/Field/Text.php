@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form\Field;
  */
 
 use FluidTYPO3\Flux\Form\FieldInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Text
@@ -94,6 +95,7 @@ class Text extends Input implements FieldInterface
      */
     public function setDefaultExtras($defaultExtras)
     {
+        GeneralUtility::logDeprecatedFunction();
         $this->defaultExtras = $defaultExtras;
         return $this;
     }
@@ -103,6 +105,7 @@ class Text extends Input implements FieldInterface
      */
     public function getDefaultExtras()
     {
+        GeneralUtility::logDeprecatedFunction();
         return $this->defaultExtras;
     }
 

@@ -49,14 +49,6 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable']['flux'] = \FluidTYPO3\Flux\Hooks\RecordListGetTableHookSubscriber::class;
 	}
 
-	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript($_EXTKEY, 'setup', '
-		plugin.tx_flux.settings {
-			flexform {
-				rteDefaults = richtext:rte_transform[flag=rte_enabled|mode=ts_css]
-			}
-		}
-	');
-
 	if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
 
 		// native Outlets, replaceable by short name in subsequent registerOutlet() calls by adding second argument (string, name of type)
