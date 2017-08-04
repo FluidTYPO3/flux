@@ -53,7 +53,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     const CONTROL_HIDE = 'hide';
     const CONTROL_DELETE = 'delete';
     const CONTROL_LOCALISE = 'localize';
-    const DEFAULT_LANGUAGEFILE = '/Resources/Private/Language/locallang.xlf';
 
     /**
      * Machine-readable, lowerCamelCase ID of this form. DOM compatible.
