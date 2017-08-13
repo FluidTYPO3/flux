@@ -57,11 +57,11 @@ class BackendConfigurationManager extends CoreBackendConfigurationManager implem
             return $this->currentPageId;
         }
         $pageUids = $this->getPrioritizedPageUids();
-        // parent::getCurrentPageId() in getPrioritizedPageUids() set possible wrong value
-        $this->currentPageId = 0;
-        while (true === empty($this->currentPageId) && true !== empty($pageUids)) {
-            $this->currentPageId = array_shift($pageUids);
-        };
+        foreach ($pageUids as $pageUid) {
+            if ($pageUid > 0) {
+                return $this->currentPageId = $pageUid;
+            }
+        }
         return $this->currentPageId;
     }
 
