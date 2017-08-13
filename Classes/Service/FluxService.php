@@ -24,6 +24,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
 use TYPO3\CMS\Extbase\Service\FlexFormService;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
  * Flux FlexForm integration Service
@@ -297,6 +298,20 @@ class FluxService implements SingletonInterface
             GeneralUtility::sysLog($message, 'flux', $severity);
             $this->sentDebugMessages[$hash] = true;
         }
+    }
+
+    /**
+     * Returns the plugin.tx_extsignature.view array,
+     * or a default set of paths if that array is not
+     * defined in TypoScript.
+     *
+     * @param string $extensionName
+     * @return array|NULL
+     */
+    public function getViewConfigurationForExtensionName($extensionName)
+    {
+        GeneralUtility::logDeprecatedFunction();
+        return (new TemplatePaths(ExtensionNamingUtility::getExtensionKey($extensionName)))->toArray();
     }
 
     /**
