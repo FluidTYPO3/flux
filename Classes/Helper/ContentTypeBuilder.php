@@ -174,17 +174,19 @@ class ContentTypeBuilder
             $controllerExtensionName = 'FluidTYPO3.Flux';
         }
         $this->registerExtbasePluginForForm($controllerExtensionName, $pluginName, $form);
-        $this->addPageTsConfig($controllerExtensionName, $form, $contentType);
-        $this->addIcon($form, $contentType);
+        $this->addPageTsConfig($form, $contentType);
     }
 
     /**
      * @param Form $form
      * @param string $contentType
-     * @return void
+     * @return string
      */
     protected function addIcon(Form $form, $contentType)
     {
+        if (isset($GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType])) {
+            return $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType];
+        }
         $icon = MiscellaneousUtility::getIconForTemplate($form);
         if (strpos($icon, 'EXT:') === 0 || $icon{0} !== '/') {
             $icon = GeneralUtility::getFileAbsFileName($icon);
@@ -192,11 +194,13 @@ class ContentTypeBuilder
         if (!$icon) {
             $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Plugin.png');
         }
-        $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType] = MiscellaneousUtility::createIcon(
+        $iconIdentifier = MiscellaneousUtility::createIcon(
             $icon,
             Icon::SIZE_DEFAULT,
             Icon::SIZE_DEFAULT
         );
+        $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType] = $iconIdentifier;
+        return $iconIdentifier;
     }
 
     /**
@@ -222,25 +226,16 @@ class ContentTypeBuilder
     }
 
     /**
-     * @param string $providerExtensionName
      * @param Form $form
      * @param string $contentType
      * @return void
      */
-    protected function addPageTsConfig($providerExtensionName, Form $form, $contentType)
+    protected function addPageTsConfig(Form $form, $contentType)
     {
         // Icons required solely for use in the "new content element" wizard
-        $extensionKey = ExtensionNamingUtility::getExtensionKey($providerExtensionName);
-        $defaultIcon = ExtensionManagementUtility::extPath($extensionKey, 'ext_icon.gif');
-
         $formId = $form->getId();
-        $icon = $form->getOption(Form::OPTION_ICON) ?? $defaultIcon;
         $group = $form->getOption(Form::OPTION_GROUP) ?? 'fluxContent';
         $this->initializeNewContentWizardGroup($this->sanitizeString($group), $group);
-
-        $iconIdentifier = $extensionKey . '-' . $formId;
-        $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
-        $iconRegistry->registerIcon($iconIdentifier, BitmapIconProvider::class, ['source' => $icon]);
 
         // Registration for "new content element" wizard to show our new CType (otherwise, only selectable via "Content type" drop-down)
         ExtensionManagementUtility::addPageTSConfig(
@@ -256,7 +251,7 @@ class ContentTypeBuilder
                 mod.wizards.newContentElement.wizardItems.%s.show := addToList(%s)',
                 $this->sanitizeString($group),
                 $formId,
-                $iconIdentifier,
+                $this->addIcon($form, $contentType),
                 $form->getLabel(),
                 $form->getDescription(),
                 $contentType,
@@ -289,7 +284,8 @@ class ContentTypeBuilder
         ExtensionUtility::registerPlugin(
             $providerExtensionName,
             $pluginName,
-            $form->getLabel()
+            $form->getLabel(),
+            MiscellaneousUtility::getIconForTemplate($form)
         );
     }
 
