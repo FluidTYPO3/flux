@@ -28,7 +28,7 @@ class RecordService implements SingletonInterface
      * @param string $clause
      * @param string $groupBy
      * @param string $orderBy
-     * @param integer $limit
+     * @param integer|string $limit
      * @return array|NULL
      */
     public function get($table, $fields, $clause = null, $groupBy = null, $orderBy = null, $limit = 0)
@@ -45,7 +45,13 @@ class RecordService implements SingletonInterface
             $statement->where($clause);
         }
         if ($limit) {
-            $statement->setMaxResults($limit);
+            if (is_int($limit)) {
+                $statement->setMaxResults($limit);
+            } else {
+                $limit =  explode(',', $limit);
+                $statement->setFirstResult($limit[0]);
+                $statement->setMaxResults($limit[1]);
+            }
         }
 
         return $statement->execute()->fetchAll();
