@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
@@ -175,6 +176,12 @@ class ContentTypeBuilder
         }
         $this->registerExtbasePluginForForm($controllerExtensionName, $pluginName, $form);
         $this->addPageTsConfig($form, $contentType);
+
+        // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
+        // all TypoScript is finally loaded.
+        GeneralUtility::makeInstance(CacheManager::class)
+            ->getCache('cache_runtime')
+            ->remove('viewpaths_' . ExtensionNamingUtility::getExtensionKey($providerExtensionName));
     }
 
     /**
