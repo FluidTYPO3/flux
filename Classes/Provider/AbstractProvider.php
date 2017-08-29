@@ -1012,5 +1012,4 @@ class AbstractProvider implements ProviderInterface
         $this->grid = $grid;
         return $this;
     }
-
 }
