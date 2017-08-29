@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -144,6 +145,7 @@ class ContentTypeBuilder
      * @param ProviderInterface $provider
      * @param string $pluginName
      * @return void
+     * @throws \Exception
      */
     public function registerContentType(
         $providerExtensionName,
@@ -151,18 +153,35 @@ class ContentTypeBuilder
         ProviderInterface $provider,
         $pluginName
     ) {
-        // Provider *must* be able to return a Form without any global configuration or specific content
-        // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
-        $form = $provider->getForm([]);
+        $cacheId = 'CType_' . $contentType . '_' . md5($providerExtensionName . '_' . $pluginName);
+        $cache = $this->getCache();
+        $form = $cache->get($cacheId);
         if (!$form) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Flux could not extract a Flux definition from "%s". Check that the file exists and contains ' .
-                    'the necessary flux:form in the configured section "%s"',
-                    $provider->getTemplatePathAndFilename([]),
-                    $provider->getConfigurationSectionName([])
-                )
-            );
+            // Provider *must* be able to return a Form without any global configuration or specific content
+            // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
+            $form = $provider->getForm([]);
+            if (!$form) {
+                throw new \RuntimeException(
+                    sprintf(
+                        'Flux could not extract a Flux definition from "%s". Check that the file exists and contains ' .
+                        'the necessary flux:form in the configured section "%s"',
+                        $provider->getTemplatePathAndFilename([]),
+                        $provider->getConfigurationSectionName([])
+                    )
+                );
+            }
+            try {
+                $cache->set($cacheId, $form);
+            } catch (\Exception $error) {
+                // Possible serialization error!
+                // Unfortunately we must do pokemon-style exception catching since serialization
+                // errors use the most base Exception class in PHP. So instead we check for a
+                // specific dispatcher in the stack trace and re-throw if not matched.
+                $pitcher = $error->getTrace()[0] ?? false;
+                if ($pitcher && $pitcher['class'] !== 'SplObjectStorage' && $pitcher['function'] !== 'serialize') {
+                    throw $error;
+                }
+            }
         }
 
         $this->initializeIfRequired();
@@ -336,5 +355,13 @@ class ContentTypeBuilder
             );
             $initialized = true;
         }
+    }
+
+    /**
+     * @return FrontendInterface
+     */
+    protected function getCache()
+    {
+        return GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
     }
 }
