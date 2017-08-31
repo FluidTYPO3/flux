@@ -201,11 +201,23 @@ class FluxService implements SingletonInterface
      * @param string $fieldName
      * @param array $row
      * @param string $extensionKey
+     * @param string|array $interfaces
      * @return ProviderInterface|NULL
      */
-    public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = null, $extensionKey = null)
-    {
-        return $this->providerResolver->resolvePrimaryConfigurationProvider($table, $fieldName, $row, $extensionKey);
+    public function resolvePrimaryConfigurationProvider(
+        $table,
+        $fieldName,
+        array $row = null,
+        $extensionKey = null,
+        $interfaces = ProviderInterface::class
+    ) {
+        return $this->providerResolver->resolvePrimaryConfigurationProvider(
+            $table,
+            $fieldName,
+            $row,
+            $extensionKey,
+            $interfaces
+        );
     }
 
     /**
@@ -216,11 +228,23 @@ class FluxService implements SingletonInterface
      * @param string $fieldName
      * @param array $row
      * @param string $extensionKey
+     * @param string|array $interfaces
      * @return ProviderInterface[]
      */
-    public function resolveConfigurationProviders($table, $fieldName, array $row = null, $extensionKey = null)
-    {
-        return $this->providerResolver->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey);
+    public function resolveConfigurationProviders(
+        $table,
+        $fieldName,
+        array $row = null,
+        $extensionKey = null,
+        $interfaces = ProviderInterface::class
+    ) {
+        return $this->providerResolver->resolveConfigurationProviders(
+            $table,
+            $fieldName,
+            $row,
+            $extensionKey,
+            $interfaces
+        );
     }
 
     /**
