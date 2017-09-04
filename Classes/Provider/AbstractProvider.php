@@ -770,7 +770,7 @@ class AbstractProvider implements ProviderInterface
         $controllerContext = $objectManager->get(ControllerContext::class);
         $controllerContext->setRequest($request);
         $controllerContext->setUriBuilder($uriBuilder);
-        $renderingContext = $objectManager->get(RenderingContext::class, $this);
+        $renderingContext = $objectManager->get(RenderingContext::class);
         $renderingContext->setControllerContext($controllerContext);
         $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
             ExtensionNamingUtility::getExtensionKey($this->getExtensionKey($row))
@@ -1012,5 +1012,4 @@ class AbstractProvider implements ProviderInterface
         $this->grid = $grid;
         return $this;
     }
-
 }

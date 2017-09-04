@@ -73,18 +73,24 @@ class ProviderResolver implements SingletonInterface
      * Resolves a ConfigurationProvider which can provide a working FlexForm
      * configuration based on the given parameters.
      *
-     * @param string $table
-     * @param string $fieldName
-     * @param array $row
-     * @param string $extensionKey
+     * @param string $table Table the Provider must match.
+     * @param string $fieldName Field in the table the Provider must match.
+     * @param array|null $row The record from table which the Provider must handle, or null if any record.
+     * @param string|null $extensionKey The extension key the Provider must match, or null if any extension key.
+     * @param string $interface A specific interface the Provider must implement. Must not be null!
      * @throws \RuntimeException
      * @return ProviderInterface[]
      */
-    public function resolveConfigurationProviders($table, $fieldName, array $row = null, $extensionKey = null)
-    {
+    public function resolveConfigurationProviders(
+        $table,
+        $fieldName,
+        array $row = null,
+        $extensionKey = null,
+        $interface = ProviderInterface::class
+    ) {
         $row = false === is_array($row) ? [] : $row;
         $providers = $this->getAllRegisteredProviderInstances();
-        usort($providers, function ($a, $b) use ($row) {
+        usort($providers, function (ProviderInterface $a, ProviderInterface $b) use ($row) {
             $priorityA = $a->getPriority($row);
             $priorityB = $b->getPriority($row);
             if ($priorityA === $priorityB) {
@@ -92,9 +98,12 @@ class ProviderResolver implements SingletonInterface
             }
             return $priorityA < $priorityB ? -1 : 1;
         });
-        $providers = array_filter($providers, function ($provider) use ($row, $table, $fieldName) {
-            return $provider->trigger($row, $table, $fieldName);
-        });
+        $providers = array_filter(
+            $providers,
+            function (ProviderInterface $provider) use ($row, $table, $fieldName, $extensionKey, $interface) {
+                return $provider instanceof $interface && $provider->trigger($row, $table, $fieldName, $extensionKey);
+            }
+        );
         return $providers;
     }
 
