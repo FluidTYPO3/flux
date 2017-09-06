@@ -23,6 +23,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility;
 
 /**
  * AbstractFormComponent
@@ -63,7 +64,7 @@ abstract class AbstractFormComponent implements FormInterface
      *
      * @var string
      */
-    protected $localLanguageFileRelativePath = Form::DEFAULT_LANGUAGEFILE;
+    protected $localLanguageFileRelativePath = '';
 
     /**
      * @var string
@@ -355,6 +356,15 @@ abstract class AbstractFormComponent implements FormInterface
      */
     public function getLocalLanguageFileRelativePath()
     {
+        if (!$this->localLanguageFileRelativePath) {
+            /** @var ConfigurationUtility $configurationUtility */
+            $configurationUtility = $this->getObjectManager()->get(ConfigurationUtility::class);
+            $extensionConfiguration = $configurationUtility->getCurrentConfiguration('flux');
+            return $extensionConfiguration['defaultLocallangFile']['value']
+                ? $extensionConfiguration['defaultLocallangFile']['value']
+                : $extensionConfiguration['defaultLocallangFile']['default_value'];
+        }
+
         return $this->localLanguageFileRelativePath;
     }
 

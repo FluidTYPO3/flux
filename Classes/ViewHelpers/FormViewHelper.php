@@ -72,8 +72,7 @@ class FormViewHelper extends AbstractFormViewHelper
             'localLanguageFileRelativePath',
             'string',
             'Relative (from extension) path to locallang file containing labels for the LLL values used in this form.',
-            false,
-            Form::DEFAULT_LANGUAGEFILE
+            false
         );
         $this->registerArgument(
             'extensionName',
