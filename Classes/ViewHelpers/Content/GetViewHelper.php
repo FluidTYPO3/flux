@@ -153,7 +153,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             $contentObjectRenderer->enableFields('tt_content'),
             BackendUtility::versioningPlaceholderClause('tt_content')
         );
-        $rows = static::getRecordService()->get('tt_content', '*', $conditions, '', $order, $offset . ',' . $limit);
+        $rows = static::getRecordService()->get('tt_content', '*', $conditions, '', $order, $limit, $offset);
 
         $elements = false === (boolean) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
         if (true === empty($arguments['as'])) {
