@@ -45,8 +45,8 @@ class RecordServiceTest extends AbstractTestCase
         $queryBuilder->select(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
         $queryBuilder->orderBy('sorting', '');
         $queryBuilder->delete(Argument::type('string'));
-        $queryBuilder->setMaxResults(0);
         $queryBuilder->setMaxResults(60);
+        $queryBuilder->setMaxResults(99999);
         $queryBuilder->execute()->willReturn($statement->reveal());
 
         $prophecy = $this->prophesize(ConnectionPool::class);
