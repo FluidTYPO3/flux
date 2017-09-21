@@ -14,6 +14,10 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\View\PageLayoutView;
 use FluidTYPO3\Flux\View\PreviewView;
+use TYPO3\CMS\Backend\Routing\Exception\ResourceNotFoundException;
+use TYPO3\CMS\Backend\Routing\Route;
+use TYPO3\CMS\Backend\Routing\Router;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
@@ -29,6 +33,14 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function setUp()
     {
+        parent::setUp();
+        $router = GeneralUtility::makeInstance(Router::class);
+        try {
+            $router->match('tce_db');
+        } catch (ResourceNotFoundException $error) {
+            $router->addRoute('tce_db', new Route('tce_db', []));
+            $router->addRoute('new_content_element', new Route('new_content_element', []));
+        }
         $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->setMethods(array('calcPerms'))->getMock();
         $GLOBALS['BE_USER']->expects($this->any())->method('calcPerms');
         $GLOBALS['LANG'] = $this->getMockBuilder('TYPO3\\CMS\\Lang\\LanguageService')->setMethods(array('sL'))->getMock();
