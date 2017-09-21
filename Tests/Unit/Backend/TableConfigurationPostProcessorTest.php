@@ -22,7 +22,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
      */
     public function canLoadProcessorAsUserObject()
     {
-        $object = GeneralUtility::getUserObj('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
+        $object = GeneralUtility::makeInstance('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor');
         $object->processData();
         $this->assertInstanceOf('FluidTYPO3\\Flux\\Backend\\TableConfigurationPostProcessor', $object);
     }
