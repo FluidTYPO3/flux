@@ -35,5 +35,6 @@
     },
     "require-dev": {
         "fluidtypo3/development": "^3.0"
-    }
+    },
+    "non-feature-branches": ["development", "staging"]
 }

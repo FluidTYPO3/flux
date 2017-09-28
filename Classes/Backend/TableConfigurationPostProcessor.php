@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
+use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Exception;
 
@@ -25,6 +26,19 @@ use TYPO3Fluid\Fluid\Exception;
  */
 class TableConfigurationPostProcessor implements TableConfigurationPostProcessingHookInterface
 {
+    /**
+     * @param array $parameters
+     * @return void
+     */
+    public function includeStaticTypoScriptHook(array $parameters, TemplateService $caller)
+    {
+        static $called = false;
+        if (!$called) {
+            $this->processData();
+            $called = true;
+        }
+    }
+
     /**
      * @return void
      */
