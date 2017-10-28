@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -46,7 +47,7 @@ abstract class AbstractFluxController extends ActionController
     protected $configurationService;
 
     /**
-     * @var \FluidTYPO3\Flux\Provider\ProviderInterface
+     * @var \FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface
      */
     protected $provider;
 
@@ -139,7 +140,13 @@ abstract class AbstractFluxController extends ActionController
         $row = $this->getRecord();
         $table = $this->getFluxTableName();
         $field = $this->getFluxRecordField();
-        $this->provider = $this->configurationService->resolvePrimaryConfigurationProvider($table, $field, $row);
+        $this->provider = $this->configurationService->resolvePrimaryConfigurationProvider(
+            $table,
+            $field,
+            $row,
+            null,
+            ControllerProviderInterface::class
+        );
         if (!$this->provider) {
             throw new \RuntimeException(
                 'Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled ' .

@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Core\Bootstrap;
@@ -99,11 +100,12 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         $contentTypeBuilder = new ContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
-            list ($providerExtensionName, $templateFilename) = $queuedRegistration;
+            list ($providerExtensionName, $templateFilename, $providerClassName) = $queuedRegistration;
             try {
                 $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
                     $providerExtensionName,
-                    $templateFilename
+                    $templateFilename,
+                    $providerClassName ?? Provider::class
                 );
 
                 Core::registerConfigurationProvider($provider);

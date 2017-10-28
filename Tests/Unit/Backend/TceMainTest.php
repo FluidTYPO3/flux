@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  */
 
 use FluidTYPO3\Flux\Backend\TceMain;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -263,7 +264,7 @@ class TceMainTest extends AbstractTestCase
         $configurationService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
         $configurationService->expects($this->once())->method('resolveConfigurationProviders')->willReturn($providers);
         $mock->injectConfigurationService($configurationService);
-        $result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, $row, $arguments, $caller);
+        $result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, $row, $arguments, ProviderInterface::class, $caller);
         $this->assertEquals($row, $result);
     }
 

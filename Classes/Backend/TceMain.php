@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\Interfaces\CommandProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -235,6 +237,7 @@ class TceMain
             $id,
             $record,
             $arguments,
+            CommandProviderInterface::class,
             $reference
         );
     }
@@ -347,6 +350,7 @@ class TceMain
             $id,
             $record,
             $arguments,
+            CommandProviderInterface::class,
             $reference
         );
     }
@@ -370,6 +374,7 @@ class TceMain
             $id,
             $incomingFieldArray,
             $arguments,
+            RecordProviderInterface::class,
             $reference
         );
     }
@@ -391,6 +396,7 @@ class TceMain
             $id,
             $fieldArray,
             $arguments,
+            RecordProviderInterface::class,
             $reference
         );
     }
@@ -436,6 +442,7 @@ class TceMain
             $id,
             $fieldArray,
             $arguments,
+            CommandProviderInterface::class,
             $reference
         );
     }
@@ -784,6 +791,7 @@ class TceMain
      * @param mixed $id
      * @param array $record
      * @param array $arguments
+     * @param string|array $interfaces
      * @param DataHandler $reference
      * @return array
      */
@@ -793,13 +801,20 @@ class TceMain
         $id,
         array $record,
         array $arguments,
+        $interfaces = ProviderInterface::class,
         DataHandler $reference
     ) {
         $id = $this->resolveRecordUid($id, $reference);
         $record = $this->ensureRecordDataIsLoaded($table, $id, $record);
         $arguments['row'] = &$record;
         $arguments[] = &$reference;
-        $detectedProviders = $this->configurationService->resolveConfigurationProviders($table, null, $record);
+        $detectedProviders = $this->configurationService->resolveConfigurationProviders(
+            $table,
+            null,
+            $record,
+            null,
+            $interfaces
+        );
         foreach ($detectedProviders as $provider) {
             call_user_func_array([$provider, $methodName], array_values($arguments));
         }

@@ -9,6 +9,8 @@ namespace FluidTYPO3\Flux\Backend;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -164,19 +166,22 @@ class DynamicFlexForm extends FlexFormTools
         }
         $fieldName = $identifier['fieldName'];
         $dataStructArray = $dataStructureArray = $this->parseDataStructureByIdentifier($identifier['originalIdentifier']);;
-        $providers = $this->configurationService->resolveConfigurationProviders($identifier['tableName'], $fieldName, $record);
+        $providers = $this->configurationService->resolveConfigurationProviders(
+            $identifier['tableName'],
+            $fieldName,
+            $record,
+            null,
+            DataStructureProviderInterface::class
+        );
         if (count($providers) === 0) {
             // No Providers detected - we will cache this response
             $this->configurationService->setInCaches([], true, $identifier);
             return [];
         }
         foreach ($providers as $provider) {
-            $form = $provider->getForm($record);
-            if (!$form) {
-                continue;
-            }
+            $form = $provider instanceof FormProviderInterface ? $provider->getForm($record) : null;
             $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
-            if ($form->getOption(Form::OPTION_STATIC)) {
+            if ($form && $form->getOption(Form::OPTION_STATIC)) {
                 // This provider has requested static DS caching; stop attempting
                 // to process any other DS, cache and return this DS as final result:
                 $this->configurationService->setInCaches($dataStructArray, true, $identifier);

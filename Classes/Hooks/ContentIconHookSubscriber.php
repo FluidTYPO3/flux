@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Hooks;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
@@ -108,7 +109,13 @@ class ContentIconHookSubscriber
             $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
             // filter 2: table must have one field defined as "flex" and record must include it.
             if ($field && array_key_exists($field, $record)) {
-                $provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
+                $provider = $this->fluxService->resolvePrimaryConfigurationProvider(
+                    $table,
+                    $field,
+                    $record,
+                    null,
+                    GridProviderInterface::class
+                );
                 // filter 3: a Provider must be resolved for the record.
                 if ($provider) {
                     if ($provider->getGrid($record)->hasChildren()) {

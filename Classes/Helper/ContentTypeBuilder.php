@@ -11,6 +11,10 @@ namespace FluidTYPO3\Flux\Helper;
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
@@ -37,9 +41,10 @@ class ContentTypeBuilder
     /**
      * @param string $providerExtensionName
      * @param string $templateFilename
+     * @param string $providerClassName
      * @return ProviderInterface
      */
-    public function configureContentTypeFromTemplateFile($providerExtensionName, $templateFilename)
+    public function configureContentTypeFromTemplateFile($providerExtensionName, $templateFilename, $providerClassName = Provider::class)
     {
         $variables = [];
         $section = 'Configuration';
@@ -59,7 +64,20 @@ class ContentTypeBuilder
         $this->configureContentTypeForController($controllerExtensionName, $controllerClassName, $emulatedControllerAction);
 
         /** @var Provider $provider */
-        $provider = GeneralUtility::makeInstance(ObjectManager::class)->get(Provider::class);
+        $provider = GeneralUtility::makeInstance(ObjectManager::class)->get($providerClassName);
+        if (
+            !$provider instanceof RecordProviderInterface
+            || !$provider instanceof ControllerProviderInterface
+            || !$provider instanceof FluidProviderInterface
+        ) {
+            throw new \RuntimeException(
+                sprintf(
+                    'The Flux Provider class "%s" must implement at least the following interfaces to work as content type Provider: %s',
+                    $providerClassName,
+                    implode(',', [RecordProviderInterface::class, ControllerProviderInterface::class, FluidProviderInterface::class])
+                )
+            );
+        }
         $provider->setFieldName('pi_flexform');
         $provider->setTableName('tt_content');
         $provider->setExtensionKey($providerExtensionName);
