@@ -113,14 +113,8 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     {
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        if (isset($settings['extensionName'])) {
-            $className = FluxPackageFactory::getPackageWithFallback($settings['extensionName'])
-                ->getImplementation(FluxPackage::IMPLEMENTATION_FORM);
-        } else {
-            $className = get_called_class();
-        }
         /** @var FormInterface $object */
-        $object = $objectManager->get($className);
+        $object = $objectManager->get(static::class);
         return $object->modify($settings);
     }
 
