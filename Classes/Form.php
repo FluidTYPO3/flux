@@ -254,16 +254,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     public function setId($id)
     {
-        $allowed = 'a-z0-9_';
-        $pattern = '/[^' . $allowed . ']+/i';
-        if (preg_match($pattern, $id)) {
-            $this->getConfigurationService()->message(
-                'Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters are: "' .
-                $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent ' .
-                'you from utilising some features, fx automatic LLL reference building, but is not fatal',
-                GeneralUtility::SYSLOG_SEVERITY_NOTICE
-            );
-        }
         $this->id = $id;
         if (true === empty($this->name)) {
             $this->name = $id;
