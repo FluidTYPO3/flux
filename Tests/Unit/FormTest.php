@@ -88,17 +88,6 @@ class FormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canUseGroupProperty()
-    {
-        $form = $this->getDummyFormFromTemplate();
-        $group = 'dummyGroup';
-        $form->setGroup($group);
-        $this->assertSame($group, $form->getGroup());
-    }
-
-    /**
-     * @test
-     */
     public function canUseExtensionNameProperty()
     {
         $form = $this->getDummyFormFromTemplate();
@@ -357,18 +346,6 @@ class FormTest extends AbstractTestCase
         $form = Form::create();
         $form->setOutlet($outlet);
         $this->assertSame($outlet, $form->getOutlet());
-    }
-
-    /**
-     * @test
-     */
-    public function dispatchesDebugMessageOnProblematicId()
-    {
-        $service = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('message'))->getMock();
-        $service->expects($this->once())->method('message');
-        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Form')->setMethods(array('getConfigurationService'))->getMock();
-        $instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
-        $instance->setId('I-am-not-valid');
     }
 
     /**

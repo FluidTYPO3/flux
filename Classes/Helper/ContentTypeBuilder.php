@@ -50,7 +50,7 @@ class ContentTypeBuilder
         $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
-        if ($this->validateContentController($controllerClassName, $fullContentType)) {
+        if ($this->validateContentController($controllerClassName)) {
             $controllerExtensionName = $providerExtensionName;
         } else {
             $controllerClassName = ContentController::class;
@@ -105,38 +105,11 @@ class ContentTypeBuilder
 
     /**
      * @param string $controllerClassName
-     * @param string $contentType
      * @return boolean
      */
-    protected function validateContentController($controllerClassName, $contentType)
+    protected function validateContentController($controllerClassName)
     {
-        // Sanity check:
-        if (!class_exists($controllerClassName)) {
-            GeneralUtility::devLog(
-                sprintf(
-                    'Class "%s" not found as controller for CType "%s"; Flux will use the default which is "%s"',
-                    $controllerClassName,
-                    $contentType,
-                    ContentController::class
-                ),
-                '',
-                GeneralUtility::SYSLOG_SEVERITY_INFO
-            );
-            return false;
-        }
-        if (!is_a($controllerClassName, AbstractFluxController::class, true)) {
-            GeneralUtility::devLog(
-                sprintf(
-                    'Class "%s" exists but is not a subclass of "%s", please switch parent class!',
-                    $controllerClassName,
-                    AbstractFluxController::class
-                ),
-                '',
-                GeneralUtility::SYSLOG_SEVERITY_WARNING
-            );
-            return false;
-        }
-        return true;
+        return is_a($controllerClassName, AbstractFluxController::class, true);
     }
 
     /**
@@ -186,7 +159,7 @@ class ContentTypeBuilder
 
         $this->initializeIfRequired();
         $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $provider->getControllerNameFromRecord([]) . 'Controller';
-        if ($this->validateContentController($controllerClassName, $contentType)) {
+        if ($this->validateContentController($controllerClassName)) {
             $controllerExtensionName = $providerExtensionName;
         } else {
             $controllerExtensionName = 'FluidTYPO3.Flux';

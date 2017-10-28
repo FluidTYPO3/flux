@@ -60,9 +60,6 @@ $GLOBALS['TCA']['tt_content']['ctrl']['useColumnsForDefaultValues'] .= ',tx_flux
                         'hide' => TRUE
                     )
                 ),
-                'behaviour' => array(
-                    'localizeChildrenAtParentLocalization' => TRUE,
-                ),
             )
         ),
     )

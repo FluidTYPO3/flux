@@ -35,7 +35,9 @@ class Select extends AbstractMultiValueFormField
     public function buildConfiguration()
     {
         $configuration = parent::prepareConfiguration('select');
-        $configuration['showIconTable'] = $this->getShowIconTable();
+        if ($this->getShowIconTable()) {
+            $configuration['fieldWizard']['selectIcons']['disabled'] = false;
+        }
         return $configuration;
     }
 

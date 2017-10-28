@@ -54,7 +54,7 @@ class ResolveUtilityTest extends AbstractTestCase
     public function throwsExceptionForClassIfSetToHardFail()
     {
         $resolver = new Resolver();
-        $this->setExpectedException('RuntimeException', '', 1364498093);
+        $this->expectExceptionCode(1364498093);
         $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('FluidTYPO3.Flux', 'Void', true);
     }
 

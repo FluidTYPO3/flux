@@ -307,21 +307,13 @@ class FluxService implements SingletonInterface
     }
 
     /**
+     * @deprecated
      * @param string $message
      * @param integer $severity
      * @return void
      */
     public function message($message, $severity = GeneralUtility::SYSLOG_SEVERITY_INFO)
     {
-        $hash = $message . $severity;
-        $disabledDebugMode = (boolean) (1 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode']);
-        $alreadySent = isset($this->sentDebugMessages[$hash]);
-        $shouldExcludedFriendlySeverities = 2 == $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'];
-        $isExcludedSeverity = ($shouldExcludedFriendlySeverities && in_array($severity, self::$friendlySeverities));
-        if (!$disabledDebugMode && !$alreadySent && !$isExcludedSeverity) {
-            GeneralUtility::sysLog($message, 'flux', $severity);
-            $this->sentDebugMessages[$hash] = true;
-        }
     }
 
     /**

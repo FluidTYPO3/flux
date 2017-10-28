@@ -249,41 +249,11 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @param string $group
-     * @return Form\FormInterface
-     */
-    public function setGroup($group)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $this->setOption(self::OPTION_GROUP, $group);
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGroup()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return $this->getOption(self::OPTION_GROUP);
-    }
-
-    /**
      * @param string $id
      * @return Form\FormInterface
      */
     public function setId($id)
     {
-        $allowed = 'a-z0-9_';
-        $pattern = '/[^' . $allowed . ']+/i';
-        if (preg_match($pattern, $id)) {
-            $this->getConfigurationService()->message(
-                'Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters are: "' .
-                $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent ' .
-                'you from utilising some features, fx automatic LLL reference building, but is not fatal',
-                GeneralUtility::SYSLOG_SEVERITY_NOTICE
-            );
-        }
         $this->id = $id;
         if (true === empty($this->name)) {
             $this->name = $id;
