@@ -66,7 +66,7 @@ class ContentService implements SingletonInterface
         if (false === empty($parameters['overrideVals']['tt_content']['tx_flux_parent'])) {
             $row['tx_flux_parent'] = (integer) $parameters['overrideVals']['tt_content']['tx_flux_parent'];
             if (0 < $row['tx_flux_parent']) {
-                $row['colPos'] = self::COLPOS_FLUXCONTENT;
+                $row['colPos'] = static::COLPOS_FLUXCONTENT;
             }
         }
     }
@@ -101,8 +101,8 @@ class ContentService implements SingletonInterface
             if ((false === empty($colPos) || 0 === $colPos || '0' === $colPos)) {
                 $record['colPos'] = $colPos;
             }
-            $record['tx_flux_column'] = (string) (self::COLPOS_FLUXCONTENT === (integer) $colPos ? $area : '');
-            $record['tx_flux_parent'] = (integer) (self::COLPOS_FLUXCONTENT === (integer) $colPos ? $parentUid : 0);
+            $record['tx_flux_column'] = (string) (static::COLPOS_FLUXCONTENT === (integer) $colPos ? $area : '');
+            $record['tx_flux_parent'] = (integer) (static::COLPOS_FLUXCONTENT === (integer) $colPos ? $parentUid : 0);
             if (0 > $relativeUid) {
                 $record['sorting'] = $tceMain->resorting($table, $relativeRecord['pid'], 'sorting', abs($relativeUid));
             }

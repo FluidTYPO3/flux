@@ -31,7 +31,7 @@ class CustomViewHelper extends UserFuncViewHelper
             'string',
             'User function to render the Closure built by this ViewHelper',
             false,
-            self::DEFAULT_USERFUNCTION
+            static::DEFAULT_USERFUNCTION
         );
     }
 

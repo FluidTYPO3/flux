@@ -205,7 +205,7 @@ class AbstractProvider implements ProviderInterface
         $providerExtensionKey = $this->extensionKey;
         $contentObjectType = $this->contentObjectType;
         $listType = $this->listType;
-        $rowContainsPlugin = (!empty($row['CType']) && self::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
+        $rowContainsPlugin = (!empty($row['CType']) && static::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
         $rowIsEmpty = (0 === count($row));
         $matchesContentType = ((empty($contentObjectType) && empty($row['CType']))
             || (!empty($row['CType']) && $row['CType'] === $contentObjectType));
@@ -234,7 +234,7 @@ class AbstractProvider implements ProviderInterface
         $packageKey = str_replace('.', '\\', $packageName);
         $controllerName = $this->getControllerNameFromRecord($row);
         $action = $this->getControllerActionFromRecord($row);
-        $expectedClassName = sprintf(self::FORM_CLASS_PATTERN, $packageKey, $controllerName, ucfirst($action));
+        $expectedClassName = sprintf(static::FORM_CLASS_PATTERN, $packageKey, $controllerName, ucfirst($action));
         return true === class_exists($expectedClassName) ? $expectedClassName : null;
     }
 

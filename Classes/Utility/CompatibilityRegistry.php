@@ -236,7 +236,7 @@ abstract class CompatibilityRegistry
      */
     protected static function resolveVersion($version)
     {
-        return (string) (self::VERSION_DEFAULT === $version ? TYPO3_version : $version);
+        return (string) (static::VERSION_DEFAULT === $version ? TYPO3_version : $version);
     }
 
     /**

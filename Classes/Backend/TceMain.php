@@ -862,7 +862,7 @@ class TceMain
      */
     public function clearCacheCommand($command)
     {
-        if (true === self::$cachesCleared) {
+        if (true === static::$cachesCleared) {
             return;
         }
         $tables = array_keys($GLOBALS['TCA']);
@@ -873,7 +873,7 @@ class TceMain
                 $provider->clearCacheCommand($command);
             }
         }
-        self::$cachesCleared = true;
+        static::$cachesCleared = true;
     }
 
     /**

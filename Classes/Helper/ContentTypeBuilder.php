@@ -226,7 +226,7 @@ class ContentTypeBuilder
     public function addBoilerplateTableConfiguration($contentType)
     {
         // use CompatibilityRegistry for correct DefaultData class
-        $showItem = CompatibilityRegistry::get(self::DEFAULT_SHOWITEM);
+        $showItem = CompatibilityRegistry::get(static::DEFAULT_SHOWITEM);
 
         // Do not add the special IRRE nested content display (when editing parent) if workspaces is loaded.
         // When workspaces is loaded, the IRRE may contain move placeholders which cause TYPO3 to throw errors

@@ -51,7 +51,7 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface
      */
     public function conduct($data)
     {
-        $queue = new FlashMessageQueue(self::FLASHMESSAGE_QUEUE);
+        $queue = new FlashMessageQueue(static::FLASHMESSAGE_QUEUE);
         $flashMessage = new FlashMessage(
             (string) $this->getMessage(),
             (string) $this->getTitle(),

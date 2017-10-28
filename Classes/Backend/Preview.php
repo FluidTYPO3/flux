@@ -123,7 +123,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
      */
     protected function attachAssets()
     {
-        if (false === self::$assetsIncluded) {
+        if (false === static::$assetsIncluded) {
             $doc = GeneralUtility::makeInstance(ModuleTemplate::class);
             $doc->backPath = $GLOBALS['BACK_PATH'];
 
@@ -146,7 +146,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
             ]);
             $pageRenderer->loadRequireJsModule('FluidTypo3/Flux/FluxCollapse');
 
-            self::$assetsIncluded = true;
+            static::$assetsIncluded = true;
         }
     }
 }
