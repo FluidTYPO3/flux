@@ -249,26 +249,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @param string $group
-     * @return Form\FormInterface
-     */
-    public function setGroup($group)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $this->setOption(self::OPTION_GROUP, $group);
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGroup()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return $this->getOption(self::OPTION_GROUP);
-    }
-
-    /**
      * @param string $id
      * @return Form\FormInterface
      */
