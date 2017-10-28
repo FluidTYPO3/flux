@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 
 /**
  * FluxServiceTest
@@ -129,20 +130,5 @@ class FluxServiceTest extends AbstractTestCase
             array('', Form::create(), '', '', array()),
             array(Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD, Form::create(), '', '', array('settings' => array('input' => 0)))
         );
-    }
-
-    /**
-     * @test
-     */
-    public function testGetAllTypoScriptCache()
-    {
-        $fluxService = $this->createFluxServiceInstance(array('getCurrentPageId'));
-
-        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->setMethods(array('getConfiguration'))->getMock();
-        $fluxService->injectConfigurationManager($configurationManager);
-        $configurationManager->expects($this->once(0))->method('getConfiguration')->willReturn(['foo' => 'bar']);
-
-        $this->assertNotNull($fluxService->getAllTypoScript());
-        $this->assertNotNull($fluxService->getAllTypoScript());
     }
 }

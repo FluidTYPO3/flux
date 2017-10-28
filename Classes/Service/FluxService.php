@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -19,6 +18,7 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -161,48 +161,36 @@ class FluxService implements SingletonInterface
      */
     public function getTypoScriptByPath($path)
     {
-        $typoScript = $this->getAllTypoScript();
-        return (array) ObjectAccess::getPropertyPath($typoScript, $path);
+        $all = (array) $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
+        );
+        $value = &$all;
+        foreach (explode('.', $path) as $segment) {
+            $value = ($value[$path . '.'] ?? $value[$path] ?? null);
+            if ($value === null) {
+                break;
+            }
+        }
+        if (is_array($value)) {
+            return GeneralUtility::removeDotsFromTS($value);
+        }
+        return $value;
     }
 
     /**
      * Returns the complete, global TypoScript array
      * defined in TYPO3.
      *
+     * @deprecated DO NOT USE THIS METHOD! It will hinder performance - and the method will be removed later.
      * @return array
      */
     public function getAllTypoScript()
     {
-        static $cache = [];
-        $pageId = $this->getCurrentPageId();
-        if (isset($cache[$pageId])) {
-            return $cache[$pageId];
-        }
-        if (false === isset($cache[$pageId])) {
-            $typoScript = (array) $this->configurationManager->getConfiguration(
+        return GeneralUtility::removeDotsFromTS(
+            (array) $this->configurationManager->getConfiguration(
                 ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
-            );
-            if (!empty($typoScript)) {
-                $cache[$pageId] = GeneralUtility::removeDotsFromTS($typoScript);
-            } else {
-                // Special case: the TS is empty, meaning the template is not yet initialized.
-                // We avoid caching this result so future calls won't read an empty array.
-                return [];
-            }
-        }
-        return (array) $cache[$pageId];
-    }
-
-    /**
-     * @return integer
-     */
-    protected function getCurrentPageId()
-    {
-        if ($this->configurationManager instanceof ConfigurationManager) {
-            return (integer) $this->configurationManager->getCurrentPageId();
-        } else {
-            return (integer) $GLOBALS['TSFE']->id;
-        }
+            )
+        );
     }
 
     /**
