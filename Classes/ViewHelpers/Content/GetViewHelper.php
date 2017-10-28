@@ -113,7 +113,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
     ) {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         static::$configurationService = static::$configurationService ?? $objectManager->get(FluxService::class);
-        static::$configurationManager = $configurationManager ?? $objectManager->get(ConfigurationManagerInterface::class);
+        static::$configurationManager = static::$configurationManager ?? $objectManager->get(ConfigurationManagerInterface::class);
 
         $contentObjectRenderer = static::getContentObjectRenderer();
 
@@ -123,14 +123,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             $loadRegister = true;
         }
         $templateVariableContainer = $renderingContext->getVariableProvider();
-        $record = $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
-        $id = $record['uid'];
-        $order = $arguments['order'];
-        $area = $arguments['area'];
-        $limit = $arguments['limit'] ? $arguments['limit'] : 99999;
-        $offset = intval($arguments['offset']);
-        $sortDirection = $arguments['sortDirection'];
-        $order .= ' ' . $sortDirection;
+        $record = (array) $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
 
         if ($GLOBALS['BE_USER']->workspace) {
             $placeholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid']);
@@ -141,19 +134,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             }
         }
 
-        // Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and column.
-        // The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.
-        // Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the
-        // localized version or default version.
-        $conditions = sprintf(
-            "(tx_flux_parent = '%s' AND tx_flux_column = '%s' AND pid = %d AND colPos = 18181) %s %s",
-            $id,
-            $area,
-            $record['pid'],
-            $contentObjectRenderer->enableFields('tt_content'),
-            BackendUtility::versioningPlaceholderClause('tt_content')
-        );
-        $rows = static::getRecordService()->get('tt_content', '*', $conditions, '', $order, $limit, $offset);
+        $rows = static::getContentRecords($arguments, $record);
 
         $elements = false === (boolean) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
         if (true === empty($arguments['as'])) {
@@ -175,6 +156,29 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             $contentObjectRenderer->cObjGetSingle('RESTORE_REGISTER', '');
         }
         return $content;
+    }
+
+    /**
+     * @param array $arguments
+     * @param array $parent
+     * @return array
+     */
+    protected static function getContentRecords(array $arguments, array $parent)
+    {
+        $conditions = sprintf(
+            "(tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = 18181)",
+            $parent['uid'],
+            $arguments['area']
+        );
+        return static::getContentObjectRenderer()->getRecords(
+            'tt_content',
+            [
+                'max' => $arguments['limit'],
+                'begin' => $arguments['offset'],
+                'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
+                'where' => $conditions
+            ]
+        );
     }
 
     /**
@@ -209,7 +213,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
                 'source' => $row['uid'],
                 'dontCheckPid' => 1,
             ];
-            array_push($elements, static::$configurationManager->getContentObject()->cObjGetSingle('RECORDS', $conf));
+            array_push($elements, static::getContentObjectRenderer()->cObjGetSingle('RECORDS', $conf));
         }
         return $elements;
     }
