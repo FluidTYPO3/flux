@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -62,7 +63,7 @@ class ContentIconHookSubscriberTest extends AbstractTestCase
         $cache->expects($this->once())->method('get')->willReturn(null);
         $cache->expects($this->once())->method('set')->with($this->anything());
 
-        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
         $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolvePrimaryConfigurationProvider','getConfiguration'))->getMock();
         $service->injectConfigurationManager($configurationManager);
         $service->expects($this->any())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);

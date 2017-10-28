@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -27,7 +28,7 @@ class TceMainTest extends AbstractTestCase
      */
     public function setUp()
     {
-        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
         $fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
         $fluxService->injectConfigurationManager($configurationManager);
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(

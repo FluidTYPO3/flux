@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Helper\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -19,6 +18,7 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;

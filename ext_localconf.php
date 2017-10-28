@@ -58,12 +58,6 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 		\FluidTYPO3\Flux\Core::registerPipe('flashMessage');
 		\FluidTYPO3\Flux\Core::registerPipe('typeConverter');
 	}
-
-	/** @var $extbaseObjectContainer \TYPO3\CMS\Extbase\Object\Container\Container */
-	$extbaseObjectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\Container\Container::class);
-	$extbaseObjectContainer->registerImplementation(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::class, \FluidTYPO3\Flux\Configuration\ConfigurationManager::class);
-	unset($extbaseObjectContainer);
-
 }
 
 if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'])) {
