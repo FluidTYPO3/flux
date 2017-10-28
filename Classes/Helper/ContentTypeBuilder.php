@@ -50,12 +50,11 @@ class ContentTypeBuilder
         $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
+        $controllerExtensionName = 'FluidTYPO3.Flux';
         if ($this->validateContentController($controllerClassName)) {
             $controllerExtensionName = $providerExtensionName;
         } else {
             $controllerClassName = ContentController::class;
-            $controllerExtensionName = 'FluidTYPO3.Flux';
-            $fullContentType = 'flux_' . strtolower($emulatedPluginName);
         }
         $this->configureContentTypeForController($controllerExtensionName, $controllerClassName, $emulatedControllerAction);
 
