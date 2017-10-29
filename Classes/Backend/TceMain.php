@@ -779,8 +779,7 @@ class TceMain
             $table,
             't3ver_move_id',
             sprintf(
-                ' %s t3ver_state = 3 AND deleted = 0 AND uid = %d',
-                version_compare(ExtensionManagementUtility::getExtensionVersion('workspaces'), '8.0.0', '<') ? 'AND' : '',
+                't3ver_state = 3 AND deleted = 0 AND uid = %d',
                 $uid
             )
         );
