@@ -46,7 +46,6 @@ class ContentTypeBuilder
      */
     public function configureContentTypeFromTemplateFile($providerExtensionName, $templateFilename, $providerClassName = Provider::class)
     {
-        $variables = [];
         $section = 'Configuration';
         $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
@@ -83,7 +82,6 @@ class ContentTypeBuilder
         $provider->setControllerAction($emulatedControllerAction);
         $provider->setTemplatePathAndFilename($templateFilename);
         $provider->setContentObjectType($fullContentType);
-        $provider->setTemplateVariables($variables);
         $provider->setConfigurationSectionName($section);
 
         return $provider;
