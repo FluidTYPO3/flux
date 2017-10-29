@@ -157,6 +157,7 @@ class ContentTypeBuilder
                 );
             }
             try {
+                $form->setExtensionName($providerExtensionName);
                 $cache->set($cacheId, $form);
             } catch (\Exception $error) {
                 // Possible serialization error!
