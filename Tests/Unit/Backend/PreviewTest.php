@@ -14,6 +14,8 @@ use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -101,5 +103,19 @@ class PreviewTest extends AbstractTestCase
         $instance = $this->getMockBuilder($function)->setMethods(array('attachAssets'))->getMock();
         $instance->preProcess($caller, $drawItem, $headerContent, $itemContent, $row);
         Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
+    }
+
+    /**
+     * @test
+     */
+    public function testAttachAssets()
+    {
+        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['addCssFile'])->getMock();
+        $pageRenderer->expects($this->atLeastOnce())->method('addCssFile');
+        $document = $this->getMockBuilder(ModuleTemplate::class)->setMethods(['getPageRenderer'])->getMock();
+        $document->expects($this->once())->method('getPageRenderer')->willReturn($pageRenderer);
+        GeneralUtility::addInstance(ModuleTemplate::class, $document);
+        $subject = $this->createInstance();
+        $this->callInaccessibleMethod($subject, 'attachAssets');
     }
 }
