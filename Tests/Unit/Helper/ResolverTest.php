@@ -16,17 +16,6 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
  */
 class ResolveUtilityTest extends AbstractTestCase
 {
-
-    /**
-     * @test
-     */
-    public function resolvesClassNamesInSubNamespaceOfPackage()
-    {
-        $resolver = new Resolver();
-        $result = $resolver->resolveClassNamesInPackageSubNamespace('FluidTYPO3.Flux', '');
-        $this->assertEquals(array('FluidTYPO3\\Flux\\Core', 'FluidTYPO3\\Flux\\Form'), $result);
-    }
-
     /**
      * @test
      */
