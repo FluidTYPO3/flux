@@ -71,9 +71,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     {
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
         $controllerExtensionName = $providerExtensionName;
-        if (!static::controllerExistsInExtension($providerExtensionName, 'Content')) {
-            $controllerExtensionName = 'FluidTYPO3.Flux';
-        }
         $emulatedPluginName = ucfirst(pathinfo($templatePathAndFilename, PATHINFO_FILENAME));
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($controllerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
