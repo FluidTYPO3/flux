@@ -79,7 +79,7 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
         );
         $instance = $this->buildViewHelperInstance($arguments, array(), null, $arguments['extensionName'], $arguments['pluginName']);
         ;
-        $this->setExpectedException('RuntimeException', '', 1346514748);
+        $this->expectExceptionCode(1346514748);
         $instance->initializeArgumentsAndRender();
     }
     /**

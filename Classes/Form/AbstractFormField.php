@@ -200,15 +200,17 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             return [];
         }
         $configuration = $this->buildConfiguration();
+        $filterClosure = function($value) {
+            return $value !== null && $value !== '' && $value !== [];
+        };
+        $configuration = array_filter($configuration, $filterClosure);
         $fieldStructureArray = [
             'label' => $this->getLabel(),
             'exclude' => intval($this->getExclude()),
-            'config' => $configuration,
-            'displayCond' => $this->getDisplayCondition()
+            'config' => $configuration
         ];
-        if (true === isset($configuration['defaultExtras'])) {
-            $fieldStructureArray['defaultExtras'] = $configuration['defaultExtras'];
-            unset($fieldStructureArray['config']['defaultExtras']);
+        if (($displayCondition = $this->getDisplayCondition())) {
+            $fieldStructureArray['displayCond'] = $displayCondition;
         }
         $wizards = $this->buildChildren($this->wizards);
         if (true === $this->getClearable()) {
@@ -220,7 +222,9 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
                 ],
             ]);
         }
-        $fieldStructureArray['config']['wizards'] = $wizards;
+        if (!empty($wizards)) {
+            $fieldStructureArray['config']['wizards'] = $wizards;
+        }
         if (true === $this->getRequestUpdate()) {
             $fieldStructureArray['onChange'] = 'reload';
         }

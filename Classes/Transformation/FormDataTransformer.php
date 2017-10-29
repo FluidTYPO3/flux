@@ -67,25 +67,6 @@ class FormDataTransformer
     }
 
     /**
-     * @param mixed $value
-     * @param Form $form
-     * @param string $path
-     * @return mixed
-     */
-    protected function transformValueAtPath($value, Form $form, $path)
-    {
-        /** @var FieldInterface|ContainerInterface $object */
-        $object = $this->extractTransformableObjectByPath($form, $path);
-        if ($object instanceof Form\FormInterface) {
-            $transformType = $object->getTransform();
-            if ($transformType) {
-                return $this->transformValueToType($value, $transformType);
-            }
-        }
-        return $value;
-    }
-
-    /**
      * @param ContainerInterface $subject
      * @param string $path
      * @return mixed

@@ -134,7 +134,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     {
         $properties = $this->chainProperties;
         $properties['type'] = 'InvalidType';
-        $this->setExpectedException('RuntimeException', '', 1375373527);
+        $this->expectExceptionCode(1375373527);
         call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
     }
 

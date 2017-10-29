@@ -8,11 +8,14 @@ namespace FluidTYPO3\Flux\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\Interfaces\CommandProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
@@ -194,7 +197,7 @@ class TceMain
                         $this->contentService->moveRecord($temporaryRecord, $relativeTo, $clipboardCommand, $reference);
 
                         $relativeRecordUid = abs($reference->cmdmap[$table][$id]['move']);
-                        $relativeRecord = BackendUtility::getRecordRaw($table, sprintf('uid = %d', $relativeRecordUid), 'uid,pid,tx_flux_parent');
+                        $relativeRecord = $this->getRecordWithoutRestrictions($table, $relativeRecordUid, 'uid,pid,tx_flux_parent');
                         BackendUtility::workspaceOL($table, $relativeRecord);
 
                         if ($this->isRecordChildOfItself($table, $temporaryRecord)) {
@@ -235,6 +238,7 @@ class TceMain
             $id,
             $record,
             $arguments,
+            CommandProviderInterface::class,
             $reference
         );
     }
@@ -276,7 +280,7 @@ class TceMain
 
                 // Special case: 8.6 sends clipboard pasting commands in a way that matches this case.
                 // When we encounter a Flux-handled colPos value we perform a move on the input maps
-                // and reset the clipboard command and relatveTo so ContentService resolves from colPos.
+                // and reset the clipboard command and relativeTo so ContentService resolves from colPos.
                 if ($properties['colPos'] > ContentService::COLPOS_FLUXCONTENT) {
                     $relativeTo = $properties['colPos'];
                     $clipboardCommand = [];
@@ -329,10 +333,10 @@ class TceMain
                     $this->resolveRecordForOperation($table, $reference->copyMappingArray[$table][$id])
                 );
             } elseif ($command === 'move') {
-                $this->getDatabaseConnection()->sql_query(
+                $this->updateSortingValue(
                     sprintf(
-                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.sorting != s.sorting ' .
-                        'AND t.t3ver_move_id = s.t3ver_oid AND s.t3ver_state = 4 AND s.tx_flux_parent = %d AND s.t3ver_wsid = %d',
+                        't.sorting != s.sorting AND t.t3ver_move_id = s.t3ver_oid AND s.t3ver_state = 4 ' .
+                        'AND s.tx_flux_parent = %d AND s.t3ver_wsid = %d',
                         $id,
                         $GLOBALS['BE_USER']->workspace
                     )
@@ -347,6 +351,7 @@ class TceMain
             $id,
             $record,
             $arguments,
+            CommandProviderInterface::class,
             $reference
         );
     }
@@ -370,6 +375,7 @@ class TceMain
             $id,
             $incomingFieldArray,
             $arguments,
+            RecordProviderInterface::class,
             $reference
         );
     }
@@ -391,6 +397,7 @@ class TceMain
             $id,
             $fieldArray,
             $arguments,
+            RecordProviderInterface::class,
             $reference
         );
     }
@@ -420,14 +427,14 @@ class TceMain
             // workspace preview to be in the correct sorting order, and restores the proper sorting value
             // to child records when the workspace is published.
             $originalUid = BackendUtility::getLiveVersionIdOfRecord($table, $id);
-            $this->getDatabaseConnection()->sql_query(
+            GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('tt_content')->query(
                 sprintf(
                     'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.sorting != s.sorting ' .
                     'AND t.t3ver_move_id = s.t3ver_oid AND s.t3ver_state = 4 AND s.tx_flux_parent = %d AND s.t3ver_wsid = %d',
                     $originalUid,
                     $GLOBALS['BE_USER']->workspace
                 )
-            );
+            )->execute();
         }
         $arguments = ['status' => $status, 'id' => $id, 'row' => &$fieldArray];
         $fieldArray = $this->executeConfigurationProviderMethod(
@@ -436,6 +443,7 @@ class TceMain
             $id,
             $fieldArray,
             $arguments,
+            CommandProviderInterface::class,
             $reference
         );
     }
@@ -574,27 +582,26 @@ class TceMain
      */
     protected function moveChildPlaceholdersToPageUid(array $parentUids, $pageUid)
     {
-        $databaseConnection = $this->getDatabaseConnection();
-        $childMovePlaceholders = $databaseConnection->exec_SELECTgetRows(
-            'uid',
+        if (!$GLOBALS['BE_USER']->workspace) {
+            return;
+        }
+        $childMovePlaceholders = $this->recordService->get(
             'tt_content',
+            'uid',
             sprintf(
                 'tx_flux_parent IN (%s) AND t3ver_state = 3 AND t3ver_wsid > 0',
-                implode(', ', $parentUids)
+                implode(', ', array_map('intval', $parentUids))
             )
         );
         if (empty($childMovePlaceholders)) {
             return;
         }
         $childMovePlaceholderUids = array_column($childMovePlaceholders, 'uid');
-        $databaseConnection->exec_UPDATEquery(
-            'tt_content',
-            sprintf(
-                'uid IN (%s)',
-                implode(', ', $childMovePlaceholderUids)
-            ),
-            ['pid' => $pageUid]
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+        $queryBuilder->update('tt_content')
+            ->set('pid', $pageUid, true)
+            ->where($queryBuilder->expr()
+            ->in('uid', implode(', ', array_map('intval', $childMovePlaceholderUids))));
         $this->moveChildPlaceholdersToPageUid($childMovePlaceholderUids, $pageUid);
     }
 
@@ -635,33 +642,45 @@ class TceMain
             if ($GLOBALS['BE_USER']->workspace) {
 
                 // Update versioned record (which is what $parentRecord is when copy happens in workspace mode)
-                $this->getDatabaseConnection()->sql_query(
+                $this->updateSortingValue(
                     sprintf(
-                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
+                        't.uid = %d AND s.uid = t.t3_origuid',
                         $child['uid']
                     )
                 );
 
                 // Update the move placeholder that was automatically created for the versioned record we updated above.
-                $this->getDatabaseConnection()->sql_query(
+                $this->updateSortingValue(
                     sprintf(
-                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.t3ver_oid = %d AND s.uid = t.t3ver_oid AND t.t3ver_state = -1',
+                        't.t3ver_oid = %d AND s.uid = t.t3ver_oid AND t.t3ver_state = -1',
                         $child['uid']
                     )
                 );
 
             } else {
-
-                $this->getDatabaseConnection()->sql_query(
-                    sprintf(
-                        'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE t.uid = %d AND s.uid = t.t3_origuid',
-                        $child['uid']
-                    )
-                );
-
+                $this->updateSortingValue(sprintf('t.uid = %d AND s.uid = t.t3_origuid', $child['uid']));
             }
             $this->copySortingValueOfChildrenFromOriginalsToCopies($child);
         }
+    }
+
+    /**
+     * Updates sorting values of tt_content aliased as "t" by
+     * copying sorting value from tt_content aliased as "s"
+     * with the destination and source records identified by
+     * the condition (for example, t.uid = 123 AND s.uid = 321
+     * copies sorting from record with uid 321 to uid 123)
+     *
+     * @param string $condition
+     */
+    protected function updateSortingValue($condition)
+    {
+        $query = sprintf(
+            'UPDATE tt_content t, tt_content s SET t.sorting = s.sorting WHERE %s',
+            $condition
+        );
+        $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('tt_content');
+        $connection->query($query)->execute();
     }
 
     /**
@@ -690,10 +709,7 @@ class TceMain
             }
         } while (
             $record['tx_flux_parent'] > 0
-            && ($record = BackendUtility::getRecordRaw(
-                $table,
-                sprintf('uid = %d', $record['tx_flux_parent']),
-                'uid,tx_flux_parent')
+            && ($record = $this->getRecordWithoutRestrictions($table, $record['tx_flux_parent'], 'uid,tx_flux_parent')
             )
         );
 
@@ -785,6 +801,7 @@ class TceMain
      * @param mixed $id
      * @param array $record
      * @param array $arguments
+     * @param string|array $interfaces
      * @param DataHandler $reference
      * @return array
      */
@@ -794,13 +811,20 @@ class TceMain
         $id,
         array $record,
         array $arguments,
+        $interfaces = ProviderInterface::class,
         DataHandler $reference
     ) {
         $id = $this->resolveRecordUid($id, $reference);
         $record = $this->ensureRecordDataIsLoaded($table, $id, $record);
         $arguments['row'] = &$record;
         $arguments[] = &$reference;
-        $detectedProviders = $this->configurationService->resolveConfigurationProviders($table, null, $record);
+        $detectedProviders = $this->configurationService->resolveConfigurationProviders(
+            $table,
+            null,
+            $record,
+            null,
+            $interfaces
+        );
         foreach ($detectedProviders as $provider) {
             call_user_func_array([$provider, $methodName], array_values($arguments));
         }
@@ -848,7 +872,7 @@ class TceMain
      */
     public function clearCacheCommand($command)
     {
-        if (true === self::$cachesCleared) {
+        if (true === static::$cachesCleared) {
             return;
         }
         $tables = array_keys($GLOBALS['TCA']);
@@ -859,7 +883,7 @@ class TceMain
                 $provider->clearCacheCommand($command);
             }
         }
-        self::$cachesCleared = true;
+        static::$cachesCleared = true;
     }
 
     /**
@@ -897,10 +921,16 @@ class TceMain
     }
 
     /**
-     * @return DatabaseConnection
+     * @param string $table
+     * @param integer $uid
+     * @param string $fields
+     * @return array|null
      */
-    protected function getDatabaseConnection()
+    protected function getRecordWithoutRestrictions($table, $uid, $fields)
     {
-        return $GLOBALS['TYPO3_DB'];
+        $builder = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($table)->createQueryBuilder();
+        $builder->getRestrictions()->removeAll();
+        $builder->select(...explode(',', $fields))->from($table)->where(sprintf('uid = %d', $uid));
+        return $builder->execute()->fetch();
     }
 }

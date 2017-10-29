@@ -30,7 +30,7 @@ class Resolver
         $controllerObjectShortName,
         $failHard = false
     ) {
-        $potentialControllerClassName = $this->buildControllerClassNameFromExtensionKeyAndControllerType(
+        $potentialControllerClassName = static::buildControllerClassNameFromExtensionKeyAndControllerType(
             $extensionKey,
             $controllerObjectShortName
         );
@@ -45,61 +45,6 @@ class Resolver
             return null;
         }
         return $potentialControllerClassName;
-    }
-
-    /**
-     * Resolves a list (array) of class names (not instances) of
-     * all classes in files in the specified sub-namespace of the
-     * specified package name. Does not attempt to load the class.
-     * Does not work recursively.
-     *
-     * @param string $packageName
-     * @param string $subNamespace
-     * @param string|NULL $requiredSuffix If specified, class name must use this suffix
-     * @return array
-     */
-    public function resolveClassNamesInPackageSubNamespace($packageName, $subNamespace, $requiredSuffix = null)
-    {
-        $classNames = [];
-        $extensionKey = ExtensionNamingUtility::getExtensionKey($packageName);
-        $prefix = str_replace('.', '\\', $packageName);
-        $suffix = true === empty($subNamespace) ? '' : str_replace('/', '\\', $subNamespace) . '\\';
-        $folder = ExtensionManagementUtility::extPath($extensionKey, 'Classes/' . $subNamespace);
-        $files = GeneralUtility::getFilesInDir($folder, 'php');
-        if (true === is_array($files)) {
-            foreach ($files as $file) {
-                $filename = pathinfo($file, PATHINFO_FILENAME);
-                // include if no required suffix is given or string ends with suffix
-                if (null === $requiredSuffix || 1 === preg_match('/' . $requiredSuffix . '$/', $filename)) {
-                    $classNames[] = $prefix . '\\' . $suffix . $filename;
-                }
-            }
-        }
-        return $classNames;
-    }
-
-    /**
-     * Resolve the table name for the given class name
-     *
-     * @param string $className
-     * @return string The table name
-     */
-    public function resolveDatabaseTableName($className)
-    {
-        $className = ltrim($className, '\\');
-        if (strpos($className, '\\') !== false) {
-            $classNameParts = explode('\\', $className, 6);
-            // Skip vendor and product name for core classes
-            if (strpos($className, 'TYPO3\\CMS\\') === 0) {
-                $classPartsToSkip = 2;
-            } else {
-                $classPartsToSkip = 1;
-            }
-            $tableName = 'tx_' . strtolower(implode('_', array_slice($classNameParts, $classPartsToSkip)));
-        } else {
-            $tableName = strtolower($className);
-        }
-        return $tableName;
     }
 
     /**

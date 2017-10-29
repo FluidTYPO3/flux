@@ -33,7 +33,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
     {
         parent::setUp();
         $GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
-        $GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
+        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)->setMethods(['getRecords'])->getMock();
         $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)->setMethods(['enableFields'])->getMock();
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
         $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->will($this->returnValue(array()));
@@ -41,33 +41,10 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
     }
 
     /**
-     * @return void
-     */
-    protected function createAndRegisterMockForQueryBuilder()
-    {
-        $statement = $this->prophesize(Statement::class);
-        $statement->fetchAll()->willReturn([]);
-
-        $queryBuilder = $this->prophesize(QueryBuilder::class);
-        $queryBuilder->from('tt_content')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->select('*')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->where(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->orderBy('sorting', '');
-        $queryBuilder->setMaxResults(0);
-        $queryBuilder->execute()->willReturn($statement->reveal());
-
-        $prophecy = $this->prophesize(ConnectionPool::class);
-        $prophecy->getQueryBuilderForTable('tt_content')->willReturn($queryBuilder->reveal());
-
-        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
-    }
-
-    /**
      * @test
      */
     public function canRenderViewHelper()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',
@@ -86,7 +63,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
      */
     public function isUnaffectedByRenderArgumentBeingFalse()
     {
-        $this->createAndRegisterMockForQueryBuilder();
+        $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
         $arguments = array(
             'area' => 'void',
             'render' => false,
@@ -104,7 +81,6 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithLoadRegister()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',

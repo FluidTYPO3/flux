@@ -46,7 +46,7 @@ class MiscellaneousUtility
     {
         $integers = array_map('ord', str_split($areaName));
         $integers[] = $contentElementUid;
-        $integers[] = self::UNIQUE_INTEGER_OVERHEAD;
+        $integers[] = static::UNIQUE_INTEGER_OVERHEAD;
         $integer = array_sum($integers);
         // Loop + increment until a free position is found. The integer size is kept low by the logic above, but
         // it also means that collisions are possible. This iteration prevents such collisions.
@@ -110,11 +110,11 @@ class MiscellaneousUtility
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
                 if (true === defined(GLOB_BRACE)) {
-                    $allowedExtensions = implode(',', self::$allowedIconTypes);
+                    $allowedExtensions = implode(',', static::$allowedIconTypes);
                     $iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
                     $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);
                 } else {
-                    foreach (self::$allowedIconTypes as $allowedIconType) {
+                    foreach (static::$allowedIconTypes as $allowedIconType) {
                         $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType));
                     }
                 }

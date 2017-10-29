@@ -45,7 +45,7 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
         $converter = $this->objectManager->get($converterClass);
         $instance->setTypeConverter($converter);
         $instance->setTargetType('TYPO3\CMS\Domain\Model\FrontendUser');
-        $this->setExpectedException('FluidTYPO3\Flux\Outlet\Pipe\Exception', '', 1386292424);
+        $this->expectExceptionCode(1386292424);
         $instance->conduct($this->defaultData);
     }
 
@@ -75,7 +75,7 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
         $converter = $this->objectManager->get($converterClass);
         $instance->setTypeConverter($converter);
         $instance->setTargetType('DateTime');
-        $this->setExpectedException('TYPO3\CMS\Extbase\Property\Exception\TypeConverterException', '', 1308003914);
+        $this->expectExceptionCode(1308003914);
         $instance->conduct(array());
     }
 

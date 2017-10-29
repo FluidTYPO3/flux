@@ -28,7 +28,7 @@ class RecursiveArrayUtility
         foreach ($array2 as $key => $val) {
             if (is_array($array1[$key])) {
                 if (is_array($array2[$key])) {
-                    $val = self::merge($array1[$key], $array2[$key]);
+                    $val = static::merge($array1[$key], $array2[$key]);
                 }
             }
             $array1[$key] = $val;
@@ -49,7 +49,7 @@ class RecursiveArrayUtility
         foreach ($array1 as $key => $value) {
             if (true === isset($array2[$key])) {
                 if (true === is_array($value) && true === is_array($array2[$key])) {
-                    $diff = self::diff($value, $array2[$key]);
+                    $diff = static::diff($value, $array2[$key]);
                     if (0 === count($diff)) {
                         unset($array1[$key]);
                     } else {

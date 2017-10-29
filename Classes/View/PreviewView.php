@@ -165,14 +165,14 @@ class PreviewView extends TemplateView
         $mode = $this->getOptionMode($options);
         $previewContent = (string) $this->renderPreviewSection($provider, $row, $form);
 
-        if (self::MODE_NONE === $mode || false === is_object($form)) {
+        if (static::MODE_NONE === $mode || false === is_object($form)) {
             return $previewContent;
         }
 
         $gridContent = $this->renderGrid($provider, $row, $form);
-        if (self::MODE_APPEND === $mode) {
+        if (static::MODE_APPEND === $mode) {
             $previewContent = $previewContent . $gridContent;
-        } elseif (self::MODE_PREPEND === $mode) {
+        } elseif (static::MODE_PREPEND === $mode) {
             $previewContent = $gridContent . $previewContent;
         }
 
@@ -187,14 +187,14 @@ class PreviewView extends TemplateView
      */
     protected function getPreviewOptions(Form $form = null)
     {
-        if (false === is_object($form) || false === $form->hasOption(self::OPTION_PREVIEW)) {
+        if (false === is_object($form) || false === $form->hasOption(static::OPTION_PREVIEW)) {
             return [
-                self::OPTION_MODE => $this->getOptionMode(),
-                self::OPTION_TOGGLE => $this->getOptionToggle()
+                static::OPTION_MODE => $this->getOptionMode(),
+                static::OPTION_TOGGLE => $this->getOptionToggle()
             ];
         }
 
-        return $form->getOption(self::OPTION_PREVIEW);
+        return $form->getOption(static::OPTION_PREVIEW);
     }
 
     /**
@@ -203,15 +203,15 @@ class PreviewView extends TemplateView
      */
     protected function getOptionMode(array $options = null)
     {
-        if (true === isset($options[self::OPTION_MODE])) {
-            if (self::MODE_APPEND === $options[self::OPTION_MODE] ||
-                self::MODE_PREPEND === $options[self::OPTION_MODE] ||
-                self::MODE_NONE === $options[self::OPTION_MODE]) {
-                return $options[self::OPTION_MODE];
+        if (true === isset($options[static::OPTION_MODE])) {
+            if (static::MODE_APPEND === $options[static::OPTION_MODE] ||
+                static::MODE_PREPEND === $options[static::OPTION_MODE] ||
+                static::MODE_NONE === $options[static::OPTION_MODE]) {
+                return $options[static::OPTION_MODE];
             }
         }
 
-        return self::MODE_APPEND;
+        return static::MODE_APPEND;
     }
 
     /**
@@ -220,8 +220,8 @@ class PreviewView extends TemplateView
      */
     protected function getOptionToggle(array $options = null)
     {
-        if (true === isset($options[self::OPTION_TOGGLE])) {
-            return (boolean) $options[self::OPTION_TOGGLE];
+        if (true === isset($options[static::OPTION_TOGGLE])) {
+            return (boolean) $options[static::OPTION_TOGGLE];
         }
 
         return true;

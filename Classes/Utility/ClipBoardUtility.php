@@ -29,7 +29,7 @@ class ClipBoardUtility
      */
     public static function setClipBoardData($data)
     {
-        self::$cache = $data;
+        static::$cache = $data;
     }
 
     /**
@@ -37,7 +37,7 @@ class ClipBoardUtility
      */
     public static function clearClipBoardData()
     {
-        self::$cache = null;
+        static::$cache = null;
     }
 
     /**
@@ -47,12 +47,12 @@ class ClipBoardUtility
     public static function getClipBoardData($reference = false)
     {
         $reference = (boolean) $reference;
-        if (true === is_array(self::$cache)) {
-            $clipData = self::$cache;
+        if (true === is_array(static::$cache)) {
+            $clipData = static::$cache;
         } else {
-            $clipData = self::getBackendUser()->getModuleData(
+            $clipData = static::getBackendUser()->getModuleData(
                 'clipboard',
-                self::getBackendUser()->getTSConfigVal('options.saveClipboard') ? '' : 'ses'
+                static::getBackendUser()->getTSConfigVal('options.saveClipboard') ? '' : 'ses'
             );
         }
         $mode = true === isset($clipData['current']) ? $clipData['current'] : 'normal';
@@ -71,7 +71,7 @@ class ClipBoardUtility
     public static function createIconWithUrl($relativeTo, $reference = false)
     {
         $reference = (boolean) $reference;
-        $data = self::getClipBoardData($reference);
+        $data = static::getClipBoardData($reference);
         if (null === $data) {
             return '';
         }

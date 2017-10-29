@@ -27,7 +27,7 @@ class CompatibilityRegistryTest extends AbstractTestCase
      */
     public function testRegisterAndRetieve(array $versionedValues, $version, $default, $expected)
     {
-        CompatibilityRegistry::register('foo', $versionedValues, false);
+        CompatibilityRegistry::register('foo', $versionedValues);
         $this->assertEquals($expected, CompatibilityRegistry::get('foo', $version, $default));
     }
 
@@ -84,10 +84,10 @@ class CompatibilityRegistryTest extends AbstractTestCase
      * @test
      * @dataProvider getRegisterAndRetrieveFeatureFlagTestValues
      */
-    public function testRegisterAndRetieveFeatureFlag(array $versionedValues, $version, $flag, $expected)
+    public function testRegisterAndRetrieveFeatureFlag(array $versionedValues, $version, $flag, $expected)
     {
-        CompatibilityRegistry::registerFeatureFlags($scope, $versionedValues, false);
-        $this->assertEquals($expected, CompatibilityRegistry::hasFeatureFlag($scope, $flag, $version));
+        CompatibilityRegistry::registerFeatureFlags('xyz', $versionedValues);
+        $this->assertEquals($expected, CompatibilityRegistry::hasFeatureFlag('xyz', $flag, $version));
     }
 
     /**

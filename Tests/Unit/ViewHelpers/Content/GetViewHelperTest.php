@@ -12,6 +12,7 @@ use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use Prophecy\Argument;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -32,33 +33,9 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     {
         parent::setUp();
         $GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
-        $GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
+        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)->setMethods(['getRecords'])->getMock();
         $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)->setMethods(['enableFields'])->getMock();
         $GLOBALS['TCA']['tt_content']['ctrl'] = array();
-    }
-
-    /**
-     * @return QueryBuilder
-     */
-    protected function createAndRegisterMockForQueryBuilder()
-    {
-        $statement = $this->prophesize(Statement::class);
-        $statement->fetchAll()->willReturn([]);
-
-        $queryBuilder = $this->prophesize(QueryBuilder::class);
-        $queryBuilder->from('tt_content')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->select('*')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->select('uid', 'pi_flexform')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->where(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->orderBy('sorting', '');
-        $queryBuilder->setMaxResults(Argument::type('int'));
-        $queryBuilder->execute()->willReturn($statement->reveal());
-
-        $prophecy = $this->prophesize(ConnectionPool::class);
-        $prophecy->getQueryBuilderForTable('tt_content')->willReturn($queryBuilder->reveal());
-
-        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
-        return $queryBuilder;
     }
 
     /**
@@ -66,7 +43,6 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelper()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',
@@ -85,7 +61,6 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithLoadRegister()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',
@@ -107,7 +82,6 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'nameTaken',
@@ -127,7 +101,6 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithNonExistingAsArgument()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'freevariablename',
@@ -146,7 +119,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canReturnArrayOfUnrenderedContentElements()
     {
-        $this->createAndRegisterMockForQueryBuilder();
+        $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
         $arguments = array(
             'area' => 'void',
             'render' => false,
@@ -164,7 +137,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canReturnArrayOfRenderedContentElements()
     {
-        $this->createAndRegisterMockForQueryBuilder();
+        $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
         $arguments = array(
             'area' => 'void',
             'render' => true,

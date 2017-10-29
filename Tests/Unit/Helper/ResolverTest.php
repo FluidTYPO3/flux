@@ -16,17 +16,6 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
  */
 class ResolveUtilityTest extends AbstractTestCase
 {
-
-    /**
-     * @test
-     */
-    public function resolvesClassNamesInSubNamespaceOfPackage()
-    {
-        $resolver = new Resolver();
-        $result = $resolver->resolveClassNamesInPackageSubNamespace('FluidTYPO3.Flux', '');
-        $this->assertEquals(array('FluidTYPO3\\Flux\\Core', 'FluidTYPO3\\Flux\\FluxPackage', 'FluidTYPO3\\Flux\\Form'), $result);
-    }
-
     /**
      * @test
      */
@@ -54,7 +43,7 @@ class ResolveUtilityTest extends AbstractTestCase
     public function throwsExceptionForClassIfSetToHardFail()
     {
         $resolver = new Resolver();
-        $this->setExpectedException('RuntimeException', '', 1364498093);
+        $this->expectExceptionCode(1364498093);
         $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('FluidTYPO3.Flux', 'Void', true);
     }
 
@@ -77,31 +66,5 @@ class ResolveUtilityTest extends AbstractTestCase
         $resolver = new Resolver();
         $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('Void.NoName', 'Void');
         $this->assertNull($result);
-    }
-
-    /**
-     * @test
-     * @dataProvider getClassToTableTestValues
-     * @param string $class
-     * @param string $expectedTable
-     */
-    public function testResolveTableName($class, $expectedTable)
-    {
-        $resolver = new Resolver();
-        $result = $resolver->resolveDatabaseTableName($class);
-        $this->assertEquals($expectedTable, $result);
-    }
-
-    /**
-     * @return array
-     */
-    public function getClassToTableTestValues()
-    {
-        return array(
-            array('syslog', 'syslog'),
-            array('FluidTYPO3\\Flux\\Domain\\Model\\ObjectName', 'tx_flux_domain_model_objectname'),
-            array('TYPO3\\CMS\\Extbase\\Domain\\Model\\ObjectName', 'tx_extbase_domain_model_objectname'),
-            array('Tx_Flux_Domain_Model_ObjectName', 'tx_flux_domain_model_objectname'),
-        );
     }
 }

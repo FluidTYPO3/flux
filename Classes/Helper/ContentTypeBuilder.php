@@ -11,6 +11,10 @@ namespace FluidTYPO3\Flux\Helper;
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
@@ -23,6 +27,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Content Type Builder
@@ -37,11 +42,11 @@ class ContentTypeBuilder
     /**
      * @param string $providerExtensionName
      * @param string $templateFilename
+     * @param string $providerClassName
      * @return ProviderInterface
      */
-    public function configureContentTypeFromTemplateFile($providerExtensionName, $templateFilename)
+    public function configureContentTypeFromTemplateFile($providerExtensionName, $templateFilename, $providerClassName = Provider::class)
     {
-        $variables = [];
         $section = 'Configuration';
         $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
@@ -50,17 +55,27 @@ class ContentTypeBuilder
         $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
-        if ($this->validateContentController($controllerClassName, $fullContentType)) {
-            $controllerExtensionName = $providerExtensionName;
-        } else {
-            $controllerClassName = ContentController::class;
-            $controllerExtensionName = 'FluidTYPO3.Flux';
-            $fullContentType = 'flux_' . strtolower($emulatedPluginName);
+        $controllerExtensionName = $providerExtensionName;
+        if (!$this->validateContentController($controllerClassName)) {
+            class_alias(ContentController::class, $controllerClassName);
         }
         $this->configureContentTypeForController($controllerExtensionName, $controllerClassName, $emulatedControllerAction);
 
         /** @var Provider $provider */
-        $provider = GeneralUtility::makeInstance(ObjectManager::class)->get(Provider::class);
+        $provider = GeneralUtility::makeInstance(ObjectManager::class)->get($providerClassName);
+        if (
+            !$provider instanceof RecordProviderInterface
+            || !$provider instanceof ControllerProviderInterface
+            || !$provider instanceof FluidProviderInterface
+        ) {
+            throw new \RuntimeException(
+                sprintf(
+                    'The Flux Provider class "%s" must implement at least the following interfaces to work as content type Provider: %s',
+                    $providerClassName,
+                    implode(',', [RecordProviderInterface::class, ControllerProviderInterface::class, FluidProviderInterface::class])
+                )
+            );
+        }
         $provider->setFieldName('pi_flexform');
         $provider->setTableName('tt_content');
         $provider->setExtensionKey($providerExtensionName);
@@ -68,7 +83,6 @@ class ContentTypeBuilder
         $provider->setControllerAction($emulatedControllerAction);
         $provider->setTemplatePathAndFilename($templateFilename);
         $provider->setContentObjectType($fullContentType);
-        $provider->setTemplateVariables($variables);
         $provider->setConfigurationSectionName($section);
 
         return $provider;
@@ -105,38 +119,11 @@ class ContentTypeBuilder
 
     /**
      * @param string $controllerClassName
-     * @param string $contentType
      * @return boolean
      */
-    protected function validateContentController($controllerClassName, $contentType)
+    protected function validateContentController($controllerClassName)
     {
-        // Sanity check:
-        if (!class_exists($controllerClassName)) {
-            GeneralUtility::devLog(
-                sprintf(
-                    'Class "%s" not found as controller for CType "%s"; Flux will use the default which is "%s"',
-                    $controllerClassName,
-                    $contentType,
-                    ContentController::class
-                ),
-                '',
-                GeneralUtility::SYSLOG_SEVERITY_INFO
-            );
-            return false;
-        }
-        if (!is_a($controllerClassName, AbstractFluxController::class, true)) {
-            GeneralUtility::devLog(
-                sprintf(
-                    'Class "%s" exists but is not a subclass of "%s", please switch parent class!',
-                    $controllerClassName,
-                    AbstractFluxController::class
-                ),
-                '',
-                GeneralUtility::SYSLOG_SEVERITY_WARNING
-            );
-            return false;
-        }
-        return true;
+        return is_a($controllerClassName, AbstractFluxController::class, true);
     }
 
     /**
@@ -171,6 +158,7 @@ class ContentTypeBuilder
                 );
             }
             try {
+                $form->setExtensionName($providerExtensionName);
                 $cache->set($cacheId, $form);
             } catch (\Exception $error) {
                 // Possible serialization error!
@@ -184,14 +172,7 @@ class ContentTypeBuilder
             }
         }
 
-        $this->initializeIfRequired();
-        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $provider->getControllerNameFromRecord([]) . 'Controller';
-        if ($this->validateContentController($controllerClassName, $contentType)) {
-            $controllerExtensionName = $providerExtensionName;
-        } else {
-            $controllerExtensionName = 'FluidTYPO3.Flux';
-        }
-        $this->registerExtbasePluginForForm($controllerExtensionName, $pluginName, $form);
+        $this->registerExtbasePluginForForm($providerExtensionName, $pluginName, $form);
         $this->addPageTsConfig($form, $contentType);
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
@@ -236,7 +217,7 @@ class ContentTypeBuilder
     public function addBoilerplateTableConfiguration($contentType)
     {
         // use CompatibilityRegistry for correct DefaultData class
-        $showItem = CompatibilityRegistry::get(self::DEFAULT_SHOWITEM);
+        $showItem = CompatibilityRegistry::get(static::DEFAULT_SHOWITEM);
 
         // Do not add the special IRRE nested content display (when editing parent) if workspaces is loaded.
         // When workspaces is loaded, the IRRE may contain move placeholders which cause TYPO3 to throw errors
@@ -256,10 +237,24 @@ class ContentTypeBuilder
      */
     protected function addPageTsConfig(Form $form, $contentType)
     {
+        if (TYPO3_MODE !== 'BE') {
+            return;
+        }
         // Icons required solely for use in the "new content element" wizard
         $formId = $form->getId();
-        $group = $form->getOption(Form::OPTION_GROUP) ?? 'fluxContent';
-        $this->initializeNewContentWizardGroup($this->sanitizeString($group), $group);
+        $group = $form->getOption(Form::OPTION_GROUP);
+        $groupName = $this->sanitizeString($group ?? 'fluxContent');
+        $extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());
+
+        $labelSubReference = 'flux.newContentWizard.' . $groupName;
+        $labelExtensionKey = $groupName === 'fluxContent' ? 'flux' : $extensionKey;
+        $labelReference = 'LLL:EXT:' . $labelExtensionKey . $form->getLocalLanguageFileRelativePath() . ':' . $labelSubReference;
+        $probedTranslation = LocalizationUtility::translate($labelReference);
+
+        $this->initializeNewContentWizardGroup(
+            $groupName,
+            $probedTranslation ? $labelReference : $groupName
+        );
 
         // Registration for "new content element" wizard to show our new CType (otherwise, only selectable via "Content type" drop-down)
         ExtensionManagementUtility::addPageTSConfig(
@@ -273,13 +268,13 @@ class ContentTypeBuilder
                     }
                 }
                 mod.wizards.newContentElement.wizardItems.%s.show := addToList(%s)',
-                $this->sanitizeString($group),
+                $groupName,
                 $formId,
                 $this->addIcon($form, $contentType),
                 $form->getLabel(),
                 $form->getDescription(),
                 $contentType,
-                $group,
+                $groupName,
                 $formId
             )
         );
@@ -323,38 +318,23 @@ class ContentTypeBuilder
         if (isset($groups[$groupName])) {
             return;
         }
+
+        if (in_array($groupName, ['common', 'menu', 'special', 'forms', 'plugins'])) {
+            return;
+        }
+
         ExtensionManagementUtility::addPageTSConfig(
             sprintf(
                 'mod.wizards.newContentElement.wizardItems.%s {
-                    header = %s
-                    show = *
+                    %s
                     elements {
                     }
                 }',
                 $groupName,
-                $groupLabel
+                $groupLabel ? 'header = ' . $groupLabel : ''
             )
         );
         $groups[$groupName] = true;
-    }
-
-    /**
-     * @return void
-     */
-    protected function initializeIfRequired()
-    {
-        static $initialized = false;
-
-        if (!$initialized) {
-            // Register the stub/group/tab which will store all elements added this way. We wrap this in our Core
-            // registration class to avoid this tab being added unless elements are used. Then toggle the static
-            // initialized flag to avoid repeating this insertion.
-            $this->initializeNewContentWizardGroup(
-                'fluxContent',
-                'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:newContentWizard.fluxContent'
-            );
-            $initialized = true;
-        }
     }
 
     /**

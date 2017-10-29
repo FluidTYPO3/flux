@@ -177,44 +177,20 @@ abstract class CompatibilityRegistry
     /**
      * @param string $scope
      * @param array $versionedVariables
-     * @param boolean $deprecationWarnings
      * @return void
      */
-    public static function register($scope, array $versionedVariables, $deprecationWarnings = false)
+    public static function register($scope, array $versionedVariables)
     {
-        if ($deprecationWarnings
-            && null === static::resolveVersionedValue($versionedVariables, self::VERSION_DEFAULT)) {
-            GeneralUtility::deprecationLog(
-                sprintf(
-                    'FluidTYPO3.Flux: CompatibilityRegistry was given versioned variables in scope %s but the ' .
-                    'versioned values do not contain at least one value that applies on this version of TYPO3 (%s)',
-                    $scope,
-                    static::resolveVersion(self::VERSION_DEFAULT)
-                )
-            );
-        }
         static::$registry[$scope] = $versionedVariables;
     }
 
     /**
      * @param string $scope
      * @param array $versionedFeatureFlags
-     * @param boolean $deprecationWarnings
      * @return void
      */
-    public static function registerFeatureFlags($scope, array $versionedFeatureFlags, $deprecationWarnings = false)
+    public static function registerFeatureFlags($scope, array $versionedFeatureFlags)
     {
-        if ($deprecationWarnings
-            && null === static::resolveVersionedValue($versionedFeatureFlags, self::VERSION_DEFAULT)) {
-            GeneralUtility::deprecationLog(
-                sprintf(
-                    'FluidTYPO3.Flux: CompatibilityRegistry was given versioned feature flags in scope %s but the ' .
-                    'versioned values do not contain at least one set that applies on this version (%s)',
-                    $scope,
-                    static::resolveVersion(self::VERSION_DEFAULT)
-                )
-            );
-        }
         static::$featureFlags[$scope] = $versionedFeatureFlags;
     }
 
@@ -260,7 +236,7 @@ abstract class CompatibilityRegistry
      */
     protected static function resolveVersion($version)
     {
-        return (string) (self::VERSION_DEFAULT === $version ? TYPO3_version : $version);
+        return (string) (static::VERSION_DEFAULT === $version ? TYPO3_version : $version);
     }
 
     /**
@@ -296,19 +272,6 @@ abstract class CompatibilityRegistry
             $value = static::resolveVersionedValue($source[$scope], $version);
             static::$cache[$key] = $value;
             return $value;
-        } else {
-            GeneralUtility::sysLog(
-                sprintf(
-                    'Possible misconfiguration or stale cached configuration: versioned attributes named "%s" ' .
-                    'requested from %s but no such named attributes are registered. If flushing the system cache ' .
-                    'does not remove this message please check your source code for possible typos in registration ' .
-                    'or usages of "%s".',
-                    $scope,
-                    static::class,
-                    $scope
-                ),
-                GeneralUtility::SYSLOG_SEVERITY_WARNING
-            );
         }
         return null;
     }

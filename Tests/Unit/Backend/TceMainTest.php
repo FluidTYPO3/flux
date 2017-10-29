@@ -9,11 +9,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  */
 
 use FluidTYPO3\Flux\Backend\TceMain;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -27,7 +29,7 @@ class TceMainTest extends AbstractTestCase
      */
     public function setUp()
     {
-        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
         $fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
         $fluxService->injectConfigurationManager($configurationManager);
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(
@@ -262,7 +264,7 @@ class TceMainTest extends AbstractTestCase
         $configurationService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
         $configurationService->expects($this->once())->method('resolveConfigurationProviders')->willReturn($providers);
         $mock->injectConfigurationService($configurationService);
-        $result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, $row, $arguments, $caller);
+        $result = $this->callInaccessibleMethod($mock, 'executeConfigurationProviderMethod', $command, 'void', 1, $row, $arguments, ProviderInterface::class, $caller);
         $this->assertEquals($row, $result);
     }
 

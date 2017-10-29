@@ -150,7 +150,7 @@ class PreviewViewTest extends AbstractTestCase
     public function rendersPreviews(array $options, $finalAssertionMethod)
     {
         $provider = $this->objectManager->get('FluidTYPO3\\Flux\\Provider\\Provider');
-        $form = Form::create(array('name' => 'test', 'options' => array('preview' => $options)));
+        $form = Form::create(array('name' => 'test', 'options' => array(PreviewView::OPTION_PREVIEW => $options)));
         $grid = Form\Container\Grid::create(array());
         $grid->createContainer('Row', 'row')->createContainer('Column', 'column');
         $templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_PREVIEW);
@@ -232,7 +232,7 @@ class PreviewViewTest extends AbstractTestCase
      */
     protected function assertPreviewContainsToggle($preview)
     {
-        $this->assertStringStartsWith('<div class="grid-visibility-toggle" ', trim($preview));
+        $this->assertContains('<div class="grid-visibility-toggle" ', trim($preview));
     }
 
     /**

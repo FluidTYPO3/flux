@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Core\Bootstrap;
@@ -70,9 +71,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     {
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
         $controllerExtensionName = $providerExtensionName;
-        if (!static::controllerExistsInExtension($providerExtensionName, 'Content')) {
-            $controllerExtensionName = 'FluidTYPO3.Flux';
-        }
         $emulatedPluginName = ucfirst(pathinfo($templatePathAndFilename, PATHINFO_FILENAME));
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($controllerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
@@ -99,11 +97,12 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         $contentTypeBuilder = new ContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
-            list ($providerExtensionName, $templateFilename) = $queuedRegistration;
+            list ($providerExtensionName, $templateFilename, $providerClassName) = $queuedRegistration;
             try {
                 $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
                     $providerExtensionName,
-                    $templateFilename
+                    $templateFilename,
+                    $providerClassName ?? Provider::class
                 );
 
                 Core::registerConfigurationProvider($provider);
@@ -121,14 +120,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
                 if (!Bootstrap::getInstance()->getApplicationContext()->isProduction()) {
                     throw $error;
                 }
-                GeneralUtility::sysLog(
-                    sprintf(
-                        'Template %s count not be used as content type: %s',
-                        $templateFilename,
-                        $error->getMessage()
-                    ),
-                    'flux'
-                );
             }
         }
     }

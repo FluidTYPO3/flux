@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\PreviewView;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
@@ -205,7 +206,7 @@ class AbstractProvider implements ProviderInterface
         $providerExtensionKey = $this->extensionKey;
         $contentObjectType = $this->contentObjectType;
         $listType = $this->listType;
-        $rowContainsPlugin = (!empty($row['CType']) && self::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
+        $rowContainsPlugin = (!empty($row['CType']) && static::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
         $rowIsEmpty = (0 === count($row));
         $matchesContentType = ((empty($contentObjectType) && empty($row['CType']))
             || (!empty($row['CType']) && $row['CType'] === $contentObjectType));
@@ -234,7 +235,7 @@ class AbstractProvider implements ProviderInterface
         $packageKey = str_replace('.', '\\', $packageName);
         $controllerName = $this->getControllerNameFromRecord($row);
         $action = $this->getControllerActionFromRecord($row);
-        $expectedClassName = sprintf(self::FORM_CLASS_PATTERN, $packageKey, $controllerName, ucfirst($action));
+        $expectedClassName = sprintf(static::FORM_CLASS_PATTERN, $packageKey, $controllerName, ucfirst($action));
         return true === class_exists($expectedClassName) ? $expectedClassName : null;
     }
 
@@ -309,10 +310,11 @@ class AbstractProvider implements ProviderInterface
     protected function extractConfiguration(array $row, $name = null)
     {
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $name ?: '_all');
-
-        $fromCache = $this->configurationService->getFromCaches($cacheKey);
+        $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all');
+        $allCached = $this->configurationService->getFromCaches($cacheKeyAll);
+        $fromCache = $this->configurationService->getFromCaches($cacheKey) ?? $allCached[$name] ?? false;
         if ($fromCache) {
-            return $name ? $fromCache[$name] ?? null : $fromCache;
+            return $fromCache;
         }
         $configurationSectionName = $this->getConfigurationSectionName($row);
         $variables = $this->getViewVariables($row);
@@ -335,7 +337,9 @@ class AbstractProvider implements ProviderInterface
             }
 
         } catch (Exception $error) {
-            GeneralUtility::sysLog($error->getMessage(), 'flux');
+            if (!Bootstrap::getInstance()->getApplicationContext()->isProduction()) {
+                throw $error;
+            }
             return null;
         }
 
