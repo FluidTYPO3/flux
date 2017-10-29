@@ -55,11 +55,9 @@ class ContentTypeBuilder
         $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
         $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
-        $controllerExtensionName = 'FluidTYPO3.Flux';
-        if ($this->validateContentController($controllerClassName)) {
-            $controllerExtensionName = $providerExtensionName;
-        } else {
-            $controllerClassName = ContentController::class;
+        $controllerExtensionName = $providerExtensionName;
+        if (!$this->validateContentController($controllerClassName)) {
+            class_alias(ContentController::class, $controllerClassName);
         }
         $this->configureContentTypeForController($controllerExtensionName, $controllerClassName, $emulatedControllerAction);
 
@@ -175,13 +173,7 @@ class ContentTypeBuilder
         }
 
         $this->initializeIfRequired();
-        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $provider->getControllerNameFromRecord([]) . 'Controller';
-        if ($this->validateContentController($controllerClassName)) {
-            $controllerExtensionName = $providerExtensionName;
-        } else {
-            $controllerExtensionName = 'FluidTYPO3.Flux';
-        }
-        $this->registerExtbasePluginForForm($controllerExtensionName, $pluginName, $form);
+        $this->registerExtbasePluginForForm($providerExtensionName, $pluginName, $form);
         $this->addPageTsConfig($form, $contentType);
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
