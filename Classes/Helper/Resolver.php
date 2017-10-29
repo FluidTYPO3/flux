@@ -48,30 +48,6 @@ class Resolver
     }
 
     /**
-     * Resolve the table name for the given class name
-     *
-     * @param string $className
-     * @return string The table name
-     */
-    public function resolveDatabaseTableName($className)
-    {
-        $className = ltrim($className, '\\');
-        if (strpos($className, '\\') !== false) {
-            $classNameParts = explode('\\', $className, 6);
-            // Skip vendor and product name for core classes
-            if (strpos($className, 'TYPO3\\CMS\\') === 0) {
-                $classPartsToSkip = 2;
-            } else {
-                $classPartsToSkip = 1;
-            }
-            $tableName = 'tx_' . strtolower(implode('_', array_slice($classNameParts, $classPartsToSkip)));
-        } else {
-            $tableName = strtolower($className);
-        }
-        return $tableName;
-    }
-
-    /**
      * @param string $extensionKey
      * @param string $controllerName
      * @return boolean|string
