@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -128,6 +129,18 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
                 1387049117
             );
         }
+        $dataArray = HookHandler::trigger(
+            HookHandler::FORM_DATA_FETCHED,
+            [
+                'providers' => $providers,
+                'record' => $record,
+                'table' => $table,
+                'field' => $field,
+                'data' => $dataArray,
+                'as' => $as,
+                'variableProvider' => $templateVariableContainer
+            ]
+        )['data'];
         if (null !== $as) {
             if ($templateVariableContainer->exists($as)) {
                 $backupVariable = $templateVariableContainer->get($as);

@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\CommandProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -602,6 +603,14 @@ class TceMain
             ->set('pid', $pageUid, true)
             ->where($queryBuilder->expr()
             ->in('uid', implode(', ', array_map('intval', $childMovePlaceholderUids))));
+        $childMovePlaceholderUids = HookHandler::trigger(
+            HookHandler::RECORD_CHILD_PLACEHOLDERS_MOVED,
+            [
+                'parentUids' => $parentUids,
+                'pageUid' => $pageUid,
+                'childPlaceholderUids' => $childMovePlaceholders
+            ]
+        )['childPlaceholderUids'];
         $this->moveChildPlaceholdersToPageUid($childMovePlaceholderUids, $pageUid);
     }
 
@@ -681,6 +690,12 @@ class TceMain
         );
         $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('tt_content');
         $connection->query($query)->execute();
+        HookHandler::trigger(
+            HookHandler::RECORD_CONTENT_SORTED,
+            [
+                'condition' => $condition
+            ]
+        );
     }
 
     /**
@@ -765,7 +780,14 @@ class TceMain
 
         }
 
-        return $record;
+        return HookHandler::trigger(
+            HookHandler::RECORD_RESOLVED,
+            [
+                'record' => $record,
+                'table' => $table,
+                'id' => $id
+            ]
+        )['record'];
     }
 
     /**
@@ -826,7 +848,18 @@ class TceMain
         foreach ($detectedProviders as $provider) {
             call_user_func_array([$provider, $methodName], array_values($arguments));
         }
-        return $record;
+        return HookHandler::trigger(
+            HookHandler::PROVIDER_COMMAND_EXECUTED,
+            [
+                'record' => $record,
+                'providers' => $detectedProviders,
+                'command' => $methodName,
+                'table' => $table,
+                'id' => $id,
+                'interfaces' => $interfaces,
+                'dataHandler' => $reference
+            ]
+        )['record'];
     }
 
     /**
@@ -882,6 +915,12 @@ class TceMain
             }
         }
         static::$cachesCleared = true;
+        HookHandler::trigger(
+            HookHandler::CACHES_CLEARED,
+            [
+                'command' => $command
+            ]
+        );
     }
 
     /**

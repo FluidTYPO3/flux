@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
@@ -170,15 +171,20 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             $parent['uid'],
             $arguments['area']
         );
-        return static::getContentObjectRenderer()->getRecords(
-            'tt_content',
+        return HookHandler::trigger(
+            HookHandler::NESTED_CONTENT_FETCHED,
             [
-                'max' => $arguments['limit'],
-                'begin' => $arguments['offset'],
-                'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
-                'where' => $conditions
+                'records' => static::getContentObjectRenderer()->getRecords(
+                    'tt_content',
+                    [
+                        'max' => $arguments['limit'],
+                        'begin' => $arguments['offset'],
+                        'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
+                        'where' => $conditions
+                    ]
+                )
             ]
-        );
+        )['records'];
     }
 
     /**
@@ -215,6 +221,12 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             ];
             array_push($elements, static::getContentObjectRenderer()->cObjGetSingle('RECORDS', $conf));
         }
-        return $elements;
+        return HookHandler::trigger(
+            HookHandler::NESTED_CONTENT_RENDERED,
+            [
+                'rows' => $rows,
+                'rendered' => $elements
+            ]
+        )['rendered'];
     }
 }

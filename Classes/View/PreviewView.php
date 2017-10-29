@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\View;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -178,7 +179,7 @@ class PreviewView extends TemplateView
 
         $previewContent = trim($previewContent);
 
-        return $previewContent;
+        return HookHandler::trigger(HookHandler::PREVIEW_RENDERED, ['form' => $form, 'preview' => $previewContent])['preview'];
     }
 
     /**
@@ -311,13 +312,14 @@ class PreviewView extends TemplateView
             $maximumColumnCount = max($maximumColumnCount, $columnCount);
         }
 
-        return sprintf(
+        $content = sprintf(
             $this->templates['grid'],
             $row['uid'],
             $collapsedClass,
             str_repeat('<col />', $maximumColumnCount),
             $content
         );
+        return HookHandler::trigger(HookHandler::PREVIEW_COLUMN_RENDERED, ['preview' => $content, 'grid' => $grid, 'form' => $form])['preview'];
     }
 
     /**
@@ -367,7 +369,8 @@ class PreviewView extends TemplateView
         $id = 'colpos-' . $colPosFluxContent . '-page-' . $pageUid . '--top-' . $row['uid'] . '-' . $columnName;
         $target = $this->registerTargetContentAreaInSession($row['uid'], $columnName);
 
-        return $this->parseGridColumnTemplate($row, $column, $target, $id, $content);
+        $content = $this->parseGridColumnTemplate($row, $column, $target, $id, $content);
+        return HookHandler::trigger(HookHandler::PREVIEW_COLUMN_RENDERED, ['preview' => $content, 'column' => $column, 'parentRecord' => $row])['preview'];
     }
 
     /**
@@ -389,7 +392,7 @@ class PreviewView extends TemplateView
             $element = '<div class="t3-page-ce-dragitem">' . $element . '</div>';
         }
 
-        return sprintf(
+        $content = sprintf(
             $this->templates['record'],
             $disabledClass,
             $record['_CSSCLASS'],
@@ -404,6 +407,7 @@ class PreviewView extends TemplateView
             $this->drawNewIcon($parentRow, $column, $record['uid']) .
             $this->drawPasteIcon($parentRow, $column, true, $record)
         );
+        return HookHandler::trigger(HookHandler::PREVIEW_COLUMN_RENDERED, ['preview' => $content, 'column' => $column, 'parentRecord' => $parentRow, 'record' => $record, 'view' => $dblist])['preview'];
     }
 
     /**
@@ -551,6 +555,7 @@ class PreviewView extends TemplateView
                     $rows[] = $contentRecord;
                 }
             }
+            $rows = HookHandler::trigger(HookHandler::PREVIEW_RECORDS_FETCHED, ['rows' => $rows, 'parentRecord' => $row, 'area' => $area])['rows'];
             $view->generateTtContentDataArray($rows);
         }
         return $rows;

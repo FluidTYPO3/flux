@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -108,6 +109,21 @@ abstract class AbstractFluxController extends ActionController
             $this->settings
         );
         $this->data = $this->provider->getFlexFormValues($row);
+        $overrides = HookHandler::trigger(
+            HookHandler::CONTROLLER_SETTINGS_INITIALIZED,
+            [
+                'settings' => $this->settings,
+                'data' => $this->data,
+                'record' => $row,
+                'provider' => $this->provider,
+                'controller' => $this,
+                'request' => $this->request,
+                'extensionKey' => $extensionKey
+            ]
+        );
+        $this->data = $overrides['data'];
+        $this->settings = $overrides['settings'];
+        $this->provider = $overrides['provider'];
     }
 
     /**
@@ -169,6 +185,15 @@ abstract class AbstractFluxController extends ActionController
         $this->view->assign('settings', $this->settings);
         $this->view->assign('provider', $this->provider);
         $this->view->assign('record', $row);
+        HookHandler::trigger(
+            HookHandler::CONTROLLER_VARIABLES_ASSIGNED,
+            [
+                'view' => $this->view,
+                'record' => $row,
+                'settings' => $this->settings,
+                'provider' => $this->provider,
+            ]
+        );
     }
 
     /**
@@ -220,6 +245,16 @@ abstract class AbstractFluxController extends ActionController
         $this->controllerContext->getRequest()->setControllerExtensionName($extensionKey);
         $this->initializeViewVariables();
         $this->initializeViewHelperVariableContainer();
+        HookHandler::trigger(
+            HookHandler::CONTROLLER_VIEW_INITIALIZED,
+            [
+                'view' => $view,
+                'request' => $this->request,
+                'provider' => $this->provider,
+                'controller' => $this,
+                'extensionKey' => $extensionKey
+            ]
+        );
     }
 
     /**
@@ -295,21 +330,34 @@ abstract class AbstractFluxController extends ActionController
     protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature)
     {
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
-        if (true === $shouldRelay) {
+        if (!$shouldRelay) {
+            $content = $this->view->render();
+        } else {
             $foreignControllerClass = $this->configurationService
                 ->getResolver()
                 ->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
                     $extensionName,
                     $controllerName
                 );
-            return $this->callSubControllerAction(
+            $content = $this->callSubControllerAction(
                 $extensionName,
                 $foreignControllerClass,
                 $actionName,
                 $pluginSignature
             );
         }
-        return $this->view->render();
+        return HookHandler::trigger(
+            HookHandler::CONTROLLER_AFTER_RENDERING,
+            [
+                'view' => $this->view,
+                'content' => $content,
+                'request' => $this->request,
+                'response' => $this->response,
+                'extensionName' => $extensionName,
+                'controllerClassName' => $controllerClassName,
+                'controllerActionName' => $controllerActionName
+            ]
+        )['content'];
     }
 
     /**
@@ -351,10 +399,30 @@ abstract class AbstractFluxController extends ActionController
         $this->request->setControllerActionName($controllerActionName);
         $potentialControllerInstance = $this->objectManager->get($controllerClassName);
         try {
+            HookHandler::trigger(
+                HookHandler::CONTROLLER_BEFORE_REQUEST,
+                [
+                    'request' => $this->request,
+                    'response' => $this->response,
+                    'extensionName' => $extensionName,
+                    'controllerClassName' => $controllerClassName,
+                    'controllerActionName' => $controllerActionName
+                ]
+            );
             $potentialControllerInstance->processRequest($this->request, $this->response);
         } catch (StopActionException $error) {
             // intentionally left blank
         }
+        HookHandler::trigger(
+            HookHandler::CONTROLLER_AFTER_REQUEST,
+            [
+                'request' => $this->request,
+                'response' => $this->response,
+                'extensionName' => $extensionName,
+                'controllerClassName' => $controllerClassName,
+                'controllerActionName' => $controllerActionName
+            ]
+        );
         return $this->response->getContent();
     }
 

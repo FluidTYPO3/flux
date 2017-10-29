@@ -139,11 +139,22 @@ class ContentIconHookSubscriber
     {
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
 
-        $icon = $iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
-        $icon .= $iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
+        $collapseIcon = $iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
+        $expandIcon = $iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
         $label = $GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
+        $icon = $collapseIcon . $expandIcon;
 
-        return sprintf($this->templates['gridToggle'], $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
+        $rendered = sprintf($this->templates['gridToggle'], $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
+
+        return HookHandler::trigger(
+            HookHandler::PREVIEW_GRID_TOGGLE_RENDERED,
+            [
+                'rendered' => $rendered,
+                'iconCollapse' => $collapseIcon,
+                'iconExpand' => $expandIcon,
+                'label' => $label
+            ]
+        )['rendered'];
     }
 
     /**
@@ -158,7 +169,14 @@ class ContentIconHookSubscriber
             $cookie = json_decode(urldecode($cookie));
             $collapsed = in_array($row['uid'], (array) $cookie);
         }
-        return $collapsed;
+        return HookHandler::trigger(
+            HookHandler::PREVIEW_GRID_TOGGLE_STATUS_FETCHED,
+            [
+                'collapsed' => $collapsed,
+                'record' => $row,
+                'cookie' => $cookie
+            ]
+        )['collapsed'];
     }
 
     /**

@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -114,7 +115,14 @@ class Core
         }
 
         if (false === in_array($extensionKey, static::$extensions[$providesControllerName])) {
-            array_push(static::$extensions[$providesControllerName], $extensionKey);
+            $overrides = HookHandler::trigger(
+                HookHandler::PROVIDER_EXTENSION_REGISTERED,
+                [
+                    'extensionKey' => $extensionKey,
+                    'providesControllerName' => $providesControllerName
+                ]
+            );
+            array_push(static::$extensions[$overrides['providesControllerName']], $overrides['extensionKey']);
         }
     }
 
@@ -145,6 +153,12 @@ class Core
         $alreadyRegistered = in_array($classNameOrInstance, static::$providers);
         $alreadyUnregistered = in_array($classNameOrInstance, static::$unregisteredProviders);
         if (!$alreadyUnregistered && !$alreadyRegistered) {
+            $classNameOrInstance = HookHandler::trigger(
+                HookHandler::PROVIDER_REGISTERED,
+                [
+                    'provider' => $classNameOrInstance
+                ]
+            )['provider'];
             array_push(static::$providers, $classNameOrInstance);
         }
     }

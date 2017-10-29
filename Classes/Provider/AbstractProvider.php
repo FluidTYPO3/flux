@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Provider;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -312,38 +313,46 @@ class AbstractProvider implements ProviderInterface
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $name ?: '_all');
         $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all');
         $allCached = $this->configurationService->getFromCaches($cacheKeyAll);
-        $fromCache = $this->configurationService->getFromCaches($cacheKey) ?? $allCached[$name] ?? false;
+        $fromCache = $this->configurationService->getFromCaches($cacheKey) ?: ($allCached[$name] ?? false);
         if ($fromCache) {
             return $fromCache;
         }
         $configurationSectionName = $this->getConfigurationSectionName($row);
-        $variables = $this->getViewVariables($row);
+        $viewVariables = $this->getViewVariables($row);
         $view = $this->getViewForRecord($row);
 
         try {
             if ($configurationSectionName) {
-                $view->renderSection($configurationSectionName, $variables, true);
+                $view->renderSection($configurationSectionName, $viewVariables, true);
             } else {
-                $view->assignMultiple($variables);
+                $view->assignMultiple($viewVariables);
                 $view->render();
             }
             if ($name) {
-                return $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, $name);
+                $returnValue = $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, $name);
             } else {
                 $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class) ?? [];
                 if (isset($variables['form']) && $variables['form']->getOption(Form::OPTION_STATIC)) {
                     $this->configurationService->setInCaches($variables, true, $cacheKey);
                 }
+                $returnValue = $variables;
             }
 
         } catch (Exception $error) {
             if (!Bootstrap::getInstance()->getApplicationContext()->isProduction()) {
                 throw $error;
             }
-            return null;
+            $returnValue = null;
         }
 
-        return $variables;
+        return HookHandler::trigger(
+            HookHandler::PROVIDER_EXTRACTED_OBJECT,
+            [
+                'record' => $row,
+                'name' => $name,
+                'value' => $returnValue
+            ]
+        )['value'];
     }
 
     /**
@@ -416,14 +425,21 @@ class AbstractProvider implements ProviderInterface
     public function getTemplatePathAndFilename(array $row)
     {
         unset($row);
-        if (0 === strpos($this->templatePathAndFilename, 'EXT:') || 0 !== strpos($this->templatePathAndFilename, '/')) {
-            $path = GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
-            if (true === empty($path)) {
-                return null;
+        $templatePathAndFilename = $this->templatePathAndFilename;
+        if (0 === strpos($templatePathAndFilename, 'EXT:') || 0 !== strpos($templatePathAndFilename, '/')) {
+            $templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
+            if (true === empty($templatePathAndFilename)) {
+                $templatePathAndFilename = null;
             }
-            return $path;
         }
-        return $this->templatePathAndFilename;
+        return HookHandler::trigger(
+            HookHandler::PROVIDER_RESOLVED_TEMPLATE,
+            [
+                'template' => $templatePathAndFilename,
+                'provider' => $this,
+                'record' => $row
+            ]
+        )['template'];
     }
 
     /**

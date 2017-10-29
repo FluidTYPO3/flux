@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Package\FluxPackageFactory;
@@ -115,7 +116,8 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var FormInterface $object */
         $object = $objectManager->get(static::class);
-        return $object->modify($settings);
+        $object->modify($settings);
+        return HookHandler::trigger(HookHandler::FORM_CREATED, ['form' => $object])['form'];
     }
 
     /**
@@ -142,6 +144,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             $this->children->attach($child);
             $child->setParent($this);
         }
+        HookHandler::trigger(HookHandler::FORM_CHILD_ADDED, ['parent' => $this, 'child' => $child]);
         return $this;
     }
 
@@ -173,7 +176,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 'el' => []
             ];
         }
-        return $dataStructArray;
+        return HookHandler::trigger(HookHandler::FORM_BUILT, ['dataStructure' => $dataStructArray])['dataStructure'];
     }
 
     /**

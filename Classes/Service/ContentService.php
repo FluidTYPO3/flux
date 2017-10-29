@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -210,6 +211,16 @@ class ContentService implements SingletonInterface
         if (0 < $row['tx_flux_parent']) {
             $row['colPos'] = static::COLPOS_FLUXCONTENT;
         }
+        $row = HookHandler::trigger(
+            HookHandler::RECORD_MOVED,
+            [
+                'record' => $row,
+                'relativeTo' => $relativeTo,
+                'relativeToRecord' => $relativeToRecord,
+                'parameters' => $parameters,
+                'dataHandler' => $tceMain
+            ]
+        )['record'];
     }
 
     /**
@@ -233,6 +244,14 @@ class ContentService implements SingletonInterface
             $languageFieldName,
             $tceMain
         );
+        $row = HookHandler::trigger(
+            HookHandler::RECORD_INITIALIZED,
+            [
+                'id' => $id,
+                'record' => $row,
+                'dataHandler' => $tceMain
+            ]
+        )['record'];
     }
 
     /**

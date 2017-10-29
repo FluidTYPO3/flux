@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Helper;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -42,9 +43,16 @@ class Resolver
                     1364498093
                 );
             }
-            return null;
+            $potentialControllerClassName = null;
         }
-        return $potentialControllerClassName;
+        return HookHandler::trigger(
+            HookHandler::CONTROLLER_RESOLVED,
+            [
+                'extensionKey' => $extensionKey,
+                'controllerName' => $controllerObjectShortName,
+                'controllerClassName' => $potentialControllerClassName
+            ]
+        )['controllerClassName'];
     }
 
     /**

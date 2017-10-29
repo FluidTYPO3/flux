@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Provider;
  */
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -128,7 +129,17 @@ class ProviderResolver implements SingletonInterface
                 return !$provider instanceof RecordProviderInterface || $provider->trigger($row, $table, $fieldName, $extensionKey);
             }
         );
-        return $providers;
+        return HookHandler::trigger(
+            HookHandler::PROVIDERS_RESOLVED,
+            [
+                'table' => $table,
+                'field' => $fieldName,
+                'record' => $row,
+                'extensionKey' => $extensionKey,
+                'interfaces' => $interfaces,
+                'providers' => $providers
+            ]
+        )['providers'];
     }
 
     /**

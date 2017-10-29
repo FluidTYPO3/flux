@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Transformation;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
@@ -57,7 +58,28 @@ class FormDataTransformer
                     $transformType = $object->getTransform();
 
                     if ($transformType) {
-                        $value = $this->transformValueToType($value, $transformType);
+                        $originalValue = $value;
+                        $value = HookHandler::trigger(
+                            HookHandler::VALUE_BEFORE_TRANSFORM,
+                            [
+                                'value' => $value,
+                                'object' => $object,
+                                'type' => $transformType,
+                                'form' => $form
+                            ]
+                        )['value'];
+                        if ($value === $originalValue) {
+                            $value = $this->transformValueToType($value, $transformType);
+                        }
+                        $value = HookHandler::trigger(
+                            HookHandler::VALUE_AFTER_TRANSFORM,
+                            [
+                                'value' => $value,
+                                'object' => $object,
+                                'type' => $transformType,
+                                'form' => $form
+                            ]
+                        )['value'];
                     }
                 }
             }

@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Helper;
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
@@ -85,7 +86,16 @@ class ContentTypeBuilder
         $provider->setContentObjectType($fullContentType);
         $provider->setConfigurationSectionName($section);
 
-        return $provider;
+        return HookHandler::trigger(
+            HookHandler::CONTENT_TYPE_CONFIGURED,
+            [
+                'provider' => $provider,
+                'extensionName' => $providerExtensionName,
+                'templateFilename' => $templateFilename,
+                'controllerClassName' => $controllerClassName,
+                'contentType' => $fullContentType
+            ]
+        )['provider'];
     }
 
     /**
