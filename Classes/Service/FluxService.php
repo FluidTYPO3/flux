@@ -309,12 +309,12 @@ class FluxService implements SingletonInterface
      * or a default set of paths if that array is not
      * defined in TypoScript.
      *
+     * @deprecated See TemplatePaths object
      * @param string $extensionName
      * @return array|NULL
      */
     public function getViewConfigurationForExtensionName($extensionName)
     {
-        GeneralUtility::logDeprecatedFunction();
         return (new TemplatePaths(ExtensionNamingUtility::getExtensionKey($extensionName)))->toArray();
     }
 

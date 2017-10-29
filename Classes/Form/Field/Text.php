@@ -95,22 +95,22 @@ class Text extends Input implements FieldInterface
     }
 
     /**
+     * @deprecated Will be removed in next major version
      * @param string $defaultExtras
      * @return Text
      */
     public function setDefaultExtras($defaultExtras)
     {
-        GeneralUtility::logDeprecatedFunction();
         $this->defaultExtras = $defaultExtras;
         return $this;
     }
 
     /**
+     * @deprecated Will be removed in next major version
      * @return string
      */
     public function getDefaultExtras()
     {
-        GeneralUtility::logDeprecatedFunction();
         return $this->defaultExtras;
     }
 
