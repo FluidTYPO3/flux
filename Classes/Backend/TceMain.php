@@ -932,12 +932,4 @@ class TceMain
         $builder->select(...explode(',', $fields))->from($table)->where(sprintf('uid = %d', $uid));
         return $builder->execute()->fetch();
     }
-
-    /**
-     * @return DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
-    }
 }
