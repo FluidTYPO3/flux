@@ -120,14 +120,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
                 if (!Bootstrap::getInstance()->getApplicationContext()->isProduction()) {
                     throw $error;
                 }
-                GeneralUtility::sysLog(
-                    sprintf(
-                        'Template %s count not be used as content type: %s',
-                        $templateFilename,
-                        $error->getMessage()
-                    ),
-                    'flux'
-                );
             }
         }
     }
