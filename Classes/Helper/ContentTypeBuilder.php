@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Content Type Builder
@@ -171,7 +172,6 @@ class ContentTypeBuilder
             }
         }
 
-        $this->initializeIfRequired();
         $this->registerExtbasePluginForForm($providerExtensionName, $pluginName, $form);
         $this->addPageTsConfig($form, $contentType);
 
@@ -237,10 +237,24 @@ class ContentTypeBuilder
      */
     protected function addPageTsConfig(Form $form, $contentType)
     {
+        if (TYPO3_MODE !== 'BE') {
+            return;
+        }
         // Icons required solely for use in the "new content element" wizard
         $formId = $form->getId();
-        $group = $form->getOption(Form::OPTION_GROUP) ?? 'fluxContent';
-        $this->initializeNewContentWizardGroup($this->sanitizeString($group), $group);
+        $group = $form->getOption(Form::OPTION_GROUP);
+        $groupName = $this->sanitizeString($group ?? 'fluxContent');
+        $extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());
+
+        $labelSubReference = 'flux.newContentWizard.' . $groupName;
+        $labelExtensionKey = $groupName === 'fluxContent' ? 'flux' : $extensionKey;
+        $labelReference = 'LLL:EXT:' . $labelExtensionKey . $form->getLocalLanguageFileRelativePath() . ':' . $labelSubReference;
+        $probedTranslation = LocalizationUtility::translate($labelReference);
+
+        $this->initializeNewContentWizardGroup(
+            $groupName,
+            $probedTranslation ? $labelReference : $groupName
+        );
 
         // Registration for "new content element" wizard to show our new CType (otherwise, only selectable via "Content type" drop-down)
         ExtensionManagementUtility::addPageTSConfig(
@@ -254,13 +268,13 @@ class ContentTypeBuilder
                     }
                 }
                 mod.wizards.newContentElement.wizardItems.%s.show := addToList(%s)',
-                $this->sanitizeString($group),
+                $groupName,
                 $formId,
                 $this->addIcon($form, $contentType),
                 $form->getLabel(),
                 $form->getDescription(),
                 $contentType,
-                $group,
+                $groupName,
                 $formId
             )
         );
@@ -304,38 +318,23 @@ class ContentTypeBuilder
         if (isset($groups[$groupName])) {
             return;
         }
+
+        if (in_array($groupName, ['common', 'menu', 'special', 'forms', 'plugins'])) {
+            return;
+        }
+
         ExtensionManagementUtility::addPageTSConfig(
             sprintf(
                 'mod.wizards.newContentElement.wizardItems.%s {
-                    header = %s
-                    show = *
+                    %s
                     elements {
                     }
                 }',
                 $groupName,
-                $groupLabel
+                $groupLabel ? 'header = ' . $groupLabel : ''
             )
         );
         $groups[$groupName] = true;
-    }
-
-    /**
-     * @return void
-     */
-    protected function initializeIfRequired()
-    {
-        static $initialized = false;
-
-        if (!$initialized) {
-            // Register the stub/group/tab which will store all elements added this way. We wrap this in our Core
-            // registration class to avoid this tab being added unless elements are used. Then toggle the static
-            // initialized flag to avoid repeating this insertion.
-            $this->initializeNewContentWizardGroup(
-                'fluxContent',
-                'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:newContentWizard.fluxContent'
-            );
-            $initialized = true;
-        }
     }
 
     /**

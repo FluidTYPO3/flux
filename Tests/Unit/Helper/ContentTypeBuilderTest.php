@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * ContentTypeBuilderTest
@@ -57,6 +58,7 @@ class ContentTypeBuilderTest extends AbstractTestCase
         $provider->expects($this->once())->method('getForm')->willReturn($form);
 
         $GLOBALS['TCA']['tt_content']['columns']['list_type']['config']['items'] = [];
+        $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)->disableOriginalConstructor()->getMock();
 
         $subject->registerContentType(
             'FluidTYPO3.Flux',
