@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\Text;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -84,9 +83,6 @@ class TextViewHelper extends AbstractFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
     {
-        if (isset($arguments['defaultExtras'])) {
-            GeneralUtility::logDeprecatedViewHelperAttribute('defaultExtras', $renderingContext);
-        }
         /** @var Text $text */
         $text = static::getPreparedComponent('Text', $renderingContext, $arguments);
         $text->setValidate($arguments['validate']);
