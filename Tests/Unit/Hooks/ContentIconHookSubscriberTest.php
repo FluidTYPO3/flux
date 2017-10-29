@@ -46,6 +46,20 @@ class ContentIconHookSubscriberTest extends AbstractTestCase
     }
 
     /**
+     * @test
+     */
+    public function testDrawGridToggle()
+    {
+        $GLOBALS['LANG'] = $this->getMockBuilder('TYPO3\\CMS\\Lang\\LanguageService')->setMethods(array('sL'))->getMock();
+        $GLOBALS['LANG']->expects($this->any())->method('sL')->will($this->returnArgument(0));
+        $subject = $this->createInstance();
+        $result = $this->callInaccessibleMethod($subject, 'drawGridToggle', ['uid' => 123]);
+        $this->assertContains('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content', $result);
+        $this->assertContains('icon-actions-view-list-expand', $result);
+        $this->assertContains('icon-actions-view-list-collapse', $result);
+    }
+
+    /**
      * @dataProvider getAddSubIconTestValues
      * @param array $parameters
      * @param ProviderInterface|NULL
