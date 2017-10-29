@@ -206,10 +206,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             'config' => $configuration,
             'displayCond' => $this->getDisplayCondition()
         ];
-        if (true === isset($configuration['defaultExtras'])) {
-            $fieldStructureArray['defaultExtras'] = $configuration['defaultExtras'];
-            unset($fieldStructureArray['config']['defaultExtras']);
-        }
         $wizards = $this->buildChildren($this->wizards);
         if (true === $this->getClearable()) {
             array_push($wizards, [
