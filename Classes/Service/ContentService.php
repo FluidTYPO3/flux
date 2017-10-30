@@ -219,7 +219,7 @@ class ContentService implements SingletonInterface
             [
                 'record' => $row,
                 'relativeTo' => $relativeTo,
-                'relativeToRecord' => $relativeToRecord,
+                'relativeToRecord' => $relativeToRecord ?? null,
                 'parameters' => $parameters,
                 'dataHandler' => $tceMain
             ]
