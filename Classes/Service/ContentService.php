@@ -198,7 +198,10 @@ class ContentService implements SingletonInterface
                 // moving to first position in colPos, means that $relativeTo is the target colPos. PID is already set!
                 $row['tx_flux_parent'] = null;
                 $row['tx_flux_column'] = null;
-                $row['colPos'] = $relativeTo;
+                if ($relativeTo !== null) {
+                    // eliminating potential problem with Gridelements turning $relativeTo into NULL.
+                    $row['colPos'] = $relativeTo;
+                }
             } else {
                 $row['tx_flux_parent'] = null;
                 $row['tx_flux_column'] = null;
