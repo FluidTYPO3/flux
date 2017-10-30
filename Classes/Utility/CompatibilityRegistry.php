@@ -1,8 +1,6 @@
 <?php
 namespace FluidTYPO3\Flux\Utility;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 /**
  * Compatibility Registry
  * ----------------------

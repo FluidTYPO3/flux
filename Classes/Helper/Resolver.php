@@ -10,8 +10,6 @@ namespace FluidTYPO3\Flux\Helper;
 
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Resolver
