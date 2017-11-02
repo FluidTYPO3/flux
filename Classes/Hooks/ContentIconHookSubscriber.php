@@ -8,15 +8,14 @@ namespace FluidTYPO3\Flux\Hooks;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -110,7 +109,13 @@ class ContentIconHookSubscriber
             $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
             // filter 2: table must have one field defined as "flex" and record must include it.
             if ($field && array_key_exists($field, $record)) {
-                $provider = $this->fluxService->resolvePrimaryConfigurationProvider($table, $field, $record);
+                $provider = $this->fluxService->resolvePrimaryConfigurationProvider(
+                    $table,
+                    $field,
+                    $record,
+                    null,
+                    GridProviderInterface::class
+                );
                 // filter 3: a Provider must be resolved for the record.
                 if ($provider) {
                     if ($provider->getGrid($record)->hasChildren()) {
@@ -134,11 +139,22 @@ class ContentIconHookSubscriber
     {
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
 
-        $icon = $iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
-        $icon .= $iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
+        $collapseIcon = $iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
+        $expandIcon = $iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
         $label = $GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
+        $icon = $collapseIcon . $expandIcon;
 
-        return sprintf($this->templates['gridToggle'], $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
+        $rendered = sprintf($this->templates['gridToggle'], $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
+
+        return HookHandler::trigger(
+            HookHandler::PREVIEW_GRID_TOGGLE_RENDERED,
+            [
+                'rendered' => $rendered,
+                'iconCollapse' => $collapseIcon,
+                'iconExpand' => $expandIcon,
+                'label' => $label
+            ]
+        )['rendered'];
     }
 
     /**
@@ -153,7 +169,14 @@ class ContentIconHookSubscriber
             $cookie = json_decode(urldecode($cookie));
             $collapsed = in_array($row['uid'], (array) $cookie);
         }
-        return $collapsed;
+        return HookHandler::trigger(
+            HookHandler::PREVIEW_GRID_TOGGLE_STATUS_FETCHED,
+            [
+                'collapsed' => $collapsed,
+                'record' => $row,
+                'cookie' => $cookie
+            ]
+        )['collapsed'];
     }
 
     /**
@@ -184,6 +207,6 @@ class ContentIconHookSubscriber
      */
     protected function attachAssets()
     {
-        $GLOBALS['TBE_STYLES']['stylesheet'] = ExtensionManagementUtility::extRelPath('flux') . 'Resources/Public/css/icon.css';
+        $GLOBALS['TBE_STYLES']['stylesheet'] = 'EXT:flux/Resources/Public/css/icon.css';
     }
 }

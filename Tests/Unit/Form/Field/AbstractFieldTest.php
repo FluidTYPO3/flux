@@ -21,7 +21,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @var array
      */
-    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enable' => true);
+    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
 
     /**
      * @test
@@ -59,7 +59,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     public function returnsEmptyArrayForDisabledVersionOfField()
     {
         $instance = $this->canChainAllChainableSetters();
-        $instance->setEnable(false);
+        $instance->setEnabled(false);
         $built = $instance->build();
         $this->assertIsArray($built);
         $this->assertSame(0, count($built));
@@ -134,7 +134,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     {
         $properties = $this->chainProperties;
         $properties['type'] = 'InvalidType';
-        $this->setExpectedException('RuntimeException', '', 1375373527);
+        $this->expectExceptionCode(1375373527);
         call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
     }
 

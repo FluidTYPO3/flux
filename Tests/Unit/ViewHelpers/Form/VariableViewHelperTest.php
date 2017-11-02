@@ -28,12 +28,11 @@ class VariableViewHelperTest extends AbstractViewHelperTestCase
         )->setMethods(
             array('exists', 'get')
         )->getMock();
-        $viewHelperVariableContainerMock->expects($this->once())->method('exists')->willReturn(true);
         $viewHelperVariableContainerMock->expects($this->once())->method('get')->willReturn($containerMock);
         $renderingContext = $this->getMockBuilder(
             'TYPO3\CMS\Fluid\Core\Rendering\RenderingContext'
         )->setMethods(
-            array('getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext')
+            array('getViewHelperVariableContainer', 'getControllerContext')
         )->getMock();
         $renderingContext->expects($this->atLeastOnce())
             ->method('getViewHelperVariableContainer')

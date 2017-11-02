@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Package;
+namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -8,10 +8,12 @@ namespace FluidTYPO3\Flux\Package;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
+
 /**
- * Class PackageNotFoundException
+ * DateTimeViewHelperTest
  */
-class PackageNotFoundException extends \RuntimeException
+class DateTimeViewHelperTest extends AbstractFieldViewHelperTestCase
 {
 
 }

@@ -33,29 +33,6 @@ class CoreTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canRegisterFormInstanceForModelClassName()
-    {
-        $class = 'Tx_Flux_Domain_Model_Fake';
-        $form = Form::create();
-        Core::registerFormForModelObjectClassName($class, $form);
-        $registered = Core::getRegisteredFormForModelObjectClass($class);
-        $this->assertEquals($form, $registered);
-    }
-
-    /**
-     * @test
-     */
-    public function canRegisterAutoFormInstanceForModelClassName()
-    {
-        $class = 'Tx_Flux_Domain_Model_Fake';
-        Core::registerAutoFormForModelObjectClassName($class);
-        $registered = Core::getRegisteredFormForModelObjectClass($class);
-        $this->assertEquals(null, $registered);
-    }
-
-    /**
-     * @test
-     */
     public function canRegisterFormInstanceForTable()
     {
         $table = 'this_table_does_not_exist';
@@ -189,58 +166,10 @@ class CoreTest extends AbstractTestCase
         $fieldName = null;
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
         $absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
-        $result = Core::registerTemplateAsContentType(
+        Core::registerTemplateAsContentType(
             'FluidTYPO3.Flux',
             $absoluteTemplatePathAndFilename
         );
-        $this->assertNull($result);
-    }
-
-    /**
-     * @test
-     */
-    public function canUnregisterFormForModelClassName()
-    {
-        $fakeClass = 'MyFakeClass';
-        $form = Form::create();
-        Core::registerFormForModelObjectClassName($fakeClass, $form);
-        $this->assertSame($form, Core::getRegisteredFormForModelObjectClass($fakeClass));
-        Core::unregisterFormForModelObjectClassName($fakeClass);
-        $this->assertNull(Core::getRegisteredFormForModelObjectClass($fakeClass));
-    }
-
-    /**
-     * @test
-     */
-    public function canAddAndRetrieveGlobalTypoScript()
-    {
-        Core::addStaticTypoScript(self::FIXTURE_TYPOSCRIPT_DIR);
-        $registered = Core::getStaticTypoScript();
-        $this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
-    }
-
-    /**
-     * @test
-     */
-    public function canAddAndRetrieveGlobalTypoScriptCollections()
-    {
-        Core::addStaticTypoScript(array(self::FIXTURE_TYPOSCRIPT_DIR));
-        $registered = Core::getStaticTypoScript();
-        $this->assertContains(self::FIXTURE_TYPOSCRIPT_DIR, $registered);
-    }
-
-    /**
-     * @test
-     */
-    public function canGetRegisteredFormsForModelClassNames()
-    {
-        $fakeClass = 'MyFakeClass';
-        $form = Form::create();
-        Core::registerFormForModelObjectClassName($fakeClass, $form);
-        $this->assertSame($form, Core::getRegisteredFormForModelObjectClass($fakeClass));
-        $this->assertContains($form, Core::getRegisteredFormsForModelObjectClasses());
-        Core::unregisterFormForModelObjectClassName($fakeClass);
-
     }
 
     /**
@@ -276,30 +205,6 @@ class CoreTest extends AbstractTestCase
         Core::unregisterConfigurationProvider($fakeClass);
         core::registerConfigurationProvider($fakeClass);
         $this->assertNotContains($fakeClass, Core::getRegisteredFlexFormProviders());
-    }
-
-    /**
-     * @test
-     */
-    public function canRegisterAndUnregisterPackagesForFormGeneration()
-    {
-        $fakePackage = 'MyFakeVendor.MyFakePackage';
-        Core::registerFluxDomainFormPackage($fakePackage);
-        $this->assertArrayHasKey($fakePackage, Core::getRegisteredPackagesForAutoForms());
-        Core::unregisterFluxDomainFormPackage($fakePackage);
-        $this->assertArrayNotHasKey($fakePackage, Core::getRegisteredPackagesForAutoForms());
-    }
-
-    /**
-     * @test
-     */
-    public function registerFormForModelObjectClassNameSetsExtensionNameFromExtensionKeyGlobal()
-    {
-        $GLOBALS['_EXTKEY'] = 'test';
-        $form = $this->getMockBuilder('FluidTYPO3\\Flux\\Form')->setMethods(array('setExtensionName'))->getMock();
-        $form->expects($this->once())->method('setExtensionName')->with('Test');
-        Core::registerFormForModelObjectClassName('FooBar', $form);
-        unset($GLOBALS['_EXTKEY']);
     }
 
     /**

@@ -37,7 +37,7 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper implements 
             'string',
             'Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes',
             false,
-            self::DIRECTION_OUT
+            static::DIRECTION_OUT
         );
     }
 

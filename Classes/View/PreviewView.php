@@ -11,12 +11,14 @@ namespace FluidTYPO3\Flux\View;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ClipBoardUtility;
-use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
@@ -31,13 +33,13 @@ use TYPO3\CMS\Core\Versioning\VersionState;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * PreviewView
  */
-class PreviewView
+class PreviewView extends TemplateView
 {
 
     const OPTION_PREVIEW = 'preview';
@@ -72,7 +74,7 @@ class PreviewView
                                     <div class="t3-page-ce t3js-page-ce" data-page="%s">
                                         <div class="t3js-page-new-ce t3-page-ce-wrapper-new-ce" id="%s"
                                             style="display: block;">
-                                            %s%s%s
+                                            %s%s
                                         </div>
                                         <div class="t3-page-ce-dropzone-available t3js-page-ce-dropzone-available" ></div>
                                     </div>
@@ -112,6 +114,11 @@ class PreviewView
     protected $workspacesAwareRecordService;
 
     /**
+     * @var RecordService
+     */
+    protected $recordService;
+
+    /**
      * @param ConfigurationManagerInterface $configurationManager
      * @return void
      */
@@ -139,6 +146,15 @@ class PreviewView
     }
 
     /**
+     * @param RecordService $recordService
+     * @return void
+     */
+    public function injectRecordService(RecordService $recordService)
+    {
+        $this->recordService = $recordService;
+    }
+
+    /**
      * @param ProviderInterface $provider
      * @param array $row
      * @return string
@@ -150,20 +166,20 @@ class PreviewView
         $mode = $this->getOptionMode($options);
         $previewContent = (string) $this->renderPreviewSection($provider, $row, $form);
 
-        if (self::MODE_NONE === $mode || false === is_object($form)) {
+        if (static::MODE_NONE === $mode || false === is_object($form)) {
             return $previewContent;
         }
 
         $gridContent = $this->renderGrid($provider, $row, $form);
-        if (self::MODE_APPEND === $mode) {
+        if (static::MODE_APPEND === $mode) {
             $previewContent = $previewContent . $gridContent;
-        } elseif (self::MODE_PREPEND === $mode) {
+        } elseif (static::MODE_PREPEND === $mode) {
             $previewContent = $gridContent . $previewContent;
         }
 
         $previewContent = trim($previewContent);
 
-        return $previewContent;
+        return HookHandler::trigger(HookHandler::PREVIEW_RENDERED, ['form' => $form, 'preview' => $previewContent])['preview'];
     }
 
     /**
@@ -172,14 +188,14 @@ class PreviewView
      */
     protected function getPreviewOptions(Form $form = null)
     {
-        if (false === is_object($form) || false === $form->hasOption(self::OPTION_PREVIEW)) {
+        if (false === is_object($form) || false === $form->hasOption(static::OPTION_PREVIEW)) {
             return [
-                self::OPTION_MODE => $this->getOptionMode(),
-                self::OPTION_TOGGLE => $this->getOptionToggle()
+                static::OPTION_MODE => $this->getOptionMode(),
+                static::OPTION_TOGGLE => $this->getOptionToggle()
             ];
         }
 
-        return $form->getOption(self::OPTION_PREVIEW);
+        return $form->getOption(static::OPTION_PREVIEW);
     }
 
     /**
@@ -188,15 +204,15 @@ class PreviewView
      */
     protected function getOptionMode(array $options = null)
     {
-        if (true === isset($options[self::OPTION_MODE])) {
-            if (self::MODE_APPEND === $options[self::OPTION_MODE] ||
-                self::MODE_PREPEND === $options[self::OPTION_MODE] ||
-                self::MODE_NONE === $options[self::OPTION_MODE]) {
-                return $options[self::OPTION_MODE];
+        if (true === isset($options[static::OPTION_MODE])) {
+            if (static::MODE_APPEND === $options[static::OPTION_MODE] ||
+                static::MODE_PREPEND === $options[static::OPTION_MODE] ||
+                static::MODE_NONE === $options[static::OPTION_MODE]) {
+                return $options[static::OPTION_MODE];
             }
         }
 
-        return self::MODE_APPEND;
+        return static::MODE_APPEND;
     }
 
     /**
@@ -205,8 +221,8 @@ class PreviewView
      */
     protected function getOptionToggle(array $options = null)
     {
-        if (true === isset($options[self::OPTION_TOGGLE])) {
-            return (boolean) $options[self::OPTION_TOGGLE];
+        if (true === isset($options[static::OPTION_TOGGLE])) {
+            return (boolean) $options[static::OPTION_TOGGLE];
         }
 
         return true;
@@ -221,11 +237,10 @@ class PreviewView
     protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null)
     {
         $templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
-        if (null === $templatePathAndFilename) {
+        if (!$templatePathAndFilename) {
             return null;
         }
         $extensionKey = $provider->getExtensionKey($row);
-        $paths = $provider->getTemplatePaths($row);
 
         $flexformVariables = $provider->getFlexFormValues($row);
         $templateVariables = $provider->getTemplateVariables($row);
@@ -239,21 +254,13 @@ class PreviewView
             $variables['label'] = $label;
         }
 
-        $templatePaths = new TemplatePaths($paths);
-        $viewContext = new ViewContext($templatePathAndFilename, $extensionKey, self::CONTROLLER_NAME);
-        $viewContext->setTemplatePaths($templatePaths);
-        $viewContext->setVariables($variables);
-        $view = $this->configurationService->getPreparedExposedTemplateView($viewContext);
-
-        $existingContentObject = $this->configurationManager->getContentObject();
-        $contentObject = new ContentObjectRenderer();
-        $contentObject->start($row, $provider->getTableName($row));
-        $this->configurationManager->setContentObject($contentObject);
-        $previewContent = $view->renderStandaloneSection(self::PREVIEW_SECTION, $variables, true);
-        $this->configurationManager->setContentObject($existingContentObject);
-        $previewContent = trim($previewContent);
-
-        return $previewContent;
+        $this->getRenderingContext()->setControllerName($provider->getControllerNameFromRecord($row));
+        $this->getRenderingContext()->setControllerAction($provider->getControllerActionFromRecord($row));
+        $this->getRenderingContext()->getTemplatePaths()->fillDefaultsByPackageName(
+            ExtensionNamingUtility::getExtensionKey($extensionKey)
+        );
+        $this->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
+        return $this->renderSection('Preview', $variables, true);
     }
 
     /**
@@ -305,13 +312,14 @@ class PreviewView
             $maximumColumnCount = max($maximumColumnCount, $columnCount);
         }
 
-        return sprintf(
+        $content = sprintf(
             $this->templates['grid'],
             $row['uid'],
             $collapsedClass,
             str_repeat('<col />', $maximumColumnCount),
             $content
         );
+        return HookHandler::trigger(HookHandler::PREVIEW_COLUMN_RENDERED, ['preview' => $content, 'grid' => $grid, 'form' => $form])['preview'];
     }
 
     /**
@@ -361,7 +369,8 @@ class PreviewView
         $id = 'colpos-' . $colPosFluxContent . '-page-' . $pageUid . '--top-' . $row['uid'] . '-' . $columnName;
         $target = $this->registerTargetContentAreaInSession($row['uid'], $columnName);
 
-        return $this->parseGridColumnTemplate($row, $column, $target, $id, $content);
+        $content = $this->parseGridColumnTemplate($row, $column, $target, $id, $content);
+        return HookHandler::trigger(HookHandler::PREVIEW_COLUMN_RENDERED, ['preview' => $content, 'column' => $column, 'parentRecord' => $row])['preview'];
     }
 
     /**
@@ -383,7 +392,7 @@ class PreviewView
             $element = '<div class="t3-page-ce-dragitem">' . $element . '</div>';
         }
 
-        return sprintf(
+        $content = sprintf(
             $this->templates['record'],
             $disabledClass,
             $record['_CSSCLASS'],
@@ -396,9 +405,9 @@ class PreviewView
             $parentRow['uid'],
             $record['uid'],
             $this->drawNewIcon($parentRow, $column, $record['uid']) .
-            (CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($parentRow, $column, false, $record) : '') .
             $this->drawPasteIcon($parentRow, $column, true, $record)
         );
+        return HookHandler::trigger(HookHandler::PREVIEW_COLUMN_RENDERED, ['preview' => $content, 'column' => $column, 'parentRecord' => $parentRow, 'record' => $record, 'view' => $dblist])['preview'];
     }
 
     /**
@@ -528,13 +537,7 @@ class PreviewView
             ContentService::COLPOS_FLUXCONTENT,
             BackendUtility::versioningPlaceholderClause('tt_content')
         );
-        if (GeneralUtility::compat_version('8.4.0') && !GeneralUtility::compat_version('8.5.0')) {
-            // Patching to avoid http://forge.typo3.org/issues/78353 by specifically targeting only the 8.4.x branch
-            // which is the only branch to display the symptom. Bug is fixed in coming 8.5.0 and does not exist in
-            // LTS - @TODO: remove this patch when 8.4.x is no longer supported, but no need to hurry.
-            $condition .= ' AND ';
-        }
-        $result = $this->getDatabaseConnection()->exec_SELECTgetRows('*', 'tt_content', $condition, '', 'sorting');
+        $result = $this->recordService->get('tt_content', '*', $condition, '', 'sorting');
         $rows = [];
         if ($result) {
             foreach ($result as $contentRecord) {
@@ -552,6 +555,7 @@ class PreviewView
                     $rows[] = $contentRecord;
                 }
             }
+            $rows = HookHandler::trigger(HookHandler::PREVIEW_RECORDS_FETCHED, ['rows' => $rows, 'parentRecord' => $row, 'area' => $area])['rows'];
             $view->generateTtContentDataArray($rows);
         }
         return $rows;
@@ -642,15 +646,6 @@ class PreviewView
     protected function getPageModuleSettings()
     {
         return $GLOBALS['SOBE']->MOD_SETTINGS;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @return DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 
     /**
@@ -792,7 +787,6 @@ class PreviewView
             $pageUid,
             $id,
             $this->drawNewIcon($row, $column),
-            CompatibilityRegistry::get(static::class . '->drawPasteIcon') ? $this->drawPasteIcon($row, $column) : '',
             $this->drawPasteIcon($row, $column, true),
             $content
         );

@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Transformation;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
@@ -57,32 +58,34 @@ class FormDataTransformer
                     $transformType = $object->getTransform();
 
                     if ($transformType) {
-                        $value = $this->transformValueToType($value, $transformType);
+                        $originalValue = $value;
+                        $value = HookHandler::trigger(
+                            HookHandler::VALUE_BEFORE_TRANSFORM,
+                            [
+                                'value' => $value,
+                                'object' => $object,
+                                'type' => $transformType,
+                                'form' => $form
+                            ]
+                        )['value'];
+                        if ($value === $originalValue) {
+                            $value = $this->transformValueToType($value, $transformType);
+                        }
+                        $value = HookHandler::trigger(
+                            HookHandler::VALUE_AFTER_TRANSFORM,
+                            [
+                                'value' => $value,
+                                'object' => $object,
+                                'type' => $transformType,
+                                'form' => $form
+                            ]
+                        )['value'];
                     }
                 }
             }
             $values[$index] = $value;
         }
         return $values;
-    }
-
-    /**
-     * @param mixed $value
-     * @param Form $form
-     * @param string $path
-     * @return mixed
-     */
-    protected function transformValueAtPath($value, Form $form, $path)
-    {
-        /** @var FieldInterface|ContainerInterface $object */
-        $object = $this->extractTransformableObjectByPath($form, $path);
-        if ($object instanceof Form\FormInterface) {
-            $transformType = $object->getTransform();
-            if ($transformType) {
-                return $this->transformValueToType($value, $transformType);
-            }
-        }
-        return $value;
     }
 
     /**
@@ -131,6 +134,9 @@ class FormDataTransformer
             return explode(',', $value);
         } elseif ('bool' === $dataType || 'boolean' === $dataType) {
             return boolval($value);
+        } elseif (strpos($dataType, '->')) {
+            list ($class, $function) = explode('->', $dataType);
+            return call_user_func_array([$this->objectManager->get($class), $function], [$value]);
         } else {
             return $this->getObjectOfType($dataType, $value);
         }

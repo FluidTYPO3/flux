@@ -1,6 +1,7 @@
 <?php
 namespace FluidTYPO3\Flux\Backend\FormEngine;
 
+use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -19,7 +20,9 @@ class ProviderProcessor implements FormDataProviderInterface
         $providers = $this->getProviderResolver()->resolveConfigurationProviders(
             $result['tableName'],
             null,
-            $result['databaseRow']
+            $result['databaseRow'],
+            null,
+            DataStructureProviderInterface::class
         );
         foreach ($providers as $provider) {
             $result = $provider->processTableConfiguration($result['databaseRow'], $result);

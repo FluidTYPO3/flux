@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * ContentTypeBuilderTest
@@ -53,11 +54,11 @@ class ContentTypeBuilderTest extends AbstractTestCase
     {
         $subject = new ContentTypeBuilder();
         $form = Form::create([]);
-        $provider = $this->getMockBuilder(Provider::class)->getMock();
         $provider = $this->getMockBuilder(Provider::class)->setMethods(['getForm'])->getMock();
         $provider->expects($this->once())->method('getForm')->willReturn($form);
 
         $GLOBALS['TCA']['tt_content']['columns']['list_type']['config']['items'] = [];
+        $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)->disableOriginalConstructor()->getMock();
 
         $subject->registerContentType(
             'FluidTYPO3.Flux',
@@ -76,9 +77,8 @@ class ContentTypeBuilderTest extends AbstractTestCase
         $subject = new ContentTypeBuilder();
         $result = $subject->configureContentTypeFromTemplateFile(
             'FluidTYPO3.Flux',
-            $this->getAbsoluteFixtureTemplatePathAndFilename(static::FIXTURE_TEMPLATE_BASICGRID)
+            $this->getAbsoluteFixtureTemplatePathAndFilename(static::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL)
         );
         $this->assertInstanceOf(Provider::class, $result);
-        $this->assertSame('test', $result->getForm([])->getId());
     }
 }

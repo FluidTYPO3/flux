@@ -31,7 +31,7 @@ class CustomViewHelper extends UserFuncViewHelper
             'string',
             'User function to render the Closure built by this ViewHelper',
             false,
-            self::DEFAULT_USERFUNCTION
+            static::DEFAULT_USERFUNCTION
         );
     }
 
@@ -64,7 +64,7 @@ class CustomViewHelper extends UserFuncViewHelper
         array $arguments,
         \Closure $renderChildrenClosure
     ) {
-        $container = $renderingContext->getTemplateVariableContainer();
+        $container = $renderingContext->getVariableProvider();
         $closure = function ($parameters) use ($container, $renderingContext, $renderChildrenClosure) {
             $backupParameters = null;
             $backupParameters = null;

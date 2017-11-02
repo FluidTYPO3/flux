@@ -8,11 +8,16 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Backend\Preview;
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -26,11 +31,9 @@ class PreviewTest extends AbstractTestCase
      */
     public function setUp()
     {
-        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
         $fluxService = $this->objectManager->get('FluidTYPO3\Flux\Service\FluxService');
         $fluxService->injectConfigurationManager($configurationManager);
-        $GLOBALS['TYPO3_DB'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Database\\DatabaseConnection')->setMethods(array('exec_SELECTgetRows'))->disableOriginalConstructor()->getMock();
-        $GLOBALS['TYPO3_DB']->expects($this->any())->method('exec_SELECTgetRows')->willReturn(array());
         $tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
         foreach ($tempFiles as $tempFile) {
             if (true === file_exists($tempFile)) {
@@ -55,10 +58,12 @@ class PreviewTest extends AbstractTestCase
      */
     public function canGetPageTitleAndPidFromContentUid()
     {
-        $className = 'FluidTYPO3\Flux\Backend\Preview';
-        $instance = $this->getMockBuilder($className)->getMock();
+        $instance = new Preview();
+        $recordService = $this->getMockBuilder(RecordService::class)->setMethods(['get'])->getMock();
+        $recordService->expects($this->once())->method('get')->willReturn([['foo']]);
+        ObjectAccess::setProperty($instance, 'recordService', $recordService, true);
         $result = $this->callInaccessibleMethod($instance, 'getPageTitleAndPidFromContentUid', 1);
-        $this->assertEmpty($result);
+        $this->assertSame(['foo'], $result);
     }
 
     /**
@@ -98,5 +103,19 @@ class PreviewTest extends AbstractTestCase
         $instance = $this->getMockBuilder($function)->setMethods(array('attachAssets'))->getMock();
         $instance->preProcess($caller, $drawItem, $headerContent, $itemContent, $row);
         Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
+    }
+
+    /**
+     * @test
+     */
+    public function testAttachAssets()
+    {
+        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['addCssFile'])->getMock();
+        $pageRenderer->expects($this->atLeastOnce())->method('addCssFile');
+        $document = $this->getMockBuilder(ModuleTemplate::class)->setMethods(['getPageRenderer'])->getMock();
+        $document->expects($this->once())->method('getPageRenderer')->willReturn($pageRenderer);
+        GeneralUtility::addInstance(ModuleTemplate::class, $document);
+        $subject = $this->createInstance();
+        $this->callInaccessibleMethod($subject, 'attachAssets');
     }
 }

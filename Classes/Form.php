@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Package\FluxPackageFactory;
@@ -98,7 +99,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     public function initializeObject()
     {
         /** @var Form\Container\Sheet $defaultSheet */
-        $defaultSheet = $this->getObjectManager()->get(Sheet::class);
+        $defaultSheet = GeneralUtility::makeInstance(Sheet::class);
         $defaultSheet->setName('options');
         $defaultSheet->setLabel('LLL:EXT:flux' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
         $this->add($defaultSheet);
@@ -113,15 +114,10 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     {
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        if (isset($settings['extensionName'])) {
-            $className = FluxPackageFactory::getPackageWithFallback($settings['extensionName'])
-                ->getImplementation(FluxPackage::IMPLEMENTATION_FORM);
-        } else {
-            $className = get_called_class();
-        }
         /** @var FormInterface $object */
-        $object = $objectManager->get($className);
-        return $object->modify($settings);
+        $object = $objectManager->get(static::class);
+        $object->modify($settings);
+        return HookHandler::trigger(HookHandler::FORM_CREATED, ['form' => $object])['form'];
     }
 
     /**
@@ -148,6 +144,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             $this->children->attach($child);
             $child->setParent($this);
         }
+        HookHandler::trigger(HookHandler::FORM_CHILD_ADDED, ['parent' => $this, 'child' => $child]);
         return $this;
     }
 
@@ -179,7 +176,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 'el' => []
             ];
         }
-        return $dataStructArray;
+        return HookHandler::trigger(HookHandler::FORM_BUILT, ['dataStructure' => $dataStructArray])['dataStructure'];
     }
 
     /**
@@ -249,41 +246,11 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @param string $group
-     * @return Form\FormInterface
-     */
-    public function setGroup($group)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $this->setOption(self::OPTION_GROUP, $group);
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGroup()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return $this->getOption(self::OPTION_GROUP);
-    }
-
-    /**
      * @param string $id
      * @return Form\FormInterface
      */
     public function setId($id)
     {
-        $allowed = 'a-z0-9_';
-        $pattern = '/[^' . $allowed . ']+/i';
-        if (preg_match($pattern, $id)) {
-            $this->getConfigurationService()->message(
-                'Flux FlexForm with id "' . $id . '" uses invalid characters in the ID; valid characters are: "' .
-                $allowed . '" and the pattern used for matching is "' . $pattern . '". This bad ID name will prevent ' .
-                'you from utilising some features, fx automatic LLL reference building, but is not fatal',
-                GeneralUtility::SYSLOG_SEVERITY_NOTICE
-            );
-        }
         $this->id = $id;
         if (true === empty($this->name)) {
             $this->name = $id;
@@ -446,6 +413,11 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 $sheet->modify($sheetData);
             }
             unset($structure['sheets'], $structure['children']);
+        }
+        if (isset($structure['outlet'])) {
+            $outlet = StandardOutlet::create($structure['outlet']);
+            $this->setOutlet($outlet);
+            unset($structure['outlet']);
         }
         return parent::modify($structure);
     }

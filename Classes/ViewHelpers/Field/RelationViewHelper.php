@@ -9,7 +9,25 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 /**
- * Select-type FlexForm field ViewHelper
+ * Select one or multiple database records from one table.
+ *
+ * Features a two-list style that shows all selectable items
+ * in a list on the right side,
+ * and all selected items in a list on the left side.
+ *
+ * Related: ``MultiRelationViewHelper``.
+ *
+ * ### Example: Select a content element
+ *
+ * If put inside a fluidpages "Configuration" section, the following code
+ * allows selecting a content element from the current page:
+ *
+ *     <flux:field.relation name="settings.content"
+ *                          table="tt_content"
+ *                          condition="AND tt_content.pid = ###THIS_UID###" />
+ *
+ * A list of allowed markers for the `condition` can be found in the
+ * [TCA "select" type `foreign_table_where` documentation](https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#foreign-table-where).
  */
 class RelationViewHelper extends AbstractRelationFieldViewHelper
 {

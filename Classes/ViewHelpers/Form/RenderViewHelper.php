@@ -9,10 +9,11 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
  * ## Main form rendering ViewHelper
@@ -21,36 +22,34 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  */
 class RenderViewHelper extends AbstractViewHelper
 {
+    use CompileWithRenderStatic;
+
     /**
      * @var boolean
      */
     protected $escapeOutput = false;
 
     /**
-     * @var \FluidTYPO3\Flux\Service\FluxService
-     * @inject
-     */
-    protected $configurationService;
-
-    /**
-     * @param FluxService $configurationService
      * @return void
      */
-    public function injectConfigurationService(FluxService $configurationService)
+    public function initializeArguments()
     {
-        $this->configurationService = $configurationService;
+        $this->registerArgument('form', Form::class, 'Form instance to render as HTML', true);
     }
 
     /**
-     * @param Form $form
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param RenderingContextInterface $renderingContext
      * @return string
      */
-    public function render(Form $form)
+    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
+        $form = $arguments['form'];
         $record = $form->getOption(Form::OPTION_RECORD);
         $table = $form->getOption(Form::OPTION_RECORD_TABLE);
         $field = $form->getOption(Form::OPTION_RECORD_FIELD);
-        $node = $this->getNodeFactory()->create([
+        $node = static::getNodeFactory()->create([
             'type' => 'flex',
             'renderType' => 'flex',
             'flexFormDataStructureArray' => $form->build(),
@@ -76,8 +75,8 @@ class RenderViewHelper extends AbstractViewHelper
     /**
      * @return NodeFactory
      */
-    protected function getNodeFactory()
+    protected static function getNodeFactory()
     {
-        return new NodeFactory();
+        return GeneralUtility::makeInstance(NodeFactory::class);
     }
 }

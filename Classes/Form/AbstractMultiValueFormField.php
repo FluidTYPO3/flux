@@ -55,7 +55,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * @var string
      * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#rendertype
      */
-    protected $renderType;
+    protected $renderType = 'selectSingle';
 
     /**
      * Mixed - string (CSV), Traversable or array of items. Format of key/value
@@ -354,14 +354,9 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      */
     protected function getLabelPropertyName($table, $type)
     {
-        $typoScript = $this->getConfigurationService()->getAllTypoScript();
-        if (true === isset($typoScript['config']['tx_extbase']['persistence']['classes'][$type])) {
-            $mapping = $typoScript['config']['tx_extbase']['persistence']['classes'][$type];
-            if (true === isset($mapping['mapping']['tableName'])) {
-                $table = $mapping['mapping']['tableName'];
-            }
-        }
-        $labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
+        $path = sprintf('config.tx_extbase.persistence.classes.%s.mapping.tableName', $type);
+        $mappedTable = $this->getConfigurationService()->getTypoScriptByPath($path);
+        $labelField = $GLOBALS['TCA'][$mappedTable ?: $table]['ctrl']['label'];
         $propertyName = GeneralUtility::underscoredToLowerCamelCase($labelField);
         return $propertyName;
     }
