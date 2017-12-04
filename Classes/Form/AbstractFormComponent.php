@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Container;
 use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Form\Container\ObjectContainer;
+use FluidTYPO3\Flux\Form\Container\Object as ObjectContainer;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Hooks\HookHandler;
