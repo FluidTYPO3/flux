@@ -9,6 +9,8 @@ namespace FluidTYPO3\Flux\Provider;
  */
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Hooks\HookHandler;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -20,7 +22,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class ProviderResolver implements SingletonInterface
 {
-
     /**
      * @var array
      */
@@ -62,40 +63,83 @@ class ProviderResolver implements SingletonInterface
      * @param string $fieldName
      * @param array $row
      * @param string $extensionKey
+     * @param string|array $interfaces One or more specific interfaces the Provider must implement.
      * @return ProviderInterface|NULL
      */
-    public function resolvePrimaryConfigurationProvider($table, $fieldName, array $row = null, $extensionKey = null)
-    {
-        return array_pop($this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey));
+    public function resolvePrimaryConfigurationProvider(
+        $table,
+        $fieldName,
+        array $row = null,
+        $extensionKey = null,
+        $interfaces = null
+    ) {
+        return array_pop($this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey, $interfaces));
     }
 
     /**
      * Resolves a ConfigurationProvider which can provide a working FlexForm
      * configuration based on the given parameters.
      *
-     * @param string $table
-     * @param string $fieldName
-     * @param array $row
-     * @param string $extensionKey
+     * @param string $table Table the Provider must match.
+     * @param string $fieldName Field in the table the Provider must match.
+     * @param array|null $row The record from table which the Provider must handle, or null if any record.
+     * @param string|null $extensionKey The extension key the Provider must match, or null if any extension key.
+     * @param string|array $interfaces One or more specific interfaces the Provider must implement.
      * @throws \RuntimeException
      * @return ProviderInterface[]
      */
-    public function resolveConfigurationProviders($table, $fieldName, array $row = null, $extensionKey = null)
-    {
+    public function resolveConfigurationProviders(
+        $table,
+        $fieldName,
+        array $row = null,
+        $extensionKey = null,
+        $interfaces = null
+    ) {
         $row = false === is_array($row) ? [] : $row;
         $providers = $this->getAllRegisteredProviderInstances();
-        usort($providers, function ($a, $b) use ($row) {
-            $priorityA = $a->getPriority($row);
-            $priorityB = $b->getPriority($row);
-            if ($priorityA === $priorityB) {
-                return 0;
+        if ($interfaces) {
+            $providers = array_filter(
+                $providers,
+                function (ProviderInterface $provider) use ($interfaces) {
+                    foreach ((array) $interfaces as $interface) {
+                        if (!$provider instanceof $interface) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            );
+        }
+        usort(
+            $providers,
+            function (ProviderInterface $a, ProviderInterface $b) use ($row) {
+                $priorityA = $a->getPriority($row);
+                $priorityB = $b->getPriority($row);
+                if ($priorityA === $priorityB) {
+                    return 0;
+                }
+                return $priorityA < $priorityB ? -1 : 1;
             }
-            return $priorityA < $priorityB ? -1 : 1;
-        });
-        $providers = array_filter($providers, function ($provider) use ($row, $table, $fieldName) {
-            return $provider->trigger($row, $table, $fieldName);
-        });
-        return $providers;
+        );
+        // RecordProviderInterface being missing will automatically include the Provider. Those that do
+        // implement the interface will be asked if they should trigger on the table/field/row/ext combo.
+        $providers = array_filter(
+            $providers,
+            function (ProviderInterface $provider) use ($row, $table, $fieldName, $extensionKey) {
+                return !$provider instanceof RecordProviderInterface || $provider->trigger($row, $table, $fieldName, $extensionKey);
+            }
+        );
+        return HookHandler::trigger(
+            HookHandler::PROVIDERS_RESOLVED,
+            [
+                'table' => $table,
+                'field' => $fieldName,
+                'record' => $row,
+                'extensionKey' => $extensionKey,
+                'interfaces' => $interfaces,
+                'providers' => $providers
+            ]
+        )['providers'];
     }
 
     /**

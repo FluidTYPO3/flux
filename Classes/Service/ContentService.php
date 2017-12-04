@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -66,7 +67,7 @@ class ContentService implements SingletonInterface
         if (false === empty($parameters['overrideVals']['tt_content']['tx_flux_parent'])) {
             $row['tx_flux_parent'] = (integer) $parameters['overrideVals']['tt_content']['tx_flux_parent'];
             if (0 < $row['tx_flux_parent']) {
-                $row['colPos'] = self::COLPOS_FLUXCONTENT;
+                $row['colPos'] = static::COLPOS_FLUXCONTENT;
             }
         }
     }
@@ -101,8 +102,8 @@ class ContentService implements SingletonInterface
             if ((false === empty($colPos) || 0 === $colPos || '0' === $colPos)) {
                 $record['colPos'] = $colPos;
             }
-            $record['tx_flux_column'] = (string) (self::COLPOS_FLUXCONTENT === (integer) $colPos ? $area : '');
-            $record['tx_flux_parent'] = (integer) (self::COLPOS_FLUXCONTENT === (integer) $colPos ? $parentUid : 0);
+            $record['tx_flux_column'] = (string) (static::COLPOS_FLUXCONTENT === (integer) $colPos ? $area : '');
+            $record['tx_flux_parent'] = (integer) (static::COLPOS_FLUXCONTENT === (integer) $colPos ? $parentUid : 0);
             if (0 > $relativeUid) {
                 $record['sorting'] = $tceMain->resorting($table, $relativeRecord['pid'], 'sorting', abs($relativeUid));
             }
@@ -152,64 +153,61 @@ class ContentService implements SingletonInterface
      */
     public function moveRecord(array &$row, &$relativeTo, $parameters, DataHandler $tceMain)
     {
-        // Note: this condition is here in order to NOT perform any actions if
-        // the $relativeTo variable was passed by EXT:gridelements in which case
-        // it is invalid (not a negative/positive integer but a string).
-        if (false === strpos($relativeTo, 'x')) {
-            if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $relativeTo) {
-                // Fake relative to value - we can get the target from a session variable
-                list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
-                $row['tx_flux_parent'] = $parent;
-                $row['tx_flux_column'] = $column;
-                $row['colPos'] = static::COLPOS_FLUXCONTENT;
-                $row['sorting'] = 0;
-            } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
-                // Special case for clipboard commands only. This special case also requires a new
-                // sorting value to re-sort after a possibly invalid sorting value is received.
-                list (, , $relativeTo, $parentUid, $area, ) = GeneralUtility::trimExplode('-', $parameters[1]);
-                if ($relativeTo <> 0) {
-                    $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], -(integer) $relativeTo);
-                    $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
-                } else {
-                    $row['sorting'] = 0;
-                }
-                $row['tx_flux_parent'] = $parentUid;
-                $row['tx_flux_column'] = $area;
-            } elseif (0 > (integer) $relativeTo) {
-                // inserting a new element after another element. Check column position of that element.
-                // Get the desired sorting value after the relative record.
-                $relativeUid = abs($relativeTo);
-                $relativeToRecord = $this->loadRecordFromDatabase($relativeUid);
-
-                if ((integer) $relativeToRecord['t3ver_oid'] === 0) {
-                    BackendUtility::workspaceOL('tt_content', $relativeToRecord);
-                    $movePlaceholder = BackendUtility::getMovePlaceholder('tt_content', $relativeUid);
-                    if ($movePlaceholder) {
-                        $relativeToRecord = $movePlaceholder;
-                    }
-                }
-                $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], $relativeTo);
-                $row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
-                $row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
-                $row['colPos'] = $relativeToRecord['colPos'];
+        if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $relativeTo) {
+            // Fake relative to value - we can get the target from a session variable
+            list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
+            $row['tx_flux_parent'] = $parent;
+            $row['tx_flux_column'] = $column;
+            $row['colPos'] = static::COLPOS_FLUXCONTENT;
+            $row['sorting'] = 0;
+        } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
+            // Special case for clipboard commands only. This special case also requires a new
+            // sorting value to re-sort after a possibly invalid sorting value is received.
+            list (, , $relativeTo, $parentUid, $area, ) = GeneralUtility::trimExplode('-', $parameters[1]);
+            if ($relativeTo <> 0) {
+                $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], -(integer) $relativeTo);
                 $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
-            } elseif (0 <= (integer) $relativeTo) {
-                // moving to first position in colPos, means that $relativeTo is the target colPos. PID is already set!
-                $row['tx_flux_parent'] = null;
-                $row['tx_flux_column'] = null;
-                $row['colPos'] = $relativeTo;
             } else {
-                $row['tx_flux_parent'] = null;
-                $row['tx_flux_column'] = null;
+                $row['sorting'] = 0;
             }
+            $row['tx_flux_parent'] = $parentUid;
+            $row['tx_flux_column'] = $area;
+            $row['colPos'] = static::COLPOS_FLUXCONTENT;
+        } elseif (0 > (integer) $relativeTo) {
+            // inserting a new element after another element. Check column position of that element.
+            // Get the desired sorting value after the relative record.
+            $relativeUid = abs($relativeTo);
+            $relativeToRecord = $this->loadRecordFromDatabase($relativeUid);
+
+            if ((integer) $relativeToRecord['t3ver_oid'] === 0) {
+                BackendUtility::workspaceOL('tt_content', $relativeToRecord);
+                $movePlaceholder = BackendUtility::getMovePlaceholder('tt_content', $relativeUid);
+                if ($movePlaceholder) {
+                    $relativeToRecord = $movePlaceholder;
+                }
+            }
+            $sorting = $tceMain->getSortNumber('tt_content', $row['uid'], $relativeTo);
+            $row['tx_flux_parent'] = $relativeToRecord['tx_flux_parent'];
+            $row['tx_flux_column'] = $relativeToRecord['tx_flux_column'];
+            $row['colPos'] = $relativeToRecord['colPos'];
+            $row['sorting'] = is_array($sorting) ? $sorting['sortNumber'] : $sorting;
         } else {
-            // $relativeTo variable was passed by EXT:gridelements
             $row['tx_flux_parent'] = null;
             $row['tx_flux_column'] = null;
         }
         if (0 < $row['tx_flux_parent']) {
             $row['colPos'] = static::COLPOS_FLUXCONTENT;
         }
+        $row = HookHandler::trigger(
+            HookHandler::RECORD_MOVED,
+            [
+                'record' => $row,
+                'relativeTo' => $relativeTo,
+                'relativeToRecord' => $relativeToRecord ?? null,
+                'parameters' => $parameters,
+                'dataHandler' => $tceMain
+            ]
+        )['record'];
     }
 
     /**
@@ -233,6 +231,14 @@ class ContentService implements SingletonInterface
             $languageFieldName,
             $tceMain
         );
+        $row = HookHandler::trigger(
+            HookHandler::RECORD_INITIALIZED,
+            [
+                'id' => $id,
+                'record' => $row,
+                'dataHandler' => $tceMain
+            ]
+        )['record'];
     }
 
     /**
@@ -424,9 +430,10 @@ class ContentService implements SingletonInterface
                 );
             }
             $where .= $reference->deleteClause($table);
-            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select, $table, $where, '', $sortRow . ' DESC', '1');
+            $res = $this->recordService->get($table, $select, $where, '', $sortRow . ' DESC', 1);
+            $previousRow = $res[0] ?? false;
             // If there is an element, find its localized record in specified localization language
-            if ($previousRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+            if ($previousRow) {
                 $previousLocalizedRecord = BackendUtility::getRecordLocalization(
                     $table,
                     $previousRow['uid'],
@@ -436,7 +443,6 @@ class ContentService implements SingletonInterface
                     $previousLocalizedRecordUid = $previousLocalizedRecord[0]['uid'];
                 }
             }
-            $GLOBALS['TYPO3_DB']->sql_free_result($res);
         }
         return $previousLocalizedRecordUid;
     }

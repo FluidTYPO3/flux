@@ -8,10 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
-use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
 use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 
 /**
@@ -48,7 +45,7 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
     {
         $instance = $this->objectManager->get('FluidTYPO3\Flux\ViewHelpers\Field\CustomViewHelper');
         $renderingContext = $this->objectManager->get('TYPO3\CMS\Fluid\Core\Rendering\RenderingContext');
-        $container = $renderingContext->getTemplateVariableContainer();
+        $container = $renderingContext->getVariableProvider();
         $arguments = array(
             'name' => 'custom'
         );

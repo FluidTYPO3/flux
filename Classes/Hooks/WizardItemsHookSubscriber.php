@@ -103,11 +103,30 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
             $parentObject->colPos,
             $parentObject->uid_pid
         );
+        $overrides = HookHandler::trigger(
+            HookHandler::ALLOWED_CONTENT_RULES_FETCHED,
+            [
+                'whitelist' => $whitelist,
+                'blacklist' => $blacklist,
+                'controller' => $parentObject
+            ]
+        );
+        $whitelist = $overrides['whitelist'];
+        $blacklist = $overrides['blacklist'];
+
         $items = $this->applyWhitelist($items, $whitelist);
         $items = $this->applyBlacklist($items, $blacklist);
         $items = $this->applyDefaultValues($items, $this->getDefaultValues());
         $items = $this->trimItems($items);
-        return $items;
+        return HookHandler::trigger(
+            HookHandler::ALLOWED_CONTENT_FILTERED,
+            [
+                'whitelist' => $whitelist,
+                'blacklist' => $blacklist,
+                'controller' => $parentObject,
+                'items' => $items
+            ]
+        )['items'];
     }
 
     /**

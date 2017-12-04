@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -45,6 +46,20 @@ class ContentIconHookSubscriberTest extends AbstractTestCase
     }
 
     /**
+     * @test
+     */
+    public function testDrawGridToggle()
+    {
+        $GLOBALS['LANG'] = $this->getMockBuilder('TYPO3\\CMS\\Lang\\LanguageService')->setMethods(array('sL'))->getMock();
+        $GLOBALS['LANG']->expects($this->any())->method('sL')->will($this->returnArgument(0));
+        $subject = $this->createInstance();
+        $result = $this->callInaccessibleMethod($subject, 'drawGridToggle', ['uid' => 123]);
+        $this->assertContains('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content', $result);
+        $this->assertContains('icon-actions-view-list-expand', $result);
+        $this->assertContains('icon-actions-view-list-collapse', $result);
+    }
+
+    /**
      * @dataProvider getAddSubIconTestValues
      * @param array $parameters
      * @param ProviderInterface|NULL
@@ -62,7 +77,7 @@ class ContentIconHookSubscriberTest extends AbstractTestCase
         $cache->expects($this->once())->method('get')->willReturn(null);
         $cache->expects($this->once())->method('set')->with($this->anything());
 
-        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
         $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('resolvePrimaryConfigurationProvider','getConfiguration'))->getMock();
         $service->injectConfigurationManager($configurationManager);
         $service->expects($this->any())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);

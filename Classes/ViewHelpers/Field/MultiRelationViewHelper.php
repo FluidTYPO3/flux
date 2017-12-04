@@ -12,7 +12,31 @@ use FluidTYPO3\Flux\Form\RelationFieldInterface;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
- * Multi-table-relation FlexForm field ViewHelper
+ * Select one or more database records from several tables.
+ *
+ * In comparison to ``RelationViewHelper``, only the list with selected
+ * items is visible on the left.
+ * The right side contains a "browse" button that opens a popup.
+ *
+ * Related: ``RelationViewHelper``.
+ *
+ * ### Example: Select from multiple tables
+ *
+ * Select pages and content elements:
+ *
+ *     <flux:field.multiRelation name="settings.records"
+ *                               table="pages,tt_content"
+ *                               maxItems="5" />
+ *
+ * ### Example: Content element selector with autocomplete
+ *
+ * Add a wizard to search for content elements, instead of opening a popup:
+ *
+ *     <flux:field.multiRelation name="settings.elements"
+ *                               table="tt_content"
+ *                               maxItems="5">
+ *         <flux:wizard.suggest />
+ *     </flux:field.multiRelation>
  */
 class MultiRelationViewHelper extends AbstractRelationFieldViewHelper
 {

@@ -57,6 +57,14 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper
             false,
             false
         );
+        $this->registerArgument(
+            'internalType',
+            'string',
+            'Internal type (TCA internal_type) to use for the field. Defaults to `file_reference` but can be set to ' .
+            '`file` to support file uploading',
+            false,
+            'file_reference'
+        );
     }
 
     /**
@@ -74,6 +82,7 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper
         $component->setUploadFolder($arguments['uploadFolder']);
         $component->setShowThumbnails($arguments['showThumbnails']);
         $component->setUseFalRelation($arguments['useFalRelation']);
+        $component->setInternalType($arguments['internalType']);
         return $component;
     }
 }

@@ -8,23 +8,18 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\FormInterface;
-use FluidTYPO3\Flux\Service\FluxService;
-use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
-
 /**
  * TextTest
  */
 class TextTest extends InputTest
 {
-
     /**
      * @var array
      */
     protected $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
-        'enable' => true,
+        'enabled' => true,
         'maxCharacters' => 30,
         'maximum' => 10,
         'minimum' => 0,
@@ -45,41 +40,5 @@ class TextTest extends InputTest
         $chained = $instance->setEnableRichText(true);
         $this->assertSame($instance, $chained);
         $this->assertTrue($instance->getEnableRichText());
-    }
-
-    /**
-     * @test
-     */
-    public function canChainSetterForDefaultExtras()
-    {
-        /** @var Text $instance */
-        $instance = $this->createInstance();
-        $chained = $instance->setDefaultExtras('void');
-        $this->assertSame($instance, $chained);
-        $this->assertSame('void', $instance->getDefaultExtras());
-    }
-
-    /**
-     * @test
-     */
-    public function canBuildConfigurationWithoutDefaultExtrasWithEnableRichText()
-    {
-        /** @var Text $instance */
-        $instance = $this->createInstance();
-        $instance->setDefaultExtras(null)->setEnableRichText(true);
-        $result = $this->performTestBuild($instance);
-        $this->assertArrayHasKey('defaultExtras', $result['config']);
-    }
-
-    /**
-     * @test
-     */
-    public function canBuildConfigurationWithDefaultExtras()
-    {
-        /** @var Text $instance */
-        $instance = $this->createInstance();
-        $instance->setDefaultExtras('richtext[*]');
-        $result = $this->performTestBuild($instance);
-        $this->assertNotEmpty($result['defaultExtras']);
     }
 }

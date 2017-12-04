@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Object;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -106,7 +107,8 @@ abstract class AbstractFormComponent implements FormInterface
         $className = get_called_class();
         /** @var FormInterface $object */
         $object = $objectManager->get($className);
-        return $object->modify($settings);
+        $object->modify($settings);
+        return HookHandler::trigger(HookHandler::FORM_COMPONENT_CREATED, ['component' => $object])['component'];
     }
 
     /**
@@ -164,8 +166,7 @@ abstract class AbstractFormComponent implements FormInterface
     public function createComponent($namespace, $type, $name, $label = null)
     {
         /** @var FormInterface $component */
-        $className = $this->createComponentClassName($type, $namespace);
-        $component = $this->getObjectManager()->get($className);
+        $component = GeneralUtility::makeInstance($this->createComponentClassName($type, $namespace));
         if (null === $component->getName()) {
             $component->setName($name);
         }
@@ -173,7 +174,7 @@ abstract class AbstractFormComponent implements FormInterface
         $component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
         $component->setDisableLocalLanguageLabels($this->getDisableLocalLanguageLabels());
         $component->setExtensionName($this->getExtensionName());
-        return $component;
+        return HookHandler::trigger(HookHandler::FORM_COMPONENT_CREATED, ['component' => $component])['component'];
     }
 
     /**
@@ -529,6 +530,7 @@ abstract class AbstractFormComponent implements FormInterface
                 ObjectAccess::setProperty($this, $propertyName, $propertyValue);
             }
         }
+        HookHandler::trigger(HookHandler::FORM_COMPONENT_MODIFIED, ['component' => $this, 'modififications' => $structure]);
         return $this;
     }
 

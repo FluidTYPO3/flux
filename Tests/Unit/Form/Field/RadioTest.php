@@ -20,7 +20,7 @@ class RadioTest extends AbstractFieldTest
     protected $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
-        'enable' => true,
+        'enabled' => true,
         'default' => 1,
         'requestUpdate' => true,
     );

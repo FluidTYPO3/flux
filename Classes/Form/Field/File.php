@@ -48,6 +48,11 @@ class File extends AbstractMultiValueFormField
     protected $useFalRelation = false;
 
     /**
+     * @var string
+     */
+    protected $internalType = 'file_reference';
+
+    /**
      * @return array
      */
     public function buildConfiguration()
@@ -58,7 +63,7 @@ class File extends AbstractMultiValueFormField
         $configuration['max_size'] = $this->getMaxSize();
         $configuration['uploadfolder'] = $this->getUploadFolder();
         $configuration['show_thumbs'] = $this->getShowThumbnails();
-        $configuration['internal_type'] = 'file_reference';
+        $configuration['internal_type'] = $this->getInternalType();
 
         if ($this->getUseFalRelation() === true) {
             $configuration['internal_type'] = 'db';
@@ -202,5 +207,23 @@ class File extends AbstractMultiValueFormField
     public function getUseFalRelation()
     {
         return $this->useFalRelation;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInternalType()
+    {
+        return $this->internalType;
+    }
+
+    /**
+     * @param string $internalType
+     * @return File
+     */
+    public function setInternalType($internalType)
+    {
+        $this->internalType = $internalType;
+        return $this;
     }
 }

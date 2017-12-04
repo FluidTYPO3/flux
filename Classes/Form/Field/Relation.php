@@ -17,6 +17,11 @@ class Relation extends AbstractRelationFormField
 {
 
     /**
+     * @var string|null
+     */
+    protected $renderType = null;
+
+    /**
      * @return array
      */
     public function buildConfiguration()
