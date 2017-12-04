@@ -7,12 +7,15 @@ env: COVERAGE="YES" TYPO3_VERSION="^8"
 php:
   - "7.0"
   - "7.1"
+  - "7.2"
 
 matrix:
   include:
     - php: "7.0"
       env: COVERAGE="NO" TYPO3_VERSION="dev-master"
     - php: "7.1"
+      env: COVERAGE="NO" TYPO3_VERSION="dev-master"
+    - php: "7.2"
       env: COVERAGE="NO" TYPO3_VERSION="dev-master"
 
 cache:
