@@ -31,8 +31,6 @@ use function get_class;
  * to ease interaction with Flux forms. Is not required as subclass for
  * Controllers rendering records associated with Flux - all it does is
  * ease the interaction by providing a common API.
- *
- * @route off
  */
 abstract class AbstractFluxController extends ActionController
 {
@@ -288,7 +286,6 @@ abstract class AbstractFluxController extends ActionController
 
     /**
      * @return string
-     * @route off
      */
     public function renderAction()
     {
