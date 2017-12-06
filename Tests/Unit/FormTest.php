@@ -149,7 +149,7 @@ class FormTest extends AbstractTestCase
         $objectField = $form->createField('Input', 'objectField');
         $form->add($field);
         $section = $form->createContainer('Section', 'section');
-        $object = $form->createContainer('Object', 'object');
+        $object = $form->createContainer('SectionObject', 'object');
         $object->add($objectField);
         $section->add($object);
         $form->add($section);

@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Container\Object as ObjectComponent;
+use FluidTYPO3\Flux\Form\Container\SectionObject;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -81,13 +81,13 @@ class ObjectViewHelper extends AbstractFormViewHelper
     /**
      * @param RenderingContextInterface $renderingContext
      * @param array $arguments
-     * @return ObjectComponent
+     * @return SectionObject
      */
     public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
     {
-        /** @var ObjectComponent $object */
+        /** @var SectionObject $object */
         $object = static::getFormFromRenderingContext($renderingContext)
-            ->createContainer('Object', $arguments['name'], $arguments['label']);
+            ->createContainer('SectionObject', $arguments['name'], $arguments['label']);
         $object->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );

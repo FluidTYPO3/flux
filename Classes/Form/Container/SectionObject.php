@@ -16,7 +16,7 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 /**
  * Object
  */
-class Object extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
+class SectionObject extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
 {
 
     /**
