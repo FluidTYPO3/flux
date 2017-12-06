@@ -227,6 +227,9 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
 
         $component->setCreateNewRelationLinkTitle($createNewRelationLinkTitle);
 
+        /** Deactivate Render Type for 8.7 */
+        $component->setRenderType(null);
+
         return $component;
     }
 }
