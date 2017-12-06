@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Container;
 use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Form\Container\Object;
+use FluidTYPO3\Flux\Form\Container\Object as ObjectContainer;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Hooks\HookHandler;
@@ -279,7 +279,7 @@ abstract class AbstractFormComponent implements FormInterface
             $prefix = 'grids';
         } elseif (true === $this instanceof Column) {
             $prefix = 'columns';
-        } elseif (true === $this instanceof Object) {
+        } elseif (true === $this instanceof ObjectContainer) {
             $prefix = 'objects';
         } elseif (true === $this instanceof Container) {
             $prefix = 'containers';
