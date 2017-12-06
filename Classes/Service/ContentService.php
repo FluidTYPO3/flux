@@ -272,8 +272,7 @@ class ContentService implements SingletonInterface
                 // assign its UID as flux parent to the current record.
                 $translatedParents = (array) $this->workspacesAwareRecordService->get(
                     'tt_content',
-                    'uid,sys_language_uid',
-                    '1=1 ' . BackendUtility::deleteClause('tt_content')
+                    'uid,sys_language_uid'
                 );
                 foreach ($translatedParents as $translatedParent) {
                     if ($translatedParent['sys_language_uid'] == $newLanguageUid) {

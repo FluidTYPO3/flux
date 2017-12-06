@@ -170,7 +170,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     public function prefixesParentObjectNameToAutoLabelIfInsideObject()
     {
         $instance = $this->createInstance();
-        $parent = Form\Container\Object::create();
+        $parent = Form\Container\SectionObject::create();
         $parent->setName('parent');
         $instance->setName('child');
         $parent->add($instance);

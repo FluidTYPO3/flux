@@ -8,12 +8,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Container\Object;
+use FluidTYPO3\Flux\Form\Container\SectionObject;
 
 /**
  * ObjectTest
  */
-class ObjectTest extends AbstractContainerTest
+class SectionObjectTest extends AbstractContainerTest
 {
 
     /**
@@ -21,7 +21,7 @@ class ObjectTest extends AbstractContainerTest
      */
     public function getFieldsGetsFields()
     {
-        $container = Object::create(array('name' => 'test'));
+        $container = SectionObject::create(array('name' => 'test'));
         $container->createField('Input', 'test');
         $this->assertCount(1, $container->getFields());
     }

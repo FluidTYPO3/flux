@@ -6,6 +6,10 @@ if (!defined('TYPO3_MODE')) {
 
 if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 
+    if (version_compare(PHP_VERSION, '7.2', '<')) {
+        class_alias(\FluidTYPO3\Flux\Form\Container\SectionObject::class, 'FluidTYPO3\\Flux\\Form\\Container\\Object');
+    }
+
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] ?? [];
 
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF);
