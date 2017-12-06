@@ -53,6 +53,11 @@ class File extends AbstractMultiValueFormField
     protected $internalType = 'file_reference';
 
     /**
+     * @var string|null
+     */
+    protected $renderType = null;
+
+    /**
      * @return array
      */
     public function buildConfiguration()
