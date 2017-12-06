@@ -180,7 +180,8 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
                         'max' => $arguments['limit'],
                         'begin' => $arguments['offset'],
                         'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
-                        'where' => $conditions
+                        'where' => $conditions,
+                        'pidInList' => $parent['pid']
                     ]
                 )
             ]
