@@ -21,7 +21,7 @@ cache:
     - $HOME/.composer/cache
 
 install:
-  - composer require "typo3/cms:$TYPO3_VERSION"
+  - composer require "typo3/minimal:$TYPO3_VERSION"
 
 before_script: mkdir -p build/logs
 
