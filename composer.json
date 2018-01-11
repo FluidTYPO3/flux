@@ -33,7 +33,7 @@
         "typo3-ter/flux": "self.version"
     },
     "require-dev": {
-        "fluidtypo3/development": "^3.0"
+        "fluidtypo3/development": "^3.4.1"
     },
     "non-feature-branches": ["development", "staging"]
 }
