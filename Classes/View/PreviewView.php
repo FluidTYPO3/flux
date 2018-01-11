@@ -25,6 +25,7 @@ use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
@@ -454,7 +455,11 @@ class PreviewView extends TemplateView
         $columnName = $column->getName();
         $after = (false === empty($columnName) && false === empty($after)) ? '-' . $after : $row['pid'];
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-        $icon = $iconFactory->getIcon('actions-document-new', Icon::SIZE_SMALL)->render();
+        try {
+            $icon = $iconFactory->getIcon('actions-document-new', Icon::SIZE_SMALL)->render();
+        } catch (Exception $exception) {
+            $icon = '[+]';
+        }
         $uri = $this->getNewLink($row, $after, $columnName);
         $title = $this->getLanguageService()->getLL('newRecordHere');
         $inner = $this->getLanguageService()->getLL('content');
