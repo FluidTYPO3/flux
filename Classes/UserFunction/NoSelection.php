@@ -25,7 +25,7 @@ class NoSelection
     {
         unset($pObj);
         if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['debugMode'] > 0) {
-            return LocalizationUtility::translate('user.no_selection', 'Flux');
+            return LocalizationUtility::translate('user.no_selection', 'Flux') ?: 'No template selected';
         }
         unset($parameters);
         return null;

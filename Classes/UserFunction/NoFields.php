@@ -24,6 +24,6 @@ class NoFields
     public function renderField(&$parameters, &$pObj)
     {
         unset($pObj, $parameters);
-        return LocalizationUtility::translate('user.no_fields', 'Flux');
+        return LocalizationUtility::translate('user.no_fields', 'Flux') ?: 'Form contains no fields';
     }
 }
