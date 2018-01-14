@@ -79,7 +79,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * If not-FALSE, adds one empty option/value pair to the generated selector
      * box and tries to use this property's value (cast to string) as label.
      *
-     * @var boolean|string
+     * @var mixed
      */
     protected $emptyOption = false;
 
@@ -306,7 +306,11 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         }
         $emptyOption = $this->getEmptyOption();
         if (false !== $emptyOption) {
-            array_unshift($items, [$emptyOption, '']);
+            if (is_array($emptyOption)) {
+                array_unshift($items, $emptyOption);
+            } else {
+                array_unshift($items, [$emptyOption, '']);
+            }
         }
         return $items;
     }
