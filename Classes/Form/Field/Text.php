@@ -55,6 +55,11 @@ class Text extends Input implements FieldInterface
     protected $format;
 
     /**
+     * @var string
+     */
+    protected $placeholder;
+
+    /**
      * @return array
      */
     public function buildConfiguration()
@@ -63,6 +68,7 @@ class Text extends Input implements FieldInterface
         $configuration['rows'] = $this->getRows();
         $configuration['cols'] = $this->getColumns();
         $configuration['eval'] = $this->getValidate();
+        $configuration['placeholder'] = $this->getPlaceholder();
         if (true === $this->getEnableRichText()) {
             $configuration['enableRichtext'] = true;
             $configuration['richtextConfiguration'] = $this->getRichtextConfiguration();
@@ -179,6 +185,24 @@ class Text extends Input implements FieldInterface
     public function setFormat($format)
     {
         $this->format = $format;
+    }
+
+    /**
+     * @param string $placeholder
+     * @return Text
+     */
+    public function setPlaceholder($placeholder)
+    {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlaceholder()
+    {
+        return $this->placeholder;
     }
 
     /**
