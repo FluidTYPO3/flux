@@ -165,7 +165,7 @@ class FluxService implements SingletonInterface
         );
         $value = &$all;
         foreach (explode('.', $path) as $segment) {
-            $value = ($value[$path . '.'] ?? $value[$path] ?? null);
+            $value = ($value[$segment . '.'] ?? $value[$segment] ?? null);
             if ($value === null) {
                 break;
             }
