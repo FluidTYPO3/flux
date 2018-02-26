@@ -13,6 +13,8 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * FluxServiceTest
@@ -88,6 +90,21 @@ class FluxServiceTest extends AbstractTestCase
         $service->injectProviderResolver($this->objectManager->get('FluidTYPO3\\Flux\\Provider\\ProviderResolver'));
         $result = $service->resolvePrimaryConfigurationProvider('tt_content', null);
         $this->assertNull($result);
+    }
+
+    /**
+     * @test
+     */
+    public function testGetTypoScriptByPath()
+    {
+        $service = new FluxService();;
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->setMethods(array('getConfiguration'))->getMock();
+        $configurationManager->expects($this->once())->method('getConfiguration')
+            ->with(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT)
+            ->willReturn(array('plugin.' => array('tx_test.' => array('settings.' => array('test_var' => 'test_val')))));
+        $service->injectConfigurationManager($configurationManager);
+        $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
+        $this->assertEquals(array('test_var' => 'test_val'), $result);
     }
 
     /**
