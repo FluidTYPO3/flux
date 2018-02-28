@@ -235,8 +235,6 @@ abstract class AbstractFluxController extends ActionController
 
         /** @var RenderingContextInterface $renderingContext */
         $renderingContext = $view->getRenderingContext();
-        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName($extensionKey);
-
         $renderingContext->setControllerAction(
             $this->provider->getControllerActionFromRecord($record)
         );
@@ -265,6 +263,17 @@ abstract class AbstractFluxController extends ActionController
     protected function resolveView()
     {
         $view = $this->objectManager->get($this->resolveViewObjectName() ?: $this->defaultViewObjectName);
+
+        // Set view paths - must be done before setControllerContext()
+        //
+        // setControllerContext() will call fillDefaultsByPackageName with the
+        // package name of the request, which is not what we want. Then the template
+        // paths are already filled and another call to fillDefaultsByPackageName
+        // will not add the full configuration from TypoScript as it would be needed.
+        $record = $this->getRecord();
+        $extensionKey = ExtensionNamingUtility::getExtensionKey($this->provider->getControllerExtensionKeyFromRecord($record));
+        $view->getRenderingContext()->getTemplatePaths()->fillDefaultsByPackageName($extensionKey);
+
         $view->setControllerContext($this->controllerContext);
         return $view;
     }
