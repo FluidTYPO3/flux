@@ -172,7 +172,6 @@ class ContentService implements SingletonInterface
             }
             $row['tx_flux_parent'] = $parentUid;
             $row['tx_flux_column'] = $area;
-            $row['colPos'] = static::COLPOS_FLUXCONTENT;
         } elseif (0 > (integer) $relativeTo) {
             // inserting a new element after another element. Check column position of that element.
             // Get the desired sorting value after the relative record.
