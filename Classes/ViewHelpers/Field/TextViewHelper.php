@@ -74,6 +74,13 @@ class TextViewHelper extends AbstractFieldViewHelper
             false,
             null
         );
+        $this->registerArgument(
+            'placeholder',
+            'string',
+            'Placeholder text which vanishes if field is filled and/or field is focused',
+            false,
+            null
+        );
     }
 
     /**
@@ -92,6 +99,7 @@ class TextViewHelper extends AbstractFieldViewHelper
         $text->setRichtextConfiguration($arguments['richtextConfiguration']);
         $text->setRenderType($arguments['renderType']);
         $text->setFormat($arguments['format']);
+        $text->setPlaceholder($arguments['placeholder']);
         return $text;
     }
 }

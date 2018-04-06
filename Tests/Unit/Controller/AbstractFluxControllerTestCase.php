@@ -24,6 +24,7 @@ use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContext;
 
@@ -100,15 +101,12 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
      */
     public function testResolveView()
     {
-        $controllerContext = new ControllerContext();
-        $view = $this->getMockBuilder(TemplateView::class)->setMethods(['setControllerContext'])->disableOriginalConstructor()->getMock();
-        $view->expects($this->once())->method('setControllerContext')->with($controllerContext);
+        $view = $this->getMockBuilder(TemplateView::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->getMock();
         $objectManager->expects($this->once())->method('get')->with(TemplateView::class)->willReturn($view);
         $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['resolveViewObjectName'])->getMockForAbstractClass();
         $instance->expects($this->once())->method('resolveViewObjectName');
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
-        ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, true);
         $result = $this->callInaccessibleMethod($instance, 'resolveView');
         $this->assertSame($view, $result);
     }
@@ -248,6 +246,9 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $controllerContext = new ControllerContext();
         $controllerContext->setRequest(new Request());
         ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, true);
+        $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->getMock();
+        $objectManager->expects($this->once())->method('get')->with(TemplatePaths::class)->willReturn(new TemplatePaths());
+        ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
@@ -272,6 +273,9 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $controllerContext = new ControllerContext();
         $controllerContext->setRequest(new Request());
         ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, true);
+        $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->getMock();
+        $objectManager->expects($this->once())->method('get')->with(TemplatePaths::class)->willReturn(new TemplatePaths());
+        ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
