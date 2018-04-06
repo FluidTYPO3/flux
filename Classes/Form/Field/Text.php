@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Configuration\BackendConfigurationManager;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -226,18 +225,10 @@ class Text extends Input implements FieldInterface
      */
     protected function getPageTsConfigForRichTextEditor()
     {
-        $configurationManager = $this->getObjectManager()->get(ConfigurationManagerInterface::class);
-        if ($configurationManager instanceof BackendConfigurationManager) {
-            $pageUid = $configurationManager->getCurrentPageId();
-        } else {
-            $root = $this->getRoot();
-            $pageUid = $root instanceof Form ? $root->getOption('record')['pid'] ?? 0 : 0;
-        }
+        $root = $this->getRoot();
+        $pageUid = $root instanceof Form ? $root->getOption('record')['pid'] ?? 0 : 0;
 
-        if ($pageUid) {
-            return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
-        }
-        return 'default';
+        return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
     }
 
     /**
