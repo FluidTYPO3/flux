@@ -228,10 +228,7 @@ class Text extends Input implements FieldInterface
         $root = $this->getRoot();
         $pageUid = $root instanceof Form ? $root->getOption('record')['pid'] ?? 0 : 0;
 
-        if ($pageUid) {
-            return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
-        }
-        return 'default';
+        return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
     }
 
     /**
