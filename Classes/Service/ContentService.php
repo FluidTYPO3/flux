@@ -153,12 +153,14 @@ class ContentService implements SingletonInterface
      */
     public function moveRecord(array &$row, &$relativeTo, $parameters, DataHandler $tceMain)
     {
+        // This condition matches colPos values which are above the constant which is a virtual, assumed limit. When
+        // the $relativeTo value is above this constant value it is likely a virtual value - but it may also be the
+        // case for very large page trees where UID values naturally exceed this.
         if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $relativeTo) {
             // Fake relative to value - we can get the target from a session variable
             list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
             $row['tx_flux_parent'] = $parent;
             $row['tx_flux_column'] = $column;
-            $row['colPos'] = static::COLPOS_FLUXCONTENT;
             $row['sorting'] = 0;
         } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
             // Special case for clipboard commands only. This special case also requires a new
@@ -172,7 +174,6 @@ class ContentService implements SingletonInterface
             }
             $row['tx_flux_parent'] = $parentUid;
             $row['tx_flux_column'] = $area;
-            $row['colPos'] = static::COLPOS_FLUXCONTENT;
         } elseif (0 > (integer) $relativeTo) {
             // inserting a new element after another element. Check column position of that element.
             // Get the desired sorting value after the relative record.
