@@ -59,7 +59,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     /**
      * @var boolean
      */
-    protected $exclude = true;
+    protected $exclude = false;
 
     /**
      * @var string
