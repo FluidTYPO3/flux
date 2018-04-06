@@ -408,7 +408,7 @@ abstract class AbstractFluxController extends ActionController
                     'controllerActionName' => $controllerActionName
                 ]
             );
-            $potentialControllerInstance->processRequest($this->request,$response);
+            $potentialControllerInstance->processRequest($this->request, $response);
         } catch (StopActionException $error) {
             // intentionally left blank
         }
