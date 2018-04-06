@@ -107,7 +107,6 @@ class FormViewHelper extends AbstractFormViewHelper
         $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);
         $form->setOptions((array) $arguments['options']);
-        $form->setOption(Form::OPTION_RECORD, $renderingContext->getVariableProvider()->getByPath('record'));
         if (false === $form->hasOption(Form::OPTION_ICON)) {
             $form->setOption(Form::OPTION_ICON, $arguments['icon']);
         }
