@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Text
@@ -225,11 +226,8 @@ class Text extends Input implements FieldInterface
     protected function getPageTsConfigForRichTextEditor()
     {
         $root = $this->getRoot();
-        if ($root instanceof Form) {
-            $record = $root->getOption('record');
-            $pageUid = array_key_exists('doktype', $record) ? $record['uid'] : $record['pid'];
-        }
-        
+        $pageUid = $root instanceof Form ? $root->getOption('record')['pid'] ?? 0 : 0;
+
         if ($pageUid) {
             return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
         }
