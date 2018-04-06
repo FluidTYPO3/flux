@@ -50,8 +50,7 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
             'emptyOption',
             'mixed',
             'If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this ' .
-            'property\'s value (cast to string) as label.' .
-            'If you use the icon table in a selection field, you can set the empty option to an array with three elements (label, value, iconname).',
+            'property\'s value (cast to string) as label.',
             false,
             false
         );
