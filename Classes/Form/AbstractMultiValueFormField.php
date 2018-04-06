@@ -78,6 +78,8 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     /**
      * If not-FALSE, adds one empty option/value pair to the generated selector
      * box and tries to use this property's value (cast to string) as label.
+     * Can also be an array of [$value, $label, $iconName] where label and icon
+     * name are optional - use this when you need to specify an icon for "empty".
      *
      * @var mixed
      */
