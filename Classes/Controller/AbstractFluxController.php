@@ -21,6 +21,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use function get_class;
 
@@ -233,14 +234,17 @@ abstract class AbstractFluxController extends ActionController
         $record = $this->getRecord();
         $extensionKey = ExtensionNamingUtility::getExtensionKey($this->provider->getControllerExtensionKeyFromRecord($record));
 
+        $this->controllerContext->getRequest()->setControllerExtensionName($extensionKey);
+        $view->setControllerContext($this->controllerContext);
+
         /** @var RenderingContextInterface $renderingContext */
         $renderingContext = $view->getRenderingContext();
-        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName($extensionKey);
-
+        $renderingContext->setTemplatePaths(
+            $this->objectManager->get(TemplatePaths::class, $extensionKey)
+        );
         $renderingContext->setControllerAction(
             $this->provider->getControllerActionFromRecord($record)
         );
-        $this->controllerContext->getRequest()->setControllerExtensionName($extensionKey);
         $this->initializeViewVariables();
         $this->initializeViewHelperVariableContainer();
         HookHandler::trigger(
@@ -264,9 +268,7 @@ abstract class AbstractFluxController extends ActionController
      */
     protected function resolveView()
     {
-        $view = $this->objectManager->get($this->resolveViewObjectName() ?: $this->defaultViewObjectName);
-        $view->setControllerContext($this->controllerContext);
-        return $view;
+        return $this->objectManager->get($this->resolveViewObjectName() ?: $this->defaultViewObjectName);
     }
 
     /**

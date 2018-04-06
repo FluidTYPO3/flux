@@ -33,11 +33,6 @@ class MiscellaneousUtility
     private static $allowedIconTypes = ['svg', 'png', 'gif'];
 
     /**
-     * @var IconFactory
-     */
-    private static $iconFactory;
-
-    /**
      * @param integer $contentElementUid
      * @param string $areaName
      * @return integer
@@ -62,11 +57,7 @@ class MiscellaneousUtility
      */
     public static function getIcon($icon)
     {
-        if (null === static::$iconFactory) {
-            static::$iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-        }
-
-        return static::$iconFactory->getIcon($icon, Icon::SIZE_SMALL);
+        return GeneralUtility::makeInstance(IconFactory::class)->getIcon($icon, Icon::SIZE_SMALL);
     }
 
     /**

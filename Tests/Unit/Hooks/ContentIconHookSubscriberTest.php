@@ -11,6 +11,8 @@ namespace FluidTYPO3\Flux\Hooks;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\PageLayoutView;
+use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
+use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -20,6 +22,25 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  */
 class ContentIconHookSubscriberTest extends AbstractTestCase
 {
+    protected function setUp()
+    {
+        // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
+        // Since it doesn't matter much what this method actually responds for these tests, we mock it for all envs.
+        $iconRegistryMock = $this->getMockBuilder(IconRegistry::class)->setMethods(['isRegistered', 'getIconConfigurationByIdentifier'])->getMock();
+        $iconRegistryMock->expects($this->any())->method('isRegistered')->willReturn(true);
+        $iconRegistryMock->expects($this->any())->method('getIconConfigurationByIdentifier')->willReturn([
+            'provider' => SvgIconProvider::class,
+            'options' => [
+                'source' => 'EXT:core/Resources/Public/Icons/T3Icons/default/default-not-found.svg'
+            ]
+        ]);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryMock);
+    }
+
+    protected function tearDown()
+    {
+        GeneralUtility::removeSingletonInstance(IconRegistry::class, GeneralUtility::makeInstance(IconRegistry::class));
+    }
 
     /**
      * @return void

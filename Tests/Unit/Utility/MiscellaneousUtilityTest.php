@@ -17,6 +17,8 @@ use org\bovigo\vfs\vfsStream;
 use TYPO3\CMS\Backend\Routing\Exception\ResourceNotFoundException;
 use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Backend\Routing\Router;
+use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
+use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
@@ -32,13 +34,28 @@ class MiscellaneousUtilityTest extends AbstractTestCase
     protected function setUp()
     {
         parent::setUp();
+        // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
+        // Since it doesn't matter much what this method actually responds for these tests, we mock it for all envs.
+        $iconRegistryMock = $this->getMockBuilder(IconRegistry::class)->setMethods(['isRegistered', 'getIconConfigurationByIdentifier'])->getMock();
+        $iconRegistryMock->expects($this->any())->method('isRegistered')->willReturn(true);
+        $iconRegistryMock->expects($this->any())->method('getIconConfigurationByIdentifier')->willReturn([
+            'provider' => SvgIconProvider::class,
+            'options' => [
+                'source' => 'EXT:core/Resources/Public/Icons/T3Icons/default/default-not-found.svg'
+            ]
+        ]);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryMock);
         $router = GeneralUtility::makeInstance(Router::class);
         try {
             $router->match('tce_db');
         } catch (ResourceNotFoundException $error) {
             $router->addRoute('tce_db', new Route('tce_db', []));
         }
-        $GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
+    }
+
+    protected function tearDown()
+    {
+        GeneralUtility::removeSingletonInstance(IconRegistry::class, GeneralUtility::makeInstance(IconRegistry::class));
     }
 
     /**
