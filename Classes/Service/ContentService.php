@@ -156,9 +156,9 @@ class ContentService implements SingletonInterface
         // This condition matches colPos values which are above the constant which is a virtual, assumed limit. When
         // the $relativeTo value is above this constant value it is likely a virtual value - but it may also be the
         // case for very large page trees where UID values naturally exceed this.
-        if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $relativeTo) {
+        if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $row['colPos']) {
             // Fake relative to value - we can get the target from a session variable
-            list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
+            list ($parent, $column) = $this->getTargetAreaStoredInSession($row['colPos']);
             $row['tx_flux_parent'] = $parent;
             $row['tx_flux_column'] = $column;
             $row['sorting'] = 0;
