@@ -156,13 +156,12 @@ class ContentService implements SingletonInterface
         // This condition matches colPos values which are above the constant which is a virtual, assumed limit. When
         // the $relativeTo value is above this constant value it is likely a virtual value - but it may also be the
         // case for very large page trees where UID values naturally exceed this.
-        if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $relativeTo) {
+        if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $row['colPos']) {
             // Fake relative to value - we can get the target from a session variable
-            list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
+            list ($parent, $column) = $this->getTargetAreaStoredInSession($row['colPos']);
             $row['tx_flux_parent'] = $parent;
             $row['tx_flux_column'] = $column;
-            $row['sorting'] = 0;
-        } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
+        } else if (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
             // Special case for clipboard commands only. This special case also requires a new
             // sorting value to re-sort after a possibly invalid sorting value is received.
             list (, , $relativeTo, $parentUid, $area, ) = GeneralUtility::trimExplode('-', $parameters[1]);
