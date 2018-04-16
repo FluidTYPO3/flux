@@ -161,8 +161,7 @@ class ContentService implements SingletonInterface
             list ($parent, $column) = $this->getTargetAreaStoredInSession($row['colPos']);
             $row['tx_flux_parent'] = $parent;
             $row['tx_flux_column'] = $column;
-            $row['sorting'] = 0;
-        } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
+        } else if (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
             // Special case for clipboard commands only. This special case also requires a new
             // sorting value to re-sort after a possibly invalid sorting value is received.
             list (, , $relativeTo, $parentUid, $area, ) = GeneralUtility::trimExplode('-', $parameters[1]);
