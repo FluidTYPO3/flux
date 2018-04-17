@@ -268,7 +268,7 @@ class TceMain
         $record = $this->resolveRecordForOperation($table, $id);
 
         if ($table === 'tt_content') {
-            if ('localize' === $command) {
+            if ('localize' === $command || 'move' === $command) {
                 $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
             }
 

@@ -365,7 +365,6 @@ class ContentService implements SingletonInterface
      */
     public function fixPositionInLocalization($uid, $languageUid, &$sourceRecord, DataHandler $reference)
     {
-        $previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
         if (!empty($sourceRecord['l18n_parent'])) {
             $defaultRecordUid = $sourceRecord['l18n_parent'];
         } else {
@@ -373,22 +372,15 @@ class ContentService implements SingletonInterface
         }
         $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $defaultRecordUid, $languageUid);
         $sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
-        if (null === $previousLocalizedRecordUid) {
-            // moving to first position in tx_flux_column
-            $localizedRecord[0][$sortingRow] = $reference->getSortNumber(
-                'tt_content',
-                0,
-                $sourceRecord['pid']
-            );
-        } else {
-            $localizedRecord[0][$sortingRow] = $reference->resorting(
-                'tt_content',
-                $sourceRecord['pid'],
-                $sortingRow,
-                $previousLocalizedRecordUid
-            );
-        }
-        $this->updateRecordInDataMap($localizedRecord[0], null, $reference);
+
+        $localizedRecord[0][$sortingRow] = $sourceRecord[$sortingRow];
+        $localizedRecord[0]['colPos'] = $sourceRecord['colPos'];
+
+        $parentLocalizedRecord = BackendUtility::getRecordLocalization('tt_content', $sourceRecord['tx_flux_parent'], $languageUid);
+        $localizedRecord[0]['tx_flux_parent'] = $parentLocalizedRecord[0]['uid'];
+        $localizedRecord[0]['tx_flux_column'] = $sourceRecord['tx_flux_column'];
+
+        $this->recordService->update('tt_content', $localizedRecord[0]);
     }
 
     /**
