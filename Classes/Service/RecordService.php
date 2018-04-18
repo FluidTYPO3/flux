@@ -66,7 +66,9 @@ class RecordService implements SingletonInterface
         if (TYPO3_MODE === 'BE') {
             return BackendUtility::getRecord($table, $uid, $fields);
         }
-        $results = $this->getQueryBuilder($table)
+        $queryBuilder = $this->getQueryBuilder($table);
+        $queryBuilder->getRestrictions()->removeAll();
+        $results = $queryBuilder
             ->from($table)
             ->select(...explode(',', $fields))
             ->where(sprintf('uid = %d', $uid))
