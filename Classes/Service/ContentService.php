@@ -370,10 +370,26 @@ class ContentService implements SingletonInterface
         } else {
             $defaultRecordUid = $uid;
         }
-        $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $defaultRecordUid, $languageUid);
-        $sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
 
-        $localizedRecord[0][$sortingRow] = $sourceRecord[$sortingRow];
+        $sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
+        $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $defaultRecordUid, $languageUid);
+        $previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
+        if (null === $previousLocalizedRecordUid) {
+            // moving to first position in tx_flux_column
+            $localizedRecord[0][$sortingRow] = $reference->getSortNumber(
+                'tt_content',
+                0,
+                $sourceRecord['pid']
+            );
+        } else {
+            $localizedRecord[0][$sortingRow] = $reference->resorting(
+                'tt_content',
+                $sourceRecord['pid'],
+                $sortingRow,
+                $previousLocalizedRecordUid
+            );
+        }
+
         $localizedRecord[0]['colPos'] = $sourceRecord['colPos'];
 
         $parentLocalizedRecord = BackendUtility::getRecordLocalization('tt_content', $sourceRecord['tx_flux_parent'], $languageUid);
@@ -381,6 +397,9 @@ class ContentService implements SingletonInterface
         $localizedRecord[0]['tx_flux_column'] = $sourceRecord['tx_flux_column'];
 
         $this->recordService->update('tt_content', $localizedRecord[0]);
+
+
+
     }
 
     /**
@@ -414,12 +433,25 @@ class ContentService implements SingletonInterface
             // Respect the colPos for content elements
             if ($table === 'tt_content') {
                 $where .= sprintf(
-                    ' AND colPos=%d AND tx_flux_column=\'%s\' AND tx_flux_parent=%d',
-                    (integer) $row['colPos'],
-                    $row['tx_flux_column'],
+                    ' AND colPos=%d',
+                    (integer) $row['colPos']
+                );
+            }
+            // Respect the tx_flux_column for content elements
+            if ($table === 'tt_content' && $row['tx_flux_column']) {
+                $where .= sprintf(
+                    ' AND tx_flux_column=\'%s\'',
+                    $row['tx_flux_column']
+                );
+            }
+            // Respect the tx_flux_parent for content elements
+            if ($table === 'tt_content' && (integer) $row['tx_flux_parent']) {
+                $where .= sprintf(
+                    ' AND tx_flux_parent=%d',
                     (integer) $row['tx_flux_parent']
                 );
             }
+
             $where .= $reference->deleteClause($table);
             $res = $this->recordService->get($table, $select, $where, '', $sortRow . ' DESC', 1);
             $previousRow = $res[0] ?? false;
