@@ -140,13 +140,13 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase
         $instance = new WizardItemsHookSubscriber();
         $defaultValues = ['tx_flux_column' => 'foobararea', 'tx_flux_parent' => 321];
         $items = [
-            ['tt_content_defValues' => '', 'params' => '']
+            'test_test' => ['tt_content_defValues' => [], 'params' => '']
         ];
         $result = $this->callInaccessibleMethod($instance, 'applyDefaultValues', $items, $defaultValues);
-        $this->assertEquals($defaultValues['tx_flux_column'], $result[0]['tt_content_defValues']['tx_flux_column']);
-        $this->assertEquals($defaultValues['tx_flux_parent'], $result[0]['tt_content_defValues']['tx_flux_parent']);
-        $this->assertContains('[tx_flux_column]=foobararea', $result[0]['params']);
-        $this->assertContains('[tx_flux_parent]=321', $result[0]['params']);
+        $this->assertEquals($defaultValues['tx_flux_column'], $result['test_test']['tt_content_defValues']['tx_flux_column']);
+        $this->assertEquals($defaultValues['tx_flux_parent'], $result['test_test']['tt_content_defValues']['tx_flux_parent']);
+        $this->assertContains('[tx_flux_column]=foobararea', $result['test_test']['params']);
+        $this->assertContains('[tx_flux_parent]=321', $result['test_test']['params']);
     }
 
     /**
@@ -156,7 +156,7 @@ class WizardItemsHookSubscriberTest extends AbstractTestCase
     {
         $defaultValues = ['tx_flux_column' => 'foobararea', 'tx_flux_parent' => 321];
         $items = [
-            ['tt_content_defValues' => '', 'params' => '']
+            ['tt_content_defValues' => [], 'params' => '']
         ];
         $instance = $this->getMockBuilder($this->createInstanceClassName())
             ->setMethods(

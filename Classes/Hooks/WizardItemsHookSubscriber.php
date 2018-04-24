@@ -267,22 +267,21 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
      */
     protected function applyDefaultValues(array $items, array $defaultValues)
     {
+        $columnName = rawurlencode($defaultValues['tx_flux_column']);
+        $parentUid = (int) $defaultValues['tx_flux_parent'];
         foreach ($items as $name => $item) {
-            if (false === empty($defaultValues['tx_flux_column'])) {
-                if (false === is_array($items[$name]['tt_content_defValues'])) {
-                    $items[$name]['tt_content_defValues'] = [];
-                }
-
-                $items[$name]['tt_content_defValues']['tx_flux_column'] = $defaultValues['tx_flux_column'];
-                $items[$name]['params'] .= '&defVals[tt_content][tx_flux_column]=' .
-                    rawurlencode($defaultValues['tx_flux_column']);
+            if (strpos($name, '_') === false) {
+                // Skip header columns, identifiable by not having an underscore in name
+                continue;
             }
-            if (false === empty($defaultValues['tx_flux_parent'])) {
-                $items[$name]['tt_content_defValues']['tx_flux_parent'] = $defaultValues['tx_flux_parent'];
-                $items[$name]['params'] .= '&defVals[tt_content][tx_flux_parent]=' .
-                    rawurlencode($defaultValues['tx_flux_parent']);
-                $items[$name]['params'] .= '&overrideVals[tt_content][tx_flux_parent]=' .
-                    rawurlencode($defaultValues['tx_flux_parent']);
+            if (!is_array($items[$name]['tt_content_defValues'] ?? null)) {
+                $items[$name]['tt_content_defValues'] = [];
+            }
+            if (!empty($columnName) && !empty($parentUid)) {
+                $items[$name]['tt_content_defValues']['tx_flux_column'] = $columnName;
+                $items[$name]['tt_content_defValues']['tx_flux_parent'] = $parentUid;
+                $items[$name]['params'] .= '&defVals[tt_content][tx_flux_column]=' . $columnName;
+                $items[$name]['params'] .= '&defVals[tt_content][tx_flux_parent]=' . $parentUid;
             }
         }
         return $items;

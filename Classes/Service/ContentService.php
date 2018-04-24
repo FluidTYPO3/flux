@@ -64,8 +64,9 @@ class ContentService implements SingletonInterface
     public function affectRecordByRequestParameters($id, array &$row, $parameters, DataHandler $tceMain)
     {
         unset($id, $tceMain);
-        if (false === empty($parameters['overrideVals']['tt_content']['tx_flux_parent'])) {
-            $row['tx_flux_parent'] = (integer) $parameters['overrideVals']['tt_content']['tx_flux_parent'];
+        if (!empty($parameters['defVals']['tt_content']['tx_flux_parent'])) {
+            $row['tx_flux_parent'] = (integer) $parameters['defVals']['tt_content']['tx_flux_parent'];
+            $row['tx_flux_column'] = $parameters['defVals']['tt_content']['tx_flux_column'];
             if (0 < $row['tx_flux_parent']) {
                 $row['colPos'] = static::COLPOS_FLUXCONTENT;
             }

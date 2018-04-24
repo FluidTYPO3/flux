@@ -37,13 +37,15 @@ class ContentServiceTest extends AbstractTestCase
      */
     public function affectByRequestParametersAppliesParent()
     {
-        $parameters['overrideVals']['tt_content']['tx_flux_parent'] = 999999;
+        $parameters['defVals']['tt_content']['tx_flux_parent'] = 999999;
+        $parameters['defVals']['tt_content']['tx_flux_column'] = 'fluxcolumn';
         $record = Records::$contentRecordIsParentAndHasChildren;
         $this->assertSame(0, $record['tx_flux_parent']);
         $this->assertSame(0, $record['colPos']);
         $tceMain = GeneralUtility::makeInstance('TYPO3\CMS\Core\DataHandling\DataHandler');
         $this->createInstance()->affectRecordByRequestParameters('NEW12345', $record, $parameters, $tceMain);
         $this->assertSame(999999, $record['tx_flux_parent']);
+        $this->assertSame('fluxcolumn', $record['tx_flux_column']);
         $this->assertSame(ContentService::COLPOS_FLUXCONTENT, $record['colPos']);
     }
 
