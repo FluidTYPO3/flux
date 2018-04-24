@@ -157,12 +157,11 @@ class ContentService implements SingletonInterface
         // This condition matches colPos values which are above the constant which is a virtual, assumed limit. When
         // the $relativeTo value is above this constant value it is likely a virtual value - but it may also be the
         // case for very large page trees where UID values naturally exceed this.
-        if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $relativeTo) {
+        if (MiscellaneousUtility::UNIQUE_INTEGER_OVERHEAD < $row['colPos']) {
             // Fake relative to value - we can get the target from a session variable
-            list ($parent, $column) = $this->getTargetAreaStoredInSession($relativeTo);
+            list ($parent, $column) = $this->getTargetAreaStoredInSession($row['colPos']);
             $row['tx_flux_parent'] = $parent;
             $row['tx_flux_column'] = $column;
-            $row['sorting'] = 0;
         } elseif (0 <= (integer) $relativeTo && false === empty($parameters[1])) {
             // Special case for clipboard commands only. This special case also requires a new
             // sorting value to re-sort after a possibly invalid sorting value is received.
@@ -367,14 +366,15 @@ class ContentService implements SingletonInterface
      */
     public function fixPositionInLocalization($uid, $languageUid, &$sourceRecord, DataHandler $reference)
     {
-        $previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
         if (!empty($sourceRecord['l18n_parent'])) {
             $defaultRecordUid = $sourceRecord['l18n_parent'];
         } else {
             $defaultRecordUid = $uid;
         }
-        $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $defaultRecordUid, $languageUid);
+
         $sortingRow = $GLOBALS['TCA']['tt_content']['ctrl']['sortby'];
+        $localizedRecord = BackendUtility::getRecordLocalization('tt_content', $defaultRecordUid, $languageUid);
+        $previousLocalizedRecordUid = $this->getPreviousLocalizedRecordUid($uid, $languageUid, $reference);
         if (null === $previousLocalizedRecordUid) {
             // moving to first position in tx_flux_column
             $localizedRecord[0][$sortingRow] = $reference->getSortNumber(
@@ -390,7 +390,17 @@ class ContentService implements SingletonInterface
                 $previousLocalizedRecordUid
             );
         }
-        $this->updateRecordInDataMap($localizedRecord[0], null, $reference);
+
+        $localizedRecord[0]['colPos'] = $sourceRecord['colPos'];
+
+        $parentLocalizedRecord = BackendUtility::getRecordLocalization('tt_content', $sourceRecord['tx_flux_parent'], $languageUid);
+        $localizedRecord[0]['tx_flux_parent'] = $parentLocalizedRecord[0]['uid'];
+        $localizedRecord[0]['tx_flux_column'] = $sourceRecord['tx_flux_column'];
+
+        $this->recordService->update('tt_content', $localizedRecord[0]);
+
+
+
     }
 
     /**
@@ -424,12 +434,25 @@ class ContentService implements SingletonInterface
             // Respect the colPos for content elements
             if ($table === 'tt_content') {
                 $where .= sprintf(
-                    ' AND colPos=%d AND tx_flux_column=\'%s\' AND tx_flux_parent=%d',
-                    (integer) $row['colPos'],
-                    $row['tx_flux_column'],
+                    ' AND colPos=%d',
+                    (integer) $row['colPos']
+                );
+            }
+            // Respect the tx_flux_column for content elements
+            if ($table === 'tt_content' && $row['tx_flux_column']) {
+                $where .= sprintf(
+                    ' AND tx_flux_column=\'%s\'',
+                    $row['tx_flux_column']
+                );
+            }
+            // Respect the tx_flux_parent for content elements
+            if ($table === 'tt_content' && (integer) $row['tx_flux_parent']) {
+                $where .= sprintf(
+                    ' AND tx_flux_parent=%d',
                     (integer) $row['tx_flux_parent']
                 );
             }
+
             $where .= $reference->deleteClause($table);
             $res = $this->recordService->get($table, $select, $where, '', $sortRow . ' DESC', 1);
             $previousRow = $res[0] ?? false;

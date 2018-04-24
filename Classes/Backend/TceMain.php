@@ -268,7 +268,7 @@ class TceMain
         $record = $this->resolveRecordForOperation($table, $id);
 
         if ($table === 'tt_content') {
-            if ('localize' === $command) {
+            if ('localize' === $command || 'move' === $command) {
                 $this->contentService->fixPositionInLocalization($id, $relativeTo, $record, $reference);
             }
 
@@ -492,6 +492,7 @@ class TceMain
 
         // Move the immediate record, which may itself be a placeholder or an original record.
         $row['uid'] = $uid;
+        $row['colPos'] = $newColumnNumber;
         $target = [$table, $destPid];
         $this->contentService->moveRecord($row, $destPid, $target, $reference);
         $this->recordService->update($table, $row);
@@ -535,9 +536,10 @@ class TceMain
         // Following block takes care of updating the immediate record, be that a placeholder, an
         // original or a versioned copy.
         $moveData = $this->getMoveData();
-        if (!$moveData) {
-            return;
-        }
+
+        $resolveUid = $this->getOriginalRecordUid($table, $uid);
+        $updateFields['colPos'] = GeneralUtility::_GET('data')[$table][$resolveUid]['colPos'];
+
         $updateFields['uid'] = $uid;
 
         $this->contentService->moveRecord($updateFields, $origDestPid, $moveData, $reference);

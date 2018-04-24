@@ -355,7 +355,8 @@ class PreviewView extends TemplateView
                 $langPointer = $row['sys_language_uid'];
                 $localizeButton = $dblist->newLanguageButton(
                     $dblist->getNonTranslatedTTcontentUids($childrenUids, $dblist->id, $langPointer),
-                    $langPointer
+                    $langPointer,
+                    $colPosFluxContent
                 );
                 $content .= $localizeButton;
             }
