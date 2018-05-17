@@ -8,8 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Data;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Service\ContentService;
-
 /**
  * Records
  */
@@ -63,10 +61,7 @@ class Records {
 	public static $contentRecordIsParentAndHasChildren = array(
 		'uid' => self::UID_CONTENT_PARENT,
 		'header' => 'Is itself parent, has no parent',
-		'colPos' => 0,
-		'tx_flux_parent' => 0,
-		'tx_flux_column' => '',
-		'tx_flux_children' => 1
+		'colPos' => 0
 	);
 
 	/**
@@ -75,9 +70,7 @@ class Records {
 	public static $contentRecordWithParentAndWithoutChildren = array(
 		'uid' => self::UID_CONTENT_CHILD,
 		'header' => 'Has parent, is in default content area',
-		'colPos' => ContentService::COLPOS_FLUXCONTENT,
-		'tx_flux_parent' => self::UID_CONTENT_NOPARENTWITHCHILDREN,
-		'tx_flux_column' => self::DEFAULT_CONTENTAREA
+		'colPos' => 103
 	);
 
 	/**
@@ -86,10 +79,7 @@ class Records {
 	public static $contentRecordWithParentAndChildren = array(
 		'uid' => self::UID_CONTENT_NOPARENTWITHCHILDREN,
 		'header' => 'Has parent, is in default content area',
-		'colPos' => ContentService::COLPOS_FLUXCONTENT,
-		'tx_flux_parent' => 0,
-		'tx_flux_column' => '',
-		'tx_flux_children' => 1
+		'colPos' => 102
 	);
 
 }

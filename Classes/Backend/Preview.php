@@ -129,9 +129,6 @@ class Preview implements PageLayoutViewDrawItemHookInterface
 
             /** @var PageRenderer $pageRenderer */
             $pageRenderer = $doc->getPageRenderer();
-            $pageRenderer->addCssFile(
-                'EXT:flux/Resources/Public/css/grid.css'
-            );
 
             $fullJsPath = PathUtility::getRelativePath(
                 PATH_typo3,

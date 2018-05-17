@@ -19,6 +19,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
@@ -110,7 +111,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
                 $record = static::getRecordService()->getSingle($table, 'uid,' . $field, $uid);
             }
             if (!$record) {
-                ErrorUtility::throwViewHelperException(
+                throw new Exception(
                     sprintf(
                         'Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .
                         'provide the "record" attribute.',
@@ -124,7 +125,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
             $providers = static::getFluxService()->resolveConfigurationProviders($table, $field, $record);
             $dataArray = static::readDataArrayFromProvidersOrUsingDefaultMethod($providers, $record, $field);
         } else {
-            ErrorUtility::throwViewHelperException(
+            throw new Exception(
                 'Invalid table:field "' . $table . ':' . $field . '" - does not exist in TYPO3 TCA.',
                 1387049117
             );

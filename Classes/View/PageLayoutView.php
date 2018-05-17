@@ -8,8 +8,21 @@ namespace FluidTYPO3\Flux\View;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
 {
+    /**
+     * @var array
+     */
+    protected $record = [];
+
+    /**
+     * @var GridProviderInterface
+     */
+    protected $provider;
+
     /**
      * @param array $pageinfo
      */
@@ -26,13 +39,26 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
         return $this->pageinfo;
     }
 
-    /**
-     * Public access version of parent's method
-     *
-     * @param array $rowArray
-     */
-    public function generateTtContentDataArray(array $rowArray)
+
+    public function setProvider(GridProviderInterface $provider)
     {
-        parent::generateTtContentDataArray($rowArray);
+        $this->provider = $provider;
+    }
+
+    public function setRecord(array $record)
+    {
+        $this->record = $record;
+    }
+
+    /**
+     * @return BackendLayoutView
+     */
+    protected function getBackendLayoutView()
+    {
+        /** @var BackendLayoutView $view */
+        $view = GeneralUtility::makeInstance(BackendLayoutView::class);
+        $view->setProvider($this->provider);
+        $view->setRecord($this->record);
+        return $view;
     }
 }

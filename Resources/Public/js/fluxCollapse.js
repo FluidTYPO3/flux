@@ -66,7 +66,7 @@ define(['jquery'], function ($) {
 
             var i, toggle = $(this),
                 toggleContent = $('[data-toggle-uid='+toggle.data('togglerUid')+']'),
-                fluxGrid = toggleContent.find('> .t3-grid-container > .flux-grid'),
+                fluxGrid = $('[data-grid-uid="' + toggle.data('togglerUid') + '"]'),
                 uid = toggleContent.data('toggleUid');
             if (fluxGrid.hasClass('flux-grid-hidden')) {
                 fluxGrid.removeClass('flux-grid-hidden');

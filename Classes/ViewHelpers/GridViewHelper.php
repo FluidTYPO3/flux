@@ -78,6 +78,12 @@ class GridViewHelper extends AbstractFormViewHelper
             false,
             []
         );
+        $this->registerArgument(
+            'extensionName',
+            'string',
+            'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
+            'is otherwise automatically detected from rendering context.'
+        );
     }
 
     /**
@@ -94,6 +100,7 @@ class GridViewHelper extends AbstractFormViewHelper
         $grid = static::getGridFromRenderingContext($renderingContext, $arguments['name']);
         $grid->setLabel($arguments['label']);
         $grid->setVariables($arguments['variables']);
+        $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
         static::setContainerInRenderingContext($renderingContext, $grid);
         $renderChildrenClosure();
     }

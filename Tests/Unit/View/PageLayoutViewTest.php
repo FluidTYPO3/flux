@@ -16,17 +16,6 @@ use FluidTYPO3\Flux\View\PageLayoutView;
  */
 class PageLayoutViewTest extends AbstractTestCase
 {
-
-    /**
-     * @return void
-     */
-    public function testMakesGenerateTtContentDataArrayPublic()
-    {
-        $instance = new PageLayoutView();
-        $result = $instance->generateTtContentDataArray([['uid' => 123]]);
-        $this->assertNull($result);
-    }
-
     /**
      * @tet
      */
@@ -39,5 +28,4 @@ class PageLayoutViewTest extends AbstractTestCase
         $result = $instance->getPageinfo();
         $this->assertSame($info, $result);
     }
-
 }
