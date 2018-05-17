@@ -295,7 +295,21 @@ class AbstractProvider implements ProviderInterface
      */
     public function getGrid(array $row)
     {
-        return $this->grid ?? $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
+
+        $grid = $this->grid ?? $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
+
+        // Special case: We use record UID * 100 to set an unique colPos value
+        if('tt_content' == $this->tableName) {
+            foreach ($grid->getRows() as $gridRow){
+                foreach ($gridRow->getColumns() as $gridColumn) {
+                    $colPos = $gridColumn->getColumnPosition();
+                    $gridUid = ($row['l18n_parent'] > 0) ? $row['l18n_parent'] : $row['uid'];
+                    $gridColumn->setColumnPosition($gridUid * 100 + $colPos);
+                }
+            }
+        }
+
+        return $grid;
     }
 
     /**

@@ -79,6 +79,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
      */
     public function initializeArguments()
     {
+        $this->registerArgument('column', 'integer', 'Column position number (colPos) of the column to render');
         $this->registerArgument('area', 'string', 'Name of the area to render');
         $this->registerArgument('limit', 'integer', 'Optional limit to the number of content elements to render');
         $this->registerArgument('offset', 'integer', 'Optional offset to the limit', false, 0);
@@ -166,6 +167,23 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
      */
     protected static function getContentRecords(array $arguments, array $parent)
     {
+
+        if (is_numeric($arguments['column'])) {
+            // Special case: We use record UID to get an unique colPos value
+            $conditions = sprintf('colPos = %d', (integer) $parent['uid'] * 100 + $arguments['column']);
+
+            $rows = $GLOBALS['TSFE']->cObj->getRecords(
+                'tt_content',
+                [
+                    'where' => $conditions,
+                    'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
+                ]
+            );
+
+            return $rows;
+
+        }
+
         $conditions = sprintf(
             "(tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = 18181)",
             $parent['uid'],
