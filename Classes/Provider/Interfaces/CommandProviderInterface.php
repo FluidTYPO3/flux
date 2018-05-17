@@ -15,6 +15,8 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
  *
  * Contract for Providers which listen and react to
  * DataHandler commands being dispatched in the BE.
+ *
+ * @deprecated Will be removed in Flux 10.0, please use DataHandler hooks directly
  */
 interface CommandProviderInterface
 {

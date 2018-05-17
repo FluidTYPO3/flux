@@ -12,10 +12,11 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Helper\ContentTypeBuilder;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Utility\ContextUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3Fluid\Fluid\Exception;
 
 /**
@@ -32,10 +33,8 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     public function includeStaticTypoScriptHook(array $parameters, TemplateService $caller)
     {
-        static $called = false;
-        if (!$called) {
+        if (!ObjectAccess::getProperty($caller, 'extensionStaticsProcessed', true)) {
             $this->processData();
-            $called = true;
         }
     }
 
@@ -45,6 +44,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     public function processData()
     {
         $this->spoolQueuedContentTypeRegistrations(Core::getQueuedContentTypeRegistrations());
+        Core::clearQueuedContentTypeRegistrations();
     }
 
     /**
@@ -116,7 +116,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
                 $contentTypeBuilder->registerContentType($controllerExtensionName, $contentType, $provider, $pluginName);
 
             } catch (Exception $error) {
-                if (!Bootstrap::getInstance()->getApplicationContext()->isProduction()) {
+                if (!ContextUtility::getApplicationContext()->isProduction()) {
                     throw $error;
                 }
             }

@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
-use FluidTYPO3\Flux\Package\FluxPackageFactory;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;

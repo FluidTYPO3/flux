@@ -6,21 +6,6 @@
 			<trans-unit id="flux.newContentWizard.fluxContent">
 				<source>Flux content</source>
 			</trans-unit>
-			<trans-unit id="tt_content.tx_flux_container">
-				<source>Content Container</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_flux_parent">
-				<source>Parent element</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_flux_column">
-				<source>Content area of parent</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_flux_children">
-				<source>Child content</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tabs.relation">
-				<source>Relations</source>
-			</trans-unit>
 			<trans-unit id="tt_content.tx_flux_options">
 				<source>Options</source>
 			</trans-unit>

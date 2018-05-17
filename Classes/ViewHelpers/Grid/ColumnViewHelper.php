@@ -61,15 +61,8 @@ class ColumnViewHelper extends AbstractFormViewHelper
             false,
             'column'
         );
-        $this->registerArgument('label', 'string', 'Optional column label');
-        $this->registerArgument(
-            'colPos',
-            'integer',
-            'Page column number; use only when creating root page content columns. Container elements use ' .
-            '"name" instead.',
-            false,
-            -1
-        );
+        $this->registerArgument('label', 'string', 'Optional column label, will be shown as column header.');
+        $this->registerArgument('colPos', 'integer', 'Column number - between 0 and 99, should be unique.', true);
         $this->registerArgument('colspan', 'integer', 'Column span', false, 1);
         $this->registerArgument('rowspan', 'integer', 'Row span', false, 1);
         $this->registerArgument('style', 'string', 'Inline style to add when rendering the column');

@@ -13,12 +13,12 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Utility\ContextUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\PreviewView;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
-use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
@@ -295,6 +295,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function getGrid(array $row)
     {
+
         return $this->grid ?? $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
     }
 
@@ -334,7 +335,7 @@ class AbstractProvider implements ProviderInterface
             }
 
         } catch (Exception $error) {
-            if (!Bootstrap::getInstance()->getApplicationContext()->isProduction()) {
+            if (!ContextUtility::getApplicationContext()->isProduction()) {
                 throw $error;
             }
             $returnValue = null;
@@ -580,6 +581,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function preProcessRecord(array &$row, $id, DataHandler $reference)
     {
+        // TODO: move to single-fire implementation in TceMain (DataHandler)
         $fieldName = $this->getFieldName($row);
         $tableName = $this->getTableName($row);
         if (is_array($row[$fieldName]) && isset($row[$fieldName]['data']['options']['lDEF'])
@@ -608,6 +610,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = [])
     {
+        // TODO: move to single-fire implementation in TceMain (DataHandler)
         if ('update' === $operation || 'new' === $operation) {
             $record = $reference->datamap[$this->tableName][$id];
             $stored = $this->recordService->getSingle($this->tableName, '*', $record['uid']) ?? $record;
@@ -658,6 +661,8 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference)
     {
+        // TODO: move function body to single-fire implementation in TceMain (DataHandler)
+        // TODO: remove in Flux 10.0
         // We dispatch the Outlet associated with the Form, triggering each defined
         // Pipe inside the Outlet to "conduct" the data.
         $record = $this->recordService->getSingle($this->getTableName($row), '*', $id);
@@ -689,6 +694,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function preProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference)
     {
+        // TODO: remove in Flux 10.0
         unset($command, $id, $row, $relativeTo, $reference);
     }
 
@@ -705,6 +711,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference)
     {
+        // TODO: remove in Flux 10.0
         unset($command, $id, $row, $relativeTo, $reference);
     }
 
@@ -759,6 +766,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function clearCacheCommand($command = [])
     {
+        // TODO: remove in Flux 10.0
     }
 
     /**
@@ -773,6 +781,8 @@ class AbstractProvider implements ProviderInterface
         $request = $objectManager->get(WebRequest::class);
         $request->setRequestUri(GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL'));
         $request->setBaseUri(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
+        $request->setControllerExtensionName($this->getControllerExtensionKeyFromRecord($row));
+        $request->setControllerActionName($this->getControllerActionFromRecord($row));
         /** @var UriBuilder $uriBuilder */
         $uriBuilder = $objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($request);
