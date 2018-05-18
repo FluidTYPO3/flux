@@ -24,32 +24,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class MiscellaneousUtility
 {
 
-    /** Overhead used by unique integer generation. */
-    const UNIQUE_INTEGER_OVERHEAD = ContentService::COLPOS_FLUXCONTENT;
 
     /**
      * @var array
      */
     private static $allowedIconTypes = ['svg', 'png', 'gif'];
-
-    /**
-     * @param integer $contentElementUid
-     * @param string $areaName
-     * @return integer
-     */
-    public static function generateUniqueIntegerForFluxArea($contentElementUid, $areaName)
-    {
-        $integers = array_map('ord', str_split($areaName));
-        $integers[] = $contentElementUid;
-        $integers[] = static::UNIQUE_INTEGER_OVERHEAD;
-        $integer = array_sum($integers);
-        // Loop + increment until a free position is found. The integer size is kept low by the logic above, but
-        // it also means that collisions are possible. This iteration prevents such collisions.
-        while (isset($_SESSION['target' . $integer])) {
-            $integer++;
-        }
-        return $integer;
-    }
 
     /**
      * @param string $icon

@@ -11,10 +11,11 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -34,6 +35,11 @@ class TceMain
      * @var FluxService
      */
     protected $configurationService;
+
+    /**
+     * @var RecordService
+     */
+    protected $recordService;
 
     /**
      * @var boolean
@@ -58,6 +64,15 @@ class TceMain
         $this->configurationService = $configurationService;
     }
 
+    /**
+     * @param RecordService $recordService
+     * @return void
+     */
+    public function injectRecordService(RecordService $recordService)
+    {
+        $this->recordService = $recordService;
+    }
+
 
     /**
      * CONSTRUCTOR
@@ -66,6 +81,7 @@ class TceMain
     {
         $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
         $this->injectConfigurationService($this->objectManager->get(FluxService::class));
+        $this->injectRecordService($this->objectManager->get(RecordService::class));
     }
 
 
@@ -80,24 +96,10 @@ class TceMain
     public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$reference)
     {
         // BUGFIX Typo3 Issue https://forge.typo3.org/issues/85013#change-365564
-        foreach ($reference->datamap[$table] as $i => $incomingFieldArray) {
-
-            if (array_key_exists('colPos', $incomingFieldArray)) {
-                $synchronizedColPos = $incomingFieldArray['colPos'];
-            }
-
-            if(is_array($reference->cmdmap)){
-                $incomingCmdArray = $reference->cmdmap[$table][$i];
-                foreach ($incomingCmdArray as $command => $value) {
-                    if ('move' == $command && $synchronizedColPos >= 0) {
-                        $fieldArray['colPos'] = $synchronizedColPos;
-                    }
-                }
-            }
-
-            if('update' == $status){
-                $fieldArray['colPos'] = $synchronizedColPos;
-            }
+        if ('tt_content' == $table && !array_key_exists('colPos', $fieldArray)) {
+            $recordInDefaultLanguage = $this->recordService->get($table, 'l18n_parent', "uid = $id");
+            $uidInDefaultLanguage = $recordInDefaultLanguage[0]['l18n_parent'];
+            $fieldArray['colPos'] = $reference->datamap[$table][$uidInDefaultLanguage]['colPos'];
         }
     }
 
