@@ -366,7 +366,6 @@ class PreviewView extends TemplateView
             }
         }
         $id = 'colpos-' . $colPos . '-page-' . $pageUid . '--top-' . $row['uid'];
-        //$target = $this->registerTargetContentAreaInSession($row['uid'], $colPos);
 
         $content = $this->parseGridColumnTemplate($row, $column, $colPos, $id, $content);
         return HookHandler::trigger(HookHandler::PREVIEW_COLUMN_RENDERED, ['preview' => $content, 'column' => $column, 'parentRecord' => $row])['preview'];
@@ -449,6 +448,9 @@ class PreviewView extends TemplateView
      */
     protected function drawNewIcon(array $row, Column $column, $after = 0)
     {
+        if($row['sys_language_uid'] > 0 && $row['l18n_parent'] > 0){
+            return;
+        }
         $columnName = $column->getName();
         $after = (false === empty($columnName) && false === empty($after)) ? '-' . $after : $row['pid'];
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
@@ -693,6 +695,9 @@ class PreviewView extends TemplateView
      */
     protected function drawPasteIcon(array $row, Column $column, $reference = false, array $relativeTo = [])
     {
+        if($row['sys_language_uid'] > 0 && $row['l18n_parent'] > 0){
+            return;
+        }
         $command = true === $reference ? 'reference' : 'paste';
         $relativeUid = true === isset($relativeTo['uid']) ? $relativeTo['uid'] : 0;
         $columnName = $column->getName();

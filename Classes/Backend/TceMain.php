@@ -14,8 +14,6 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -85,6 +83,7 @@ class TceMain
     }
 
 
+
     /**
      * @param string $status The TCEmain operation status, fx. 'update'
      * @param string $table The table TCEmain is currently processing
@@ -95,13 +94,33 @@ class TceMain
      */
     public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$reference)
     {
-        // BUGFIX Typo3 Issue https://forge.typo3.org/issues/85013#change-365564
-        if ('tt_content' == $table && !array_key_exists('colPos', $fieldArray)) {
-            $recordInDefaultLanguage = $this->recordService->get($table, 'l18n_parent', "uid = $id");
-            $uidInDefaultLanguage = $recordInDefaultLanguage[0]['l18n_parent'];
-            $fieldArray['colPos'] = $reference->datamap[$table][$uidInDefaultLanguage]['colPos'];
+
+        // if record already exists
+        if (is_integer($id)) {
+
+            $record = $this->recordService->get($table, 'sys_language_uid, l18n_parent', "uid = $id");
+            $recordLanguageUid = $record[0]['sys_language_uid'];
+
+            // BUGFIX Typo3 Issue https://forge.typo3.org/issues/85013
+            if ('tt_content' == $table && !array_key_exists('colPos', $fieldArray)) {
+                $uidInDefaultLanguage = $record[0]['l18n_parent'];
+                $fieldArray['colPos'] = $reference->datamap[$table][$uidInDefaultLanguage]['colPos'];
+            }
+
+            // BUGFIX IRRE
+            if ($recordLanguageUid == '0') {
+                $fieldArray['tx_flux_parent'] = (int) $fieldArray['colPos'] / 100;
+            } else {
+                $parentRecordUid = (int) $fieldArray['colPos'] / 100;
+                $parentRecord = $this->recordService->get($table, 'uid', "l18n_parent = $parentRecordUid AND sys_language_uid = $recordLanguageUid");
+                $fieldArray['tx_flux_parent'] = $parentRecord[0]['uid'];
+            }
         }
+
     }
+
+
+
 
     /**
      * Perform various cleanup operations upon clearing cache
