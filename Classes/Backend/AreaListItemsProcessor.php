@@ -49,29 +49,17 @@ class AreaListItemsProcessor
     }
 
     /**
-     * @return array
-     */
-    protected function readParentAndAreaNameFromUrl()
-    {
-        $urlRequestedParent = ObjectAccess::getPropertyPath($_GET, 'defVals.tt_content.tx_flux_parent');
-        $urlRequestedArea = ObjectAccess::getPropertyPath($_GET, 'defVals.tt_content.tx_flux_column');
-        return [$urlRequestedParent, $urlRequestedArea];
-    }
-
-    /**
      * ItemsProcFunc - adds items to tt_content.colPos selector (first, pipes through EXT:gridelements)
      *
      * @param array $params
      * @return void
      */
+
     public function itemsProcFunc(&$params)
     {
-        list ($urlRequestedParent, $urlRequestedArea) = $this->readParentAndAreaNameFromUrl();
-        if ($urlRequestedParent) {
-            $parentUid = $urlRequestedParent;
-        } else {
-            $parentUid = $params['row']['tx_flux_parent'];
-        }
+        $rawRecord = $this->recordService->getSingle('tt_content', 'colPos', $params['row']['uid']);
+        $parentUid = (int) ($rawRecord['colPos'] / 100);
+
         if ($parentUid > 0) {
             $items = $this->getContentAreasDefinedInContentElement($parentUid);
         } else {
@@ -79,13 +67,7 @@ class AreaListItemsProcessor
         }
         // adds an empty option in the beginning of the item list
         array_unshift($items, ['', '']);
-        if ($urlRequestedArea) {
-            foreach ($items as $index => $set) {
-                if ($set[1] !== $urlRequestedArea) {
-                    unset($items[$index]);
-                }
-            }
-        }
+
         $params['items'] = $items;
     }
 

@@ -13,18 +13,15 @@ use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\ContentService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ClipBoardUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -330,12 +327,11 @@ class PreviewView extends TemplateView
      */
     protected function drawGridColumn(array $row, Column $column)
     {
-        $colPosFluxContent = ContentService::COLPOS_FLUXCONTENT;
 
-        $columnName = $column->getName();
+        $colPos = $column->getColumnPosition();
         $dblist = $this->getInitializedPageLayoutView($row);
         $this->configurePageLayoutViewForLanguageMode($dblist);
-        $records = $this->getRecords($dblist, $row, $columnName);
+        $records = $this->getRecords($dblist, $row, $colPos);
         $content = '';
         if (is_array($records)) {
             foreach ($records as $record) {
@@ -347,7 +343,7 @@ class PreviewView extends TemplateView
         if (isset($row['l18n_parent']) && 0 < $row['l18n_parent']) {
             if (true === empty($dblist->defLangBinding)) {
                 $partialOriginalRecord = ['uid' => $row['l18n_parent'], 'pid' => $row['pid']];
-                $childrenInDefaultLanguage = $this->getRecords($dblist, $partialOriginalRecord, $columnName);
+                $childrenInDefaultLanguage = $this->getRecords($dblist, $partialOriginalRecord, $colPos);
                 $childrenUids = [];
                 foreach ($childrenInDefaultLanguage as $child) {
                     $childrenUids[] = $child['uid'];
@@ -355,11 +351,13 @@ class PreviewView extends TemplateView
                 $langPointer = $row['sys_language_uid'];
                 $localizeButton = $dblist->newLanguageButton(
                     $dblist->getNonTranslatedTTcontentUids($childrenUids, $dblist->id, $langPointer),
-                    $langPointer
+                    $langPointer,
+                    $colPos
                 );
                 $content .= $localizeButton;
             }
         }
+
         $pageUid = $row['pid'];
         if ($GLOBALS['BE_USER']->workspace) {
             $placeholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid'], 'pid');
@@ -367,10 +365,9 @@ class PreviewView extends TemplateView
                 $pageUid = $placeholder['pid'];
             }
         }
-        $id = 'colpos-' . $colPosFluxContent . '-page-' . $pageUid . '--top-' . $row['uid'] . '-' . $columnName;
-        $target = $this->registerTargetContentAreaInSession($row['uid'], $columnName);
+        $id = 'colpos-' . $colPos . '-page-' . $pageUid . '--top-' . $row['uid'];
 
-        $content = $this->parseGridColumnTemplate($row, $column, $target, $id, $content);
+        $content = $this->parseGridColumnTemplate($row, $column, $colPos, $id, $content);
         return HookHandler::trigger(HookHandler::PREVIEW_COLUMN_RENDERED, ['preview' => $content, 'column' => $column, 'parentRecord' => $row])['preview'];
     }
 
@@ -383,7 +380,6 @@ class PreviewView extends TemplateView
      */
     protected function drawRecord(array $parentRow, Column $column, array $record, PageLayoutView $dblist)
     {
-        $colPosFluxContent = ContentService::COLPOS_FLUXCONTENT;
         $isDisabled = $dblist->isDisabled('tt_content', $record);
         $disabledClass = $isDisabled ? ' t3-page-ce-hidden  t3js-hidden-record' : '';
         $displayNone = !$dblist->tt_contentConfig['showHidden'] && $isDisabled ? ' style="display: none;"' : '';
@@ -401,7 +397,7 @@ class PreviewView extends TemplateView
             $record['uid'],
             $record['uid'],
             $element,
-            $colPosFluxContent,
+            $record['colPos'],
             $parentRow['pid'],
             $parentRow['uid'],
             $record['uid'],
@@ -452,6 +448,9 @@ class PreviewView extends TemplateView
      */
     protected function drawNewIcon(array $row, Column $column, $after = 0)
     {
+        if($row['sys_language_uid'] > 0 && $row['l18n_parent'] > 0){
+            return;
+        }
         $columnName = $column->getName();
         $after = (false === empty($columnName) && false === empty($after)) ? '-' . $after : $row['pid'];
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
@@ -460,7 +459,7 @@ class PreviewView extends TemplateView
         } catch (Exception $exception) {
             $icon = '[+]';
         }
-        $uri = $this->getNewLink($row, $after, $columnName);
+        $uri = $this->getNewLink($row, $after, $column->getColumnPosition());
         $title = $this->getLanguageService()->getLL('newRecordHere');
         $inner = $this->getLanguageService()->getLL('content');
         return sprintf($this->templates['link'], htmlspecialchars($uri), $title, $icon, $inner);
@@ -474,16 +473,15 @@ class PreviewView extends TemplateView
      * @param string $columnName
      * @return string
      */
-    protected function getNewLink(array $row, $after, $columnName)
+    protected function getNewLink(array $row, $after, $colPos)
     {
         $returnUri = str_replace('/' . TYPO3_mainDir, '', GeneralUtility::getIndpEnv('REQUEST_URI'));
         $uri = BackendUtility::getModuleUrl('new_content_element', [
             'id' => $row['pid'],
             'uid_pid' => $after,
-            'colPos' => ContentService::COLPOS_FLUXCONTENT,
+            'colPos' => $colPos,
             'sys_language_uid' => $row['sys_language_uid'],
             'defVals[tt_content][tx_flux_parent]' => $this->getFluxParentUid($row),
-            'defVals[tt_content][tx_flux_column]' => $columnName,
             'returnUrl' => $returnUri
         ]);
         return $uri;
@@ -525,21 +523,20 @@ class PreviewView extends TemplateView
     /**
      * @param PageLayoutView $view
      * @param array $row
-     * @param string $area
+     * @param integer $colPos
      * @return array
      */
-    protected function getRecords(PageLayoutView $view, array $row, $area)
+    protected function getRecords(PageLayoutView $view, array $row, $colPos)
     {
         // The following solution is half lifted from \TYPO3\CMS\Backend\View\PageLayoutView::getContentRecordsPerColumn
         // and relies on TYPO3 core query parts for enable-clause-, language- and versioning placeholders. All that
         // needs to be done after this, is filter the array according to moved/deleted placeholders since TYPO3 will
         // not remove records based on them having remove placeholders.
         $condition = sprintf(
-            "(deleted = 0 AND pid = %d AND tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = '%d') %s",
+            "(deleted = 0 AND pid = %d AND colPos = '%d' AND sys_language_uid = '%d') %s",
             (integer) (isset($row['_MOVE_PLH_pid']) ? $row['_MOVE_PLH_pid'] : $row['pid']),
-            $this->getFluxParentUid($row),
-            $area,
-            ContentService::COLPOS_FLUXCONTENT,
+            $colPos,
+            (integer) $row['sys_language_uid'],
             BackendUtility::versioningPlaceholderClause('tt_content')
         );
         $result = $this->recordService->get('tt_content', '*', $condition, '', 'sorting');
@@ -552,15 +549,13 @@ class PreviewView extends TemplateView
                 // provided column name and parent UID, and sits in a Flux column.
                 if (
                     $contentRecord
-                    && (integer) $contentRecord['colPos'] === ContentService::COLPOS_FLUXCONTENT
-                    && $contentRecord['tx_flux_column'] === $area
-                    && (integer) $contentRecord['tx_flux_parent'] === (integer) $row['uid']
+                    && (integer) $contentRecord['colPos'] === $colPos
                     && (integer) $contentRecord['t3ver_state'] !== VersionState::DELETE_PLACEHOLDER
                 ) {
                     $rows[] = $contentRecord;
                 }
             }
-            $rows = HookHandler::trigger(HookHandler::PREVIEW_RECORDS_FETCHED, ['rows' => $rows, 'parentRecord' => $row, 'area' => $area])['rows'];
+            $rows = HookHandler::trigger(HookHandler::PREVIEW_RECORDS_FETCHED, ['rows' => $rows, 'parentRecord' => $row])['rows'];
             $view->generateTtContentDataArray($rows);
         }
         return $rows;
@@ -602,7 +597,7 @@ class PreviewView extends TemplateView
         $dblist->tt_contentConfig['showInfo'] = 1;
         $dblist->tt_contentConfig['single'] = 0;
         $dblist->tt_contentConfig['showHidden'] = intval($moduleData['tt_content_showHidden']);
-        $dblist->tt_contentConfig['activeCols'] .= ',' . ContentService::COLPOS_FLUXCONTENT;
+        $dblist->tt_contentConfig['activeCols'] .= ',' . 0;
         $dblist->CType_labels = [];
         $dblist->pidSelect = "pid = '" . $row['pid'] . "'";
         $dblist->setPageinfo(BackendUtility::readPageAccess($row['pid'], ''));
@@ -680,21 +675,7 @@ class PreviewView extends TemplateView
         return (integer) (true === isset($GLOBALS['BE_USER']->workspace) ? $GLOBALS['BE_USER']->workspace : 0);
     }
 
-    /**
-     * @codeCoverageIgnore
-     * @param integer $contentElementUid
-     * @param string $areaName
-     * @return integer
-     */
-    protected function registerTargetContentAreaInSession($contentElementUid, $areaName)
-    {
-        if ('' === session_id()) {
-            session_start();
-        }
-        $integer = MiscellaneousUtility::generateUniqueIntegerForFluxArea($contentElementUid, $areaName);
-        $_SESSION['target' . $integer] = [$contentElementUid, $areaName];
-        return $integer;
-    }
+
 
     /**
      * @param array $row
@@ -714,11 +695,14 @@ class PreviewView extends TemplateView
      */
     protected function drawPasteIcon(array $row, Column $column, $reference = false, array $relativeTo = [])
     {
+        if($row['sys_language_uid'] > 0 && $row['l18n_parent'] > 0){
+            return;
+        }
         $command = true === $reference ? 'reference' : 'paste';
         $relativeUid = true === isset($relativeTo['uid']) ? $relativeTo['uid'] : 0;
         $columnName = $column->getName();
         $relativeTo = $row['pid'] . '-' . $command . '-' . $relativeUid . '-' .
-                $row['uid'] . (!empty($columnName) ? '-' . $columnName : '') . '-' . ContentService::COLPOS_FLUXCONTENT;
+                $row['uid'] . (!empty($columnName) ? '-' . $columnName : '') . '-' . $row['colPos'];
         return ClipBoardUtility::createIconWithUrl($relativeTo, $reference);
     }
 

@@ -5,7 +5,7 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF)
 
 $TCA['tt_content']['columns']['colPos']['config']['items'][] = array(
     'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container',
-    \FluidTYPO3\Flux\Service\ContentService::COLPOS_FLUXCONTENT
+    18181
 );
 
 $GLOBALS['TCA']['tt_content']['ctrl']['shadowColumnsForNewPlaceholders'] .= ',tx_flux_column,tx_flux_parent';
@@ -29,15 +29,9 @@ $GLOBALS['TCA']['tt_content']['ctrl']['useColumnsForDefaultValues'] .= ',tx_flux
         'tx_flux_parent' => array (
             'exclude' => 0,
             'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_parent',
-            'displayCond' => 'FIELD:tx_flux_parent:>:0',
             'config' => array (
-                'type' => 'input',
-                'readOnly' => TRUE,
-                'foreign_table' => 'tt_content',
-                'foreign_table_where' => "AND tt_content.pid = '###CURRENT_PID###'",
-                'default' => 0,
-                'size' => 1,
-                'maxitems' => 1,
+                'type' => 'user',
+                'userFunc' => 'FluidTYPO3\Flux\Backend\TcaUserfuncs->getParent'
             )
         ),
         'tx_flux_children' => array (
