@@ -24,6 +24,7 @@ use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Imaging\Icon;
@@ -542,7 +543,18 @@ class PreviewView extends TemplateView
             ContentService::COLPOS_FLUXCONTENT,
             BackendUtility::versioningPlaceholderClause('tt_content')
         );
-        $result = $this->recordService->get('tt_content', '*', $condition, '', 'sorting');
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+        $statement = $queryBuilder
+          ->select('*')
+          ->from('tt_content')
+          ->where(
+            $condition
+          )
+          ->addOrderBy('sorting');
+        $statement->getRestrictions()->removeByType(\TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction::class);
+        $result = $statement->execute();
+
         $rows = [];
         if ($result) {
             foreach ($result as $contentRecord) {
