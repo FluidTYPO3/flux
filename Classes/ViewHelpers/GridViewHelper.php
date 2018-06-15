@@ -91,10 +91,12 @@ class GridViewHelper extends AbstractFormViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
+        $container = static::getContainerFromRenderingContext($renderingContext);
         $grid = static::getGridFromRenderingContext($renderingContext, $arguments['name']);
         $grid->setLabel($arguments['label']);
         $grid->setVariables($arguments['variables']);
         static::setContainerInRenderingContext($renderingContext, $grid);
         $renderChildrenClosure();
+        static::setContainerInRenderingContext($renderingContext, $container);
     }
 }
