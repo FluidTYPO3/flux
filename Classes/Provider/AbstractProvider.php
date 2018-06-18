@@ -19,6 +19,7 @@ use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\View\PreviewView;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Core\Core\Bootstrap;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
@@ -334,7 +335,7 @@ class AbstractProvider implements ProviderInterface
             }
 
         } catch (Exception $error) {
-            if (!Bootstrap::getInstance()->getApplicationContext()->isProduction()) {
+            if (!Environment::getContext()->isProduction()) {
                 throw $error;
             }
             $returnValue = null;
