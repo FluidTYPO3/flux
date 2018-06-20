@@ -551,7 +551,7 @@ class PreviewView extends TemplateView
           ->where(
             $condition
           )
-          ->addOrderBy('sorting');
+          ->orderBy('sorting');
         $statement->getRestrictions()->removeByType(\TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction::class);
         $result = $statement->execute();
 
