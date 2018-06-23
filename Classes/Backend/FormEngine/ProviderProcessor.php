@@ -3,7 +3,9 @@ namespace FluidTYPO3\Flux\Backend\FormEngine;
 
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -17,7 +19,8 @@ class ProviderProcessor implements FormDataProviderInterface
      */
     public function addData(array $result)
     {
-        $providers = $this->getProviderResolver()->resolveConfigurationProviders(
+        $resolver = $this->getProviderResolver();
+        $providers = $resolver->resolveConfigurationProviders(
             $result['tableName'],
             null,
             $result['databaseRow'],
@@ -28,6 +31,17 @@ class ProviderProcessor implements FormDataProviderInterface
             $result = $provider->processTableConfiguration($result['databaseRow'], $result);
         }
         return $result;
+    }
+
+    protected function loadRecord(string $table, int $uid): array
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $query = $queryBuilder->select('*')
+            ->from($table)
+            ->where($queryBuilder->expr()->eq('uid', $uid))
+            ->setMaxResults(1);
+        $query->getRestrictions()->removeAll();
+        return $query->execute()->fetchAll()[0] ?? [];
     }
 
     /**

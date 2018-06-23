@@ -8,11 +8,13 @@ namespace FluidTYPO3\Flux\Form\Container;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Core\TypoScript\ExtendedTemplateService;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Grid
@@ -53,7 +55,8 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             foreach ($row->getColumns() as $column) {
                 $key = ($index + 1) . '.';
                 $columns[$key] = [
-                    'name' => $column->getLabel(),
+                    'name' => LocalizationUtility::translate($column->getLabel()) ?? $column->getName(),
+                    'icon' => $column->getVariable(Form::OPTION_ICON),
                     'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                         $parentRecordUid,
                         $column->getColumnPosition()
@@ -90,23 +93,30 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             $colCount = 0;
             $columns = [];
             foreach ($row['columns.'] as $column) {
+                $colPos = (string)$column['colPos'];
                 $key = ($index + 1) . '.';
-                $columns[$key] = [
-                    'name' => $column['label'] ?? $column['name'],
-                    'colPos' => (string)$column['colPos']
+                $columns[$key] = $column;
+                $colPosList[$colPos] = $colPos;
+                $items[] = [
+                    $columns[$key]['name'],
+                    $colPos,
+                    $column['icon']
                 ];
-                if ($column['colspan']) {
-                    $columns[$key]['colspan'] = $column['colspan'];
-                }
-                if ($column['rowspan']) {
-                    $columns[$key]['rowspan'] = $column['rowspan'];
-                }
-                $colPosList[$columns[$key]['colPos']] = $columns[$key]['colPos'];
-                array_push($items, [$columns[$key]['name'], $columns[$key]['colPos'], null]);
                 $colCount += $column['colspan'] ? $column['colspan'] : 1;
                 ++ $index;
             }
             ++ $rowIndex;
+        }
+
+        if ($parentRecordUid === 0) {
+            // We are creating a grid for the page level backend layout. Add colPos item values from TCA if they were
+            // not defined as grid columns and are above ColumnNumberCalculator::MULTIPLIER.
+            foreach ($GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] as $columnSelectionOption) {
+                if ($columnSelectionOption[1] > ColumnNumberUtility::MULTIPLIER && !in_array($columnSelectionOption, $items, true)) {
+                    // This is in all likelihood a virtual column; include it.
+                    $items[] = $columnSelectionOption;
+                }
+            }
         }
 
         $backendLayout['__config'] = ['backend_layout.' => $config];

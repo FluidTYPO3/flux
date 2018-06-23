@@ -1,4 +1,7 @@
 <?php
+
+use FluidTYPO3\Flux\View\BackendLayoutView;
+
 defined ('TYPO3_MODE') or die ('Access denied.');
 
 \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
@@ -28,3 +31,5 @@ defined ('TYPO3_MODE') or die ('Access denied.');
 \FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor::spoolQueuedContentTypeTableConfigurations(
     \FluidTYPO3\Flux\Core::getQueuedContentTypeRegistrations()
 );
+
+$GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['itemsProcFunc'] = BackendLayoutView::class . '->colPosListItemProcFunc';

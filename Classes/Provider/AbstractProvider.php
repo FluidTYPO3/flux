@@ -296,7 +296,9 @@ class AbstractProvider implements ProviderInterface
     public function getGrid(array $row)
     {
 
-        return $this->grid ?? $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
+        $grid = $this->grid ?? $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
+        $grid->setExtensionName($grid->getExtensionName() ?: $this->getControllerExtensionKeyFromRecord($row));
+        return $grid;
     }
 
     /**
@@ -420,7 +422,6 @@ class AbstractProvider implements ProviderInterface
      */
     public function getTemplatePathAndFilename(array $row)
     {
-        unset($row);
         $templatePathAndFilename = $this->templatePathAndFilename;
         if (0 === strpos($templatePathAndFilename, 'EXT:') || 0 !== strpos($templatePathAndFilename, '/')) {
             $templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
