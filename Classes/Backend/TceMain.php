@@ -67,11 +67,14 @@ class TceMain
      */
     public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$reference)
     {
-        // BUGFIX Typo3 Issue https://forge.typo3.org/issues/85013
+        // TYPO3 issue https://forge.typo3.org/issues/85013 "colPos not part of $fieldArray when dropping in top column"
+        // TODO: remove when expected solution, the inclusion of colPos in $fieldArray, is merged and released in TYPO3
         if ($table === 'tt_content' && is_integer($id) && !isset($fieldArray['colPos'])) {
-            $record = $this->recordService->get($table, 'sys_language_uid, l18n_parent', "uid = $id");
+            $record = $this->recordService->get($table, 'colPos, sys_language_uid, l18n_parent', "uid = $id");
             $uidInDefaultLanguage = $record[0]['l18n_parent'];
-            $fieldArray['colPos'] = (int)($reference->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? 0);
+            if ($uidInDefaultLanguage) {
+                $fieldArray['colPos'] = (int)($reference->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? $record['colPos']);
+            }
         }
     }
 
