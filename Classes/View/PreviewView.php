@@ -232,10 +232,24 @@ class PreviewView extends TemplateView
                 if ($this->getOptionToggle($options)) {
                     $content = $this->drawGridToggle($row, $content);
                 }
+
+                // Live-patching TCA to add items, which will be read by the BackendLayoutView in order to read
+                // the LLL labels of individual columns. Unfortunately, BackendLayoutView calls functions in a way
+                // that it is not possible to overrule the colPos values via the BackendLayout without creating an
+                // XCLASS - so a bit of runtime TCA patching is preferable.
+                $tcaBackup = $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'];
+                $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = array_merge(
+                    $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
+                    $grid->buildExtendedBackendLayoutArray($row['uid'])['__items']
+                );
+
                 $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
                 $pageLayoutView->oddColumnsCssClass = 'flux-grid-column';
                 $pageLayoutView->start($row['pid'], 'tt_content', 0);
                 $pageLayoutView->generateList();
+
+                $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;
+
                 $content .= $pageLayoutView->HTMLcode;
             }
             $renderedGrids[$row['uid']] = $content;

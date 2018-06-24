@@ -55,7 +55,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             foreach ($row->getColumns() as $column) {
                 $key = ($index + 1) . '.';
                 $columns[$key] = [
-                    'name' => LocalizationUtility::translate($column->getLabel()) ?? $column->getName(),
+                    'name' => $column->getLabel(),
                     'icon' => $column->getVariable(Form::OPTION_ICON),
                     'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                         $parentRecordUid,
