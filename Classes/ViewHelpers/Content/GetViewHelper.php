@@ -8,9 +8,12 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Container\Column;
+use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -20,6 +23,7 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 
@@ -79,8 +83,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
      */
     public function initializeArguments()
     {
-        $this->registerArgument('column', 'integer', 'Column position number (colPos) of the column to render');
-        $this->registerArgument('area', 'string', 'Name of the area to render');
+        $this->registerArgument('area', 'string', 'Name or "colPos" value of the content area to render', true);
         $this->registerArgument('limit', 'integer', 'Optional limit to the number of content elements to render');
         $this->registerArgument('offset', 'integer', 'Optional offset to the limit', false, 0);
         $this->registerArgument(
@@ -136,7 +139,8 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             }
         }
 
-        $rows = static::getContentRecords($arguments, $record);
+        $grid = $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'provider')->getGrid($record);
+        $rows = static::getContentRecords($arguments, $record, $grid);
 
         $elements = false === (boolean) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
         if (true === empty($arguments['as'])) {
@@ -163,45 +167,51 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
     /**
      * @param array $arguments
      * @param array $parent
+     * @param Grid $grid
      * @return array
      */
-    protected static function getContentRecords(array $arguments, array $parent)
+    protected static function getContentRecords(array $arguments, array $parent, Grid $grid)
     {
-
-        if (is_numeric($arguments['column'])) {
-            // Special case: We use record UID to get an unique colPos value
-            $conditions = sprintf('colPos = %d', (integer) $parent['uid'] * 100 + $arguments['column']);
-
-            $rows = $GLOBALS['TSFE']->cObj->getRecords(
-                'tt_content',
-                [
-                    'where' => $conditions,
-                    'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
-                ]
-            );
-
-            return $rows;
-
+        $columnPosition = $arguments['area'];
+        if (!is_numeric($columnPosition)) {
+            $column = $grid->get($columnPosition, true, Column::class);
+            if ($column instanceof Column) {
+                $columnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                    $parent['l18n_parent'] ?: $parent['uid'],
+                    $column->getColumnPosition()
+                );
+            } else {
+                throw new Exception(
+                    sprintf(
+                        'Argument "column" or "area" for "flux:content.(get|render)" was a string column name "%s", ' .
+                        'but this column was not defined',
+                        $columnPosition
+                    )
+                );
+            }
         }
 
         $conditions = sprintf(
-            "(tx_flux_parent = '%s' AND tx_flux_column = '%s' AND colPos = 18181)",
-            $parent['uid'],
-            $arguments['area']
+            'colPos = %d',
+            $columnPosition
         );
+
+        $rows = static::getContentObjectRenderer()->getRecords(
+            'tt_content',
+            [
+                'max' => $arguments['limit'],
+                'begin' => $arguments['offset'],
+                'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
+                'where' => $conditions,
+                'pidInList' => $parent['pid'],
+                'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
+            ]
+        );
+
         return HookHandler::trigger(
             HookHandler::NESTED_CONTENT_FETCHED,
             [
-                'records' => static::getContentObjectRenderer()->getRecords(
-                    'tt_content',
-                    [
-                        'max' => $arguments['limit'],
-                        'begin' => $arguments['offset'],
-                        'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
-                        'where' => $conditions,
-                        'pidInList' => $parent['pid']
-                    ]
-                )
+                'records' => $rows
             ]
         )['records'];
     }
