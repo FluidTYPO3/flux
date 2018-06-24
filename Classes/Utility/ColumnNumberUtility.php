@@ -33,6 +33,11 @@ abstract class ColumnNumberUtility
 {
     const MULTIPLIER = 100;
 
+    public static function calculateLocalColumnNumber(int $colPos): int
+    {
+        return (int) $colPos % static::MULTIPLIER;
+    }
+
     public static function calculateParentUid(int $colPos): int
     {
         return (int) floor($colPos / static::MULTIPLIER);
@@ -47,7 +52,7 @@ abstract class ColumnNumberUtility
     {
         return [
             static::calculateParentUid($virtualColumnNumber),
-            $virtualColumnNumber % static::MULTIPLIER
+            static::calculateLocalColumnNumber($virtualColumnNumber)
         ];
     }
 

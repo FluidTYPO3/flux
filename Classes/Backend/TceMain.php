@@ -9,7 +9,9 @@ namespace FluidTYPO3\Flux\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\RecordService;
+use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -106,9 +108,55 @@ class TceMain
             }
 
             if ($command === 'copy') {
-                // TODO: cascade copy of children with overridden colPos value for each record.
-                // Records can be selected with an SQL condition that matches colPos values within the calculated range
-                // based on parent's UID.
+                // A copy was made. Cascade copy operations for child records.
+                $resolver = $this->objectManager->get(ProviderResolver::class);
+                $originalRecord = $this->recordService->getSingle($table, '*', $id);
+                $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
+                    $table,
+                    null,
+                    $originalRecord
+                );
+                if ($primaryProvider) {
+                    $childColPosValues = [];
+                    foreach ($primaryProvider->getGrid($originalRecord)->getRows() as $row) {
+                        foreach ($row->getColumns() as $column) {
+                            $childColPosValues[] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                                $id,
+                                $column->getColumnPosition()
+                            );
+                        }
+                    }
+
+                    // Selecting records to copy. The "sorting DESC" is very intentional, since we are copying children
+                    // into columns by consistently placing them in the topmost position. When copying is complete,
+                    // children will have the exact opposite order of the "sorting DESC" result - which means they are
+                    // sorted correctly, ascending, as the original child records were.
+                    $recordsToCopy = $this->recordService->get(
+                        $table,
+                        'uid, colPos, pid, sorting',
+                        sprintf('colPos IN (%s', implode(', ', $childColPosValues) . ')'),
+                        null,
+                        'sorting DESC'
+                    );
+
+                    // Records copying loop. We force "colPos" to have a new, re-calculated value. Each record is copied
+                    // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
+                    // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
+                    foreach ($recordsToCopy as $recordToCopy) {
+                        $reference->copyRecord(
+                            $table,
+                            $recordToCopy['uid'],
+                            $originalRecord['pid'],
+                            true,
+                            [
+                                'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                                    $reference->copyMappingArray[$table][$id],
+                                    ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
+                                )
+                            ]
+                        );
+                    }
+                }
             }
         }
     }
