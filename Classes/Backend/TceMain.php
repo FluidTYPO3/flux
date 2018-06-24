@@ -102,60 +102,80 @@ class TceMain
      */
     public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
     {
-        if ($table === 'tt_content') {
-            if ('localize' === $command) {
+        if ($table === 'tt_content' && ($command === 'localize' || $command === 'copy' || $command === 'copyToLanguage')) {
+            // A copy, or localisation (which is also a copy) was made. Cascade copy operations for child records.
+            $resolver = $this->objectManager->get(ProviderResolver::class);
+            $originalRecord = $this->recordService->getSingle($table, '*', $id);
+            $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
+                $table,
+                null,
+                $originalRecord
+            );
+            if ($primaryProvider) {
+                $childColPosValues = [];
+                foreach ($primaryProvider->getGrid($originalRecord)->getRows() as $row) {
+                    foreach ($row->getColumns() as $column) {
+                        $childColPosValues[] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                            $id,
+                            $column->getColumnPosition()
+                        );
+                    }
+                }
+
+                // Selecting records to copy. The "sorting DESC" is very intentional, since we are copying children
+                // into columns by consistently placing them in the topmost position. When copying is complete,
+                // children will have the exact opposite order of the "sorting DESC" result - which means they are
+                // sorted correctly, ascending, as the original child records were.
+                $recordsToCopy = $this->recordService->get(
+                    $table,
+                    'uid, colPos, pid, sorting',
+                    sprintf('colPos IN (%s', implode(', ', $childColPosValues) . ')'),
+                    null,
+                    'sorting DESC'
+                );
+            }
+
+            if ($command === 'localize' || $command === 'copyToLanguage') {
                 // TODO: correct the colPos value by reading the original language parent and re-calculating based on new parent
+                // Records copying loop. We force "colPos" to have a new, re-calculated value. Each record is copied
+                // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
+                // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
+                foreach ($recordsToCopy as $recordToCopy) {
+                    $reference->copyRecord(
+                        $table,
+                        $recordToCopy['uid'],
+                        $originalRecord['pid'],
+                        true,
+                        [
+                            't3_origuid' => $originalRecord['uid'],
+                            'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                                $reference->copyMappingArray[$table][$id],
+                                ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
+                            ),
+                            'sys_language_uid' => (int)$reference->cmdmap[$table][$id][$command],
+                            ($command === 'copyToLanguage' ? 'l10n_source' : 'l18n_parent') => $originalRecord['uid']
+                        ]
+                    );
+                }
             }
 
             if ($command === 'copy') {
-                // A copy was made. Cascade copy operations for child records.
-                $resolver = $this->objectManager->get(ProviderResolver::class);
-                $originalRecord = $this->recordService->getSingle($table, '*', $id);
-                $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
-                    $table,
-                    null,
-                    $originalRecord
-                );
-                if ($primaryProvider) {
-                    $childColPosValues = [];
-                    foreach ($primaryProvider->getGrid($originalRecord)->getRows() as $row) {
-                        foreach ($row->getColumns() as $column) {
-                            $childColPosValues[] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                                $id,
-                                $column->getColumnPosition()
-                            );
-                        }
-                    }
-
-                    // Selecting records to copy. The "sorting DESC" is very intentional, since we are copying children
-                    // into columns by consistently placing them in the topmost position. When copying is complete,
-                    // children will have the exact opposite order of the "sorting DESC" result - which means they are
-                    // sorted correctly, ascending, as the original child records were.
-                    $recordsToCopy = $this->recordService->get(
+                // Records copying loop. We force "colPos" to have a new, re-calculated value. Each record is copied
+                // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
+                // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
+                foreach ($recordsToCopy as $recordToCopy) {
+                    $reference->copyRecord(
                         $table,
-                        'uid, colPos, pid, sorting',
-                        sprintf('colPos IN (%s', implode(', ', $childColPosValues) . ')'),
-                        null,
-                        'sorting DESC'
+                        $recordToCopy['uid'],
+                        $originalRecord['pid'],
+                        true,
+                        [
+                            'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                                $reference->copyMappingArray[$table][$id],
+                                ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
+                            )
+                        ]
                     );
-
-                    // Records copying loop. We force "colPos" to have a new, re-calculated value. Each record is copied
-                    // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
-                    // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
-                    foreach ($recordsToCopy as $recordToCopy) {
-                        $reference->copyRecord(
-                            $table,
-                            $recordToCopy['uid'],
-                            $originalRecord['pid'],
-                            true,
-                            [
-                                'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                                    $reference->copyMappingArray[$table][$id],
-                                    ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
-                                )
-                            ]
-                        );
-                    }
                 }
             }
         }
