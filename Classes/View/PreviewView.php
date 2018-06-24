@@ -315,6 +315,7 @@ class PreviewView extends TemplateView
         $dblist->tt_contentConfig['showCommands'] = 1;
         $dblist->tt_contentConfig['showInfo'] = 1;
         $dblist->tt_contentConfig['single'] = 0;
+        $dblist->tt_contentConfig['sys_language_uid'] = $row['sys_language_uid'];
         $dblist->tt_contentConfig['showHidden'] = $showHiddenRecords;
         $dblist->tt_contentConfig['activeCols'] = $columnsAsCSV;
         $dblist->tt_contentConfig['cols'] = $columnsAsCSV;
