@@ -69,7 +69,7 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         }
         // Delegate resolving of backend layout structure to the Provider, which will return a Grid, which can create
         // a full backend layout data array.
-        return $this->provider->getGrid($this->record)->buildExtendedBackendLayoutArray($this->record['uid']);
+        return $this->provider->getGrid($this->record)->buildExtendedBackendLayoutArray($this->record['l18n_parent'] ?: $this->record['uid']);
     }
 
     /**

@@ -104,6 +104,7 @@ class TceMain
     {
         if ($table === 'tt_content' && ($command === 'localize' || $command === 'copy' || $command === 'copyToLanguage')) {
             // A copy, or localisation (which is also a copy) was made. Cascade copy operations for child records.
+            $recordsToCopy = [];
             $resolver = $this->objectManager->get(ProviderResolver::class);
             $originalRecord = $this->recordService->getSingle($table, '*', $id);
             $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
@@ -126,17 +127,18 @@ class TceMain
                 // into columns by consistently placing them in the topmost position. When copying is complete,
                 // children will have the exact opposite order of the "sorting DESC" result - which means they are
                 // sorted correctly, ascending, as the original child records were.
-                $recordsToCopy = $this->recordService->get(
-                    $table,
-                    'uid, colPos, pid, sorting',
-                    sprintf('colPos IN (%s', implode(', ', $childColPosValues) . ')'),
-                    null,
-                    'sorting DESC'
-                );
+                if (!empty($childColPosValues)) {
+                    $recordsToCopy = $this->recordService->get(
+                        $table,
+                        'uid, colPos, pid, sorting',
+                        sprintf('colPos IN (%s', implode(', ', $childColPosValues) . ')'),
+                        null,
+                        'sorting DESC'
+                    );
+                }
             }
 
             if ($command === 'localize' || $command === 'copyToLanguage') {
-                // TODO: correct the colPos value by reading the original language parent and re-calculating based on new parent
                 // Records copying loop. We force "colPos" to have a new, re-calculated value. Each record is copied
                 // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
                 // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
@@ -149,7 +151,7 @@ class TceMain
                         [
                             't3_origuid' => $originalRecord['uid'],
                             'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                                $reference->copyMappingArray[$table][$id],
+                                $command === 'copyToLanguage' ? $reference->copyMappingArray[$table][$id] : $originalRecord['uid'],
                                 ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
                             ),
                             'sys_language_uid' => (int)$reference->cmdmap[$table][$id][$command],

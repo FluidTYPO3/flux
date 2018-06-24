@@ -219,11 +219,11 @@ class PreviewView extends TemplateView
     protected function renderGrid(ProviderInterface $provider, array $row, Form $form)
     {
         static $renderedGrids = [];
-        if (!isset($renderedGrids[$row['uid']])) {
+        if (!isset($renderedGrids[$row['uid']][$row['sys_language_uid']])) {
 
             // First, set an empty string so this condition block does not execute twice. The content will be built
             // later, but doing so will recursively call this function again which must be avoided.
-            $renderedGrids[$row['uid']] = '';
+            $renderedGrids[$row['uid']][$row['sys_language_uid']] = '';
 
             $content = '';
             $grid = $provider->getGrid($row);
@@ -252,9 +252,9 @@ class PreviewView extends TemplateView
 
                 $content .= $pageLayoutView->HTMLcode;
             }
-            $renderedGrids[$row['uid']] = $content;
+            $renderedGrids[$row['uid']][$row['sys_language_uid']] = $content;
         }
-        return $renderedGrids[$row['uid']];
+        return $renderedGrids[$row['uid']][$row['sys_language_uid']];
     }
 
     /**
