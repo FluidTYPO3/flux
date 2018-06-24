@@ -11,9 +11,12 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Core\TypoScript\ExtendedTemplateService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -41,6 +44,15 @@ class Grid extends AbstractFormContainer implements ContainerInterface
      */
     public function buildBackendLayoutArray(int $parentRecordUid)
     {
+
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $recordService = $objectManager->get(RecordService::class);
+        $recordRow = $recordService->getSingle('tt_content','*',$parentRecordUid); // workspaces?
+        $recordIsTranslation = $recordRow['l18n_parent'] > 0;
+        if($recordIsTranslation){
+            $parentRecordUid = $recordRow['l18n_parent'];
+        }
+
         $config = [
             'colCount' => 0,
             'rowCount' => 0,
@@ -54,8 +66,15 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             $columns = [];
             foreach ($row->getColumns() as $column) {
                 $key = ($index + 1) . '.';
+
+                $translatedLabel = LocalizationUtility::translate(
+                    $column->getLabel(),
+                    $this->getRoot()->getExtensionName()
+                );
+                $columnName = $translatedLabel ?? $column->getName();
+
                 $columns[$key] = [
-                    'name' => LocalizationUtility::translate($column->getLabel()) ?? $column->getName(),
+                    'name' => $columnName,
                     'icon' => $column->getVariable(Form::OPTION_ICON),
                     'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                         $parentRecordUid,
