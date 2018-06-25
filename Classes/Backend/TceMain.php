@@ -81,6 +81,91 @@ class TceMain
     }
 
     /**
+     * Command pre processing method
+     *
+     * Deletion of child records must be done before parent record is deleted,
+     * so this logic is here in the preProcess
+     *
+     * @param string $command The TCEmain operation status, fx. 'update'
+     * @param string $table The table TCEmain is currently processing
+     * @param string $id The records id (if any)
+     * @param mixed $value
+     * @param DataHandler $reference Reference to the parent object (TCEmain)
+     * @param array $pasteUpdate
+     * @return void
+     */
+    public function processCmdmap_preProcess($command, $table, $id, $value, &$reference, &$pasteUpdate){
+        $doProcessCommand = in_array($command,['delete']);
+        $doProcessCommand = $doProcessCommand && 'tt_content' == $table;
+
+
+        if ($doProcessCommand) {
+            // A copy, or localisation (which is also a copy) was made. Cascade copy operations for child records.
+            $gridChildRecords = [];
+            $resolver = $this->objectManager->get(ProviderResolver::class);
+            $originalRecord = $this->recordService->getSingle($table, '*', $id);
+            $recordCanBeGrid = !empty($originalRecord['pi_flexform']);
+            if(!$recordCanBeGrid){
+                return;
+            }
+
+
+            $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
+                $table,
+                null,
+                $originalRecord
+            );
+            $colPosCalcBaseUid = $id;
+            $gridIsTranslation = $originalRecord['sys_language_uid'] > 0;
+            if($gridIsTranslation){
+                $colPosCalcBaseUid = $originalRecord['l18n_parent'];
+            }
+            if ($primaryProvider) {
+                $childColPosValues = [];
+                foreach ($primaryProvider->getGrid($originalRecord)->getRows() as $row) {
+                    foreach ($row->getColumns() as $column) {
+                        $childColPosValues[] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                            $colPosCalcBaseUid,
+                            $column->getColumnPosition()
+                        );
+                    }
+                }
+
+                // Selecting records to copy. The "sorting DESC" is very intentional, since we are copying children
+                // into columns by consistently placing them in the topmost position. When copying is complete,
+                // children will have the exact opposite order of the "sorting DESC" result - which means they are
+                // sorted correctly, ascending, as the original child records were.
+                if (!empty($childColPosValues)) {
+                    $gridChildRecords = $this->recordService->get(
+                        $table,
+                        'uid, colPos, pid, sorting',
+                        sprintf(
+                            'colPos IN (%s) and sys_language_uid=%s',
+                            implode(', ', $childColPosValues),
+                            $originalRecord['sys_language_uid']
+                        ),
+                        null,
+                        'sorting DESC'
+                    );
+                }
+            }
+            $gridHasChildren = count($gridChildRecords) > 0;
+
+            if('delete' == $command && $gridHasChildren){
+                $cmd = [
+                    'tt_content' => []
+                ];
+                foreach ($gridChildRecords as $recordToDelete) {
+                    $cmd['tt_content'][ $recordToDelete['uid'] ] = ['delete' => 1];
+                }
+                $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+                $dataHandler->start([], $cmd);
+                $dataHandler->process_cmdmap();
+            }
+        }
+    }
+
+    /**
      * Command post processing method
      *
      * Like other pre/post methods this method calls the corresponding
@@ -102,11 +187,18 @@ class TceMain
      */
     public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
     {
-        if ($table === 'tt_content' && ($command === 'localize' || $command === 'copy' || $command === 'copyToLanguage')) {
+        $doProcessCommand = in_array($command,['localize','copy','copyToLanguage','delete']);
+        $doProcessCommand = $doProcessCommand && 'tt_content' == $table;
+
+        if ($doProcessCommand) {
             // A copy, or localisation (which is also a copy) was made. Cascade copy operations for child records.
-            $recordsToCopy = [];
+            $gridChildRecords = [];
             $resolver = $this->objectManager->get(ProviderResolver::class);
             $originalRecord = $this->recordService->getSingle($table, '*', $id);
+            $recordCanBeGrid = !empty($originalRecord['pi_flexform']);
+            if(!$recordCanBeGrid){
+                return;
+            }
             $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
                 $table,
                 null,
@@ -128,10 +220,14 @@ class TceMain
                 // children will have the exact opposite order of the "sorting DESC" result - which means they are
                 // sorted correctly, ascending, as the original child records were.
                 if (!empty($childColPosValues)) {
-                    $recordsToCopy = $this->recordService->get(
+                    $gridChildRecords = $this->recordService->get(
                         $table,
                         'uid, colPos, pid, sorting',
-                        sprintf('colPos IN (%s', implode(', ', $childColPosValues) . ')'),
+                        sprintf(
+                            'colPos IN (%s) and sys_language_uid=%s',
+                            implode(', ', $childColPosValues),
+                            $originalRecord['sys_language_uid']
+                        ),
                         null,
                         'sorting DESC'
                     );
@@ -142,7 +238,7 @@ class TceMain
                 // Records copying loop. We force "colPos" to have a new, re-calculated value. Each record is copied
                 // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
                 // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
-                foreach ($recordsToCopy as $recordToCopy) {
+                foreach ($gridChildRecords as $recordToCopy) {
                     $overrideValues = [];
                     // https://docs.typo3.org/typo3cms/TCAReference/latest/singlehtml/#origuid
                     $overrideValues['t3_origuid'] = $recordToCopy['uid'];
@@ -180,7 +276,7 @@ class TceMain
                 // Records copying loop. We force "colPos" to have a new, re-calculated value. Each record is copied
                 // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
                 // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
-                foreach ($recordsToCopy as $recordToCopy) {
+                foreach ($gridChildRecords as $recordToCopy) {
                     $reference->copyRecord(
                         $table,
                         $recordToCopy['uid'],
