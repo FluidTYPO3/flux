@@ -143,20 +143,35 @@ class TceMain
                 // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
                 // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
                 foreach ($recordsToCopy as $recordToCopy) {
+                    $overrideValues = [];
+                    // https://docs.typo3.org/typo3cms/TCAReference/latest/singlehtml/#origuid
+                    $overrideValues['t3_origuid'] = $recordToCopy['uid'];
+                    if('copyToLanguage' == $command){
+                        $newChildRecord_parentUid = $reference->copyMappingArray[$table][$id];
+                    }else{
+                        $newChildRecord_parentUid = $originalRecord['uid'];
+                    }
+                    $newChildRecord_ColPos = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                        $newChildRecord_parentUid,
+                        ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
+                    );
+                    $overrideValues['colPos'] = $newChildRecord_ColPos;
+                    $overrideValues['sys_language_uid'] = (int)$reference->cmdmap[$table][$id][$command];
+                    if($command == 'copyToLanguage'){
+                        $overrideValues['l10n_source'] = $originalRecord['uid'];
+                    }else{
+                        if($recordToCopy['sys_language_uid'] > 0){
+                            $overrideValues['l18n_parent'] = $recordToCopy['l18n_parent'];
+                        }else{
+                            $overrideValues['l18n_parent'] = $recordToCopy['uid'];
+                        }
+                    }
                     $reference->copyRecord(
                         $table,
                         $recordToCopy['uid'],
                         $originalRecord['pid'],
                         true,
-                        [
-                            't3_origuid' => $originalRecord['uid'],
-                            'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                                $command === 'copyToLanguage' ? $reference->copyMappingArray[$table][$id] : $originalRecord['uid'],
-                                ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
-                            ),
-                            'sys_language_uid' => (int)$reference->cmdmap[$table][$id][$command],
-                            ($command === 'copyToLanguage' ? 'l10n_source' : 'l18n_parent') => $originalRecord['uid']
-                        ]
+                        $overrideValues
                     );
                 }
             }
