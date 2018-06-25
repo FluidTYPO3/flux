@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -34,11 +35,26 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         return $structure;
     }
 
+    public function buildColumnPositionValues(array $record): array
+    {
+        $columnPositionValues = [];
+        $parentRecordUid = $record['l18n_parent'] ?: $record['uid'];
+        foreach ($this->getRows() as $row) {
+            foreach ($row->getColumns() as $column) {
+                $columnPositionValues[] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                    $parentRecordUid,
+                    $column->getColumnPosition()
+                );
+            }
+        }
+        return $columnPositionValues;
+    }
+
     /**
      * @param int $parentRecordUid
      * @return array
      */
-    public function buildBackendLayoutArray(int $parentRecordUid)
+    public function buildBackendLayoutArray(int $parentRecordUid): array
     {
         $config = [
             'colCount' => 0,
@@ -80,7 +96,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         return $config;
     }
 
-    public function buildExtendedBackendLayoutArray(int $parentRecordUid)
+    public function buildExtendedBackendLayoutArray(int $parentRecordUid): array
     {
         $config = $this->buildBackendLayoutArray($parentRecordUid);
 
@@ -129,7 +145,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
      * @param int $parentRecordUid
      * @return BackendLayout
      */
-    public function buildBackendLayout(int $parentRecordUid)
+    public function buildBackendLayout(int $parentRecordUid): BackendLayout
     {
         $configuration = $this->buildBackendLayoutArray($parentRecordUid);
         $configuration = $this->ensureDottedKeys($configuration);
@@ -146,7 +162,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
      * @param array $configuration
      * @return array
      */
-    protected function ensureDottedKeys(array $configuration)
+    protected function ensureDottedKeys(array $configuration): array
     {
         $converted = [];
         foreach ($configuration as $key => $value) {
