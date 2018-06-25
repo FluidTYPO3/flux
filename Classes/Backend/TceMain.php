@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -23,43 +24,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class TceMain
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
-
-    /**
-     * @var RecordService
-     */
-    protected $recordService;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @param RecordService $recordService
-     * @return void
-     */
-    public function injectRecordService(RecordService $recordService)
-    {
-        $this->recordService = $recordService;
-    }
-
-    /**
-     * CONSTRUCTOR
-     */
-    public function __construct()
-    {
-        $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
-        $this->injectRecordService($this->objectManager->get(RecordService::class));
-    }
-
     /**
      * @param array $fieldArray The field names and their values to be processed
      * @param string $table The table TCEmain is currently processing
@@ -78,7 +42,7 @@ class TceMain
         // symptom of this bug.
         // TODO: remove when expected solution, the inclusion of colPos in $fieldArray, is merged and released in TYPO3
         if (isset($reference->cmdmap[$table][$id]['move']) && $reference->cmdmap[$table][$id]['move'] === 'Root') {
-            $record = $this->recordService->getSingle($table, 'pid, colPos, l18n_parent', $id);
+            $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
             $uidInDefaultLanguage = $record['l18n_parent'];
             if ($uidInDefaultLanguage && isset($reference->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
                 $fieldArray['colPos'] = (int)($reference->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? $record['colPos']);
@@ -86,6 +50,36 @@ class TceMain
             // A massive assignment: 1) force target PID for move, 2) force update of PID, 3) update input field array.
             // All receive the value of the record's "pid" column.
             $reference->cmdmap[$table][$id]['move'] = $reference->datamap[$table][$id]['pid'] = $fieldArray['pid'] = $record['pid'];
+        }
+    }
+
+    /**
+     * Command pre processing method
+     *
+     * Responsible for cascading delete commands to also delete children.
+     *
+     * @param string $command The TCEmain operation status, fx. 'update'
+     * @param string $table The table TCEmain is currently processing
+     * @param string $id The records id (if any)
+     * @param string $relativeTo Filled if command is relative to another element
+     * @param DataHandler $reference Reference to the parent object (TCEmain)
+     * @param array $pasteUpdate
+     * @param array $pasteDataMap
+     * @return void
+     */
+    public function processCmdmap_preProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate)
+    {
+        if ($table !== 'tt_content' || $command !== 'delete') {
+            return;
+        }
+
+        list (, $recordsToDelete) = $this->getParentAndRecordsNestedInGrid($table, (int)$id, 'uid, pid');
+        if (empty($recordsToDelete)) {
+            return;
+        }
+
+        foreach ($recordsToDelete as $recordToDelete) {
+            $reference->deleteAction($table, $recordToDelete['uid']);
         }
     }
 
@@ -171,11 +165,21 @@ class TceMain
     {
     }
 
+    protected function getSingleRecordWithoutRestrictions(string $table, int $uid, string $fieldsToSelect)
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
+            ->from($table)
+            ->where($queryBuilder->expr()->eq('uid', $uid));
+        return $queryBuilder->execute()->fetch();
+    }
+
     protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect)
     {
         // A Provider must be resolved which implements the GridProviderInterface
-        $resolver = $this->objectManager->get(ProviderResolver::class);
-        $originalRecord = $this->recordService->getSingle($table, '*', $parentUid);
+        $resolver = GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class);
+        $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
         $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
             $table,
             null,
@@ -201,17 +205,21 @@ class TceMain
             ];
         }
 
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
+            ->from($table)
+            ->where($queryBuilder->expr()->in('colPos', $childColPosValues))
+            ->orderBy('sorting', 'DESC');
+        $records = $queryBuilder->execute()->fetchAll();
+
+        echo '';
+
         // Selecting records to return. The "sorting DESC" is very intentional; copy operations will place records
         // into the top of columns which means reading records in reverse order causes the correct final order.
         return [
             $originalRecord,
-            $this->recordService->get(
-                $table,
-                $fieldsToSelect,
-                sprintf('colPos IN (%s', implode(', ', $childColPosValues) . ')'),
-                null,
-                'sorting DESC'
-            )
+            $records
         ];
     }
 }
