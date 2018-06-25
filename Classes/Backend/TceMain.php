@@ -61,23 +61,31 @@ class TceMain
     }
 
     /**
-     * @param string $status The TCEmain operation status, fx. 'update'
+     * @param array $fieldArray The field names and their values to be processed
      * @param string $table The table TCEmain is currently processing
      * @param string $id The records id (if any)
-     * @param array $fieldArray The field names and their values to be processed
      * @param DataHandler $reference Reference to the parent object (TCEmain)
      * @return void
      */
-    public function processDatamap_postProcessFieldArray($status, $table, $id, &$fieldArray, &$reference)
+    public function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, &$reference)
     {
-        // TYPO3 issue https://forge.typo3.org/issues/85013 "colPos not part of $fieldArray when dropping in top column"
+        if ($table !== 'tt_content' || !is_integer($id)) {
+            return;
+        }
+
+        // TYPO3 issue https://forge.typo3.org/issues/85013 "colPos not part of $fieldArray when dropping in top column".
+        // We catch the special case of a record being moved, but the target pid being "Root" which is the identifying
+        // symptom of this bug.
         // TODO: remove when expected solution, the inclusion of colPos in $fieldArray, is merged and released in TYPO3
-        if ($table === 'tt_content' && is_integer($id) && !isset($fieldArray['colPos'])) {
-            $record = $this->recordService->get($table, 'colPos, sys_language_uid, l18n_parent', "uid = $id");
-            $uidInDefaultLanguage = $record[0]['l18n_parent'];
-            if ($uidInDefaultLanguage) {
+        if (isset($reference->cmdmap[$table][$id]['move']) && $reference->cmdmap[$table][$id]['move'] === 'Root') {
+            $record = $this->recordService->getSingle($table, 'pid, colPos, l18n_parent', $id);
+            $uidInDefaultLanguage = $record['l18n_parent'];
+            if ($uidInDefaultLanguage && isset($reference->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
                 $fieldArray['colPos'] = (int)($reference->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? $record['colPos']);
             }
+            // A massive assignment: 1) force target PID for move, 2) force update of PID, 3) update input field array.
+            // All receive the value of the record's "pid" column.
+            $reference->cmdmap[$table][$id]['move'] = $reference->datamap[$table][$id]['pid'] = $fieldArray['pid'] = $record['pid'];
         }
     }
 
