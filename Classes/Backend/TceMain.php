@@ -136,7 +136,10 @@ class TceMain
                         ),
                         'sys_language_uid' => (int)$reference->cmdmap[$table][$id][$command],
                         ($command === 'copyToLanguage' ? 'l10n_source' : 'l18n_parent') => $recordToCopy['uid']
-                    ]
+                    ],
+                    '',
+                    0,
+                    true
                 );
             }
 
