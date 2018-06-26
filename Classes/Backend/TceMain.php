@@ -112,16 +112,17 @@ class TceMain
         list ($originalRecord, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
             $table,
             (int)$id,
-            'uid, colPos, pid, sorting'
+            'uid, colPos'
         );
         if (empty($recordsToCopy)) {
             return;
         }
 
+        $translationSourceField = $GLOBALS['TCA'][$table]['ctrl']['translationSource'];
+        $copySourceField = $GLOBALS['TCA'][$table]['ctrl']['origUid'];
+        $languageField = $GLOBALS['TCA'][$table]['ctrl']['origUid'];
+
         foreach ($recordsToCopy as $recordToCopy) {
-            // Records copying loop. We force "colPos" to have a new, re-calculated value. Each record is copied
-            // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
-            // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
             if ($command === 'localize') {
                 $reference->localize($table, $recordToCopy['uid'], $relativeTo);
             }
@@ -133,13 +134,13 @@ class TceMain
                     $originalRecord['pid'],
                     true,
                     [
-                        't3_origuid' => $recordToCopy['uid'],
+                        $copySourceField => $recordToCopy['uid'],
                         'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                            $command === 'copyToLanguage' ? $reference->copyMappingArray[$table][$id] : $originalRecord['uid'],
+                            $reference->copyMappingArray[$table][$id],
                             ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
                         ),
-                        'sys_language_uid' => (int)$reference->cmdmap[$table][$id][$command],
-                        ($command === 'copyToLanguage' ? 'l10n_source' : 'l18n_parent') => $recordToCopy['uid']
+                        $languageField => (int)$reference->cmdmap[$table][$id][$command],
+                        $translationSourceField => $recordToCopy['uid']
                     ],
                     '',
                     0,
