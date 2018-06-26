@@ -41,8 +41,9 @@ class TceMain
         // We catch the special case of a record being moved, but the target pid being "Root" which is the identifying
         // symptom of this bug.
         // TODO: remove when expected solution, the inclusion of colPos in $fieldArray, is merged and released in TYPO3
-        $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
-        $l18nParentValue = $record['l18n_parent'];
+        $translationSourceField = $GLOBALS['TCA'][$table]['ctrl']['translationSource'];
+        $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, "pid, colPos, {$translationSourceField}");
+        $l18nParentValue = $record[$translationSourceField];
         if ((isset($reference->cmdmap[$table][$id]['move']) || isset($reference->cmdmap[$table][$l18nParentValue]['move']))
             && ($reference->cmdmap[$table][$id]['move'] === 'Root' || version_compare(TYPO3_version, 9.0, '<'))) {
             if ($l18nParentValue && isset($reference->datamap[$table][$l18nParentValue]['colPos'])) {
