@@ -209,8 +209,10 @@ class TceMain
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
-            ->where($queryBuilder->expr()->in('colPos', $childColPosValues))
-            ->orderBy('sorting', 'DESC');
+            ->andWhere(
+                $queryBuilder->expr()->in('colPos', $childColPosValues),
+                $queryBuilder->expr()->eq('sys_language_uid', $originalRecord['sys_language_uid'])
+            )->orderBy('sorting', 'DESC');
         $records = $queryBuilder->execute()->fetchAll();
 
         echo '';
