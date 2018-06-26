@@ -122,7 +122,11 @@ class TceMain
             // Records copying loop. We force "colPos" to have a new, re-calculated value. Each record is copied
             // as if it were placed into the top of a column and the loop is in reverse order of "sorting", so
             // the end result is same sorting as originals (but with new sorting values bound to new "colPos").
-            if ($command === 'localize' || $command === 'copyToLanguage') {
+            if ($command === 'localize') {
+                $reference->localize($table, $recordToCopy['uid'], $relativeTo);
+            }
+
+            if ($command === 'copyToLanguage') {
                 $reference->copyRecord(
                     $table,
                     $recordToCopy['uid'],
