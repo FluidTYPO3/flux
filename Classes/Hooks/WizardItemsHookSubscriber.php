@@ -17,6 +17,7 @@ use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * WizardItemsHookSubscriber
@@ -101,9 +102,8 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
     {
         $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
-            key($dataArray),
-            $dataArray['colPos'] ?? 0,
-            GeneralUtility::_GET('uid_pid') ?? 0
+            key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true),
+            (int) ($dataArray['colPos'] ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
         );
         $overrides = HookHandler::trigger(
             HookHandler::ALLOWED_CONTENT_RULES_FETCHED,
@@ -131,21 +131,12 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
     }
 
     /**
-     * @return array
-     */
-    protected function getDefaultValues()
-    {
-        $values = GeneralUtility::_GET('defVals');
-        return (array) $values['tt_content'];
-    }
-
-    /**
      * @param integer $pageUid
      * @param integer $columnPosition
      * @param integer $relativeUid
      * @return array
      */
-    protected function getWhiteAndBlackListsFromPageAndContentColumn($pageUid, $columnPosition, $relativeUid)
+    protected function getWhiteAndBlackListsFromPageAndContentColumn($pageUid, $columnPosition)
     {
         $whitelist = [];
         $blacklist = [];
@@ -154,20 +145,26 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
         // of allowed/denied content element types from it.
         $pageRecord = (array) $this->recordService->getSingle('pages', '*', $pageUid);
         $pageProviders = $this->configurationService->resolveConfigurationProviders('pages', null, $pageRecord);
+        $parentRecordUid = ColumnNumberUtility::calculateParentUid($columnPosition);
+        $pageColumnPosition = $parentRecordUid > 0 ? $this->findParentColumnPosition($parentRecordUid) : $columnPosition;
         $this->appendToWhiteAndBlacklistFromProviders(
             $pageProviders,
             $pageRecord,
             $whitelist,
             $blacklist,
-            $columnPosition
+            $pageColumnPosition
         );
-        $parentRecordUid = ColumnNumberUtility::calculateParentUid($columnPosition);
+
+        if ($parentRecordUid === 0) {
+            return [$whitelist, $blacklist];
+        }
+
         // if these variables now indicate that we are inserting content elements into a Flux-enabled content
         // area inside another content element, attempt to read allowed/denied content types from the
         // Grid returned by the Provider that applies to the parent element's type and configuration
         // (admitted, that's quite a mouthful - but it's not that different from reading the values from
         // a page template like above; it's the same principle).
-        if (0 < $parentRecordUid) {
+        if ($parentRecordUid > 0) {
             $parentRecord = (array) $this->recordService->getSingle('tt_content', '*', $parentRecordUid);
             $contentProviders = $this->configurationService->resolveConfigurationProviders(
                 'tt_content',
@@ -196,16 +193,17 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
      * @param array $whitelist
      * @param array $blacklist
      * @param integer $columnPosition
-     * @param string $fluxAreaName
      */
     protected function appendToWhiteAndBlacklistFromProviders(
         array $providers,
         array $record,
         array &$whitelist,
         array &$blacklist,
-        $columnPosition,
-        $fluxAreaName = null
+        $columnPosition
     ) {
+        if ($columnPosition >= ColumnNumberUtility::MULTIPLIER) {
+            $columnPosition = ColumnNumberUtility::calculateLocalColumnNumber($columnPosition);
+        }
         foreach ($providers as $provider) {
             $grid = $provider->getGrid($record);
             if (null === $grid) {
@@ -213,15 +211,7 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
             }
             foreach ($grid->getRows() as $row) {
                 foreach ($row->getColumns() as $column) {
-                    if (false === empty($fluxAreaName)) {
-                        if ($column->getName() === $fluxAreaName) {
-                            list ($whitelist, $blacklist) = $this->appendToWhiteAndBlacklistFromComponent(
-                                $column,
-                                $whitelist,
-                                $blacklist
-                            );
-                        }
-                    } elseif ($column->getColumnPosition() === $columnPosition) {
+                    if ($column->getColumnPosition() === $columnPosition) {
                         list ($whitelist, $blacklist) = $this->appendToWhiteAndBlacklistFromComponent(
                             $column,
                             $whitelist,
@@ -311,5 +301,13 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface
             $blacklist = array_merge($blacklist, GeneralUtility::trimExplode(',', $denied));
         }
         return [$whitelist, $blacklist];
+    }
+
+    protected function findParentColumnPosition(int $parentRecordUid): int
+    {
+        $parentRecord = (array) $this->recordService->getSingle('tt_content', 'uid,colPos', $parentRecordUid);
+        return $parentRecord['colPos'] >= ColumnNumberUtility::MULTIPLIER
+            ? $this->findParentColumnPosition(ColumnNumberUtility::calculateParentUid($parentRecord['colPos']))
+            : (int) $parentRecord['colPos'];
     }
 }
