@@ -120,7 +120,7 @@ class TceMain
 
         $translationSourceField = $GLOBALS['TCA'][$table]['ctrl']['translationSource'];
         $copySourceField = $GLOBALS['TCA'][$table]['ctrl']['origUid'];
-        $languageField = $GLOBALS['TCA'][$table]['ctrl']['origUid'];
+        $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
         foreach ($recordsToCopy as $recordToCopy) {
             if ($command === 'localize') {
