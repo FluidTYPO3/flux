@@ -52,7 +52,8 @@ class ext_update
         if (!$this->validatePresenceOfMigrationVersionFieldInDatabaseSchema()) {
             return '<h3 class="text-danger">Please update the database schema to add "tt_content.tx_flux_migrated_version"' .
                 ' but DO NOT REMOVE ANY FIELDS PREFIXED WITH "tx_flux_*" YET!</h3>' . PHP_EOL .
-                '<p>Return to this migration script when you have added the field and it will show additional output</p>';
+                '<p>Return to this migration script when you have added the field and it will show additional output</p>' .
+                '<p><a class="btn btn-primary" href="' . $url . '">Re-check</a></p>' . PHP_EOL;;
         }
 
         // Secondary vital sanity check: if we can select ANY content records whatsoever, with a colPos value above 99,
