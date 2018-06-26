@@ -41,15 +41,20 @@ class TceMain
         // We catch the special case of a record being moved, but the target pid being "Root" which is the identifying
         // symptom of this bug.
         // TODO: remove when expected solution, the inclusion of colPos in $fieldArray, is merged and released in TYPO3
-        if (isset($reference->cmdmap[$table][$id]['move']) && $reference->cmdmap[$table][$id]['move'] === 'Root') {
-            $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
-            $uidInDefaultLanguage = $record['l18n_parent'];
-            if ($uidInDefaultLanguage && isset($reference->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
-                $fieldArray['colPos'] = (int)($reference->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? $record['colPos']);
+        $translationSourceField = $GLOBALS['TCA'][$table]['ctrl']['translationSource'];
+        $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, "pid, colPos, {$translationSourceField}");
+        $l18nParentValue = $record[$translationSourceField];
+        if ((isset($reference->cmdmap[$table][$id]['move']) || isset($reference->cmdmap[$table][$l18nParentValue]['move']))
+            && ($reference->cmdmap[$table][$id]['move'] === 'Root' || version_compare(TYPO3_version, 9.0, '<'))) {
+            if ($l18nParentValue && isset($reference->datamap[$table][$l18nParentValue]['colPos'])) {
+                $fieldArray['colPos'] = (int)($reference->datamap[$table][$l18nParentValue]['colPos'] ?? $record['colPos']);
             }
             // A massive assignment: 1) force target PID for move, 2) force update of PID, 3) update input field array.
             // All receive the value of the record's "pid" column.
-            $reference->cmdmap[$table][$id]['move'] = $reference->datamap[$table][$id]['pid'] = $fieldArray['pid'] = $record['pid'];
+            $reference->datamap[$table][$id]['pid'] = $fieldArray['pid'] = $record['pid'];
+            if ($reference->cmdmap[$table][$id]['move'] > 0) {
+                $reference->cmdmap[$table][$id]['move'] = $record['pid'];
+            }
         }
 
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
