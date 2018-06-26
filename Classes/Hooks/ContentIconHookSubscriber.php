@@ -207,6 +207,6 @@ class ContentIconHookSubscriber
      */
     protected function attachAssets()
     {
-        $GLOBALS['TBE_STYLES']['stylesheet'] = 'EXT:flux/Resources/Public/css/icon.css';
+        $GLOBALS['TBE_STYLES']['stylesheet'] = 'EXT:flux/Resources/Public/css/flux.css';
     }
 }

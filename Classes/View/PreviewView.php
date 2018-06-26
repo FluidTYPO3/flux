@@ -122,6 +122,16 @@ class PreviewView extends TemplateView
         }
 
         $gridContent = $this->renderGrid($provider, $row, $form);
+        $collapsedClass = '';
+        if (in_array($row['uid'], (array) json_decode((string) $_COOKIE['fluxCollapseStates']))) {
+            $collapsedClass = ' flux-grid-hidden';
+        }
+        $gridContent = sprintf(
+            '<div class="flux-collapse%s" data-grid-uid="%d">%s</div>',
+            $collapsedClass,
+            $row['uid'],
+            $gridContent
+        );
         if (static::MODE_APPEND === $mode) {
             $previewContent = $previewContent . $gridContent;
         } elseif (static::MODE_PREPEND === $mode) {
@@ -244,7 +254,6 @@ class PreviewView extends TemplateView
                 );
 
                 $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
-                $pageLayoutView->oddColumnsCssClass = 'flux-grid-column';
                 $pageLayoutView->start($row['pid'], 'tt_content', 0);
                 $pageLayoutView->generateList();
 
