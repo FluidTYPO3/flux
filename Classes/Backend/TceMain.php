@@ -213,13 +213,15 @@ class TceMain
             ];
         }
 
+        $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
+
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->andWhere(
                 $queryBuilder->expr()->in('colPos', $childColPosValues),
-                $queryBuilder->expr()->eq('sys_language_uid', $originalRecord['sys_language_uid'])
+                $queryBuilder->expr()->eq($languageField, $originalRecord[$languageField])
             )->orderBy('sorting', 'DESC');
         $records = $queryBuilder->execute()->fetchAll();
 
