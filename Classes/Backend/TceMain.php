@@ -51,6 +51,23 @@ class TceMain
             // All receive the value of the record's "pid" column.
             $reference->cmdmap[$table][$id]['move'] = $reference->datamap[$table][$id]['pid'] = $fieldArray['pid'] = $record['pid'];
         }
+
+        $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
+
+        list ($originalRecord, $recordsToUpdate) = $this->getParentAndRecordsNestedInGrid(
+            $table,
+            (int)$id,
+            'uid, colPos, ' .  $languageField
+        );
+
+        if (isset($fieldArray[$languageField]) && (int) $originalRecord[$languageField] !== (int) $fieldArray[$languageField]) {
+            foreach ($recordsToUpdate as $recordToUpdate) {
+                $recordToUpdate[$languageField] = $fieldArray[$languageField];
+                $this->processDatamap_preProcessFieldArray($recordToUpdate, $table, $recordToUpdate['uid'], $reference);
+                $reference->updateDB($table, $recordToUpdate['uid'], $recordToUpdate);
+            }
+        }
+
     }
 
     /**
@@ -74,9 +91,6 @@ class TceMain
         }
 
         list (, $recordsToDelete) = $this->getParentAndRecordsNestedInGrid($table, (int)$id, 'uid, pid');
-        if (empty($recordsToDelete)) {
-            return;
-        }
 
         foreach ($recordsToDelete as $recordToDelete) {
             $reference->deleteAction($table, $recordToDelete['uid']);
