@@ -143,7 +143,7 @@ class TceMain
                         $translationSourceField => $recordToCopy['uid']
                     ],
                     '',
-                    0,
+                    (int) ($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $recordToCopy[$languageField]),
                     true
                 );
             }
@@ -155,6 +155,7 @@ class TceMain
                     $originalRecord['pid'],
                     true,
                     [
+                        $languageField => (int) ($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $recordToCopy[$languageField]),
                         'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                             $reference->copyMappingArray[$table][$id],
                             ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
