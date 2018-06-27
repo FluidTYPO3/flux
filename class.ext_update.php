@@ -97,7 +97,7 @@ class ext_update
                 // that colPos is not provided for the ViewHelper, track this template as one that needs migration and track
                 // the content record as a parent which requires migration.
                 $parentUid = $row['uid'];
-                $uidForColPosCalc = $row['l18n_parent'] ?: $row['uid'];
+                $uidForColumnPositionCalculation = $row['l18n_parent'] ?: $row['uid'];
                 foreach ($this->loadProvidersForRecord($row) as $provider) {
                     try {
                         if ($provider instanceof FluidProviderInterface) {
@@ -113,7 +113,10 @@ class ext_update
                             foreach ($gridRow->getColumns() as $gridColumn) {
                                 $name = $gridColumn->getName();
                                 $columnPosition = $gridColumn->getColumnPosition();
-                                $columnPositionMigrationMap[$parentUid][$name] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn($uidForColPosCalc, $columnPosition);
+                                $columnPositionMigrationMap[$parentUid][$name] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                                    $uidForColumnPositionCalculation,
+                                    $columnPosition
+                                );
                             }
                         }
                     } catch (\TYPO3Fluid\Fluid\Core\Parser\Exception $exception) {
