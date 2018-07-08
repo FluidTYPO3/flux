@@ -77,13 +77,9 @@ class Grid extends AbstractFormContainer implements ContainerInterface
                         $column->getColumnPosition()
                     )
                 ];
-                if ($column->getColspan()) {
-                    $columns[$key]['colspan'] = $column->getColspan();
-                }
-                if ($column->getRowspan()) {
-                    $columns[$key]['rowspan'] = $column->getRowspan();
-                }
-                $colCount += $column->getColspan() ? $column->getColspan() : 1;
+                $columns[$key]['colspan'] = $column->getColspan() ?: 1;
+                $columns[$key]['rowspan'] = $column->getRowspan() ?: 1;
+                $colCount += ($column->getColspan() ?: 1);
                 ++ $index;
             }
             $config['colCount'] = max($config['colCount'], $colCount);

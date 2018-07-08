@@ -333,7 +333,6 @@ class PreviewView extends TemplateView
         $dblist->no_noWrap = 1;
         $dblist->ext_CALC_PERMS = $this->getBackendUser()->calcPerms($pageRecord);
         $dblist->id = $row['pid'];
-        $dblist->nextThree = 1;
         $dblist->table = 'tt_content';
         $dblist->tableList = 'tt_content';
         $dblist->currentTable = 'tt_content';
@@ -351,7 +350,7 @@ class PreviewView extends TemplateView
         }
         $dblist->itemLabels = [];
         foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
-            $dblist->itemLabels[$name] = $this->getLanguageService()->sL($val['label']);
+            $dblist->itemLabels[$name] = ($val['label'] ?? false) ? $this->getLanguageService()->sL($val['label']) : '';
         }
         return $dblist;
     }

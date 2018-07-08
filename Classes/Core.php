@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux;
  */
 
 use FluidTYPO3\Flux\Hooks\HookHandler;
-use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -311,7 +310,7 @@ class Core
         static::$queuedContentTypeRegistrations[] = [
             $providerExtensionName,
             $templateFilename,
-            ContentProvider::class
+            Provider::class
         ];
     }
 

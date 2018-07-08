@@ -257,7 +257,7 @@ class AbstractProvider implements ProviderInterface
         // and must not be processed by the configuration service. This has limited support from
         // Flux (essentially: no Form instance which means no inheritance, transformation or
         // form options can be dependended upon at this stage).
-        if (false === is_array($row[$fieldName])) {
+        if (isset($row[$fieldName]) && !is_array($row[$fieldName])) {
             $recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
             $variables = RecursiveArrayUtility::mergeRecursiveOverrule($variables, $recordVariables);
         }
@@ -492,7 +492,10 @@ class AbstractProvider implements ProviderInterface
      */
     protected function getPageValues()
     {
-        $record = $GLOBALS['TSFE']->page;
+        $record = $GLOBALS['TSFE']->page ?? null;
+        if (!$record) {
+            return [];
+        }
         if ($GLOBALS['TSFE']->sys_language_uid != 0) {
             $localisation = $this->recordService->get(
                 'pages_language_overlay',
@@ -505,7 +508,7 @@ class AbstractProvider implements ProviderInterface
                 ' AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())'
             );
         }
-        if (false === empty($localisation)) {
+        if (!empty($localisation)) {
             $mergedRecord = RecursiveArrayUtility::merge($record, reset($localisation));
             if (isset($record['uid']) && isset($record['pid'])) {
                 $mergedRecord['uid'] = $record['uid'];
@@ -525,8 +528,8 @@ class AbstractProvider implements ProviderInterface
         $variables = (array) $this->templateVariables;
         $variables['record'] = $row;
         $variables['page'] = $this->getPageValues();
-        $variables['user'] = $GLOBALS['TSFE']->fe_user->user;
-        if (true === file_exists($this->getTemplatePathAndFilename($row))) {
+        $variables['user'] = $GLOBALS['TSFE']->fe_user->user ?? [];
+        if (file_exists($this->getTemplatePathAndFilename($row))) {
             $variables['grid'] = $this->getGrid($row);
             $variables['form'] = $this->getForm($row);
         }
@@ -863,7 +866,8 @@ class AbstractProvider implements ProviderInterface
         }
         $class = get_class($this);
         $separator = false !== strpos($class, '\\') ? '\\' : '_';
-        $base = array_pop(explode($separator, $class));
+        $parts = explode($separator, $class);
+        $base = end($parts);
         return substr($base, 0, -8);
     }
 

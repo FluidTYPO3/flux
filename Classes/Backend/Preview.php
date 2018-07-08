@@ -125,7 +125,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
     {
         if (false === static::$assetsIncluded) {
             $doc = GeneralUtility::makeInstance(ModuleTemplate::class);
-            $doc->backPath = $GLOBALS['BACK_PATH'];
+            $doc->backPath = $GLOBALS['BACK_PATH'] ?? '';
 
             /** @var PageRenderer $pageRenderer */
             $pageRenderer = $doc->getPageRenderer();
