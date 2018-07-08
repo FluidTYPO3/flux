@@ -51,6 +51,13 @@ class RecordService implements SingletonInterface
         if ($offset) {
             $statement->setFirstResult($offset);
         }
+        
+        if (TYPO3_MODE === 'BE') {
+            $moduleData = $GLOBALS['BE_USER']->getModuleData('web_layout', '');
+            if (!empty($moduleData['tt_content_showHidden'])) {
+                $statement->getRestrictions()->removeByType(\TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction::class);
+            }
+        }
 
         return $statement->execute()->fetchAll();
     }
