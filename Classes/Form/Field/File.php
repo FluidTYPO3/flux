@@ -82,31 +82,6 @@ class File extends AbstractMultiValueFormField
     }
 
     /**
-     * Overrides parent method to ensure properly formatted
-     * default values for files
-     *
-     * @param mixed $default
-     * @return \FluidTYPO3\Flux\Form\FieldInterface
-     */
-    public function setDefault($default)
-    {
-        if (null !== $default) {
-            $files = [];
-            $filePaths = GeneralUtility::trimExplode(',', $default);
-            foreach ($filePaths as $path) {
-                if (false === strpos($path, '|')) {
-                    $files[] = $path . '|' . rawurlencode($path);
-                } else {
-                    $files[] = $path;
-                }
-            }
-            $default = implode(',', $files);
-        }
-        $this->default = $default;
-        return $this;
-    }
-
-    /**
      * @param string $allowed
      * @return File
      */
