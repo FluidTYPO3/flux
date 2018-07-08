@@ -167,8 +167,6 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
     protected static function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field)
     {
         if (0 === count($providers)) {
-            $lang = static::getCurrentLanguageName();
-            $pointer = static::getCurrentValuePointerName();
             $dataArray = static::$configurationService->convertFlexFormContentToArray($record[$field]);
         } else {
             $dataArray = [];
@@ -201,34 +199,5 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
             static::$recordService = GeneralUtility::makeInstance(ObjectManager::class)->get(WorkspacesAwareRecordService::class);
         }
         return static::$recordService;
-    }
-
-    /**
-     * Gets the current language name as string, in a format that is
-     * compatible with language pointers in a flexform. Usually this
-     * implies values like "en", "de" etc.
-     *
-     * Return NULL when language is site default language.
-     *
-     * @return string|NULL
-     */
-    protected static function getCurrentLanguageName()
-    {
-        $language = $GLOBALS['TSFE']->lang;
-        if (true === empty($language) || 'default' === $language) {
-            $language = null;
-        }
-        return $language;
-    }
-
-    /**
-     * Gets the pointer name to use whne retrieving values from a
-     * flexform source. Return NULL when pointer is default.
-     *
-     * @return string|NULL
-     */
-    protected static function getCurrentValuePointerName()
-    {
-        return static::getCurrentLanguageName();
     }
 }
