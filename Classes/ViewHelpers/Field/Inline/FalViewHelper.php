@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Form\Field\Inline\Fal;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractInlineFieldViewHelper;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Filter\FileExtensionFilter;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Creates a FAL IRRE field

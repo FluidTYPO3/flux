@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm configuration container ViewHelper

@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Grid container ViewHelper.
