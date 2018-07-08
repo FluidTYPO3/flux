@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Backend\UserFunctions;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -216,7 +217,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         if (true === $this->getClearable()) {
             array_push($wizards, [
                 'type' => 'userFunc',
-                'userFunc' => ClearValueWizard::class . '->renderField',
+                'userFunc' => UserFunctions::class . '->renderClearValueWizardField',
                 'params' => [
                     'itemName' => $this->getName(),
                 ],

@@ -125,13 +125,10 @@ class Preview implements PageLayoutViewDrawItemHookInterface
     {
         if (false === static::$assetsIncluded) {
             $doc = GeneralUtility::makeInstance(ModuleTemplate::class);
-            $doc->backPath = $GLOBALS['BACK_PATH'];
+            $doc->backPath = $GLOBALS['BACK_PATH'] ?? '';
 
             /** @var PageRenderer $pageRenderer */
             $pageRenderer = $doc->getPageRenderer();
-            $pageRenderer->addCssFile(
-                'EXT:flux/Resources/Public/css/grid.css'
-            );
 
             $fullJsPath = PathUtility::getRelativePath(
                 PATH_typo3,

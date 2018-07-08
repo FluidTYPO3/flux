@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Input

@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Grid container ViewHelper.
@@ -78,6 +78,12 @@ class GridViewHelper extends AbstractFormViewHelper
             false,
             []
         );
+        $this->registerArgument(
+            'extensionName',
+            'string',
+            'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
+            'is otherwise automatically detected from rendering context.'
+        );
     }
 
     /**
@@ -95,6 +101,7 @@ class GridViewHelper extends AbstractFormViewHelper
         $grid = static::getGridFromRenderingContext($renderingContext, $arguments['name']);
         $grid->setLabel($arguments['label']);
         $grid->setVariables($arguments['variables']);
+        $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
         static::setContainerInRenderingContext($renderingContext, $grid);
         $renderChildrenClosure();
         static::setContainerInRenderingContext($renderingContext, $container);

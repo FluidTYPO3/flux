@@ -13,14 +13,13 @@ use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
  * Class AbstractPipeViewHelper
  */
-abstract class AbstractPipeViewHelper extends AbstractFormViewHelper implements CompilableInterface
+abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
 {
     use CompileWithRenderStatic;
 

@@ -78,6 +78,14 @@ class Core
     }
 
     /**
+     * @return void
+     */
+    public static function clearQueuedContentTypeRegistrations()
+    {
+        static::$queuedContentTypeRegistrations = [];
+    }
+
+    /**
      * @param string $table
      * @param Form $form
      * @return void
@@ -302,6 +310,7 @@ class Core
         static::$queuedContentTypeRegistrations[] = [
             $providerExtensionName,
             $templateFilename,
+            Provider::class
         ];
     }
 

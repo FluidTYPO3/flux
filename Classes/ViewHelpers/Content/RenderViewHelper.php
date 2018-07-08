@@ -1,7 +1,7 @@
 <?php
 namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.

@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.

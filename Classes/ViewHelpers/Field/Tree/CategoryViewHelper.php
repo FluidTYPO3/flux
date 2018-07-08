@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field\Tree;
 
 use FluidTYPO3\Flux\Form\Field\Tree;
 use FluidTYPO3\Flux\ViewHelpers\Field\TreeViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Tree preset for sys_category

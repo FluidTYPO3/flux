@@ -26,7 +26,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     /**
      * @var string
      */
-    protected $configurationProviderClassName = 'FluidTYPO3\Flux\Provider\ContentProvider';
+    protected $configurationProviderClassName = 'FluidTYPO3\Flux\Provider\Provider';
 
     /**
      * @return ProviderInterface
