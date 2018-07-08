@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Input
@@ -62,7 +61,7 @@ class Input extends AbstractFormField implements FieldInterface
         $configuration['size'] = $this->getSize();
         $configuration['max'] = $this->getMaxCharacters();
         $configuration['eval'] = $validate;
-        if (null !== $minimum && null !== $maximum && in_array('int', GeneralUtility::trimExplode(',', $validate))) {
+        if (null !== $minimum && null !== $maximum) {
             $configuration['range'] = [
                 'lower' => $minimum,
                 'upper' => $maximum

@@ -37,3 +37,6 @@
 [data-toggler-uid].toggler-collapse .icon-actions-view-list-expand {
 	display :none;
 }
+.flux-grid-hidden {
+	display: none !important;
+}

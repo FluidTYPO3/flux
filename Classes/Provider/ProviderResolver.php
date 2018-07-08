@@ -73,7 +73,8 @@ class ProviderResolver implements SingletonInterface
         $extensionKey = null,
         $interfaces = null
     ) {
-        return array_pop($this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey, $interfaces));
+        $providers = $this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey, $interfaces);
+        return end($providers) ?: null;
     }
 
     /**

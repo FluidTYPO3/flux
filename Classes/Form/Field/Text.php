@@ -8,11 +8,9 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Configuration\BackendConfigurationManager;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Text
@@ -55,6 +53,11 @@ class Text extends Input implements FieldInterface
     protected $format;
 
     /**
+     * @var string
+     */
+    protected $placeholder;
+
+    /**
      * @return array
      */
     public function buildConfiguration()
@@ -63,6 +66,7 @@ class Text extends Input implements FieldInterface
         $configuration['rows'] = $this->getRows();
         $configuration['cols'] = $this->getColumns();
         $configuration['eval'] = $this->getValidate();
+        $configuration['placeholder'] = $this->getPlaceholder();
         if (true === $this->getEnableRichText()) {
             $configuration['enableRichtext'] = true;
             $configuration['richtextConfiguration'] = $this->getRichtextConfiguration();
@@ -182,6 +186,24 @@ class Text extends Input implements FieldInterface
     }
 
     /**
+     * @param string $placeholder
+     * @return Text
+     */
+    public function setPlaceholder($placeholder)
+    {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlaceholder()
+    {
+        return $this->placeholder;
+    }
+
+    /**
      * Fetch richtext editor configuration preset
      *
      * The following places are looked at:
@@ -202,18 +224,10 @@ class Text extends Input implements FieldInterface
      */
     protected function getPageTsConfigForRichTextEditor()
     {
-        $configurationManager = $this->getObjectManager()->get(ConfigurationManagerInterface::class);
-        if ($configurationManager instanceof BackendConfigurationManager) {
-            $pageUid = $configurationManager->getCurrentPageId();
-        } else {
-            $root = $this->getRoot();
-            $pageUid = $root instanceof Form ? $root->getOption('record')['pid'] ?? 0 : 0;
-        }
+        $root = $this->getRoot();
+        $pageUid = $root instanceof Form ? $root->getOption('record')['pid'] ?? 0 : 0;
 
-        if ($pageUid) {
-            return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
-        }
-        return 'default';
+        return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
     }
 
     /**

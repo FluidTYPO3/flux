@@ -21,7 +21,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Extbase\Reflection\ReflectionService;
 use TYPO3\CMS\Extbase\Service\FlexFormService;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
@@ -32,13 +31,6 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
  */
 class FluxService implements SingletonInterface
 {
-
-    /**
-     * @var array
-     * @deprecated To be removed in next major release
-     */
-    protected static $typoScript = [];
-
     /**
      * @var array
      */
@@ -46,21 +38,6 @@ class FluxService implements SingletonInterface
         GeneralUtility::SYSLOG_SEVERITY_INFO,
         GeneralUtility::SYSLOG_SEVERITY_NOTICE,
     ];
-
-    /**
-     * @var array
-     */
-    protected $sentDebugMessages = [];
-
-    /**
-     * @var string
-     */
-    protected $raw;
-
-    /**
-     * @var array
-     */
-    protected $contentObjectData;
 
     /**
      * @var ConfigurationManagerInterface
@@ -71,11 +48,6 @@ class FluxService implements SingletonInterface
      * @var ObjectManagerInterface
      */
     protected $objectManager;
-
-    /**
-     * @var ReflectionService
-     */
-    protected $reflectionService;
 
     /**
      * @var ProviderResolver
@@ -98,15 +70,6 @@ class FluxService implements SingletonInterface
     public function injectObjectManager(ObjectManagerInterface $objectManager)
     {
         $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @param ReflectionService $reflectionService
-     * @return void
-     */
-    public function injectReflectionService(ReflectionService $reflectionService)
-    {
-        $this->reflectionService = $reflectionService;
     }
 
     /**
@@ -165,7 +128,7 @@ class FluxService implements SingletonInterface
         );
         $value = &$all;
         foreach (explode('.', $path) as $segment) {
-            $value = ($value[$path . '.'] ?? $value[$path] ?? null);
+            $value = ($value[$segment . '.'] ?? $value[$segment] ?? null);
             if ($value === null) {
                 break;
             }

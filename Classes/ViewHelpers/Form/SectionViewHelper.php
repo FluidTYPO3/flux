@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm field section ViewHelper

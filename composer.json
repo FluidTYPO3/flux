@@ -5,6 +5,8 @@
     "homepage": "http://fluidtypo3.org",
     "license": "GPL-2.0+",
     "preferred-install": "dist",
+    "prefer-stable": true,
+    "minimum-stability": "dev",
     "support": {
         "irc": "irc://irc.freenode.org/fedext",
         "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
@@ -26,14 +28,18 @@
     },
     "require": {
         "php": ">=7.0.0",
-        "typo3/cms": "^8.7|9.x-dev"
+        "typo3/cms-core": "^8.7 || ^9 || dev-master",
+        "typo3/cms-fluid": "^8.7 || ^9 || dev-master",
+        "typo3/cms-backend": "^8.7 || ^9 || dev-master",
+        "typo3/cms-frontend": "^8.7 || ^9 || dev-master",
+        "typo3/cms-recordlist": "^8.7 || ^9 || dev-master"
     },
     "replace": {
         "flux": "self.version",
         "typo3-ter/flux": "self.version"
     },
     "require-dev": {
-        "fluidtypo3/development": "^3.0"
+        "fluidtypo3/development": "^4"
     },
     "non-feature-branches": ["development", "staging"]
 }

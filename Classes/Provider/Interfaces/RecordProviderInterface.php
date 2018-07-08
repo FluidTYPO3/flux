@@ -40,6 +40,7 @@ interface RecordProviderInterface
      * @param integer $id The ID of the current record (which is sometimes now included in $row
      * @param DataHandler $reference A reference to the DataHandler object that is currently displaying the record
      * @return void
+     * @deprecated Will be removed in Flux 10.0, please use DataHandler hooks directly
      */
     public function preProcessRecord(array &$row, $id, DataHandler $reference);
 
@@ -53,6 +54,7 @@ interface RecordProviderInterface
      * @param DataHandler $reference A reference to the DataHandler object that is currently saving the record
      * @param array $removals Allows methods to pass an array of field names to remove from the stored Flux value
      * @return void
+     * @deprecated Will be removed in Flux 10.0, please use DataHandler hooks directly
      */
     public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = []);
 

@@ -195,7 +195,7 @@ class ContentIconHookSubscriber
     protected function detectFirstFlexTypeFieldInTableFromPossibilities($table, $fields)
     {
         foreach ($fields as $fieldName) {
-            if ('flex' === $GLOBALS['TCA'][$table]['columns'][$fieldName]['config']['type']) {
+            if (($GLOBALS['TCA'][$table]['columns'][$fieldName]['config']['type'] ?? null) === 'flex') {
                 return $fieldName;
             }
         }
@@ -207,6 +207,6 @@ class ContentIconHookSubscriber
      */
     protected function attachAssets()
     {
-        $GLOBALS['TBE_STYLES']['stylesheet'] = 'EXT:flux/Resources/Public/css/icon.css';
+        $GLOBALS['TBE_STYLES']['stylesheet'] = 'EXT:flux/Resources/Public/css/flux.css';
     }
 }
