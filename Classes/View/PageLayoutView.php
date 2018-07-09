@@ -61,4 +61,14 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
         $view->setRecord($this->record);
         return $view;
     }
+
+    protected function getContentRecordsPerColumn($table, $id, array $columns, $additionalWhereClause = '')
+    {
+        // Vital recursion prevention: each instance of PageLayoutView will attempt to render all records every
+        // time - something which has started happening since the "unused content" feature was introduced. To avoid
+        // the infinite recursion that happens because of this combined with the recursive usage of PageLayoutView,
+        // we restrict the content elements this sub-view is capable of loading.
+        $additionalWhereClause .= ' AND colPos IN (' . implode(',', $columns) . ') ';
+        return parent::getContentRecordsPerColumn($table, $id, $columns, $additionalWhereClause);
+    }
 }

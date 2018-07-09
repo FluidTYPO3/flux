@@ -67,20 +67,6 @@ class Preview implements PageLayoutViewDrawItemHookInterface
      */
     public function preProcess(PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row)
     {
-        $this->renderPreview($headerContent, $itemContent, $row, $drawItem);
-        unset($parentObject);
-    }
-
-    /**
-     * @param string $headerContent
-     * @param string $itemContent
-     * @param array $row
-     * @param boolean $drawItem
-     * @return NULL
-     */
-    public function renderPreview(&$headerContent, &$itemContent, array &$row, &$drawItem)
-    {
-        // every provider for tt_content will be asked to get a preview
         $fieldName = null;
         $itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
         $providers = $this->configurationService->resolveConfigurationProviders('tt_content', $fieldName, $row);
@@ -100,7 +86,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
             }
         }
         $this->attachAssets();
-        return null;
+        unset($parentObject);
     }
 
     /**

@@ -67,28 +67,6 @@ class PreviewTest extends AbstractTestCase
     }
 
     /**
-     * @test
-     */
-    public function stopsRenderingWhenProviderSaysStop()
-    {
-        $instance = $this->getMockBuilder('FluidTYPO3\Flux\Backend\Preview')->setMethods(array('createShortcutIcon', 'attachAssets'))->getMock();
-        $instance->expects($this->never())->method('createShortcutIcon');
-        $configurationServiceMock = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('resolveConfigurationProviders'))->getMock();
-        $providerOne = $this->getMockBuilder('FluidTYPO3\Flux\Provider\ContentProvider')->setMethods(array('getPreview'))->getMock();
-        $providerOne->expects($this->once())->method('getPreview')->will($this->returnValue(array('test', 'test', false)));
-        $providerTwo = $this->getMockBuilder('FluidTYPO3\Flux\Provider\ContentProvider')->setMethods(array('getPreview'))->getMock();
-        $providerTwo->expects($this->never())->method('getPreview');
-        $configurationServiceMock->expects($this->once())->method('resolveConfigurationProviders')->will($this->returnValue(array($providerOne, $providerTwo)));
-        ObjectAccess::setProperty($instance, 'configurationService', $configurationServiceMock, true);
-        $header = 'test';
-        $item = 'test';
-        $record = Records::$contentRecordIsParentAndHasChildren;
-        $draw = true;
-        $this->setup();
-        $instance->renderPreview($header, $item, $record, $draw);
-    }
-
-    /**
      * @param string $function
      * @param mixed $caller
      */
