@@ -59,7 +59,7 @@ class DataHandlerSubscriber
                             (int)$mostRecentCopyOfParentRecord['uid'],
                             $localColumnPosition
                         );
-                        $reference->updateDB($table, $newRecordUid, ['colPos' => $newColumnPosition]);
+                        $reference->updateDB($table, $newRecordUid, ['colPos' => $newColumnPosition, 'pid' => $mostRecentCopyOfParentRecord['pid']]);
                     }
                 }
             }
@@ -162,7 +162,7 @@ class DataHandlerSubscriber
         list ($originalRecord, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
             $table,
             (int)$id,
-            'uid, colPos'
+            'uid, pid, colPos'
         );
 
         if (empty($recordsToCopy)) {
@@ -171,23 +171,30 @@ class DataHandlerSubscriber
 
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
+        if ($relativeTo > 0) {
+            $destinationPid = $relativeTo;
+        } else {
+            $relativeRecord = $this->getSingleRecordWithoutRestrictions($table, abs($relativeTo), 'pid');
+            $destinationPid = $relativeRecord['pid'] ?? $relativeTo;
+        }
 
         foreach ($recordsToCopy as $recordToCopy) {
             $languageUid = (int) ($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $recordToCopy[$languageField]);
             $newChildUid = $reference->copyRecord(
                 $table,
                 $recordToCopy['uid'],
-                $originalRecord['pid'],
+                $destinationPid,
                 true,
                 [
                     $languageField => $languageUid,
                     'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                         $reference->copyMappingArray[$table][$id],
                         ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
-                    )
+                    ),
+                    'pid' => $destinationPid
                 ]
             );
-            $this->recursivelyCopyChildRecords($table, $recordToCopy['uid'], $newChildUid, $languageUid, $reference);
+            $this->recursivelyCopyChildRecords($table, $recordToCopy['uid'], $newChildUid, $destinationPid, $languageUid, $reference);
         }
     }
 
@@ -199,7 +206,7 @@ class DataHandlerSubscriber
     {
     }
 
-    protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $languageUid, DataHandler $dataHandler)
+    protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $pageUid, int $languageUid, DataHandler $dataHandler)
     {
         list ($originalRecord, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
             $table,
@@ -217,17 +224,18 @@ class DataHandlerSubscriber
             $newChildUid = $dataHandler->copyRecord(
                 $table,
                 $recordToCopy['uid'],
-                $originalRecord['pid'],
+                $pageUid,
                 true,
                 [
                     $languageField => $languageUid,
                     'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                         $newParentUid,
                         ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
-                    )
+                    ),
+                    'pid' => $pageUid
                 ]
             );
-            $this->recursivelyCopyChildRecords($table, $recordToCopy['uid'], $newChildUid, $languageUid, $dataHandler);
+            $this->recursivelyCopyChildRecords($table, $recordToCopy['uid'], $newChildUid, $pageUid, $languageUid, $dataHandler);
         }
     }
 
