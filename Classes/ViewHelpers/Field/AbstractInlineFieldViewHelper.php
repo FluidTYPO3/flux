@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\InlineRelationFieldInterface;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Inline-style FlexForm field ViewHelper

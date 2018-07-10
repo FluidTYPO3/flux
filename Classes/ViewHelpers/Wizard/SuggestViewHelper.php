@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
  */
 
 use FluidTYPO3\Flux\Form\Wizard\Suggest;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Field Wizard: Suggest
@@ -93,7 +93,7 @@ class SuggestViewHelper extends AbstractWizardViewHelper
         $component->setStoragePageRecursiveDepth($arguments['pidDepth']);
         $component->setMinimumCharacters($arguments['minimumCharacters']);
         $component->setMaxPathTitleLength($arguments['maxPathTitleLength']);
-        $component->setSearchWholePhrase($arguments['setSearchWholePhrase']);
+        $component->setSearchWholePhrase($arguments['searchWholePhrase']);
         $component->setSearchCondition($arguments['searchCondition']);
         $component->setCssClass($arguments['cssClass']);
         $component->setReceiverClass($arguments['receiverClass']);

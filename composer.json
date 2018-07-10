@@ -5,6 +5,8 @@
     "homepage": "http://fluidtypo3.org",
     "license": "GPL-2.0+",
     "preferred-install": "dist",
+    "prefer-stable": true,
+    "minimum-stability": "dev",
     "support": {
         "irc": "irc://irc.freenode.org/fedext",
         "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
@@ -22,18 +24,22 @@
     "suggest": {
         "fluidtypo3/vhs": "ViewHelper library for Fluid templates.",
         "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid.",
-        "fluidtypo3/fluidcontent": "Gives the ability to render Content Templates with pure fluid.",
         "fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
     },
     "require": {
         "php": ">=7.0.0",
-        "typo3/cms": ">=7.6.13, <7.6.99|^8.4.1"
+        "typo3/cms-core": "^8.7 || ^9 || dev-master",
+        "typo3/cms-fluid": "^8.7 || ^9 || dev-master",
+        "typo3/cms-backend": "^8.7 || ^9 || dev-master",
+        "typo3/cms-frontend": "^8.7 || ^9 || dev-master",
+        "typo3/cms-recordlist": "^8.7 || ^9 || dev-master"
     },
     "replace": {
         "flux": "self.version",
         "typo3-ter/flux": "self.version"
     },
     "require-dev": {
-        "fluidtypo3/development": "^3.0"
-    }
+        "fluidtypo3/development": "^4"
+    },
+    "non-feature-branches": ["development", "staging"]
 }

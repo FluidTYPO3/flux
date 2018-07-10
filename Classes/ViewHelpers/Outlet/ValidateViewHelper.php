@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
  */
 
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * ViewHelper to validate Outlet arguments

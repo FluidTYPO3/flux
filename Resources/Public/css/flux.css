@@ -1,0 +1,42 @@
+/* Hack icon into page and list */
+.t3-js-clickmenutrigger {
+	z-index: 2;
+	position: relative
+}
+
+.t3-js-clickmenutrigger .icon-state-default.icon-apps-pagetree-root .icon-markup {
+	opacity: 0
+}
+
+.t3-page-ce-header-icons-left .t3-js-clickmenutrigger + .t3-icon-empty-empty {
+	display: none
+}
+
+.t3-page-ce-header {
+	position: relative
+}
+
+.t3-page-ce-header .fluidcontent-icon {
+	margin-top: 3px;
+	left: 10px;
+	display: none;
+}
+.fluidcontent-toggler {
+	opacity: 0.3;
+	float: right;
+	margin-left: 10px;
+}
+.t3-page-ce:hover .fluidcontent-toggler {
+	opacity: 1;
+}
+
+.toggle-content { cursor: pointer; }
+[data-toggler-uid].toggler-expand .icon-actions-view-list-collapse {
+	display :none;
+}
+[data-toggler-uid].toggler-collapse .icon-actions-view-list-expand {
+	display :none;
+}
+.flux-grid-hidden {
+	display: none !important;
+}

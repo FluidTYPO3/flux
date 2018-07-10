@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Adds a content area to a source using Flux FlexForms

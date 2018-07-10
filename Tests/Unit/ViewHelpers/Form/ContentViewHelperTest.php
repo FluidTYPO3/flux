@@ -8,12 +8,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Extbase\Mvc\Web\Request;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 
 /**
  * ContentViewHelperTest
@@ -54,9 +53,6 @@ class ContentViewHelperTest extends AbstractViewHelperTestCase
             )
         )->getMock();
         $renderingcontext->expects($this->atLeastOnce())->method('getViewHelperVariableContainer')->willReturn($viewHelperContainer);
-        $renderingcontext->expects($this->atLeastOnce())->method('getTemplateVariableContainer')->willReturn(
-            $this->getMockBuilder('TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer')->getMock()
-        );
         $renderingcontext->expects($this->any())->method('getControllerContext')->willReturn($controllerContext);
         $mock->setRenderingContext($renderingcontext);
         $mock->setArguments(array());

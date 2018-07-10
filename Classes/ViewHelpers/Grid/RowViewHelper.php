@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Flexform Grid Row ViewHelper
@@ -59,9 +59,7 @@ class RowViewHelper extends AbstractFormViewHelper
     public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
     {
         $name = ('row' === $arguments['name'] ? uniqid('row', true) : $arguments['name']);
-        /** @var Row $column */
-        $row = static::getFormFromRenderingContext($renderingContext)
-            ->createContainer('Row', $name, $arguments['label']);
+        $row = Row::create(['name' => $name, 'label' => $arguments['label']]);
         $row->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
         $row->setVariables($arguments['variables']);
         return $row;

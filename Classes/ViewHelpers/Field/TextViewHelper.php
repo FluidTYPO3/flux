@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\Text;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Textarea FlexForm field ViewHelper
@@ -36,14 +36,14 @@ class TextViewHelper extends AbstractFieldViewHelper
         $this->registerArgument(
             'defaultExtras',
             'string',
-            'FlexForm-syntax "defaultExtras" definition, example: "richtext[*]:rte_transform[mode=ts_css]"',
+            'DEPRECATED, IGNORED - has no function on TYPO3 8.7+. FlexForm-syntax "defaultExtras" definition, example: "richtext[*]:rte_transform[mode=ts_css]"',
             false,
             ''
         );
         $this->registerArgument(
             'enableRichText',
             'boolean',
-            'Shortcut for adding value of TS plugin.tx_flux.settings.flexform.rteDefaults to "defaultExtras"',
+            'Enable the richtext editor (RTE)',
             false,
             false
         );
@@ -65,6 +65,22 @@ class TextViewHelper extends AbstractFieldViewHelper
             false,
             ''
         );
+        $this->registerArgument(
+            'richtextConfiguration',
+            'string',
+            'Specifies which configuration to use in combination with EXT:rte_ckeditor.' .
+            'If none is given, PageTSconfig "RTE.tx_flux.preset" and "RTE.default.preset" are used.' .
+            'More information: https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Properties/TextRichtextConfiugration.html',
+            false,
+            null
+        );
+        $this->registerArgument(
+            'placeholder',
+            'string',
+            'Placeholder text which vanishes if field is filled and/or field is focused',
+            false,
+            null
+        );
     }
 
     /**
@@ -79,10 +95,11 @@ class TextViewHelper extends AbstractFieldViewHelper
         $text->setValidate($arguments['validate']);
         $text->setColumns($arguments['cols']);
         $text->setRows($arguments['rows']);
-        $text->setDefaultExtras($arguments['defaultExtras']);
         $text->setEnableRichText($arguments['enableRichText']);
+        $text->setRichtextConfiguration($arguments['richtextConfiguration']);
         $text->setRenderType($arguments['renderType']);
         $text->setFormat($arguments['format']);
+        $text->setPlaceholder($arguments['placeholder']);
         return $text;
     }
 }

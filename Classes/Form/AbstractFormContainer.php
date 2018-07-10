@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 
 /**
  * AbstractFormContainer
@@ -69,6 +70,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
                 }
             }
         }
+        HookHandler::trigger(HookHandler::FORM_CHILD_ADDED, ['parent' => $this, 'child' => $child]);
         return $this;
     }
 
@@ -98,6 +100,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
                 $this->children->detach($child);
                 $this->children->rewind();
                 $child->setParent(null);
+                HookHandler::trigger(HookHandler::FORM_CHILD_REMOVED, ['parent' => $this, 'child' => $child]);
                 return $child;
             }
         }

@@ -8,10 +8,8 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\FluxPackage;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Package\FluxPackageFactory;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm configuration container ViewHelper
@@ -95,10 +93,8 @@ class FormViewHelper extends AbstractFormViewHelper
         RenderingContextInterface $renderingContext
     ) {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
-        $templateVariableContainer = $renderingContext->getTemplateVariableContainer();
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-        $formClassName = FluxPackageFactory::getPackageWithFallback($extensionName)
-            ->getImplementation(FluxPackage::IMPLEMENTATION_FORM);
+        $formClassName = Form::class;
         $form = call_user_func_array([$formClassName, 'create'], []);
         // configure Form instance
         $form->setId($arguments['id']);
@@ -111,27 +107,18 @@ class FormViewHelper extends AbstractFormViewHelper
         $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);
         $form->setOptions((array) $arguments['options']);
-        if (false === $form->hasOption(Form::OPTION_ICON)) {
+        if (false === $form->hasOption(Form::OPTION_ICON) && isset($arguments['icon'])) {
             $form->setOption(Form::OPTION_ICON, $arguments['icon']);
-        }
-        if (false === $form->hasOption(Form::OPTION_GROUP)) {
-            $form->setOption(Form::OPTION_GROUP, $arguments['wizardTab']);
         }
 
         // rendering child nodes with Form's last sheet as active container
         $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
         $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
-        $templateVariableContainer->add(static::SCOPE_VARIABLE_FORM, $form);
 
         static::setContainerInRenderingContext($renderingContext, $form);
-        static::setExtensionNameInRenderingContext(
-            $renderingContext,
-            static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
-        );
         $renderChildrenClosure();
 
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
-        $templateVariableContainer->remove(static::SCOPE_VARIABLE_CONTAINER);
     }
 }
