@@ -51,7 +51,7 @@ class DataHandlerSubscriber
                             $table,
                             (int)$originalParentRecordUid,
                             (int)$fieldArray['sys_language_uid'],
-                            'uid'
+                            'uid,pid'
                         );
 
                         $newRecordUid = (int)($reference->substNEWwithIDs[$id] ?? $id);
@@ -155,46 +155,60 @@ class DataHandlerSubscriber
      */
     public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
     {
-        if ($table !== 'tt_content' || $command !== 'copy') {
+        if ($table !== 'tt_content' || ($command !== 'copy' && $command !== 'move')) {
             return;
         }
 
-        list ($originalRecord, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
+        list ($originalRecord, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
             $table,
             (int)$id,
             'uid, pid, colPos'
         );
 
-        if (empty($recordsToCopy)) {
+        if (empty($recordsToProcess)) {
             return;
         }
 
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
+        $languageUid = (int)($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $originalRecord[$languageField]);
 
         if ($relativeTo > 0) {
             $destinationPid = $relativeTo;
         } else {
             $relativeRecord = $this->getSingleRecordWithoutRestrictions($table, abs($relativeTo), 'pid');
-            $destinationPid = $relativeRecord['pid'] ?? $relativeTo;
+            $destinationPid = (int)($relativeRecord['pid'] ?? $relativeTo);
         }
 
-        foreach ($recordsToCopy as $recordToCopy) {
-            $languageUid = (int) ($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $recordToCopy[$languageField]);
-            $newChildUid = $reference->copyRecord(
-                $table,
-                $recordToCopy['uid'],
-                $destinationPid,
-                true,
-                [
-                    $languageField => $languageUid,
-                    'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                        $reference->copyMappingArray[$table][$id],
-                        ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
-                    ),
-                    'pid' => $destinationPid
-                ]
-            );
-            $this->recursivelyCopyChildRecords($table, $recordToCopy['uid'], $newChildUid, $destinationPid, $languageUid, $reference);
+        if ($command === 'move') {
+            $this->recursivelyMoveChildRecords($table, (int)$id, $destinationPid, $languageUid, $reference);
+        }
+
+        if ($command === 'copy') {
+            $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference);
+            /*
+            foreach ($recordsToProcess as $recordToProcess) {
+
+                $languageUid = (int) ($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $recordToProcess[$languageField]);
+
+                if ($command === 'copy') {
+                    $newChildUid = $reference->copyRecord(
+                        $table,
+                        $recordToProcess['uid'],
+                        $destinationPid,
+                        true,
+                        [
+                            $languageField => $languageUid,
+                            'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                                $reference->copyMappingArray[$table][$id],
+                                ColumnNumberUtility::calculateLocalColumnNumber($recordToProcess['colPos'])
+                            ),
+                            'pid' => $destinationPid
+                        ]
+                    );
+                    $this->recursivelyCopyChildRecords($table, $recordToProcess['uid'], $newChildUid, $destinationPid, $languageUid, $reference);
+                }
+            }
+            */
         }
     }
 
@@ -206,9 +220,36 @@ class DataHandlerSubscriber
     {
     }
 
+    protected function recursivelyMoveChildRecords(string $table, int $parentUid, int $pageUid, int $languageUid, DataHandler $dataHandler)
+    {
+        list (, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
+            $table,
+            $parentUid,
+            'uid, colPos'
+        );
+
+        if (empty($recordsToProcess)) {
+            return;
+        }
+
+        $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
+
+        foreach ($recordsToProcess as $recordToProcess) {
+            $dataHandler->updateDB(
+                $table,
+                $recordToProcess['uid'],
+                [
+                    $languageField => $languageUid,
+                    'pid' => $pageUid
+                ]
+            );
+            $this->recursivelyMoveChildRecords($table, $recordToProcess['uid'], $pageUid, $languageUid, $dataHandler);
+        }
+    }
+
     protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $pageUid, int $languageUid, DataHandler $dataHandler)
     {
-        list ($originalRecord, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
+        list (, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
             $table,
             $parentUid,
             'uid, colPos'
