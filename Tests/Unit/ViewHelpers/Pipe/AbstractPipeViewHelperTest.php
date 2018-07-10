@@ -9,8 +9,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
  */
 
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 
 /**
@@ -26,7 +24,6 @@ class AbstractPipeViewHelperTest extends AbstractTestCase
     {
         $className = 'FluidTYPO3\\Flux\\ViewHelpers\\Pipe\\AbstractPipeViewHelper';
         $instance = $this->getMockBuilder($className)->getMock();
-        $instance->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
         $result = $this->callInaccessibleMethod($instance, 'preparePipeInstance', new RenderingContext(), array());
         $this->assertInstanceOf('FluidTYPO3\\Flux\\Outlet\\Pipe\\StandardPipe', $result);
     }

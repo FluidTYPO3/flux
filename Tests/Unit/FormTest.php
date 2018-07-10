@@ -11,8 +11,8 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
-use FluidTYPO3\Flux\View\TemplatePaths;
-use FluidTYPO3\Flux\View\ViewContext;
+use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * FormTest
@@ -36,12 +36,14 @@ class FormTest extends AbstractTestCase
      */
     protected function getDummyFormFromTemplate($template = self::FIXTURE_TEMPLATE_BASICGRID)
     {
-        $templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($template);
-        $service = $this->createFluxServiceInstance();
-        $viewContext = new ViewContext($templatePathAndFilename, 'Flux');
-        $viewContext->setSectionName('Configuration');
-        $form = $service->getFormFromTemplateFile($viewContext);
-        return $form;
+        $view = $this->objectManager->get(StandaloneView::class);
+        $view->setPartialRootPaths(['EXT:flux/Tests/Fixtures/Partials/']);
+        $view->setTemplateRootPaths(['EXT:flux/Tests/Fixtures/Templates/']);
+        $view->setLayoutRootPaths(['EXT:flux/Tests/Fixtures/Layouts/']);
+        $view->getRenderingContext()->setControllerAction(basename($template, '.html'));
+        $view->getRenderingContext()->setControllerName('Content');
+        $view->renderSection('Configuration', [], true);
+        return $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, 'form');
     }
 
     /**
@@ -81,17 +83,6 @@ class FormTest extends AbstractTestCase
         $form = $this->getDummyFormFromTemplate();
         $form->setEnabled(false);
         $this->assertSame(false, $form->getEnabled());
-    }
-
-    /**
-     * @test
-     */
-    public function canUseGroupProperty()
-    {
-        $form = $this->getDummyFormFromTemplate();
-        $group = 'dummyGroup';
-        $form->setGroup($group);
-        $this->assertSame($group, $form->getGroup());
     }
 
     /**
@@ -158,7 +149,7 @@ class FormTest extends AbstractTestCase
         $objectField = $form->createField('Input', 'objectField');
         $form->add($field);
         $section = $form->createContainer('Section', 'section');
-        $object = $form->createContainer('Object', 'object');
+        $object = $form->createContainer('SectionObject', 'object');
         $object->add($objectField);
         $section->add($object);
         $form->add($section);
@@ -271,16 +262,7 @@ class FormTest extends AbstractTestCase
     public function supportsFormComponentsPlacedInPartialTemplates()
     {
         $template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_USESPARTIAL);
-        $service = $this->createFluxServiceInstance();
-        $paths = array(
-            'templateRootPaths' => array('EXT:flux/Tests/Fixtures/Templates/'),
-            'partialRootPaths' => array('EXT:flux/Tests/Fixtures/Partials/'),
-            'layoutRootPaths' => array('EXT:flux/Tests/Fixtures/Layouts/')
-        );
-        $viewContext = new ViewContext($template);
-        $viewContext->setTemplatePaths(new TemplatePaths($paths));
-        $viewContext->setSectionName('Configuration');
-        $form = $service->getFormFromTemplateFile($viewContext);
+        $form = $this->getDummyFormFromTemplate($template);
         $this->assertIsValidAndWorkingFormObject($form);
     }
 
@@ -364,18 +346,6 @@ class FormTest extends AbstractTestCase
         $form = Form::create();
         $form->setOutlet($outlet);
         $this->assertSame($outlet, $form->getOutlet());
-    }
-
-    /**
-     * @test
-     */
-    public function dispatchesDebugMessageOnProblematicId()
-    {
-        $service = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('message'))->getMock();
-        $service->expects($this->once())->method('message');
-        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Form')->setMethods(array('getConfigurationService'))->getMock();
-        $instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
-        $instance->setId('I-am-not-valid');
     }
 
     /**

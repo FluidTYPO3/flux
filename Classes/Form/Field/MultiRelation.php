@@ -15,6 +15,10 @@ use FluidTYPO3\Flux\Form\AbstractRelationFormField;
  */
 class MultiRelation extends AbstractRelationFormField
 {
+    /**
+     * @var string|null
+     */
+    protected $renderType = null;
 
     /**
      * @return array

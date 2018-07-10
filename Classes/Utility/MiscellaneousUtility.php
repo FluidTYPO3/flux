@@ -9,10 +9,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Service\ContentService;
-use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
@@ -25,62 +22,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class MiscellaneousUtility
 {
 
-    /** Overhead used by unique integer generation. */
-    const UNIQUE_INTEGER_OVERHEAD = ContentService::COLPOS_FLUXCONTENT;
 
     /**
      * @var array
      */
     private static $allowedIconTypes = ['svg', 'png', 'gif'];
-
-    /**
-     * @var IconFactory
-     */
-    private static $iconFactory;
-
-    /**
-     * @param integer $contentElementUid
-     * @param string $areaName
-     * @return integer
-     */
-    public static function generateUniqueIntegerForFluxArea($contentElementUid, $areaName)
-    {
-        $integers = array_map('ord', str_split($areaName));
-        $integers[] = $contentElementUid;
-        $integers[] = self::UNIQUE_INTEGER_OVERHEAD;
-        $integer = array_sum($integers);
-        // Loop + increment until a free position is found. The integer size is kept low by the logic above, but
-        // it also means that collisions are possible. This iteration prevents such collisions.
-        while (isset($_SESSION['target' . $integer])) {
-            $integer++;
-        }
-        return $integer;
-    }
-
-    /**
-     * @param string $icon
-     * @return string
-     */
-    public static function getIcon($icon)
-    {
-        if (null === static::$iconFactory) {
-            static::$iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-        }
-
-        return static::$iconFactory->getIcon($icon, Icon::SIZE_SMALL);
-    }
-
-    /**
-     * @param string $inner
-     * @param string $uri
-     * @param string $title
-     * @return string
-     */
-    public static function wrapLink($inner, $uri, $title)
-    {
-        return '<a href="#" class="btn btn-default btn-sm" onclick="window.location.href=\'' . htmlspecialchars($uri) .
-            '\'" title="' . $title . '">' . $inner . '</a>';
-    }
 
     /**
      * Returns the icon for a template
@@ -111,11 +57,11 @@ class MiscellaneousUtility
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
                 if (true === defined(GLOB_BRACE)) {
-                    $allowedExtensions = implode(',', self::$allowedIconTypes);
+                    $allowedExtensions = implode(',', static::$allowedIconTypes);
                     $iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
                     $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);
                 } else {
-                    foreach (self::$allowedIconTypes as $allowedIconType) {
+                    foreach (static::$allowedIconTypes as $allowedIconType) {
                         $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType));
                     }
                 }

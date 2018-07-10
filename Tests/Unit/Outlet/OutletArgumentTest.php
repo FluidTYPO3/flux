@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet;
 use FluidTYPO3\Flux\Outlet\OutletArgument;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Error\Result;
-use TYPO3\CMS\Extbase\Property\PropertyMapper;
 use TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface;
 use TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter;
 use TYPO3\CMS\Extbase\Validation\Error;

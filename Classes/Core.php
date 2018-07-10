@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -45,9 +46,7 @@ class Core
      * @var array
      */
     private static $forms = [
-        'models' => [],
         'tables' => [],
-        'packages' => []
     ];
 
     /**
@@ -65,25 +64,10 @@ class Core
     ];
 
     /**
-     * Contains all programatically added TypoScript configuration files for auto-inclusion
-     * @var array
-     * @deprecated To be removed in next major release
-     */
-    private static $staticTypoScript = [];
-
-    /**
      * Contains queued instructions to call \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin in later hook
      * @var array
      */
     private static $queuedContentTypeRegistrations = [];
-
-    /**
-     * @return array
-     */
-    public static function getStaticTypoScript()
-    {
-        return self::$staticTypoScript;
-    }
 
     /**
      * @return array
@@ -94,21 +78,11 @@ class Core
     }
 
     /**
-     * @param mixed $locationOrLocations
      * @return void
      */
-    public static function addStaticTypoScript($locationOrLocations)
+    public static function clearQueuedContentTypeRegistrations()
     {
-        GeneralUtility::logDeprecatedFunction();
-        if (true === is_array($locationOrLocations) || true === $locationOrLocations instanceof \Traversable) {
-            foreach ($locationOrLocations as $location) {
-                self::addStaticTypoScript($location);
-            }
-        } else {
-            if (false === in_array($locationOrLocations, self::$staticTypoScript)) {
-                array_push(self::$staticTypoScript, $locationOrLocations);
-            }
-        }
+        static::$queuedContentTypeRegistrations = [];
     }
 
     /**
@@ -124,72 +98,7 @@ class Core
         if (null === $form->getExtensionName() && true === isset($GLOBALS['_EXTKEY'])) {
             $form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
         }
-        self::$forms['tables'][$table] = $form;
-    }
-
-    /**
-     * Registers automatic Form instance building and use as TCA for a model object class/table.
-     *
-     * @param string $className
-     * @return void
-     */
-    public static function registerAutoFormForModelObjectClassName($className)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        self::registerFormForModelObjectClassName($className);
-    }
-
-    /**
-     * Registers a Form instance to use when TCA for a model object class/table is requested.
-     *
-     * @param string $className
-     * @param Form $form
-     * @return void
-     */
-    public static function registerFormForModelObjectClassName($className, Form $form = null)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (null !== $form && true === isset($GLOBALS['_EXTKEY']) && null === $form->getExtensionName()) {
-            $form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
-        }
-        self::$forms['models'][$className] = $form;
-    }
-
-    /**
-     * @param string $className
-     * @return void
-     */
-    public static function unregisterFormForModelObjectClassName($className)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (true === isset(self::$forms['models'][$className])) {
-            unset(self::$forms['models'][$className]);
-        }
-    }
-
-    /**
-     * Registers a package key (Vendor.ExtensionName) which is expected to
-     * contain Domain/Form/{$modelName}Form classes.
-     *
-     * @param string $packageName
-     * @return void
-     */
-    public static function registerFluxDomainFormPackage($packageName)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        self::$forms['packages'][$packageName] = true;
-    }
-
-    /**
-     * @param string $packageName
-     * @return void
-     */
-    public static function unregisterFluxDomainFormPackage($packageName)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (true === isset(self::$forms['packages'][$packageName])) {
-            unset(self::$forms['packages'][$packageName]);
-        }
+        static::$forms['tables'][$table] = $form;
     }
 
     /**
@@ -209,12 +118,19 @@ class Core
             }
             return;
         }
-        if (false === isset(self::$extensions[$providesControllerName])) {
-            self::$extensions[$providesControllerName] = [];
+        if (false === isset(static::$extensions[$providesControllerName])) {
+            static::$extensions[$providesControllerName] = [];
         }
 
-        if (false === in_array($extensionKey, self::$extensions[$providesControllerName])) {
-            array_push(self::$extensions[$providesControllerName], $extensionKey);
+        if (false === in_array($extensionKey, static::$extensions[$providesControllerName])) {
+            $overrides = HookHandler::trigger(
+                HookHandler::PROVIDER_EXTENSION_REGISTERED,
+                [
+                    'extensionKey' => $extensionKey,
+                    'providesControllerName' => $providesControllerName
+                ]
+            );
+            array_push(static::$extensions[$overrides['providesControllerName']], $overrides['extensionKey']);
         }
     }
 
@@ -224,12 +140,12 @@ class Core
      */
     public static function getRegisteredProviderExtensionKeys($forControllerName)
     {
-        if (true === isset(self::$extensions[$forControllerName])) {
+        if (true === isset(static::$extensions[$forControllerName])) {
             return array_unique(
-                array_merge(self::$extensions[self::CONTROLLER_ALL], self::$extensions[$forControllerName])
+                array_merge(static::$extensions[static::CONTROLLER_ALL], static::$extensions[$forControllerName])
             );
         }
-        return self::$extensions[self::CONTROLLER_ALL];
+        return static::$extensions[static::CONTROLLER_ALL];
     }
 
     /**
@@ -242,10 +158,16 @@ class Core
      */
     public static function registerConfigurationProvider($classNameOrInstance)
     {
-        $alreadyRegistered = in_array($classNameOrInstance, self::$providers);
-        $alreadyUnregistered = in_array($classNameOrInstance, self::$unregisteredProviders);
+        $alreadyRegistered = in_array($classNameOrInstance, static::$providers);
+        $alreadyUnregistered = in_array($classNameOrInstance, static::$unregisteredProviders);
         if (!$alreadyUnregistered && !$alreadyRegistered) {
-            array_push(self::$providers, $classNameOrInstance);
+            $classNameOrInstance = HookHandler::trigger(
+                HookHandler::PROVIDER_REGISTERED,
+                [
+                    'provider' => $classNameOrInstance
+                ]
+            )['provider'];
+            array_push(static::$providers, $classNameOrInstance);
         }
     }
 
@@ -291,7 +213,7 @@ class Core
         $provider->setTemplateVariables($variables);
         $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
-        self::registerConfigurationProvider($provider);
+        static::registerConfigurationProvider($provider);
         return $provider;
     }
 
@@ -330,7 +252,7 @@ class Core
         $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
         $provider->setContentObjectType($contentObjectType);
-        self::registerConfigurationProvider($provider);
+        static::registerConfigurationProvider($provider);
         return $provider;
     }
 
@@ -365,7 +287,7 @@ class Core
         $provider->setTemplateVariables($variables);
         $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
-        self::registerConfigurationProvider($provider);
+        static::registerConfigurationProvider($provider);
         return $provider;
     }
 
@@ -388,6 +310,7 @@ class Core
         static::$queuedContentTypeRegistrations[] = [
             $providerExtensionName,
             $templateFilename,
+            Provider::class
         ];
     }
 
@@ -397,11 +320,11 @@ class Core
      */
     public static function unregisterConfigurationProvider($providerClassName)
     {
-        if (true === in_array($providerClassName, self::$providers)) {
-            $index = array_search($providerClassName, self::$providers);
-            unset(self::$providers[$index]);
-        } elseif (false === in_array($providerClassName, self::$unregisteredProviders)) {
-            array_push(self::$unregisteredProviders, $providerClassName);
+        if (true === in_array($providerClassName, static::$providers)) {
+            $index = array_search($providerClassName, static::$providers);
+            unset(static::$providers[$index]);
+        } elseif (false === in_array($providerClassName, static::$unregisteredProviders)) {
+            array_push(static::$unregisteredProviders, $providerClassName);
         }
     }
 
@@ -413,7 +336,7 @@ class Core
     public static function registerPipe($typeOrClassName, $insteadOfNativeType = null)
     {
         $key = null === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
-        self::$pipes[$key] = $typeOrClassName;
+        static::$pipes[$key] = $typeOrClassName;
     }
 
     /**
@@ -421,9 +344,9 @@ class Core
      */
     public static function unregisterPipe($typeOrClassName)
     {
-        if (true === in_array($typeOrClassName, self::$pipes)) {
-            $index = array_search($typeOrClassName, self::$pipes);
-            unset(self::$pipes[$index]);
+        if (true === in_array($typeOrClassName, static::$pipes)) {
+            $index = array_search($typeOrClassName, static::$pipes);
+            unset(static::$pipes[$index]);
         }
     }
 
@@ -435,7 +358,7 @@ class Core
     public static function registerOutlet($typeOrClassName, $insteadOfNativeType = null)
     {
         $key = null === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
-        self::$outlets[$key] = $typeOrClassName;
+        static::$outlets[$key] = $typeOrClassName;
     }
 
     /**
@@ -443,9 +366,9 @@ class Core
      */
     public static function unregisterOutlet($typeOrClassName)
     {
-        if (true === in_array($typeOrClassName, self::$outlets)) {
-            $index = array_search($typeOrClassName, self::$outlets);
-            unset(self::$outlets[$index]);
+        if (true === in_array($typeOrClassName, static::$outlets)) {
+            $index = array_search($typeOrClassName, static::$outlets);
+            unset(static::$outlets[$index]);
         }
     }
 
@@ -455,8 +378,8 @@ class Core
      */
     public static function getRegisteredFlexFormProviders()
     {
-        reset(self::$providers);
-        return self::$providers;
+        reset(static::$providers);
+        return static::$providers;
     }
 
     /**
@@ -464,7 +387,7 @@ class Core
      */
     public static function getRegisteredFormsForTables()
     {
-        return self::$forms['tables'];
+        return static::$forms['tables'];
     }
 
     /**
@@ -473,39 +396,8 @@ class Core
      */
     public static function getRegisteredFormForTable($table)
     {
-        if (true === isset(self::$forms['tables'][$table])) {
-            return self::$forms['tables'][$table];
-        }
-        return null;
-    }
-
-    /**
-     * @return Form[]
-     */
-    public static function getRegisteredFormsForModelObjectClasses()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return self::$forms['models'];
-    }
-
-    /**
-     * @return Form[]
-     */
-    public static function getRegisteredPackagesForAutoForms()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return self::$forms['packages'];
-    }
-
-    /**
-     * @param string $class
-     * @return Form|NULL
-     */
-    public static function getRegisteredFormForModelObjectClass($class)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (true === isset(self::$forms['models'][$class])) {
-            return self::$forms['models'][$class];
+        if (true === isset(static::$forms['tables'][$table])) {
+            return static::$forms['tables'][$table];
         }
         return null;
     }
@@ -515,7 +407,7 @@ class Core
      */
     public static function getPipes()
     {
-        return array_values(self::$pipes);
+        return array_values(static::$pipes);
     }
 
     /**
@@ -523,6 +415,6 @@ class Core
      */
     public static function getOutlets()
     {
-        return array_values(self::$outlets);
+        return array_values(static::$outlets);
     }
 }

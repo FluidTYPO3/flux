@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe\AbstractPipeTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**

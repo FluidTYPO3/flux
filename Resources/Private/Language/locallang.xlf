@@ -3,23 +3,11 @@
 	<file source-language="en" datatype="plaintext" original="messages" product-name="flux" date="2014-01-05T14:38:32+01:00">
 		<header/>
 		<body>
-			<trans-unit id="newContentWizard.fluxContent">
+			<trans-unit id="flux.backendLayout.columnsInParent">
+				<source>Columns in parent</source>
+			</trans-unit>
+			<trans-unit id="flux.newContentWizard.fluxContent">
 				<source>Flux content</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_flux_container">
-				<source>Content Container</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_flux_parent">
-				<source>Parent element</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_flux_column">
-				<source>Content area of parent</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_flux_children">
-				<source>Child content</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tabs.relation">
-				<source>Relations</source>
 			</trans-unit>
 			<trans-unit id="tt_content.tx_flux_options">
 				<source>Options</source>

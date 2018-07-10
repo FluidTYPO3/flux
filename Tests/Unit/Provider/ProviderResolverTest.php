@@ -8,12 +8,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Provider\Provider;
-use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\InvalidConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * ProviderResolverTest

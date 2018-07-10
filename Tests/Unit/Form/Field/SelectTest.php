@@ -97,23 +97,8 @@ class SelectTest extends AbstractFieldTest
     {
         $table = 'foo';
         $type = 'bar';
-        $fixture = array(
-            'config' => array(
-                'tx_extbase' => array(
-                    'persistence' => array(
-                        'classes' => array(
-                            $type => array(
-                                'mapping' => array(
-                                    'tableName' => $table . 'suffix'
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        );
-        $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('getAllTypoScript'))->getMock();
-        $service->expects($this->once())->method('getAllTypoScript')->willReturn($fixture);
+        $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
+        $service->expects($this->once())->method('getTypoScriptByPath')->willReturn($table . 'suffix');
         $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getConfigurationService'))->getMock();
         $instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
         $GLOBALS['TCA'][$table . 'suffix']['ctrl']['label'] = $table . 'label';

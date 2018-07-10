@@ -55,7 +55,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * @var string
      * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#rendertype
      */
-    protected $renderType;
+    protected $renderType = 'selectSingle';
 
     /**
      * Mixed - string (CSV), Traversable or array of items. Format of key/value
@@ -78,8 +78,10 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     /**
      * If not-FALSE, adds one empty option/value pair to the generated selector
      * box and tries to use this property's value (cast to string) as label.
+     * Can also be an array of [$value, $label, $iconName] where label and icon
+     * name are optional - use this when you need to specify an icon for "empty".
      *
-     * @var boolean|string
+     * @var mixed
      */
     protected $emptyOption = false;
 
@@ -306,7 +308,11 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         }
         $emptyOption = $this->getEmptyOption();
         if (false !== $emptyOption) {
-            array_unshift($items, [$emptyOption, '']);
+            if (is_array($emptyOption)) {
+                array_unshift($items, $emptyOption);
+            } else {
+                array_unshift($items, [$emptyOption, '']);
+            }
         }
         return $items;
     }
@@ -354,14 +360,9 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      */
     protected function getLabelPropertyName($table, $type)
     {
-        $typoScript = $this->getConfigurationService()->getAllTypoScript();
-        if (true === isset($typoScript['config']['tx_extbase']['persistence']['classes'][$type])) {
-            $mapping = $typoScript['config']['tx_extbase']['persistence']['classes'][$type];
-            if (true === isset($mapping['mapping']['tableName'])) {
-                $table = $mapping['mapping']['tableName'];
-            }
-        }
-        $labelField = $GLOBALS['TCA'][$table]['ctrl']['label'];
+        $path = sprintf('config.tx_extbase.persistence.classes.%s.mapping.tableName', $type);
+        $mappedTable = $this->getConfigurationService()->getTypoScriptByPath($path);
+        $labelField = $GLOBALS['TCA'][$mappedTable ?: $table]['ctrl']['label'];
         $propertyName = GeneralUtility::underscoredToLowerCamelCase($labelField);
         return $propertyName;
     }

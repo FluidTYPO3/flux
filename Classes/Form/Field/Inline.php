@@ -17,6 +17,11 @@ class Inline extends AbstractInlineFormField
 {
 
     /**
+     * @var string|null
+     */
+    protected $renderType = null;
+
+    /**
      * @return array
      */
     public function buildConfiguration()

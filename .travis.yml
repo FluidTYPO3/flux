@@ -2,34 +2,30 @@ language: php
 
 sudo: false
 
-env: COVERAGE="YES" TYPO3_VERSION=">=7.6.13, <7.6.99"
-
-php:
-  - "7.0"
-
 matrix:
-  allow_failures:
-    - env: COVERAGE="NO" TYPO3_VERSION="dev-master"
   include:
     - php: "7.0"
-      env: COVERAGE="YES" TYPO3_VERSION="8.7.*"
+      env: COVERAGE="NO" TYPO3_VERSION="^8.7"
     - php: "7.1"
-      env: COVERAGE="NO" TYPO3_VERSION="8.7.*"
-    - php: "7.0"
+      env: COVERAGE="YES" TYPO3_VERSION="^8.7"
+    - php: "7.2"
+      env: COVERAGE="YES" TYPO3_VERSION="^9"
+    - php: "7.2"
       env: COVERAGE="NO" TYPO3_VERSION="dev-master"
-    - php: "7.1"
-      env: COVERAGE="NO" TYPO3_VERSION="dev-master"
+  allow_failures:
+    - env: COVERAGE="NO" TYPO3_VERSION="dev-master"
 
 cache:
   directories:
     - $HOME/.composer/cache
 
 install:
-  - composer require "typo3/cms:$TYPO3_VERSION"
+  - composer require --no-update "typo3/cms-core:$TYPO3_VERSION"
+  - composer install
 
 before_script: mkdir -p build/logs
 
-script: if [[ "$COVERAGE" != "NO" ]]; then TYPO3_PATH_ROOT=`pwd` ./vendor/bin/phpunit --coverage-clover=build/logs/clover.xml; else TYPO3_PATH_ROOT=`pwd` ./vendor/bin/phpunit; fi
+script: if [[ "$COVERAGE" != "NO" ]]; then ./vendor/bin/phpunit --coverage-clover=build/logs/clover.xml; else ./vendor/bin/phpunit; fi
 
 after_script:
   - ln -s Classes src

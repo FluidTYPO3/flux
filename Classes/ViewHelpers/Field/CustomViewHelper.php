@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\Custom;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Custom FlexForm field ViewHelper
@@ -31,7 +31,7 @@ class CustomViewHelper extends UserFuncViewHelper
             'string',
             'User function to render the Closure built by this ViewHelper',
             false,
-            self::DEFAULT_USERFUNCTION
+            static::DEFAULT_USERFUNCTION
         );
     }
 
@@ -64,7 +64,7 @@ class CustomViewHelper extends UserFuncViewHelper
         array $arguments,
         \Closure $renderChildrenClosure
     ) {
-        $container = $renderingContext->getTemplateVariableContainer();
+        $container = $renderingContext->getVariableProvider();
         $closure = function ($parameters) use ($container, $renderingContext, $renderChildrenClosure) {
             $backupParameters = null;
             $backupParameters = null;

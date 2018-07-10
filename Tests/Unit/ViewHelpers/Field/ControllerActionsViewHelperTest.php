@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
@@ -80,7 +79,7 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
         );
         $instance = $this->buildViewHelperInstance($arguments, array(), null, $arguments['extensionName'], $arguments['pluginName']);
         ;
-        $this->setExpectedException('RuntimeException', '', 1346514748);
+        $this->expectExceptionCode(1346514748);
         $instance->initializeArgumentsAndRender();
     }
     /**

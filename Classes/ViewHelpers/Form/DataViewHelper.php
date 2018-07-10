@@ -8,22 +8,30 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use FluidTYPO3\Flux\Utility\ErrorUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
- * Converts raw flexform xml into an associative array
+ * Converts raw flexform xml into an associative array, and applies any
+ * transformation that may be configured for fields/objects.
+ *
+ * ### Example: Fetch page configuration inside content element
+ *
+ * Since the `page` variable is available in fluidcontent elements, we
+ * can use it to access page configuration data:
+ *
+ *     <flux:form.data table="pages" field="tx_fed_page_flexform" record="{page}" />
  */
-class DataViewHelper extends AbstractViewHelper implements CompilableInterface
+class DataViewHelper extends AbstractViewHelper
 {
     use CompileWithRenderStatic;
 
@@ -83,7 +91,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
-        $templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+        $templateVariableContainer = $renderingContext->getVariableProvider();
         $as = $arguments['as'];
         $record = $arguments['record'];
         $uid = $arguments['uid'];
@@ -100,8 +108,8 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
             if (null === $record) {
                 $record = static::getRecordService()->getSingle($table, 'uid,' . $field, $uid);
             }
-            if (null === $record) {
-                ErrorUtility::throwViewHelperException(
+            if (!$record) {
+                throw new Exception(
                     sprintf(
                         'Either table "%s", field "%s" or record with uid %d do not exist and you did not manually ' .
                         'provide the "record" attribute.',
@@ -115,11 +123,23 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
             $providers = static::getFluxService()->resolveConfigurationProviders($table, $field, $record);
             $dataArray = static::readDataArrayFromProvidersOrUsingDefaultMethod($providers, $record, $field);
         } else {
-            ErrorUtility::throwViewHelperException(
+            throw new Exception(
                 'Invalid table:field "' . $table . ':' . $field . '" - does not exist in TYPO3 TCA.',
                 1387049117
             );
         }
+        $dataArray = HookHandler::trigger(
+            HookHandler::FORM_DATA_FETCHED,
+            [
+                'providers' => $providers,
+                'record' => $record,
+                'table' => $table,
+                'field' => $field,
+                'data' => $dataArray,
+                'as' => $as,
+                'variableProvider' => $templateVariableContainer
+            ]
+        )['data'];
         if (null !== $as) {
             if ($templateVariableContainer->exists($as)) {
                 $backupVariable = $templateVariableContainer->get($as);
@@ -145,14 +165,7 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
     protected static function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field)
     {
         if (0 === count($providers)) {
-            $lang = static::getCurrentLanguageName();
-            $pointer = static::getCurrentValuePointerName();
-            $dataArray = static::$configurationService->convertFlexFormContentToArray(
-                $record[$field],
-                null,
-                $lang,
-                $pointer
-            );
+            $dataArray = static::$configurationService->convertFlexFormContentToArray($record[$field]);
         } else {
             $dataArray = [];
             /** @var ProviderInterface $provider */
@@ -184,34 +197,5 @@ class DataViewHelper extends AbstractViewHelper implements CompilableInterface
             static::$recordService = GeneralUtility::makeInstance(ObjectManager::class)->get(WorkspacesAwareRecordService::class);
         }
         return static::$recordService;
-    }
-
-    /**
-     * Gets the current language name as string, in a format that is
-     * compatible with language pointers in a flexform. Usually this
-     * implies values like "en", "de" etc.
-     *
-     * Return NULL when language is site default language.
-     *
-     * @return string|NULL
-     */
-    protected static function getCurrentLanguageName()
-    {
-        $language = $GLOBALS['TSFE']->lang;
-        if (true === empty($language) || 'default' === $language) {
-            $language = null;
-        }
-        return $language;
-    }
-
-    /**
-     * Gets the pointer name to use whne retrieving values from a
-     * flexform source. Return NULL when pointer is default.
-     *
-     * @return string|NULL
-     */
-    protected static function getCurrentValuePointerName()
-    {
-        return static::getCurrentLanguageName();
     }
 }
