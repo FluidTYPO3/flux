@@ -91,9 +91,8 @@ class ContentIconTest extends AbstractTestCase
      * @dataProvider getAddSubIconTestValues
      * @param array $parameters
      * @param ProviderInterface|NULL
-     * @param string|NULL $expected
      */
-    public function testAddSubIcon(array $parameters, $provider, $expected)
+    public function testAddSubIcon(array $parameters, $provider)
     {
         $GLOBALS['BE_USER'] = $this->getMockBuilder(BackendUserAuthentication::class)->setMethods(array('calcPerms'))->getMock();
         $GLOBALS['BE_USER']->expects($this->any())->method('calcPerms');
@@ -118,13 +117,7 @@ class ContentIconTest extends AbstractTestCase
             ObjectAccess::setProperty($provider, 'configurationService', $configurationServiceMock, true);
         }
 
-        $result = $instance->addSubIcon($parameters, new PageLayoutView());
-        if (null === $expected) {
-            $this->assertEmpty($result);
-        } else {
-            $this->assertNotNull($result);
-        }
-        unset($GLOBALS['TCA']);
+        $instance->addSubIcon($parameters, new PageLayoutView());
     }
 
     /**
@@ -134,18 +127,21 @@ class ContentIconTest extends AbstractTestCase
     {
         $formWithoutIcon = Form::create();
         $formWithIcon = Form::create(array('options' => array('icon' => 'icon')));
-        $providerWithoutForm = $this->getMockBuilder(Provider::class)->setMethods(array('getForm'))->getMock();
+        $providerWithoutForm = $this->getMockBuilder(Provider::class)->setMethods(array('getForm', 'getGrid'))->getMock();
         $providerWithoutForm->expects($this->any())->method('getForm')->willReturn(null);
-        $providerWithFormWithoutIcon = $this->getMockBuilder(Provider::class)->setMethods(array('getForm'))->getMock();
+        $providerWithoutForm->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
+        $providerWithFormWithoutIcon = $this->getMockBuilder(Provider::class)->setMethods(array('getForm', 'getGrid'))->getMock();
         $providerWithFormWithoutIcon->expects($this->any())->method('getForm')->willReturn($formWithoutIcon);
-        $providerWithFormWithIcon = $this->getMockBuilder(Provider::class)->setMethods(array('getForm'))->getMock();
+        $providerWithFormWithoutIcon->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
+        $providerWithFormWithIcon = $this->getMockBuilder(Provider::class)->setMethods(array('getForm', 'getGrid'))->getMock();
         $providerWithFormWithIcon->expects($this->any())->method('getForm')->willReturn($formWithIcon);
+        $providerWithFormWithIcon->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
         return array(
-            array(array('tt_content', 1, array()), null, null),
-            array(array('tt_content', 1, array()), $providerWithoutForm, null),
-            array(array('tt_content', 1, array('field' => 'test')), $providerWithoutForm, null),
-            array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon, null),
-            array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon, null),
+            'no provider' => array(array('tt_content', 1, array()), null),
+            'provider without form without field' => array(array('tt_content', 1, array()), $providerWithoutForm),
+            'provider without form with field' => array(array('tt_content', 1, array('field' => 'test')), $providerWithoutForm),
+            'provider with form without icon' => array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon),
+            'provider with form with icon' => array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon),
         );
     }
 }

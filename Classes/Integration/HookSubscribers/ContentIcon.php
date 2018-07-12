@@ -90,22 +90,23 @@ class ContentIcon
         if (!$caller instanceof PageLayoutView) {
             return '';
         }
-        $provider = null;
-        $this->attachAssets();
         list ($table, $uid, $record) = $parameters;
         if ($table !== 'tt_content') {
             return '';
         }
-        $icon = '';
 
+        $this->attachAssets();
+
+        $provider = null;
+        $icon = '';
         $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
         $cacheIdentity = $table . $uid . sha1(serialize($record)) . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
         // filter 1: icon must not already be cached and both record and caller must be provided.
         // we check the cache here because at this point, the cache key is decidedly
         // unique and we have not yet consulted the (potentially costly) Provider.
         $cachedIconIdentifier = $this->cache->get($cacheIdentity);
-        if ($cachedIconIdentifier !== false) {
-            $icon = $cachedIconIdentifier;
+        if ($cachedIconIdentifier !== null) {
+            return $cachedIconIdentifier;
         } elseif ($record) {
             $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
             // filter 2: table must have one field defined as "flex" and record must include it.
@@ -118,10 +119,8 @@ class ContentIcon
                     GridProviderInterface::class
                 );
                 // filter 3: a Provider must be resolved for the record.
-                if ($provider) {
-                    if ($provider->getGrid($record)->hasChildren()) {
-                        $icon = $this->drawGridToggle($record);
-                    }
+                if ($provider && $provider->getGrid($record)->hasChildren()) {
+                    $icon = $this->drawGridToggle($record);
                 }
             }
         }
