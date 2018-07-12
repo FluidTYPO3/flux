@@ -116,6 +116,10 @@ class DataHandlerSubscriber
     public function processCmdmap_beforeStart(DataHandler $dataHandler)
     {
         foreach ($dataHandler->cmdmap as $table => $commandSets) {
+            if ($table !== 'tt_content') {
+                continue;
+            }
+
             foreach ($commandSets as $id => $commands) {
                 foreach ($commands as $command => $value) {
                     switch ($command) {
