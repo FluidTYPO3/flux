@@ -46,7 +46,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
             'boolean',
             'If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)',
             false,
-            true
+            false
         );
         $this->registerArgument(
             'transform',
