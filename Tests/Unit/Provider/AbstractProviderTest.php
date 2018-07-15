@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -137,8 +138,9 @@ abstract class AbstractProviderTest extends AbstractTestCase
      */
     public function canGetGrid()
     {
-        $provider = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['extractConfiguration'])->getMock();
-        $provider->expects($this->once())->method('extractConfiguration')->willReturn([Grid::create()]);
+        $provider = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['extractConfiguration', 'getForm'])->getMock();
+        $provider->expects($this->once())->method('getForm')->willReturn(null);
+        $provider->expects($this->once())->method('extractConfiguration')->willReturn(['grids' => ['grid' => Grid::create()]]);
         $record = $this->getBasicRecord();
         $grid = $provider->getGrid($record);
         $this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $grid);
