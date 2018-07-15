@@ -192,7 +192,7 @@ class GetViewHelper extends AbstractViewHelper
 
         $conditions = sprintf(
             'colPos = %d',
-            $columnPosition
+            ColumnNumberUtility::calculateColumnNumberForParentAndColumn($parent['uid'], $columnPosition)
         );
 
         $rows = static::getContentObjectRenderer()->getRecords(
