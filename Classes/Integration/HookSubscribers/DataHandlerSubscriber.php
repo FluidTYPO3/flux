@@ -82,15 +82,15 @@ class DataHandlerSubscriber
         // We catch the special case of a record being moved, but the target pid being "Root" which is the identifying
         // symptom of this bug.
         // TODO: remove when expected solution, the inclusion of colPos in $fieldArray, is merged and released in TYPO3
-        if (isset($dataHandler->cmdmap[$table][$id]['move']) && $dataHandler->cmdmap[$table][$id]['move'] === 'Root') {
+        if (!array_key_exists('colPos', $fieldArray)) {
             $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
             $uidInDefaultLanguage = $record['l18n_parent'];
-            if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
+            if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos']) && isset($dataHandler->cmdmap[$table][$uidInDefaultLanguage]['move'])) {
                 $fieldArray['colPos'] = (int)($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? $record['colPos']);
+                // A massive assignment: 1) force target PID for move, 2) force update of PID, 3) update input field array.
+                // All receive the value of the record's "pid" column.
+                $dataHandler->cmdmap[$table][$id]['move'] = $dataHandler->datamap[$table][$id]['pid'] = $fieldArray['pid'] = $record['pid'];
             }
-            // A massive assignment: 1) force target PID for move, 2) force update of PID, 3) update input field array.
-            // All receive the value of the record's "pid" column.
-            $dataHandler->cmdmap[$table][$id]['move'] = $dataHandler->datamap[$table][$id]['pid'] = $fieldArray['pid'] = $record['pid'];
         }
     }
 
