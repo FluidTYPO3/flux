@@ -54,11 +54,27 @@ class DataHandlerSubscriber
                             'uid,pid'
                         );
 
-                        $newRecordUid = (int)($reference->substNEWwithIDs[$id] ?? $id);
+                        if ($mostRecentCopyOfParentRecord === false) {
+                            throw new \UnexpectedValueException(
+                                sprintf(
+                                    'The record %s:%s was designated as Flux parent for %s:%s during a copy operation, ' .
+                                    'but the designated parent record does not appear to have been copied. It is possible ' .
+                                    'this is caused by a third-party hook subscriber somehow setting invalid values in DB',
+                                    $table,
+                                    $originalParentRecordUid,
+                                    $table,
+                                    $id
+                                ),
+                                1531860023
+                            );
+                        }
+
                         $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                             (int)$mostRecentCopyOfParentRecord['uid'],
                             $localColumnPosition
                         );
+
+                        $newRecordUid = (int)($reference->substNEWwithIDs[$id] ?? $id);
                         $reference->updateDB($table, $newRecordUid, ['colPos' => $newColumnPosition, 'pid' => $mostRecentCopyOfParentRecord['pid']]);
                     }
                 }
@@ -285,7 +301,7 @@ class DataHandlerSubscriber
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
-            ->andWhere($queryBuilder->expr()->eq('l10n_source', $uid), $queryBuilder->expr()->eq('sys_language_uid', $languageUid));
+            ->andWhere($queryBuilder->expr()->eq('t3_origuid', $uid), $queryBuilder->expr()->eq('sys_language_uid', $languageUid));
         $queryBuilder->setMaxResults(1)->orderBy('crdate', 'DESC');
         return $queryBuilder->execute()->fetch();
     }
