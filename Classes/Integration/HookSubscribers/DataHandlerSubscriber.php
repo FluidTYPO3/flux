@@ -345,8 +345,6 @@ class DataHandlerSubscriber
             )->orderBy('sorting', 'DESC');
         $records = $queryBuilder->execute()->fetchAll();
 
-        echo '';
-
         // Selecting records to return. The "sorting DESC" is very intentional; copy operations will place records
         // into the top of columns which means reading records in reverse order causes the correct final order.
         return [
