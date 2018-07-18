@@ -291,6 +291,15 @@ class DataHandlerSubscriber
                     'pid' => $pageUid
                 ]
             );
+            if ($newChildUid === null) {
+                // For whichever reason, the child record could not be copied to the same destination as the parent
+                // record was copied. This could indicate that the target page UID is zero, the element was disallowed
+                // for the user, the language was invalid, etc.
+                // Unfortunately we do not get the reason for the failure - it gets logged in TYPO3. So in addition, we
+                // log the fact that the record also could not be recursively treated to copy potential children.
+                $dataHandler->log($table, $recordToCopy['uid'], 1, $pageUid, 1, 'Flux could not copy child records, see previous error in log');
+                continue;
+            }
             $this->recursivelyCopyChildRecords($table, $recordToCopy['uid'], $newChildUid, $pageUid, $languageUid, $dataHandler);
         }
     }
