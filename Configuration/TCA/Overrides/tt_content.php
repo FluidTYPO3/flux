@@ -2,7 +2,7 @@
 defined ('TYPO3_MODE') or die ('Access denied.');
 
 \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
-    \FluidTYPO3\Flux\Helper\ContentTypeBuilder::DEFAULT_SHOWITEM,
+    \FluidTYPO3\Flux\Integration\ContentTypeBuilder::DEFAULT_SHOWITEM,
     [
         '8.7.0' => '
             --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,
@@ -25,8 +25,9 @@ defined ('TYPO3_MODE') or die ('Access denied.');
 );
 
 // Initialize the TCA needed by "template as CType" integrations
-\FluidTYPO3\Flux\Backend\TableConfigurationPostProcessor::spoolQueuedContentTypeTableConfigurations(
+\FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor::spoolQueuedContentTypeTableConfigurations(
     \FluidTYPO3\Flux\Core::getQueuedContentTypeRegistrations()
 );
 
-$GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['itemsProcFunc'] = \FluidTYPO3\Flux\View\BackendLayoutView::class . '->colPosListItemProcFunc';
+$GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['itemsProcFunc'] =
+    \FluidTYPO3\Flux\Integration\Overrides\BackendLayoutView::class . '->colPosListItemProcFunc';

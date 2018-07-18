@@ -192,8 +192,6 @@ class ext_update
     {
         $recordUid = $record['uid'];
         unset($record['uid']);
-        $record['tx_flux_column'] = '';
-        $record['tx_flux_parent'] = 0;
         $record['colPos'] = $newColumnPosition;
         $record['tx_flux_migrated_version'] = '9.0';
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');

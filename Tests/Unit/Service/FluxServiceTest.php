@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -78,7 +79,7 @@ class FluxServiceTest extends AbstractTestCase
     public function canInstantiateFluxService()
     {
         $service = $this->createFluxServiceInstance();
-        $this->assertInstanceOf('FluidTYPO3\Flux\Service\FluxService', $service);
+        $this->assertInstanceOf(FluxService::class, $service);
     }
 
     /**
@@ -87,8 +88,8 @@ class FluxServiceTest extends AbstractTestCase
     public function canResolvePrimaryConfigurationProviderWithEmptyArray()
     {
         $service = $this->createFluxServiceInstance();
-        $service->injectProviderResolver($this->objectManager->get('FluidTYPO3\\Flux\\Provider\\ProviderResolver'));
-        $result = $service->resolvePrimaryConfigurationProvider('tt_content', null);
+        $service->injectProviderResolver($this->objectManager->get(ProviderResolver::class));
+        $result = $service->resolvePrimaryConfigurationProvider('foobar', null);
         $this->assertNull($result);
     }
 
@@ -112,7 +113,7 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testGetSettingsForExtensionName()
     {
-        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
+        $instance = $this->getMockBuilder(FluxService::class)->setMethods(array('getTypoScriptByPath'))->getMock();
         $instance->expects($this->once())->method('getTypoScriptByPath')
             ->with('plugin.tx_underscore.settings')
             ->willReturn(array('test' => 'test'));

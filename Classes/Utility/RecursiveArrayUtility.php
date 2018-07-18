@@ -15,7 +15,6 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
  */
 class RecursiveArrayUtility
 {
-
     /**
      * @param array $array1
      * @param array $array2
@@ -93,7 +92,6 @@ class RecursiveArrayUtility
 
         return $array;
     }
-
 
     /**
      * @param array $firstArray First array

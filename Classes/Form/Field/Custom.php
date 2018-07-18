@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Backend\UserFunctions;
+use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 
 /**
  * Custom

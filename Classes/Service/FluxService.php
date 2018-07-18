@@ -9,10 +9,10 @@ namespace FluidTYPO3\Flux\Service;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Helper\Resolver;
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
+use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
