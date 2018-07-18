@@ -496,26 +496,6 @@ class AbstractProvider implements ProviderInterface
         if (!$record) {
             return [];
         }
-        if ($GLOBALS['TSFE']->sys_language_uid != 0) {
-            $localisation = $this->recordService->get(
-                'pages_language_overlay',
-                '*',
-                'pid = "' . $record['uid'] .
-                '" AND sys_language_uid = "' . $GLOBALS['TSFE']->sys_language_uid . '"' .
-                ' AND hidden = false' .
-                ' AND deleted = false' .
-                ' AND (starttime = 0 OR starttime <= UNIX_TIMESTAMP())' .
-                ' AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())'
-            );
-        }
-        if (!empty($localisation)) {
-            $mergedRecord = RecursiveArrayUtility::merge($record, reset($localisation));
-            if (isset($record['uid']) && isset($record['pid'])) {
-                $mergedRecord['uid'] = $record['uid'];
-                $mergedRecord['pid'] = $record['pid'];
-            }
-            return $mergedRecord;
-        }
         return $record;
     }
 
