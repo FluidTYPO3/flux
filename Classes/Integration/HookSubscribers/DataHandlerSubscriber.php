@@ -253,11 +253,10 @@ class DataHandlerSubscriber
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
         foreach ($recordsToCopy as $recordToCopy) {
-            $newChildUid = $dataHandler->copyRecord(
+            $newChildUid = $dataHandler->copyRecord_raw(
                 $table,
                 $recordToCopy['uid'],
                 $pageUid,
-                true,
                 [
                     $languageField => $languageUid,
                     'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
