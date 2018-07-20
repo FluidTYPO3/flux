@@ -200,30 +200,6 @@ class DataHandlerSubscriber
 
         if ($command === 'copy') {
             $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference);
-            /*
-            foreach ($recordsToProcess as $recordToProcess) {
-
-                $languageUid = (int) ($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $recordToProcess[$languageField]);
-
-                if ($command === 'copy') {
-                    $newChildUid = $reference->copyRecord(
-                        $table,
-                        $recordToProcess['uid'],
-                        $destinationPid,
-                        true,
-                        [
-                            $languageField => $languageUid,
-                            'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                                $reference->copyMappingArray[$table][$id],
-                                ColumnNumberUtility::calculateLocalColumnNumber($recordToProcess['colPos'])
-                            ),
-                            'pid' => $destinationPid
-                        ]
-                    );
-                    $this->recursivelyCopyChildRecords($table, $recordToProcess['uid'], $newChildUid, $destinationPid, $languageUid, $reference);
-                }
-            }
-            */
         }
     }
 
