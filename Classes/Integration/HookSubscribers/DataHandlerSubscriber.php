@@ -41,7 +41,7 @@ class DataHandlerSubscriber
                 // 3) it is likely a nested record
                 if ((int)$fieldArray['l18n_parent'] === 0 && $originalRecordUid > 0 && $fieldArray['colPos'] >= ColumnNumberUtility::MULTIPLIER) {
                     $localColumnPosition = ColumnNumberUtility::calculateLocalColumnNumber($fieldArray['colPos']);
-                    $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $originalRecordUid, 'colPos');
+                    $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $originalRecordUid, 'pid,colPos');
                     if ((int)$originalRecord['colPos'] === (int)$fieldArray['colPos']) {
                         // The record was copied (or copied to a language) but the column position is the same as the
                         // original record, which is not intended. The value needs to be re-calculated based on the
@@ -55,7 +55,12 @@ class DataHandlerSubscriber
                         );
 
                         if ($mostRecentCopyOfParentRecord === false) {
-                            throw new \UnexpectedValueException(
+                            $reference->log(
+                                $table,
+                                $id,
+                                2,
+                                $originalRecord['pid'],
+                                1,
                                 sprintf(
                                     'The record %s:%s was designated as Flux parent for %s:%s during a copy operation, ' .
                                     'but the designated parent record does not appear to have been copied. It is possible ' .
@@ -64,9 +69,9 @@ class DataHandlerSubscriber
                                     $originalParentRecordUid,
                                     $table,
                                     $id
-                                ),
-                                1531860023
+                                )
                             );
+                            return;
                         }
 
                         $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
