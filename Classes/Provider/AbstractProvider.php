@@ -28,7 +28,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Exception;
-use function class_exists;
 
 /**
  * AbstractProvider
@@ -495,26 +494,6 @@ class AbstractProvider implements ProviderInterface
         $record = $GLOBALS['TSFE']->page ?? null;
         if (!$record) {
             return [];
-        }
-        if ($GLOBALS['TSFE']->sys_language_uid != 0) {
-            $localisation = $this->recordService->get(
-                'pages_language_overlay',
-                '*',
-                'pid = "' . $record['uid'] .
-                '" AND sys_language_uid = "' . $GLOBALS['TSFE']->sys_language_uid . '"' .
-                ' AND hidden = false' .
-                ' AND deleted = false' .
-                ' AND (starttime = 0 OR starttime <= UNIX_TIMESTAMP())' .
-                ' AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())'
-            );
-        }
-        if (!empty($localisation)) {
-            $mergedRecord = RecursiveArrayUtility::merge($record, reset($localisation));
-            if (isset($record['uid']) && isset($record['pid'])) {
-                $mergedRecord['uid'] = $record['uid'];
-                $mergedRecord['pid'] = $record['pid'];
-            }
-            return $mergedRecord;
         }
         return $record;
     }

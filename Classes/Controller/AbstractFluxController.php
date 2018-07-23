@@ -353,8 +353,8 @@ abstract class AbstractFluxController extends ActionController
                 'request' => $this->request,
                 'response' => $this->response,
                 'extensionName' => $extensionName,
-                'controllerClassName' => $controllerClassName,
-                'controllerActionName' => $controllerActionName
+                'controllerClassName' => $foreignControllerClass,
+                'controllerActionName' => $actionName
             ]
         )['content'];
     }
@@ -397,6 +397,8 @@ abstract class AbstractFluxController extends ActionController
         $this->request->setControllerExtensionName($extensionName);
         $this->request->setControllerActionName($controllerActionName);
         $potentialControllerInstance = $this->objectManager->get($controllerClassName);
+        $response = $this->objectManager->get(Response::class);
+
         try {
             HookHandler::trigger(
                 HookHandler::CONTROLLER_BEFORE_REQUEST,
@@ -408,7 +410,7 @@ abstract class AbstractFluxController extends ActionController
                     'controllerActionName' => $controllerActionName
                 ]
             );
-            $potentialControllerInstance->processRequest($this->request, $this->response);
+            $potentialControllerInstance->processRequest($this->request,$response);
         } catch (StopActionException $error) {
             // intentionally left blank
         }
@@ -416,13 +418,13 @@ abstract class AbstractFluxController extends ActionController
             HookHandler::CONTROLLER_AFTER_REQUEST,
             [
                 'request' => $this->request,
-                'response' => $this->response,
+                'response' => $response,
                 'extensionName' => $extensionName,
                 'controllerClassName' => $controllerClassName,
                 'controllerActionName' => $controllerActionName
             ]
         );
-        return $this->response->getContent();
+        return $response->getContent();
     }
 
     /**
