@@ -41,7 +41,7 @@ class DataHandlerSubscriber
                 // 3) it is likely a nested record
                 if ((int)$fieldArray['l18n_parent'] === 0 && $originalRecordUid > 0 && $fieldArray['colPos'] >= ColumnNumberUtility::MULTIPLIER) {
                     $localColumnPosition = ColumnNumberUtility::calculateLocalColumnNumber($fieldArray['colPos']);
-                    $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $originalRecordUid, 'colPos');
+                    $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $originalRecordUid, 'pid,colPos');
                     if ((int)$originalRecord['colPos'] === (int)$fieldArray['colPos']) {
                         // The record was copied (or copied to a language) but the column position is the same as the
                         // original record, which is not intended. The value needs to be re-calculated based on the
@@ -54,11 +54,32 @@ class DataHandlerSubscriber
                             'uid,pid'
                         );
 
-                        $newRecordUid = (int)($reference->substNEWwithIDs[$id] ?? $id);
+                        if ($mostRecentCopyOfParentRecord === false) {
+                            $reference->log(
+                                $table,
+                                $id,
+                                2,
+                                $originalRecord['pid'],
+                                1,
+                                sprintf(
+                                    'The record %s:%s was designated as Flux parent for %s:%s during a copy operation, ' .
+                                    'but the designated parent record does not appear to have been copied. It is possible ' .
+                                    'this is caused by a third-party hook subscriber somehow setting invalid values in DB',
+                                    $table,
+                                    $originalParentRecordUid,
+                                    $table,
+                                    $id
+                                )
+                            );
+                            return;
+                        }
+
                         $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                             (int)$mostRecentCopyOfParentRecord['uid'],
                             $localColumnPosition
                         );
+
+                        $newRecordUid = (int)($reference->substNEWwithIDs[$id] ?? $id);
                         $reference->updateDB($table, $newRecordUid, ['colPos' => $newColumnPosition, 'pid' => $mostRecentCopyOfParentRecord['pid']]);
                     }
                 }
@@ -79,18 +100,13 @@ class DataHandlerSubscriber
         }
 
         // TYPO3 issue https://forge.typo3.org/issues/85013 "colPos not part of $fieldArray when dropping in top column".
-        // We catch the special case of a record being moved, but the target pid being "Root" which is the identifying
-        // symptom of this bug.
         // TODO: remove when expected solution, the inclusion of colPos in $fieldArray, is merged and released in TYPO3
-        if (isset($dataHandler->cmdmap[$table][$id]['move']) && $dataHandler->cmdmap[$table][$id]['move'] === 'Root') {
+        if (!array_key_exists('colPos', $fieldArray)) {
             $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
             $uidInDefaultLanguage = $record['l18n_parent'];
-            if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
+            if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos']) && isset($dataHandler->cmdmap[$table][$uidInDefaultLanguage]['move'])) {
                 $fieldArray['colPos'] = (int)($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? $record['colPos']);
             }
-            // A massive assignment: 1) force target PID for move, 2) force update of PID, 3) update input field array.
-            // All receive the value of the record's "pid" column.
-            $dataHandler->cmdmap[$table][$id]['move'] = $dataHandler->datamap[$table][$id]['pid'] = $fieldArray['pid'] = $record['pid'];
         }
     }
 
@@ -116,6 +132,10 @@ class DataHandlerSubscriber
     public function processCmdmap_beforeStart(DataHandler $dataHandler)
     {
         foreach ($dataHandler->cmdmap as $table => $commandSets) {
+            if ($table !== 'tt_content') {
+                continue;
+            }
+
             foreach ($commandSets as $id => $commands) {
                 foreach ($commands as $command => $value) {
                     switch ($command) {
@@ -185,30 +205,6 @@ class DataHandlerSubscriber
 
         if ($command === 'copy') {
             $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference);
-            /*
-            foreach ($recordsToProcess as $recordToProcess) {
-
-                $languageUid = (int) ($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $recordToProcess[$languageField]);
-
-                if ($command === 'copy') {
-                    $newChildUid = $reference->copyRecord(
-                        $table,
-                        $recordToProcess['uid'],
-                        $destinationPid,
-                        true,
-                        [
-                            $languageField => $languageUid,
-                            'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                                $reference->copyMappingArray[$table][$id],
-                                ColumnNumberUtility::calculateLocalColumnNumber($recordToProcess['colPos'])
-                            ),
-                            'pid' => $destinationPid
-                        ]
-                    );
-                    $this->recursivelyCopyChildRecords($table, $recordToProcess['uid'], $newChildUid, $destinationPid, $languageUid, $reference);
-                }
-            }
-            */
         }
     }
 
@@ -262,11 +258,10 @@ class DataHandlerSubscriber
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
         foreach ($recordsToCopy as $recordToCopy) {
-            $newChildUid = $dataHandler->copyRecord(
+            $newChildUid = $dataHandler->copyRecord_raw(
                 $table,
                 $recordToCopy['uid'],
                 $pageUid,
-                true,
                 [
                     $languageField => $languageUid,
                     'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
@@ -276,6 +271,15 @@ class DataHandlerSubscriber
                     'pid' => $pageUid
                 ]
             );
+            if ($newChildUid === null) {
+                // For whichever reason, the child record could not be copied to the same destination as the parent
+                // record was copied. This could indicate that the target page UID is zero, the element was disallowed
+                // for the user, the language was invalid, etc.
+                // Unfortunately we do not get the reason for the failure - it gets logged in TYPO3. So in addition, we
+                // log the fact that the record also could not be recursively treated to copy potential children.
+                $dataHandler->log($table, $recordToCopy['uid'], 1, $pageUid, 1, 'Flux could not copy child records, see previous error in log');
+                continue;
+            }
             $this->recursivelyCopyChildRecords($table, $recordToCopy['uid'], $newChildUid, $pageUid, $languageUid, $dataHandler);
         }
     }
@@ -286,7 +290,7 @@ class DataHandlerSubscriber
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
-            ->andWhere($queryBuilder->expr()->eq('l10n_source', $uid), $queryBuilder->expr()->eq('sys_language_uid', $languageUid));
+            ->andWhere($queryBuilder->expr()->eq('t3_origuid', $uid), $queryBuilder->expr()->eq('sys_language_uid', $languageUid));
         $queryBuilder->setMaxResults(1)->orderBy('crdate', 'DESC');
         return $queryBuilder->execute()->fetch();
     }
@@ -342,8 +346,6 @@ class DataHandlerSubscriber
                 $queryBuilder->expr()->eq($languageField, $originalRecord[$languageField])
             )->orderBy('sorting', 'DESC');
         $records = $queryBuilder->execute()->fetchAll();
-
-        echo '';
 
         // Selecting records to return. The "sorting DESC" is very intentional; copy operations will place records
         // into the top of columns which means reading records in reverse order causes the correct final order.

@@ -175,10 +175,7 @@ class GetViewHelper extends AbstractViewHelper
         if (!is_numeric($columnPosition)) {
             $column = $grid->get($columnPosition, true, Column::class);
             if ($column instanceof Column) {
-                $columnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                    $parent['l18n_parent'] ?: $parent['uid'],
-                    $column->getColumnPosition()
-                );
+                $columnPosition = $column->getColumnPosition();
             } else {
                 throw new Exception(
                     sprintf(
@@ -192,7 +189,10 @@ class GetViewHelper extends AbstractViewHelper
 
         $conditions = sprintf(
             'colPos = %d',
-            $columnPosition
+            ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                $parent['l18n_parent'] ?: $parent['uid'],
+                $columnPosition
+            )
         );
 
         $rows = static::getContentObjectRenderer()->getRecords(

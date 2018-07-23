@@ -433,7 +433,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $responseClassName = 'TYPO3\CMS\Extbase\Mvc\Web\Response';
         $response = $this->getMockBuilder($responseClassName)->setMethods(array('getContent'))->getMock();
         $response->expects($this->once())->method('getContent')->will($this->returnValue('test'));
-        $objectManager->expects($this->once())->method('get')->with($controllerClassName)->will($this->returnValue($instance));
+        $objectManager->expects($this->at(0))->method('get')->with($controllerClassName)->will($this->returnValue($instance));
+        $objectManager->expects($this->at(1))->method('get')->with($responseClassName)->will($this->returnValue($response));
         $request = $this->getMockBuilder('TYPO3\CMS\Extbase\Mvc\Web\Request')->setMethods(array('setControllerActionName'))->getMock();
         $request->expects($this->once())->method('setControllerActionName')->with('render');
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
