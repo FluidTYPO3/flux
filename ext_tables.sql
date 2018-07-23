@@ -3,4 +3,5 @@
 #
 CREATE TABLE tt_content (
   tx_flux_migrated_version varchar(11) DEFAULT NULL
+  colPos BIGINT NOT NULL DEFAULT '0'
 );
