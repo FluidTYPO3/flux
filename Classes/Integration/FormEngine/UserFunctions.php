@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\StringUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -48,11 +49,12 @@ class UserFunctions
     /**
      * Renders the special "column position" field that's used inside section objects
      * and which stores a unique integer value. The method is designed to scan for
-     * all currently defined colPos values as well as query the database to determine
-     * the next colPos value that's not already occupied by records, and to generate
-     * sequential column position values while creating section objects inside a not
-     * yet persisted parent element; or when creating multiple new section objects in
-     * an already persisted parent.
+     * all colPos currently holding content elements in the the database. The
+     * client-side JavaScript merges these values with all colPos currently defined
+     * in the form in the browser window to determine the next colPos value that's
+     * not already occupied by records.
+     * The next free value cannot be computed here as we do not have access to the
+     * data of all potentially unsaved section objects.
      *
      * @param array $parameters
      * @param object $pObj Not used
@@ -60,35 +62,50 @@ class UserFunctions
      */
     public function renderColumnPositionField(array &$parameters, &$pObj)
     {
-        $path = explode('[', trim($parameters['itemFormElName'], ']['));
-        $path = array_map(function($item) { return trim($item, ']'); }, $path);
-        $valuePath = array_slice($path, -5);
-        $path = array_slice($path, 3, -5);
-        $objectsPointer = $parameters['row'];
-        foreach ($path as $pathSegment) {
-            $objectsPointer = &$objectsPointer[$pathSegment];
+        $colPos = $parameters['itemFormElValue'];
+        $inputValue = (string) $colPos;
+
+        $id = StringUtility::getUniqueId('formengine-flux-colPos-');
+
+        if ($inputValue !== '') {
+            // The field already has a value, just use that for the hidden input element
+            return sprintf(
+                '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" value="%s" />Column position: <strong class="flux-flex-colPos-text">%d</strong>',
+                $parameters['itemFormElName'],
+                $id,
+                $inputValue,
+                $inputValue
+            );
+        } else {
+            // The field does not yet have a value, which means this is used for a new panel
+            // and we have to fill the fields that will be used by the JavaScript module to
+            // determine the value
+            $rowUid = $parameters['row']['uid'];
+            // Unsaved records may begin with "NEW", make sure we don't have one of those
+            // as we cannot look up anything in the database in that case
+            if (!isset($rowUid) || !is_int($rowUid)) {
+                $rowUid = 0;
+            }
+
+            $minimumColumnPosition = 0;
+            $maximumColumnPosition = ColumnNumberUtility::MULTIPLIER - 1;
+            $takenColumnPositions = $this->determineTakenColumnPositionsWithinParent($parameters['table'], $rowUid);
+
+            return sprintf(
+                '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" data-min-value="%d" data-max-value="%d" data-taken-values="%s" />Column position: <strong class="flux-flex-colPos-text"></strong>',
+                $parameters['itemFormElName'],
+                $id,
+                $minimumColumnPosition,
+                $maximumColumnPosition,
+                implode(',', $takenColumnPositions)
+            );
         }
-        $valuePointer = $objectsPointer;
-        foreach ($valuePath as $pathSegment) {
-            $valuePointer = &$valuePointer[$pathSegment];
-        }
-        $numberOfObjects = count($objectsPointer) - 1;
-        if ((string) $valuePointer === '') {
-            $valuePointer = $this->determineFirstFreeColumnPositionWithinParent($parameters['table'], $parameters['row']['uid'] ?? 0) ?: $numberOfObjects;
-        }
-        return sprintf(
-            '<input type="hidden" name="%s" id="%s" value="%d" />Column position: <strong>%d</strong>',
-            $parameters['itemFormElName'],
-            $parameters['itemFormElID'],
-            $valuePointer,
-            $valuePointer
-        );
     }
 
-    protected function determineFirstFreeColumnPositionWithinParent(string $table, int $parentUid): int
+    protected function determineTakenColumnPositionsWithinParent(string $table, int $parentUid) : array
     {
         if ($parentUid === 0) {
-            return 0;
+            return [];
         }
         list ($minimumColPosValue, $maximumColPosValue) = ColumnNumberUtility::calculateMinimumAndMaximumColumnNumberWithinParent($parentUid);
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
@@ -97,7 +114,6 @@ class UserFunctions
             $queryBuilder->expr()->lt('colPos', $maximumColPosValue)
         );
         $rows = $query->execute()->fetchAll();
-        $values = empty($rows) ? [] : array_column($rows, 'colPos');
-        return empty($values) ? 0 : ColumnNumberUtility::calculateLocalColumnNumber(max($values) + 1);
+        return empty($rows) ? [] : array_map(function ($colPos) { return ColumnNumberUtility::calculateLocalColumnNumber($colPos); }, array_unique(array_column($rows, 'colPos')));
     }
 }
