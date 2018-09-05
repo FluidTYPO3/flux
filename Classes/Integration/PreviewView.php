@@ -207,7 +207,7 @@ class PreviewView extends TemplateView
 
         if (is_object($form)) {
             $formLabel = $form->getLabel();
-            $label = $this>$this->getLanguageService()->sL($formLabel);
+            $label = $this->getLanguageService()->sL($formLabel);
             $variables['label'] = $label;
         }
 
