@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Form\Field;
  */
 
 use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * File
@@ -53,6 +52,11 @@ class File extends AbstractMultiValueFormField
     protected $internalType = 'file_reference';
 
     /**
+     * @var string|null
+     */
+    protected $renderType = null;
+
+    /**
      * @return array
      */
     public function buildConfiguration()
@@ -74,31 +78,6 @@ class File extends AbstractMultiValueFormField
             ];
         }
         return $configuration;
-    }
-
-    /**
-     * Overrides parent method to ensure properly formatted
-     * default values for files
-     *
-     * @param mixed $default
-     * @return \FluidTYPO3\Flux\Form\FieldInterface
-     */
-    public function setDefault($default)
-    {
-        if (null !== $default) {
-            $files = [];
-            $filePaths = GeneralUtility::trimExplode(',', $default);
-            foreach ($filePaths as $path) {
-                if (false === strpos($path, '|')) {
-                    $files[] = $path . '|' . rawurlencode($path);
-                } else {
-                    $files[] = $path;
-                }
-            }
-            $default = implode(',', $files);
-        }
-        $this->default = $default;
-        return $this;
     }
 
     /**

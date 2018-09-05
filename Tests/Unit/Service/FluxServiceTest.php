@@ -10,9 +10,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * FluxServiceTest
@@ -76,7 +79,7 @@ class FluxServiceTest extends AbstractTestCase
     public function canInstantiateFluxService()
     {
         $service = $this->createFluxServiceInstance();
-        $this->assertInstanceOf('FluidTYPO3\Flux\Service\FluxService', $service);
+        $this->assertInstanceOf(FluxService::class, $service);
     }
 
     /**
@@ -85,9 +88,24 @@ class FluxServiceTest extends AbstractTestCase
     public function canResolvePrimaryConfigurationProviderWithEmptyArray()
     {
         $service = $this->createFluxServiceInstance();
-        $service->injectProviderResolver($this->objectManager->get('FluidTYPO3\\Flux\\Provider\\ProviderResolver'));
-        $result = $service->resolvePrimaryConfigurationProvider('tt_content', null);
+        $service->injectProviderResolver($this->objectManager->get(ProviderResolver::class));
+        $result = $service->resolvePrimaryConfigurationProvider('foobar', null);
         $this->assertNull($result);
+    }
+
+    /**
+     * @test
+     */
+    public function testGetTypoScriptByPath()
+    {
+        $service = new FluxService();;
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->setMethods(array('getConfiguration'))->getMock();
+        $configurationManager->expects($this->once())->method('getConfiguration')
+            ->with(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT)
+            ->willReturn(array('plugin.' => array('tx_test.' => array('settings.' => array('test_var' => 'test_val')))));
+        $service->injectConfigurationManager($configurationManager);
+        $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
+        $this->assertEquals(array('test_var' => 'test_val'), $result);
     }
 
     /**
@@ -95,25 +113,12 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testGetSettingsForExtensionName()
     {
-        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
+        $instance = $this->getMockBuilder(FluxService::class)->setMethods(array('getTypoScriptByPath'))->getMock();
         $instance->expects($this->once())->method('getTypoScriptByPath')
             ->with('plugin.tx_underscore.settings')
             ->willReturn(array('test' => 'test'));
         $result = $instance->getSettingsForExtensionName('under_score');
         $this->assertEquals(array('test' => 'test'), $result);
-    }
-
-    /**
-     * @test
-     */
-    public function messageIgnoresRepeatedMessages()
-    {
-        $instance = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(['dummy'])->getMock();
-        $expected = ['TestTest' => true];
-        $instance->message('Test', 'Test', 2);
-        $this->assertAttributeSame($expected, 'sentDebugMessages', $instance);
-        $instance->message('Test', 'Test', 2);
-        $this->assertAttributeSame($expected, 'sentDebugMessages', $instance);
     }
 
     /**
@@ -142,20 +147,5 @@ class FluxServiceTest extends AbstractTestCase
             array('', Form::create(), '', '', array()),
             array(Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD, Form::create(), '', '', array('settings' => array('input' => 0)))
         );
-    }
-
-    /**
-     * @test
-     */
-    public function testGetAllTypoScriptCache()
-    {
-        $fluxService = $this->createFluxServiceInstance(array('getCurrentPageId'));
-
-        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->setMethods(array('getConfiguration'))->getMock();
-        $fluxService->injectConfigurationManager($configurationManager);
-        $configurationManager->expects($this->once(0))->method('getConfiguration')->willReturn(['foo' => 'bar']);
-
-        $this->assertNotNull($fluxService->getAllTypoScript());
-        $this->assertNotNull($fluxService->getAllTypoScript());
     }
 }

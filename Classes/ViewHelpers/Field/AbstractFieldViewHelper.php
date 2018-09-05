@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
@@ -46,7 +46,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
             'boolean',
             'If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)',
             false,
-            true
+            false
         );
         $this->registerArgument(
             'transform',

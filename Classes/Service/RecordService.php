@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Service;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -29,9 +28,10 @@ class RecordService implements SingletonInterface
      * @param string $groupBy
      * @param string $orderBy
      * @param integer $limit
+     * @param integer $offset
      * @return array|NULL
      */
-    public function get($table, $fields, $clause = null, $groupBy = null, $orderBy = null, $limit = 0)
+    public function get($table, $fields, $clause = null, $groupBy = null, $orderBy = null, $limit = 0, $offset = 0)
     {
         $statement = $this->getQueryBuilder($table)->from($table)->select(...explode(',', $fields));
 
@@ -46,6 +46,9 @@ class RecordService implements SingletonInterface
         }
         if ($limit) {
             $statement->setMaxResults($limit);
+        }
+        if ($offset) {
+            $statement->setFirstResult($offset);
         }
 
         return $statement->execute()->fetchAll();

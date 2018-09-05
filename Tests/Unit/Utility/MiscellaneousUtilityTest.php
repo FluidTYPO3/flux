@@ -9,11 +9,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\ClipBoardUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use org\bovigo\vfs\vfsStream;
+use TYPO3\CMS\Backend\Routing\Exception\ResourceNotFoundException;
+use TYPO3\CMS\Backend\Routing\Route;
+use TYPO3\CMS\Backend\Routing\Router;
+use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
+use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
@@ -29,21 +32,28 @@ class MiscellaneousUtilityTest extends AbstractTestCase
     protected function setUp()
     {
         parent::setUp();
-        $GLOBALS['TBE_STYLES']['spriteIconApi']['iconsAvailable'] = array();
+        // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
+        // Since it doesn't matter much what this method actually responds for these tests, we mock it for all envs.
+        $iconRegistryMock = $this->getMockBuilder(IconRegistry::class)->setMethods(['isRegistered', 'getIconConfigurationByIdentifier'])->getMock();
+        $iconRegistryMock->expects($this->any())->method('isRegistered')->willReturn(true);
+        $iconRegistryMock->expects($this->any())->method('getIconConfigurationByIdentifier')->willReturn([
+            'provider' => SvgIconProvider::class,
+            'options' => [
+                'source' => 'EXT:core/Resources/Public/Icons/T3Icons/default/default-not-found.svg'
+            ]
+        ]);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryMock);
+        $router = GeneralUtility::makeInstance(Router::class);
+        try {
+            $router->match('tce_db');
+        } catch (ResourceNotFoundException $error) {
+            $router->addRoute('tce_db', new Route('tce_db', []));
+        }
     }
 
-    /**
-     * @return array
-     */
-    protected function getClipBoardDataFixture()
+    protected function tearDown()
     {
-        $clipBoardData = array(
-            'current' => 'normal',
-            'normal' => array(
-                'el' => Records::$contentRecordWithoutParentAndWithoutChildren
-            )
-        );
-        return $clipBoardData;
+        GeneralUtility::removeSingletonInstance(IconRegistry::class, GeneralUtility::makeInstance(IconRegistry::class));
     }
 
     /**
@@ -68,50 +78,6 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         /** @var Form $instance */
         $instance = $objectManager->get('FluidTYPO3\Flux\Form');
         return $instance;
-    }
-
-    /**
-     * @test
-     */
-    public function canCreateIconWithUrl()
-    {
-        $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->getMock();
-        $clipBoardData = $this->getClipBoardDataFixture();
-        ClipBoardUtility::setClipBoardData($clipBoardData);
-        $iconWithUrl = ClipBoardUtility::createIconWithUrl('1-2-3');
-        $this->assertNotEmpty($iconWithUrl);
-        ClipBoardUtility::clearClipBoardData();
-        unset($GLOBALS['BE_USER']);
-    }
-
-    /**
-     * @test
-     */
-    public function canCreateIconWithUrlAsReference()
-    {
-        $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->getMock();
-        $clipBoardData = $this->getClipBoardDataFixture();
-        $clipBoardData['normal']['mode'] = 'reference';
-        ClipBoardUtility::setClipBoardData($clipBoardData);
-        $iconWithUrl = ClipBoardUtility::createIconWithUrl('1-2-3', true);
-        $this->assertNotEmpty($iconWithUrl);
-        ClipBoardUtility::clearClipBoardData();
-        unset($GLOBALS['BE_USER']);
-    }
-
-    /**
-     * @test
-     */
-    public function canCreateIconWithUrlAsReferenceReturnsEmptyStringIfModeIsCut()
-    {
-        $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->getMock();
-        $clipBoardData = $this->getClipBoardDataFixture();
-        ClipBoardUtility::setClipBoardData($clipBoardData);
-        $iconWithUrl = ClipBoardUtility::createIconWithUrl('1-2-3', true);
-        $this->assertIsString($iconWithUrl);
-        $this->assertEmpty($iconWithUrl);
-        ClipBoardUtility::clearClipBoardData();
-        unset($GLOBALS['BE_USER']);
     }
 
     /**
@@ -150,31 +116,6 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         $form = $this->getFormInstance();
         $icon = MiscellaneousUtility::getIconForTemplate($form);
         $this->assertNull($icon);
-    }
-
-    /**
-     * @dataProvider getGenerateUniqueIntegerForFluxAreaTestValues
-     * @param integer $uid
-     * @param string $name
-     * @param integer $expected
-     */
-    public function testGenerateUniqueIntegerForFluxArea($uid, $name, $expected)
-    {
-        $result = MiscellaneousUtility::generateUniqueIntegerForFluxArea($uid, $name);
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * @return array
-     */
-    public function getGenerateUniqueIntegerForFluxAreaTestValues()
-    {
-        return array(
-            array(1, 'test', 18630),
-            array(321, 'foobar', 19135),
-            array(8, 'xyzbazbar', 19178),
-            array(123, 'verylongstringverylongstringverylongstring', 22951)
-        );
     }
 
     /**

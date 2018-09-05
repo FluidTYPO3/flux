@@ -31,7 +31,7 @@ class ExtensionNamingUtility
      */
     public static function getVendorName($qualifiedExtensionName)
     {
-        list($vendorName, ) = self::getVendorNameAndExtensionKey($qualifiedExtensionName);
+        list($vendorName, ) = static::getVendorNameAndExtensionKey($qualifiedExtensionName);
         return $vendorName;
     }
 
@@ -41,7 +41,7 @@ class ExtensionNamingUtility
      */
     public static function getExtensionKey($qualifiedExtensionName)
     {
-        list(, $extensionKey) = self::getVendorNameAndExtensionKey($qualifiedExtensionName);
+        list(, $extensionKey) = static::getVendorNameAndExtensionKey($qualifiedExtensionName);
         return $extensionKey;
     }
 
@@ -51,7 +51,7 @@ class ExtensionNamingUtility
      */
     public static function getExtensionName($qualifiedExtensionName)
     {
-        list(, $extensionName) = self::getVendorNameAndExtensionName($qualifiedExtensionName);
+        list(, $extensionName) = static::getVendorNameAndExtensionName($qualifiedExtensionName);
         return $extensionName;
     }
 
@@ -65,7 +65,7 @@ class ExtensionNamingUtility
         if (isset($cache[$qualifiedExtensionName])) {
             return $cache[$qualifiedExtensionName];
         }
-        $extensionKey = self::getExtensionKey($qualifiedExtensionName);
+        $extensionKey = static::getExtensionKey($qualifiedExtensionName);
         $cache[$qualifiedExtensionName] = str_replace('_', '', $extensionKey);
         return $cache[$qualifiedExtensionName];
     }
@@ -80,7 +80,7 @@ class ExtensionNamingUtility
         if (isset($cache[$qualifiedExtensionName])) {
             return $cache[$qualifiedExtensionName];
         }
-        if (true === self::hasVendorName($qualifiedExtensionName)) {
+        if (true === static::hasVendorName($qualifiedExtensionName)) {
             list($vendorName, $extensionKey) = GeneralUtility::trimExplode('.', $qualifiedExtensionName);
         } else {
             $vendorName = null;
@@ -101,7 +101,7 @@ class ExtensionNamingUtility
         if (isset($cache[$qualifiedExtensionName])) {
             return $cache[$qualifiedExtensionName];
         }
-        if (true === self::hasVendorName($qualifiedExtensionName)) {
+        if (true === static::hasVendorName($qualifiedExtensionName)) {
             list($vendorName, $extensionName) = GeneralUtility::trimExplode('.', $qualifiedExtensionName);
         } else {
             $vendorName = null;

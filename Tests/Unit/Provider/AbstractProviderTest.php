@@ -26,7 +26,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     /**
      * @var string
      */
-    protected $configurationProviderClassName = 'FluidTYPO3\Flux\Provider\ContentProvider';
+    protected $configurationProviderClassName = 'FluidTYPO3\Flux\Provider\Provider';
 
     /**
      * @return ProviderInterface
@@ -516,58 +516,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $variables = array('test' => 'test');
         $provider->setTemplateVariables($variables);
         $this->assertArrayHasKey('test', $provider->getTemplateVariables($record));
-    }
-
-    /**
-     * @test
-     */
-    public function testApplyLocalisationToPageValues()
-    {
-        $GLOBALS['TSFE'] = (object) array('page' => array('title' => 'foo'), 'sys_language_uid' => 1);
-        $recordService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService')->setMethods(array('get'))->getMock();
-        $recordService->expects($this->once())->method('get')->willReturn(array(array('title' => 'bar', 'subtitle' => 'baz')));
-        $subject = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\AbstractProvider')->getMockForAbstractClass();
-        #$subject->_set('recordService', $recordService);
-        $subject->injectRecordService($recordService);
-
-        $this->assertEquals(array('title' => 'bar', 'subtitle' => 'baz'), $this->callInaccessibleMethod($subject, 'getPageValues'));
-    }
-
-    /**
-     * @test
-     */
-    public function testDontApplyLocalisationToPageValuesInDefaultLanguage()
-    {
-        $GLOBALS['TSFE'] = (object) array('page' => array('title' => 'foo'), 'sys_language_uid' => 0);
-        $recordService = $this->getMockBuilder('FluidTYPO3\\Service\\RecordService')->setMethods(array('get'))->getMock();
-        $recordService->expects($this->never())->method('get');
-        $subject = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\AbstractProvider')->getMockForAbstractClass();
-        ObjectAccess::setProperty($subject, 'recordService', $recordService, true);
-        $this->assertEquals(array('title' => 'foo'), $this->callInaccessibleMethod($subject, 'getPageValues'));
-    }
-
-    /**
-     * @test
-     */
-    public function testMaintainUidAndPidOfThePage()
-    {
-        $GLOBALS['TSFE'] = (object) array(
-            'page' => array(
-                'title' => 'foo',
-                'uid' => 1,
-                'pid' => 0
-            ), 'sys_language_uid' => 1);
-        $recordService = $this->getMockBuilder('FluidTYPO3\\Service\\RecordService')->setMethods(array('get'))->getMock();
-        $recordService->expects($this->once())->method('get')->willReturn(array(
-            array('title' => 'bar',
-                'subtitle' => 'baz',
-                'uid' => 10,
-                'pid' => 20
-            )
-        ));
-        $subject = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\AbstractProvider')->getMock();
-        ObjectAccess::setProperty($subject, 'recordService', $recordService, true);
-        $this->assertEquals(array('title' => 'bar', 'subtitle' => 'baz', 'uid' => 1, 'pid' => 0), $this->callInaccessibleMethod($subject, 'getPageValues'));
     }
 
     /**

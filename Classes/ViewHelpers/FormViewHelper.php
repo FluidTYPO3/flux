@@ -8,10 +8,8 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\FluxPackage;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Package\FluxPackageFactory;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * FlexForm configuration container ViewHelper
@@ -96,8 +94,7 @@ class FormViewHelper extends AbstractFormViewHelper
     ) {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-        $formClassName = FluxPackageFactory::getPackageWithFallback($extensionName)
-            ->getImplementation(FluxPackage::IMPLEMENTATION_FORM);
+        $formClassName = Form::class;
         $form = call_user_func_array([$formClassName, 'create'], []);
         // configure Form instance
         $form->setId($arguments['id']);
@@ -110,7 +107,7 @@ class FormViewHelper extends AbstractFormViewHelper
         $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);
         $form->setOptions((array) $arguments['options']);
-        if (false === $form->hasOption(Form::OPTION_ICON)) {
+        if (false === $form->hasOption(Form::OPTION_ICON) && isset($arguments['icon'])) {
             $form->setOption(Form::OPTION_ICON, $arguments['icon']);
         }
 

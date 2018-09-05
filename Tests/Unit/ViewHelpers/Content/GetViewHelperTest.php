@@ -8,13 +8,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use Doctrine\DBAL\Statement;
+use FluidTYPO3\Flux\Form\Container\Column;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form\Container\Row;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-use Prophecy\Argument;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageRepository;
@@ -32,33 +33,9 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     {
         parent::setUp();
         $GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
-        $GLOBALS['TSFE']->cObj = new ContentObjectRenderer();
+        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)->setMethods(['getRecords'])->getMock();
         $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)->setMethods(['enableFields'])->getMock();
         $GLOBALS['TCA']['tt_content']['ctrl'] = array();
-    }
-
-    /**
-     * @return QueryBuilder
-     */
-    protected function createAndRegisterMockForQueryBuilder()
-    {
-        $statement = $this->prophesize(Statement::class);
-        $statement->fetchAll()->willReturn([]);
-
-        $queryBuilder = $this->prophesize(QueryBuilder::class);
-        $queryBuilder->from('tt_content')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->select('*')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->select('uid', 'pi_flexform')->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->where(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->orderBy('sorting', '');
-        $queryBuilder->setMaxResults(Argument::type('int'));
-        $queryBuilder->execute()->willReturn($statement->reveal());
-
-        $prophecy = $this->prophesize(ConnectionPool::class);
-        $prophecy->getQueryBuilderForTable('tt_content')->willReturn($queryBuilder->reveal());
-
-        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
-        return $queryBuilder;
     }
 
     /**
@@ -66,17 +43,22 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelper()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',
             'order' => 'sorting'
         );
         $variables = array(
-            'record' => Records::$contentRecordWithoutParentAndWithoutChildren
+            'record' => Records::$contentRecordWithoutParentAndWithoutChildren,
+            'provider' => new Provider()
         );
         $node = $this->createNode('Text', 'Hello loopy world!');
-        $output = $this->executeViewHelper($arguments, $variables, $node);
+        $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
+        $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
+        $provider = $this->objectManager->get(Provider::class);
+        $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);
     }
 
@@ -85,7 +67,6 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithLoadRegister()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'records',
@@ -98,7 +79,12 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
         );
         $node = $this->createNode('Text', 'Hello loopy world!');
-        $output = $this->executeViewHelper($arguments, $variables, $node);
+        $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
+        $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
+        $provider = $this->objectManager->get(Provider::class);
+        $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);
     }
 
@@ -107,7 +93,6 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'nameTaken',
@@ -118,7 +103,12 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
         );
         $node = $this->createNode('Text', 'Hello loopy world!');
-        $content = $this->executeViewHelper($arguments, $variables, $node);
+        $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
+        $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
+        $provider = $this->objectManager->get(Provider::class);
+        $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $content = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsString($content);
     }
 
@@ -127,7 +117,6 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithNonExistingAsArgument()
     {
-        $this->createAndRegisterMockForQueryBuilder();
         $arguments = array(
             'area' => 'void',
             'as' => 'freevariablename',
@@ -137,7 +126,12 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
         );
         $node = $this->createNode('Text', 'Hello loopy world!');
-        $output = $this->executeViewHelper($arguments, $variables, $node);
+        $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
+        $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
+        $provider = $this->objectManager->get(Provider::class);
+        $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);
     }
 
@@ -146,7 +140,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canReturnArrayOfUnrenderedContentElements()
     {
-        $this->createAndRegisterMockForQueryBuilder();
+        $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
         $arguments = array(
             'area' => 'void',
             'render' => false,
@@ -155,7 +149,12 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $variables = array(
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
         );
-        $output = $this->executeViewHelper($arguments, $variables);
+        $viewHelper = $this->buildViewHelperInstance($arguments, $variables);
+        $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
+        $provider = $this->objectManager->get(Provider::class);
+        $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsArray($output);
     }
 
@@ -164,7 +163,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canReturnArrayOfRenderedContentElements()
     {
-        $this->createAndRegisterMockForQueryBuilder();
+        $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
         $arguments = array(
             'area' => 'void',
             'render' => true,
@@ -173,7 +172,12 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $variables = array(
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
         );
-        $output = $this->executeViewHelper($arguments, $variables);
+        $viewHelper = $this->buildViewHelperInstance($arguments, $variables);
+        $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
+        $provider = $this->objectManager->get(Provider::class);
+        $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsArray($output);
     }
 

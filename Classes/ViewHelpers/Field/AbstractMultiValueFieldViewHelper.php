@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\MultiValueFieldInterface;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
@@ -82,6 +82,7 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
         $component->setItemsProcFunc($arguments['itemsProcFunc']);
         $component->setEmptyOption($arguments['emptyOption']);
         $component->setTranslateCsvItems((boolean) $arguments['translateCsvItems']);
+        $component->setValidate($arguments['validate']);
         $component->setMinItems($arguments['minItems']);
         $component->setMaxItems($arguments['maxItems']);
         $component->setSize($arguments['size']);

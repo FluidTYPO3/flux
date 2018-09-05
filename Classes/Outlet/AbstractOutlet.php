@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Outlet;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
 use TYPO3\CMS\Extbase\Error\Result;
@@ -76,7 +77,12 @@ abstract class AbstractOutlet implements OutletInterface
                 $instance->addPipeOut($pipeSettings['type']::create($pipeSettings));
             }
         }
-        return $instance;
+        return HookHandler::trigger(
+            HookHandler::OUTLET_CREATED,
+            [
+                'outlet' => $instance
+            ]
+        )['outlet'];
     }
 
     /**
@@ -211,7 +217,13 @@ abstract class AbstractOutlet implements OutletInterface
             $pipe->conduct($data);
         }
 
-        return $data;
+        return HookHandler::trigger(
+            HookHandler::OUTLET_EXECUTED,
+            [
+                'outlet' => $this,
+                'data' => $data
+            ]
+        )['data'];
     }
 
     /**
@@ -271,8 +283,17 @@ abstract class AbstractOutlet implements OutletInterface
         foreach ($this->arguments as $argument) {
             $argumentName = $argument->getName();
             $argument->setValue(isset($data[$argumentName]) ? $data[$argumentName] : null);
+            $propertyName = $argument->getName();
             if (!$argument->isValid()) {
-                $this->validationResults->forProperty($argument->getName())->merge($argument->getValidationResults());
+                $this->validationResults->forProperty($propertyName)->merge(
+                    HookHandler::trigger(
+                        HookHandler::OUTLET_INPUT_INVALID,
+                        [
+                            'property' => $propertyName,
+                            'argument' => $argument
+                        ]
+                    )['validationResults']
+                );
             }
         }
 

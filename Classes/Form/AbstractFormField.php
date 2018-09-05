@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 use FluidTYPO3\Flux\Form\Container\Section;
+use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -59,7 +60,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     /**
      * @var boolean
      */
-    protected $exclude = true;
+    protected $exclude = false;
 
     /**
      * @var string
@@ -200,27 +201,31 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             return [];
         }
         $configuration = $this->buildConfiguration();
+        $filterClosure = function($value) {
+            return $value !== null && $value !== '' && $value !== [];
+        };
+        $configuration = array_filter($configuration, $filterClosure);
         $fieldStructureArray = [
             'label' => $this->getLabel(),
             'exclude' => intval($this->getExclude()),
-            'config' => $configuration,
-            'displayCond' => $this->getDisplayCondition()
+            'config' => $configuration
         ];
-        if (true === isset($configuration['defaultExtras'])) {
-            $fieldStructureArray['defaultExtras'] = $configuration['defaultExtras'];
-            unset($fieldStructureArray['config']['defaultExtras']);
+        if (($displayCondition = $this->getDisplayCondition())) {
+            $fieldStructureArray['displayCond'] = $displayCondition;
         }
         $wizards = $this->buildChildren($this->wizards);
         if (true === $this->getClearable()) {
             array_push($wizards, [
                 'type' => 'userFunc',
-                'userFunc' => ClearValueWizard::class . '->renderField',
+                'userFunc' => UserFunctions::class . '->renderClearValueWizardField',
                 'params' => [
                     'itemName' => $this->getName(),
                 ],
             ]);
         }
-        $fieldStructureArray['config']['wizards'] = $wizards;
+        if (!empty($wizards)) {
+            $fieldStructureArray['config']['wizards'] = $wizards;
+        }
         if (true === $this->getRequestUpdate()) {
             $fieldStructureArray['onChange'] = 'reload';
         }

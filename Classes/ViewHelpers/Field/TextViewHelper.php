@@ -9,8 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\Text;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Textarea FlexForm field ViewHelper
@@ -75,6 +74,13 @@ class TextViewHelper extends AbstractFieldViewHelper
             false,
             null
         );
+        $this->registerArgument(
+            'placeholder',
+            'string',
+            'Placeholder text which vanishes if field is filled and/or field is focused',
+            false,
+            null
+        );
     }
 
     /**
@@ -84,9 +90,6 @@ class TextViewHelper extends AbstractFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
     {
-        if (isset($arguments['defaultExtras'])) {
-            GeneralUtility::logDeprecatedViewHelperAttribute('defaultExtras', $renderingContext);
-        }
         /** @var Text $text */
         $text = static::getPreparedComponent('Text', $renderingContext, $arguments);
         $text->setValidate($arguments['validate']);
@@ -96,6 +99,7 @@ class TextViewHelper extends AbstractFieldViewHelper
         $text->setRichtextConfiguration($arguments['richtextConfiguration']);
         $text->setRenderType($arguments['renderType']);
         $text->setFormat($arguments['format']);
+        $text->setPlaceholder($arguments['placeholder']);
         return $text;
     }
 }

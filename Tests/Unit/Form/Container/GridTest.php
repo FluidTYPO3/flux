@@ -100,4 +100,33 @@ class GridTest extends AbstractContainerTest
         $instance = $this->createInstance();
         $this->assertEmpty($instance->getRows());
     }
+
+    /**
+     * @dataProvider getEnsureDottedKeysTestValues
+     * @param array $input
+     * @param array $expected
+     */
+    public function testEnsureDottedKeys(array $input, array $expected)
+    {
+        $instance = new Grid();
+        $result = $this->callInaccessibleMethod($instance, 'ensureDottedKeys', $input);
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getEnsureDottedKeysTestValues()
+    {
+        return array(
+            array(
+                array('foo' => array('bar' => 'bar')),
+                array('foo.' => array('bar' => 'bar'))
+            ),
+            array(
+                array('foo.' => array('bar' => 'bar')),
+                array('foo.' => array('bar' => 'bar'))
+            )
+        );
+    }
 }

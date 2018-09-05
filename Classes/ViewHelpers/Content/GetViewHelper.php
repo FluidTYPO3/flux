@@ -8,17 +8,21 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Container\Column;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 
@@ -48,7 +52,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  *      </f:for>
  *     </f:section>
  */
-class GetViewHelper extends AbstractViewHelper implements CompilableInterface
+class GetViewHelper extends AbstractViewHelper
 {
     use CompileWithRenderStatic;
 
@@ -78,7 +82,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
      */
     public function initializeArguments()
     {
-        $this->registerArgument('area', 'string', 'Name of the area to render');
+        $this->registerArgument('area', 'string', 'Name or "colPos" value of the content area to render', true);
         $this->registerArgument('limit', 'integer', 'Optional limit to the number of content elements to render');
         $this->registerArgument('offset', 'integer', 'Optional offset to the limit', false, 0);
         $this->registerArgument(
@@ -113,7 +117,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
     ) {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         static::$configurationService = static::$configurationService ?? $objectManager->get(FluxService::class);
-        static::$configurationManager = $configurationManager ?? $objectManager->get(ConfigurationManagerInterface::class);
+        static::$configurationManager = static::$configurationManager ?? $objectManager->get(ConfigurationManagerInterface::class);
 
         $contentObjectRenderer = static::getContentObjectRenderer();
 
@@ -123,14 +127,7 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             $loadRegister = true;
         }
         $templateVariableContainer = $renderingContext->getVariableProvider();
-        $record = $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
-        $id = $record['uid'];
-        $order = $arguments['order'];
-        $area = $arguments['area'];
-        $limit = $arguments['limit'] ? $arguments['limit'] : 99999;
-        $offset = intval($arguments['offset']);
-        $sortDirection = $arguments['sortDirection'];
-        $order .= ' ' . $sortDirection;
+        $record = (array) $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
 
         if ($GLOBALS['BE_USER']->workspace) {
             $placeholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid']);
@@ -141,19 +138,8 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             }
         }
 
-        // Always use the $record['uid'] when fetching child rows, and fetch everything with same parent and column.
-        // The RECORDS function called in getRenderedRecords will handle overlay, access restrictions, time etc.
-        // Depending on the TYPO3 setting config.sys_language_overlay, the $record could be either one of the
-        // localized version or default version.
-        $conditions = sprintf(
-            "(tx_flux_parent = '%s' AND tx_flux_column = '%s' AND pid = %d AND colPos = 18181) %s %s",
-            $id,
-            $area,
-            $record['pid'],
-            $contentObjectRenderer->enableFields('tt_content'),
-            BackendUtility::versioningPlaceholderClause('tt_content')
-        );
-        $rows = static::getRecordService()->get('tt_content', '*', $conditions, '', $order, $offset . ',' . $limit);
+        $grid = $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'provider')->getGrid($record);
+        $rows = static::getContentRecords($arguments, $record, $grid);
 
         $elements = false === (boolean) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
         if (true === empty($arguments['as'])) {
@@ -175,6 +161,58 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
             $contentObjectRenderer->cObjGetSingle('RESTORE_REGISTER', '');
         }
         return $content;
+    }
+
+    /**
+     * @param array $arguments
+     * @param array $parent
+     * @param Grid $grid
+     * @return array
+     */
+    protected static function getContentRecords(array $arguments, array $parent, Grid $grid)
+    {
+        $columnPosition = $arguments['area'];
+        if (!is_numeric($columnPosition)) {
+            $column = $grid->get($columnPosition, true, Column::class);
+            if ($column instanceof Column) {
+                $columnPosition = $column->getColumnPosition();
+            } else {
+                throw new Exception(
+                    sprintf(
+                        'Argument "column" or "area" for "flux:content.(get|render)" was a string column name "%s", ' .
+                        'but this column was not defined',
+                        $columnPosition
+                    )
+                );
+            }
+        }
+
+        $conditions = sprintf(
+            'colPos = %d',
+            ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                $parent['l18n_parent'] ?: $parent['uid'],
+                $columnPosition
+            )
+        );
+
+        $rows = static::getContentObjectRenderer()->getRecords(
+            'tt_content',
+            [
+                'max' => $arguments['limit'],
+                'begin' => $arguments['offset'],
+                'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
+                'where' => $conditions,
+                'pidInList' => $parent['pid'],
+                'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
+            ]
+        );
+
+        return HookHandler::trigger(
+            HookHandler::NESTED_CONTENT_FETCHED,
+            [
+                'records' => $rows
+            ]
+        )['records'];
     }
 
     /**
@@ -209,8 +247,14 @@ class GetViewHelper extends AbstractViewHelper implements CompilableInterface
                 'source' => $row['uid'],
                 'dontCheckPid' => 1,
             ];
-            array_push($elements, static::$configurationManager->getContentObject()->cObjGetSingle('RECORDS', $conf));
+            array_push($elements, static::getContentObjectRenderer()->cObjGetSingle('RECORDS', $conf));
         }
-        return $elements;
+        return HookHandler::trigger(
+            HookHandler::NESTED_CONTENT_RENDERED,
+            [
+                'rows' => $rows,
+                'rendered' => $elements
+            ]
+        )['rendered'];
     }
 }

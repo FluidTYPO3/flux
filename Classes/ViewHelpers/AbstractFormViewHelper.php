@@ -11,16 +11,14 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\FormInterface;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
  * Base class for all FlexForm related ViewHelpers
  */
-abstract class AbstractFormViewHelper extends AbstractViewHelper implements CompilableInterface
+abstract class AbstractFormViewHelper extends AbstractViewHelper
 {
     use CompileWithRenderStatic;
 
@@ -69,7 +67,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
     /**
      * @param RenderingContextInterface $renderingContext
      * @param string $name
-     * @throws InvalidVariableException
      */
     protected static function setExtensionNameInRenderingContext(RenderingContextInterface $renderingContext, $name)
     {
@@ -80,7 +77,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
     /**
      * @param RenderingContextInterface $renderingContext
      * @param array $arguments
-     * @throws InvalidVariableException
      * @return string
      */
     protected static function getExtensionNameFromRenderingContextOrArguments(
@@ -105,7 +101,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @throws InvalidVariableException
      * @return Form
      */
     public static function getFormFromRenderingContext(RenderingContextInterface $renderingContext)
@@ -123,7 +118,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
     /**
      * @param RenderingContextInterface $renderingContext
      * @param string $gridName
-     * @throws InvalidVariableException
      * @return Grid
      */
     protected static function getGridFromRenderingContext(
@@ -142,7 +136,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @throws InvalidVariableException
      * @return Form\ContainerInterface
      */
     protected static function getContainerFromRenderingContext(RenderingContextInterface $renderingContext)
@@ -155,7 +148,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper implements Comp
     /**
      * @param RenderingContextInterface $renderingContext
      * @param FormInterface $container
-     * @throws InvalidVariableException
      * @return void
      */
     protected static function setContainerInRenderingContext(

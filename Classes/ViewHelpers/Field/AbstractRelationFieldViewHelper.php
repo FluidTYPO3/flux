@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\RelationFieldInterface;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
@@ -56,7 +56,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
             'A selector is used to show all possible child records that could be used to create a relation with ' .
             'the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the ' .
             'selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` ' .
-            'that is responsible for providing a selector-box – this field on the `foreign_table` usually has the ' .
+            'that is responsible for providing a selector-box - this field on the `foreign_table` usually has the ' .
             'type "select" and also has a `foreign_table` defined.'
         );
         $this->registerArgument(

@@ -150,6 +150,11 @@ class Fal extends AbstractInlineFormField
     protected $createNewRelationLinkTitle = self::DEFAULT_CREATE_NEW_RELATION_LINK_TITLE;
 
     /**
+     * @var null|string
+     */
+    protected $renderType = null;
+
+    /**
      * @return array
      */
     public function buildConfiguration()

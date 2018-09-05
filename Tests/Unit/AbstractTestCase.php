@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 
 /**
  * AbstractTestCase
@@ -189,7 +190,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
         /** @var FluxService $fluxService */
         $fluxService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods($methods)->disableOriginalConstructor()->getMock();
         $fluxService->injectObjectManager($this->objectManager);
-        $configurationManager = $this->getMockBuilder('FluidTYPO3\Flux\Configuration\ConfigurationManager')->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
         return $fluxService;
     }

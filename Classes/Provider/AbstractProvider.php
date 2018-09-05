@@ -10,12 +10,14 @@ namespace FluidTYPO3\Flux\Provider;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Utility\ContextUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
-use FluidTYPO3\Flux\View\PreviewView;
+use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -26,7 +28,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Exception;
-use function class_exists;
 
 /**
  * AbstractProvider
@@ -205,7 +206,7 @@ class AbstractProvider implements ProviderInterface
         $providerExtensionKey = $this->extensionKey;
         $contentObjectType = $this->contentObjectType;
         $listType = $this->listType;
-        $rowContainsPlugin = (!empty($row['CType']) && self::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
+        $rowContainsPlugin = (!empty($row['CType']) && static::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
         $rowIsEmpty = (0 === count($row));
         $matchesContentType = ((empty($contentObjectType) && empty($row['CType']))
             || (!empty($row['CType']) && $row['CType'] === $contentObjectType));
@@ -234,7 +235,7 @@ class AbstractProvider implements ProviderInterface
         $packageKey = str_replace('.', '\\', $packageName);
         $controllerName = $this->getControllerNameFromRecord($row);
         $action = $this->getControllerActionFromRecord($row);
-        $expectedClassName = sprintf(self::FORM_CLASS_PATTERN, $packageKey, $controllerName, ucfirst($action));
+        $expectedClassName = sprintf(static::FORM_CLASS_PATTERN, $packageKey, $controllerName, ucfirst($action));
         return true === class_exists($expectedClassName) ? $expectedClassName : null;
     }
 
@@ -255,13 +256,8 @@ class AbstractProvider implements ProviderInterface
         // and must not be processed by the configuration service. This has limited support from
         // Flux (essentially: no Form instance which means no inheritance, transformation or
         // form options can be dependended upon at this stage).
-        if (false === is_array($row[$fieldName])) {
-            $recordVariables = $this->configurationService->convertFlexFormContentToArray(
-                $row[$fieldName],
-                null,
-                'lDEF',
-                'vDEF'
-            );
+        if (isset($row[$fieldName]) && !is_array($row[$fieldName])) {
+            $recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
             $variables = RecursiveArrayUtility::mergeRecursiveOverrule($variables, $recordVariables);
         }
 
@@ -298,7 +294,10 @@ class AbstractProvider implements ProviderInterface
      */
     public function getGrid(array $row)
     {
-        return $this->grid ?? $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
+
+        $grid = $this->grid ?? $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
+        $grid->setExtensionName($grid->getExtensionName() ?: $this->getControllerExtensionKeyFromRecord($row));
+        return $grid;
     }
 
     /**
@@ -309,37 +308,48 @@ class AbstractProvider implements ProviderInterface
     protected function extractConfiguration(array $row, $name = null)
     {
         $cacheKey = $this->getCacheKeyForStoredVariable($row, $name ?: '_all');
-
-        $fromCache = $this->configurationService->getFromCaches($cacheKey);
+        $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all');
+        $allCached = $this->configurationService->getFromCaches($cacheKeyAll);
+        $fromCache = $this->configurationService->getFromCaches($cacheKey) ?: ($allCached[$name] ?? false);
         if ($fromCache) {
-            return $name ? $fromCache[$name] ?? null : $fromCache;
+            return $fromCache;
         }
         $configurationSectionName = $this->getConfigurationSectionName($row);
-        $variables = $this->getViewVariables($row);
+        $viewVariables = $this->getViewVariables($row);
         $view = $this->getViewForRecord($row);
 
         try {
             if ($configurationSectionName) {
-                $view->renderSection($configurationSectionName, $variables, true);
+                $view->renderSection($configurationSectionName, $viewVariables, true);
             } else {
-                $view->assignMultiple($variables);
+                $view->assignMultiple($viewVariables);
                 $view->render();
             }
             if ($name) {
-                return $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, $name);
+                $returnValue = $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, $name);
             } else {
                 $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class) ?? [];
                 if (isset($variables['form']) && $variables['form']->getOption(Form::OPTION_STATIC)) {
                     $this->configurationService->setInCaches($variables, true, $cacheKey);
                 }
+                $returnValue = $variables;
             }
 
         } catch (Exception $error) {
-            GeneralUtility::sysLog($error->getMessage(), 'flux');
-            return null;
+            if (!ContextUtility::getApplicationContext()->isProduction()) {
+                throw $error;
+            }
+            $returnValue = null;
         }
 
-        return $variables;
+        return HookHandler::trigger(
+            HookHandler::PROVIDER_EXTRACTED_OBJECT,
+            [
+                'record' => $row,
+                'name' => $name,
+                'value' => $returnValue
+            ]
+        )['value'];
     }
 
     /**
@@ -411,15 +421,21 @@ class AbstractProvider implements ProviderInterface
      */
     public function getTemplatePathAndFilename(array $row)
     {
-        unset($row);
-        if (0 === strpos($this->templatePathAndFilename, 'EXT:') || 0 !== strpos($this->templatePathAndFilename, '/')) {
-            $path = GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
-            if (true === empty($path)) {
-                return null;
+        $templatePathAndFilename = $this->templatePathAndFilename;
+        if (0 === strpos($templatePathAndFilename, 'EXT:') || 0 !== strpos($templatePathAndFilename, '/')) {
+            $templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
+            if (true === empty($templatePathAndFilename)) {
+                $templatePathAndFilename = null;
             }
-            return $path;
         }
-        return $this->templatePathAndFilename;
+        return HookHandler::trigger(
+            HookHandler::PROVIDER_RESOLVED_TEMPLATE,
+            [
+                'template' => $templatePathAndFilename,
+                'provider' => $this,
+                'record' => $row
+            ]
+        )['template'];
     }
 
     /**
@@ -434,12 +450,7 @@ class AbstractProvider implements ProviderInterface
     {
         $fieldName = $this->getFieldName($row);
         $form = $this->getForm($row);
-        return $this->configurationService->convertFlexFormContentToArray(
-            $row[$fieldName],
-            $form,
-            'lDEF',
-            'vDEF'
-        );
+        return $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form);
     }
 
     /**
@@ -480,26 +491,9 @@ class AbstractProvider implements ProviderInterface
      */
     protected function getPageValues()
     {
-        $record = $GLOBALS['TSFE']->page;
-        if ($GLOBALS['TSFE']->sys_language_uid != 0) {
-            $localisation = $this->recordService->get(
-                'pages_language_overlay',
-                '*',
-                'pid = "' . $record['uid'] .
-                '" AND sys_language_uid = "' . $GLOBALS['TSFE']->sys_language_uid . '"' .
-                ' AND hidden = false' .
-                ' AND deleted = false' .
-                ' AND (starttime = 0 OR starttime <= UNIX_TIMESTAMP())' .
-                ' AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())'
-            );
-        }
-        if (false === empty($localisation)) {
-            $mergedRecord = RecursiveArrayUtility::merge($record, reset($localisation));
-            if (isset($record['uid']) && isset($record['pid'])) {
-                $mergedRecord['uid'] = $record['uid'];
-                $mergedRecord['pid'] = $record['pid'];
-            }
-            return $mergedRecord;
+        $record = $GLOBALS['TSFE']->page ?? null;
+        if (!$record) {
+            return [];
         }
         return $record;
     }
@@ -513,8 +507,8 @@ class AbstractProvider implements ProviderInterface
         $variables = (array) $this->templateVariables;
         $variables['record'] = $row;
         $variables['page'] = $this->getPageValues();
-        $variables['user'] = $GLOBALS['TSFE']->fe_user->user;
-        if (true === file_exists($this->getTemplatePathAndFilename($row))) {
+        $variables['user'] = $GLOBALS['TSFE']->fe_user->user ?? [];
+        if (file_exists($this->getTemplatePathAndFilename($row))) {
             $variables['grid'] = $this->getGrid($row);
             $variables['form'] = $this->getForm($row);
         }
@@ -570,6 +564,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function preProcessRecord(array &$row, $id, DataHandler $reference)
     {
+        // TODO: move to single-fire implementation in TceMain (DataHandler)
         $fieldName = $this->getFieldName($row);
         $tableName = $this->getTableName($row);
         if (is_array($row[$fieldName]) && isset($row[$fieldName]['data']['options']['lDEF'])
@@ -598,6 +593,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = [])
     {
+        // TODO: move to single-fire implementation in TceMain (DataHandler)
         if ('update' === $operation || 'new' === $operation) {
             $record = $reference->datamap[$this->tableName][$id];
             $stored = $this->recordService->getSingle($this->tableName, '*', $record['uid']) ?? $record;
@@ -648,6 +644,8 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference)
     {
+        // TODO: move function body to single-fire implementation in TceMain (DataHandler)
+        // TODO: remove in Flux 10.0
         // We dispatch the Outlet associated with the Form, triggering each defined
         // Pipe inside the Outlet to "conduct" the data.
         $record = $this->recordService->getSingle($this->getTableName($row), '*', $id);
@@ -679,6 +677,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function preProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference)
     {
+        // TODO: remove in Flux 10.0
         unset($command, $id, $row, $relativeTo, $reference);
     }
 
@@ -695,6 +694,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference)
     {
+        // TODO: remove in Flux 10.0
         unset($command, $id, $row, $relativeTo, $reference);
     }
 
@@ -749,6 +749,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function clearCacheCommand($command = [])
     {
+        // TODO: remove in Flux 10.0
     }
 
     /**
@@ -763,6 +764,8 @@ class AbstractProvider implements ProviderInterface
         $request = $objectManager->get(WebRequest::class);
         $request->setRequestUri(GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL'));
         $request->setBaseUri(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
+        $request->setControllerExtensionName($this->getControllerExtensionKeyFromRecord($row));
+        $request->setControllerActionName($this->getControllerActionFromRecord($row));
         /** @var UriBuilder $uriBuilder */
         $uriBuilder = $objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($request);
@@ -770,7 +773,7 @@ class AbstractProvider implements ProviderInterface
         $controllerContext = $objectManager->get(ControllerContext::class);
         $controllerContext->setRequest($request);
         $controllerContext->setUriBuilder($uriBuilder);
-        $renderingContext = $objectManager->get(RenderingContext::class, $this);
+        $renderingContext = $objectManager->get(RenderingContext::class);
         $renderingContext->setControllerContext($controllerContext);
         $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
             ExtensionNamingUtility::getExtensionKey($this->getExtensionKey($row))
@@ -842,7 +845,8 @@ class AbstractProvider implements ProviderInterface
         }
         $class = get_class($this);
         $separator = false !== strpos($class, '\\') ? '\\' : '_';
-        $base = array_pop(explode($separator, $class));
+        $parts = explode($separator, $class);
+        $base = end($parts);
         return substr($base, 0, -8);
     }
 
@@ -1012,5 +1016,4 @@ class AbstractProvider implements ProviderInterface
         $this->grid = $grid;
         return $this;
     }
-
 }
