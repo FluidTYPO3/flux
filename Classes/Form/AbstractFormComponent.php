@@ -283,7 +283,7 @@ abstract class AbstractFormComponent implements FormInterface
         } elseif (true === $this instanceof Container) {
             $prefix = 'containers';
         } elseif (true === $this instanceof FieldInterface) {
-            if (true === $this->isChildOfType('Object')) {
+            if (true === $this->isChildOfType('ContainerObject')) {
                 $prefix = 'objects.' . $this->getParent()->getName();
             } else {
                 $prefix = 'fields';

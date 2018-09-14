@@ -93,7 +93,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
                 $isSectionOrContainer = (true === $child instanceof Section || true === $child instanceof Container);
                 $isFieldEmulatorAndHasChildren = ($isSectionOrContainer && true === $child->hasChildren());
                 $isActualField = (true === $child instanceof FieldInterface);
-                $isNotInsideObject = (false === $child->isChildOfType('Object'));
+                $isNotInsideObject = (false === $child->isChildOfType('ContainerObject'));
                 $isNotInsideContainer = (false === $child->isChildOfType('Container'));
                 if ($isFieldEmulatorAndHasChildren || ($isActualField && $isNotInsideObject && $isNotInsideContainer)) {
                     $name = $child->getName();
