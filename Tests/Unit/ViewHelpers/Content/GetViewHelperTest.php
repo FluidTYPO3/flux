@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Container\Object;
+use FluidTYPO3\Flux\Form\Container\ContainerObject;
 use FluidTYPO3\Flux\ViewHelpers\Content\GetViewHelper;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;

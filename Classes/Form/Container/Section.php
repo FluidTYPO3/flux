@@ -42,7 +42,7 @@ class Section extends AbstractFormContainer implements ContainerInterface
                 if (false === isset($objectSettings['name'])) {
                     $objectSettings['name'] = $fieldName;
                 }
-                $object = Object::create($objectSettings);
+                $object = ContainerObject::create($objectSettings);
                 $section->add($object);
             }
         }
