@@ -23,7 +23,12 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 		'before' => array(
 			\TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class
 		)
-	);
+    );
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1532363653] = [
+        'nodeName' => 'fluxColumnPosition',
+        'priority' => 30,
+        'class' => \FluidTYPO3\Flux\Integration\FormEngine\ColposElement::class
+    ];
 
     // Various hooks needed to operate Flux
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][\TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools::class]['flexParsing']['flux'] =
