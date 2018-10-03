@@ -108,6 +108,19 @@ class DataHandlerSubscriber
                 $fieldArray['colPos'] = (int)($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? $record['colPos']);
             }
         }
+
+        // Save tt_content.* named form fields direct in db columns
+        if (is_array($fieldArray['pi_flexform']) && isset($fieldArray['pi_flexform']['data']['options']['lDEF']) && is_array($fieldArray['pi_flexform']['data']['options']['lDEF'])) {
+            foreach ($fieldArray['pi_flexform']['data']['options']['lDEF'] as $key => $value) {
+                if (0 === strpos($key, $table)) {
+                    $realKey = array_pop(explode('.', $key));
+                    if (isset($GLOBALS['TCA'][$table]['columns'][$realKey])) {
+                        $fieldArray[$realKey] = $value['vDEF'];
+                    }
+                }
+            }
+        }
+
     }
 
     protected function cascadeCommandToChildRecords(string $table, int $id, string $command, $value, DataHandler $dataHandler)
