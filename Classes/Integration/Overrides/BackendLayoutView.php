@@ -101,7 +101,7 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         }
         if ($this->addingItemsForContent) {
             $parentRecordUid = ColumnNumberUtility::calculateParentUid($this->record['colPos']);
-            if ($parentRecordUid) {
+            if ($parentRecordUid > 0) {
                 $parentRecord = $this->loadRecordFromTable('tt_content', $parentRecordUid);
                 $provider = $this->resolvePrimaryProviderForRecord('tt_content', $parentRecord);
                 if ($provider) {
