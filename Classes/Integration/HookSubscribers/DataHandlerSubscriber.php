@@ -95,6 +95,29 @@ class DataHandlerSubscriber
      */
     public function processDatamap_preProcessFieldArray(array &$fieldArray, $table, $id, DataHandler $dataHandler)
     {
+        // Handle "$table.$field" named fields where $table is the valid TCA table name and $field is an existing TCA
+        // field. Updated value will still be subject to permission checks.
+        $resolver = GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class);
+        foreach ($fieldArray as $fieldName => $fieldValue) {
+            if ($GLOBALS["TCA"][$table]["columns"][$fieldName]["config"]["type"] === 'flex') {
+                $primaryConfigurationProvider = $resolver->resolvePrimaryConfigurationProvider(
+                    $table,
+                    $fieldName
+                );
+
+                if ($primaryConfigurationProvider) {
+                    foreach ($fieldArray[$fieldName]['data'] as $sheet) {
+                        foreach ($sheet['lDEF'] as $key => $value) {
+                            list ($possibleTableName, $columnName) = explode('.', $key, 2);
+                            if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName])) {
+                                $fieldArray[$columnName] = $value['vDEF'];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         if ($table !== 'tt_content' || !is_integer($id)) {
             return;
         }

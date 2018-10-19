@@ -4,7 +4,7 @@ $EM_CONF[$_EXTKEY] = array (
   'description' => 'Backend form and frontend content rendering assistance API with focus on productivity.',
   'category' => 'misc',
   'shy' => 0,
-  'version' => '9.0.1',
+  'version' => '9.1.0',
   'dependencies' => 'cms',
   'conflicts' => '',
   'priority' => 'top',
@@ -25,7 +25,7 @@ $EM_CONF[$_EXTKEY] = array (
   array (
     'depends' => 
     array (
-      'typo3' => '8.7.0-9.3.99',
+      'typo3' => '8.7.0-9.5.99',
       'php' => '7.0.0-7.2.99',
     ),
     'conflicts' => 
