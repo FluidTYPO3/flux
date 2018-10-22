@@ -246,9 +246,6 @@ class ContentTypeBuilder
      */
     protected function addPageTsConfig(Form $form, $contentType)
     {
-        if (TYPO3_MODE !== 'BE') {
-            return;
-        }
         // Icons required solely for use in the "new content element" wizard
         $formId = $form->getId();
         $group = $form->getOption(Form::OPTION_GROUP);
