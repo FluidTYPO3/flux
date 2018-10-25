@@ -77,6 +77,17 @@ Known issues
   `max_input_vars`. If this number is too small then the TYPO3 Backend (being PHP) will decline the submission of the
   backend editing form and will exit with an "Invalid CSRF Token" message because of incomplete (truncated) `POST` data.
 
+
+Installation
+------------
+### Installation using Composer
+
+The recommended way to install the extension is by using [Composer](https://getcomposer.org/). In your Composer based TYPO3 project root, just do `composer require fluidtypo3/flux`.
+
+### Installation as extension from TYPO3 Extension Repository (TER)
+
+Download and install as TYPO3 extension. Search for the term `flux`.
+
 Documentation
 -------------
 
