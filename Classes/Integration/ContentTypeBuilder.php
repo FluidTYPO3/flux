@@ -43,23 +43,31 @@ class ContentTypeBuilder
      * @param string $providerExtensionName
      * @param string $templateFilename
      * @param string $providerClassName
+     * @param string $contentType
+     * @param string $defaultControllerExtensionName
      * @return ProviderInterface
      */
-    public function configureContentTypeFromTemplateFile($providerExtensionName, $templateFilename, $providerClassName = Provider::class)
-    {
+    public function configureContentTypeFromTemplateFile(
+        $providerExtensionName,
+        $templateFilename,
+        $providerClassName = Provider::class,
+        $contentType,
+        $defaultControllerExtensionName
+    ) {
         $section = 'Configuration';
         $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
-        $emulatedControllerAction = lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
+        $emulatedControllerAction = lcfirst($contentType ? GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2))) : pathinfo($templateFilename, PATHINFO_FILENAME));
         $emulatedPluginName = ucfirst($emulatedControllerAction);
-        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
+
+        $controllerClassName = str_replace('.', '\\', $defaultControllerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
+        $localControllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
-        $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
-        $controllerExtensionName = $providerExtensionName;
-        if (!$this->validateContentController($controllerClassName)) {
-            class_alias(ContentController::class, $controllerClassName);
+        $fullContentType = $contentType ?: $extensionSignature . '_' . strtolower($emulatedPluginName);
+        if (!$this->validateContentController($localControllerClassName)) {
+            class_alias($controllerClassName, $localControllerClassName);
         }
-        $this->configureContentTypeForController($controllerExtensionName, $controllerClassName, $emulatedControllerAction);
+        $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $emulatedControllerAction);
 
         /** @var Provider $provider */
         $provider = GeneralUtility::makeInstance(ObjectManager::class)->get($providerClassName);
@@ -181,7 +189,7 @@ class ContentTypeBuilder
             }
         }
 
-        $this->registerExtbasePluginForForm($providerExtensionName, $pluginName, $form);
+        $this->registerExtbasePluginForForm($providerExtensionName, GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType))), $form);
         $this->addPageTsConfig($form, $contentType);
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once

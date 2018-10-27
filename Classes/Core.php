@@ -300,9 +300,9 @@ class Core
      *
      * @param string $providerExtensionName Vendor.ExtensionName format of extension scope of the template file
      * @param string $templateFilename Absolute path to template file containing Flux definition, EXT:... allowed
+     * @param string|null $contentTypeName Optional override for the CType value this template will use
      */
-    public static function registerTemplateAsContentType($providerExtensionName, $templateFilename)
-    {
+    public static function registerTemplateAsContentType($providerExtensionName, $templateFilename, $contentTypeName = null) {
         if (strpos($templateFilename, '/') !== 0) {
             $templateFilename = GeneralUtility::getFileAbsFileName($templateFilename);
         }
@@ -310,7 +310,8 @@ class Core
         static::$queuedContentTypeRegistrations[] = [
             $providerExtensionName,
             $templateFilename,
-            Provider::class
+            Provider::class,
+            $contentTypeName
         ];
     }
 
