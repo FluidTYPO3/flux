@@ -163,7 +163,7 @@ class ContentTypeBuilder
         if (!$form) {
             // Provider *must* be able to return a Form without any global configuration or specific content
             // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
-            $form = $provider->getForm([]);
+            $form = $provider->getForm(['CType' => $contentType]);
             if (!$form) {
                 throw new \RuntimeException(
                     sprintf(
