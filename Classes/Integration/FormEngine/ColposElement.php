@@ -58,7 +58,7 @@ class ColposElement extends AbstractFormElement
             if (!isset($rowUid) || !is_int($rowUid)) {
                 $rowUid = 0;
             }
-            $usedColumnPositions = $this->determineUsedColumnPositionsWithinParent($this->data['tableName'], $rowUid);
+            $usedColumnPositions = $this->determineUsedColumnPositionsWithinParent('tt_content', $rowUid);
             $usedColumnPositionsJS = '[' . implode(',', $usedColumnPositions) . ']';
             // FIXME better constant?
             $maximumColPos = 99;
