@@ -51,8 +51,8 @@ class ContentTypeBuilder
         $providerExtensionName,
         $templateFilename,
         $providerClassName = Provider::class,
-        $contentType,
-        $defaultControllerExtensionName
+        $contentType = null,
+        $defaultControllerExtensionName = 'FluidTYPO3.Flux'
     ) {
         $section = 'Configuration';
         $controllerName = 'Content';
