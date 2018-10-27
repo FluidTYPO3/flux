@@ -317,6 +317,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $provider = $this->getConfigurationProviderInstance();
         $form = Form::create();
+        $form->createField(Form\Field\Input::class, 'dummy');
         $record = $this->getBasicRecord();
         $dataStructure = array();
         $config = array();

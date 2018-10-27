@@ -775,7 +775,7 @@ class AbstractProvider implements ProviderInterface
             $newDataStructure = $form->build();
             if ($dataStructure === $defaultDataStructure) {
                 $dataStructure = $newDataStructure;
-            } else {
+            } elseif (count($form->getFields()) > 0) {
                 if ($newDataStructure !== ['meta' => ['langDisable' => 1, 'langChildren' => 0], 'ROOT' => ['type' => 'array', 'el' => []]]) {
                     $dataStructure = array_replace_recursive($dataStructure, $newDataStructure);
                 } else {
