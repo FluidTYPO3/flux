@@ -255,7 +255,7 @@ class ContentTypeBuilder
     protected function addPageTsConfig(Form $form, $contentType)
     {
         // Icons required solely for use in the "new content element" wizard
-        $formId = $form->getId();
+        $formId = $form->getId() ?: $contentType;
         $group = $form->getOption(Form::OPTION_GROUP);
         $groupName = $this->sanitizeString($group ?? 'fluxContent');
         $extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());
