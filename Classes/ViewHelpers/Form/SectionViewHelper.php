@@ -81,6 +81,14 @@ class SectionViewHelper extends AbstractFieldViewHelper
             false,
             false
         );
+        $this->registerArgument(
+            'gridMode',
+            'string',
+            'Defines how section objects which are marked as content containers, get rendered as a grid. Valid ' .
+            'values are either "rows" or "columns". Default is to render as rows.',
+            false,
+            Section::GRID_MODE_ROWS
+        );
     }
 
     /**
@@ -99,6 +107,7 @@ class SectionViewHelper extends AbstractFieldViewHelper
         $section->setVariables($arguments['variables']);
         $section->setInherit($arguments['inherit']);
         $section->setInheritEmpty($arguments['inheritEmpty']);
+        $section->setGridMode($arguments['gridMode']);
         return $section;
     }
 }

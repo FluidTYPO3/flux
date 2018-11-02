@@ -16,10 +16,25 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * Section
+ * TCEForms Section object representation
+ *
+ * Must be used as container around section objects. In TYPO3 these
+ * become sections where the different types of objects you define,
+ * as children inside the container.
+ *
+ * Section objects from Flux also combine the normal TYPO3 TCEForms
+ * behavior with the ability to flag section objects as "content
+ * containers" which means they automatically produce nested content
+ * columns as a Grid. A flag on this object then determins if the
+ * section objects that become grid containers, should be rendered
+ * as rows or columns.
  */
 class Section extends AbstractFormContainer implements ContainerInterface
 {
+    const GRID_MODE_ROWS = 'rows';
+    const GRID_MODE_COLUMNS = 'columns';
+
+    protected $gridMode = self::GRID_MODE_ROWS;
 
     /**
      * @param array $settings
@@ -47,6 +62,31 @@ class Section extends AbstractFormContainer implements ContainerInterface
             }
         }
         return $section;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGridMode()
+    {
+        return $this->gridMode;
+    }
+
+    /**
+     * @param string $gridMode
+     */
+    public function setGridMode($gridMode)
+    {
+        $this->gridMode = $gridMode;
+    }
+
+    public function getContentContainer()
+    {
+        foreach ($this->children as $child) {
+            if ($child->isContentContainer()) {
+                return $child;
+            }
+        }
     }
 
     /**

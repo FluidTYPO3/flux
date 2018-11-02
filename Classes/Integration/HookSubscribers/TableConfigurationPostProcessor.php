@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Utility\ContextUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3Fluid\Fluid\Exception;
 
@@ -55,8 +56,8 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     {
         $contentTypeBuilder = new ContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
-            list ($providerExtensionName, $templatePathAndFilename) = $queuedRegistration;
-            $contentType = static::determineContentType($providerExtensionName, $templatePathAndFilename);
+            list ($providerExtensionName, $templatePathAndFilename, , $contentType) = $queuedRegistration;
+            $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templatePathAndFilename);
             $contentTypeBuilder->addBoilerplateTableConfiguration($contentType);
         }
     }
@@ -77,17 +78,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     }
 
     /**
-     * @param string $providerExtensionName
-     * @param string $controllerName
-     * @return boolean
-     */
-    protected static function controllerExistsInExtension($providerExtensionName, $controllerName)
-    {
-        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
-        return class_exists($controllerClassName);
-    }
-
-    /**
      * @param array $queue
      * @return void
      */
@@ -96,24 +86,22 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         $contentTypeBuilder = new ContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
-            list ($providerExtensionName, $templateFilename, $providerClassName) = $queuedRegistration;
+            list ($providerExtensionName, $templateFilename, $providerClassName, $contentType) = $queuedRegistration;
             try {
+                $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templateFilename);
+                $defaultControllerExtensionName = 'FluidTYPO3.Flux';
                 $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
                     $providerExtensionName,
                     $templateFilename,
-                    $providerClassName ?? Provider::class
+                    $providerClassName ?? Provider::class,
+                    $contentType,
+                    $defaultControllerExtensionName
                 );
 
                 Core::registerConfigurationProvider($provider);
 
-                $controllerExtensionName = $providerExtensionName;
-                if (!static::controllerExistsInExtension($providerExtensionName, 'Content')) {
-                    $controllerExtensionName = 'FluidTYPO3.Flux';
-                }
-
-                $contentType = static::determineContentType($providerExtensionName, $templateFilename);
-                $pluginName = ucfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
-                $contentTypeBuilder->registerContentType($controllerExtensionName, $contentType, $provider, $pluginName);
+                $pluginName = GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType)));
+                $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
 
             } catch (Exception $error) {
                 if (!ContextUtility::getApplicationContext()->isProduction()) {

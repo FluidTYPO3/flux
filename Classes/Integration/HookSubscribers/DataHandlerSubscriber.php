@@ -105,7 +105,7 @@ class DataHandlerSubscriber
                     $fieldName
                 );
 
-                if ($primaryConfigurationProvider) {
+                if ($primaryConfigurationProvider && is_array($fieldArray[$fieldName]) && array_key_exists('data', $fieldArray[$fieldName])) {
                     foreach ($fieldArray[$fieldName]['data'] as $sheet) {
                         foreach ($sheet['lDEF'] as $key => $value) {
                             list ($possibleTableName, $columnName) = explode('.', $key, 2);

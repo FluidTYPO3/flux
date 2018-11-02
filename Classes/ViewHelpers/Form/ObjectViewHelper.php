@@ -76,6 +76,14 @@ class ObjectViewHelper extends AbstractFormViewHelper
             'Set this to transform your value to this type - integer, array (for csv values), float, DateTime, ' .
             'Vendor\\MyExt\\Domain\\Model\\Object or ObjectStorage with type hint. '
         );
+        $this->registerArgument(
+            'contentContainer',
+            'boolean',
+            'If TRUE, each object that is created of this type results in a content column of the same name, with ' .
+            'an automatic colPos value.',
+            false,
+            false
+        );
     }
 
     /**
@@ -86,7 +94,7 @@ class ObjectViewHelper extends AbstractFormViewHelper
     public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
     {
         /** @var SectionObject $object */
-        $object = static::getFormFromRenderingContext($renderingContext)
+        $object = static::getContainerFromRenderingContext($renderingContext)
             ->createContainer('SectionObject', $arguments['name'], $arguments['label']);
         $object->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
@@ -95,6 +103,7 @@ class ObjectViewHelper extends AbstractFormViewHelper
         $object->setInherit($arguments['inherit']);
         $object->setInheritEmpty($arguments['inheritEmpty']);
         $object->setTransform($arguments['transform']);
+        $object->setContentContainer($arguments['contentContainer']);
         return $object;
     }
 }
