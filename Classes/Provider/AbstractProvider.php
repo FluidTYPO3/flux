@@ -25,6 +25,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Request as WebRequest;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Exception;
@@ -206,11 +207,16 @@ class AbstractProvider implements ProviderInterface
         $providerExtensionKey = $this->extensionKey;
         $contentObjectType = $this->contentObjectType;
         $listType = $this->listType;
-        $rowContainsPlugin = (!empty($row['CType']) && static::CONTENT_OBJECT_TYPE_LIST === $row['CType']);
+
+        // Content type resolving: CType *may* be an array when called from certain FormEngine contexts, such as
+        // user functions registered via userFunc.
+        $contentTypeFromRecord = (is_array($row['CType'] ?? null) ? $row['CType'][0] : null) ?? $row['CType'] ?? null;
+        $pluginTypeFromRecord = $row['list_type'] ?? null;
+
+        $rowContainsPlugin = $contentTypeFromRecord === static::CONTENT_OBJECT_TYPE_LIST;
         $rowIsEmpty = (0 === count($row));
-        $matchesContentType = ((empty($contentObjectType) && empty($row['CType']))
-            || (!empty($row['CType']) && $row['CType'] === $contentObjectType));
-        $matchesPluginType = ((!empty($row['list_type']) && $row['list_type'] === $listType));
+        $matchesContentType = $contentTypeFromRecord === $contentObjectType;
+        $matchesPluginType = $rowContainsPlugin && $pluginTypeFromRecord === $listType;
         $matchesTableName = ($providerTableName === $table || !$table);
         $matchesFieldName = ($providerFieldName === $field || !$field);
         $matchesExtensionKey = ($providerExtensionKey === $extensionKey || !$extensionKey);
@@ -294,10 +300,64 @@ class AbstractProvider implements ProviderInterface
      */
     public function getGrid(array $row)
     {
+        $form = $this->getForm($row);
+        if ($form) {
+            $container = $this->detectContentContainerParent($form);
+            if ($container) {
+                $values = $this->getFlexFormValues($row);
+                $persistedObjects = array_column(
+                    ObjectAccess::getProperty($values, $container->getName()) ?? [],
+                    $container->getContentContainer()->getName()
+                );
 
+
+                // Determine the mode to render, then create an ad-hoc grid.
+                $grid = Grid::create();
+                if ($container->getGridMode() === Form\Container\Section::GRID_MODE_ROWS) {
+                    foreach ($persistedObjects as $index => $object) {
+                        $gridRow = $grid->createContainer('Row', 'row' . $index);
+                        $gridColumn = $gridRow->createContainer(
+                            'Column',
+                            'column' . $object['colPos'],
+                            $object['label'] ?? 'Column ' . $object['colPos']
+                        );
+                        $gridColumn->setColumnPosition($object['colPos']);
+                    }
+                } elseif ($container->getGridMode() === Form\Container\Section::GRID_MODE_COLUMNS) {
+                    $gridRow = $grid->createContainer('Row', 'row');
+                    foreach ($persistedObjects as $index => $object) {
+                        $gridColumn = $gridRow->createContainer(
+                            'Column',
+                            'column' . $object['colPos'],
+                            $object['label'] ?? 'Column ' . $object['colPos']
+                        );
+                        $gridColumn->setColumnPosition($object['colPos']);
+                        $gridColumn->setColSpan($object['colspan'] ?? 1);
+                    }
+                }
+                return $grid;
+            }
+        }
         $grid = $this->grid ?? $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
         $grid->setExtensionName($grid->getExtensionName() ?: $this->getControllerExtensionKeyFromRecord($row));
         return $grid;
+    }
+
+    /**
+     * @param Form\ContainerInterface $container
+     * @return Form\Container\Section|null
+     */
+    protected function detectContentContainerParent(Form\ContainerInterface $container)
+    {
+        if ($container instanceof Form\Container\SectionObject && $container->isContentContainer()) {
+            return $container->getParent();
+        }
+        foreach ($container->getChildren() as $child) {
+            if ($child instanceof Form\ContainerInterface && ($detected = $this->detectContentContainerParent($child))) {
+                return $detected;
+            }
+        }
+        return null;
     }
 
     /**
@@ -715,7 +775,7 @@ class AbstractProvider implements ProviderInterface
             $newDataStructure = $form->build();
             if ($dataStructure === $defaultDataStructure) {
                 $dataStructure = $newDataStructure;
-            } else {
+            } elseif (count($form->getFields()) > 0) {
                 if ($newDataStructure !== ['meta' => ['langDisable' => 1, 'langChildren' => 0], 'ROOT' => ['type' => 'array', 'el' => []]]) {
                     $dataStructure = array_replace_recursive($dataStructure, $newDataStructure);
                 } else {

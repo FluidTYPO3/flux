@@ -74,7 +74,7 @@ class ProviderResolver implements SingletonInterface
         $interfaces = null
     ) {
         $providers = $this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey, $interfaces);
-        return end($providers) ?: null;
+        return reset($providers) ?: null;
     }
 
     /**
@@ -114,12 +114,7 @@ class ProviderResolver implements SingletonInterface
         usort(
             $providers,
             function (ProviderInterface $a, ProviderInterface $b) use ($row) {
-                $priorityA = $a->getPriority($row);
-                $priorityB = $b->getPriority($row);
-                if ($priorityA === $priorityB) {
-                    return 0;
-                }
-                return $priorityA < $priorityB ? -1 : 1;
+                return $b->getPriority($row) <=> $a->getPriority($row);
             }
         );
         // RecordProviderInterface being missing will automatically include the Provider. Those that do

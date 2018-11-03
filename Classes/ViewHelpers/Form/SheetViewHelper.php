@@ -72,7 +72,7 @@ class SheetViewHelper extends AbstractFormViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
     {
-        $form = static::getFormFromRenderingContext($renderingContext);
+        $form = static::getContainerFromRenderingContext($renderingContext);
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
         if (true === $form->has($arguments['name'])) {
             $sheet = $form->get($arguments['name']);
