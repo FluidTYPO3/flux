@@ -257,6 +257,7 @@ class ext_update
         $queryBuilder->select('uid', 'pid', 'colPos')
             ->from('tt_content')
             ->andWhere(
+                $queryBuilder->expr()->eq('deleted', 0),
                 $queryBuilder->expr()->neq('colPos', 18181),
                 $queryBuilder->expr()->gt('colPos', 99),
                 $queryBuilder->expr()->isNull('tx_flux_migrated_version')
