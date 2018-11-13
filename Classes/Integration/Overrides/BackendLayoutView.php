@@ -73,9 +73,29 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         // Delegate resolving of backend layout structure to the Provider, which will return a Grid, which can create
         // a full backend layout data array.
         if ($this->provider instanceof GridProviderInterface) {
-            return $this->provider->getGrid($this->record)->buildExtendedBackendLayoutArray($this->record['l18n_parent'] ?: $this->record['uid']);
+            return $this->provider->getGrid($this->record)->buildExtendedBackendLayoutArray(
+                $this->resolveParentRecordUid($this->record)
+            );
         }
         return parent::getSelectedBackendLayout($pageId);
+    }
+
+    /**
+     * Extracts the UID to use as parent UID, based on properties of the record
+     * and composition of the values within it, to ensure an integer UID.
+     *
+     * @param array $record
+     * @return int
+     */
+    protected function resolveParentRecordUid(array $record): int
+    {
+        $uid = $record['l18n_parent'] ?: $record['uid'];
+        if (is_array($uid)) {
+            // The record was passed by a third-party integration which read the record from FormEngine's expanded
+            // format which stores select-type fields such as the l18n_parent as array values. Extract it from there.
+            return $uid = reset($uid);
+        }
+        return (int) $uid;
     }
 
     /**
