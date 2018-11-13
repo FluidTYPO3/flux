@@ -5,6 +5,12 @@ use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\BackendWorkspaceRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\EndTimeRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\FrontendGroupRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\FrontendWorkspaceRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\StartTimeRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -251,6 +257,7 @@ class ext_update
         $queryBuilder->select('uid', 'pid', 'colPos')
             ->from('tt_content')
             ->andWhere(
+                $queryBuilder->expr()->eq('deleted', 0),
                 $queryBuilder->expr()->neq('colPos', 18181),
                 $queryBuilder->expr()->gt('colPos', 99),
                 $queryBuilder->expr()->isNull('tx_flux_migrated_version')
@@ -261,7 +268,12 @@ class ext_update
     protected function loadContentRecords(): \Doctrine\DBAL\Driver\Statement
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
-        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(StartTimeRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(EndTimeRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(BackendWorkspaceRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(FrontendGroupRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(FrontendWorkspaceRestriction::class);
         $queryBuilder->select('*')->from('tt_content');
         return $queryBuilder->execute();
     }
