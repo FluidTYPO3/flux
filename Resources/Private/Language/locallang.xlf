@@ -3,6 +3,151 @@
 	<file source-language="en" datatype="plaintext" original="messages" product-name="flux" date="2014-01-05T14:38:32+01:00">
 		<header/>
 		<body>
+			<trans-unit id="content_types">
+				<source>Flux-based Content Type</source>
+			</trans-unit>
+			<trans-unit id="content_types.extension_identity">
+				<source>Extension identity (Vendor.ExtensionName format, should be your own extension). Determines where a partial and layout template files are resolved, and where a controller class may potentially be found.</source>
+			</trans-unit>
+			<trans-unit id="content_types.icon">
+				<source>Icon file or icon name (if custom icon name you must manually register the icon in TYPO3)</source>
+			</trans-unit>
+			<trans-unit id="content_types.content_type">
+				<source>Content type name, must be a value using only a-z and 0-9, but never starting with a number, and must use signature of extension you put in "extension identity" as prefix, e.g. extension "MyVendor.MySpecialExt" means prefix must be "myspecialext_".</source>
+			</trans-unit>
+			<trans-unit id="content_types.content_configuration">
+				<source>Content type configuration options</source>
+			</trans-unit>
+			<trans-unit id="content_types.grid_configuration">
+				<source>Grid configuration options</source>
+			</trans-unit>
+			<trans-unit id="content_types.template_file">
+				<source>Template file - if you use this, it overrides "template source" below. If you also enter a source it is available as {contentType.templateSource} in your own template. Use EXT:... file reference format.</source>
+			</trans-unit>
+			<trans-unit id="content_types.template_source">
+				<source>Template source</source>
+			</trans-unit>
+			<trans-unit id="content_types.validation">
+				<source>Content type validation</source>
+			</trans-unit>
+			<trans-unit id="content_types.template_dump">
+				<source>Flux template source (copy-paste to template file rendered by Flux)</source>
+			</trans-unit>
+			<trans-unit id="content_types.sheetName">
+				<source>Sheet name (a-z, 0-9 and _)</source>
+			</trans-unit>
+			<trans-unit id="content_types.sheetLabel">
+				<source>Sheet label (any characters you need)</source>
+			</trans-unit>
+			<trans-unit id="content_types.sheetDescription">
+				<source>Add fields or modify fields that appear in this sheet when editors edit the content type.
+					The properties of fields follow TCA standards with a few exceptions. If you need it, there is
+					documentation about this API on https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/ -
+					which although it is for the ViewHelper API of Flux also documents the attributes used here.</source>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.context">
+				<source>Context</source>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.formFields">
+				<source>Form Fields</source>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.grid">
+				<source>Grid</source>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.template">
+				<source>Fluid Template</source>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.export">
+				<source>Export Template</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.universal.name">
+				<source>Field name (a-z, 0-9, _ and .)</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.label">
+				<source>Label, can be LLL:EXT: reference or LLL:keyname which resolves the label in the content type's extension context, file locallang.xlf</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.transform">
+				<source>Data type transformation, enter for example "array" to cast CSV values to array. See Flux documentation about possible values.</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.clearable">
+				<source>Field can be cleared (add "clear" checkbox wizard beside field)</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.default.value">
+				<source>Default value</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.default.state">
+				<source>Default state</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.input">
+				<source>Input</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.text">
+				<source>Text</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.checkbox">
+				<source>Checkbox</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.radio">
+				<source>Radio</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.dateTime">
+				<source>DateTime</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.select">
+				<source>Select</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.select.items">
+				<source>Items (CSV)</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.relation">
+				<source>Relation</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.size">
+				<source>Size of fields (number of possible entries)</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.minItems">
+				<source>Minimum number of items that can be selected</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.maxItems">
+				<source>Maximum number of items that can be selected</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.multiple">
+				<source>Allow multiple selections of the same value/record</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.emptyOption">
+				<source>Add an empty option before as first option</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.foreignTableField">
+				<source>Field name on foreign table that contains UID of origin record. Empty means only one item can be related and UID is stored in origin record.</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.multiRelation">
+				<source>MultiRelation</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.inline">
+				<source>Inline</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.file">
+				<source>File</source>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.function">
+				<source>Function</source>
+			</trans-unit>
+			<trans-unit id="content_types.fields.function.userFunc">
+				<source>User function reference, e.g. MyClass->myFunction. Class must be registered with autoloader to be usable.</source>
+			</trans-unit>
+
 			<trans-unit id="flux.backendLayout.columnsInParent">
 				<source>Columns in parent</source>
 			</trans-unit>
@@ -11,6 +156,9 @@
 			</trans-unit>
 			<trans-unit id="tt_content.tx_flux_options">
 				<source>Options</source>
+			</trans-unit>
+			<trans-unit id="tt_content.pi_flexform">
+				<source>Content-type options</source>
 			</trans-unit>
 			<trans-unit id="flux.clearValue">
 				<source>Clear value</source>
