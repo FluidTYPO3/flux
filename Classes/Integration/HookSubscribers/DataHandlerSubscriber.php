@@ -37,20 +37,16 @@ class DataHandlerSubscriber
                 $originalRecordUid = (int)$fieldArray['t3_origuid'];
                 // Only trigger if:
                 // 1) Record is a copy of another record
-                // 2) record is not in connected translation mode
-                // 3) it is likely a nested record
-                if ((int)$fieldArray['l18n_parent'] === 0 && $originalRecordUid > 0 && $fieldArray['colPos'] >= ColumnNumberUtility::MULTIPLIER) {
-                    $localColumnPosition = ColumnNumberUtility::calculateLocalColumnNumber($fieldArray['colPos']);
+                // 2) it is likely a nested record
+                if ($originalRecordUid > 0) {
                     $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $originalRecordUid, 'pid,colPos');
-                    if ((int)$originalRecord['colPos'] === (int)$fieldArray['colPos']) {
-                        // The record was copied (or copied to a language) but the column position is the same as the
-                        // original record, which is not intended. The value needs to be re-calculated based on the
-                        // translated version of the original parent record in the same language as the child record.
+                    if($originalRecord['colPos'] >= ColumnNumberUtility::MULTIPLIER){
+                        $localColumnPosition = ColumnNumberUtility::calculateLocalColumnNumber($originalRecord['colPos']);
                         $originalParentRecordUid = ColumnNumberUtility::calculateParentUid($originalRecord['colPos']);
                         $mostRecentCopyOfParentRecord = $this->getLastCopiedVersionOfRecordInLanguage(
                             $table,
                             (int)$originalParentRecordUid,
-                            (int)$fieldArray['sys_language_uid'],
+                            0,
                             'uid,pid'
                         );
 
@@ -82,6 +78,7 @@ class DataHandlerSubscriber
                         $newRecordUid = (int)($reference->substNEWwithIDs[$id] ?? $id);
                         $reference->updateDB($table, $newRecordUid, ['colPos' => $newColumnPosition, 'pid' => $mostRecentCopyOfParentRecord['pid']]);
                     }
+
                 }
             }
         }
@@ -127,7 +124,7 @@ class DataHandlerSubscriber
         if (!array_key_exists('colPos', $fieldArray)) {
             $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
             $uidInDefaultLanguage = $record['l18n_parent'];
-            if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos']) && isset($dataHandler->cmdmap[$table][$uidInDefaultLanguage]['move'])) {
+            if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
                 $fieldArray['colPos'] = (int)($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? $record['colPos']);
             }
         }
@@ -148,6 +145,9 @@ class DataHandlerSubscriber
         foreach ($childRecords as $childRecord) {
             $childRecordUid = $childRecord['uid'];
             $dataHandler->cmdmap[$table][$childRecordUid][$command] = $value;
+            if(array_key_exists('colPos', $dataHandler->cmdmap[$table][$childRecordUid][$command]['update'])){
+                unset($dataHandler->cmdmap[$table][$childRecordUid][$command]['update']['colPos']);
+            }
             $this->cascadeCommandToChildRecords($table, $childRecordUid, $command, $value, $dataHandler);
         }
     }
@@ -165,6 +165,7 @@ class DataHandlerSubscriber
                         case 'delete':
                         case 'undelete':
                         case 'localize':
+                        case 'copy':
                         case 'copyToLanguage':
                             $this->cascadeCommandToChildRecords($table, (int)$id, $command, $value, $dataHandler);
                             break;
@@ -198,7 +199,7 @@ class DataHandlerSubscriber
      */
     public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
     {
-        if ($table !== 'tt_content' || ($command !== 'copy' && $command !== 'move')) {
+        if ($table !== 'tt_content' || ($command !== 'move')) {
             return;
         }
 
@@ -226,9 +227,6 @@ class DataHandlerSubscriber
             $this->recursivelyMoveChildRecords($table, (int)$id, $destinationPid, $languageUid, $reference);
         }
 
-        if ($command === 'copy') {
-            $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference);
-        }
     }
 
     /**
@@ -263,47 +261,6 @@ class DataHandlerSubscriber
                 ]
             );
             $this->recursivelyMoveChildRecords($table, $recordToProcess['uid'], $pageUid, $languageUid, $dataHandler);
-        }
-    }
-
-    protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $pageUid, int $languageUid, DataHandler $dataHandler)
-    {
-        list (, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
-            $table,
-            $parentUid,
-            'uid, colPos'
-        );
-
-        if (empty($recordsToCopy)) {
-            return;
-        }
-
-        $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
-
-        foreach ($recordsToCopy as $recordToCopy) {
-            $newChildUid = $dataHandler->copyRecord_raw(
-                $table,
-                $recordToCopy['uid'],
-                $pageUid,
-                [
-                    $languageField => $languageUid,
-                    'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                        $newParentUid,
-                        ColumnNumberUtility::calculateLocalColumnNumber($recordToCopy['colPos'])
-                    ),
-                    'pid' => $pageUid
-                ]
-            );
-            if ($newChildUid === null) {
-                // For whichever reason, the child record could not be copied to the same destination as the parent
-                // record was copied. This could indicate that the target page UID is zero, the element was disallowed
-                // for the user, the language was invalid, etc.
-                // Unfortunately we do not get the reason for the failure - it gets logged in TYPO3. So in addition, we
-                // log the fact that the record also could not be recursively treated to copy potential children.
-                $dataHandler->log($table, $recordToCopy['uid'], 1, $pageUid, 1, 'Flux could not copy child records, see previous error in log');
-                continue;
-            }
-            $this->recursivelyCopyChildRecords($table, $recordToCopy['uid'], $newChildUid, $pageUid, $languageUid, $dataHandler);
         }
     }
 
