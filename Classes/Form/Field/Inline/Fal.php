@@ -154,7 +154,7 @@ class Fal extends AbstractInlineFormField
      *
      * @var array
      */
-    protected $cropVariants = null;
+    protected $cropVariants = [];
 
     /**
      * @var null|string
@@ -168,12 +168,12 @@ class Fal extends AbstractInlineFormField
     {
         $configuration = $this->prepareConfiguration('inline');
         $configuration['appearance']['createNewRelationLinkTitle'] = $this->getCreateNewRelationLinkTitle();
-        if ($this->getCropVariants()) {
+        if (!empty($this->cropVariants)) {
             $configuration['overrideChildTca'] = [
                 'columns' => [
                     'crop' => [
                         'config' => [
-                            'cropVariants' => $this->getCropVariants()
+                            'cropVariants' => $this->cropVariants
                         ]
                     ]
                 ]
