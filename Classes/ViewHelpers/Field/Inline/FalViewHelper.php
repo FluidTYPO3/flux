@@ -193,8 +193,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
         $this->registerArgument(
             'cropVariants',
             'array',
-            'Add one or multiple crop variants for uploaded images',
-            false
+            'Add one or multiple crop variants for uploaded images'
         );
     }
 
@@ -245,11 +244,12 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
                 ],
             ]);
         }
-
-        $component->setCreateNewRelationLinkTitle($createNewRelationLinkTitle);
-        if(is_array($cropVariants)) {
+        
+        if (!empty($cropVariants)) {
             $component->setCropVariants($cropVariants);
         }
+
+        $component->setCreateNewRelationLinkTitle($createNewRelationLinkTitle);
 
         return $component;
     }
