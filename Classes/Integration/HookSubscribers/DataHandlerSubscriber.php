@@ -46,10 +46,17 @@ class DataHandlerSubscriber
                         $mostRecentCopyOfParentRecord = $this->getLastCopiedVersionOfRecordInLanguage(
                             $table,
                             (int)$originalParentRecordUid,
-                            0,
+                            (int)$fieldArray['sys_language_uid'],
                             'uid,pid'
                         );
-
+                        if ($mostRecentCopyOfParentRecord === false) {
+                            $mostRecentCopyOfParentRecord = $this->getLastCopiedVersionOfRecordInLanguage(
+                                $table,
+                                (int)$originalParentRecordUid,
+                                0,
+                                'uid,pid'
+                            );
+                        }
                         if ($mostRecentCopyOfParentRecord === false) {
                             $reference->log(
                                 $table,
@@ -145,7 +152,7 @@ class DataHandlerSubscriber
         foreach ($childRecords as $childRecord) {
             $childRecordUid = $childRecord['uid'];
             $dataHandler->cmdmap[$table][$childRecordUid][$command] = $value;
-            if(array_key_exists('colPos', $dataHandler->cmdmap[$table][$childRecordUid][$command]['update'])){
+            if($command ==  'copy' && array_key_exists('colPos', $dataHandler->cmdmap[$table][$childRecordUid][$command]['update'])){
                 unset($dataHandler->cmdmap[$table][$childRecordUid][$command]['update']['colPos']);
             }
             $this->cascadeCommandToChildRecords($table, $childRecordUid, $command, $value, $dataHandler);
