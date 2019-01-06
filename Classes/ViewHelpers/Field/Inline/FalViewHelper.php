@@ -53,6 +53,20 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  *     <flux:field.inline.fal name="settings.image" required="1" maxItems="1" minItems="1"/>
  *
+ * #### Define crop variants
+ *
+ *     <flux:field.inline.fal name="settings.slides" required="1" maxItems="10" minItems="1" cropVariants="{
+ *       default: {
+ *         title: 'Default',
+ *         allowedAspectRatios: {
+ *           default: {
+ *             title: '1200:450',
+ *             value: '2.6666666666'
+ *           }
+ *         }
+ *       }
+ *     }"/>
+ *
  * #### Rendering the image
  *
  *     {v:content.resources.fal(field: 'settings.image') -> v:iterator.first() -> v:variable.set(name: 'image')}
@@ -176,6 +190,12 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
             false,
             Fal::DEFAULT_CREATE_NEW_RELATION_LINK_TITLE
         );
+        $this->registerArgument(
+            'cropVariants',
+            'array',
+            'Add one or multiple crop variants for uploaded images',
+            false
+        );
     }
 
     /**
@@ -188,6 +208,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
         $allowedExtensions = $arguments['allowedExtensions'];
         $disallowedExtensions = $arguments['disallowedExtensions'];
         $createNewRelationLinkTitle = $arguments['createNewRelationLinkTitle'];
+        $cropVariants = $arguments['cropVariants'];
 
         /** @var Fal $component */
         $component = static::getPreparedComponent('Inline/Fal', $renderingContext, $arguments);
@@ -226,6 +247,9 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
         }
 
         $component->setCreateNewRelationLinkTitle($createNewRelationLinkTitle);
+        if(is_array($cropVariants)) {
+            $component->setCropVariants($cropVariants);
+        }
 
         return $component;
     }
