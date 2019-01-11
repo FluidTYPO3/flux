@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Service;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -65,13 +66,15 @@ class RecordService implements SingletonInterface
         if (TYPO3_MODE === 'BE') {
             return BackendUtility::getRecord($table, $uid, $fields);
         }
-        $results = $this->getQueryBuilder($table)
-            ->from($table)
+        $queryBuilder = $this->getQueryBuilder($table);
+        $queryBuilder->getRestrictions()->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $result = $queryBuilder->from($table)
             ->select(...explode(',', $fields))
             ->where(sprintf('uid = %d', $uid))
             ->execute()
-            ->fetchAll() ?: [];
-        return reset($results) ?: null;
+            ->fetch(\PDO::FETCH_ASSOC);
+        return $result !== false ? $result : null;
     }
 
     /**
