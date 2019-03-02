@@ -32,7 +32,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     protected function setUp()
     {
         parent::setUp();
-        $GLOBALS['TSFE'] = new TypoScriptFrontendController($GLOBALS['TYPO3_CONF_VARS'], 0, 0, 1);
+        $GLOBALS['TSFE'] = new TypoScriptFrontendController([], 0, 0);
         $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)->setMethods(['getRecords'])->getMock();
         $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)->setMethods(['enableFields'])->getMock();
         $GLOBALS['TCA']['tt_content']['ctrl'] = array();
