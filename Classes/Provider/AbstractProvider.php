@@ -885,6 +885,7 @@ class AbstractProvider implements ProviderInterface
                 $this->getTableName($row),
                 $this->getFieldName($row),
                 $row['uid'] ?? 0,
+                $this->getControllerExtensionKeyFromRecord($row),
                 $this->getControllerActionFromRecord($row),
                 $variable
             ]
