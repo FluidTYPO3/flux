@@ -9,8 +9,11 @@ namespace FluidTYPO3\Flux\Service;
  */
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\VisibilityAspect;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -118,7 +121,24 @@ class RecordService implements SingletonInterface
      */
     protected function getQueryBuilder($table)
     {
-        return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $this->setContextDependentRestrictionsForQueryBuilder($queryBuilder);
+        return $queryBuilder;
     }
 
+    protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
+    {
+        if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE) {
+            $context = new Context();
+            $visibility = new VisibilityAspect(
+                (bool)($GLOBALS['TSFE']->fePreview ?? false),
+                (bool)($GLOBALS['TSFE']->fePreview ?? false)
+            );
+            $context->setAspect('visibility', $visibility);
+            $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
+            $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
+        } else {
+            $queryBuilder->getRestrictions()->removeAll();
+        }
+    }
 }
