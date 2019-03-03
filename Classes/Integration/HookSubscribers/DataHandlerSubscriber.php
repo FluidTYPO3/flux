@@ -9,9 +9,11 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -22,6 +24,30 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class DataHandlerSubscriber
 {
+    public function clearCacheCommand($command)
+    {
+        if ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system') {
+            GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
+        }
+    }
+
+    /**
+     * @param string $command Command that was executed
+     * @param string $table The table TCEmain is currently processing
+     * @param string $id The records id (if any)
+     * @param array $fieldArray The field names and their values to be processed
+     * @param DataHandler $reference Reference to the parent object (TCEmain)
+     * @return void
+     */
+    public function processDatamap_afterDatabaseOperations($command, $table, $id, $fieldArray, $reference)
+    {
+        if ($table === 'content_types') {
+            // Changing records in table "content_types" has to flush the system cache to regenerate various cached
+            // definitions of plugins etc. that are based on those "content_types" records.
+            GeneralUtility::makeInstance(CacheManager::class)->flushCachesInGroup('system');
+            GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
+        }
+    }
 
     /**
      * @param array $fieldArray
@@ -91,6 +117,11 @@ class DataHandlerSubscriber
     public function processCmdmap_beforeStart(DataHandler $dataHandler)
     {
         foreach ($dataHandler->cmdmap as $table => $commandSets) {
+            if ($table === 'content_types') {
+                GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
+                continue;
+            }
+
             if ($table !== 'tt_content') {
                 continue;
             }
@@ -200,14 +231,6 @@ class DataHandlerSubscriber
             $languageUid = reset($reference->cmdmap[$table])["copyToLanguage"];
             $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command);
         }
-    }
-
-    /**
-     * @param string $command
-     * @return void
-     */
-    public function clearCacheCommand($command)
-    {
     }
 
     protected function recursivelyMoveChildRecords(string $table, int $parentUid, int $pageUid, int $languageUid, DataHandler $dataHandler)

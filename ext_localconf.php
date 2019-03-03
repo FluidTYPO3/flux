@@ -3,6 +3,16 @@ if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
 
+if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'])) {
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] = array(
+        'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
+        'backend' => \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class,
+        'groups' => array('system'),
+        'options' => [
+            'defaultLifetime' => 2592000,
+        ],
+    );
+}
 
 if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 
@@ -37,6 +47,8 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class;
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] =
+        \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class . '->clearCacheCommand';
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\Preview::class;
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] =
@@ -59,7 +71,11 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 
 	if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
 
-		// native Outlets, replaceable by short name in subsequent registerOutlet() calls by adding second argument (string, name of type)
+
+        \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\ContentTypeProvider::class);
+        \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider::class);
+
+        // native Outlets, replaceable by short name in subsequent registerOutlet() calls by adding second argument (string, name of type)
 		\FluidTYPO3\Flux\Core::registerOutlet('standard');
 
 		// native Pipes, replaceable by short name in subsequent registerPipe() calls by adding second argument (string, name of type)
@@ -69,15 +85,4 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 		\FluidTYPO3\Flux\Core::registerPipe('flashMessage');
 		\FluidTYPO3\Flux\Core::registerPipe('typeConverter');
 	}
-}
-
-if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'])) {
-	$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] = array(
-		'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
-		'backend' => \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class,
-		'groups' => array('system'),
-		'options' => [
-			'defaultLifetime' => 2592000,
-		],
-	);
 }
