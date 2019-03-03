@@ -65,6 +65,9 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     {
         if ($this->addingItemsForContent) {
             $pageRecord = $this->loadRecordFromTable('pages', (int)$pageId);
+            if (!$pageRecord) {
+                return null;
+            }
             $pageLevelProvider = $this->resolvePrimaryProviderForRecord('pages', $pageRecord);
             if ($pageLevelProvider instanceof GridProviderInterface) {
                 return $pageLevelProvider->getGrid($pageRecord)->buildExtendedBackendLayoutArray(0);
@@ -123,6 +126,9 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
             $parentRecordUid = ColumnNumberUtility::calculateParentUid($this->record['colPos']);
             if ($parentRecordUid > 0) {
                 $parentRecord = $this->loadRecordFromTable('tt_content', $parentRecordUid);
+                if (!$parentRecord) {
+                    return $items;
+                }
                 $provider = $this->resolvePrimaryProviderForRecord('tt_content', $parentRecord);
                 if ($provider) {
                     $items = array_merge(
@@ -143,14 +149,19 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         return $items;
     }
 
-    protected function loadRecordFromTable(string $table, int $uid): array
+    /**
+     * @param string $table
+     * @param int $uid
+     * @return array|null
+     */
+    protected function loadRecordFromTable(string $table, int $uid)
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
         $query = $queryBuilder->select('*')
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $uid));
         $query->getRestrictions()->removeAll();
-        return $query->execute()->fetchAll()[0];
+        return $query->execute()->fetchAll()[0] ?? null;
     }
 
     protected function resolvePrimaryProviderForRecord(string $table, array $record)
