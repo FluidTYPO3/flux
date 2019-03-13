@@ -1,4 +1,5 @@
 <?php
+
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -17,6 +18,23 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 class CheckboxViewHelper extends AbstractFieldViewHelper
 {
 
+
+    /**
+     * Initialize arguments
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument(
+            'renderType',
+            'string',
+            'Rendering type as applies in FormEngine/TCA',
+            false,
+            'checkboxToggle'
+        );
+    }
+
     /**
      * @param RenderingContextInterface $renderingContext
      * @param array $arguments
@@ -26,6 +44,9 @@ class CheckboxViewHelper extends AbstractFieldViewHelper
     {
         /** @var Checkbox $checkbox */
         $checkbox = static::getPreparedComponent('Checkbox', $renderingContext, $arguments);
+        $checkbox->setRenderType($arguments['renderType']);
         return $checkbox;
     }
+
+
 }
