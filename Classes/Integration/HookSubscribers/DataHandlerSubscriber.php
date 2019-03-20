@@ -192,7 +192,7 @@ class DataHandlerSubscriber
                             ColumnNumberUtility::calculateLocalColumnNumber((int)$recordToProcess['colPos'])
                         );
 
-                        $reference->updateDB($table, $copiedRecordUidNested, $overrideArray);
+                        $reference->updateDB('tt_content', $copiedRecordUidNested, $overrideArray);
                     }
                 }
             }
