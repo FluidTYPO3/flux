@@ -14,6 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
 
 class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\LocalizationController
@@ -24,8 +25,11 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function getRecordLocalizeSummary(ServerRequestInterface $request): ResponseInterface
+    public function getRecordLocalizeSummary(ServerRequestInterface $request, ResponseInterface $response = null): ResponseInterface
     {
+        if (version_compare(ExtensionManagementUtility::getExtensionVersion('core'), '9.0', '<=')) {
+            return parent::getRecordLocalizeSummary($request, $response);
+        }
         $params = $request->getQueryParams();
         if (!isset($params['pageId'], $params['destLanguageId'], $params['languageId'])) {
             return new JsonResponse(null, 400);
@@ -57,7 +61,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
             if (!isset($records[$colPos])) {
                 $records[$colPos] = [];
             }
-            if ($colPos > ColumnNumberUtility::MULTIPLIER && !isset($columns['columns'][$colPos])) {
+            if ($colPos >= ColumnNumberUtility::MULTIPLIER && !isset($columns['columns'][$colPos])) {
                 $columns[$colPos] = 'Unknown';
                 array_push($columns['columnList'], $colPos);
             }
@@ -68,9 +72,10 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
             ];
         }
 
-        return (new JsonResponse())->setPayload([
+        $payload = [
             'records' => $records,
             'columns' => $columns,
-        ]);
+        ];
+        return (new JsonResponse())->setPayload($payload);
     }
 }
