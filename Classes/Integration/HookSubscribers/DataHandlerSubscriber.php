@@ -285,7 +285,7 @@ class DataHandlerSubscriber
                 'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                     $newParentUid,
                     ColumnNumberUtility::calculateLocalColumnNumber((int)$recordToCopy['colPos'])
-                )
+                ),
             ];
 
             if ($command === 'copyToLanguage') {
