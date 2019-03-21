@@ -281,13 +281,17 @@ class DataHandlerSubscriber
         }
 
         foreach ($recordsToCopy as $recordToCopy) {
+
             $overrideArray = [
                 'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                     $newParentUid,
                     ColumnNumberUtility::calculateLocalColumnNumber((int)$recordToCopy['colPos'])
-                ),
-                $GLOBALS['TCA']['tt_content']['ctrl']['languageField'] => (int) $languageUid
+                )
             ];
+
+            if ($command === 'copyToLanguage') {
+                $overrideArray[$GLOBALS['TCA']['tt_content']['ctrl']['languageField']] = (int) $languageUid;
+            }
 
             $newChildUid = $dataHandler->copyRecord($table, $recordToCopy['uid'], $pageUid, false, $overrideArray);
 
