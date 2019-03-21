@@ -47,10 +47,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
             '*'
         );
 
-        $columns = [
-            'columns' => [],
-            'columnList' => [],
-        ];
+        $columns = $this->getPageColumns($pageId);
 
         while ($row = $result->fetch()) {
             BackendUtility::workspaceOL('tt_content', $row, -99, true);
