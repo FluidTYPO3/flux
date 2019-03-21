@@ -281,7 +281,6 @@ class DataHandlerSubscriber
         }
 
         foreach ($recordsToCopy as $recordToCopy) {
-
             $overrideArray = [
                 'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                     $newParentUid,
