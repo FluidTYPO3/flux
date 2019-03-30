@@ -192,7 +192,7 @@ class DataHandlerSubscriber
                             ColumnNumberUtility::calculateLocalColumnNumber((int)$recordToProcess['colPos'])
                         );
 
-                        $reference->updateDB($table, $copiedRecordUidNested, $overrideArray);
+                        $reference->updateDB('tt_content', $copiedRecordUidNested, $overrideArray);
                     }
                 }
             }
@@ -286,8 +286,11 @@ class DataHandlerSubscriber
                     $newParentUid,
                     ColumnNumberUtility::calculateLocalColumnNumber((int)$recordToCopy['colPos'])
                 ),
-                $GLOBALS['TCA']['tt_content']['ctrl']['languageField'] => (int) $languageUid
             ];
+
+            if ($command === 'copyToLanguage') {
+                $overrideArray[$GLOBALS['TCA']['tt_content']['ctrl']['languageField']] = (int) $languageUid;
+            }
 
             $newChildUid = $dataHandler->copyRecord($table, $recordToCopy['uid'], $pageUid, false, $overrideArray);
 
