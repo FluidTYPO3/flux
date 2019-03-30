@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Context\VisibilityAspect;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -129,14 +130,22 @@ class RecordService implements SingletonInterface
     protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
     {
         if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE) {
-            $context = new Context();
-            $visibility = new VisibilityAspect(
-                (bool)($GLOBALS['TSFE']->fePreview ?? false),
-                (bool)($GLOBALS['TSFE']->fePreview ?? false)
-            );
-            $context->setAspect('visibility', $visibility);
-            $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
-            $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
+            if ((bool)($GLOBALS['TSFE']->fePreview ?? false)) {
+                // check if running TYPO3 version >= 9
+                if (class_exists('\\TYPO3\\CMS\\Core\\Context\\VisibilityAspect')) {
+                    $context = new Context();
+                    $visibility = new VisibilityAspect(true, true);
+                    $context->setAspect('visibility', $visibility);
+                    $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
+                    $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
+                } else {
+                    // Fallback for TYPO3 8.7
+                    $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
+                    if ($GLOBALS['TSFE']->showHiddenRecords) {
+                        $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
+                    }
+                }
+            }
         } else {
             $queryBuilder->getRestrictions()->removeAll();
         }
