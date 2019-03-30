@@ -1,6 +1,6 @@
 <?php
 if (!defined('TYPO3_MODE')) {
-	die('Access denied.');
+    die('Access denied.');
 }
 
 if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'])) {
@@ -24,15 +24,15 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['flux'] = ['FluidTYPO3\\Flux\\ViewHelpers'];
 
     // FormEngine integration between TYPO3 forms and Flux Providers
-	$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\ProviderProcessor::class] = array(
-		'depends' => array(
-			\TYPO3\CMS\Backend\Form\FormDataProvider\PageTsConfig::class,
-			\TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsProcessCommon::class,
-			\TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsProcessShowitem::class
-		),
-		'before' => array(
-			\TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class
-		)
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\ProviderProcessor::class] = array(
+        'depends' => array(
+            \TYPO3\CMS\Backend\Form\FormDataProvider\PageTsConfig::class,
+            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsProcessCommon::class,
+            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsProcessShowitem::class
+        ),
+        'before' => array(
+            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class
+        )
     );
 
     // Small override for record-localize controller to manipulate the record listing to provide child records in list
@@ -49,9 +49,9 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class . '->clearCacheCommand';
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\Preview::class;
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] =
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems::class;
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] =
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\ContentIcon::class . '->addSubIcon';
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['record_is_used']['flux'] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\ContentUsedDecision::class . '->isContentElementUsed';
@@ -76,20 +76,20 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         'requireColumnPositionJavaScript'
     );
 
-	if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
+    if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
 
 
         \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\ContentTypeProvider::class);
         \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider::class);
 
         // native Outlets, replaceable by short name in subsequent registerOutlet() calls by adding second argument (string, name of type)
-		\FluidTYPO3\Flux\Core::registerOutlet('standard');
+        \FluidTYPO3\Flux\Core::registerOutlet('standard');
 
-		// native Pipes, replaceable by short name in subsequent registerPipe() calls by adding second argument (string, name of type)
-		\FluidTYPO3\Flux\Core::registerPipe('standard');
-		\FluidTYPO3\Flux\Core::registerPipe('controller');
-		\FluidTYPO3\Flux\Core::registerPipe('email');
-		\FluidTYPO3\Flux\Core::registerPipe('flashMessage');
-		\FluidTYPO3\Flux\Core::registerPipe('typeConverter');
-	}
+        // native Pipes, replaceable by short name in subsequent registerPipe() calls by adding second argument (string, name of type)
+        \FluidTYPO3\Flux\Core::registerPipe('standard');
+        \FluidTYPO3\Flux\Core::registerPipe('controller');
+        \FluidTYPO3\Flux\Core::registerPipe('email');
+        \FluidTYPO3\Flux\Core::registerPipe('flashMessage');
+        \FluidTYPO3\Flux\Core::registerPipe('typeConverter');
+    }
 }
