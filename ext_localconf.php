@@ -34,11 +34,6 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 			\TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class
 		)
     );
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1532363653] = [
-        'nodeName' => 'fluxColumnPosition',
-        'priority' => 30,
-        'class' => \FluidTYPO3\Flux\Integration\FormEngine\ColposElement::class
-    ];
 
     // Small override for record-localize controller to manipulate the record listing to provide child records in list
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class]['className'] = \FluidTYPO3\Flux\Integration\Overrides\LocalizationController::class;
@@ -71,6 +66,15 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources'][] =
             \FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor::class . '->includeStaticTypoScriptHook';
     }
+
+    /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
+    $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+    $signalSlotDispatcher->connect(
+        \TYPO3\CMS\Backend\Controller\EditDocumentController::class,
+        'initAfter',
+        \FluidTYPO3\Flux\Integration\HookSubscribers\EditDocumentController::class,
+        'requireColumnPositionJavaScript'
+    );
 
 	if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
 
