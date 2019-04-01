@@ -218,8 +218,7 @@ class ContentTypeBuilder
         }
         $iconIdentifier = MiscellaneousUtility::createIcon(
             $icon,
-            Icon::SIZE_DEFAULT,
-            Icon::SIZE_DEFAULT
+            'content-' . $contentType
         );
         $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType] = $iconIdentifier;
         return $iconIdentifier;
