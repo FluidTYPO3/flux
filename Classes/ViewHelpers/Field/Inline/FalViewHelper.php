@@ -53,6 +53,28 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  *     <flux:field.inline.fal name="settings.image" required="1" maxItems="1" minItems="1"/>
  *
+ * #### Define crop variants
+ *
+ *     <flux:field.inline.fal name="settings.slides" required="1" maxItems="10" minItems="1" cropVariants="{
+ *       default: {
+ *         title: 'Default',
+ *         allowedAspectRatios: {
+ *           default: {
+ *             title: '1200:450',
+ *             value: '2.6666666666'
+ *           }
+ *         }
+ *       }
+ *     }"/>
+ *
+ * The crop configuration can now be passed to the image viewhelper:
+ *
+ *     <f:section name="Main">
+ *       <f:for each="{v:content.resources.fal(field: 'settings.slides')}" as="image" iteration="iterator">
+ *         <f:image src="{image.id}" height="300" class="leb-pic" crop="{image.crop}" cropVariant="default"/>
+ *       </f:for>
+ *     </f:section>
+ *
  * #### Rendering the image
  *
  *     {v:content.resources.fal(field: 'settings.image') -> v:iterator.first() -> v:variable.set(name: 'image')}
@@ -176,6 +198,11 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
             false,
             Fal::DEFAULT_CREATE_NEW_RELATION_LINK_TITLE
         );
+        $this->registerArgument(
+            'cropVariants',
+            'array',
+            'Add one or multiple crop variants for uploaded images'
+        );
     }
 
     /**
@@ -188,6 +215,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
         $allowedExtensions = $arguments['allowedExtensions'];
         $disallowedExtensions = $arguments['disallowedExtensions'];
         $createNewRelationLinkTitle = $arguments['createNewRelationLinkTitle'];
+        $cropVariants = $arguments['cropVariants'];
 
         /** @var Fal $component */
         $component = static::getPreparedComponent('Inline/Fal', $renderingContext, $arguments);
@@ -223,6 +251,10 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
                         'imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
                 ],
             ]);
+        }
+        
+        if (!empty($cropVariants)) {
+            $component->setCropVariants($cropVariants);
         }
 
         $component->setCreateNewRelationLinkTitle($createNewRelationLinkTitle);

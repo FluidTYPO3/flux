@@ -43,23 +43,31 @@ class ContentTypeBuilder
      * @param string $providerExtensionName
      * @param string $templateFilename
      * @param string $providerClassName
+     * @param string $contentType
+     * @param string $defaultControllerExtensionName
      * @return ProviderInterface
      */
-    public function configureContentTypeFromTemplateFile($providerExtensionName, $templateFilename, $providerClassName = Provider::class)
-    {
+    public function configureContentTypeFromTemplateFile(
+        $providerExtensionName,
+        $templateFilename,
+        $providerClassName = Provider::class,
+        $contentType = null,
+        $defaultControllerExtensionName = 'FluidTYPO3.Flux'
+    ) {
         $section = 'Configuration';
         $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
-        $emulatedControllerAction = lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
+        $emulatedControllerAction = lcfirst($contentType ? GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2))) : pathinfo($templateFilename, PATHINFO_FILENAME));
         $emulatedPluginName = ucfirst($emulatedControllerAction);
-        $controllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
+
+        $controllerClassName = str_replace('.', '\\', $defaultControllerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
+        $localControllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
-        $fullContentType = $extensionSignature . '_' . strtolower($emulatedPluginName);
-        $controllerExtensionName = $providerExtensionName;
-        if (!$this->validateContentController($controllerClassName)) {
-            class_alias(ContentController::class, $controllerClassName);
+        $fullContentType = $contentType ?: $extensionSignature . '_' . strtolower($emulatedPluginName);
+        if (!$this->validateContentController($localControllerClassName)) {
+            class_alias($controllerClassName, $localControllerClassName);
         }
-        $this->configureContentTypeForController($controllerExtensionName, $controllerClassName, $emulatedControllerAction);
+        $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $emulatedControllerAction);
 
         /** @var Provider $provider */
         $provider = GeneralUtility::makeInstance(ObjectManager::class)->get($providerClassName);
@@ -155,7 +163,7 @@ class ContentTypeBuilder
         if (!$form) {
             // Provider *must* be able to return a Form without any global configuration or specific content
             // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
-            $form = $provider->getForm([]);
+            $form = $provider->getForm(['CType' => $contentType]);
             if (!$form) {
                 throw new \RuntimeException(
                     sprintf(
@@ -181,7 +189,7 @@ class ContentTypeBuilder
             }
         }
 
-        $this->registerExtbasePluginForForm($providerExtensionName, $pluginName, $form);
+        $this->registerExtbasePluginForForm($providerExtensionName, GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType))), $form);
         $this->addPageTsConfig($form, $contentType);
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
@@ -210,8 +218,7 @@ class ContentTypeBuilder
         }
         $iconIdentifier = MiscellaneousUtility::createIcon(
             $icon,
-            Icon::SIZE_DEFAULT,
-            Icon::SIZE_DEFAULT
+            'content-' . $contentType
         );
         $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType] = $iconIdentifier;
         return $iconIdentifier;
@@ -246,11 +253,8 @@ class ContentTypeBuilder
      */
     protected function addPageTsConfig(Form $form, $contentType)
     {
-        if (TYPO3_MODE !== 'BE') {
-            return;
-        }
         // Icons required solely for use in the "new content element" wizard
-        $formId = $form->getId();
+        $formId = $form->getId() ?: $contentType;
         $group = $form->getOption(Form::OPTION_GROUP);
         $groupName = $this->sanitizeString($group ?? 'fluxContent');
         $extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());

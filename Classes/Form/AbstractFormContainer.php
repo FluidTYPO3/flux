@@ -143,6 +143,14 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     }
 
     /**
+     * @return FormInterface[]
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
      * @return FormInterface|FALSE
      */
     public function last()

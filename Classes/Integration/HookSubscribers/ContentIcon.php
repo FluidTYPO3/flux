@@ -105,7 +105,9 @@ class ContentIcon
         // we check the cache here because at this point, the cache key is decidedly
         // unique and we have not yet consulted the (potentially costly) Provider.
         $cachedIconIdentifier = $this->cache->get($cacheIdentity);
-        if ($cachedIconIdentifier !== null) {
+        if ($cachedIconIdentifier !== false) {
+            // both empty string and non-empty value means icon was generated and cached, we return
+            // the result directly in both such cases, to prevent attempts to re-resolve provider etc.
             return $cachedIconIdentifier;
         } elseif ($record) {
             $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));

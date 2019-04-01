@@ -65,6 +65,7 @@ class Tree extends AbstractRelationFormField
     {
         $configuration = $this->prepareConfiguration('select');
         $configuration['renderMode'] = 'tree';
+        $configuration['renderType'] = 'selectTree';
         $configuration['treeConfig'] = [
             'parentField' => $this->getParentField(),
             'appearance' => [

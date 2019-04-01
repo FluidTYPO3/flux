@@ -1,0 +1,79 @@
+<f:variable name="fileNotFound">EMPTY</f:variable>
+<f:if condition="{recordIsNew}">
+	<f:then>
+		<h4>New record</h4>
+		<p>Save the record to validate the content type.</p>
+		<ol>
+			<li>Before you create content types you <strong>should create an extension, even an empty one</strong> to use as context. This allows things like template paths and settings to be correctly isolated.</li>
+			<li>Give your content type a name (CType value) and a title (the label humans read as name of the type, can be LLL reference)</li>
+			<li>You <strong>should</strong> make sure the CType prefix matches the signature of your extension. For example, if your extension is <code>MyVendor.GreatExtension</code> then the prefix of your CType should be <code>greatextension_</code>.</li>
+			<li>Or you can use the context provided by <code>FluidTYPO3.Builder</code> which is set as default value below.</li>
+		</ol>
+	</f:then>
+	<f:else>
+		<table class="table table-bordered">
+			<tr>
+				<td>Context</td>
+				<td>
+					<f:render section="Message" arguments="{
+                        class: '{f:if(condition: validation.extensionInstalled, then: \'success\', else: \'danger\')}',
+                        text: '{f:if(condition: validation.extensionInstalled, then: \'Extension <strong>{contentType.extensionIdentity}</strong> is installed.\', else: \'Extension <strong>{contentType.extensionIdentity}</strong> is NOT installed!\')}'
+                    }" />
+					<f:render section="Message" arguments="{
+                        class: '{f:if(condition: validation.extensionMatched, then: \'success\', else: \'warning\')}',
+                        text: '{f:if(condition: validation.extensionMatched, then: \'<strong>{contentType.extensionIdentity}</strong> matches content type <strong>{contentType.contentTypeName}</strong>.\', else: \'<strong>{contentType.extensionIdentity}</strong> does NOT match prefix used in content type <strong>{contentType.contentTypeName}</strong>!\')}'
+                    }" />
+				</td>
+				<td>Usages</td>
+				<td>
+					<f:render section="Message" arguments="{
+                        class: '{f:if(condition: usages, then: \'warning\', else: \'success\')}',
+                        text: '{f:if(condition: usages, then: \'{usages} usage(s) of this content type detected. Edit at your own risk!\', else: \'There are no usages of this content type. Safe to edit.\')}'
+                    }" />
+				</td>
+			</tr>
+			<tr>
+				<td>Template</td>
+				<td>
+					<f:if condition="{validation.templateSource}">
+						<f:then>
+							<f:render section="Message" arguments="{
+                                class: 'danger',
+                                text: validation.templateSource
+                            }" />
+						</f:then>
+						<f:else if="{contentType.usingGeneratedTemplateSource}">
+							<f:render section="Message" arguments="{
+                                class: 'info',
+                                text: 'Automatically generated template source in use. Can render nested content with basic markup.'
+                            }" />
+						</f:else>
+						<f:else if="{contentType.usingTemplateFile} && !{validation.templateFile}">
+							<f:render section="Message" arguments="{
+                                class: 'danger',
+                                text: 'Template file <strong>{contentType.templatePathAndFilename ? contentType.templatePathAndFilename : fileNotFound}</strong> could not be resolved.'
+                            }" />
+						</f:else>
+						<f:else>
+							<f:render section="Message" arguments="{
+                                class: 'success',
+                                text: 'Fluid template source is valid.'
+                            }" />
+						</f:else>
+					</f:if>
+				</td>
+				<td>Icon</td>
+				<td>
+					<f:render section="Message" arguments="{
+                        class: '{f:if(condition: validation.icon, then: \'success\', else: \'danger\')}',
+                        text: '{f:if(condition: validation.icon, then: \'Icon file exists or default icon is used.\', else: \'Icon file <strong>{record.icon}</strong> could not be resolved!\')}'
+                    }" />
+				</td>
+			</tr>
+		</table>
+	</f:else>
+</f:if>
+
+<f:section name="Message">
+	<span class="text-{class}">{text -> f:format.raw()}</span>
+</f:section>

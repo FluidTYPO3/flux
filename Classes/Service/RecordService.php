@@ -9,8 +9,12 @@ namespace FluidTYPO3\Flux\Service;
  */
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\VisibilityAspect;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -71,7 +75,7 @@ class RecordService implements SingletonInterface
             ->where(sprintf('uid = %d', $uid))
             ->execute()
             ->fetchAll() ?: [];
-        return reset($results);
+        return reset($results) ?: null;
     }
 
     /**
@@ -118,7 +122,32 @@ class RecordService implements SingletonInterface
      */
     protected function getQueryBuilder($table)
     {
-        return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $this->setContextDependentRestrictionsForQueryBuilder($queryBuilder);
+        return $queryBuilder;
     }
 
+    protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
+    {
+        if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE) {
+            if ((bool)($GLOBALS['TSFE']->fePreview ?? false)) {
+                // check if running TYPO3 version >= 9
+                if (class_exists('\\TYPO3\\CMS\\Core\\Context\\VisibilityAspect')) {
+                    $context = new Context();
+                    $visibility = new VisibilityAspect(true, true);
+                    $context->setAspect('visibility', $visibility);
+                    $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
+                    $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
+                } else {
+                    // Fallback for TYPO3 8.7
+                    $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
+                    if ($GLOBALS['TSFE']->showHiddenRecords) {
+                        $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
+                    }
+                }
+            }
+        } else {
+            $queryBuilder->getRestrictions()->removeAll();
+        }
+    }
 }
