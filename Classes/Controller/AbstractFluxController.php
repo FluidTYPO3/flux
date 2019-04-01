@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Controller;
 
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -330,6 +331,10 @@ abstract class AbstractFluxController extends ActionController
     {
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
         if (!$shouldRelay) {
+            if ($this->provider instanceof FluidProviderInterface) {
+                $templatePathAndFilename = $this->provider->getTemplatePathAndFilename($this->getRecord());
+                $this->view->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
+            }
             $content = $this->view->render();
         } else {
             $foreignControllerClass = $this->configurationService

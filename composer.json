@@ -27,7 +27,7 @@
         "fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
     },
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "typo3/cms-core": "^8.7 || ^9 || dev-master",
         "typo3/cms-fluid": "^8.7 || ^9 || dev-master",
         "typo3/cms-backend": "^8.7 || ^9 || dev-master",

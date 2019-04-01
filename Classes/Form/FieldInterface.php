@@ -108,6 +108,17 @@ interface FieldInterface extends FormInterface
     public function getValidate();
 
     /**
+     * @return array
+     */
+    public function getConfig();
+
+    /**
+     * @param array $config
+     * @return FieldInterface
+     */
+    public function setConfig(array $config);
+
+    /**
      * @param WizardInterface $wizard
      * @return FormInterface
      */

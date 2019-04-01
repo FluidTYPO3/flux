@@ -73,6 +73,11 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     protected $wizards;
 
     /**
+     * @var array
+     */
+    protected $config = [];
+
+    /**
      * CONSTRUCTOR
      */
     public function __construct()
@@ -200,7 +205,10 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         if (false === $this->getEnabled()) {
             return [];
         }
-        $configuration = $this->buildConfiguration();
+
+        // The "config" section consists of whichever configuration arry the component built, but with
+        // priority to any options set directly as raw TCA field config options in $this->config.
+        $configuration = array_replace($this->buildConfiguration(), $this->getConfig());
         $filterClosure = function($value) {
             return $value !== null && $value !== '' && $value !== [];
         };
@@ -343,6 +351,24 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     public function setValidate($validate)
     {
         $this->validate = $validate;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param array $config
+     * @return FieldInterface
+     */
+    public function setConfig(array $config)
+    {
+        $this->config = $config;
         return $this;
     }
 

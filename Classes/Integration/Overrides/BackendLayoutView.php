@@ -65,6 +65,9 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     {
         if ($this->addingItemsForContent) {
             $pageRecord = $this->loadRecordFromTable('pages', (int)$pageId);
+            if (!$pageRecord) {
+                return null;
+            }
             $pageLevelProvider = $this->resolvePrimaryProviderForRecord('pages', $pageRecord);
             if ($pageLevelProvider instanceof GridProviderInterface) {
                 return $pageLevelProvider->getGrid($pageRecord)->buildExtendedBackendLayoutArray(0);
@@ -73,9 +76,29 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         // Delegate resolving of backend layout structure to the Provider, which will return a Grid, which can create
         // a full backend layout data array.
         if ($this->provider instanceof GridProviderInterface) {
-            return $this->provider->getGrid($this->record)->buildExtendedBackendLayoutArray($this->record['l18n_parent'] ?: $this->record['uid']);
+            return $this->provider->getGrid($this->record)->buildExtendedBackendLayoutArray(
+                $this->resolveParentRecordUid($this->record)
+            );
         }
         return parent::getSelectedBackendLayout($pageId);
+    }
+
+    /**
+     * Extracts the UID to use as parent UID, based on properties of the record
+     * and composition of the values within it, to ensure an integer UID.
+     *
+     * @param array $record
+     * @return int
+     */
+    protected function resolveParentRecordUid(array $record): int
+    {
+        $uid = $record['l18n_parent'] ?: $record['uid'];
+        if (is_array($uid)) {
+            // The record was passed by a third-party integration which read the record from FormEngine's expanded
+            // format which stores select-type fields such as the l18n_parent as array values. Extract it from there.
+            return $uid = reset($uid);
+        }
+        return (int) $uid;
     }
 
     /**
@@ -101,8 +124,11 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         }
         if ($this->addingItemsForContent) {
             $parentRecordUid = ColumnNumberUtility::calculateParentUid($this->record['colPos']);
-            if ($parentRecordUid) {
+            if ($parentRecordUid > 0) {
                 $parentRecord = $this->loadRecordFromTable('tt_content', $parentRecordUid);
+                if (!$parentRecord) {
+                    return $items;
+                }
                 $provider = $this->resolvePrimaryProviderForRecord('tt_content', $parentRecord);
                 if ($provider) {
                     $items = array_merge(
@@ -123,14 +149,19 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         return $items;
     }
 
-    protected function loadRecordFromTable(string $table, int $uid): array
+    /**
+     * @param string $table
+     * @param int $uid
+     * @return array|null
+     */
+    protected function loadRecordFromTable(string $table, int $uid)
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
         $query = $queryBuilder->select('*')
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $uid));
         $query->getRestrictions()->removeAll();
-        return $query->execute()->fetchAll()[0];
+        return $query->execute()->fetchAll()[0] ?? null;
     }
 
     protected function resolvePrimaryProviderForRecord(string $table, array $record)

@@ -106,6 +106,15 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
             'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
             'is otherwise automatically detected from rendering context.'
         );
+        $this->registerArgument(
+            'config',
+            'array',
+            'Raw TCA options - passed directly to "config" section of created field and overrides anything generated ' .
+            'by the component itself. Can be used to provide options that Flux itself does not support, and can be ' .
+            'used to pass root-level arguments for a "userFunc"',
+            false,
+            []
+        );
     }
 
     /**
@@ -116,8 +125,9 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
     {
-        $component = static::getFormFromRenderingContext($renderingContext)
+        $component = static::getContainerFromRenderingContext($renderingContext)
             ->createField($type, $arguments['name'], $arguments['label']);
+        $component->setConfig((array)$arguments['config']);
         $component->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );

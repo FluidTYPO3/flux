@@ -174,12 +174,11 @@ class DynamicFlexForm extends FlexFormTools
             DataStructureProviderInterface::class
         );
         if (count($providers) === 0) {
-            // No Providers detected - we will cache this response
-            $this->configurationService->setInCaches([], true, $identifier);
+            // No Providers detected - return empty data structure (reported as invalid DS in backend)
             return [];
         }
         foreach ($providers as $provider) {
-            $form = $provider instanceof FormProviderInterface ? $provider->getForm($record) : null;
+            $form = $form ?? ($provider instanceof FormProviderInterface ? $provider->getForm($record) : null);
             $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
             if ($form && $form->getOption(Form::OPTION_STATIC)) {
                 // This provider has requested static DS caching; stop attempting
@@ -193,7 +192,6 @@ class DynamicFlexForm extends FlexFormTools
         }
 
         $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
-        $this->configurationService->setInCaches($dataStructArray, false, $identifier);
 
         return $dataStructArray;
     }

@@ -76,11 +76,10 @@ class MiscellaneousUtility
     /**
      * Returns a generated icon file into typo3temp/pics
      * @param string $originalFile
-     * @param integer $width
-     * @param integer $height
+     * @param string $identifier
      * @return string
      */
-    public static function createIcon($originalFile, $width, $height)
+    public static function createIcon($originalFile, $identifier = null)
     {
         $extension = pathinfo($originalFile, PATHINFO_EXTENSION);
         switch (strtolower($extension)) {
@@ -91,7 +90,7 @@ class MiscellaneousUtility
             default:
                 $iconProvider = BitmapIconProvider::class;
         }
-        $iconIdentifier = 'icon-' . md5($originalFile);
+        $iconIdentifier = $identifier ?? 'icon-' . md5($originalFile);
         $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
         $iconRegistry->registerIcon($iconIdentifier, $iconProvider, ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]);
         return $iconIdentifier;

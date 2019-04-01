@@ -207,7 +207,7 @@ class PreviewView extends TemplateView
 
         if (is_object($form)) {
             $formLabel = $form->getLabel();
-            $label = $this>$this->getLanguageService()->sL($formLabel);
+            $label = $this->getLanguageService()->sL($formLabel);
             $variables['label'] = $label;
         }
 
@@ -314,6 +314,11 @@ class PreviewView extends TemplateView
 
         $dblist = $this->getPageLayoutView($provider, $row);
         $layoutConfiguration = $provider->getGrid($row)->buildExtendedBackendLayoutArray($parentRecordUid);
+
+        array_push(
+            $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
+            ...$layoutConfiguration['__items']
+        );
 
         $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList']);
 

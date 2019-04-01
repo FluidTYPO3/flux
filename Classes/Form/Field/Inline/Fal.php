@@ -150,6 +150,13 @@ class Fal extends AbstractInlineFormField
     protected $createNewRelationLinkTitle = self::DEFAULT_CREATE_NEW_RELATION_LINK_TITLE;
 
     /**
+     * Crop variants for uploaded images
+     *
+     * @var array
+     */
+    protected $cropVariants = [];
+
+    /**
      * @var null|string
      */
     protected $renderType = null;
@@ -161,6 +168,17 @@ class Fal extends AbstractInlineFormField
     {
         $configuration = $this->prepareConfiguration('inline');
         $configuration['appearance']['createNewRelationLinkTitle'] = $this->getCreateNewRelationLinkTitle();
+        if (!empty($this->cropVariants)) {
+            $configuration['overrideChildTca'] = [
+                'columns' => [
+                    'crop' => [
+                        'config' => [
+                            'cropVariants' => $this->cropVariants
+                        ]
+                    ]
+                ]
+            ];
+        }
         return $configuration;
     }
 
@@ -179,6 +197,24 @@ class Fal extends AbstractInlineFormField
     public function setCreateNewRelationLinkTitle($createNewRelationLinkTitle)
     {
         $this->createNewRelationLinkTitle = $createNewRelationLinkTitle;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCropVariants()
+    {
+        return $this->cropVariants;
+    }
+
+    /**
+     * @param array $cropVariants
+     * @return Fal
+     */
+    public function setCropVariants(array $cropVariants)
+    {
+        $this->cropVariants = $cropVariants;
         return $this;
     }
 }
