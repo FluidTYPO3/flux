@@ -315,10 +315,12 @@ class PreviewView extends TemplateView
         $dblist = $this->getPageLayoutView($provider, $row);
         $layoutConfiguration = $provider->getGrid($row)->buildExtendedBackendLayoutArray($parentRecordUid);
 
-        array_push(
-            $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
-            ...$layoutConfiguration['__items']
-        );
+        if (!empty($layoutConfiguration['__items'])) {
+            array_push(
+                $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
+                ...$layoutConfiguration['__items']
+            );
+        }
 
         $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList']);
 
