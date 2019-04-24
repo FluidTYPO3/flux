@@ -132,11 +132,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
                 $pluginName = GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType)));
                 $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
 
-                if ($templateFilename === '/var/www/public/typo3conf/ext/flux/Resources/Private/Templates/Content/Proxy.html') {
-                    #var_dump($pluginName);
-                    #exit();
-                }
-
             } catch (Exception $error) {
                 if (!ContextUtility::getApplicationContext()->isProduction()) {
                     throw $error;
