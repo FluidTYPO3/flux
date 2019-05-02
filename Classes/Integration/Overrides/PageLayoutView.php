@@ -68,6 +68,9 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
         // time - something which has started happening since the "unused content" feature was introduced. To avoid
         // the infinite recursion that happens because of this combined with the recursive usage of PageLayoutView,
         // we restrict the content elements this sub-view is capable of loading.
+        if (empty($columns)) {
+            return [];
+        }
         $additionalWhereClause .= ' AND colPos IN (' . implode(',', $columns) . ') ';
         return parent::getContentRecordsPerColumn($table, $id, $columns, $additionalWhereClause);
     }
