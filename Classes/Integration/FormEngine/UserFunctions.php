@@ -56,7 +56,7 @@ class UserFunctions
         }
         $form = $provider->getForm($parameters['record']);
         if ($form) {
-            return count($form->getFields() > 0;
+            return count($form->getFields()) > 0;
         }
         return false;
     }
