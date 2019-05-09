@@ -54,7 +54,10 @@ class UserFunctions
         if (!$provider) {
             return true;
         }
-        return count($provider->getForm($parameters['record'])->getFields()) > 0;
+        if (is_array($parameters['record'])) {
+            $numberOfFields = count($parameters['record']);
+        }
+        return $numberOfFields > 0;
     }
 
     /**
