@@ -39,7 +39,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  *     <f:section name="Configuration">
  *      <flux:grid>
  *       <flux:grid.row>
- *        <flux:grid.column name="teaser"/>
+ *        <flux:grid.column name="teaser" colPos="0"/>
  *       </flux:grid.row>
  *      </flux:grid>
  *     </f:section>
