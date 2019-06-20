@@ -39,11 +39,11 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *         <!-- Creates a full, multi-column/row Grid -->
  *         <flux:grid>
  *             <flux:grid.row>
- *                 <flux:grid.column name="mycontentA" />
- *                 <flux:grid.column name="mycontentB" />
+ *                 <flux:grid.column name="mycontentA" colPos="0" />
+ *                 <flux:grid.column name="mycontentB" colPos="1" />
  *             </flux:grid.row>
  *             <flux:grid.row>
- *                 <flux:grid.column name="mycontentC" colspan="2" />
+ *                 <flux:grid.column name="mycontentC" colPos="2" colspan="2" />
  *             </flux:grid.row>
  *         </flux:grid>
  *         <!-- No use of flux:content is possible after this point -->
