@@ -161,7 +161,8 @@ class DynamicFlexForm extends FlexFormTools
         if ($fromCache) {
             return $fromCache;
         }
-        if (count($record) === 1 && isset($record['uid'])) {
+        if (count($record) === 1 && isset($record['uid']) && is_numeric($record['uid'])) {
+            // The record is a stub, has only "uid" and "uid" is numeric. Reload the full record from DB.
             $record = BackendUtility::getRecord($identifier['tableName'], $record['uid'], '*', '', false);
         }
         $fieldName = $identifier['fieldName'];
