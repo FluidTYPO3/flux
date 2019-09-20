@@ -23,8 +23,7 @@
     },
     "suggest": {
         "fluidtypo3/vhs": "ViewHelper library for Fluid templates.",
-        "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid.",
-        "fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
+        "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid."
     },
     "require": {
         "php": ">=7.1.0",
