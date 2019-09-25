@@ -338,7 +338,11 @@ class PreviewView extends TemplateView
         $dblist->tt_contentConfig['showInfo'] = 1;
         $dblist->tt_contentConfig['single'] = 0;
         $dblist->nextThree = 1;
-        $dblist->tt_contentConfig['sys_language_uid'] = $row['sys_language_uid'];
+
+        if ($GLOBALS['SOBE']) {
+            $dblist->tt_contentConfig['sys_language_uid'] = $GLOBALS['SOBE']->current_sys_language;
+        }
+
         $dblist->tt_contentConfig['showHidden'] = $showHiddenRecords;
         $dblist->tt_contentConfig['activeCols'] = $columnsAsCSV;
         $dblist->tt_contentConfig['cols'] = $columnsAsCSV;
