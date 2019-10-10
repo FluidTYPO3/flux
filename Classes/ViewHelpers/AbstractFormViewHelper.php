@@ -11,6 +11,8 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\FormInterface;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
@@ -99,8 +101,15 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         }
         $controllerContext = $renderingContext->getControllerContext();
         if (null !== $controllerContext) {
-            $controllerExtensionName = $controllerContext->getRequest()->getControllerExtensionName();
-            $controllerVendorName = $controllerContext->getRequest()->getControllerVendorName();
+            /** @var Request $request */
+            $request = $controllerContext->getRequest();
+            $controllerExtensionName = $request->getControllerExtensionName();
+            if (is_callable([$request, 'getControllerVendorName'])) {
+                $controllerVendorName = $request->getControllerVendorName();
+            } else {
+                $controllerClassName = $request->getControllerObjectName();
+                $controllerVendorName = ExtensionUtility::resolveVendorFromExtensionAndControllerClassName($controllerExtensionName, $controllerClassName);
+            }
             return (!empty($controllerVendorName) ? $controllerVendorName . '.' : '') . $controllerExtensionName;
         }
         return 'FluidTYPO3.Flux';

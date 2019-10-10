@@ -21,7 +21,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Extbase\Service\FlexFormService;
+use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
@@ -31,14 +31,6 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
  */
 class FluxService implements SingletonInterface
 {
-    /**
-     * @var array
-     */
-    protected static $friendlySeverities = [
-        GeneralUtility::SYSLOG_SEVERITY_INFO,
-        GeneralUtility::SYSLOG_SEVERITY_NOTICE,
-    ];
-
     /**
      * @var ConfigurationManagerInterface
      */
@@ -246,7 +238,8 @@ class FluxService implements SingletonInterface
         if (true === empty($valuePointer)) {
             $valuePointer = 'vDEF';
         }
-        $settings = $this->objectManager->get(FlexFormService::class)
+        $serviceClassName = class_exists(FlexFormService::class) ? FlexFormService::class : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
+        $settings = $this->objectManager->get($serviceClassName)
             ->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
         if (null !== $form && $form->getOption(Form::OPTION_TRANSFORM)) {
             /** @var FormDataTransformer $transformer */
@@ -254,16 +247,6 @@ class FluxService implements SingletonInterface
             $settings = $transformer->transformAccordingToConfiguration($settings, $form);
         }
         return $settings;
-    }
-
-    /**
-     * @deprecated
-     * @param string $message
-     * @param integer $severity
-     * @return void
-     */
-    public function message($message, $severity = GeneralUtility::SYSLOG_SEVERITY_INFO)
-    {
     }
 
     /**

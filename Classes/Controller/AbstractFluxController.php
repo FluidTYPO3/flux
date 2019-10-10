@@ -269,7 +269,7 @@ abstract class AbstractFluxController extends ActionController
      */
     protected function resolveView()
     {
-        return $this->objectManager->get($this->resolveViewObjectName() ?: $this->defaultViewObjectName);
+        return $this->objectManager->get(is_callable([$this, 'resolveViewObjectName']) ? $this->resolveViewObjectName() : $this->defaultViewObjectName);
     }
 
     /**
@@ -333,7 +333,23 @@ abstract class AbstractFluxController extends ActionController
         if (!$shouldRelay) {
             if ($this->provider instanceof FluidProviderInterface) {
                 $templatePathAndFilename = $this->provider->getTemplatePathAndFilename($this->getRecord());
-                $this->view->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
+                $vendorLessExtensionName = ExtensionNamingUtility::getExtensionName($extensionName);
+                $paths = $this->view->getRenderingContext()->getTemplatePaths();
+
+                $this->request->setControllerExtensionName($vendorLessExtensionName);
+                $this->configurationManager->setConfiguration(
+                    array_merge(
+                        $this->configurationManager->getConfiguration(
+                            ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT,
+                            $vendorLessExtensionName
+                        ),
+                        [
+                            'extensionName' => $vendorLessExtensionName,
+                        ]
+                    )
+                );
+                $paths->fillDefaultsByPackageName(GeneralUtility::camelCaseToLowerCaseUnderscored($vendorLessExtensionName));
+                $paths->setTemplatePathAndFilename($templatePathAndFilename);
             }
             $content = $this->view->render();
         } else {

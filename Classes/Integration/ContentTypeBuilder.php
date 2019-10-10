@@ -276,6 +276,7 @@ class ContentTypeBuilder
                     iconIdentifier = %s
                     title = %s
                     description = %s
+                    params = 
                     tt_content_defValues {
                         CType = %s
                     }

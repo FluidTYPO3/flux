@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
@@ -52,7 +53,7 @@ class MiscellaneousUtility
                 $extensionKey,
                 'Resources/Public/Icons/' . $controllerName . '/'
             );
-            $iconAbsoluteUrl = '/' . str_replace(PATH_site, '', $iconFolder);
+            $iconAbsoluteUrl = '/' . str_replace(defined('PATH_site') ? PATH_site : Environment::getPublicPath(), '', $iconFolder);
             $iconPathAndName = $iconFolder . $templateName;
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
