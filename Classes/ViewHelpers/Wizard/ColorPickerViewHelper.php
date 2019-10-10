@@ -46,10 +46,10 @@ class ColorPickerViewHelper extends AbstractWizardViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return ColorPicker
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var ColorPicker $component */
         $component = static::getPreparedComponent('ColorPicker', $renderingContext, $arguments);

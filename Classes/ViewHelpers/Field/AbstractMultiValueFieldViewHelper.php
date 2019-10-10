@@ -71,10 +71,10 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
     /**
      * @param string $type
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return MultiValueFieldInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
+    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var MultiValueFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);

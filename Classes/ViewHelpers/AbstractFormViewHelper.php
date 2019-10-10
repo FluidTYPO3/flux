@@ -28,6 +28,16 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     const SCOPE_VARIABLE_CONTAINER = 'container';
     const SCOPE_VARIABLE_GRIDS = 'grids';
 
+    protected function callRenderMethod()
+    {
+        $container = static::getContainerFromRenderingContext($this->renderingContext);
+        $component = static::getComponent($this->renderingContext, $this->arguments);
+        // rendering child nodes with Form's last sheet as active container
+        static::setContainerInRenderingContext($this->renderingContext, $component);
+        $this->renderChildren();
+        static::setContainerInRenderingContext($this->renderingContext, $container);
+    }
+
     /**
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
@@ -73,12 +83,12 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return string
      */
     protected static function getExtensionNameFromRenderingContextOrArguments(
         RenderingContextInterface $renderingContext,
-        array $arguments
+        iterable $arguments
     ) {
         if (true === isset($arguments[static::SCOPE_VARIABLE_EXTENSIONNAME])) {
             return $arguments[static::SCOPE_VARIABLE_EXTENSIONNAME];

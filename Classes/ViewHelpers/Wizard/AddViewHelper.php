@@ -50,10 +50,10 @@ class AddViewHelper extends AbstractWizardViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Add
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Add $component */
         $component = static::getPreparedComponent('Add', $renderingContext, $arguments);

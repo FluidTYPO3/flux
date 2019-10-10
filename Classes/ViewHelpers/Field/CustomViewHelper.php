@@ -37,13 +37,13 @@ class CustomViewHelper extends UserFuncViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @param \Closure $renderChildrenClosure
      * @return Custom
      */
     public static function getComponent(
         RenderingContextInterface $renderingContext,
-        array $arguments,
+        iterable $arguments,
         \Closure $renderChildrenClosure
     ) {
         /** @var Custom $component */
@@ -61,7 +61,7 @@ class CustomViewHelper extends UserFuncViewHelper
      */
     protected static function buildClosure(
         RenderingContextInterface $renderingContext,
-        array $arguments,
+        iterable $arguments,
         \Closure $renderChildrenClosure
     ) {
         $container = $renderingContext->getVariableProvider();

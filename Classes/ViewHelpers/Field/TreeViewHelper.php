@@ -66,10 +66,10 @@ class TreeViewHelper extends AbstractRelationFieldViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Tree
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Tree $tree */
         $tree = static::getPreparedComponent('Tree', $renderingContext, $arguments);

@@ -81,6 +81,40 @@ class FormViewHelper extends AbstractFormViewHelper
         );
     }
 
+    protected function callRenderMethod()
+    {
+        $viewHelperVariableContainer = $this->renderingContext->getViewHelperVariableContainer();
+        $extensionName = static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments);
+        $formClassName = Form::class;
+        $arguments = $this->arguments;
+        $form = call_user_func_array([$formClassName, 'create'], []);
+        // configure Form instance
+        $form->setId($arguments['id']);
+        $form->setName($arguments['id']);
+        $form->setLabel($arguments['label']);
+        $form->setDescription($arguments['description']);
+        $form->setEnabled($arguments['enabled']);
+        $form->setCompact($arguments['compact']);
+        $form->setExtensionName($extensionName);
+        $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
+        $form->setVariables((array) $arguments['variables']);
+        $form->setOptions((array) $arguments['options']);
+        if (false === $form->hasOption(Form::OPTION_ICON) && isset($arguments['icon'])) {
+            $form->setOption(Form::OPTION_ICON, $arguments['icon']);
+        }
+
+        // rendering child nodes with Form's last sheet as active container
+        $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
+        $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
+
+        static::setContainerInRenderingContext($this->renderingContext, $form);
+        $this->renderChildren();
+
+        $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
+        $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
+    }
+
+
     /**
      * @param array $arguments
      * @param \Closure $renderChildrenClosure

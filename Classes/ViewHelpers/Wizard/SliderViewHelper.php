@@ -38,10 +38,10 @@ class SliderViewHelper extends AbstractWizardViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Slider
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Slider $component */
         $component = static::getPreparedComponent('Slider', $renderingContext, $arguments);

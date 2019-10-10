@@ -69,10 +69,10 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return File
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var File $component */
         $component = static::getPreparedComponent('File', $renderingContext, $arguments);

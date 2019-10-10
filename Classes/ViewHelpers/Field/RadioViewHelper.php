@@ -22,10 +22,10 @@ class RadioViewHelper extends SelectViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Radio
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Radio $component */
         $component = static::getPreparedComponent('Radio', $renderingContext, $arguments);

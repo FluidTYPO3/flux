@@ -22,10 +22,10 @@ class NoneViewHelper extends AbstractFieldViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return None
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         return static::getPreparedComponent('None', $renderingContext, $arguments);
     }

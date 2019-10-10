@@ -43,10 +43,10 @@ class MultiRelationViewHelper extends AbstractRelationFieldViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return RelationFieldInterface
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         return static::getPreparedComponent('MultiRelation', $renderingContext, $arguments);
     }

@@ -61,10 +61,10 @@ class CategoryViewHelper extends TreeViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Tree
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $tree = parent::getComponent($renderingContext, $arguments);
         if (null === $arguments['matchFields']) {

@@ -70,10 +70,10 @@ class ContainerViewHelper extends AbstractFieldViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Container
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Container $container */
         $container = static::getContainerFromRenderingContext($renderingContext)

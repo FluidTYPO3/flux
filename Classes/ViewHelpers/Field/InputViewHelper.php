@@ -44,10 +44,10 @@ class InputViewHelper extends AbstractFieldViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Input
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Input $input */
         $input = static::getPreparedComponent('Input', $renderingContext, $arguments);

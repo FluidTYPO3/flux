@@ -54,10 +54,10 @@ class LinkViewHelper extends AbstractWizardViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Link
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Link $component */
         $component = static::getPreparedComponent('Link', $renderingContext, $arguments);
