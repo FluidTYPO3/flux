@@ -234,8 +234,9 @@ abstract class AbstractFluxController extends ActionController
     {
         $record = $this->getRecord();
         $extensionKey = ExtensionNamingUtility::getExtensionKey($this->provider->getControllerExtensionKeyFromRecord($record));
+        $extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 
-        $this->controllerContext->getRequest()->setControllerExtensionName($extensionKey);
+        $this->controllerContext->getRequest()->setControllerExtensionName($extensionName);
         $view->setControllerContext($this->controllerContext);
 
         /** @var RenderingContextInterface $renderingContext */
