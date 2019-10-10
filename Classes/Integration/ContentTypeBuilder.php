@@ -257,16 +257,15 @@ class ContentTypeBuilder
         $formId = $form->getId() ?: $contentType;
         $group = $form->getOption(Form::OPTION_GROUP);
         $groupName = $this->sanitizeString($group ?? 'fluxContent');
-        $extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());
+        $extensionName = $form->getExtensionName();
+        $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 
         $labelSubReference = 'flux.newContentWizard.' . $groupName;
         $labelExtensionKey = $groupName === 'fluxContent' ? 'flux' : $extensionKey;
         $labelReference = 'LLL:EXT:' . $labelExtensionKey . $form->getLocalLanguageFileRelativePath() . ':' . $labelSubReference;
-        $probedTranslation = LocalizationUtility::translate($labelReference);
-
         $this->initializeNewContentWizardGroup(
             $groupName,
-            $probedTranslation ? $labelReference : $groupName
+            $labelReference
         );
 
         // Registration for "new content element" wizard to show our new CType (otherwise, only selectable via "Content type" drop-down)
