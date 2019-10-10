@@ -194,6 +194,11 @@ class DataHandlerSubscriber
                         );
 
                         $reference->updateDB('tt_content', $copiedRecordUidNested, $overrideArray);
+
+                        if (isset($reference->autoVersionIdMap['tt_content'][$copiedRecordUidNested])) {
+                            //also adjust workspace-overlaid version
+                            $reference->updateDB('tt_content', $reference->autoVersionIdMap['tt_content'][$copiedRecordUidNested], $overrideArray);
+                        }
                     }
                 }
             }
