@@ -33,8 +33,12 @@
         "typo3/cms-frontend": "^8.7 || ^9 || ^10 || dev-master",
         "typo3/cms-recordlist": "^8.7 || ^9 || ^10 || dev-master"
     },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "flux"
+        }
+    },
     "replace": {
-        "flux": "self.version",
         "typo3-ter/flux": "self.version"
     },
     "require-dev": {
