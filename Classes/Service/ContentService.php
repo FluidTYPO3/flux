@@ -403,7 +403,9 @@ class ContentService implements SingletonInterface {
 				$previousLocalizedRecordUid
 			);
 		}
-		$this->updateRecordInDatabase($localizedRecord[0]);
+		if (!empty($localizedRecord[0]['uid'])) {
+			$this->updateRecordInDatabase($localizedRecord[0]);
+		}
 	}
 
 	/**
