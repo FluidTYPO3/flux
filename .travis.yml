@@ -3,19 +3,15 @@ language: php
 sudo: false
 
 php:
-  - "5.4"
-  - "5.5"
   - "5.6"
   - "7"
-  - "hhvm"
 
 matrix:
   include:
-    - php: "5.5"
+    - php: "5.6"
       env: CHECKSTYLE="YES" COVERAGE="YES"
   allow_failures:
     - php: "7"
-    - php: "hhvm"
 
 cache:
   directories:
