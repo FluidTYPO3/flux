@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -229,7 +230,13 @@ class DataHandlerSubscriber
         }
 
         if ($command === 'move') {
-            $this->recursivelyMoveChildRecords($table, (int)$id, $destinationPid, $languageUid, $reference);
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start([], []);
+            $subCommandMap = $this->recursivelyMoveChildRecords($table, (int)$id, $destinationPid, $languageUid, $dataHandler);
+
+            $dataHandler->start([], $subCommandMap);
+            $dataHandler->process_cmdmap();
+
         } elseif ($command === 'copy') {
             $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command);
         } elseif ($command === 'copyToLanguage') {
@@ -241,6 +248,10 @@ class DataHandlerSubscriber
 
     protected function recursivelyMoveChildRecords(string $table, int $parentUid, int $pageUid, int $languageUid, DataHandler $dataHandler)
     {
+        $dataMap = [
+            $table => [],
+        ];
+
         list (, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
             $table,
             $parentUid,
@@ -248,30 +259,27 @@ class DataHandlerSubscriber
         );
 
         if (empty($recordsToProcess)) {
-            return;
+            return $dataMap;
         }
-
-        $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
         foreach ($recordsToProcess as $recordToProcess) {
-            $dataHandler->updateDB(
-                $table,
-                $recordToProcess['uid'],
-                [
-                    $languageField => $languageUid,
-                    'pid' => $pageUid
-                ]
+            if ($GLOBALS['BE_USER']->workspace > 0) {
+                $workspaceVersionOfRecord = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER'], $table, $recordToProcess['uid']);
+                $recordUid = $recordToProcess['uid'];
+                if (!$workspaceVersionOfRecord) {
+                    $recordUid = $dataHandler->versionizeRecord($table, $recordToProcess, $pageUid);
+                }
+                $dataMap[$table][$recordUid]['move'] = $pageUid;
+            } else {
+                $dataMap[$table][$recordToProcess['uid']]['move'] = $pageUid;
+            }
+
+            $dataMap = array_replace_recursive(
+                $dataMap,
+                $this->recursivelyMoveChildRecords($table, $recordToProcess['uid'], $pageUid, $languageUid, $dataHandler)
             );
-
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-            $queryBuilder->getRestrictions()->removeAll();
-            $queryBuilder->update($table)
-                ->where($queryBuilder->expr()->eq('l18n_parent', $recordToProcess['uid']))
-                ->set('pid', $pageUid)
-                ->execute();
-
-            $this->recursivelyMoveChildRecords($table, $recordToProcess['uid'], $pageUid, $languageUid, $dataHandler);
         }
+        return $dataMap;
     }
 
     protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $pageUid, int $languageUid, DataHandler $dataHandler, $command)
@@ -368,6 +376,8 @@ class DataHandlerSubscriber
 
         if ($respectPid) {
             $query->andWhere($queryBuilder->expr()->eq('pid', $originalRecord['pid']));
+        } else {
+            $query->andWhere($queryBuilder->expr()->neq('pid', -1));
         }
 
         $records = $query->execute()->fetchAll();
