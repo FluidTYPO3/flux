@@ -8,9 +8,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
@@ -28,9 +28,10 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
      */
     public function canLoadProcessorAsUserObject()
     {
-        $object = GeneralUtility::makeInstance(TableConfigurationPostProcessor::class);
+        $manager = $this->getMockBuilder(ContentTypeManager::class)->setMethods(['fetchContentTypes'])->getMock();
+        $manager->expects($this->atLeastOnce())->method('fetchContentTypes')->willReturn([]);
+        $object = $this->getMockBuilder(TableConfigurationPostProcessor::class)->setMethods(['getContentTypeManager'])->getMock();
+        $object->expects($this->atLeastOnce())->method('getContentTypeManager')->willReturn($manager);
         $object->processData();
-        $this->assertInstanceOf(TableConfigurationPostProcessor::class, $object);
     }
-
 }

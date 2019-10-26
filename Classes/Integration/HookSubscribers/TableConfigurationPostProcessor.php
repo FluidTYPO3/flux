@@ -47,7 +47,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     public function processData()
     {
-        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+        $contentTypeManager = $this->getContentTypeManager();
 
         foreach ($contentTypeManager->fetchContentTypes() as $contentTypesFromExtension) {
             foreach ($contentTypesFromExtension as $contentType) {
@@ -138,5 +138,10 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
                 }
             }
         }
+    }
+
+    protected function getContentTypeManager(): ContentTypeManager
+    {
+        return GeneralUtility::makeInstance(ContentTypeManager::class);
     }
 }
