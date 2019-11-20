@@ -170,38 +170,26 @@ class DataHandlerSubscriber
 
         if ($table === 'pages' && $command === 'copy') {
             foreach ($reference->copyMappingArray['tt_content'] ?? [] as $originalRecordUid => $copiedRecordUid) {
+                $copiedRecord = $this->getSingleRecordWithoutRestrictions('tt_content', $copiedRecordUid, 'colPos');
+                if ($copiedRecord['colPos'] < ColumnNumberUtility::MULTIPLIER) {
+                    continue;
+                }
 
-                list (, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
-                    'tt_content',
-                    (int)$originalRecordUid,
-                    'uid, pid, colPos, l18n_parent',
-                    true
+                $oldParentUid = ColumnNumberUtility::calculateParentUid($copiedRecord['colPos']);
+                $newParentUid = $reference->copyMappingArray['tt_content'][$oldParentUid];
+
+                $overrideArray['colPos'] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                    $newParentUid,
+                    ColumnNumberUtility::calculateLocalColumnNumber((int) $copiedRecord['colPos'])
                 );
 
-                foreach ($recordsToProcess as $recordToProcess) {
-                    if (isset($reference->copyMappingArray['tt_content'][$recordToProcess['uid']])) {
+                // Note here: it is safe to directly update the DB in this case, since we filtered out any
+                // non-"copy" actions, and "copy" is the only action which requires adjustment.
+                $reference->updateDB('tt_content', $copiedRecordUid, $overrideArray);
 
-                        $copiedRecordUidNested = (int)$reference->copyMappingArray['tt_content'][$recordToProcess['uid']];
-
-                        if ($recordToProcess['l18n_parent'] > 0) {
-                            $parentRecord = $this->getSingleRecordWithoutRestrictions('tt_content', $copiedRecordUid, 'l18n_parent');
-                            $parentUid = (int)$parentRecord['l18n_parent'];
-                        } else {
-                            $parentUid = (int)$copiedRecordUid;
-                        }
-
-                        $overrideArray['colPos'] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                            $parentUid,
-                            ColumnNumberUtility::calculateLocalColumnNumber((int)$recordToProcess['colPos'])
-                        );
-
-                        $reference->updateDB('tt_content', $copiedRecordUidNested, $overrideArray);
-
-                        if (isset($reference->autoVersionIdMap['tt_content'][$copiedRecordUidNested])) {
-                            //also adjust workspace-overlaid version
-                            $reference->updateDB('tt_content', $reference->autoVersionIdMap['tt_content'][$copiedRecordUidNested], $overrideArray);
-                        }
-                    }
+                // But if we also have a workspace version of the record recorded, it too must be updated:
+                if (isset($reference->autoVersionIdMap['tt_content'][$copiedRecordUid])) {
+                    $reference->updateDB('tt_content', $reference->autoVersionIdMap['tt_content'][$copiedRecordUid], $overrideArray);
                 }
             }
         }
