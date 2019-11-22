@@ -339,8 +339,7 @@ class DataHandlerSubscriber
             ->from($table)
             ->andWhere(
                 $queryBuilder->expr()->in('colPos', $queryBuilder->createNamedParameter($childColPosValues, Connection::PARAM_INT_ARRAY)),
-                $queryBuilder->expr()->eq($languageField, (int)$originalRecord[$languageField]),
-                $queryBuilder->expr()->eq('t3ver_wsid', 0)
+                $queryBuilder->expr()->eq($languageField, (int)$originalRecord[$languageField])
             )->orderBy('sorting', 'DESC');
 
         if ($respectPid) {
