@@ -246,8 +246,13 @@ class PreviewView extends TemplateView
                 $grid->buildExtendedBackendLayoutArray($row['uid'])['__items']
             );
 
+            $pageUid = $row['pid'];
+            if ($GLOBALS['BE_USER']->workspace > 0) {
+                $placeholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid'], 'pid', $GLOBALS['BE_USER']->workspace);
+                $pageUid = $placeholder['pid'] ?? $pageUid;
+            }
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
-            $pageLayoutView->start($row['pid'], 'tt_content', 0);
+            $pageLayoutView->start($pageUid, 'tt_content', 0);
             $pageLayoutView->generateList();
 
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;

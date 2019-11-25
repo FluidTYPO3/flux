@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -169,38 +170,26 @@ class DataHandlerSubscriber
 
         if ($table === 'pages' && $command === 'copy') {
             foreach ($reference->copyMappingArray['tt_content'] ?? [] as $originalRecordUid => $copiedRecordUid) {
+                $copiedRecord = $this->getSingleRecordWithoutRestrictions('tt_content', $copiedRecordUid, 'colPos');
+                if ($copiedRecord['colPos'] < ColumnNumberUtility::MULTIPLIER) {
+                    continue;
+                }
 
-                list (, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
-                    'tt_content',
-                    (int)$originalRecordUid,
-                    'uid, pid, colPos, l18n_parent',
-                    true
+                $oldParentUid = ColumnNumberUtility::calculateParentUid($copiedRecord['colPos']);
+                $newParentUid = $reference->copyMappingArray['tt_content'][$oldParentUid];
+
+                $overrideArray['colPos'] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                    $newParentUid,
+                    ColumnNumberUtility::calculateLocalColumnNumber((int) $copiedRecord['colPos'])
                 );
 
-                foreach ($recordsToProcess as $recordToProcess) {
-                    if (isset($reference->copyMappingArray['tt_content'][$recordToProcess['uid']])) {
+                // Note here: it is safe to directly update the DB in this case, since we filtered out any
+                // non-"copy" actions, and "copy" is the only action which requires adjustment.
+                $reference->updateDB('tt_content', $copiedRecordUid, $overrideArray);
 
-                        $copiedRecordUidNested = (int)$reference->copyMappingArray['tt_content'][$recordToProcess['uid']];
-
-                        if ($recordToProcess['l18n_parent'] > 0) {
-                            $parentRecord = $this->getSingleRecordWithoutRestrictions('tt_content', $copiedRecordUid, 'l18n_parent');
-                            $parentUid = (int)$parentRecord['l18n_parent'];
-                        } else {
-                            $parentUid = (int)$copiedRecordUid;
-                        }
-
-                        $overrideArray['colPos'] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                            $parentUid,
-                            ColumnNumberUtility::calculateLocalColumnNumber((int)$recordToProcess['colPos'])
-                        );
-
-                        $reference->updateDB('tt_content', $copiedRecordUidNested, $overrideArray);
-
-                        if (isset($reference->autoVersionIdMap['tt_content'][$copiedRecordUidNested])) {
-                            //also adjust workspace-overlaid version
-                            $reference->updateDB('tt_content', $reference->autoVersionIdMap['tt_content'][$copiedRecordUidNested], $overrideArray);
-                        }
-                    }
+                // But if we also have a workspace version of the record recorded, it too must be updated:
+                if (isset($reference->autoVersionIdMap['tt_content'][$copiedRecordUid])) {
+                    $reference->updateDB('tt_content', $reference->autoVersionIdMap['tt_content'][$copiedRecordUid], $overrideArray);
                 }
             }
         }
@@ -211,7 +200,7 @@ class DataHandlerSubscriber
 
         list ($originalRecord, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
             $table,
-            (int)$id,
+            $id,
             'uid, pid, colPos'
         );
 
@@ -230,27 +219,26 @@ class DataHandlerSubscriber
         }
 
         if ($command === 'move') {
-            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-            $dataHandler->start([], []);
-            $subCommandMap = $this->recursivelyMoveChildRecords($table, (int)$id, $destinationPid, $languageUid, $dataHandler);
-
-            $dataHandler->start([], $subCommandMap);
-            $dataHandler->process_cmdmap();
-
+            $subCommandMap = $this->recursivelyMoveChildRecords($table, $id, $destinationPid, $languageUid, $reference);
         } elseif ($command === 'copy') {
-            $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command);
+            $subCommandMap = $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command, $pasteUpdate, $pasteDataMap);
         } elseif ($command === 'copyToLanguage') {
             $destinationPid = reset($recordsToProcess)['pid'];
             $languageUid = reset($reference->cmdmap[$table])["copyToLanguage"];
-            $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command);
+            $subCommandMap = $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command, $pasteUpdate, $pasteDataMap);
+        }
+
+        if (!empty($subCommandMap)) {
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->copyMappingArray = $reference->copyMappingArray;
+            $dataHandler->start([], $subCommandMap);
+            $dataHandler->process_cmdmap();
         }
     }
 
-    protected function recursivelyMoveChildRecords(string $table, int $parentUid, int $pageUid, int $languageUid, DataHandler $dataHandler)
+    protected function recursivelyMoveChildRecords(string $table, int $parentUid, int $pageUid, int $languageUid, DataHandler $dataHandler): array
     {
-        $dataMap = [
-            $table => [],
-        ];
+        $dataMap = [];
 
         list (, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
             $table,
@@ -258,31 +246,20 @@ class DataHandlerSubscriber
             'uid, colPos'
         );
 
-        if (empty($recordsToProcess)) {
-            return $dataMap;
-        }
-
         foreach ($recordsToProcess as $recordToProcess) {
-            if ($GLOBALS['BE_USER']->workspace > 0) {
-                $workspaceVersionOfRecord = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER'], $table, $recordToProcess['uid']);
-                $recordUid = $recordToProcess['uid'];
-                if (!$workspaceVersionOfRecord) {
-                    $recordUid = $dataHandler->versionizeRecord($table, $recordToProcess, $pageUid);
-                }
-                $dataMap[$table][$recordUid]['move'] = $pageUid;
-            } else {
-                $dataMap[$table][$recordToProcess['uid']]['move'] = $pageUid;
-            }
-
-            $dataMap = array_replace_recursive(
-                $dataMap,
-                $this->recursivelyMoveChildRecords($table, $recordToProcess['uid'], $pageUid, $languageUid, $dataHandler)
-            );
+            $recordUid = $recordToProcess['uid'];
+            $dataMap[$table][$recordUid]['move'] = [
+                'action' => 'paste',
+                'target' => $pageUid,
+                'update' => [
+                    $GLOBALS['TCA']['tt_content']['ctrl']['languageField'] => $languageUid,
+                ],
+            ];
         }
         return $dataMap;
     }
 
-    protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $pageUid, int $languageUid, DataHandler $dataHandler, $command)
+    protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $pageUid, int $languageUid, DataHandler $dataHandler, $command, array $pasteUpdate, array $pasteDataMap): array
     {
         list (, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
             $table,
@@ -290,10 +267,7 @@ class DataHandlerSubscriber
             'uid, colPos'
         );
 
-        if (empty($recordsToCopy)) {
-            return;
-        }
-
+        $dataMap = [];
         foreach ($recordsToCopy as $recordToCopy) {
             $overrideArray = [
                 'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
@@ -306,25 +280,20 @@ class DataHandlerSubscriber
                 $overrideArray[$GLOBALS['TCA']['tt_content']['ctrl']['languageField']] = (int) $languageUid;
             }
 
-            $newChildUid = $dataHandler->copyRecord($table, $recordToCopy['uid'], $pageUid, false, $overrideArray);
-
-            if ($newChildUid === null) {
-                // For whichever reason, the child record could not be copied to the same destination as the parent
-                // record was copied. This could indicate that the target page UID is zero, the element was disallowed
-                // for the user, the language was invalid, etc.
-                // Unfortunately we do not get the reason for the failure - it gets logged in TYPO3. So in addition, we
-                // log the fact that the record also could not be recursively treated to copy potential children.
-                $dataHandler->log($table, $recordToCopy['uid'], 1, $pageUid, 1, 'Flux could not copy child records, see previous error in log');
-                continue;
-            }
-            $this->recursivelyCopyChildRecords($table, $recordToCopy['uid'], $newChildUid, $pageUid, $languageUid, $dataHandler, $command);
+            $recordUid = $recordToCopy['uid'];
+            $dataMap[$table][$recordUid][$command] = [
+                'action' => 'paste',
+                'target' => $pageUid,
+                'update' => $overrideArray,
+            ];
         }
+        return $dataMap;
     }
 
     protected function getSingleRecordWithoutRestrictions(string $table, int $uid, string $fieldsToSelect)
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $uid));
@@ -364,14 +333,14 @@ class DataHandlerSubscriber
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-        $queryBuilder->getRestrictions()->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
         $query = $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->andWhere(
-                $queryBuilder->expr()->in('colPos', $childColPosValues),
-                $queryBuilder->expr()->eq($languageField, $originalRecord[$languageField])
+                $queryBuilder->expr()->in('colPos', $queryBuilder->createNamedParameter($childColPosValues, Connection::PARAM_INT_ARRAY)),
+                $queryBuilder->expr()->eq($languageField, (int)$originalRecord[$languageField]),
+                $queryBuilder->expr()->in('t3ver_wsid', $queryBuilder->createNamedParameter([0, $GLOBALS['BE_USER']->workspace], Connection::PARAM_INT_ARRAY))
             )->orderBy('sorting', 'DESC');
 
         if ($respectPid) {
