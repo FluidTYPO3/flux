@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
@@ -205,7 +206,7 @@ class PageService implements SingletonInterface
                 continue;
             }
             $output[$extensionName] = [];
-            $templatePaths = new TemplatePaths($group);
+            $templatePaths = new TemplatePaths(ExtensionNamingUtility::getExtensionKey($extensionName));
             $view->getRenderingContext()->setTemplatePaths($templatePaths);
             foreach ($templatePaths->resolveAvailableTemplateFiles('Page') as $file) {
                 $pathinfo = pathinfo($file);
@@ -227,13 +228,13 @@ class PageService implements SingletonInterface
 
                     if (false === $form instanceof Form) {
                         $logger->log(
-                            GeneralUtility::SYSLOG_SEVERITY_FATAL,
+                            'fatal',
                             'Template file ' . $file . ' contains an unparsable Form definition'
                         );
                         continue;
                     } elseif (false === $form->getEnabled()) {
                         $logger->log(
-                            GeneralUtility::SYSLOG_SEVERITY_NOTICE,
+                            'notice',
                             'Template file ' . $file . ' is disabled by configuration'
                         );
                         continue;
@@ -242,9 +243,9 @@ class PageService implements SingletonInterface
                     $form->setExtensionName($extensionName);
                     $output[$extensionName][$filename] = $form;
                 } catch (InvalidSectionException $error) {
-                    $logger->log(GeneralUtility::SYSLOG_SEVERITY_ERROR, $error->getMessage());
+                    $logger->log('error', $error->getMessage());
                 } catch (ChildNotFoundException $error) {
-                    $logger->log(GeneralUtility::SYSLOG_SEVERITY_ERROR, $error->getMessage());
+                    $logger->log('error', $error->getMessage());
                 }
             }
         }

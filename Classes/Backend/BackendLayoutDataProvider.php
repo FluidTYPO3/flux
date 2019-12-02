@@ -90,10 +90,11 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
         DataProviderContext $dataProviderContext,
         BackendLayoutCollection $backendLayoutCollection
     ) {
-        $backendLayout = $this->getBackendLayout('flux', $dataProviderContext->getPageId());
+        $backendLayout = $this->getBackendLayout('grid', $dataProviderContext->getPageId());
         if ($backendLayout) {
             $backendLayoutCollection->add($backendLayout);
         }
+        $backendLayoutCollection->add(new BackendLayout('empty', 'Empty', []));
     }
 
     /**
@@ -107,11 +108,11 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     {
         $record = $this->recordService->getSingle('pages', '*', $pageUid);
         if (null === $record) {
-            return new BackendLayout('grid', 'Empty', '');
+            return new BackendLayout('empty', 'Empty', '');
         }
         $grid = $this->resolveProvider($record)->getGrid($record);
         if (!$grid->hasChildren()) {
-            return new BackendLayout('grid', 'Empty', '');
+            return new BackendLayout('empty', 'Empty', '');
         }
         return $grid->buildBackendLayout(0);
     }
