@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
+use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -83,10 +84,14 @@ class FormViewHelper extends AbstractFormViewHelper
 
     protected function callRenderMethod()
     {
+        if (class_exists(Sequencer::class)) {
+            $arguments = $this->arguments->getArrayCopy();
+        } else {
+            $arguments = $this->arguments;
+        }
         $viewHelperVariableContainer = $this->renderingContext->getViewHelperVariableContainer();
-        $extensionName = static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments);
+        $extensionName = static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $arguments);
         $formClassName = Form::class;
-        $arguments = $this->arguments;
         $form = call_user_func_array([$formClassName, 'create'], []);
         // configure Form instance
         $form->setId($arguments['id']);

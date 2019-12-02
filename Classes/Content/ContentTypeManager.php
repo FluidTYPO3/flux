@@ -10,6 +10,10 @@ namespace FluidTYPO3\Flux\Content;
  */
 
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\FluidFileBasedContentTypeDefinition;
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
@@ -35,32 +39,20 @@ class ContentTypeManager implements SingletonInterface
      */
     protected $types = [];
 
-    public function __construct()
-    {
-        $this->types = $this->loadFromCache();
-    }
-
     /**
-     * @return ContentTypeDefinitionInterface[][]
+     * @return FluidRenderingContentTypeDefinitionInterface[]
      */
     public function fetchContentTypes(): iterable
     {
         static $types = [];
         if (empty($types)) {
-            foreach (ExtensionManagementUtility::getLoadedExtensionListArray() as $extensionKey) {
-                $expectedContentTypesDefinitionFile = GeneralUtility::getFileAbsFileName('EXT:' . $extensionKey . '/Configuration/Flux/ContentTypes.php');
-                if (file_exists($expectedContentTypesDefinitionFile)) {
-                    /** @var ContentTypeDefinitionInterface[] $types */
-                    $types[$extensionKey] = include $expectedContentTypesDefinitionFile;
-                }
-            }
+            return array_replace(
+                (array) DropInContentTypeDefinition::fetchContentTypes(),
+                (array) FluidFileBasedContentTypeDefinition::fetchContentTypes(),
+                (array) RecordBasedContentTypeDefinition::fetchContentTypes()
+            );
         }
         return $types;
-    }
-
-    public function fetchContentTypesFromExtension(string $extensionKey): iterable
-    {
-        return $this->fetchContentTypes()[$extensionKey] ?? [];
     }
 
     public function registerTypeDefinition(ContentTypeDefinitionInterface $typeDefinition): void
@@ -84,21 +76,6 @@ class ContentTypeManager implements SingletonInterface
             return $this->getCache()->get(static::CACHE_IDENTIFIER_PREFIX . $name) ?: null;
         } catch (NoSuchCacheException $error) {
             return null;
-        }
-    }
-
-    protected function loadFromCache(): array
-    {
-        try {
-            $cache = $this->getCache();
-            $fromCache = $cache->get(static::CACHE_IDENTIFIER);
-            if (empty($fromCache)) {
-                $this->regenerate();
-                return (array) $cache->get(static::CACHE_IDENTIFIER);
-            }
-            return $fromCache ?: [];
-        } catch (NoSuchCacheException $error) {
-            return [];
         }
     }
 

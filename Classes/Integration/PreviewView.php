@@ -315,7 +315,7 @@ class PreviewView extends TemplateView
             $moduleData['tt_content_showHidden'] = 1;
         }
 
-        $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0 ? $row['l18n_parent'] : $row['uid'];
+        $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0 ? $row['l18n_parent'] : ($row['t3ver_oid'] ?: $row['uid']);
 
         $dblist = $this->getPageLayoutView($provider, $row);
         $layoutConfiguration = $provider->getGrid($row)->buildExtendedBackendLayoutArray($parentRecordUid);

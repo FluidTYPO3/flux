@@ -367,10 +367,9 @@ class AbstractProvider implements ProviderInterface
      */
     protected function extractConfiguration(array $row, $name = null)
     {
-        $cacheKey = $this->getCacheKeyForStoredVariable($row, $name ?: '_all');
         $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all');
         $allCached = $this->configurationService->getFromCaches($cacheKeyAll);
-        $fromCache = $this->configurationService->getFromCaches($cacheKey) ?: ($allCached[$name] ?? false);
+        $fromCache = $allCached[$name] ?? null;
         if ($fromCache) {
             return $fromCache;
         }
@@ -378,29 +377,23 @@ class AbstractProvider implements ProviderInterface
         $viewVariables = $this->getViewVariables($row);
         $view = $this->getViewForRecord($row);
 
-        try {
+        #try {
             if ($configurationSectionName) {
-                $view->renderSection($configurationSectionName, $viewVariables, true);
+                $view->renderSection($configurationSectionName, $viewVariables, false);
             } else {
                 $view->assignMultiple($viewVariables);
                 $view->render();
             }
-            if ($name) {
-                $returnValue = $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, $name);
-            } else {
-                $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class) ?? [];
-                if (isset($variables['form']) && $variables['form']->getOption(Form::OPTION_STATIC)) {
-                    $this->configurationService->setInCaches($variables, true, $cacheKey);
-                }
-                $returnValue = $variables;
+
+            $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class) ?? [];
+            if (isset($variables['form']) && $variables['form']->getOption(Form::OPTION_STATIC)) {
+                $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
             }
 
-        } catch (Exception $error) {
-            if (!ContextUtility::getApplicationContext()->isProduction()) {
-                throw $error;
-            }
-            $returnValue = null;
-        }
+            $returnValue = $name ? $variables[$name] : $variables;
+        #} catch (Exception $error) {
+        #    $returnValue = null;
+        #}
 
         return HookHandler::trigger(
             HookHandler::PROVIDER_EXTRACTED_OBJECT,
@@ -819,13 +812,16 @@ class AbstractProvider implements ProviderInterface
      */
     public function getViewForRecord(array $row, $viewClassName = TemplateView::class)
     {
+        $controllerExtensionKey = $this->getControllerExtensionKeyFromRecord($row);
+
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var WebRequest $request */
         $request = $objectManager->get(WebRequest::class);
         $request->setRequestUri(GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL'));
         $request->setBaseUri(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
-        $request->setControllerExtensionName($this->getControllerExtensionKeyFromRecord($row));
+        $request->setControllerExtensionName(ExtensionNamingUtility::getExtensionName($controllerExtensionKey));
         $request->setControllerActionName($this->getControllerActionFromRecord($row));
+        $request->setControllerName($this->getControllerNameFromRecord($row));
         /** @var UriBuilder $uriBuilder */
         $uriBuilder = $objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($request);
@@ -835,14 +831,13 @@ class AbstractProvider implements ProviderInterface
         $controllerContext->setUriBuilder($uriBuilder);
         $renderingContext = $objectManager->get(RenderingContext::class);
         $renderingContext->setControllerContext($controllerContext);
-        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
-            ExtensionNamingUtility::getExtensionKey($this->getExtensionKey($row))
-        );
+        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(ExtensionNamingUtility::getExtensionKey($controllerExtensionKey));
         $renderingContext->getTemplatePaths()->setTemplatePathAndFilename($this->getTemplatePathAndFilename($row));
         $renderingContext->setControllerName($this->getControllerNameFromRecord($row));
         $renderingContext->setControllerAction($this->getControllerActionFromRecord($row));
         /** @var TemplateView $view */
-        $view = GeneralUtility::makeInstance(ObjectManager::class)->get($viewClassName, $renderingContext);
+        $view = GeneralUtility::makeInstance(ObjectManager::class)->get($viewClassName);
+        $view->setRenderingContext($renderingContext);
         return $view;
     }
 

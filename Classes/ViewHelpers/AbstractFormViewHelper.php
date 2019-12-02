@@ -92,12 +92,12 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         RenderingContextInterface $renderingContext,
         iterable $arguments
     ) {
-        if (true === isset($arguments[static::SCOPE_VARIABLE_EXTENSIONNAME])) {
-            return $arguments[static::SCOPE_VARIABLE_EXTENSIONNAME];
+        if ($extensionName = $arguments[static::SCOPE_VARIABLE_EXTENSIONNAME] ?? false) {
+            return $extensionName;
         }
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
-        if (true === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME)) {
-            return $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
+        if ($extensionName = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME)) {
+            return $extensionName;
         }
         $controllerContext = $renderingContext->getControllerContext();
         if (null !== $controllerContext) {

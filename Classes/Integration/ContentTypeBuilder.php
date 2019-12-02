@@ -165,14 +165,7 @@ class ContentTypeBuilder
             // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
             $form = $provider->getForm(['CType' => $contentType]);
             if (!$form) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Flux could not extract a Flux definition from "%s". Check that the file exists and contains ' .
-                        'the necessary flux:form in the configured section "%s"',
-                        $provider->getTemplatePathAndFilename([]),
-                        $provider->getConfigurationSectionName([])
-                    )
-                );
+                return;
             }
             try {
                 $form->setExtensionName($providerExtensionName);
@@ -275,7 +268,6 @@ class ContentTypeBuilder
                     iconIdentifier = %s
                     title = %s
                     description = %s
-                    params = 
                     tt_content_defValues {
                         CType = %s
                     }
@@ -344,7 +336,7 @@ class ContentTypeBuilder
                     }
                 }',
                 $groupName,
-                $groupLabel ? 'header = ' . $groupLabel : ''
+                'header = ' . $groupLabel ?: 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types'
             )
         );
         $groups[$groupName] = true;

@@ -1,0 +1,2 @@
+# cat=FLUX/settings; type=boolean; label=Allow pages which have is_siteroot = 1 to inherit chosen template from parent. Disable this to prevent subsites in a multisite environment from using the same template as the immediate parent of that site root.
+plugin.tx_flux.siteRootInheritance = 1

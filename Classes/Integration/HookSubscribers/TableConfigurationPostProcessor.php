@@ -61,6 +61,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
             }
         }
 
+
         $this->spoolQueuedContentTypeRegistrations(Core::getQueuedContentTypeRegistrations());
         Core::clearQueuedContentTypeRegistrations();
     }
@@ -72,18 +73,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     public static function spoolQueuedContentTypeTableConfigurations(array $queue)
     {
         $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
-
-        foreach (ExtensionManagementUtility::getLoadedExtensionListArray() as $extensionKey) {
-            $expectedContentTypesDefinitionFile = GeneralUtility::getFileAbsFileName('EXT:' . $extensionKey . '/Configuration/Flux/ContentTypes.php');
-            if (file_exists($expectedContentTypesDefinitionFile)) {
-                /** @var ContentTypeDefinitionInterface[] $types */
-                $types = include $expectedContentTypesDefinitionFile;
-                foreach ($types as $contentType) {
-                    $contentTypeBuilder->addBoilerplateTableConfiguration($contentType->getContentTypeName());
-                }
-            }
-        }
-
         foreach ($queue as $queuedRegistration) {
             list ($providerExtensionName, $templatePathAndFilename, , $contentType) = $queuedRegistration;
             $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templatePathAndFilename);
@@ -129,7 +118,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 
                 Core::registerConfigurationProvider($provider);
 
-                $pluginName = GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType)));
+                $pluginName = GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2)));
                 $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
 
             } catch (Exception $error) {

@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use Prophecy\Argument;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -27,7 +28,7 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
 {
     protected $tableName = 'tt_content';
     protected $fieldName = 'pi_flexform';
-    protected $extensionKey = 'FluidTYPO3.Builder';
+    protected $extensionKey = 'FluidTYPO3.Flux';
     protected $priority = 90;
 
     /**
@@ -59,7 +60,7 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
 
     public function getExtensionKey(array $row)
     {
-        return $this->contentTypeDefinitions->determineContentTypeForRecord($row)->getExtensionIdentity();
+        return $this->getContentTypeDefinition($row)->getExtensionIdentity();
     }
 
     public function postProcessDataStructure(array &$row, &$dataStructure, array $conf)
@@ -71,17 +72,17 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
 
     public function getGrid(array $row)
     {
-        return $this->contentTypeDefinitions->determineContentTypeForRecord($row)->getGrid() ?? parent::getGrid($row);
+        return $this->getContentTypeDefinition($row)->getGrid() ?? parent::getGrid($row);
     }
 
     public function getForm(array $row)
     {
-        return $this->contentTypeDefinitions->determineContentTypeForRecord($row)->getForm();
+        return $this->getContentTypeDefinition($row)->getForm();
     }
 
     public function getTemplatePathAndFilename(array $row)
     {
-        return $this->contentTypeDefinitions->determineContentTypeForRecord($row)->getTemplatePathAndFilename();
+        return $this->getContentTypeDefinition($row)->getTemplatePathAndFilename();
     }
 
     public function getTemplateVariables(array $row)
@@ -90,5 +91,22 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
         $variables['contentType'] = $this->contentTypeDefinitions->determineContentTypeForRecord($row);
         $variables['provider'] = $this;
         return $variables;
+    }
+
+    protected function getContentTypeDefinition(array $row): FluidRenderingContentTypeDefinitionInterface
+    {
+        $definition = $this->contentTypeDefinitions->determineContentTypeForRecord($row);
+        if (!$definition instanceof FluidRenderingContentTypeDefinitionInterface) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Content type definition for %s must implement interface %s, class %s does not.',
+                    $row['CType'],
+                    FluidRenderingContentTypeDefinitionInterface::class,
+                    get_class($definition)
+                ),
+                1556109085
+            );
+        }
+        return $definition;
     }
 }

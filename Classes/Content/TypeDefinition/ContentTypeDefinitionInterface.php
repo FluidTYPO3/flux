@@ -21,10 +21,4 @@ interface ContentTypeDefinitionInterface
     public function getContentTypeName(): string;
     public function getIconReference(): string;
     public function getExtensionIdentity(): string;
-    public function getSheetNamesAndLabels(): \Generator;
-    public function getProviderClassName(): ?string;
-    public function getTemplatePathAndFilename(): ?string;
-    public function getForm(): Form;
-    public function getGrid(): ?Grid;
-    public function __sleep();
 }

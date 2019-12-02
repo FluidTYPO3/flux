@@ -211,6 +211,51 @@
 			<trans-unit id="toggle_content">
 				<source>Show or hide the grid</source>
 			</trans-unit>
+			<trans-unit id="flux.grid.grids.grid">
+				<source>Columns from selected "Page Layout"</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_controller_action">
+				<source>Page Layout - this page</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_controller_action.default">
+				<source>Parent decides</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_controller_action_sub">
+				<source>Page Layout - subpages</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_flexform">
+				<source>Page Configuration</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_flexform_sub">
+				<source>Page Configuration - subpages</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_package">
+				<source>Package</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_layoutselect">
+				<source>Page Layouts</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_configuration">
+				<source>Page Configuration</source>
+			</trans-unit>
+			<trans-unit id="pages.doktype.187">
+				<source>Raw Fluid template</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fluidpages_templatefile">
+				<source>Template file reference</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fluidpages_templatefile.placeholder">
+				<source>EXT:... or site-relative path</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_fluidpages_layout">
+				<source>Layout to use for rendering</source>
+			</trans-unit>
+			<trans-unit id="fluidContentArea">
+				<source>Fluid Content Area</source>
+			</trans-unit>
+			<trans-unit id="flux.grid.grids.grid">
+				<source>Columns from selected "Page Layout"</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

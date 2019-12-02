@@ -35,6 +35,18 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         )
     );
 
+    // FormEngine integration for custom TCA field types used by Flux
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1575276512] = [
+        'nodeName' => 'fluxContentTypeValidator',
+        'priority' => 40,
+        'class' => \FluidTYPO3\Flux\Integration\FormEngine\ContentTypeValidatorNode::class,
+    ];
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1575277301] = [
+        'nodeName' => 'fluxTemplateSourceDumper',
+        'priority' => 40,
+        'class' => \FluidTYPO3\Flux\Integration\FormEngine\TemplateSourceDumperNode::class,
+    ];
+
     // Small override for record-localize controller to manipulate the record listing to provide child records in list
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class]['className'] = \FluidTYPO3\Flux\Integration\Overrides\LocalizationController::class;
 
@@ -67,6 +79,25 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
             \FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor::class . '->includeStaticTypoScriptHook';
     }
 
+    // Add a default menu and colPos=0 content output TS - ultra-basic - to make deployed skeleton page templates slightly usable
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup('plugin.tx_flux.objects.default_menu = HMENU');
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup('
+        plugin.tx_flux.objects.default_content = CONTENT
+        plugin.tx_flux.objects.default_content.table = tt_content
+        plugin.tx_flux.objects.default_content.where = colPos = 0
+    ');
+
+    $contentTypeManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\FluidTYPO3\Flux\Content\ContentTypeManager::class);
+    foreach ($contentTypeManager->fetchContentTypes() as $contentType) {
+        $contentTypeManager->registerTypeDefinition($contentType);
+        \FluidTYPO3\Flux\Core::registerTemplateAsContentType(
+            $contentType->getExtensionIdentity(),
+            $contentType->getTemplatePathAndFilename(),
+            $contentType->getContentTypeName(),
+            $contentType->getProviderClassName()
+        );
+    }
+
     /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
     $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
     $signalSlotDispatcher->connect(
@@ -77,8 +108,6 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
     );
 
     if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
-
-
         \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\ContentTypeProvider::class);
         \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider::class);
 
@@ -92,4 +121,40 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         \FluidTYPO3\Flux\Core::registerPipe('flashMessage');
         \FluidTYPO3\Flux\Core::registerPipe('typeConverter');
     }
+
+    \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageProvider::class);
+    \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\SubPageProvider::class);
+    if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 9.0, '<')) {
+        \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageLanguageOverlayProvider::class);
+        \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\SubPageLanguageOverlayProvider::class);
+    }
+
+    if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
+        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+            'FluidTYPO3.Flux',
+            'Page',
+            [
+                'Page' => 'render,error',
+            ],
+            [],
+            \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_PLUGIN
+        );
+
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['BackendLayoutDataProvider']['flux'] = \FluidTYPO3\Flux\Backend\BackendLayoutDataProvider::class;
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/db_layout.php']['drawHeaderHook'][] = \FluidTYPO3\Flux\Integration\HookSubscribers\PagePreviewRenderer::class . '->render';
+
+        if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['autoload'] ?? true) {
+            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptConstants(file_get_contents(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Configuration/TypoScript/constants.txt')));
+            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(file_get_contents(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Configuration/TypoScript/setup.txt')));
+        }
+
+        if (TRUE === isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['pagesLanguageConfigurationOverlay'])
+            && TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['pagesLanguageConfigurationOverlay']) {
+            $GLOBALS['TYPO3_CONF_VARS']['FE']['pageOverlayFields'] .= ',tx_fed_page_flexform,tx_fed_page_flexform_sub';
+        }
+
+        $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ($GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] == '' ? '' : ',') .
+            'tx_fed_page_controller_action,tx_fed_page_controller_action_sub,tx_fed_page_flexform,tx_fed_page_flexform_sub,';
+    }
+
 }

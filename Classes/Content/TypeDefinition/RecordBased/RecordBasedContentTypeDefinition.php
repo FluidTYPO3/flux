@@ -39,19 +39,15 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
 
     protected $contentTypeName = '';
 
-    protected $contentConfiguration = [];
-
-    protected $gridConfiguration = [];
-
-    /**
-     * @var Form\FormInterface
-     */
-    protected $form;
-
     /**
      * @var Grid
      */
     protected $grid;
+
+    /**
+     * @var iterable
+     */
+    protected static $types = [];
 
     public function __construct(array $record)
     {
@@ -59,49 +55,33 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         $this->contentTypeName = $record['content_type'];
     }
 
-    public static function loadByName(string $contentTypeName): ?RecordBasedContentTypeDefinition
-    {
-        try {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('content_types');
-            $typeRecord = $queryBuilder
-                ->select(...array_keys($GLOBALS['TCA']['content_types']['columns']))
-                ->from('content_types')
-                ->where($queryBuilder->expr()->eq('content_type', $queryBuilder->createNamedParameter($contentTypeName, \PDO::PARAM_STR)))
-                ->setMaxResults(1)
-                ->execute()
-                ->fetch();
-        } catch (TableNotFoundException $exception) {
-            $typeRecord = false;
-        }
-        return $typeRecord ? GeneralUtility::makeInstance(ObjectManager::class)->get(RecordBasedContentTypeDefinition::class, $typeRecord) : null;
-    }
-
     public static function fetchContentTypes(): iterable
     {
-        try {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('content_types');
-            $typeRecords = $queryBuilder->select(...array_keys($GLOBALS['TCA']['content_types']['columns'] ?? ['*' => '']))
-                ->from('content_types')
-                ->where(
-                    $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
-                    $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT))
-                )->execute()
-                ->fetchAll();
-        } catch (TableNotFoundException $exception) {
-            $typeRecords = [];
-        }
-
-        $types = [];
-        foreach ($typeRecords as $typeRecord) {
-            $extensionIdentity = $typeRecord['extension_identity'];
-            if (empty($extensionIdentity) || !ExtensionManagementUtility::isLoaded(ExtensionNamingUtility::getExtensionKey($extensionIdentity))) {
-                $typeRecord['extension_identity'] = 'FluidTYPO3.Builder';
+        if (empty(static::$types)) {
+            try {
+                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('content_types');
+                $typeRecords = $queryBuilder->select(...array_keys($GLOBALS['TCA']['content_types']['columns'] ?? ['*' => '']))
+                    ->from('content_types')
+                    ->where(
+                        $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+                        $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT))
+                    )->execute()
+                    ->fetchAll();
+            } catch (TableNotFoundException $exception) {
+                $typeRecords = [];
             }
 
-            $contentType = new RecordBasedContentTypeDefinition($typeRecord);
-            $types[$typeRecord['content_type']] = $contentType;
+            foreach ($typeRecords as $typeRecord) {
+                $extensionIdentity = $typeRecord['extension_identity'];
+                if (empty($extensionIdentity) || !ExtensionManagementUtility::isLoaded(ExtensionNamingUtility::getExtensionKey($extensionIdentity))) {
+                    $typeRecord['extension_identity'] = 'FluidTYPO3.Builder';
+                }
+
+                $contentType = new RecordBasedContentTypeDefinition($typeRecord);
+                static::$types[$typeRecord['content_type']] = $contentType;
+            }
         }
-        return $types;
+        return static::$types;
     }
 
     public function getProviderClassName(): string
@@ -116,12 +96,12 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
 
     protected function getContentConfiguration(): array
     {
-        return $this->contentConfiguration ?? ($this->contentConfiguration = $this->contentConfiguration = (array)GeneralUtility::xml2array($this->record['content_configuration'] ?? ''));
+        return (array) GeneralUtility::xml2array($this->record['content_configuration'] ?? '');
     }
 
     protected function getGridConfiguration(): array
     {
-        return $this->gridConfiguration ?? ($this->gridConfiguration = (array) GeneralUtility::xml2array($this->record['grid'] ?? ''));
+        return (array) GeneralUtility::xml2array($this->record['grid'] ?? '');
     }
 
     public function getSheetNamesAndLabels(): \Generator
@@ -133,15 +113,12 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         }
     }
 
-    public function getForm(): Form
+    public function getForm(array $record = []): Form\FormInterface
     {
-        if (!empty($this->form)) {
-            return $this->form;
-        }
         $instance = GeneralUtility::makeInstance(ObjectManager::class)->get(Form::class);
         $instance->remove('options');
         $instance->setOption(Form::OPTION_ICON, $this->getIconReference());
-        $instance->setOption(Form::OPTION_GROUP, 'Custom');
+        $instance->setOption(Form::OPTION_GROUP, 'fluxContent');
         $instance->setLabel($this->record['title']);
         $instance->setDescription($this->record['description']);
         foreach ($this->getContentConfiguration() as $item) {
@@ -167,7 +144,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         return $instance;
     }
 
-    public function getGrid(): ?Grid
+    public function getGrid(array $record = []): ?Grid
     {
         if (!empty($this->grid)) {
             return $this->grid;
