@@ -377,7 +377,7 @@ class AbstractProvider implements ProviderInterface
         $viewVariables = $this->getViewVariables($row);
         $view = $this->getViewForRecord($row);
 
-        #try {
+        try {
             if ($configurationSectionName) {
                 $view->renderSection($configurationSectionName, $viewVariables, false);
             } else {
@@ -391,9 +391,9 @@ class AbstractProvider implements ProviderInterface
             }
 
             $returnValue = $name ? $variables[$name] : $variables;
-        #} catch (Exception $error) {
-        #    $returnValue = null;
-        #}
+        } catch (Exception $error) {
+            $returnValue = null;
+        }
 
         return HookHandler::trigger(
             HookHandler::PROVIDER_EXTRACTED_OBJECT,
