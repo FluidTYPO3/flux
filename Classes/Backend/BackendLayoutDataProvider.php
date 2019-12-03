@@ -94,7 +94,6 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
         if ($backendLayout) {
             $backendLayoutCollection->add($backendLayout);
         }
-        $backendLayoutCollection->add(new BackendLayout('empty', 'Empty', []));
     }
 
     /**
@@ -108,12 +107,9 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     {
         $record = $this->recordService->getSingle('pages', '*', $pageUid);
         if (null === $record) {
-            return new BackendLayout('empty', 'Empty', '');
+            return new BackendLayout($identifier, 'Empty', '');
         }
         $grid = $this->resolveProvider($record)->getGrid($record);
-        if (!$grid->hasChildren()) {
-            return new BackendLayout('empty', 'Empty', '');
-        }
         return $grid->buildBackendLayout(0);
     }
 
@@ -125,7 +121,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     {
         $record = $this->recordService->getSingle('pages', '*', $record['uid']);
 
-        // Stop processing if no fluidpages template configured in rootline
+        // Stop processing if no template configured in rootline
         if (null === $record) {
             return [];
         }

@@ -189,7 +189,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     public function getControllerActionFromRecord(array $row)
     {
-        $action = $this->getControllerActionReferenceFromRecord($row) ?? 'default';
+        $action = $this->getControllerActionReferenceFromRecord($row);
         $parts = explode('->', $action);
         $controllerActionName = end($parts);
         if (empty($controllerActionName)) {
@@ -205,10 +205,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     public function getControllerActionReferenceFromRecord(array $row)
     {
-        if (empty($row[self::FIELD_ACTION_MAIN])) {
-            return $this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB];
+        if (!empty($row[self::FIELD_ACTION_MAIN])) {
+            return is_array($row[self::FIELD_ACTION_MAIN]) ? $row[self::FIELD_ACTION_MAIN][0] : $row[self::FIELD_ACTION_MAIN];
         }
-        return is_array($row[self::FIELD_ACTION_MAIN]) ? $row[self::FIELD_ACTION_MAIN][0] : $row[self::FIELD_ACTION_MAIN];
+        return ($this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB] ?? 'flux->default') ?: 'flux->default';
     }
 
     /**

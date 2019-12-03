@@ -73,12 +73,12 @@ class PageLayoutDataProviderTest extends AbstractTestCase
             [
                 ['field' => 'tx_fed_page_controller_action_sub', 'row' => ['pid' => 1]],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['Parent decides', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], [null, '->', null]]
+                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], [null, '->', null]]
             ],
             [
                 ['field' => 'tx_fed_page_controller_action_sub', 'row' => ['pid' => 1, 'is_siteroot' => false]],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['Parent decides', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], [null, '->', null]]
+                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], [null, '->', null]]
             ],
             [
                 ['field' => 'tx_fed_page_controller_action', 'row' => ['pid' => 0, 'is_siteroot' => true]],

@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
 
 use FluidTYPO3\Flux\Controller\PageControllerInterface;
 use FluidTYPO3\Flux\Provider\SubPageProvider;
+use FluidTYPO3\Flux\Service\ConfigurationService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -29,8 +30,8 @@ class SubPageProviderTest extends AbstractTestCase
     public function testGetControllerActionFromRecord(array $record, $fieldName, $expected)
     {
         $instance = new SubPageProvider();
-        /** @var PageService $service */
         $service = $this->getMockBuilder(PageService::class)->setMethods(array('getPageTemplateConfiguration'))->getMock();
+        $service->expects($this->any())->method('getPageTemplateConfiguration')->willReturn($record);
         $instance->injectPageService($service);
         // make sure PageProvider is now using the right field name
         $instance->trigger($record, null, $fieldName);
@@ -44,8 +45,8 @@ class SubPageProviderTest extends AbstractTestCase
     public function getControllerActionFromRecordTestValues()
     {
         return array(
-            array(array('doktype' => 0, 'tx_fed_page_controller_action_sub' => ''), 'tx_fed_page_flexform_sub', 'default'),
-            array(array('doktype' => 0, 'tx_fed_page_controller_action_sub' => 'fluidpages->action'), 'tx_fed_page_flexform_sub', 'action'),
+            array(array('tx_fed_page_controller_action_sub' => ''), 'tx_fed_page_flexform_sub', 'default'),
+            array(array('tx_fed_page_controller_action_sub' => 'flux->action'), 'tx_fed_page_flexform_sub', 'action'),
         );
     }
 

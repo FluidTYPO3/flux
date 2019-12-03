@@ -29,13 +29,4 @@ class SubPageProvider extends PageProvider implements ProviderInterface
      * @var string
      */
     protected $fieldName = self::FIELD_NAME_SUB;
-
-    /**
-     * @param array $row
-     * @return string
-     */
-    public function getControllerNameFromRecord(array $row)
-    {
-        return 'Page';
-    }
 }

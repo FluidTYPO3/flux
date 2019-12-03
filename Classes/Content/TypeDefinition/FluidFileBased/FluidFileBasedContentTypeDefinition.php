@@ -66,6 +66,15 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
         )->getForm($record);
     }
 
+    public function getGrid(array $record = []): Form\Container\Grid
+    {
+        return GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class)->resolvePrimaryConfigurationProvider(
+            'tt_content',
+            'pi_flexform',
+            $record
+        )->getGrid($record);
+    }
+
     public static function fetchContentTypes(): iterable
     {
         return [];

@@ -124,9 +124,9 @@ class PageService implements SingletonInterface
 
         // Initialize with possibly-empty values and loop root line
         // to fill values as they are detected.
-        $resolvedMainTemplateIdentity = is_array($page['tx_fed_page_controller_action']) ? $page['tx_fed_page_controller_action'][0] : $page['tx_fed_page_controller_action'];
-        $resolvedSubTemplateIdentity = is_array($page['tx_fed_page_controller_action_sub']) ? $page['tx_fed_page_controller_action_sub'][0] : $page['tx_fed_page_controller_action_sub'];
         do {
+            $resolvedMainTemplateIdentity = is_array($page['tx_fed_page_controller_action']) ? $page['tx_fed_page_controller_action'][0] : $page['tx_fed_page_controller_action'];
+            $resolvedSubTemplateIdentity = is_array($page['tx_fed_page_controller_action_sub']) ? $page['tx_fed_page_controller_action_sub'][0] : $page['tx_fed_page_controller_action_sub'];
             $containsSubDefinition = (false !== strpos($page['tx_fed_page_controller_action_sub'], '->'));
             $isCandidate = ((integer) $page['uid'] !== $pageUid);
             if (true === $containsSubDefinition && true === $isCandidate) {
@@ -141,7 +141,7 @@ class PageService implements SingletonInterface
             }
             // Note: 't3ver_oid' is analysed in order to make versioned records inherit the original record's
             // configuration as an emulated first parent page.
-            $resolveParentPageUid = (integer) (0 > $page['pid'] ? $page['t3ver_oid'] : $page['pid']);
+            $resolveParentPageUid = $page['pid'];
             // Avoid useless SQL query if uid is 0, because uids in the database start from 1.
             if (0 === $resolveParentPageUid) {
                 break;

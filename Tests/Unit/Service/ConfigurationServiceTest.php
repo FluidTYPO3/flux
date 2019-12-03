@@ -157,6 +157,6 @@ class ConfigurationServiceTest extends AbstractTestCase
         Core::registerProviderExtensionKey('foo', 'Page');
         Core::registerProviderExtensionKey('bar', 'Page');
         $result = $instance->getPageConfiguration();
-        $this->assertCount(2, $result);
+        $this->assertCount(3, $result);
     }
 }

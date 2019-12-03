@@ -136,19 +136,16 @@ class PageProviderTest extends AbstractTestCase
      * @dataProvider getControllerActionFromRecordTestValues
      * @param array $record
      * @param string $fieldName
-     * @param boolean $expectsMessage
      * @param string $expected
      */
-    public function testGetControllerActionFromRecord(array $record, $fieldName, $expectsMessage, $expected)
+    public function testGetControllerActionFromRecord(array $record, $fieldName, $expected)
     {
         $instance = new PageProvider();
         $service = $this->getMockBuilder(PageService::class)->setMethods(array('getPageTemplateConfiguration'))->getMock();
         $instance->injectPageService($service);
-        if (true === $expectsMessage) {
-            /** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $configurationService */
-            $configurationService = $this->getMockBuilder(ConfigurationService::class)->getMock();
-            $instance->injectPageConfigurationService($configurationService);
-        }
+        /** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $configurationService */
+        $configurationService = $this->getMockBuilder(ConfigurationService::class)->getMock();
+        $instance->injectPageConfigurationService($configurationService);
         // make sure PageProvider is now using the right field name
         $instance->trigger($record, null, $fieldName);
         $result = $instance->getControllerActionFromRecord($record);
@@ -161,8 +158,8 @@ class PageProviderTest extends AbstractTestCase
     public function getControllerActionFromRecordTestValues()
     {
         return array(
-            array(array('doktype' => 0, 'tx_fed_page_controller_action' => ''), 'tx_fed_page_flexform', true, 'default'),
-            array(array('doktype' => 0, 'tx_fed_page_controller_action' => 'fluidpages->action'), 'tx_fed_page_flexform', false, 'action'),
+            array(array('tx_fed_page_controller_action' => ''), 'tx_fed_page_flexform', 'default'),
+            array(array('tx_fed_page_controller_action' => 'flux->action'), 'tx_fed_page_flexform', 'action'),
         );
     }
 

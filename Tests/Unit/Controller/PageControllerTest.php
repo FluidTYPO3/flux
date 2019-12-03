@@ -73,26 +73,4 @@ class PageControllerTest extends AbstractTestCase
         $instance->injectPageService($pageService);
         $this->callInaccessibleMethod($instance, 'initializeProvider');
     }
-
-    public function testRawAction()
-    {
-        $instance = new DummyPageController();
-        /** @var ExposedTemplateView $view */
-        $view = $this->getMockBuilder(TemplateView::class)->setMethods(array('assign'))->getMock();
-        /** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $pageConfigurationService */
-        $pageConfigurationService = $this->getMockBuilder(
-            ConfigurationService::class
-        )->setMethods(
-            array(
-                'convertFileReferenceToTemplatePathAndFilename',
-                'getViewConfigurationByFileReference',
-            )
-        )->getMock();
-        $pageConfigurationService->expects($this->once())->method('convertFileReferenceToTemplatePathAndFilename')->willReturn('test');
-        $pageConfigurationService->expects($this->once())->method('getViewConfigurationByFileReference')->willReturn(array());
-        $instance->injectpageConfigurationService($pageConfigurationService);
-        $instance->setProvider(new Provider());
-        $instance->setView($view);
-        $instance->rawAction();
-    }
 }

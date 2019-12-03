@@ -101,7 +101,7 @@ class ConfigurationService extends FluxService implements SingletonInterface
             // of returning ALL paths here, an empty array is the proper return value.
             // However, dispatch a debug message to inform integrators of the problem.
             GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__)->log(
-                GeneralUtility::SYSLOG_SEVERITY_NOTICE,
+                'notice',
                 'Template paths have been attempted fetched using an empty value that is NOT NULL in ' .
                 get_class($this) . '. This indicates a potential problem with your TypoScript configuration - a ' .
                 'value which is expected to be an array may be defined as a string. This error is not fatal but may ' .
@@ -109,8 +109,8 @@ class ConfigurationService extends FluxService implements SingletonInterface
             );
             return [];
         }
+        $projectPath = class_exists(Environment::class) ? Environment::getProjectPath() : getcwd();
         if ($extensionName === 'Flux') {
-            $projectPath = Environment::getProjectPath();
             return [
                 TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$projectPath . DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::TEMPLATES_DIRECTORY . DropInContentTypeDefinition::PAGE_DIRECTORY],
                 TemplatePaths::CONFIG_PARTIALROOTPATHS => [$projectPath . DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
@@ -120,7 +120,6 @@ class ConfigurationService extends FluxService implements SingletonInterface
         if (null !== $extensionName) {
             return (new TemplatePaths(ExtensionNamingUtility::getExtensionKey($extensionName)))->toArray();
         }
-        $projectPath = Environment::getProjectPath();
         $configurations = [];
         $registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Page');
         foreach ($registeredExtensionKeys as $registeredExtensionKey) {
