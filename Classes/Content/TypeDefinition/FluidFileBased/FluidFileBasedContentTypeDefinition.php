@@ -11,10 +11,13 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased;
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Fluid File-based Content Type Definition
@@ -52,6 +55,15 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
         $this->basePath = substr($basePath, 0, 1) !== '/' ? GeneralUtility::getFileAbsFileName($basePath) : $basePath;
         $this->relativeFilePath = $relativeFilePath;
         $this->providerClassName = $providerClassName;
+    }
+
+    public function getForm(array $record = []): Form\FormInterface
+    {
+        return GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class)->resolvePrimaryConfigurationProvider(
+            'tt_content',
+            'pi_flexform',
+            $record
+        )->getForm($record);
     }
 
     public static function fetchContentTypes(): iterable
