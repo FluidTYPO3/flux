@@ -271,7 +271,7 @@ abstract class AbstractFluxController extends ActionController
     protected function resolveView()
     {
         $viewClassName = (!method_exists($this, 'resolveViewObjectName') ? $this->defaultViewObjectName : $this->resolveViewObjectName()) ?: $this->defaultViewObjectName;
-        return $this->objectManager->get($viewClassName)
+        return $this->objectManager->get($viewClassName);
     }
 
     /**
