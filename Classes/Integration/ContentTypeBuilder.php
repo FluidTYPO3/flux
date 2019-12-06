@@ -157,7 +157,7 @@ class ContentTypeBuilder
         ProviderInterface $provider,
         $pluginName
     ) {
-        $cacheId = 'CType_' . $contentType . '_' . md5($providerExtensionName . '_' . $pluginName);
+        $cacheId = 'CType_' . md5($contentType . '__' . $providerExtensionName . '__' . $pluginName);
         $cache = $this->getCache();
         $form = $cache->get($cacheId);
         if (!$form) {
