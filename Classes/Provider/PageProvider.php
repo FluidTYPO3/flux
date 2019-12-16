@@ -8,13 +8,12 @@ namespace FluidTYPO3\Flux\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Controller\PageControllerInterface;
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
-use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
-use FluidTYPO3\Flux\Integration\PreviewView;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;

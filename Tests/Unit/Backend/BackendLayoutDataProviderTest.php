@@ -10,8 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
 
 use FluidTYPO3\Flux\Backend\BackendLayoutDataProvider;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;

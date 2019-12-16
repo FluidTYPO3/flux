@@ -9,9 +9,6 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Form\Container\Grid;
-
 /**
  * Public contract for objects that contains one content
  * type definition for a Flux-based content type.

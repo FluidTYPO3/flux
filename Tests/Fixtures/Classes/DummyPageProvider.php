@@ -8,8 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\SubPageProvider;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\SubPageProvider;
 
 /**
  * Class DummyPageProvider

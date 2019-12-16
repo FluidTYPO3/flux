@@ -8,8 +8,6 @@ namespace FluidTYPO3\Flux\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\ProviderInterface;
-
 /**
  * Page LanguageOverlayConfiguration Provider
  *

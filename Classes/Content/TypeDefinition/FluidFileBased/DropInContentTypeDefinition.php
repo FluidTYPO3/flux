@@ -9,11 +9,8 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Provider\ContentProvider;
-use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use Symfony\Component\Finder\Finder;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

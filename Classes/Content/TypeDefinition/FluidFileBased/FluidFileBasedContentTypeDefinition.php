@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ContentProvider;
