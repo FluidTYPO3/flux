@@ -26,7 +26,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
 {
-    public const DESIGN_DIRECTORY = '/design/';
+    public const DESIGN_DIRECTORY = 'design/';
     public const TEMPLATES_DIRECTORY = 'Templates/';
     public const PARTIALS_DIRECTORY = 'Partials/';
     public const LAYOUTS_DIRECTORY = 'Layouts/';
@@ -70,7 +70,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         // Steps:
         // 1) auto-create if missing, the required file structure and dummy files
         // 2) iterate all content types found in the file structure
-        $basePath = Environment::getPublicPath() . static::DESIGN_DIRECTORY;
+        $basePath = static::DESIGN_DIRECTORY;
         $contentTypesPath = $basePath . static::TEMPLATES_DIRECTORY . static::CONTENT_DIRECTORY;
         static::initializeDropInFileSystemStructure($basePath);
         $finder = GeneralUtility::makeInstance(Finder::class);

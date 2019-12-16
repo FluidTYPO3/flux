@@ -109,12 +109,11 @@ class ConfigurationService extends FluxService implements SingletonInterface
             );
             return [];
         }
-        $projectPath = class_exists(Environment::class) ? Environment::getProjectPath() : getcwd();
         if ($extensionName === 'Flux') {
             return [
-                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$projectPath . DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::TEMPLATES_DIRECTORY . DropInContentTypeDefinition::PAGE_DIRECTORY],
-                TemplatePaths::CONFIG_PARTIALROOTPATHS => [$projectPath . DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
-                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$projectPath . DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
+                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::TEMPLATES_DIRECTORY . DropInContentTypeDefinition::PAGE_DIRECTORY],
+                TemplatePaths::CONFIG_PARTIALROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
+                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
             ];
         }
         if (null !== $extensionName) {
@@ -128,9 +127,9 @@ class ConfigurationService extends FluxService implements SingletonInterface
         $configurations['FluidTYPO3.Flux'] = array_replace(
             $configurations['FluidTYPO3.Flux'] ?? [],
             [
-                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$projectPath . DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::TEMPLATES_DIRECTORY],
-                TemplatePaths::CONFIG_PARTIALROOTPATHS => [$projectPath . DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
-                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$projectPath . DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
+                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::TEMPLATES_DIRECTORY],
+                TemplatePaths::CONFIG_PARTIALROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
+                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
             ]
         );
         return $configurations;

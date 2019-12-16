@@ -91,15 +91,9 @@ class ConfigurationServiceTest extends AbstractTestCase
             'partialRootPaths' => [ExtensionManagementUtility::extPath('flux', 'Resources/Private/Partials/')],
             'layoutRootPaths' => [ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts/')],
         ];
-        $fallbackPaths = [
-            'templateRootPaths' => [ExtensionManagementUtility::extPath('flux', 'Templates/')],
-            'partialRootPaths' => [ExtensionManagementUtility::extPath('flux', 'Partials/')],
-            'layoutRootPaths' => [ExtensionManagementUtility::extPath('flux', 'Layouts/')],
-        ];
         return array(
             array('some/file', $fluxPaths),
             array('EXT:flux/some/file', $fluxPaths),
-            array('EXT:other/some/file', $fallbackPaths)
         );
     }
 
@@ -125,27 +119,6 @@ class ConfigurationServiceTest extends AbstractTestCase
             array(0),
             array(array()),
         );
-    }
-
-    /**
-     * @return void
-     */
-    public function testGetPageConfigurationCallsGetViewConfigurationForExtensionName()
-    {
-        $instance = new ConfigurationService();
-        $result = $instance->getPageConfiguration('foobar');
-        $expected = [
-            'templateRootPaths' => [
-                ExtensionManagementUtility::extPath('flux', 'Templates/')
-            ],
-            'partialRootPaths' => [
-                ExtensionManagementUtility::extPath('flux', 'Partials/')
-            ],
-            'layoutRootPaths' => [
-                ExtensionManagementUtility::extPath('flux', 'Layouts/')
-            ],
-        ];
-        $this->assertEquals($expected, $result);
     }
 
     /**
