@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  */
 
 use FluidTYPO3\Flux\Backend\PageLayoutDataProvider;
-use FluidTYPO3\Flux\Service\ConfigurationService;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Form;
@@ -30,7 +30,7 @@ class PageLayoutDataProviderTest extends AbstractTestCase
     {
         $instance = GeneralUtility::makeInstance(ObjectManager::class)->get(PageLayoutDataProvider::class);
         $this->assertAttributeInstanceOf(PageService::class, 'pageService', $instance);
-        $this->assertAttributeInstanceOf(ConfigurationService::class, 'configurationService', $instance);
+        $this->assertAttributeInstanceOf(FluxService::class, 'configurationService', $instance);
         $this->assertAttributeInstanceOf(ConfigurationManagerInterface::class, 'configurationManager', $instance);
     }
 

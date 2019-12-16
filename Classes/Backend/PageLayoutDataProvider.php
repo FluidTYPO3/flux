@@ -7,7 +7,7 @@ namespace FluidTYPO3\Flux\Backend;
  * For the full copyright and license information, please read the
  * LICENSE.md file that was distributed with this source code.
  */
-use FluidTYPO3\Flux\Service\ConfigurationService;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -16,7 +16,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Class for provisioning page layout selections for backend form fields
@@ -30,7 +29,7 @@ class PageLayoutDataProvider
     protected $configurationManager;
 
     /**
-     * @var ConfigurationService
+     * @var FluxService
      */
     protected $configurationService;
 
@@ -54,10 +53,10 @@ class PageLayoutDataProvider
     }
 
     /**
-     * @param ConfigurationService $configurationService
+     * @param FluxService $configurationService
      * @return void
      */
-    public function injectConfigurationService(ConfigurationService $configurationService)
+    public function injectConfigurationService(FluxService $configurationService)
     {
         $this->configurationService = $configurationService;
     }
@@ -78,7 +77,7 @@ class PageLayoutDataProvider
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->injectConfigurationManager($objectManager->get(ConfigurationManagerInterface::class));
-        $this->injectConfigurationService($objectManager->get(ConfigurationService::class));
+        $this->injectConfigurationService($objectManager->get(FluxService::class));
         $this->injectPageService($objectManager->get(PageService::class));
     }
 

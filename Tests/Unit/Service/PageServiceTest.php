@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Service\ConfigurationService;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Form;
@@ -105,9 +105,9 @@ class PageServiceTest extends AbstractTestCase
      */
     public function testGetAvailablePageTemplateFiles($typoScript, $expected)
     {
-        /** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $service */
+        /** @var FluxService|\PHPUnit_Framework_MockObject_MockObject $service */
         $service = $this->getMockBuilder(
-            ConfigurationService::class
+            FluxService::class
         )->setMethods(
             array('getPageConfiguration', 'message', 'getFormFromTemplateFile')
         )->getMock();

@@ -8,8 +8,7 @@ namespace FluidTYPO3\Flux\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\PageProvider;
-use FluidTYPO3\Flux\Service\ConfigurationService;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
@@ -33,7 +32,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     protected $objectManager;
 
     /**
-     * @var ConfigurationService
+     * @var FluxService
      */
     protected $configurationService;
 
@@ -52,10 +51,10 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     }
 
     /**
-     * @param ConfigurationService $configurationService
+     * @param FluxService $configurationService
      * @return void
      */
-    public function injectConfigurationService(ConfigurationService $configurationService)
+    public function injectConfigurationService(FluxService $configurationService)
     {
         $this->configurationService = $configurationService;
     }
@@ -75,7 +74,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     public function __construct()
     {
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->injectConfigurationService($this->objectManager->get(ConfigurationService::class));
+        $this->injectConfigurationService($this->objectManager->get(FluxService::class));
         $this->injectWorkspacesAwareRecordService($this->objectManager->get(WorkspacesAwareRecordService::class));
     }
 

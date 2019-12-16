@@ -8,9 +8,8 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Service\ConfigurationService;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
-use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
 
 /**
@@ -37,7 +36,7 @@ class PageController extends AbstractFluxController implements PageControllerInt
     protected $pageService;
 
     /**
-     * @var ConfigurationService
+     * @var FluxService
      */
     protected $pageConfigurationService;
 
@@ -55,10 +54,10 @@ class PageController extends AbstractFluxController implements PageControllerInt
     }
 
     /**
-     * @param ConfigurationService $pageConfigurationService
+     * @param FluxService $pageConfigurationService
      * @return void
      */
-    public function injectPageConfigurationService(ConfigurationService $pageConfigurationService)
+    public function injectPageConfigurationService(FluxService $pageConfigurationService)
     {
         $this->pageConfigurationService = $pageConfigurationService;
     }

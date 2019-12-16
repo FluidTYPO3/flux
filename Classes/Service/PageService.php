@@ -9,12 +9,9 @@ namespace FluidTYPO3\Flux\Service;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
-use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
-use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
@@ -46,7 +43,7 @@ class PageService implements SingletonInterface
     protected $configurationManager;
 
     /**
-     * @var ConfigurationService
+     * @var FluxService
      */
     protected $configurationService;
 
@@ -74,10 +71,10 @@ class PageService implements SingletonInterface
     }
 
     /**
-     * @param ConfigurationService $configurationService
+     * @param FluxService $configurationService
      * @return void
      */
-    public function injectConfigurationService(ConfigurationService $configurationService)
+    public function injectConfigurationService(FluxService $configurationService)
     {
         $this->configurationService = $configurationService;
     }

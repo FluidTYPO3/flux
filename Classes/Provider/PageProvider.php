@@ -9,11 +9,9 @@ namespace FluidTYPO3\Flux\Provider;
  */
 
 use FluidTYPO3\Flux\Controller\PageControllerInterface;
-use FluidTYPO3\Flux\Service\ConfigurationService;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Provider\AbstractProvider;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\Integration\PreviewView;
@@ -73,11 +71,6 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     protected $pageService;
 
     /**
-     * @var ConfigurationService
-     */
-    protected $pageConfigurationService;
-
-    /**
      * @var array
      */
     private static $cache = [];
@@ -112,12 +105,12 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @param ConfigurationService $pageConfigurationService
+     * @param FluxService $pageConfigurationService
      * @return void
      */
-    public function injectPageConfigurationService(ConfigurationService $pageConfigurationService)
+    public function injectPageConfigurationService(FluxService $pageConfigurationService)
     {
-        $this->pageConfigurationService = $pageConfigurationService;
+        $this->configurationService = $pageConfigurationService;
     }
 
     /**
@@ -341,7 +334,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             $data = [];
             foreach ($tree as $branch) {
                 /** @var SubPageProvider $provider */
-                $provider = $this->pageConfigurationService->resolvePrimaryConfigurationProvider(
+                $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
                     $this->tableName,
                     self::FIELD_NAME_SUB,
                     $branch

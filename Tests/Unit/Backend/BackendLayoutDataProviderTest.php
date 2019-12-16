@@ -9,12 +9,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
  */
 
 use FluidTYPO3\Flux\Backend\BackendLayoutDataProvider;
-use FluidTYPO3\Flux\Service\ConfigurationService;
-use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
@@ -36,7 +32,7 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
         $instance = GeneralUtility::makeInstance(ObjectManager::class)
             ->get(BackendLayoutDataProvider::class);
         $this->assertAttributeInstanceOf(ObjectManager::class, 'objectManager', $instance);
-        $this->assertAttributeInstanceOf(ConfigurationService::class, 'configurationService', $instance);
+        $this->assertAttributeInstanceOf(FluxService::class, 'configurationService', $instance);
         $this->assertAttributeInstanceOf(WorkspacesAwareRecordService::class, 'recordService', $instance);
     }
 

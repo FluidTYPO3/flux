@@ -9,14 +9,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  */
 
 use FluidTYPO3\Flux\Controller\PageController;
-use FluidTYPO3\Flux\Service\ConfigurationService;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Provider\Provider;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Fluid\View\TemplateView;
 
 /**
  * Class PageControllerTest
@@ -32,7 +29,7 @@ class PageControllerTest extends AbstractTestCase
         $instance = GeneralUtility::makeInstance(ObjectManager::class)
             ->get(PageController::class);
         $this->assertAttributeInstanceOf(PageService::class, 'pageService', $instance);
-        $this->assertAttributeInstanceOf(ConfigurationService::class, 'pageConfigurationService', $instance);
+        $this->assertAttributeInstanceOf(FluxService::class, 'pageConfigurationService', $instance);
     }
 
     /**
@@ -49,9 +46,9 @@ class PageControllerTest extends AbstractTestCase
 
     public function testInitializeProvider()
     {
-        /** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $pageConfigurationService */
+        /** @var FluxService|\PHPUnit_Framework_MockObject_MockObject $pageConfigurationService */
         $pageConfigurationService = $this->getMockBuilder(
-            ConfigurationService::class
+            FluxService::class
         )->setMethods(
             array(
                 'resolvePrimaryConfigurationProvider',

@@ -8,9 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Controller\PageControllerInterface;
 use FluidTYPO3\Flux\Provider\SubPageProvider;
-use FluidTYPO3\Flux\Service\ConfigurationService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
