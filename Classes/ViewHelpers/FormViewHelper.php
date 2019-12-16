@@ -46,14 +46,6 @@ class FormViewHelper extends AbstractFormViewHelper
             true
         );
         $this->registerArgument(
-            'compact',
-            'boolean',
-            'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES AT ALL COSTS! Toggling this ' .
-            'option is DESTRUCTIVE to variables currently saved in the database!',
-            false,
-            false
-        );
-        $this->registerArgument(
             'variables',
             'array',
             'Freestyle variables which become assigned to the resulting Component - can then be read from that ' .
@@ -99,7 +91,6 @@ class FormViewHelper extends AbstractFormViewHelper
         $form->setLabel($arguments['label']);
         $form->setDescription($arguments['description']);
         $form->setEnabled($arguments['enabled']);
-        $form->setCompact($arguments['compact']);
         $form->setExtensionName($extensionName);
         $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);
@@ -141,7 +132,6 @@ class FormViewHelper extends AbstractFormViewHelper
         $form->setLabel($arguments['label']);
         $form->setDescription($arguments['description']);
         $form->setEnabled($arguments['enabled']);
-        $form->setCompact($arguments['compact']);
         $form->setExtensionName($extensionName);
         $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);

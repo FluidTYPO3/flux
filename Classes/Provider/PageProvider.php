@@ -28,7 +28,6 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
  */
 class PageProvider extends AbstractProvider implements ProviderInterface
 {
-
     const FIELD_NAME_MAIN = 'tx_fed_page_flexform';
     const FIELD_NAME_SUB = 'tx_fed_page_flexform_sub';
     const FIELD_ACTION_MAIN = 'tx_fed_page_controller_action';
