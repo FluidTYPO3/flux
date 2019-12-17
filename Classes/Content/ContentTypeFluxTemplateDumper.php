@@ -7,6 +7,8 @@ use FluidTYPO3\Flux\Form\Conversion\FormToFluidTemplateConverter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\TemplateView;
+use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
+use TYPO3Fluid\Fluid\Core\Parser\Source;
 
 /**
  * Content Template Dumper
@@ -36,7 +38,11 @@ class ContentTypeFluxTemplateDumper
         $dump = GeneralUtility::makeInstance(FormToFluidTemplateConverter::class)->convertFormAndGrid($form, $grid, $options);
         $parser = GeneralUtility::makeInstance(ObjectManager::class)->get(TemplateView::class)->getRenderingContext()->getTemplateParser();
         try {
-            $parser->parse($dump);
+            if (class_exists(Sequencer::class)) {
+                $parser->parse(new Source($dump));
+            } else {
+                $parser->parse($dump);
+            }
             $validation = '<p class="text-success">Template parses OK, it is safe to copy</p>';
         } catch (\Exception $error) {
             $validation = '<p class="text-danger">' . $error->getMessage() . '</p>';
@@ -48,10 +54,5 @@ class ContentTypeFluxTemplateDumper
     protected function getContentType(string $contentTypeName): ?ContentTypeDefinitionInterface
     {
         return GeneralUtility::makeInstance(ObjectManager::class)->get(ContentTypeManager::class)->determineContentTypeForTypeString($contentTypeName);
-    }
-
-    protected function getProvider(): ContentTypeProvider
-    {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(ContentTypeProvider::class);
     }
 }

@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Integration;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
@@ -22,12 +21,10 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Content Type Builder
@@ -157,7 +154,7 @@ class ContentTypeBuilder
         ProviderInterface $provider,
         $pluginName
     ) {
-        $cacheId = 'CType_' . $contentType . '_' . md5($providerExtensionName . '_' . $pluginName);
+        $cacheId = 'CType_' . md5($contentType . '__' . $providerExtensionName . '__' . $pluginName);
         $cache = $this->getCache();
         $form = $cache->get($cacheId);
         if (!$form) {
@@ -165,14 +162,7 @@ class ContentTypeBuilder
             // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
             $form = $provider->getForm(['CType' => $contentType]);
             if (!$form) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Flux could not extract a Flux definition from "%s". Check that the file exists and contains ' .
-                        'the necessary flux:form in the configured section "%s"',
-                        $provider->getTemplatePathAndFilename([]),
-                        $provider->getConfigurationSectionName([])
-                    )
-                );
+                return;
             }
             try {
                 $form->setExtensionName($providerExtensionName);
@@ -275,7 +265,6 @@ class ContentTypeBuilder
                     iconIdentifier = %s
                     title = %s
                     description = %s
-                    params = 
                     tt_content_defValues {
                         CType = %s
                     }
@@ -344,7 +333,7 @@ class ContentTypeBuilder
                     }
                 }',
                 $groupName,
-                $groupLabel ? 'header = ' . $groupLabel : ''
+                'header = ' . $groupLabel ?: 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types'
             )
         );
         $groups[$groupName] = true;

@@ -33,23 +33,6 @@ class ContentTypeBuilderTest extends AbstractTestCase
     /**
      * @return void
      */
-    public function testRegisterContentTypeThrowsExceptionWhenMissingForm()
-    {
-        $subject = new ContentTypeBuilder();
-        $provider = $this->getMockBuilder(Provider::class)->setMethods(['getForm'])->getMock();
-        $provider->expects($this->once())->method('getForm')->willReturn(null);
-        $this->expectException(\RuntimeException::class);
-        $subject->registerContentType(
-            'FluidTYPO3.Flux',
-            'foobar',
-            $provider,
-            'Foobar'
-        );
-    }
-
-    /**
-     * @return void
-     */
     public function testRegisterContentType()
     {
         $subject = new ContentTypeBuilder();

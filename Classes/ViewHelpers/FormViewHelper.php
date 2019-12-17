@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
+use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -45,14 +46,6 @@ class FormViewHelper extends AbstractFormViewHelper
             true
         );
         $this->registerArgument(
-            'compact',
-            'boolean',
-            'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES AT ALL COSTS! Toggling this ' .
-            'option is DESTRUCTIVE to variables currently saved in the database!',
-            false,
-            false
-        );
-        $this->registerArgument(
             'variables',
             'array',
             'Freestyle variables which become assigned to the resulting Component - can then be read from that ' .
@@ -83,10 +76,14 @@ class FormViewHelper extends AbstractFormViewHelper
 
     protected function callRenderMethod()
     {
+        if (class_exists(Sequencer::class)) {
+            $arguments = $this->arguments->getArrayCopy();
+        } else {
+            $arguments = $this->arguments;
+        }
         $viewHelperVariableContainer = $this->renderingContext->getViewHelperVariableContainer();
-        $extensionName = static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments);
+        $extensionName = static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $arguments);
         $formClassName = Form::class;
-        $arguments = $this->arguments;
         $form = call_user_func_array([$formClassName, 'create'], []);
         // configure Form instance
         $form->setId($arguments['id']);
@@ -94,7 +91,6 @@ class FormViewHelper extends AbstractFormViewHelper
         $form->setLabel($arguments['label']);
         $form->setDescription($arguments['description']);
         $form->setEnabled($arguments['enabled']);
-        $form->setCompact($arguments['compact']);
         $form->setExtensionName($extensionName);
         $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);
@@ -136,7 +132,6 @@ class FormViewHelper extends AbstractFormViewHelper
         $form->setLabel($arguments['label']);
         $form->setDescription($arguments['description']);
         $form->setEnabled($arguments['enabled']);
-        $form->setCompact($arguments['compact']);
         $form->setExtensionName($extensionName);
         $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);
