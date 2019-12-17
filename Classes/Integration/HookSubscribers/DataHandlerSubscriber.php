@@ -131,6 +131,19 @@ class DataHandlerSubscriber
             foreach ($commandSets as $id => $commands) {
                 foreach ($commands as $command => $value) {
                     switch ($command) {
+                        case 'move':
+                            // Verify that the target column is not within the element or any child hereof.
+                            if (is_array($value) && isset($value['update']['colPos'])) {
+                                $invalidColumnNumbers = $this->fetchAllColumnNumbersBeneathParent($id);
+                                // Only react to move commands which contain a target colPos
+                                if (in_array((int) $value['update']['colPos'], $invalidColumnNumbers, true)) {
+                                    // Invalid target detected - delete the "move" command so it does not happen, and
+                                    // dispatch an error message.
+                                    unset($dataHandler->cmdmap[$table][$id]);
+                                    $dataHandler->log($table, $id, 4, 0, 1, 'Record not moved, would become child of self');
+                                }
+                            }
+                            break;
                         case 'delete':
                         case 'undelete':
                         case 'localize':
@@ -233,6 +246,20 @@ class DataHandlerSubscriber
             $dataHandler->start([], $subCommandMap);
             $dataHandler->process_cmdmap();
         }
+    }
+
+    protected function fetchAllColumnNumbersBeneathParent(int $parentUid): array
+    {
+        list (, $recordsToProcess, $bannedColumnNumbers) = $this->getParentAndRecordsNestedInGrid(
+            'tt_content',
+            $parentUid,
+            'uid, colPos'
+        );
+        $invalidColumnPositions = $bannedColumnNumbers;
+        foreach ($recordsToProcess as $childRecord) {
+            $invalidColumnPositions += $this->fetchAllColumnNumbersBeneathParent($childRecord['uid']);
+        }
+        return (array) $invalidColumnPositions;
     }
 
     protected function recursivelyMoveChildRecords(string $table, int $parentUid, int $pageUid, int $languageUid, DataHandler $dataHandler): array
@@ -354,7 +381,8 @@ class DataHandlerSubscriber
         // into the top of columns which means reading records in reverse order causes the correct final order.
         return [
             $originalRecord,
-            $records
+            $records,
+            $childColPosValues
         ];
     }
 }
