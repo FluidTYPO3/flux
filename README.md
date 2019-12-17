@@ -1,32 +1,63 @@
 <img src="https://fluidtypo3.org/logo.svgz" width="100%" />
 
-Flux: Fluid FlexForms
-=====================
+Flux
+====
 
 [![Build Status](https://img.shields.io/travis/FluidTYPO3/flux.svg?style=flat-square&label=package)](https://travis-ci.org/FluidTYPO3/flux/) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/flux/development.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/flux)  [![Documentation](http://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://fluidtypo3.org/documentation/templating-manual/introduction.html) [![Build Status](https://img.shields.io/travis/FluidTYPO3/fluidtypo3-testing.svg?style=flat-square&label=framework)](https://travis-ci.org/FluidTYPO3/fluidtypo3-testing/) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/fluidtypo3-testing/master.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/fluidtypo3-testing)
 
-> Flux automates integration of Fluid with TYPO3 and makes Fluid the developer's entry point
+> Flux automates integration of Fluid with TYPO3 and makes Fluid the entry point for developers. The name "Flux" has
+> multiple meanings but in this context, it mainly refers to the gel-like fluid used when soldering components together
+> in electronic hardware, making it easier to create a bond between components and improves the durability of the bond. 
 
-There are two main purposes to Flux:
+Flux has two main purposes:
 
 1. Allow developers to configure TYPO3's page templates and add custom content types using Fluid templates, without
    the need for detailed knowledge about how TYPO3 usually requires such setup to be done.
-2. Provides embedding of metadata such as which fields to show when editing a content element, descriptions of the
+2. Allow embedding of metadata such as which fields to show when editing a content element, descriptions of the
    content or page template, and more.
    
-Bonus feature: nested content areas to create grids.
+Bonus feature: nested content areas to create content grids.
+
+
+How it works
+------------
 
 Flux has two main modes of operation - either you allow Flux to automatically create a site-wide "design" folder to
-contain your template files, which provides a 100% out of the box experience (worst case, you may need to change *one*
-setting). Or you prefer to have a more advanced and controlled integration in which case you disable the automatic
-creation of site-wide template folders and provide your own (through an extension).
+contain your template files, which provides a 100% out of the box experience. Or you prefer to have a more advanced and
+controlled integration, in which case you disable the automatic creation of site-wide template folders and provide your 
+own (through an extension).
 
 The automatic mode of operation is the default. **This means Flux is an ideal starting point if you have zero knowledge
 about how to set up TYPO3**. You can start with the automation and as you learn more about TYPO3, you can refine your
 integration and continuously improve how it works. Or keep using the automation in case it fits all your needs.
 
-To get started, you only need to know how to install a TYPO3 extension either with Composer or for non-Composer sites,
+To get started you only need to know how to install a TYPO3 extension either with Composer or for non-Composer sites,
 using the Extension Manager.
+
+
+Types of integration
+--------------------
+
+Flux has multiple ways to store your page- and content templates (which are also type definitions):
+
+1. Fully automated through the site-wide "design" folder in the public root. This integration is easiest to use but
+   forces your templates to render in Flux's context, and does not facilitate complex setups such as extension specific
+   asset storage, and is not as portable as other methods - on the other hand it works immediately out of the box.
+   Ideal for simple single-domain sites and gets you started in just a few minutes.
+2. Extension-specific, meaning you use a TYPO3 extension (written by yourself) to store all page- and content templates
+   and additional resources such as translations, icons, and so on. This method is the most portable, meaning you can
+   package your entire site templating in an extension that you can reuse, and is the only method which allows you to
+   also ship PHP classes (ViewHelpers, for example) along with your site templates.
+3. For content types specifically, you can define new types using root-level database records (one per type). This
+   method is possible to use completely without touching the file system, but has a lesser degree of portability. You
+   can use this method to quickly create prototypes of content types using a more visual approach (through TYPO3 forms).
+   This method also has an exporting feature which allows you to generate the necessary Fluid template that can then be
+   used with either of the other methods.
+
+Methods 1 and 3 are intended to get you started as quickly as possible. Method 2 is intended to serve more custom setups
+which ship more than just site templates, through use of a custom TYPO3 extension.
+
+All three methods can be combined or used individually.
 
 
 Composer Install
@@ -69,7 +100,7 @@ When Flux is installed and enabled in extension manager, and if automatic creati
 enabled (which it is by default), the following happens automatically:
 
 * A folder named `design` is created in the public directory (this directory may differ between TYPO3 versions and can
-  be changed with configuration, but in most recent TYPO3 versions it is `public` in the project root).
+  be changed with configuration, but in most recent TYPO3 versions it is `public` in the project public folder).
 * This folder is filled with a set of skeleton templates containing very basic embedded Flux metadata.
 * The file created in `design/Templates/Page` can be selected as page template (Flux adds a `Page Layout` tab to pages'
   editable properties).
@@ -77,7 +108,9 @@ enabled (which it is by default), the following happens automatically:
   standard TYPO3 content types that create text, image, etc.
 
 Renaming, removing or adding files in these folders automatically registers the file as either page template or content
-type, depending on location.
+type, depending on location. **Be careful when renaming or removing files: if the page- or content template is already
+in use this may break your system until you choose another page template and disable/delete removed or renamed content
+types. There is no warning given about types that are in use!**
 
 From that point on, you can create a completely styled site with custom content types to make sliders etc. using your
 favorite frontend framework (or none) - and you only need to know very basic Fluid (an XML based markup engine which
@@ -110,9 +143,9 @@ VHS is another extension in the FluidTYPO3 family, which is highly recommended t
 mentioned here, is that it provides alternatives to TypoScript-based content- and menu-rendering instructions, allowing
 you to instead use Fluid.
 
-Given that particularly menu rendering setup in TypoScript is notoriously difficult (due to a very old structure which
+Given that in particular menu rendering setup in TypoScript is notoriously difficult (due to a very old structure which
 has basically never changed), beginners may prefer to use a special XHTML tag and either a few CSS class properties, or
-a custom loop to output links.
+a custom loop to output menu items and their links.
 
 
 Flux form API
@@ -138,8 +171,7 @@ Flux also lets you build a grid for content elements (nested content areas):
 ```
 
 Flux is then capable of extracting these embedded structures to read form fields, labels, content grids, backend preview
-output, and more - in short, your template files embed the instructions on both how to integrate and how to render the
-template. 
+output, and more - in short, your template files embed the instructions on how to both integrate and render templates. 
 
 
 Alternative APIs
