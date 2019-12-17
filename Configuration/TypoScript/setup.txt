@@ -6,10 +6,19 @@ page.5.userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
 page.5.extensionName = Flux
 page.5.vendorName = FluidTYPO3
 page.5.pluginName = Page
-page.10 >
 
 plugin.tx_flux {
 	siteRootInheritance = {$plugin.tx_flux.siteRootInheritance}
+}
+
+lib.default_menu = TMENU
+lib.default_menu.1 = TMENU
+lib.default_menu.1.NO = 1
+
+lib.default_content = CONTENT
+lib.default_content {
+  table = tt_content
+  where = colPos = 0
 }
 
 plugin.tx_flux.view {
@@ -20,4 +29,5 @@ plugin.tx_flux.view {
   partialRootPaths.0 = design/Partials/
   partialRootPaths.10 = EXT:flux/Resources/Private/Partials/
 }
+
 module.tx_flux.view < plugin.tx_flux.view
