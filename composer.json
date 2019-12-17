@@ -4,11 +4,9 @@
     "type": "typo3-cms-extension",
     "homepage": "http://fluidtypo3.org",
     "license": "GPL-2.0+",
-    "preferred-install": "dist",
     "prefer-stable": true,
     "minimum-stability": "dev",
     "support": {
-        "irc": "irc://irc.freenode.org/fedext",
         "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
     },
     "autoload": {
