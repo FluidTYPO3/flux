@@ -14,11 +14,16 @@ if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations
     );
 }
 
+if (class_exists(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)) {
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)->get('flux');
+} else {
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] ?? unserialize($_EXTCONF);
+}
+
 if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] ?? [];
 
-    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($_EXTCONF);
 
     // Globally registered fluid namespace
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['flux'] = ['FluidTYPO3\\Flux\\ViewHelpers'];
@@ -78,14 +83,6 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources'][] =
             \FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor::class . '->includeStaticTypoScriptHook';
     }
-
-    // Add a default menu and colPos=0 content output TS - ultra-basic - to make deployed skeleton page templates slightly usable
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup('plugin.tx_flux.objects.default_menu = HMENU');
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup('
-        plugin.tx_flux.objects.default_content = CONTENT
-        plugin.tx_flux.objects.default_content.table = tt_content
-        plugin.tx_flux.objects.default_content.where = colPos = 0
-    ');
 
     $contentTypeManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\FluidTYPO3\Flux\Content\ContentTypeManager::class);
     foreach ($contentTypeManager->fetchContentTypes() as $contentType) {

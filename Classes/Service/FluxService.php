@@ -371,11 +371,12 @@ class FluxService implements SingletonInterface
             );
             return [];
         }
-        if ($extensionName === 'Flux') {
+        $plugAndPlayTemplatesDirectory = trim($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlayDirectory'] ?? DropInContentTypeDefinition::DESIGN_DIRECTORY, '/.') . '/';;
+        if (($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlay'] ?? true) && $extensionName === 'Flux') {
             return [
-                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::TEMPLATES_DIRECTORY . DropInContentTypeDefinition::PAGE_DIRECTORY],
-                TemplatePaths::CONFIG_PARTIALROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
-                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
+                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::TEMPLATES_DIRECTORY . DropInContentTypeDefinition::PAGE_DIRECTORY],
+                TemplatePaths::CONFIG_PARTIALROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
+                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
             ];
         }
         if (null !== $extensionName) {
@@ -386,14 +387,16 @@ class FluxService implements SingletonInterface
         foreach ($registeredExtensionKeys as $registeredExtensionKey) {
             $configurations[$registeredExtensionKey] = (new TemplatePaths(ExtensionNamingUtility::getExtensionKey($registeredExtensionKey)))->toArray();
         }
-        $configurations['FluidTYPO3.Flux'] = array_replace(
-            $configurations['FluidTYPO3.Flux'] ?? [],
-            [
-                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::TEMPLATES_DIRECTORY],
-                TemplatePaths::CONFIG_PARTIALROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
-                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [DropInContentTypeDefinition::DESIGN_DIRECTORY . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
-            ]
-        );
+        if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlay'] ?? true) {
+            $configurations['FluidTYPO3.Flux'] = array_replace(
+                $configurations['FluidTYPO3.Flux'] ?? [],
+                [
+                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::TEMPLATES_DIRECTORY],
+                    TemplatePaths::CONFIG_PARTIALROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
+                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
+                ]
+            );
+        }
         return $configurations;
     }
 

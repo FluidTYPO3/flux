@@ -3,6 +3,27 @@
 	<file source-language="en" datatype="plaintext" original="messages" product-name="flux" date="2014-01-05T14:38:32+01:00">
 		<header/>
 		<body>
+			<trans-unit id="extension_configuration.debugMode">
+				<source>Debug Mode: Display debug information about every Flux template being rendered and every ConfigurationProvider being used. Value "0" (production) means debug messages are disabled and Exceptions may be suppressed. Value "1" (development) means every debug message is displayed. Value "2" (staging, testing) means only severe errors' messages are displayed.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.handleErrors">
+				<source>Error handling: If enabled, all Flux controllers are permitted to handle their own errors in ways that are far more flexible than traditional error catching. Enable with care - if your plugin, content or page template collection does not contain an Error.html template, your site may risk breaking with an extremely basic and not very informative error á la "Template not found for action foobar" but when enabled and combined with proper error templates you can customise pretty much any error which might happen anywhere when a Flux controller subclass is in play. Best turned off on development sites unless you are developing exactly error templates as it greatly limits debug output!</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.autoload">
+				<source>Automatic initialisation: If enabled, Flux will automatically create the TypoScript setup that is required to render Flux templates in the frontend, and will use it on every page. Unchecking this option instead registers a static TypoScript file which can be loaded as needed.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.plugAndPlay">
+				<source>Plug-and-play templates: If enabled, Flux will automatically create a template directory structure under your project folder (public folder) into which you can place Content and Page templates which are then automatically integrated as page- and content types.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.plugAndPlayDirectory">
+				<source>Plug-and-play templates directory: The directory name of plug-and-play templates, automatically created under the project folder ("public" directory). You can change this value to use a different directory name, but it will still be created under the "public" directory. Only relative paths are allowed - note that attempting to use "../" will not work as it causes the path to be sanitised and removed by TYPO3 itself.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.doktypes">
+				<source>Doktypes: CSV list of doktypes to add the page layout selectors to in addition to the default standard pages and shortcuts (0,1,4). Possible use cases are sysfolders (254) or custom page types.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.pagesLanguageConfigurationOverlay">
+				<source>Translation: Enable translation of Page Configuration through the Pages Language Overlays.</source>
+			</trans-unit>
 			<trans-unit id="content_types">
 				<source>Flux-based Content Type</source>
 			</trans-unit>
