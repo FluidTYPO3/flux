@@ -47,7 +47,7 @@ class ContentTypeManager implements SingletonInterface
         static $types = [];
         if (empty($types)) {
             try {
-                return array_replace(
+                $types = array_replace(
                     (array) DropInContentTypeDefinition::fetchContentTypes(),
                     (array) FluidFileBasedContentTypeDefinition::fetchContentTypes(),
                     (array) RecordBasedContentTypeDefinition::fetchContentTypes()
