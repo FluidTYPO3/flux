@@ -51,7 +51,7 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
         string $providerClassName = Provider::class
     ) {
         $this->extensionIdentity = $extensionIdentity;
-        $this->basePath = substr($basePath, 0, 1) !== '/' ? GeneralUtility::getFileAbsFileName($basePath) : $basePath;
+        $this->basePath = $basePath;
         $this->relativeFilePath = $relativeFilePath;
         $this->providerClassName = $providerClassName;
     }

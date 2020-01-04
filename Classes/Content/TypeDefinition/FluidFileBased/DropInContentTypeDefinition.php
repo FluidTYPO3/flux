@@ -72,10 +72,9 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         // Steps:
         // 1) auto-create if missing, the required file structure and dummy files
         // 2) iterate all content types found in the file structure
-        #var_dump($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']);
         $basePath = trim($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlayDirectory'] ?? static::DESIGN_DIRECTORY, '/.') . '/';
-        $contentTypesPath = $basePath . static::TEMPLATES_DIRECTORY . static::CONTENT_DIRECTORY;
-        #die($contentTypesPath);
+        $contentTypesPath = GeneralUtility::getFileAbsFileName($basePath . static::TEMPLATES_DIRECTORY . static::CONTENT_DIRECTORY);
+
         static::initializeDropInFileSystemStructure($basePath);
         $finder = GeneralUtility::makeInstance(Finder::class);
         /** @var \SplFileInfo[] $files */
