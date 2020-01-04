@@ -11,7 +11,7 @@ plugin.tx_flux {
 	siteRootInheritance = {$plugin.tx_flux.siteRootInheritance}
 }
 
-lib.default_menu = TMENU
+lib.default_menu = HMENU
 lib.default_menu.1 = TMENU
 lib.default_menu.1.NO = 1
 
