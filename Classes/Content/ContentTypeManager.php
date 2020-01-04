@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use Doctrine\DBAL\DBALException;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\FluidFileBasedContentTypeDefinition;
@@ -45,11 +46,17 @@ class ContentTypeManager implements SingletonInterface
     {
         static $types = [];
         if (empty($types)) {
-            return array_replace(
-                (array) DropInContentTypeDefinition::fetchContentTypes(),
-                (array) FluidFileBasedContentTypeDefinition::fetchContentTypes(),
-                (array) RecordBasedContentTypeDefinition::fetchContentTypes()
-            );
+            try {
+                return array_replace(
+                    (array) DropInContentTypeDefinition::fetchContentTypes(),
+                    (array) FluidFileBasedContentTypeDefinition::fetchContentTypes(),
+                    (array) RecordBasedContentTypeDefinition::fetchContentTypes()
+                );
+            } catch (DBALException $error) {
+                // Suppress schema- or connection-related issues
+            } catch (NoSuchCacheException $error) {
+                // Suppress caches not yet initialized errors
+            }
         }
         return $types;
     }

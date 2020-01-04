@@ -20,6 +20,7 @@ use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -344,6 +345,11 @@ class ContentTypeBuilder
      */
     protected function getCache()
     {
-        return GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
+        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        try {
+            return $cacheManager->getCache('flux');
+        } catch (NoSuchCacheException $error) {
+            return $cacheManager->getCache('cache_runtime');
+        }
     }
 }

@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -439,6 +440,14 @@ class FluxService implements SingletonInterface
     protected function getPersistentCache()
     {
         static $cache;
-        return $cache ?? ($cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('flux'));
+        if (!$cache) {
+            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+            try {
+                $cache = $cacheManager->getCache('flux');
+            } catch (NoSuchCacheException $error) {
+                $cache = $cacheManager->getCache('cache_runtime');
+            }
+        }
+        return $cache;
     }
 }
