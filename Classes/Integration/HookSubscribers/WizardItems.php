@@ -102,8 +102,10 @@ class WizardItems implements NewContentElementWizardHookInterface
     protected function filterPermittedFluidContentTypesByInsertionPosition(array $items, $parentObject)
     {
         $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
+        $pageUid = key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true);
+
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
-            key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true),
+            $pageUid,
             (int) ($dataArray['colPos'] ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
         );
         $overrides = HookHandler::trigger(
