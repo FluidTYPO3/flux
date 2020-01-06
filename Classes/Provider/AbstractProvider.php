@@ -376,23 +376,19 @@ class AbstractProvider implements ProviderInterface
         $viewVariables = $this->getViewVariables($row);
         $view = $this->getViewForRecord($row);
 
-        try {
-            if ($configurationSectionName) {
-                $view->renderSection($configurationSectionName, $viewVariables, false);
-            } else {
-                $view->assignMultiple($viewVariables);
-                $view->render();
-            }
-
-            $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class) ?? [];
-            if (isset($variables['form']) && $variables['form']->getOption(Form::OPTION_STATIC)) {
-                $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
-            }
-
-            $returnValue = $name ? $variables[$name] : $variables;
-        } catch (Exception $error) {
-            $returnValue = null;
+        if ($configurationSectionName) {
+            $view->renderSection($configurationSectionName, $viewVariables, false);
+        } else {
+            $view->assignMultiple($viewVariables);
+            $view->render();
         }
+
+        $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class) ?? [];
+        if (isset($variables['form']) && $variables['form']->getOption(Form::OPTION_STATIC)) {
+            $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
+        }
+
+        $returnValue = $name ? $variables[$name] : $variables;
 
         return HookHandler::trigger(
             HookHandler::PROVIDER_EXTRACTED_OBJECT,
