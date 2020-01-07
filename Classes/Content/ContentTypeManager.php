@@ -35,9 +35,13 @@ class ContentTypeManager implements SingletonInterface
 
     /**
      * @var ContentTypeDefinitionInterface[]
-     *
      */
     protected $types = [];
+
+    /**
+     * @var string[]
+     */
+    protected $typeNames = [];
 
     /**
      * @return FluidRenderingContentTypeDefinitionInterface[]
@@ -52,6 +56,7 @@ class ContentTypeManager implements SingletonInterface
                     (array) FluidFileBasedContentTypeDefinition::fetchContentTypes(),
                     (array) RecordBasedContentTypeDefinition::fetchContentTypes()
                 );
+                $this->typeNames = array_keys($types);
             } catch (DBALException $error) {
                 // Suppress schema- or connection-related issues
             } catch (NoSuchCacheException $error) {
@@ -59,6 +64,16 @@ class ContentTypeManager implements SingletonInterface
             }
         }
         return $types;
+    }
+
+    public function fetchContentTypeNames(): iterable
+    {
+        return $this->typeNames;
+    }
+
+    public function registerTypeName(string $typeName): void
+    {
+        $this->typeNames[] = $typeName;
     }
 
     public function registerTypeDefinition(ContentTypeDefinitionInterface $typeDefinition): void
@@ -88,7 +103,7 @@ class ContentTypeManager implements SingletonInterface
     public function regenerate()
     {
         $cache = $this->getCache();
-        $cache->set(static::CACHE_IDENTIFIER, $this->types);
+        $cache->set(static::CACHE_IDENTIFIER, $this->fetchContentTypes());
     }
 
     protected function getCache(): FrontendInterface

@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -110,22 +111,28 @@ class PageLayoutDataProvider
                 ];
             }
         }
+
+        $allowedTemplates = [];
+        $pageUid = (int) $parameters['row']['uid'];
+        if ($pageUid > 0 && class_exists(SiteFinder::class)) {
+            $resolver = GeneralUtility::makeInstance(SiteFinder::class);
+            $site = $resolver->getSiteByPageId($pageUid);
+            $siteConfiguration = $site->getConfiguration();
+            if (!empty($siteConfiguration['flux_page_templates'])) {
+                $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '');
+            }
+        }
+
         $availableTemplates = $this->pageService->getAvailablePageTemplateFiles();
         foreach ($availableTemplates as $extension => $group) {
             $parameters['items'] = array_merge(
                 $parameters['items'],
-                $this->renderOptions($extension, $group, $parameters)
+                $this->renderOptions($extension, $group, $parameters, $allowedTemplates)
             );
         }
     }
 
-    /**
-     * @param string $extension
-     * @param Form[] $group
-     * @param array $parameters
-     * @return string
-     */
-    protected function renderOptions($extension, array $group, array $parameters)
+    protected function renderOptions($extension, array $group, array $parameters, array $allowedTemplates): array
     {
         $options = [];
         if (false === empty($group)) {
@@ -138,20 +145,22 @@ class PageLayoutDataProvider
                 $groupTitle = $EM_CONF['']['title'];
             }
 
-            $options[] = [$groupTitle, '--div--'];
+            $templateOptions = [];
             foreach ($group as $form) {
-                $options[] = $this->renderOption($form, $parameters);
+                $optionArray = $this->renderOption($form, $parameters);
+                if (!empty($allowedTemplates) && !in_array($optionArray[1], $allowedTemplates)) {
+                    continue;
+                }
+                $templateOptions[] = $optionArray;
+            }
+            if (!empty($templateOptions)) {
+                $options = array_merge($options, [[$groupTitle, '--div--']], $templateOptions);
             }
         }
         return $options;
     }
 
-    /**
-     * @param Form $form
-     * @param array $parameters
-     * @return string
-     */
-    protected function renderOption(Form $form, array $parameters)
+    protected function renderOption(Form $form, array $parameters): array
     {
         $extension = $form->getExtensionName();
         $thumbnail = MiscellaneousUtility::getIconForTemplate($form);

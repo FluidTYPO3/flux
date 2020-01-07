@@ -3,6 +3,15 @@
 	<file source-language="en" datatype="plaintext" original="messages" product-name="flux" date="2014-01-05T14:38:32+01:00">
 		<header/>
 		<body>
+			<trans-unit id="siteConfiguration.tab">
+				<source>Flux Providers</source>
+			</trans-unit>
+			<trans-unit id="siteConfiguration.pageTemplates">
+				<source>Available page layouts/templates (empty selection means allow-all)</source>
+			</trans-unit>
+			<trans-unit id="siteConfiguration.contentTypes">
+				<source>Available content types (empty selection means allow-all)</source>
+			</trans-unit>
 			<trans-unit id="extension_configuration.debugMode">
 				<source>Debug Mode: Display debug information about every Flux template being rendered and every ConfigurationProvider being used. Value "0" (production) means debug messages are disabled and Exceptions may be suppressed. Value "1" (development) means every debug message is displayed. Value "2" (staging, testing) means only severe errors' messages are displayed.</source>
 			</trans-unit>

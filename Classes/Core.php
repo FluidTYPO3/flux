@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -113,10 +114,14 @@ class Core
             // detected template files as native CTypes. Remove if/when fluidcontent is discontinued.
             $legacyKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
             $templateRootPath = ExtensionManagementUtility::extPath($legacyKey, 'Resources/Private/Templates/Content/');
+            $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
             foreach (GeneralUtility::getFilesInDir($templateRootPath, 'html') as $file) {
                 static::registerTemplateAsContentType($extensionKey, $templateRootPath . $file);
+                $contentTypeName = str_replace('_', '', $legacyKey)
+                    . '_'
+                    . str_replace('_', '', GeneralUtility::camelCaseToLowerCaseUnderscored(pathinfo($file, PATHINFO_FILENAME)));
+                $contentTypeManager->registerTypeName($contentTypeName);
             }
-            return;
         }
         if (false === isset(static::$extensions[$providesControllerName])) {
             static::$extensions[$providesControllerName] = [];
