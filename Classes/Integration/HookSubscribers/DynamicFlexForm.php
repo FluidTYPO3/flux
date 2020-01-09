@@ -192,7 +192,7 @@ class DynamicFlexForm extends FlexFormTools
             $dataStructArray = ['ROOT' => ['el' => []]];
         }
 
-        $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
+        #$dataStructArray = $this->patchTceformsWrapper($dataStructArray);
 
         return $dataStructArray;
     }

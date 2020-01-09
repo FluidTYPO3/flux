@@ -14,10 +14,11 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
 {
-
     /**
      * Initialize arguments
      * @return void
