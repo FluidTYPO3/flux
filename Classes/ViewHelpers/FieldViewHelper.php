@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
+use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -71,13 +72,13 @@ class FieldViewHelper extends AbstractFieldViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return FieldInterface
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $parent = static::getContainerFromRenderingContext($renderingContext);
-        $field = Field::create($arguments);
+        $field = Field::create($arguments instanceof ArgumentCollection ? $arguments->getArrayCopy() : $arguments);
         $parent->add($field);
         return $field;
     }
