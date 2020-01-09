@@ -17,6 +17,8 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  *
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by properties.
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 class ListWizard extends AbstractWizard
 {
