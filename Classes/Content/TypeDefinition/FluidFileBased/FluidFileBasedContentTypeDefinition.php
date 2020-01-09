@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased;
 
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -29,7 +28,7 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
     protected $extensionIdentity = '';
     protected $basePath = '';
     protected $relativeFilePath = '';
-    protected $providerClassName = ContentProvider::class;
+    protected $providerClassName = Provider::class;
 
     /**
      * Constructs a Fluid file-based content type definition
@@ -85,7 +84,7 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
         $path = $path === '.' ? '' : $path . '_';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($this->extensionIdentity));
         $contentReference = str_replace('/', '_', $path . pathinfo($this->relativeFilePath, PATHINFO_FILENAME));
-        return $extensionSignature . '_' . GeneralUtility::camelCaseToLowerCaseUnderscored($contentReference);
+        return $extensionSignature . '_' . strtolower($contentReference);
     }
 
     public function getIconReference(): string

@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Content;
  */
 
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -43,9 +44,16 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
 
     public function trigger(array $row, $table, $field, $extensionKey = null)
     {
-        return $table === $this->tableName
-            && ($field === $this->fieldName || $field === null)
-            && $this->contentTypeDefinitions->determineContentTypeForRecord($row) !== null;
+        if ($table !== $this->tableName || $field !== $this->fieldName || $field === null) {
+            return false;
+        }
+        $contentTypeDefinition = $this->contentTypeDefinitions->determineContentTypeForRecord($row);
+        if (!$contentTypeDefinition) {
+            return false;
+        }
+        $contentTypeName = $contentTypeDefinition->getContentTypeName();
+        $registeredContentTypes = RecordBasedContentTypeDefinition::fetchContentTypes();
+        return $contentTypeName && isset($registeredContentTypes[$contentTypeName]);
     }
 
     public function getControllerExtensionKeyFromRecord(array $row)

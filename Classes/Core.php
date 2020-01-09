@@ -119,7 +119,7 @@ class Core
                 static::registerTemplateAsContentType($extensionKey, $templateRootPath . $file);
                 $contentTypeName = str_replace('_', '', $legacyKey)
                     . '_'
-                    . str_replace('_', '', GeneralUtility::camelCaseToLowerCaseUnderscored(pathinfo($file, PATHINFO_FILENAME)));
+                    . strtolower(pathinfo($file, PATHINFO_FILENAME));
                 $contentTypeManager->registerTypeName($contentTypeName);
             }
         }

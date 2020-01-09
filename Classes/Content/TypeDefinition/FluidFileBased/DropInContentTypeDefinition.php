@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\ContentProvider;
+use FluidTYPO3\Flux\Provider\Provider;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -34,7 +34,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
     protected $extensionIdentity = 'FluidTYPO3.Flux';
     protected $basePath = 'design/';
     protected $relativeFilePath = '';
-    protected $providerClassName = ContentProvider::class;
+    protected $providerClassName = Provider::class;
 
     /**
      * Constructs a Fluid file-based content type definition
@@ -53,7 +53,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         string $extensionIdentity,
         string $basePath,
         string $relativeFilePath,
-        string $providerClassName = ContentProvider::class
+        string $providerClassName = Provider::class
     )
     {
         $this->extensionIdentity = $extensionIdentity;
