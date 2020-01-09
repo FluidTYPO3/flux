@@ -225,14 +225,6 @@ class ContentTypeBuilder
     {
         // use CompatibilityRegistry for correct DefaultData class
         $showItem = CompatibilityRegistry::get(static::DEFAULT_SHOWITEM);
-
-        // Do not add the special IRRE nested content display (when editing parent) if workspaces is loaded.
-        // When workspaces is loaded, the IRRE may contain move placeholders which cause TYPO3 to throw errors
-        // if attempting to save the parent record, because new versions get created for all child records and
-        // this isn't allowed for move placeholders.
-        if (!ExtensionManagementUtility::isLoaded('workspaces')) {
-            $showItem .= ', tx_flux_children';
-        }
         $GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'] = $showItem;
         ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'pi_flexform', $contentType);
     }
