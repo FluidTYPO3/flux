@@ -119,7 +119,7 @@ class PageLayoutDataProvider
             $site = $resolver->getSiteByPageId($pageUid);
             $siteConfiguration = $site->getConfiguration();
             if (!empty($siteConfiguration['flux_page_templates'])) {
-                $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '');
+                $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '', true);
             }
         }
 

@@ -102,7 +102,7 @@ class WizardItems implements NewContentElementWizardHookInterface
             if ($pageUid > 0) {
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                 $site = $siteFinder->getSiteByPageId($pageUid);
-                $enabledContentTypes = GeneralUtility::trimExplode(',', $site->getConfiguration()['flux_content_types'] ?? '');
+                $enabledContentTypes = GeneralUtility::trimExplode(',', $site->getConfiguration()['flux_content_types'] ?? '', true);
                 $fluidContentTypeNames = GeneralUtility::makeInstance(ContentTypeManager::class)->fetchContentTypeNames();
             }
         }
