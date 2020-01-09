@@ -35,6 +35,16 @@ class CustomViewHelper extends UserFuncViewHelper
         );
     }
 
+    protected function callRenderMethod()
+    {
+        $container = static::getContainerFromRenderingContext($this->renderingContext);
+        $component = static::getComponent($this->renderingContext, $this->arguments, $this->buildRenderChildrenClosure());
+        // rendering child nodes with Form's last sheet as active container
+        static::setContainerInRenderingContext($this->renderingContext, $component);
+        $this->renderChildren();
+        static::setContainerInRenderingContext($this->renderingContext, $container);
+    }
+
     /**
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
