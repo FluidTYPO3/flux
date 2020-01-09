@@ -192,33 +192,7 @@ class DynamicFlexForm extends FlexFormTools
             $dataStructArray = ['ROOT' => ['el' => []]];
         }
 
-        #$dataStructArray = $this->patchTceformsWrapper($dataStructArray);
-
         return $dataStructArray;
-    }
-
-    /**
-     * Temporary method during FormEngine transition!
-     *
-     * Performs a duplication in data source, applying a wrapper
-     * around field configurations which require it for correct
-     * rendering in flex form containers.
-     *
-     * @param array $dataStructure
-     * @param null|string $parentIndex
-     * @return array
-     */
-    protected function patchTceformsWrapper(array $dataStructure, $parentIndex = null)
-    {
-        foreach ($dataStructure as $index => $subStructure) {
-            if (is_array($subStructure)) {
-                $dataStructure[$index] = $this->patchTceformsWrapper($subStructure, $index);
-            }
-        }
-        if (isset($dataStructure['config']['type']) && $parentIndex !== 'TCEforms') {
-            $dataStructure = ['TCEforms' => $dataStructure];
-        }
-        return $dataStructure;
     }
 
     /**
