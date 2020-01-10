@@ -84,7 +84,7 @@ class UserFunctions
      * @param object $pObj Not used
      * @return mixed
      */
-    public function renderColumnPositionField(array &$parameters, &$pObj)
+    public function renderColumnPositionField(array &$parameters, &$pObj = null)
     {
         $colPos = $parameters['itemFormElValue'];
         $inputValue = (string) $colPos;
@@ -113,7 +113,7 @@ class UserFunctions
 
             $minimumColumnPosition = 0;
             $maximumColumnPosition = ColumnNumberUtility::MULTIPLIER - 1;
-            $takenColumnPositions = $this->determineTakenColumnPositionsWithinParent($parameters['table'], $rowUid);
+            $takenColumnPositions = $this->determineTakenColumnPositionsWithinParent('tt_content', $rowUid);
 
             return sprintf(
                 '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" data-min-value="%d" data-max-value="%d" data-taken-values="%s" />Column position: <strong class="flux-flex-colPos-text"></strong>',

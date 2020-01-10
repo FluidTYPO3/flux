@@ -51,6 +51,11 @@ if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\TemplateSourceDumperNode::class,
     ];
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1578613431] = [
+        'nodeName' => 'fluxColumnPosition',
+        'priority' => 40,
+        'class' => \FluidTYPO3\Flux\Integration\FormEngine\ColumnPositionNode::class,
+    ];
 
     // Small override for record-localize controller to manipulate the record listing to provide child records in list
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class]['className'] = \FluidTYPO3\Flux\Integration\Overrides\LocalizationController::class;
