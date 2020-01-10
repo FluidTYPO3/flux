@@ -169,7 +169,7 @@ class PageLayoutDataProvider
             $thumbnail = GeneralUtility::getFileAbsFileName($thumbnail);
             $thumbnail = $thumbnail ? MiscellaneousUtility::createIcon($thumbnail) : null;
         }
-        $template = pathinfo($form->getOption(Form::OPTION_TEMPLATEFILE), PATHINFO_FILENAME);
+        $template = $form->getOption(Form::OPTION_TEMPLATEFILE_RELATIVE);
         $label = $form->getLabel();
         $optionValue = $extension . '->' . lcfirst($template);
         $option = [$label, $optionValue, $thumbnail];

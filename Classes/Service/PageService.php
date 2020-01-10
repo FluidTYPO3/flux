@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Service;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -188,11 +189,10 @@ class PageService implements SingletonInterface
      * Gets a list of usable Page Templates from defined page template TypoScript.
      * Returns a list of Form instances indexed by the path ot the template file.
      *
-     * @param string $format
      * @return Form[]
      * @api
      */
-    public function getAvailablePageTemplateFiles($format = 'html')
+    public function getAvailablePageTemplateFiles()
     {
         $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         $typoScript = $this->configurationService->getPageConfiguration();
@@ -205,20 +205,21 @@ class PageService implements SingletonInterface
             $output[$extensionName] = [];
             $templatePaths = new TemplatePaths(ExtensionNamingUtility::getExtensionKey($extensionName));
             $view->getRenderingContext()->setTemplatePaths($templatePaths);
-            foreach ($templatePaths->resolveAvailableTemplateFiles('Page') as $file) {
-                $pathinfo = pathinfo($file);
-                $extension = $pathinfo['extension'];
-                if ('.' === substr($file, 0, 1)) {
-                    continue;
-                } elseif (strtolower($extension) !== strtolower($format)) {
+            $finder = Finder::create()->in($templatePaths->getTemplateRootPaths())->name('*.html');
+            foreach ($finder->files() as $file) {
+                /** @var \SplFileInfo $file */
+                if ('.' === substr($file->getBasename(), 0, 1)) {
                     continue;
                 }
-                $filename = $pathinfo['filename'];
+                if (strpos($file->getPath(), DIRECTORY_SEPARATOR . 'Page') === false) {
+                    continue;
+                }
+                $filename = $file->getRelativePathname();
                 if (isset($output[$extensionName][$filename])) {
                     continue;
                 }
 
-                $view->setTemplatePathAndFilename($file);
+                $view->setTemplatePathAndFilename($file->getPathname());
                 try {
                     $view->renderSection('Configuration');
                     $form = $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, 'form');
@@ -236,7 +237,8 @@ class PageService implements SingletonInterface
                         );
                         continue;
                     }
-                    $form->setOption(Form::OPTION_TEMPLATEFILE, $file);
+                    $form->setOption(Form::OPTION_TEMPLATEFILE, $file->getPathname());
+                    $form->setOption(Form::OPTION_TEMPLATEFILE_RELATIVE, substr($file->getRelativePathname(), 5, -5));
                     $form->setExtensionName($extensionName);
                     $output[$extensionName][$filename] = $form;
                 } catch (InvalidSectionException $error) {
