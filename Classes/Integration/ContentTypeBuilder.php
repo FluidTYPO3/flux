@@ -295,6 +295,10 @@ class ContentTypeBuilder
      */
     protected function registerExtbasePluginForForm($providerExtensionName, $pluginName, Form $form)
     {
+        $contentTypeGroupOption = [$providerExtensionName, '--div--'];
+        if (array_search($contentTypeGroupOption, $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'], true) === false) {
+            $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'][] = $contentTypeGroupOption;
+        }
         ExtensionUtility::registerPlugin(
             $providerExtensionName,
             $pluginName,

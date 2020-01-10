@@ -41,6 +41,7 @@ class ContentTypeBuilderTest extends AbstractTestCase
         $provider->expects($this->once())->method('getForm')->willReturn($form);
 
         $GLOBALS['TCA']['tt_content']['columns']['list_type']['config']['items'] = [];
+        $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] = [];
         $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)->disableOriginalConstructor()->getMock();
 
         $subject->registerContentType(
