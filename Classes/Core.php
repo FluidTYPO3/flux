@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -115,11 +116,13 @@ class Core
             $legacyKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
             $templateRootPath = ExtensionManagementUtility::extPath($legacyKey, 'Resources/Private/Templates/Content/');
             $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
-            foreach (GeneralUtility::getFilesInDir($templateRootPath, 'html') as $file) {
-                static::registerTemplateAsContentType($extensionKey, $templateRootPath . $file);
+            $finder = Finder::create()->in($templateRootPath)->name('*.html');
+            foreach ($finder->files() as $file) {
+                /** @var \SplFileInfo $file */
                 $contentTypeName = str_replace('_', '', $legacyKey)
                     . '_'
-                    . strtolower(pathinfo($file, PATHINFO_FILENAME));
+                    . strtolower(substr(str_replace(DIRECTORY_SEPARATOR, '', $file->getRelativePathname()), 0, -5));
+                static::registerTemplateAsContentType($extensionKey, $file->getPathname(), $contentTypeName);
                 $contentTypeManager->registerTypeName($contentTypeName);
             }
         }
@@ -306,15 +309,17 @@ class Core
      * @param string $providerExtensionName Vendor.ExtensionName format of extension scope of the template file
      * @param string $templateFilename Absolute path to template file containing Flux definition, EXT:... allowed
      * @param string|null $contentTypeName Optional override for the CType value this template will use
-     * @param string $providerClassName Optional custom class implementing ProviderInterface from Flux
+     * @param string|null $providerClassName Optional custom class implementing ProviderInterface from Flux
+     * @param string|null $pluginName Optional plugin name used when registering the Extbase plugin for the template
      */
     public static function registerTemplateAsContentType(
         $providerExtensionName,
         $templateFilename,
         $contentTypeName = null,
-        $providerClassName = Provider::class
+        $providerClassName = Provider::class,
+        $pluginName = null
     ) {
-        if (strpos($templateFilename, '/') !== 0) {
+        if ($templateFilename[0] !== DIRECTORY_SEPARATOR) {
             $templateFilename = GeneralUtility::getFileAbsFileName($templateFilename);
         }
 
@@ -322,7 +327,8 @@ class Core
             $providerExtensionName,
             $templateFilename,
             $providerClassName,
-            $contentTypeName
+            $contentTypeName,
+            $pluginName
         ];
     }
 

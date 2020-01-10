@@ -40,9 +40,10 @@ class ContentTypeBuilder
     /**
      * @param string $providerExtensionName
      * @param string $templateFilename
-     * @param string $providerClassName
-     * @param string $contentType
+     * @param string|null $providerClassName
+     * @param string|null $contentType
      * @param string $defaultControllerExtensionName
+     * @param string|null $controllerActionName
      * @return ProviderInterface
      */
     public function configureContentTypeFromTemplateFile(
@@ -180,7 +181,7 @@ class ContentTypeBuilder
             }
         }
 
-        $this->registerExtbasePluginForForm($providerExtensionName, GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType))), $form);
+        $this->registerExtbasePluginForForm($providerExtensionName, GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2))), $form);
         $this->addPageTsConfig($form, $contentType);
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
