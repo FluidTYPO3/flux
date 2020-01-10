@@ -18,7 +18,7 @@ lib.default_menu.1.NO = 1
 lib.default_content = CONTENT
 lib.default_content {
   table = tt_content
-  where = colPos = 0
+  select.where = colPos = 0
 }
 
 plugin.tx_flux.view {
