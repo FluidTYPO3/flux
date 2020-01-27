@@ -19,6 +19,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Lang\LanguageService;
@@ -366,8 +367,13 @@ class PreviewView extends TemplateView
      */
     protected function getPageLayoutView(ProviderInterface $provider, array $record)
     {
+        $eventDispatcher = null;
+        if (class_exists(EventDispatcher::class)) {
+            $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
+        }
+
         /** @var PageLayoutView $view */
-        $view = GeneralUtility::makeInstance(PageLayoutView::class);
+        $view = GeneralUtility::makeInstance(PageLayoutView::class, $eventDispatcher);
         $view->setProvider($provider);
         $view->setRecord($record);
         return $view;
