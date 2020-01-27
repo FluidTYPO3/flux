@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
@@ -148,7 +149,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $action = $this->getControllerActionReferenceFromRecord($row);
         if (false === empty($action)) {
             $pathsOrExtensionKey = $this->templatePaths ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row));
-            $templatePaths = new TemplatePaths($pathsOrExtensionKey);
+            $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $pathsOrExtensionKey);
             $action = $this->getControllerActionFromRecord($row);
             $action = ucfirst($action);
             $templatePathAndFilename = $templatePaths->resolveTemplateFileForControllerAndActionAndFormat(

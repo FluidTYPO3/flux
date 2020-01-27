@@ -203,7 +203,7 @@ class PageService implements SingletonInterface
                 continue;
             }
             $output[$extensionName] = [];
-            $templatePaths = new TemplatePaths(ExtensionNamingUtility::getExtensionKey($extensionName));
+            $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName));
             $view->getRenderingContext()->setTemplatePaths($templatePaths);
             $finder = Finder::create()->in($templatePaths->getTemplateRootPaths())->name('*.html');
             foreach ($finder->files() as $file) {

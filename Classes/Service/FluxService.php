@@ -294,7 +294,7 @@ class FluxService implements SingletonInterface
      */
     public function getViewConfigurationForExtensionName($extensionName)
     {
-        return (new TemplatePaths(ExtensionNamingUtility::getExtensionKey($extensionName)))->toArray();
+        return GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName))->toArray();
     }
 
     /**
@@ -346,7 +346,7 @@ class FluxService implements SingletonInterface
         if (0 === strpos($reference, 'EXT:')) {
             $extensionKey = substr($reference, 4, strpos($reference, '/') - 4);
         }
-        return (new TemplatePaths(ExtensionNamingUtility::getExtensionKey($extensionKey)))->toArray();
+        return GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionKey))->toArray();
     }
 
     /**
@@ -381,12 +381,12 @@ class FluxService implements SingletonInterface
             ];
         }
         if (null !== $extensionName) {
-            return (new TemplatePaths(ExtensionNamingUtility::getExtensionKey($extensionName)))->toArray();
+            return GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName))->toArray();
         }
         $configurations = [];
         $registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Page');
         foreach ($registeredExtensionKeys as $registeredExtensionKey) {
-            $configurations[$registeredExtensionKey] = (new TemplatePaths(ExtensionNamingUtility::getExtensionKey($registeredExtensionKey)))->toArray();
+            $configurations[$registeredExtensionKey] = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($registeredExtensionKey))->toArray();
         }
         if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlay'] ?? true) {
             $configurations['FluidTYPO3.Flux'] = array_replace(
