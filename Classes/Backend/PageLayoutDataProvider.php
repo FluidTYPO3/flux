@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -116,10 +117,14 @@ class PageLayoutDataProvider
         $pageUid = (int) $parameters['row']['uid'];
         if ($pageUid > 0 && class_exists(SiteFinder::class)) {
             $resolver = GeneralUtility::makeInstance(SiteFinder::class);
-            $site = $resolver->getSiteByPageId($pageUid);
-            $siteConfiguration = $site->getConfiguration();
-            if (!empty($siteConfiguration['flux_page_templates'])) {
-                $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '', true);
+            try {
+                $site = $resolver->getSiteByPageId($pageUid);
+                $siteConfiguration = $site->getConfiguration();
+                if (!empty($siteConfiguration['flux_page_templates'])) {
+                    $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '', true);
+                }
+            } catch (SiteNotFoundException $exception) {
+                $allowedTemplates = [];
             }
         }
 
