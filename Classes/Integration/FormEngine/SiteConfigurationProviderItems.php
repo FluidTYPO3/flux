@@ -31,10 +31,12 @@ class SiteConfigurationProviderItems
                 $templateFilename = $form->getOption(Form::OPTION_TEMPLATEFILE);
                 $label = $form->getLabel();
                 $identity = $extensionName . '->' . lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
-                $tca['items'][] = [
-                    LocalizationUtility::translate($label) ?: $identity,
-                    $identity,
-                ];
+                try {
+                    $label = LocalizationUtility::translate($label) ?: $identity;
+                } catch (\InvalidArgumentException $error) {
+                    $label = $identity;
+                }
+                $tca['items'][] = [$label, $identity];
             }
         }
         return $tca;
