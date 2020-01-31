@@ -103,9 +103,9 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
     {
         $view = $this->getMockBuilder(TemplateView::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->getMock();
-        $objectManager->expects($this->once())->method('get')->with(TemplateView::class)->willReturn($view);
+        $objectManager->method('get')->with(TemplateView::class)->willReturn($view);
         $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['resolveViewObjectName'])->getMockForAbstractClass();
-        $instance->expects($this->once())->method('resolveViewObjectName');
+        $instance->expects($this->once())->method('resolveViewObjectName')->willReturn(TemplateView::class);
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $result = $this->callInaccessibleMethod($instance, 'resolveView');
         $this->assertSame($view, $result);

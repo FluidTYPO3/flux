@@ -122,8 +122,8 @@ class DynamicFlexForm extends FlexFormTools
             $limitedRecordData = array_intersect_key($record, $fields);
             $limitedRecordData[$fieldName] = $record[$fieldName];
         }
-        $providers = $this->configurationService->resolveConfigurationProviders($tableName, $fieldName, $record);
-        if (count($providers) === 0) {
+        $provider = $this->configurationService->resolvePrimaryConfigurationProvider($tableName, $fieldName, $record);
+        if (!$provider) {
             return [];
         }
         static::$recursed = true;
@@ -161,63 +161,38 @@ class DynamicFlexForm extends FlexFormTools
         if ($fromCache) {
             return $fromCache;
         }
-        if (count($record) === 1 && isset($record['uid'])) {
+        if (count($record) === 1 && isset($record['uid']) && is_numeric($record['uid'])) {
+            // The record is a stub, has only "uid" and "uid" is numeric. Reload the full record from DB.
             $record = BackendUtility::getRecord($identifier['tableName'], $record['uid'], '*', '', false);
         }
         $fieldName = $identifier['fieldName'];
         $dataStructArray = $dataStructureArray = $this->parseDataStructureByIdentifier($identifier['originalIdentifier']);;
-        $providers = $this->configurationService->resolveConfigurationProviders(
+        $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
             $identifier['tableName'],
             $fieldName,
             $record,
             null,
             DataStructureProviderInterface::class
         );
-        if (count($providers) === 0) {
+        if (!$provider) {
             // No Providers detected - return empty data structure (reported as invalid DS in backend)
             return [];
         }
-        foreach ($providers as $provider) {
-            $form = $form ?? ($provider instanceof FormProviderInterface ? $provider->getForm($record) : null);
-            $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
-            if ($form && $form->getOption(Form::OPTION_STATIC)) {
-                // This provider has requested static DS caching; stop attempting
-                // to process any other DS, cache and return this DS as final result:
-                $this->configurationService->setInCaches($dataStructArray, true, $identifier);
-                return $dataStructArray;
-            }
+
+        $form = $form ?? ($provider instanceof FormProviderInterface ? $provider->getForm($record) : null);
+        $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
+        if ($form && $form->getOption(Form::OPTION_STATIC)) {
+            // This provider has requested static DS caching; stop attempting
+            // to process any other DS, cache and return this DS as final result:
+            $this->configurationService->setInCaches($dataStructArray, true, $identifier);
+            return $dataStructArray;
         }
+
         if (empty($dataStructArray)) {
             $dataStructArray = ['ROOT' => ['el' => []]];
         }
 
-        $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
-
         return $dataStructArray;
-    }
-
-    /**
-     * Temporary method during FormEngine transition!
-     *
-     * Performs a duplication in data source, applying a wrapper
-     * around field configurations which require it for correct
-     * rendering in flex form containers.
-     *
-     * @param array $dataStructure
-     * @param null|string $parentIndex
-     * @return array
-     */
-    protected function patchTceformsWrapper(array $dataStructure, $parentIndex = null)
-    {
-        foreach ($dataStructure as $index => $subStructure) {
-            if (is_array($subStructure)) {
-                $dataStructure[$index] = $this->patchTceformsWrapper($subStructure, $index);
-            }
-        }
-        if (isset($dataStructure['config']['type']) && $parentIndex !== 'TCEforms') {
-            $dataStructure = ['TCEforms' => $dataStructure];
-        }
-        return $dataStructure;
     }
 
     /**

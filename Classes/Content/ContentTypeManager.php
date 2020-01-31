@@ -9,12 +9,16 @@ namespace FluidTYPO3\Flux\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use Doctrine\DBAL\DBALException;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\FluidFileBasedContentTypeDefinition;
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -31,36 +35,45 @@ class ContentTypeManager implements SingletonInterface
 
     /**
      * @var ContentTypeDefinitionInterface[]
-     *
      */
     protected $types = [];
 
-    public function __construct()
-    {
-        $this->types = $this->loadFromCache();
-    }
+    /**
+     * @var string[]
+     */
+    protected $typeNames = [];
 
     /**
-     * @return ContentTypeDefinitionInterface[][]
+     * @return FluidRenderingContentTypeDefinitionInterface[]
      */
     public function fetchContentTypes(): iterable
     {
         static $types = [];
         if (empty($types)) {
-            foreach (ExtensionManagementUtility::getLoadedExtensionListArray() as $extensionKey) {
-                $expectedContentTypesDefinitionFile = GeneralUtility::getFileAbsFileName('EXT:' . $extensionKey . '/Configuration/Flux/ContentTypes.php');
-                if (file_exists($expectedContentTypesDefinitionFile)) {
-                    /** @var ContentTypeDefinitionInterface[] $types */
-                    $types[$extensionKey] = include $expectedContentTypesDefinitionFile;
-                }
+            try {
+                $types = array_replace(
+                    (array) DropInContentTypeDefinition::fetchContentTypes(),
+                    (array) FluidFileBasedContentTypeDefinition::fetchContentTypes(),
+                    (array) RecordBasedContentTypeDefinition::fetchContentTypes()
+                );
+                $this->typeNames = array_keys($types);
+            } catch (DBALException $error) {
+                // Suppress schema- or connection-related issues
+            } catch (NoSuchCacheException $error) {
+                // Suppress caches not yet initialized errors
             }
         }
         return $types;
     }
 
-    public function fetchContentTypesFromExtension(string $extensionKey): iterable
+    public function fetchContentTypeNames(): iterable
     {
-        return $this->fetchContentTypes()[$extensionKey] ?? [];
+        return $this->typeNames;
+    }
+
+    public function registerTypeName(string $typeName): void
+    {
+        $this->typeNames[] = $typeName;
     }
 
     public function registerTypeDefinition(ContentTypeDefinitionInterface $typeDefinition): void
@@ -87,25 +100,10 @@ class ContentTypeManager implements SingletonInterface
         }
     }
 
-    protected function loadFromCache(): array
-    {
-        try {
-            $cache = $this->getCache();
-            $fromCache = $cache->get(static::CACHE_IDENTIFIER);
-            if (empty($fromCache)) {
-                $this->regenerate();
-                return (array) $cache->get(static::CACHE_IDENTIFIER);
-            }
-            return $fromCache ?: [];
-        } catch (NoSuchCacheException $error) {
-            return [];
-        }
-    }
-
     public function regenerate()
     {
         $cache = $this->getCache();
-        $cache->set(static::CACHE_IDENTIFIER, $this->types);
+        $cache->set(static::CACHE_IDENTIFIER, $this->fetchContentTypes());
     }
 
     protected function getCache(): FrontendInterface
@@ -115,7 +113,12 @@ class ContentTypeManager implements SingletonInterface
             return $cacheManager->getCache('flux');
         } catch (NoSuchCacheException $error) {
             $cacheManager->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
+            try {
+                $cache = $cacheManager->getCache('flux');
+            } catch (NoSuchCacheException $error) {
+                $cache = $cacheManager->getCache('cache_runtime');
+            }
         }
-        return $cacheManager->getCache('flux');
+        return $cache;
     }
 }

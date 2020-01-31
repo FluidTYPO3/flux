@@ -14,6 +14,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Tree preset for sys_category
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class CategoryViewHelper extends TreeViewHelper
 {
@@ -61,10 +64,10 @@ class CategoryViewHelper extends TreeViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Tree
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $tree = parent::getComponent($renderingContext, $arguments);
         if (null === $arguments['matchFields']) {

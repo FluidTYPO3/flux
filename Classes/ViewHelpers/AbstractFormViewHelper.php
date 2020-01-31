@@ -11,6 +11,8 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\FormInterface;
+use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
@@ -27,6 +29,16 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     const SCOPE_VARIABLE_FORM = 'form';
     const SCOPE_VARIABLE_CONTAINER = 'container';
     const SCOPE_VARIABLE_GRIDS = 'grids';
+
+    protected function callRenderMethod()
+    {
+        $container = static::getContainerFromRenderingContext($this->renderingContext);
+        $component = static::getComponent($this->renderingContext, $this->arguments);
+        // rendering child nodes with Form's last sheet as active container
+        static::setContainerInRenderingContext($this->renderingContext, $component);
+        $this->renderChildren();
+        static::setContainerInRenderingContext($this->renderingContext, $container);
+    }
 
     /**
      * @param array $arguments
@@ -73,24 +85,31 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return string
      */
     protected static function getExtensionNameFromRenderingContextOrArguments(
         RenderingContextInterface $renderingContext,
-        array $arguments
+        iterable $arguments
     ) {
-        if (true === isset($arguments[static::SCOPE_VARIABLE_EXTENSIONNAME])) {
-            return $arguments[static::SCOPE_VARIABLE_EXTENSIONNAME];
+        if ($extensionName = $arguments[static::SCOPE_VARIABLE_EXTENSIONNAME] ?? false) {
+            return $extensionName;
         }
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
-        if (true === $viewHelperVariableContainer->exists(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME)) {
-            return $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
+        if ($extensionName = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME)) {
+            return $extensionName;
         }
         $controllerContext = $renderingContext->getControllerContext();
         if (null !== $controllerContext) {
-            $controllerExtensionName = $controllerContext->getRequest()->getControllerExtensionName();
-            $controllerVendorName = $controllerContext->getRequest()->getControllerVendorName();
+            /** @var Request $request */
+            $request = $controllerContext->getRequest();
+            $controllerExtensionName = $request->getControllerExtensionName();
+            if (is_callable([$request, 'getControllerVendorName'])) {
+                $controllerVendorName = $request->getControllerVendorName();
+            } else {
+                $controllerClassName = $request->getControllerObjectName();
+                $controllerVendorName = ExtensionUtility::resolveVendorFromExtensionAndControllerClassName($controllerExtensionName, $controllerClassName);
+            }
             return (!empty($controllerVendorName) ? $controllerVendorName . '.' : '') . $controllerExtensionName;
         }
         return 'FluidTYPO3.Flux';

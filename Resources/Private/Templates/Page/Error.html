@@ -1,0 +1,13 @@
+{namespace flux=FluidTYPO3\Flux\ViewHelpers}
+<f:section name="Configuration">
+	<flux:form id="error" enabled="FALSE" />
+</f:section>
+<f:render partial="Error/Style" />
+<div id="wrap">
+	<f:render partial="Error/Header" arguments="{error: error, class: class}" />
+	<f:if condition="{version.isLongTermSupport} < 1">
+		<f:render partial="Error/Extended" arguments="{error: error}" />
+	</f:if>
+	<f:render partial="Error/Standard" />
+	<f:render partial="Error/Backtrace" arguments="{backtrace: backtrace}" />
+</div>

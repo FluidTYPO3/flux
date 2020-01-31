@@ -13,6 +13,8 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Inline-style FlexForm field ViewHelper
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHelper
 {
@@ -118,10 +120,10 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return InlineRelationFieldInterface
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $component = static::getPreparedComponent('Inline', $renderingContext, $arguments);
         return $component;
@@ -130,10 +132,10 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
     /**
      * @param string $type
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return InlineRelationFieldInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
+    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var InlineRelationFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);

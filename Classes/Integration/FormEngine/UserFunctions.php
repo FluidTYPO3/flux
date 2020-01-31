@@ -8,8 +8,7 @@ namespace FluidTYPO3\Flux\Integration\FormEngine;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -33,6 +32,31 @@ class UserFunctions
         $html = '<label style="opacity: 0.65; padding-left: 2em"><input type="checkbox" name="' . $fieldName .
             '_clear"  value="1" /> ' . LocalizationUtility::translate('flux.clearValue', 'Flux') . '</label>';
         return $html;
+    }
+
+    /**
+     * User function for TCA fields to hide a Flux-enabled "flex" type field if
+     * there are no fields in the DS.
+     *
+     * @param array $parameters
+     * @param $pObj
+     * @return bool
+     */
+    public function fluxFormFieldDisplayCondition(array $parameters, &$pObj)
+    {
+        list ($table, $field) = $parameters['conditionParameters'];
+        $provider = GeneralUtility::makeInstance(ObjectManager::class)
+            ->get(ProviderResolver::class)
+            ->resolvePrimaryConfigurationProvider($table, $field, $parameters['record']);
+
+        if (!$provider) {
+            return true;
+        }
+        $form = $provider->getForm($parameters['record']);
+        if ($form) {
+            return count($form->getFields()) > 0;
+        }
+        return false;
     }
 
     /**
@@ -60,7 +84,7 @@ class UserFunctions
      * @param object $pObj Not used
      * @return mixed
      */
-    public function renderColumnPositionField(array &$parameters, &$pObj)
+    public function renderColumnPositionField(array &$parameters, &$pObj = null)
     {
         $colPos = $parameters['itemFormElValue'];
         $inputValue = (string) $colPos;
@@ -89,7 +113,7 @@ class UserFunctions
 
             $minimumColumnPosition = 0;
             $maximumColumnPosition = ColumnNumberUtility::MULTIPLIER - 1;
-            $takenColumnPositions = $this->determineTakenColumnPositionsWithinParent($parameters['table'], $rowUid);
+            $takenColumnPositions = $this->determineTakenColumnPositionsWithinParent('tt_content', $rowUid);
 
             return sprintf(
                 '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" data-min-value="%d" data-max-value="%d" data-taken-values="%s" />Column position: <strong class="flux-flex-colPos-text"></strong>',

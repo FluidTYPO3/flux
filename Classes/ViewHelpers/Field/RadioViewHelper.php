@@ -14,18 +14,18 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 /**
  * Radio FlexForm field ViewHelper
  *
- * @package Flux
- * @subpackage ViewHelpers/Field
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class RadioViewHelper extends SelectViewHelper
 {
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Radio
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Radio $component */
         $component = static::getPreparedComponent('Radio', $renderingContext, $arguments);

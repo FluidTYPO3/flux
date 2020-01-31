@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3Fluid\Fluid\Core\Parser\Source;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
@@ -64,6 +65,6 @@ class InlineViewHelper extends AbstractViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
-        return $renderingContext->getTemplateParser()->parse($renderChildrenClosure())->render($renderingContext);
+        return $renderingContext->getTemplateParser()->parse(new Source($renderChildrenClosure()))->evaluate($renderingContext);
     }
 }

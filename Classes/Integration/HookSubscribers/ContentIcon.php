@@ -77,7 +77,7 @@ class ContentIcon
     {
         $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
         $this->injectFluxService($this->objectManager->get(FluxService::class));
-        $this->cache = $this->objectManager->get(CacheManager::class, $this->objectManager)->getCache('flux');
+        $this->cache = $this->objectManager->get(CacheManager::class)->getCache('flux');
     }
 
     /**

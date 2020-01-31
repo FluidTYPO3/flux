@@ -234,8 +234,9 @@ abstract class AbstractFluxController extends ActionController
     {
         $record = $this->getRecord();
         $extensionKey = ExtensionNamingUtility::getExtensionKey($this->provider->getControllerExtensionKeyFromRecord($record));
+        $extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 
-        $this->controllerContext->getRequest()->setControllerExtensionName($extensionKey);
+        $this->controllerContext->getRequest()->setControllerExtensionName($extensionName);
         $view->setControllerContext($this->controllerContext);
 
         /** @var RenderingContextInterface $renderingContext */
@@ -269,7 +270,8 @@ abstract class AbstractFluxController extends ActionController
      */
     protected function resolveView()
     {
-        return $this->objectManager->get($this->resolveViewObjectName() ?: $this->defaultViewObjectName);
+        $viewClassName = (!method_exists($this, 'resolveViewObjectName') ? $this->defaultViewObjectName : $this->resolveViewObjectName()) ?: $this->defaultViewObjectName;
+        return $this->objectManager->get($viewClassName);
     }
 
     /**
@@ -333,7 +335,23 @@ abstract class AbstractFluxController extends ActionController
         if (!$shouldRelay) {
             if ($this->provider instanceof FluidProviderInterface) {
                 $templatePathAndFilename = $this->provider->getTemplatePathAndFilename($this->getRecord());
-                $this->view->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
+                $vendorLessExtensionName = ExtensionNamingUtility::getExtensionName($extensionName);
+                $paths = $this->view->getRenderingContext()->getTemplatePaths();
+
+                $this->request->setControllerExtensionName($vendorLessExtensionName);
+                $this->configurationManager->setConfiguration(
+                    array_merge(
+                        $this->configurationManager->getConfiguration(
+                            ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT,
+                            $vendorLessExtensionName
+                        ),
+                        [
+                            'extensionName' => $vendorLessExtensionName,
+                        ]
+                    )
+                );
+                $paths->fillDefaultsByPackageName(GeneralUtility::camelCaseToLowerCaseUnderscored($vendorLessExtensionName));
+                $paths->setTemplatePathAndFilename($templatePathAndFilename);
             }
             $content = $this->view->render();
         } else {

@@ -1,0 +1,29 @@
+<f:layout name="Default" />
+
+<f:section name="Configuration">
+	<flux:form id="standard" label="Auto-created page template">
+	</flux:form>
+	<flux:grid>
+		<flux:grid.row>
+			<flux:grid.column colPos="0" name="main" />
+		</flux:grid.row>
+	</flux:grid>
+</f:section>
+
+<f:section name="HeaderAssets">
+	<style type="text/css">
+		body {
+			background-color: #F6F6F6;
+			margin: 4em;
+		}
+	</style>
+</f:section>
+
+<f:section name="Preview">
+	Standard Flux page template
+</f:section>
+
+<f:section name="Main">
+	<f:cObject typoscriptObjectPath="lib.default_menu" />
+	<f:cObject typoscriptObjectPath="lib.default_content" />
+</f:section>

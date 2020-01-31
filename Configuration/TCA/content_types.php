@@ -154,14 +154,16 @@ return [
             'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types.validation',
             'config' => [
                 'type' => 'user',
-                'userFunc' => 'FluidTYPO3\\Flux\\Content\\ContentTypeValidator->validateContentTypeRecord'
+                'renderType' => 'fluxContentTypeValidator',
+                'userFunc' => \FluidTYPO3\Flux\Content\ContentTypeValidator::class . '->validateContentTypeRecord'
             ],
         ],
         'template_dump' => [
             'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types.template_dump',
             'config' => [
                 'type' => 'user',
-                'userFunc' => 'FluidTYPO3\\Flux\\Content\\ContentTypeFluxTemplateDumper->dumpFluxTemplate'
+                'renderType' => 'fluxTemplateSourceDumper',
+                'userFunc' => \FluidTYPO3\Flux\Content\ContentTypeFluxTemplateDumper::class . '->dumpFluxTemplate'
             ],
         ],
     ],

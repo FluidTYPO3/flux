@@ -1,7 +1,7 @@
 <?php
 $EM_CONF[$_EXTKEY] = array (
-  'title' => 'Flux: Fluid FlexForms',
-  'description' => 'Backend form and frontend content rendering assistance API with focus on productivity.',
+  'title' => 'Flux: Fluid Integration',
+  'description' => 'Drop-in page and content templates with nested content feature. Provides multiple condensed integration APIs to use advanced TYPO3 features with little effort.',
   'category' => 'misc',
   'shy' => 0,
   'version' => '9.2.0',
@@ -25,8 +25,8 @@ $EM_CONF[$_EXTKEY] = array (
   array (
     'depends' => 
     array (
-      'typo3' => '8.7.0-9.5.99',
-      'php' => '7.1.0-7.3.99',
+      'typo3' => '8.7.0-10.2.99',
+      'php' => '7.1.0-7.4.99',
     ),
     'conflicts' => 
     array (

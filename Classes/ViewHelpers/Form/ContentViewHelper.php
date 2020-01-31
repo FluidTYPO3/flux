@@ -39,11 +39,11 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *         <!-- Creates a full, multi-column/row Grid -->
  *         <flux:grid>
  *             <flux:grid.row>
- *                 <flux:grid.column name="mycontentA" />
- *                 <flux:grid.column name="mycontentB" />
+ *                 <flux:grid.column name="mycontentA" colPos="0" />
+ *                 <flux:grid.column name="mycontentB" colPos="1" />
  *             </flux:grid.row>
  *             <flux:grid.row>
- *                 <flux:grid.column name="mycontentC" colspan="2" />
+ *                 <flux:grid.column name="mycontentC" colPos="2" colspan="2" />
  *             </flux:grid.row>
  *         </flux:grid>
  *         <!-- No use of flux:content is possible after this point -->
@@ -76,14 +76,13 @@ class ContentViewHelper extends AbstractFormViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Column
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         // get the current Grid and check for existence of one row and one column, if missing then create them:
         $grid = static::getGridFromRenderingContext($renderingContext, 'grid');
-        ;
         $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
         $row = $grid->createContainer('Row', 'row');
         $column = $row->createContainer('Column', 'column');

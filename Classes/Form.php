@@ -37,6 +37,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     const OPTION_TCA_DELETE = 'delete';
     const OPTION_TCA_FEGROUP = 'frontendUserGroup';
     const OPTION_TEMPLATEFILE = 'templateFile';
+    const OPTION_TEMPLATEFILE_RELATIVE = 'templateFileRelative';
     const OPTION_RECORD = 'record';
     const OPTION_RECORD_FIELD = 'recordField';
     const OPTION_RECORD_TABLE = 'recordTable';
@@ -69,13 +70,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      * @var string
      */
     protected $extensionName;
-
-    /**
-     * If TRUE, removes sheet wrappers if there is only a single sheet.
-     *
-     * @var boolean
-     */
-    protected $compact = false;
 
     /**
      * @var string
@@ -161,13 +155,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             ],
         ];
         $sheets = $this->getSheets(false);
-        $compactExtensionToggleOn = 0 < $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['compact'];
-        $compactConfigurationToggleOn = 0 < $this->getCompact();
-        if (($compactExtensionToggleOn || $compactConfigurationToggleOn) && 1 === count($sheets)) {
-            $dataStructArray = $this->last()->build();
-            $dataStructArray['meta'] = ['langDisable' => $disableLocalisation];
-            unset($dataStructArray['ROOT']['TCEforms']);
-        } elseif (0 < count($sheets)) {
+        if (0 < count($sheets)) {
             $dataStructArray['sheets'] = $this->buildChildren($sheets);
         } else {
             $dataStructArray['ROOT'] = [
@@ -206,24 +194,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             $fields = array_merge($fields, $fieldsInSheet);
         }
         return $fields;
-    }
-
-    /**
-     * @param boolean $compact
-     * @return Form\FormInterface
-     */
-    public function setCompact($compact)
-    {
-        $this->compact = $compact;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getCompact()
-    {
-        return $this->compact;
     }
 
     /**

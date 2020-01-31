@@ -18,5 +18,5 @@ interface FluidRenderingContentTypeDefinitionInterface extends ContentTypeDefini
     public function isUsingTemplateFile(): bool;
     public function isUsingGeneratedTemplateSource(): bool;
     public function getTemplatePathAndFilename(): string;
-    public function getTemplateSource(): string;
+    public function getProviderClassName(): ?string;
 }

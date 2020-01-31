@@ -14,34 +14,16 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * Grid container ViewHelper.
  *
  * Use `<flux:grid.row>` with nested `<flux:grid.column>` tags
- * to define a tablular layout.
+ * to define a tabular layout.
  *
  * The grid is then rendered automatically in the preview section
  * of the content element, or as page columns if used in page templates.
  *
  * For frontend rendering, use `flux:content.render`.
  *
- * ### Content elements
+ * ### Define Page and Content elements
  *
- * Use the `name` and `area` attributes.
- *
- * #### Grid for a two-column container element
- *
- *     <flux:grid>
- *         <flux:grid.row>
- *             <flux:grid.column name="left" />
- *             <flux:grid.column name="right" />
- *         </flux:grid.row>
- *     </flux:grid>
- *
- * #### Container element frontend rendering
- *
- *     <flux:content.render area="left" />
- *     <flux:content.render area="right" />
- *
- * ### Pages
- *
- * Use the `colPos` and `column` attributes.
+ * Name is used to identify columns and fetch e.g. translations from XLF files.
  *
  *     <flux:grid>
  *         <flux:grid.row>
@@ -50,7 +32,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *         </flux:grid.row>
  *     </flux:grid>
  *
- * #### Page rendering
+ * #### Rendering
  *
  *     <v:content.render column="0" />
  *     <v:content.render column="1" />
@@ -84,6 +66,18 @@ class GridViewHelper extends AbstractFormViewHelper
             'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
             'is otherwise automatically detected from rendering context.'
         );
+    }
+
+    protected function callRenderMethod()
+    {
+        $container = static::getContainerFromRenderingContext($this->renderingContext);
+        $grid = static::getGridFromRenderingContext($this->renderingContext, $this->arguments['name']);
+        $grid->setLabel($this->arguments['label']);
+        $grid->setVariables($this->arguments['variables']);
+        $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments));
+        static::setContainerInRenderingContext($this->renderingContext, $grid);
+        $this->renderChildren();
+        static::setContainerInRenderingContext($this->renderingContext, $container);
     }
 
     /**
