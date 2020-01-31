@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -100,13 +101,17 @@ class WizardItems implements NewContentElementWizardHookInterface
             $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
             $pageUid = (int) (key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true));
             if ($pageUid > 0) {
-                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-                $site = $siteFinder->getSiteByPageId($pageUid);
-                $enabledContentTypes = GeneralUtility::trimExplode(',', $site->getConfiguration()['flux_content_types'] ?? '', true);
-                $fluidContentTypeNames = GeneralUtility::makeInstance(ContentTypeManager::class)->fetchContentTypeNames();
+                try {
+                    $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+                    $site = $siteFinder->getSiteByPageId($pageUid);
+                    $enabledContentTypes = GeneralUtility::trimExplode(',', $site->getConfiguration()['flux_content_types'] ?? '', true);
+                } catch (SiteNotFoundException $exception) {
+                    $enabledContentTypes = [];
+                }
             }
         }
 
+        $fluidContentTypeNames = GeneralUtility::makeInstance(ContentTypeManager::class)->fetchContentTypeNames();
         $items = $this->filterPermittedFluidContentTypesByInsertionPosition($items, $parentObject, $pageUid);
         if (!empty($enabledContentTypes)) {
             foreach ($items as $name => $item) {
