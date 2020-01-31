@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased;
  */
 
 use FluidTYPO3\Flux\Provider\Provider;
+use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -78,7 +79,11 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         static::initializeDropInFileSystemStructure($basePath);
         $finder = GeneralUtility::makeInstance(Finder::class);
         /** @var \SplFileInfo[] $files */
-        $files = $finder->in($contentTypesPath)->name(static::TEMPLATES_PATTERN);
+        try {
+            $files = $finder->in($contentTypesPath)->name(static::TEMPLATES_PATTERN);
+        } catch (DirectoryNotFoundException $exception) {
+            return [];
+        }
         $types = [];
         $basePathLength = strlen($contentTypesPath);
         foreach ($files as $file) {
