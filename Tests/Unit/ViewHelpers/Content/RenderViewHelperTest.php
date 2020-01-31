@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
@@ -59,6 +60,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
         $provider = $this->objectManager->get(Provider::class);
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);
@@ -82,6 +84,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
         $provider = $this->objectManager->get(Provider::class);
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsString($output);
@@ -108,6 +111,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
         $provider = $this->objectManager->get(Provider::class);
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);

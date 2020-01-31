@@ -1,0 +1,53 @@
+<h3>Why am I seeing this error page and not a TYPO3 error?</h3>
+<p>
+	This error page was specially constructed to be far more informative
+	than the default TYPO3 errors - in order to specifically debug problems
+	with Fluid page templates. Since the error message itself is based
+	on an Exception, this page can provide additional troubleshooting info
+	based on your specific TYPO3 site's settings and templates.
+</p>
+<h3>Can I disable this error page</h3>
+<p>
+	Yes, of course. There are two ways to do that:
+</p>
+<ol>
+	<li>
+		You <b>can override this template</b> with one containing a custom error page by setting
+		<code>plugin.tx_fluidpages.view.templateRootPath</code> to another path also containing the
+		Error.html file. If your custom error page uses Partials and/or Layouts, remember to add those
+		paths as well - also under the <code>plugin.tx_fluidpages.view</code> location.
+	</li>
+	<li>
+		You can set <code>plugin.tx_fluidpages.settings.displayErrors = 1</code> but beware; this has
+		the effect that the Exception is thrown as it normally would be - leaving it up to the TYPO3
+		error handler (and its settings!) to take care of reporting, which means among other things the
+		reporting is affected by the Install Tool's <code>displayErrors</code> setting.
+	</li>
+</ol>
+<h3>Why is this error special?</h3>
+<p>
+	The error occurred while <em>initialising</em> the View of a Flux enabled
+	controller, most likely the Fluidpages controller - normally such errors
+	will be caused by one of the following:
+</p>
+<ol>
+	<li>
+		No configuration exists, syntax errors in configuration - or configuration is inaccessible.
+		Check that you have included at least one page template and that you have selected it for
+		the top-level page (as well as defined which template subpages should use).
+	</li>
+	<li>
+		The configuration is incomplete - for example missing one or more path definitions when
+		the templates themselves require them to be present (i.e. rendering a Partial template
+		will require the <code>partialRootPath</code> setting to be present).
+	</li>
+	<li>
+		The template itself contains errors - if this is the case, the Exception message above
+		should help you locate the exact cause of the problem.
+	</li>
+</ol>
+<p>
+	NB: This page template is <b>EXT:fluidpages/Resources/Private/Templates/Page/Error.html</b> and
+	it is being used because no custom error page could be detected and used - which usually
+	points to configuration missing completely.
+</p>

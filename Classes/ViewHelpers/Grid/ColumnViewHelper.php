@@ -17,8 +17,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * Used inside `<flux:grid.row>` tags.
  *
- * Use the `name` attribute for grids in content elements,
- * and the `colPos` attribute for grids in pages templates.
+ * Use the `colPos` attribute for grids in page and content elements.
  *
  * See `<flux:grid>` for an example.
  *
@@ -27,7 +26,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * It is possible to limit the elements allowed in the column by setting
  * the `allowedContentTypes` variable:
  *
- *     <flux:grid.column name="elements">
+ *     <flux:grid.column name="elements" colPos="0">
  *         <flux:form.variable name="allowedContentTypes" value="text,shortcut"/>
  *     </flux:grid.column>
  *
@@ -38,7 +37,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * It is also possible to limit the allowed fluid content elements:
  *
- *     <flux:grid.column name="elements">
+ *     <flux:grid.column name="elements" colPos="0">
  *         <flux:form.variable name="allowedContentTypes" value="fluidcontent_content"/>
  *         <flux:form.variable name="Fluidcontent"
  *             value="{allowedContentTypes: 'Vendor.Extension:ContentElement.html'}"/>
@@ -56,8 +55,7 @@ class ColumnViewHelper extends AbstractFormViewHelper
         $this->registerArgument(
             'name',
             'string',
-            'Identifies your column in generated configuration; also used as target ID when column is inside a ' .
-            'container content element. Page-level content columns use "colPos" instead.',
+            'Identifies your column and is used to fetch translations from XLF for example.',
             false,
             'column'
         );
@@ -85,10 +83,10 @@ class ColumnViewHelper extends AbstractFormViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Column
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $column = static::getContainerFromRenderingContext($renderingContext)->createContainer(Column::class, $arguments['name'], $arguments['label']);
         $column->setExtensionName(

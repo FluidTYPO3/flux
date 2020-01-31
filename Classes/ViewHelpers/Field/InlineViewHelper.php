@@ -10,6 +10,9 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /**
  * Inline-style FlexForm field ViewHelper
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class InlineViewHelper extends AbstractInlineFieldViewHelper
 {

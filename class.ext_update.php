@@ -125,6 +125,7 @@ class ext_update
                                 );
                             }
                         }
+                        unset($grid);
                     } catch (\TYPO3Fluid\Fluid\Core\Parser\Exception $exception) {
                         if (strpos($exception->getMessage(), 'Required argument "colPos" was not supplied.') !== false) {
                             $templateFilesRequiringMigration[$templatePathAndFilename] = $exception->getMessage();
@@ -148,6 +149,7 @@ class ext_update
                         'tx_flux_parent' => $row['tx_flux_parent']
                     ];
                 }
+                unset($row);
             }
 
             foreach ($childContentRequiringMigration as $childContent) {

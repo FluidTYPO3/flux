@@ -16,6 +16,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * AbstractFormField
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface
 {

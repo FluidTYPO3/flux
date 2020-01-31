@@ -13,6 +13,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Checkbox FlexForm field ViewHelper
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class CheckboxViewHelper extends AbstractFieldViewHelper
 {

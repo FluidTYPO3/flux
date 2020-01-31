@@ -13,6 +13,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Flexform Userfunc field ViewHelper
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class UserFuncViewHelper extends AbstractFieldViewHelper
 {
@@ -39,13 +42,13 @@ class UserFuncViewHelper extends AbstractFieldViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @param \Closure $renderChildrenClosure
      * @return UserFunction
      */
     public static function getComponent(
         RenderingContextInterface $renderingContext,
-        array $arguments,
+        iterable $arguments,
         \Closure $renderChildrenClosure
     ) {
         /** @var UserFunction $user */

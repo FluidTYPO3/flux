@@ -16,16 +16,19 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * Makes a read-only component which supports a default value
  * but which cannot be edited.
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class NoneViewHelper extends AbstractFieldViewHelper
 {
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return None
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         return static::getPreparedComponent('None', $renderingContext, $arguments);
     }

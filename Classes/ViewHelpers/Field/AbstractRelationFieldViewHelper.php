@@ -13,6 +13,8 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldViewHelper
 {
@@ -160,7 +162,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
      * @param array $arguments
      * @return RelationFieldInterface
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         return static::getPreparedComponent('Relation', $renderingContext, $arguments);
     }
@@ -171,7 +173,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
      * @param array $arguments
      * @return RelationFieldInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
+    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var RelationFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);

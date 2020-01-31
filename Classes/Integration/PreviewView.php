@@ -19,6 +19,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Lang\LanguageService;
@@ -246,8 +247,13 @@ class PreviewView extends TemplateView
                 $grid->buildExtendedBackendLayoutArray($row['uid'])['__items']
             );
 
+            $pageUid = $row['pid'];
+            if ($GLOBALS['BE_USER']->workspace > 0) {
+                $placeholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid'], 'pid', $GLOBALS['BE_USER']->workspace);
+                $pageUid = $placeholder['pid'] ?? $pageUid;
+            }
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
-            $pageLayoutView->start($row['pid'], 'tt_content', 0);
+            $pageLayoutView->start($pageUid, 'tt_content', 0);
             $pageLayoutView->generateList();
 
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;
@@ -310,15 +316,17 @@ class PreviewView extends TemplateView
             $moduleData['tt_content_showHidden'] = 1;
         }
 
-        $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0 ? $row['l18n_parent'] : $row['uid'];
+        $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0 ? $row['l18n_parent'] : ($row['t3ver_oid'] ?: $row['uid']);
 
         $dblist = $this->getPageLayoutView($provider, $row);
         $layoutConfiguration = $provider->getGrid($row)->buildExtendedBackendLayoutArray($parentRecordUid);
 
-        array_push(
-            $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
-            ...$layoutConfiguration['__items']
-        );
+        if (!empty($layoutConfiguration['__items'])) {
+            array_push(
+                $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
+                ...$layoutConfiguration['__items']
+            );
+        }
 
         $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList']);
 
@@ -336,7 +344,7 @@ class PreviewView extends TemplateView
         $dblist->tt_contentConfig['showInfo'] = 1;
         $dblist->tt_contentConfig['single'] = 0;
         $dblist->nextThree = 1;
-        $dblist->tt_contentConfig['sys_language_uid'] = $row['sys_language_uid'];
+        $dblist->tt_contentConfig['sys_language_uid'] = (int) $moduleData['language'];
         $dblist->tt_contentConfig['showHidden'] = $showHiddenRecords;
         $dblist->tt_contentConfig['activeCols'] = $columnsAsCSV;
         $dblist->tt_contentConfig['cols'] = $columnsAsCSV;
@@ -359,8 +367,13 @@ class PreviewView extends TemplateView
      */
     protected function getPageLayoutView(ProviderInterface $provider, array $record)
     {
+        $eventDispatcher = null;
+        if (class_exists(EventDispatcher::class)) {
+            $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
+        }
+
         /** @var PageLayoutView $view */
-        $view = GeneralUtility::makeInstance(PageLayoutView::class);
+        $view = GeneralUtility::makeInstance(PageLayoutView::class, $eventDispatcher);
         $view->setProvider($provider);
         $view->setRecord($record);
         return $view;

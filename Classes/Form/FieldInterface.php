@@ -10,10 +10,11 @@ namespace FluidTYPO3\Flux\Form;
 
 /**
  * FieldInterface
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 interface FieldInterface extends FormInterface
 {
-
     /**
      * @return array
      */

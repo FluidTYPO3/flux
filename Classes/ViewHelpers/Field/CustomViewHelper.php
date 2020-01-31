@@ -13,6 +13,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Custom FlexForm field ViewHelper
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class CustomViewHelper extends UserFuncViewHelper
 {
@@ -35,15 +38,25 @@ class CustomViewHelper extends UserFuncViewHelper
         );
     }
 
+    protected function callRenderMethod()
+    {
+        $container = static::getContainerFromRenderingContext($this->renderingContext);
+        $component = static::getComponent($this->renderingContext, $this->arguments, $this->buildRenderChildrenClosure());
+        // rendering child nodes with Form's last sheet as active container
+        static::setContainerInRenderingContext($this->renderingContext, $component);
+        $this->renderChildren();
+        static::setContainerInRenderingContext($this->renderingContext, $container);
+    }
+
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @param \Closure $renderChildrenClosure
      * @return Custom
      */
     public static function getComponent(
         RenderingContextInterface $renderingContext,
-        array $arguments,
+        iterable $arguments,
         \Closure $renderChildrenClosure
     ) {
         /** @var Custom $component */
@@ -61,7 +74,7 @@ class CustomViewHelper extends UserFuncViewHelper
      */
     protected static function buildClosure(
         RenderingContextInterface $renderingContext,
-        array $arguments,
+        iterable $arguments,
         \Closure $renderChildrenClosure
     ) {
         $container = $renderingContext->getVariableProvider();

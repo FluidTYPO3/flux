@@ -37,7 +37,7 @@ class ContentGridForm extends Form
         $autoColumns->setSize(3);
         $section = $this->createContainer(Form\Container\Section::class, 'columns', 'Manual content columns');
         $columnField = $section->createContainer(Form\Container\SectionObject::class, 'column');
-        $columnField->createField(Form\Field\ColumnPosition::class, 'colPos', 'Column position value');
+        $columnField->createField(Form\Field\ColumnPositionNode::class, 'colPos', 'Column position value');
     }
 
 }
