@@ -6,6 +6,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -24,8 +25,12 @@ class ProviderProcessor implements FormDataProviderInterface
             $pageUid = $result['parentPageRow']['uid'];
             if ($pageUid > 0) {
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-                $site = $siteFinder->getSiteByPageId($pageUid);
-                $enabledContentTypes = GeneralUtility::trimExplode(',', $site->getConfiguration()['flux_content_types'] ?? '', true);
+                try {
+                    $site = $siteFinder->getSiteByPageId($pageUid);
+                    $enabledContentTypes = GeneralUtility::trimExplode(',', $site->getConfiguration()['flux_content_types'] ?? '', true);
+                } catch (SiteNotFoundException $exception) {
+                    $enabledContentTypes = [];
+                }
                 if (!empty($enabledContentTypes)) {
                     $fluidContentTypeNames = (array) GeneralUtility::makeInstance(ContentTypeManager::class)->fetchContentTypeNames();
                     foreach ($result['processedTca']['columns']['CType']['config']['items'] as $index => $optionArray) {
