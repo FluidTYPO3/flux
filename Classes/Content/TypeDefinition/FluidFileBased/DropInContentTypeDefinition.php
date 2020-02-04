@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased;
  */
 
 use FluidTYPO3\Flux\Provider\Provider;
+use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -73,12 +74,17 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         // 1) auto-create if missing, the required file structure and dummy files
         // 2) iterate all content types found in the file structure
         $basePath = trim($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlayDirectory'] ?? static::DESIGN_DIRECTORY, '/.') . '/';
-        $contentTypesPath = GeneralUtility::getFileAbsFileName($basePath . static::TEMPLATES_DIRECTORY . static::CONTENT_DIRECTORY);
-
+        $basePath = GeneralUtility::getFileAbsFileName($basePath);
         static::initializeDropInFileSystemStructure($basePath);
+
+        $contentTypesPath = GeneralUtility::getFileAbsFileName($basePath . static::TEMPLATES_DIRECTORY . static::CONTENT_DIRECTORY);
         $finder = GeneralUtility::makeInstance(Finder::class);
         /** @var \SplFileInfo[] $files */
-        $files = $finder->in($contentTypesPath)->name(static::TEMPLATES_PATTERN);
+        try {
+            $files = $finder->in($contentTypesPath)->name(static::TEMPLATES_PATTERN);
+        } catch (DirectoryNotFoundException $exception) {
+            return [];
+        }
         $types = [];
         $basePathLength = strlen($contentTypesPath);
         foreach ($files as $file) {
