@@ -254,11 +254,15 @@ class PreviewView extends TemplateView
             }
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
             $pageLayoutView->start($pageUid, 'tt_content', 0);
-            $pageLayoutView->generateList();
+            if (method_exists($pageLayoutView, 'generateList')) {
+                $pageLayoutView->generateList();
+                $content .= $pageLayoutView->HTMLcode;
+            } else {
+                $content .= $pageLayoutView->getTable_tt_content($pageUid);
+            }
 
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;
 
-            $content .= $pageLayoutView->HTMLcode;
         }
         return $content;
     }

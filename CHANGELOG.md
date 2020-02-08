@@ -1,7 +1,8 @@
-Latest release: 9.3.1 (2020/02/04)
+Latest release: 9.3.2 (2020/02/08)
 
 All previous release change logs:
 
+* [9.3.2 (2020/02/08)](Documentation/Changelog/9.3.2.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.3.1...9.3.2)
 * [9.3.1 (2020/02/04)](Documentation/Changelog/9.3.1.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.3.0...9.3.1)
 * [9.3.0 (2020/01/31)](Documentation/Changelog/9.3.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.2.0...9.3.0)
 * [9.2.0 (2019/04/01)](Documentation/Changelog/9.2.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.1.0...9.2.0)
