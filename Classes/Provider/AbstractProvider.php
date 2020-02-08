@@ -383,8 +383,11 @@ class AbstractProvider implements ProviderInterface
         }
 
         $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class) ?? [];
-        if (isset($variables['form']) && $variables['form']->getOption(Form::OPTION_STATIC)) {
-            $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
+        if (isset($variables['form'])) {
+            $variables['form']->setOption(Form::OPTION_TEMPLATEFILE, $this->getTemplatePathAndFilename($row));
+            if ($variables['form']->getOption(Form::OPTION_STATIC)) {
+                $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
+            }
         }
 
         $returnValue = $name ? $variables[$name] : $variables;
