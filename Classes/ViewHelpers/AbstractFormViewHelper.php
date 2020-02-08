@@ -13,17 +13,15 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\FormInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
  * Base class for all FlexForm related ViewHelpers
  */
 abstract class AbstractFormViewHelper extends AbstractViewHelper
 {
-    use CompileWithRenderStatic;
-
     const SCOPE = FormViewHelper::class;
     const SCOPE_VARIABLE_EXTENSIONNAME = 'extensionName';
     const SCOPE_VARIABLE_FORM = 'form';
@@ -32,12 +30,11 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
 
     protected function callRenderMethod()
     {
-        $container = static::getContainerFromRenderingContext($this->renderingContext);
-        $component = static::getComponent($this->renderingContext, $this->arguments);
-        // rendering child nodes with Form's last sheet as active container
-        static::setContainerInRenderingContext($this->renderingContext, $component);
-        $this->renderChildren();
-        static::setContainerInRenderingContext($this->renderingContext, $container);
+        return static::renderStatic(
+            $this->arguments instanceof ArgumentCollection ? $this->arguments->getArrayCopy() : $this->arguments,
+            $this->buildRenderChildrenClosure(),
+            $this->renderingContext
+        );
     }
 
     /**
@@ -52,9 +49,11 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         RenderingContextInterface $renderingContext
     ) {
         $container = static::getContainerFromRenderingContext($renderingContext);
-        $component = static::getComponent($renderingContext, $arguments, $renderChildrenClosure);
-        // rendering child nodes with Form's last sheet as active container
-        static::setContainerInRenderingContext($renderingContext, $component);
+        if (method_exists(static::class, 'getComponent')) {
+            $component = static::getComponent($renderingContext, $arguments, $renderChildrenClosure);
+            // rendering child nodes with Form's last sheet as active container
+            static::setContainerInRenderingContext($renderingContext, $component);
+        }
         $renderChildrenClosure();
         static::setContainerInRenderingContext($renderingContext, $container);
     }

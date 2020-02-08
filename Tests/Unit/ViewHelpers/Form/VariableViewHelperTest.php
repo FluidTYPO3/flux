@@ -41,6 +41,12 @@ class VariableViewHelperTest extends AbstractViewHelperTestCase
         $instance->expects($this->once())->method('buildRenderChildrenClosure')->willReturn(function() { return null; });
         $instance->setRenderingContext($renderingContext);
         $instance->setArguments(array('name' => 'test', 'value' => 'testvalue'));
-        $instance->render();
+        if (method_exists($instance, 'initializeArgumentsAndRender')) {
+            $instance->initializeArgumentsAndRender();
+        } elseif (method_exists($instance, 'render')) {
+            $instance->render();
+        } elseif (method_exists($instance, 'evaluate')) {
+            $instance->evaluate($renderingContext);
+        }
     }
 }

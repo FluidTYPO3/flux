@@ -34,12 +34,6 @@ class OptionViewHelper extends AbstractFormViewHelper
         $this->registerArgument('name', 'string', 'Name of the option to be set', true);
     }
 
-    protected function callRenderMethod()
-    {
-        $option = isset($this->arguments['name']) ? $this->arguments['name'] : static::$option;
-        static::getContainerFromRenderingContext($this->renderingContext)->setOption($option, $this->renderChildren());
-    }
-
     /**
      * @param array $arguments
      * @param \Closure $renderChildrenClosure

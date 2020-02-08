@@ -67,7 +67,13 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
     {
         $instance = $this->buildViewHelperInstance($this->defaultArguments);
         $this->assertInstanceOf($this->getViewHelperClassName(), $instance);
-        $instance->render();
+        if (method_exists($instance, 'initializeArgumentsAndRender')) {
+            $instance->initializeArgumentsAndRender();
+        } elseif (method_exists($instance, 'render')) {
+            $instance->render();
+        } elseif (method_exists($instance, 'evaluate')) {
+            $instance->evaluate(new RenderingContext());
+        }
     }
 
     /**
