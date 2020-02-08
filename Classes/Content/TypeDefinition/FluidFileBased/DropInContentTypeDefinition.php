@@ -89,12 +89,20 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         $basePathLength = strlen($contentTypesPath);
         foreach ($files as $file) {
             $templateFile = $file->getRealPath();
-            $contentType = new DropInContentTypeDefinition(
-                'FluidTYPO3.Flux',
-                $contentTypesPath,
-                substr($templateFile, $basePathLength)
-            );
-            $types[$contentType->getContentTypeName()] = $contentType;
+            // May cause some files to be ignored if the files are either symlinked or the base path was not possible
+            // to resolve correctly. This can happen if for some reason, ENV is configured with a public path that is
+            // not within the project path, is is configured as an absolute path (which technically isn't correct).
+            // We ignore this case instead of throwing an exception - essentially disabling drop-in templates on systems
+            // which contain an unexpected public path.
+            if (strlen($templateFile) > $basePathLength && substr_compare($basePath, $templateFile, 0, $basePathLength)) {
+                $relativeTemplatePath = substr($templateFile, $basePathLength);
+                $contentType = new DropInContentTypeDefinition(
+                    'FluidTYPO3.Flux',
+                    $contentTypesPath,
+                    $relativeTemplatePath
+                );
+                $types[$contentType->getContentTypeName()] = $contentType;
+            }
         }
         return $types;
     }
