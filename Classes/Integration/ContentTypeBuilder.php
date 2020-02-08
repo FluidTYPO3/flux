@@ -206,7 +206,7 @@ class ContentTypeBuilder
             $icon = GeneralUtility::getFileAbsFileName($icon);
         }
         if (!$icon) {
-            $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Plugin.png');
+            $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Extension.svg');
         }
         $iconIdentifier = MiscellaneousUtility::createIcon(
             $icon,
