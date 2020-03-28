@@ -187,7 +187,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         if (empty($controllerActionName)) {
             return 'default';
         }
-        $controllerActionName{0} = strtolower($controllerActionName{0});
+        $controllerActionName[0] = strtolower($controllerActionName[0]);
         return $controllerActionName;
     }
 
