@@ -81,7 +81,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         $finder = GeneralUtility::makeInstance(Finder::class);
         /** @var \SplFileInfo[] $files */
         try {
-            $files = $finder->in($contentTypesPath)->name(static::TEMPLATES_PATTERN);
+            $files = $finder->in($contentTypesPath)->name(static::TEMPLATES_PATTERN)->sortByName();
         } catch (DirectoryNotFoundException $exception) {
             return [];
         }
