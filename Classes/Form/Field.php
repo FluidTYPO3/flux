@@ -34,7 +34,9 @@ class Field extends AbstractFormField
     public static function create(array $settings = [])
     {
         $settings['config']['type'] = $settings['config']['type'] ?? $settings['type'];
-        unset($settings['type']);
+        $settings['displayCondition'] = $settings['displayCond'];
+        unset($settings['type'], $settings['displayCond']);
+
         $field = new static();
         foreach ($settings as $propertyName => $value) {
             $setterMethodName = 'set' . ucfirst($propertyName);
@@ -78,22 +80,6 @@ class Field extends AbstractFormField
     public function setType(string $type): void
     {
         $this->type = $type;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDisplayCond(): ?string
-    {
-        return $this->displayCond;
-    }
-
-    /**
-     * @param string|null $displayCond
-     */
-    public function setDisplayCond(?string $displayCond): void
-    {
-        $this->displayCond = $displayCond;
     }
 
     public function getOnChange(): ?string
