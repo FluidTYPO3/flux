@@ -233,11 +233,11 @@ class DataHandlerSubscriber
         if ($command === 'move') {
             $subCommandMap = $this->recursivelyMoveChildRecords($table, $id, $destinationPid, $languageUid, $reference);
         } elseif ($command === 'copy') {
-            $subCommandMap = $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command, $pasteUpdate, $pasteDataMap);
+            $subCommandMap = $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command);
         } elseif ($command === 'copyToLanguage') {
             $destinationPid = reset($recordsToProcess)['pid'];
             $languageUid = reset($reference->cmdmap[$table])["copyToLanguage"];
-            $subCommandMap = $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command, $pasteUpdate, $pasteDataMap);
+            $subCommandMap = $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command);
         }
 
         if (!empty($subCommandMap)) {
@@ -285,7 +285,7 @@ class DataHandlerSubscriber
         return $dataMap;
     }
 
-    protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $pageUid, int $languageUid, DataHandler $dataHandler, $command, array $pasteUpdate, array $pasteDataMap): array
+    protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $pageUid, int $languageUid, DataHandler $dataHandler, $command): array
     {
         list (, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
             $table,
