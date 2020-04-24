@@ -405,7 +405,7 @@ class PreviewView extends TemplateView
         $view->tt_contentConfig['showInfo'] = 1;
         $view->tt_contentConfig['single'] = 0;
         $view->nextThree = 1;
-        $view->tt_contentConfig['sys_language_uid'] = (int) $moduleData['language'];
+        $view->tt_contentConfig['sys_language_uid'] = (int) $row['sys_language_uid'];
         $view->tt_contentConfig['showHidden'] = $showHiddenRecords;
         $view->tt_contentConfig['activeCols'] = $columnsAsCSV;
         $view->tt_contentConfig['cols'] = $columnsAsCSV;
