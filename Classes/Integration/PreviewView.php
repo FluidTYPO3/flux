@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Integration;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
+use TYPO3\CMS\Backend\View\Drawing\BackendLayoutRenderer;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
@@ -18,11 +19,14 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\View\PageLayoutContext;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Lang\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3Fluid\Fluid\View\TemplateView;
 
 /**
@@ -253,12 +257,14 @@ class PreviewView extends TemplateView
                 $pageUid = $placeholder['pid'] ?? $pageUid;
             }
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
-            $pageLayoutView->start($pageUid, 'tt_content', 0);
-            if (method_exists($pageLayoutView, 'generateList')) {
+            if ($pageLayoutView instanceof BackendLayoutRenderer) {
+                $content = $pageLayoutView->drawContent(false);
+            } elseif (method_exists($pageLayoutView, 'start')) {
+                $pageLayoutView->start($pageUid, 'tt_content', 0);
                 $pageLayoutView->generateList();
                 $content .= $pageLayoutView->HTMLcode;
             } else {
-                $content .= $pageLayoutView->getTable_tt_content($pageUid);
+                $content .= $pageLayoutView->getTable_tt_content($row['pid']);
             }
 
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;
@@ -303,11 +309,12 @@ class PreviewView extends TemplateView
     /**
      * @param ProviderInterface $provider
      * @param array $row
-     * @return PageLayoutView
+     * @return PageLayoutView|BackendLayoutRenderer
      */
     protected function getInitializedPageLayoutView(ProviderInterface $provider, array $row)
     {
-        $pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $row['pid']);
+        $pageId = (int) $row['pid'];
+        $pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $pageId);
         $moduleData = $GLOBALS['BE_USER']->getModuleData('web_layout', '');
         $showHiddenRecords = (int) ($moduleData['tt_content_showHidden'] ?? 1);
 
@@ -322,55 +329,47 @@ class PreviewView extends TemplateView
 
         $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0 ? $row['l18n_parent'] : ($row['t3ver_oid'] ?: $row['uid']);
 
-        $dblist = $this->getPageLayoutView($provider, $row);
-        $layoutConfiguration = $provider->getGrid($row)->buildExtendedBackendLayoutArray($parentRecordUid);
-
-        if (!empty($layoutConfiguration['__items'])) {
-            array_push(
-                $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
-                ...$layoutConfiguration['__items']
-            );
+        $backendLayout = $provider->getGrid($row)->buildBackendLayout($parentRecordUid);
+        if (method_exists($backendLayout, 'getStructure')) {
+            // TYPO3 10.4+
+            $layoutConfiguration = $backendLayout->getStructure();
+        } elseif (method_exists($backendLayout, 'getConfigurationArray')) {
+            // TYPO3 10.3
+            $layoutConfiguration = $backendLayout->getConfigurationArray();
+        } else {
+            // TYPO3 < 10.3
+            $layoutConfiguration = $provider->getGrid($row)->buildExtendedBackendLayoutArray($parentRecordUid);
         }
 
-        $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList']);
+        $fluidBasedLayoutFeatureEnabled = class_exists(Features::class) && GeneralUtility::makeInstance(Features::class)->isFeatureEnabled('fluidBasedPageModule');
 
-        $dblist->script = 'db_layout.php';
-        $dblist->showIcon = 1;
-        $dblist->setLMargin = 0;
-        $dblist->doEdit = 1;
-        $dblist->no_noWrap = 1;
-        $dblist->ext_CALC_PERMS = $this->getBackendUser()->calcPerms($pageRecord);
-        $dblist->id = $row['pid'];
-        $dblist->table = 'tt_content';
-        $dblist->tableList = 'tt_content';
-        $dblist->currentTable = 'tt_content';
-        $dblist->tt_contentConfig['showCommands'] = 1;
-        $dblist->tt_contentConfig['showInfo'] = 1;
-        $dblist->tt_contentConfig['single'] = 0;
-        $dblist->nextThree = 1;
-        $dblist->tt_contentConfig['sys_language_uid'] = (int) $moduleData['language'];
-        $dblist->tt_contentConfig['showHidden'] = $showHiddenRecords;
-        $dblist->tt_contentConfig['activeCols'] = $columnsAsCSV;
-        $dblist->tt_contentConfig['cols'] = $columnsAsCSV;
-        $dblist->CType_labels = [];
-        $dblist->setPageinfo(BackendUtility::readPageAccess($row['pid'], ''));
-        foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
-            $dblist->CType_labels[$val[1]] = $this->getLanguageService()->sL($val[0]);
-        }
-        $dblist->itemLabels = [];
-        foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
-            $dblist->itemLabels[$name] = ($val['label'] ?? false) ? $this->getLanguageService()->sL($val['label']) : '';
-        }
-        return $dblist;
-    }
+        if ($fluidBasedLayoutFeatureEnabled) {
+            if (class_exists(PageLayoutContext::class)) {
+                // TYPO3 10.4+
+                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+                $site = $siteFinder->getSiteByPageId($pageId);
+                $language = $site->getLanguageById((int) $row['sys_language_uid']);
 
-    /**
-     * @param ProviderInterface $provider
-     * @param array $record
-     * @return PageLayoutView
-     */
-    protected function getPageLayoutView(ProviderInterface $provider, array $record)
-    {
+                $context = GeneralUtility::makeInstance(PageLayoutContext::class, BackendUtility::getRecord('pages', $pageId), $backendLayout);
+                $context = $context->cloneForLanguage($language);
+
+                $configuration = $context->getDrawingConfiguration();
+                $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
+                $configuration->setSelectedLanguageId($language->getLanguageId());
+
+                return GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
+            } else {
+                // TYPO3 10.3
+                $configuration = $backendLayout->getDrawingConfiguration();
+
+                $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
+                $configuration->setPageId($pageId);
+                $configuration->setLanguageColumnsPointer((int) $row['sys_language_uid']);
+
+                return $backendLayout->getBackendLayoutRenderer();
+            }
+        }
+
         $eventDispatcher = null;
         if (class_exists(EventDispatcher::class)) {
             $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
@@ -379,7 +378,42 @@ class PreviewView extends TemplateView
         /** @var PageLayoutView $view */
         $view = GeneralUtility::makeInstance(PageLayoutView::class, $eventDispatcher);
         $view->setProvider($provider);
-        $view->setRecord($record);
+        $view->setRecord($row);
+
+        $contentTypeLabels = [];
+        foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
+            $contentTypeLabels[$val[1]] = $this->getLanguageService()->sL($val[0]);
+        }
+        $itemLabels = [];
+        foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
+            $itemLabels[$name] = ($val['label'] ?? false) ? $this->getLanguageService()->sL($val['label']) : '';
+        }
+
+        $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList'] ?? []);
+
+        $view->script = 'db_layout.php';
+        $view->showIcon = 1;
+        $view->setLMargin = 0;
+        $view->doEdit = 1;
+        $view->no_noWrap = 1;
+        $view->ext_CALC_PERMS = $this->getBackendUser()->calcPerms($pageRecord);
+        $view->id = $row['pid'];
+        $view->table = 'tt_content';
+        $view->tableList = 'tt_content';
+        $view->currentTable = 'tt_content';
+        $view->tt_contentConfig['showCommands'] = 1;
+        $view->tt_contentConfig['showInfo'] = 1;
+        $view->tt_contentConfig['single'] = 0;
+        $view->nextThree = 1;
+        $view->tt_contentConfig['sys_language_uid'] = (int) $moduleData['language'];
+        $view->tt_contentConfig['showHidden'] = $showHiddenRecords;
+        $view->tt_contentConfig['activeCols'] = $columnsAsCSV;
+        $view->tt_contentConfig['cols'] = $columnsAsCSV;
+        $view->CType_labels = [];
+        $view->setPageinfo(BackendUtility::readPageAccess($pageId, ''));
+        $view->CType_labels = $contentTypeLabels;
+        $view->itemLabels = [];
+        $view->itemLabels = $itemLabels;
         return $view;
     }
 
