@@ -205,7 +205,7 @@ class PageService implements SingletonInterface
             $output[$extensionName] = [];
             $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName));
             $view->getRenderingContext()->setTemplatePaths($templatePaths);
-            $finder = Finder::create()->in($templatePaths->getTemplateRootPaths())->name('*.html');
+            $finder = Finder::create()->in($templatePaths->getTemplateRootPaths())->name('*.html')->sortByName();
             foreach ($finder->files() as $file) {
                 /** @var \SplFileInfo $file */
                 if ('.' === substr($file->getBasename(), 0, 1)) {

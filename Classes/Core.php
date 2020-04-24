@@ -116,7 +116,7 @@ class Core
             $legacyKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
             $templateRootPath = ExtensionManagementUtility::extPath($legacyKey, 'Resources/Private/Templates/Content/');
             $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
-            $finder = Finder::create()->in($templateRootPath)->name('*.html');
+            $finder = Finder::create()->in($templateRootPath)->name('*.html')->sortByName();
             foreach ($finder->files() as $file) {
                 /** @var \SplFileInfo $file */
                 $contentTypeName = str_replace('_', '', $legacyKey)
