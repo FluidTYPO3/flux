@@ -44,6 +44,8 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     {
         // This is an override designed to perform no operations except create a valid data provider collection instance
         $this->setDataProviderCollection(GeneralUtility::makeInstance(DataProviderCollection::class));
+
+        parent::initializeDataProviderCollection();
     }
 
     /**
