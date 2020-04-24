@@ -1,0 +1,7 @@
+services:
+  FluidTYPO3\Flux\Integration\Event\AfterLocalizationControllerColumnsEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-after-localization-controller-columns'
+        method: 'modifyColumnsManifest'
+        event: TYPO3\CMS\Backend\Controller\Event\AfterPageColumnsSelectedForLocalizationEvent
