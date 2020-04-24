@@ -194,7 +194,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         $converted = [];
         foreach ($configuration as $key => $value) {
             if (true === is_array($value)) {
-                $key = rtrim($key, '.') . '.';
+                $key = rtrim((string) $key, '.') . '.';
                 $value = $this->ensureDottedKeys($value);
             }
             $converted[$key] = $value;
