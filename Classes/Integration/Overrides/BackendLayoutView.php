@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
-use TYPO3\CMS\Backend\View\BackendLayout\DataProviderCollection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -38,12 +37,6 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     public function setRecord(array $record)
     {
         $this->record = $record;
-    }
-
-    protected function initializeDataProviderCollection()
-    {
-        // This is an override designed to perform no operations except create a valid data provider collection instance
-        $this->setDataProviderCollection(GeneralUtility::makeInstance(DataProviderCollection::class));
     }
 
     /**
