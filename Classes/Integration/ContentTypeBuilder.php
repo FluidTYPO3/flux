@@ -296,6 +296,13 @@ class ContentTypeBuilder
      */
     protected function registerExtbasePluginForForm($providerExtensionName, $pluginName, Form $form)
     {
+        if (!isset($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'])) {
+            // For whatever reason, TCA is not loaded or is loaded in an incomplete state. Attempting to register a
+            // plugin would fail when this is the case, so we return and avoid manipulating TCA of tt_content until
+            // a fully initialized TCA context exists.
+            // @see \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin
+            return;
+        }
         $contentTypeGroupOption = [$providerExtensionName, '--div--'];
         if (array_search($contentTypeGroupOption, $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'], true) === false) {
             $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'][] = $contentTypeGroupOption;
