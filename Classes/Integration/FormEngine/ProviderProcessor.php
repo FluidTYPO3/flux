@@ -21,7 +21,7 @@ class ProviderProcessor implements FormDataProviderInterface
      */
     public function addData(array $result)
     {
-        if (class_exists(SiteFinder::class)) {
+        if (class_exists(SiteFinder::class) && $result['tableName'] === 'tt_content') {
             $pageUid = $result['parentPageRow']['uid'];
             if ($pageUid > 0) {
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
