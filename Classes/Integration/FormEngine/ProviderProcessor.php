@@ -25,11 +25,15 @@ class ProviderProcessor implements FormDataProviderInterface
             $pageUid = $result['parentPageRow']['uid'];
             if ($pageUid > 0) {
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+                $enabledContentTypes = [];
                 try {
                     $site = $siteFinder->getSiteByPageId($pageUid);
-                    $enabledContentTypes = GeneralUtility::trimExplode(',', $site->getConfiguration()['flux_content_types'] ?? '', true);
+                    $siteConfiguration = $site->getConfiguration();
+                    if (!empty($siteConfiguration['flux_content_types'])) {
+                        $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
+                    }
                 } catch (SiteNotFoundException $exception) {
-                    $enabledContentTypes = [];
+                    // Suppressed; sites not being found isn't a fatal problem here.
                 }
                 if (!empty($enabledContentTypes)) {
                     $fluidContentTypeNames = (array) GeneralUtility::makeInstance(ContentTypeManager::class)->fetchContentTypeNames();

@@ -102,11 +102,15 @@ class WizardItems implements NewContentElementWizardHookInterface
             $pageUid = (int) (key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true));
             if ($pageUid > 0) {
                 try {
+                    $enabledContentTypes = [];
                     $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                     $site = $siteFinder->getSiteByPageId($pageUid);
-                    $enabledContentTypes = GeneralUtility::trimExplode(',', $site->getConfiguration()['flux_content_types'] ?? '', true);
+                    $siteConfiguration = $site->getConfiguration();
+                    if (!empty($siteConfiguration['flux_content_types'])) {
+                        $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
+                    }
                 } catch (SiteNotFoundException $exception) {
-                    $enabledContentTypes = [];
+                    // Suppressed; a site not being found is not a fatal error in this context.
                 }
             }
         }
