@@ -43,13 +43,13 @@ class FlashMessageViewHelper extends AbstractPipeViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @param \Closure $renderChildrenClosure
      * @return PipeInterface
      */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
-        array $arguments,
+        iterable $arguments,
         \Closure $renderChildrenClosure = null
     ) {
         /** @var FlashMessagePipe $pipe */

@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Wizard;
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 
 /**
  * AbstractWizardViewHelperTestCase
@@ -23,7 +24,13 @@ abstract class AbstractWizardViewHelperTestCase extends AbstractFormViewHelperTe
     public function createsValidFieldInterfaceComponents()
     {
         $instance = $this->buildViewHelperInstance($this->defaultArguments);
-        $instance->render();
+        if (method_exists($instance, 'initializeArgumentsAndRender')) {
+            $instance->initializeArgumentsAndRender();
+        } elseif (method_exists($instance, 'render')) {
+            $instance->render();
+        } elseif (method_exists($instance, 'evaluate')) {
+            $instance->evaluate(new RenderingContext());
+        }
         $component = $instance->getComponent(
             ObjectAccess::getProperty($instance, 'renderingContext', true),
             ObjectAccess::getProperty($instance, 'arguments', true)

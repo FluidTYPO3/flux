@@ -13,6 +13,8 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
 {
@@ -71,10 +73,10 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
     /**
      * @param string $type
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return MultiValueFieldInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
+    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var MultiValueFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);

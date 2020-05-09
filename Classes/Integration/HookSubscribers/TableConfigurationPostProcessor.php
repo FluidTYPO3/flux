@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
-use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
 use FluidTYPO3\Flux\Provider\Provider;
@@ -18,7 +17,6 @@ use FluidTYPO3\Flux\Utility\ContextUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3Fluid\Fluid\Exception;
@@ -47,7 +45,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     public function processData()
     {
-        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+        $contentTypeManager = $this->getContentTypeManager();
 
         foreach ($contentTypeManager->fetchContentTypes() as $contentTypesFromExtension) {
             foreach ($contentTypesFromExtension as $contentType) {
@@ -61,6 +59,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
             }
         }
 
+
         $this->spoolQueuedContentTypeRegistrations(Core::getQueuedContentTypeRegistrations());
         Core::clearQueuedContentTypeRegistrations();
     }
@@ -72,18 +71,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     public static function spoolQueuedContentTypeTableConfigurations(array $queue)
     {
         $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
-
-        foreach (ExtensionManagementUtility::getLoadedExtensionListArray() as $extensionKey) {
-            $expectedContentTypesDefinitionFile = GeneralUtility::getFileAbsFileName('EXT:' . $extensionKey . '/Configuration/Flux/ContentTypes.php');
-            if (file_exists($expectedContentTypesDefinitionFile)) {
-                /** @var ContentTypeDefinitionInterface[] $types */
-                $types = include $expectedContentTypesDefinitionFile;
-                foreach ($types as $contentType) {
-                    $contentTypeBuilder->addBoilerplateTableConfiguration($contentType->getContentTypeName());
-                }
-            }
-        }
-
         foreach ($queue as $queuedRegistration) {
             list ($providerExtensionName, $templatePathAndFilename, , $contentType) = $queuedRegistration;
             $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templatePathAndFilename);
@@ -115,7 +102,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
-            list ($providerExtensionName, $templateFilename, $providerClassName, $contentType) = $queuedRegistration;
+            list ($providerExtensionName, $templateFilename, $providerClassName, $contentType, $pluginName, $controllerActionName) = $queuedRegistration;
             try {
                 $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templateFilename);
                 $defaultControllerExtensionName = 'FluidTYPO3.Flux';
@@ -124,12 +111,13 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
                     $templateFilename,
                     $providerClassName ?? Provider::class,
                     $contentType,
-                    $defaultControllerExtensionName
+                    $defaultControllerExtensionName,
+                    $controllerActionName
                 );
 
                 Core::registerConfigurationProvider($provider);
 
-                $pluginName = GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType)));
+                $pluginName = $pluginName ?: GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2)));
                 $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
 
             } catch (Exception $error) {
@@ -138,5 +126,10 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
                 }
             }
         }
+    }
+
+    protected function getContentTypeManager(): ContentTypeManager
+    {
+        return GeneralUtility::makeInstance(ContentTypeManager::class);
     }
 }

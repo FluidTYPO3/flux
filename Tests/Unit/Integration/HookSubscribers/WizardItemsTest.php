@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
@@ -56,6 +57,7 @@ class WizardItemsTest extends AbstractTestCase
         $provider1->setTemplatePaths([]);
         $provider1->setTemplateVariables([]);
         $provider1->setGrid($grid);
+        $provider1->setForm(Form::create());
 
         $provider2 = $this->getMockBuilder(Provider::class)->setMethods(['getGrid'])->getMock();
         $provider2->expects($this->once())->method('getGrid')->will($this->returnValue(null));

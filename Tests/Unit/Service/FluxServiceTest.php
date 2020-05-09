@@ -14,6 +14,9 @@ use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
@@ -32,6 +35,118 @@ class FluxServiceTest extends AbstractTestCase
         if (true === in_array('FluidTYPO3\Flux\Service\FluxService', $providers)) {
             Core::unregisterConfigurationProvider('FluidTYPO3\Flux\Service\FluxService');
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function testPerformsInjections()
+    {
+        $instance = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+            ->get(FluxService::class);
+        $this->assertAttributeInstanceOf('TYPO3\\CMS\\Core\\Resource\\ResourceFactory', 'resourceFactory', $instance);
+    }
+
+    /**
+     * @dataProvider getConvertFileReferenceToTemplatePathAndFilenameTestValues
+     * @param string $reference
+     * @param string|NULL $resourceFactoryOutput
+     * @param string $expected
+     * @return void
+     */
+    public function testConvertFileReferenceToTemplatePathAndFilename($reference, $resourceFactoryOutput, $expected)
+    {
+        $instance = new FluxService();
+        if (null !== $resourceFactoryOutput) {
+            /** @var ResourceFactory|\PHPUnit_Framework_MockObject_MockObject $resourceFactory */
+            $resourceFactory = $this->getMockBuilder(
+                ResourceFactory::class
+            )->setMethods(
+                array('getFileObjectFromCombinedIdentifier')
+            )->getMock();
+            $resourceFactory->expects($this->once())->method('getFileObjectFromCombinedIdentifier')
+                ->with($reference)->willReturn($resourceFactoryOutput);
+            $instance->injectResourceFactory($resourceFactory);
+        }
+        $result = $instance->convertFileReferenceToTemplatePathAndFilename($reference);
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getConvertFileReferenceToTemplatePathAndFilenameTestValues()
+    {
+        $relativeReference = 'Tests/Fixtures/Templates/Page/Dummy.html';
+        return array(
+            array($relativeReference, null, GeneralUtility::getFileAbsFileName($relativeReference)),
+            array('1', $relativeReference, $relativeReference),
+        );
+    }
+
+    /**
+     * @dataProvider getViewConfigurationByFileReferenceTestValues
+     * @param string $reference
+     * @param string $expectedParameter
+     * @return void
+     */
+    public function testGetViewConfigurationByFileReference($reference, $expectedParameter)
+    {
+        $instance = new FluxService();
+        $result = $instance->getViewConfigurationByFileReference($reference);
+        $this->assertEquals($expectedParameter, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getViewConfigurationByFileReferenceTestValues()
+    {
+        $fluxPaths = [
+            'templateRootPaths' => [ExtensionManagementUtility::extPath('flux', 'Resources/Private/Templates/')],
+            'partialRootPaths' => [ExtensionManagementUtility::extPath('flux', 'Resources/Private/Partials/')],
+            'layoutRootPaths' => [ExtensionManagementUtility::extPath('flux', 'Resources/Private/Layouts/')],
+        ];
+        return array(
+            array('some/file', $fluxPaths),
+            array('EXT:flux/some/file', $fluxPaths),
+        );
+    }
+
+    /**
+     * @dataProvider getPageConfigurationInvalidTestValues
+     * @param mixed $input
+     * @return void
+     */
+    public function testGetPageConfigurationReturnsEmptyArrayOnInvalidInput($input)
+    {
+        $instance = new FluxService();
+        $result = $instance->getPageConfiguration($input);
+        $this->assertEquals(array(), $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getPageConfigurationInvalidTestValues()
+    {
+        return array(
+            array(''),
+            array(0),
+            array(array()),
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetPageConfigurationWithoutExtensionNameReadsRegisteredProviders()
+    {
+        $instance = new FluxService();
+        Core::registerProviderExtensionKey('foo', 'Page');
+        Core::registerProviderExtensionKey('bar', 'Page');
+        $result = $instance->getPageConfiguration();
+        $this->assertCount(3, $result);
     }
 
     /**

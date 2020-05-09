@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
@@ -48,11 +49,11 @@ class MiscellaneousUtility
             $templatePathParts = explode('/', $fullTemplatePathAndName);
             $templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
             $controllerName = array_pop($templatePathParts);
+            $relativeIconFolder = 'Resources/Public/Icons/' . $controllerName . '/';
             $iconFolder = ExtensionManagementUtility::extPath(
                 $extensionKey,
-                'Resources/Public/Icons/' . $controllerName . '/'
+                $relativeIconFolder
             );
-            $iconAbsoluteUrl = '/' . str_replace(PATH_site, '', $iconFolder);
             $iconPathAndName = $iconFolder . $templateName;
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
@@ -67,7 +68,7 @@ class MiscellaneousUtility
                 }
             }
             $iconFile = (is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : null);
-            $iconRelPathAndFilename = $iconFile ? $iconAbsoluteUrl . str_replace($iconFolder, '', $iconFile) : null;
+            $iconRelPathAndFilename = $iconFile ? 'EXT:' . $extensionKey . '/' . $relativeIconFolder . pathinfo($iconFile, PATHINFO_BASENAME) : null;
             return $iconRelPathAndFilename;
         }
         return null;

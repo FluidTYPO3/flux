@@ -88,10 +88,10 @@ class ObjectViewHelper extends AbstractFormViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return SectionObject
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var SectionObject $object */
         $object = static::getContainerFromRenderingContext($renderingContext)

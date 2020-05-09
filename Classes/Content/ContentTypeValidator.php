@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Content;
  */
 
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -18,6 +19,8 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\TemplateView;
+use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
+use TYPO3Fluid\Fluid\Core\Parser\Source;
 
 /**
  * TCA user feedback: Content Type Validation
@@ -59,6 +62,11 @@ class ContentTypeValidator
                 return $view->render('validation');
             }
 
+            $usesTemplateFile = true;
+            if ($contentType instanceof FluidRenderingContentTypeDefinitionInterface) {
+                $usesTemplateFile = $contentType->isUsingTemplateFile() ? file_exists(GeneralUtility::getFileAbsFileName($contentType->getTemplatePathAndFilename())) : false;
+            }
+
             $view->assignMultiple([
                 'recordIsNew' => $recordIsNew,
                 'contentType' => $contentType,
@@ -68,7 +76,7 @@ class ContentTypeValidator
                     'extensionInstalled' => $this->validateContextExtensionIsInstalled($contentType),
                     'extensionMatched' => $this->validateContextMatchesSignature($contentType),
                     'templateSource' => $this->validateTemplateSource($contentType),
-                    'templateFile' => $contentType->isUsingTemplateFile() ? file_exists(GeneralUtility::getFileAbsFileName($contentType->getTemplatePathAndFilename())) : false,
+                    'templateFile' => $usesTemplateFile,
                     'icon' => !empty($record['icon']) ? file_exists(GeneralUtility::getFileAbsFileName($record['icon'])) : true,
                 ],
             ]);
@@ -82,7 +90,11 @@ class ContentTypeValidator
     {
         $parser = GeneralUtility::makeInstance(ObjectManager::class)->get(TemplateView::class)->getRenderingContext()->getTemplateParser();
         try {
-            $parser->parse($definition->getTemplateSource());
+            if (class_exists(Sequencer::class)) {
+                $parser->parse(new Source($definition->getTemplatesource()));
+            } else {
+                $parser->parse($definition->getTemplateSource());
+            }
         } catch (\Exception $error) {
             return $error->getMessage();
         }

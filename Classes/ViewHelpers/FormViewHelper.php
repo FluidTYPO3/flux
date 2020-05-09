@@ -9,6 +9,8 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
+use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
+use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -43,14 +45,6 @@ class FormViewHelper extends AbstractFormViewHelper
             'feature using the form.',
             false,
             true
-        );
-        $this->registerArgument(
-            'compact',
-            'boolean',
-            'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES AT ALL COSTS! Toggling this ' .
-            'option is DESTRUCTIVE to variables currently saved in the database!',
-            false,
-            false
         );
         $this->registerArgument(
             'variables',
@@ -102,7 +96,6 @@ class FormViewHelper extends AbstractFormViewHelper
         $form->setLabel($arguments['label']);
         $form->setDescription($arguments['description']);
         $form->setEnabled($arguments['enabled']);
-        $form->setCompact($arguments['compact']);
         $form->setExtensionName($extensionName);
         $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);

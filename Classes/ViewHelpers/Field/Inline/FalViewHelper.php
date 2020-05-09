@@ -85,6 +85,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *     <f:for each="{v:content.resources.fal(field: 'settings.image')}" as="image">
  *         <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
  *     </f:for>
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class FalViewHelper extends AbstractInlineFieldViewHelper
 {
@@ -207,10 +210,10 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Fal
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $allowedExtensions = $arguments['allowedExtensions'];
         $disallowedExtensions = $arguments['disallowedExtensions'];

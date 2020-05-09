@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -15,6 +16,8 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -91,19 +94,43 @@ class WizardItems implements NewContentElementWizardHookInterface
      */
     public function manipulateWizardItems(&$items, &$parentObject)
     {
-        $items = $this->filterPermittedFluidContentTypesByInsertionPosition($items, $parentObject);
+        $enabledContentTypes = [];
+        $fluidContentTypeNames = [];
+        $pageUid = 0;
+        if (class_exists(SiteFinder::class)) {
+            $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
+            $pageUid = (int) (key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true));
+            if ($pageUid > 0) {
+                try {
+                    $enabledContentTypes = [];
+                    $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+                    $site = $siteFinder->getSiteByPageId($pageUid);
+                    $siteConfiguration = $site->getConfiguration();
+                    if (!empty($siteConfiguration['flux_content_types'])) {
+                        $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
+                    }
+                } catch (SiteNotFoundException $exception) {
+                    // Suppressed; a site not being found is not a fatal error in this context.
+                }
+            }
+        }
+
+        $fluidContentTypeNames = GeneralUtility::makeInstance(ContentTypeManager::class)->fetchContentTypeNames();
+        $items = $this->filterPermittedFluidContentTypesByInsertionPosition($items, $parentObject, $pageUid);
+        if (!empty($enabledContentTypes)) {
+            foreach ($items as $name => $item) {
+                $contentTypeName = $item['tt_content_defValues']['CType'] ?? null;
+                if (!empty($contentTypeName) && in_array($contentTypeName, $fluidContentTypeNames, true) && !in_array($contentTypeName, $enabledContentTypes, true)) {
+                    unset($items[$name]);
+                }
+            }
+        }
     }
 
-    /**
-     * @param array $items
-     * @param NewContentElementController $parentObject
-     * @return array
-     */
-    protected function filterPermittedFluidContentTypesByInsertionPosition(array $items, $parentObject)
+    protected function filterPermittedFluidContentTypesByInsertionPosition(array $items, NewContentElementController $parentObject, int $pageUid): array
     {
-        $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
-            key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true),
+            $pageUid,
             (int) ($dataArray['colPos'] ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
         );
         $overrides = HookHandler::trigger(

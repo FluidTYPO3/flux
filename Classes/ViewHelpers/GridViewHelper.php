@@ -68,6 +68,18 @@ class GridViewHelper extends AbstractFormViewHelper
         );
     }
 
+    protected function callRenderMethod()
+    {
+        $container = static::getContainerFromRenderingContext($this->renderingContext);
+        $grid = static::getGridFromRenderingContext($this->renderingContext, $this->arguments['name']);
+        $grid->setLabel($this->arguments['label']);
+        $grid->setVariables($this->arguments['variables']);
+        $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments));
+        static::setContainerInRenderingContext($this->renderingContext, $grid);
+        $this->renderChildren();
+        static::setContainerInRenderingContext($this->renderingContext, $container);
+    }
+
     /**
      * @param array $arguments
      * @param \Closure $renderChildrenClosure

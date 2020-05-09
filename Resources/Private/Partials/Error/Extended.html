@@ -1,0 +1,8 @@
+<f:alias map="{exceptionPartial: '{f:render(partial: \'Exception/{error.code}\', optional: TRUE)}'}">
+	<div class="details">
+		<f:if condition="{exceptionPartial}">
+			<h2>Detailed Exception Description for error #{error.code}</h2>
+			<f:format.raw>{exceptionPartial}</f:format.raw>
+		</f:if>
+	</div>
+</f:alias>

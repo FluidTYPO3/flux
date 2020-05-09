@@ -14,7 +14,7 @@ use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
-use TYPO3\CMS\Core\TypoScript\ExtendedTemplateService;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Grid
@@ -104,7 +104,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             $colCount = 0;
             $columns = [];
             foreach ($row['columns.'] as $column) {
-                $colPos = (string)$column['colPos'];
+                $colPos = (int)$column['colPos'];
                 $key = ($index + 1) . '.';
                 $columns[$key] = $column;
                 $colPosList[$colPos] = $colPos;
@@ -114,6 +114,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
                     $column['icon']
                 ];
                 $colCount += $column['colspan'] ? $column['colspan'] : 1;
+                $backendLayout['usedColumns'][$colPos] = $column['name'];
                 ++ $index;
             }
             ++ $rowIndex;
@@ -145,13 +146,43 @@ class Grid extends AbstractFormContainer implements ContainerInterface
     {
         $configuration = $this->buildBackendLayoutArray($parentRecordUid);
         $configuration = $this->ensureDottedKeys($configuration);
-        $typoScriptParser = new ExtendedTemplateService();
-        $typoScriptParser->flattenSetup($configuration, 'backend_layout.', false);
+
         $typoScriptString = '';
-        foreach ($typoScriptParser->flatSetup as $name => $value) {
+        $root = $this->getRoot();
+        $label = $root->getLabel();
+        foreach ($this->flattenSetup($configuration, 'backend_layout.') as $name => $value) {
             $typoScriptString .= $name . ' = ' . $value . LF;
         }
-        return new BackendLayout($this->getRoot()->getName(), $this->getRoot()->getExtensionName(), $typoScriptString);
+        return new BackendLayout(
+            $this->getRoot()->getName(),
+            LocalizationUtility::translate($label)
+                ? $label
+                : 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.grid.grids.grid',
+            $typoScriptString
+        );
+    }
+
+    /**
+     * This flattens a hierarchical TypoScript array to $this->flatSetup
+     *
+     * @param iterable $setupArray TypoScript array
+     * @param string $prefix Prefix to the object path. Used for recursive calls to this function.
+     * @see generateConfig()
+     */
+    protected function flattenSetup(iterable $setupArray, $prefix): array
+    {
+        $setup = [];
+        foreach ($setupArray as $key => $val) {
+            if (is_array($val)) {
+                $setup = array_merge(
+                    $setup,
+                    $this->flattenSetup($val, $prefix . $key)
+                );
+            } else {
+                $setup[$prefix . $key] = $val;
+            }
+        }
+        return $setup;
     }
 
     /**
@@ -163,7 +194,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         $converted = [];
         foreach ($configuration as $key => $value) {
             if (true === is_array($value)) {
-                $key = rtrim($key, '.') . '.';
+                $key = rtrim((string) $key, '.') . '.';
                 $value = $this->ensureDottedKeys($value);
             }
             $converted[$key] = $value;

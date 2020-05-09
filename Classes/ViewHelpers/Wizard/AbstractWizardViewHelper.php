@@ -14,6 +14,8 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for Field Wizard style ViewHelpers
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
 {
@@ -50,10 +52,10 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
     /**
      * @param string $type
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return WizardInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
+    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $name = (true === isset($arguments['name']) ? $arguments['name'] : 'wizard');
         $component = static::getContainerFromRenderingContext($renderingContext)->createWizard($type, $name);

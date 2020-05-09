@@ -83,10 +83,10 @@ class ColumnViewHelper extends AbstractFormViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Column
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $column = static::getContainerFromRenderingContext($renderingContext)->createContainer(Column::class, $arguments['name'], $arguments['label']);
         $column->setExtensionName(

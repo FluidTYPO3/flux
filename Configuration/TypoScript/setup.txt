@@ -1,0 +1,33 @@
+
+page = PAGE
+page.typeNum = 0
+page.5 = USER
+page.5.userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+page.5.extensionName = Flux
+page.5.vendorName = FluidTYPO3
+page.5.pluginName = Page
+
+plugin.tx_flux {
+	siteRootInheritance = {$plugin.tx_flux.siteRootInheritance}
+}
+
+lib.default_menu = HMENU
+lib.default_menu.1 = TMENU
+lib.default_menu.1.NO = 1
+
+lib.default_content = CONTENT
+lib.default_content {
+  table = tt_content
+  select.where = colPos = 0
+}
+
+plugin.tx_flux.view {
+  templateRootPaths.0 = design/Templates/
+  templateRootPaths.10 = EXT:flux/Resources/Private/Templates/
+  layoutRootPaths.0 = design/Layouts/
+  layoutRootPaths.10 = EXT:flux/Resources/Private/Layouts/
+  partialRootPaths.0 = design/Partials/
+  partialRootPaths.10 = EXT:flux/Resources/Private/Partials/
+}
+
+module.tx_flux.view < plugin.tx_flux.view

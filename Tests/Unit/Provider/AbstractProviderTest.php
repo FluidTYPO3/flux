@@ -454,6 +454,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $provider = $this->getConfigurationProviderInstance();
         $provider->setGrid($grid);
+        $provider->setForm(Form::create());
         $this->assertSame($grid, $provider->getGrid($record));
     }
 

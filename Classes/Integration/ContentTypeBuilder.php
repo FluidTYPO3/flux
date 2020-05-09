@@ -20,13 +20,12 @@ use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Content Type Builder
@@ -41,9 +40,10 @@ class ContentTypeBuilder
     /**
      * @param string $providerExtensionName
      * @param string $templateFilename
-     * @param string $providerClassName
-     * @param string $contentType
+     * @param string|null $providerClassName
+     * @param string|null $contentType
      * @param string $defaultControllerExtensionName
+     * @param string|null $controllerActionName
      * @return ProviderInterface
      */
     public function configureContentTypeFromTemplateFile(
@@ -162,7 +162,7 @@ class ContentTypeBuilder
         ProviderInterface $provider,
         $pluginName
     ) {
-        $cacheId = 'CType_' . $contentType . '_' . md5($providerExtensionName . '_' . $pluginName);
+        $cacheId = 'CType_' . md5($contentType . '__' . $providerExtensionName . '__' . $pluginName);
         $cache = $this->getCache();
         $form = $cache->get($cacheId);
         if (!$form) {
@@ -170,14 +170,7 @@ class ContentTypeBuilder
             // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
             $form = $provider->getForm(['CType' => $contentType]);
             if (!$form) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Flux could not extract a Flux definition from "%s". Check that the file exists and contains ' .
-                        'the necessary flux:form in the configured section "%s"',
-                        $provider->getTemplatePathAndFilename([]),
-                        $provider->getConfigurationSectionName([])
-                    )
-                );
+                return;
             }
             try {
                 $form->setExtensionName($providerExtensionName);
@@ -194,7 +187,7 @@ class ContentTypeBuilder
             }
         }
 
-        $this->registerExtbasePluginForForm($providerExtensionName, GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType))), $form);
+        $this->registerExtbasePluginForForm($providerExtensionName, GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2))), $form);
         $this->addPageTsConfig($form, $contentType);
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
@@ -215,11 +208,11 @@ class ContentTypeBuilder
             return $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType];
         }
         $icon = MiscellaneousUtility::getIconForTemplate($form);
-        if (strpos($icon, 'EXT:') === 0 || $icon{0} !== '/') {
+        if (strpos($icon, 'EXT:') === 0 || $icon[0] !== '/') {
             $icon = GeneralUtility::getFileAbsFileName($icon);
         }
         if (!$icon) {
-            $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Plugin.png');
+            $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Extension.svg');
         }
         $iconIdentifier = MiscellaneousUtility::createIcon(
             $icon,
@@ -239,14 +232,6 @@ class ContentTypeBuilder
     {
         // use CompatibilityRegistry for correct DefaultData class
         $showItem = CompatibilityRegistry::get(static::DEFAULT_SHOWITEM);
-
-        // Do not add the special IRRE nested content display (when editing parent) if workspaces is loaded.
-        // When workspaces is loaded, the IRRE may contain move placeholders which cause TYPO3 to throw errors
-        // if attempting to save the parent record, because new versions get created for all child records and
-        // this isn't allowed for move placeholders.
-        if (!ExtensionManagementUtility::isLoaded('workspaces')) {
-            $showItem .= ', tx_flux_children';
-        }
         $GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'] = $showItem;
         ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'pi_flexform', $contentType);
     }
@@ -262,16 +247,15 @@ class ContentTypeBuilder
         $formId = $form->getId() ?: $contentType;
         $group = $form->getOption(Form::OPTION_GROUP);
         $groupName = $this->sanitizeString($group ?? 'fluxContent');
-        $extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());
+        $extensionName = $form->getExtensionName();
+        $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 
         $labelSubReference = 'flux.newContentWizard.' . $groupName;
         $labelExtensionKey = $groupName === 'fluxContent' ? 'flux' : $extensionKey;
         $labelReference = 'LLL:EXT:' . $labelExtensionKey . $form->getLocalLanguageFileRelativePath() . ':' . $labelSubReference;
-        $probedTranslation = LocalizationUtility::translate($labelReference);
-
         $this->initializeNewContentWizardGroup(
             $groupName,
-            $probedTranslation ? $labelReference : $groupName
+            $labelReference
         );
 
         // Registration for "new content element" wizard to show our new CType (otherwise, only selectable via "Content type" drop-down)
@@ -318,6 +302,17 @@ class ContentTypeBuilder
      */
     protected function registerExtbasePluginForForm($providerExtensionName, $pluginName, Form $form)
     {
+        if (!isset($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'])) {
+            // For whatever reason, TCA is not loaded or is loaded in an incomplete state. Attempting to register a
+            // plugin would fail when this is the case, so we return and avoid manipulating TCA of tt_content until
+            // a fully initialized TCA context exists.
+            // @see \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin
+            return;
+        }
+        $contentTypeGroupOption = [$providerExtensionName, '--div--'];
+        if (array_search($contentTypeGroupOption, $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'], true) === false) {
+            $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'][] = $contentTypeGroupOption;
+        }
         ExtensionUtility::registerPlugin(
             $providerExtensionName,
             $pluginName,
@@ -349,7 +344,7 @@ class ContentTypeBuilder
                     }
                 }',
                 $groupName,
-                $groupLabel ? 'header = ' . $groupLabel : ''
+                'header = ' . $groupLabel ?: 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types'
             )
         );
         $groups[$groupName] = true;
@@ -360,6 +355,11 @@ class ContentTypeBuilder
      */
     protected function getCache()
     {
-        return GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
+        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        try {
+            return $cacheManager->getCache('flux');
+        } catch (NoSuchCacheException $error) {
+            return $cacheManager->getCache('cache_runtime');
+        }
     }
 }

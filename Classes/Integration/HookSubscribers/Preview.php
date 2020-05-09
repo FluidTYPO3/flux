@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
@@ -75,7 +76,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
             $pageRenderer = $doc->getPageRenderer();
 
             $fullJsPath = PathUtility::getRelativePath(
-                PATH_typo3,
+                defined('PATH_typo3') ? PATH_typo3 : Environment::getPublicPath(),
                 GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/js/')
             );
 

@@ -71,6 +71,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * cases leave out the "name" argument which is required on all other
  * field types at the time of writing this). Where the field is placed
  * is not important; the order and the sheet location don't matter.
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class ControllerActionsViewHelper extends SelectViewHelper
 {
@@ -162,11 +165,11 @@ class ControllerActionsViewHelper extends SelectViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return ControllerActions
      * @throws \RuntimeException
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $extensionName = $arguments['controllerExtensionName'];
         $pluginName = $arguments['pluginName'];

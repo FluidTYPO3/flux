@@ -76,14 +76,13 @@ class ContentViewHelper extends AbstractFormViewHelper
 
     /**
      * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
+     * @param iterable $arguments
      * @return Column
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         // get the current Grid and check for existence of one row and one column, if missing then create them:
         $grid = static::getGridFromRenderingContext($renderingContext, 'grid');
-        ;
         $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
         $row = $grid->createContainer('Row', 'row');
         $column = $row->createContainer('Column', 'column');

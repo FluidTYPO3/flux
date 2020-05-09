@@ -33,7 +33,7 @@ class ColumnPosition extends UserFunction
     public function buildConfiguration()
     {
         $fieldConfiguration = $this->prepareConfiguration('user');
-        $fieldConfiguration['userFunc'] = UserFunctions::class . '->renderColumnPositionField';
+        $fieldConfiguration['renderType'] = 'fluxColumnPosition';
         return $fieldConfiguration;
     }
 }
