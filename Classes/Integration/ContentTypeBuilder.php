@@ -56,8 +56,14 @@ class ContentTypeBuilder
         $section = 'Configuration';
         $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
-        $emulatedControllerAction = lcfirst($contentType ? GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2))) : pathinfo($templateFilename, PATHINFO_FILENAME));
-        $emulatedPluginName = ucfirst($emulatedControllerAction);
+        $emulatedControllerAction = lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
+        if ($contentType) {
+            $pluginNamePart = GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2)));
+            if (strtolower($pluginNamePart) !== strtolower($emulatedControllerAction)) {
+                $emulatedControllerAction = lcfirst($pluginNamePart);
+            }
+        }
+        $emulatedPluginName = ucfirst(strtolower($emulatedControllerAction));
 
         $controllerClassName = str_replace('.', '\\', $defaultControllerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $localControllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
@@ -114,7 +120,7 @@ class ContentTypeBuilder
     protected function configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerAction)
     {
         $controllerName = substr($controllerClassName, strrpos($controllerClassName, '\\') + 1, -10);
-        $emulatedPluginName = ucfirst($controllerAction);
+        $emulatedPluginName = ucfirst(strtolower($controllerAction));
 
         // Sanity check: if controller does not implement a custom method matching the template name, default to "render"
         if (!method_exists($controllerClassName, $controllerAction . 'Action')) {
