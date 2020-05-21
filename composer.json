@@ -7,7 +7,7 @@
     "prefer-stable": true,
     "minimum-stability": "dev",
     "support": {
-        "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
+        "issues": "https://github.com/FluidTYPO3/flux/issues"
     },
     "autoload": {
         "psr-4": {
