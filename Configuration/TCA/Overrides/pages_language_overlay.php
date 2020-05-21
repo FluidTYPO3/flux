@@ -5,7 +5,11 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) 
     return;
 }
 
-$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['flux']);
+if (class_exists(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)) {
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)->get('flux');
+} else {
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] ?? unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['flux']);
+}
 
 if (TRUE === isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['pagesLanguageConfigurationOverlay'])
     && TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['pagesLanguageConfigurationOverlay']) {
