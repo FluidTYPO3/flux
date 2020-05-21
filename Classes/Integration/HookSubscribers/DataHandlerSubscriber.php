@@ -319,7 +319,7 @@ class DataHandlerSubscriber
     protected function getSingleRecordWithoutRestrictions(string $table, int $uid, string $fieldsToSelect)
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $uid));
@@ -359,7 +359,7 @@ class DataHandlerSubscriber
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $queryBuilder->getRestrictions()->removeAll();
 
         $query = $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
