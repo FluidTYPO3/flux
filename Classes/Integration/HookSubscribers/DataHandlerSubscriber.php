@@ -26,6 +26,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class DataHandlerSubscriber
 {
+    protected static $copiedRecords = [];
+
     public function clearCacheCommand($command)
     {
         if ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system') {
@@ -49,6 +51,51 @@ class DataHandlerSubscriber
             GeneralUtility::makeInstance(CacheManager::class)->flushCachesInGroup('system');
             GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
         }
+
+        if ($table !== 'tt_content' || $command !== 'new' || !isset($fieldArray['t3_origuid'])) {
+            // The action was not for tt_content, not a "create new" action, or not a "copy" or "copyToLanguage" action.
+            return;
+        }
+
+        $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $fieldArray['t3_origuid'], 'colPos');
+        $originalParentUid = ColumnNumberUtility::calculateParentUid($originalRecord['colPos']);
+        $newColumnPosition = 0;
+
+        if (isset(static::$copiedRecords[$originalParentUid])) {
+            // The parent of the original version of the record that was copied, was also copied in the same request;
+            // this means the record that was copied, was copied as a recursion operation. Look up the most recent copy
+            // of the original record's parent and create a new column position number based on the new parent.
+            $newParentRecord = $this->getMostRecentCopyOfRecord($originalParentUid);
+            $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                $newParentRecord['uid'],
+                ColumnNumberUtility::calculateLocalColumnNumber($originalRecord['colPos'])
+            );
+        } elseif (($fieldArray['colPos'] ?? 0) >= ColumnNumberUtility::MULTIPLIER) {
+            // Record is a child record, the updated field array still indicates it is a child (was not pasted outside
+            // of parent, rather, parent was pasted somewhere else).
+            // If language of child record is different from resolved parent (copyToLanguage occurred), resolve the
+            // right parent for the language and update the column position accordingly.
+            $originalParentUid = ColumnNumberUtility::calculateParentUid($fieldArray['colPos']);
+            $originalParent = $this->getSingleRecordWithoutRestrictions($table, $originalParentUid, 'sys_language_uid');
+            if ($originalParent['sys_language_uid'] !== $fieldArray['sys_language_uid']) {
+                // copyToLanguage case. Resolve the most recent translated version of the parent record in language of
+                // child record, and calculate the new column position number based on it.
+                $newParentRecord = $this->getTranslatedVersionOfParentInLanguageOnPage((int) $fieldArray['sys_language_uid'], (int) $fieldArray['pid'], (int) $originalParentUid);
+                $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                    $newParentRecord['uid'],
+                    ColumnNumberUtility::calculateLocalColumnNumber($fieldArray['colPos'])
+                );
+            }
+        }
+
+        if ($newColumnPosition > 0) {
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+            $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, \PDO::PARAM_INT)->where(
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT))
+            )->execute();
+        }
+
+        static::$copiedRecords[$fieldArray['t3_origuid']] = true;
     }
 
     /**
@@ -146,7 +193,12 @@ class DataHandlerSubscriber
                             break;
                         case 'delete':
                         case 'undelete':
+                        case 'copyToLanguage':
                         case 'localize':
+                            $this->cascadeCommandToChildRecords($table, (int)$id, $command, $value, $dataHandler);
+                            break;
+                        case 'copy':
+                            unset($value['update']['colPos']);
                             $this->cascadeCommandToChildRecords($table, (int)$id, $command, $value, $dataHandler);
                             break;
                         default:
@@ -180,6 +232,7 @@ class DataHandlerSubscriber
     public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
     {
 
+        /*
         if ($table === 'pages' && $command === 'copy') {
             foreach ($reference->copyMappingArray['tt_content'] ?? [] as $originalRecordUid => $copiedRecordUid) {
                 $copiedRecord = $this->getSingleRecordWithoutRestrictions('tt_content', $copiedRecordUid, 'colPos');
@@ -205,8 +258,9 @@ class DataHandlerSubscriber
                 }
             }
         }
+        */
 
-        if ($table !== 'tt_content' || ($command !== 'copyToLanguage' && $command !== 'copy' && $command !== 'move')) {
+        if ($table !== 'tt_content' || $command !== 'move') {
             return;
         }
 
@@ -232,12 +286,6 @@ class DataHandlerSubscriber
 
         if ($command === 'move') {
             $subCommandMap = $this->recursivelyMoveChildRecords($table, $id, $destinationPid, $languageUid, $reference);
-        } elseif ($command === 'copy') {
-            $subCommandMap = $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command);
-        } elseif ($command === 'copyToLanguage') {
-            $destinationPid = reset($recordsToProcess)['pid'];
-            $languageUid = reset($reference->cmdmap[$table])["copyToLanguage"];
-            $subCommandMap = $this->recursivelyCopyChildRecords($table, (int)$id, (int)$reference->copyMappingArray[$table][$id], $destinationPid, $languageUid, $reference, $command);
         }
 
         if (!empty($subCommandMap)) {
@@ -285,45 +333,42 @@ class DataHandlerSubscriber
         return $dataMap;
     }
 
-    protected function recursivelyCopyChildRecords(string $table, int $parentUid, int $newParentUid, int $pageUid, int $languageUid, DataHandler $dataHandler, $command): array
-    {
-        list (, $recordsToCopy) = $this->getParentAndRecordsNestedInGrid(
-            $table,
-            $parentUid,
-            'uid, colPos'
-        );
-
-        $dataMap = [];
-        foreach ($recordsToCopy as $recordToCopy) {
-            $overrideArray = [
-                'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                    $newParentUid,
-                    ColumnNumberUtility::calculateLocalColumnNumber((int)$recordToCopy['colPos'])
-                ),
-            ];
-
-            if ($command === 'copyToLanguage') {
-                $overrideArray[$GLOBALS['TCA']['tt_content']['ctrl']['languageField']] = (int) $languageUid;
-            }
-
-            $recordUid = $recordToCopy['uid'];
-            $dataMap[$table][$recordUid][$command] = [
-                'action' => 'paste',
-                'target' => $pageUid,
-                'update' => $overrideArray,
-            ];
-        }
-        return $dataMap;
-    }
-
-    protected function getSingleRecordWithoutRestrictions(string $table, int $uid, string $fieldsToSelect)
+    protected function getSingleRecordWithoutRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
-            ->where($queryBuilder->expr()->eq('uid', $uid));
-        return $queryBuilder->execute()->fetch();
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
+        return $queryBuilder->execute()->fetch() ?: null;
+    }
+
+    protected function getMostRecentCopyOfRecord(int $uid, string $fieldsToSelect = 'uid'): ?array
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
+            ->from('tt_content')
+            ->orderBy('uid', 'DESC')
+            ->setMaxResults(1)
+            ->where($queryBuilder->expr()->eq('t3_origuid', $uid));
+        return $queryBuilder->execute()->fetch() ?: null;
+    }
+
+    protected function getTranslatedVersionOfParentInLanguageOnPage(int $languageUid, int $pageUid, int $originalParentUid, string $fieldsToSelect = '*'): ?array
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
+            ->from('tt_content')
+            ->setMaxResults(1)
+            ->orderBy('uid', 'DESC')
+            ->where(
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($languageUid, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('l10n_source', $queryBuilder->createNamedParameter($originalParentUid, \PDO::PARAM_INT))
+            );
+        return $queryBuilder->execute()->fetch() ?: null;
     }
 
     protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect, bool $respectPid = false)
