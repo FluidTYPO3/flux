@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
@@ -372,8 +373,10 @@ class FluxService implements SingletonInterface
             );
             return [];
         }
-        $plugAndPlayTemplatesDirectory = trim($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlayDirectory'] ?? DropInContentTypeDefinition::DESIGN_DIRECTORY, '/.') . '/';;
-        if (($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlay'] ?? true) && $extensionName === 'Flux') {
+
+        $plugAndPlayEnabled = ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY);
+        $plugAndPlayTemplatesDirectory = trim(ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY), '/.') . '/';;
+        if ($plugAndPlayEnabled && $extensionName === 'Flux') {
             return [
                 TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::TEMPLATES_DIRECTORY . DropInContentTypeDefinition::PAGE_DIRECTORY],
                 TemplatePaths::CONFIG_PARTIALROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
@@ -388,7 +391,7 @@ class FluxService implements SingletonInterface
         foreach ($registeredExtensionKeys as $registeredExtensionKey) {
             $configurations[$registeredExtensionKey] = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($registeredExtensionKey))->toArray();
         }
-        if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlay'] ?? true) {
+        if ($plugAndPlayEnabled) {
             $configurations['FluidTYPO3.Flux'] = array_replace(
                 $configurations['FluidTYPO3.Flux'] ?? [],
                 [

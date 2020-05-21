@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased;
  */
 
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -65,7 +66,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
 
     public static function fetchContentTypes(): iterable
     {
-        if (!($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlay'] ?? true)) {
+        if (!ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY)) {
             // Do not return or auto-create any plug and play templates if the extension config option is disabled.
             // Option default value is ENABLED (hence null coalesce to TRUE if not defined)
             return [];
@@ -73,7 +74,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         // Steps:
         // 1) auto-create if missing, the required file structure and dummy files
         // 2) iterate all content types found in the file structure
-        $basePath = trim($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['plugAndPlayDirectory'] ?? static::DESIGN_DIRECTORY, '/.') . '/';
+        $basePath = trim(ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY), '/.') . '/';
         $basePath = realpath(GeneralUtility::getFileAbsFileName($basePath)) . '/';
         static::initializeDropInFileSystemStructure($basePath);
 
