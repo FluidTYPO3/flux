@@ -19,6 +19,8 @@ use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Request as WebRequest;
@@ -27,6 +29,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplateView;
+use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
 
 /**
  * AbstractProvider
@@ -375,16 +378,24 @@ class AbstractProvider implements ProviderInterface
         $viewVariables = $this->getViewVariables($row);
         $view = $this->getViewForRecord($row);
 
-        if ($configurationSectionName) {
-            $view->renderSection($configurationSectionName, $viewVariables, false);
-        } else {
-            $view->assignMultiple($viewVariables);
-            $view->render();
+        try {
+            if ($configurationSectionName) {
+                $view->renderSection($configurationSectionName, $viewVariables, false);
+            } else {
+                $view->assignMultiple($viewVariables);
+                $view->render();
+            }
+        } catch (InvalidTemplateResourceException $exception) {
+            $this->dispatchFlashMessageForException($exception);
+            return null;
         }
 
         $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class) ?? [];
-        if (isset($variables['form']) && $variables['form']->getOption(Form::OPTION_STATIC)) {
-            $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
+        if (isset($variables['form'])) {
+            $variables['form']->setOption(Form::OPTION_TEMPLATEFILE, $this->getTemplatePathAndFilename($row));
+            if ($variables['form']->getOption(Form::OPTION_STATIC)) {
+                $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
+            }
         }
 
         $returnValue = $name ? $variables[$name] : $variables;
@@ -1065,5 +1076,12 @@ class AbstractProvider implements ProviderInterface
     {
         $this->grid = $grid;
         return $this;
+    }
+
+    protected function dispatchFlashMessageForException(\Throwable $error)
+    {
+        $flashMesasage = GeneralUtility::makeInstance(FlashMessage::class, $error->getMessage(), '', FlashMessage::ERROR);
+        $flashMesasageQueue = GeneralUtility::makeInstance(FlashMessageService::class)->getMessageQueueByIdentifier();
+        $flashMesasageQueue->enqueue($flashMesasage);
     }
 }

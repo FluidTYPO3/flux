@@ -104,7 +104,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             $colCount = 0;
             $columns = [];
             foreach ($row['columns.'] as $column) {
-                $colPos = (string)$column['colPos'];
+                $colPos = (int)$column['colPos'];
                 $key = ($index + 1) . '.';
                 $columns[$key] = $column;
                 $colPosList[$colPos] = $colPos;
@@ -114,6 +114,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
                     $column['icon']
                 ];
                 $colCount += $column['colspan'] ? $column['colspan'] : 1;
+                $backendLayout['usedColumns'][$colPos] = $column['name'];
                 ++ $index;
             }
             ++ $rowIndex;
@@ -193,7 +194,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         $converted = [];
         foreach ($configuration as $key => $value) {
             if (true === is_array($value)) {
-                $key = rtrim($key, '.') . '.';
+                $key = rtrim((string) $key, '.') . '.';
                 $value = $this->ensureDottedKeys($value);
             }
             $converted[$key] = $value;

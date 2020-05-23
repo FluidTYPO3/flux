@@ -56,8 +56,14 @@ class ContentTypeBuilder
         $section = 'Configuration';
         $controllerName = 'Content';
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
-        $emulatedControllerAction = lcfirst($contentType ? GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2))) : pathinfo($templateFilename, PATHINFO_FILENAME));
-        $emulatedPluginName = ucfirst($emulatedControllerAction);
+        $emulatedControllerAction = lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
+        if ($contentType) {
+            $pluginNamePart = GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2)));
+            if (strtolower($pluginNamePart) !== strtolower($emulatedControllerAction)) {
+                $emulatedControllerAction = lcfirst($pluginNamePart);
+            }
+        }
+        $emulatedPluginName = ucfirst(strtolower($emulatedControllerAction));
 
         $controllerClassName = str_replace('.', '\\', $defaultControllerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $localControllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
@@ -114,7 +120,7 @@ class ContentTypeBuilder
     protected function configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerAction)
     {
         $controllerName = substr($controllerClassName, strrpos($controllerClassName, '\\') + 1, -10);
-        $emulatedPluginName = ucfirst($controllerAction);
+        $emulatedPluginName = ucfirst(strtolower($controllerAction));
 
         // Sanity check: if controller does not implement a custom method matching the template name, default to "render"
         if (!method_exists($controllerClassName, $controllerAction . 'Action')) {
@@ -202,11 +208,11 @@ class ContentTypeBuilder
             return $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType];
         }
         $icon = MiscellaneousUtility::getIconForTemplate($form);
-        if (strpos($icon, 'EXT:') === 0 || $icon{0} !== '/') {
+        if (strpos($icon, 'EXT:') === 0 || $icon[0] !== '/') {
             $icon = GeneralUtility::getFileAbsFileName($icon);
         }
         if (!$icon) {
-            $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Plugin.png');
+            $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Extension.svg');
         }
         $iconIdentifier = MiscellaneousUtility::createIcon(
             $icon,
@@ -296,6 +302,13 @@ class ContentTypeBuilder
      */
     protected function registerExtbasePluginForForm($providerExtensionName, $pluginName, Form $form)
     {
+        if (!isset($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'])) {
+            // For whatever reason, TCA is not loaded or is loaded in an incomplete state. Attempting to register a
+            // plugin would fail when this is the case, so we return and avoid manipulating TCA of tt_content until
+            // a fully initialized TCA context exists.
+            // @see \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin
+            return;
+        }
         $contentTypeGroupOption = [$providerExtensionName, '--div--'];
         if (array_search($contentTypeGroupOption, $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'], true) === false) {
             $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'][] = $contentTypeGroupOption;
