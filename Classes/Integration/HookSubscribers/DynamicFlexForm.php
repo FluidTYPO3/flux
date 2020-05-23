@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Utility\CacheNamingUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
@@ -240,7 +241,7 @@ class DynamicFlexForm extends FlexFormTools
     {
         static $cache;
         if (!$cache) {
-            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
+            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache(CacheNamingUtility::getCacheName('cache_runtime'));
         }
         return $cache;
     }

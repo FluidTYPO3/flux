@@ -68,7 +68,7 @@ class FormViewHelperTest extends AbstractViewHelperTestCase
         $recordProperty->setAccessible(true);
         $recordProperty->setValue($subject, ['uid' => 123]);
         $result = $method->invoke($subject);
-        $this->assertContains('__outlet[table]', $result);
-        $this->assertContains('__outlet[recordUid]', $result);
+        $this->assertStringContainsString('__outlet[table]', $result);
+        $this->assertStringContainsString('__outlet[recordUid]', $result);
     }
 }

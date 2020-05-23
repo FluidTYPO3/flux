@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Utility\CacheNamingUtility;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
@@ -187,13 +188,14 @@ class ContentTypeBuilder
             }
         }
 
-        $this->registerExtbasePluginForForm($providerExtensionName, GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2))), $form);
+        $parts = explode('_', $contentType, 2);
+        $this->registerExtbasePluginForForm($providerExtensionName, GeneralUtility::underscoredToUpperCamelCase(end($parts)), $form);
         $this->addPageTsConfig($form, $contentType);
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
         // all TypoScript is finally loaded.
         GeneralUtility::makeInstance(CacheManager::class)
-            ->getCache('cache_runtime')
+            ->getCache(CacheNamingUtility::getCacheName('cache_runtime'))
             ->remove('viewpaths_' . ExtensionNamingUtility::getExtensionKey($providerExtensionName));
     }
 
@@ -359,7 +361,7 @@ class ContentTypeBuilder
         try {
             return $cacheManager->getCache('flux');
         } catch (NoSuchCacheException $error) {
-            return $cacheManager->getCache('cache_runtime');
+            return $cacheManager->getCache(CacheNamingUtility::getCacheName('cache_runtime'));
         }
     }
 }

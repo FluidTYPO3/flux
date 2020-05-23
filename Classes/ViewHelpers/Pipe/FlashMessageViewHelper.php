@@ -54,10 +54,10 @@ class FlashMessageViewHelper extends AbstractPipeViewHelper
     ) {
         /** @var FlashMessagePipe $pipe */
         $pipe = GeneralUtility::makeInstance(ObjectManager::class)->get(FlashMessagePipe::class);
-        $pipe->setTitle($arguments['title']);
-        $pipe->setMessage($arguments['message']);
-        $pipe->setSeverity($arguments['severity']);
-        $pipe->setStoreInSession((boolean) $arguments['storeInSession']);
+        $pipe->setTitle($arguments['title'] ?? 'Message');
+        $pipe->setMessage($arguments['message'] ?? 'Pipe message');
+        $pipe->setSeverity($arguments['severity'] ?? FlashMessage::INFO);
+        $pipe->setStoreInSession((boolean) ($arguments['storeInSession'] ?? true));
         return $pipe;
     }
 }

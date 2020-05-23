@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Utility\CacheNamingUtility;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
@@ -329,7 +330,8 @@ class FluxService implements SingletonInterface
      */
     public function convertFileReferenceToTemplatePathAndFilename($reference)
     {
-        $filename = array_pop(explode(':', $reference));
+        $parts = explode(':', $reference);
+        $filename = array_pop($parts);
         if (true === ctype_digit($filename)) {
             return $this->resourceFactory->getFileObjectFromCombinedIdentifier($reference);
         }
@@ -434,7 +436,7 @@ class FluxService implements SingletonInterface
     protected function getRuntimeCache()
     {
         static $cache;
-        return $cache ?? ($cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime'));
+        return $cache ?? ($cache = GeneralUtility::makeInstance(CacheManager::class)->getCache(CacheNamingUtility::getCacheName('cache_runtime')));
     }
 
     /**
@@ -448,7 +450,7 @@ class FluxService implements SingletonInterface
             try {
                 $cache = $cacheManager->getCache('flux');
             } catch (NoSuchCacheException $error) {
-                $cache = $cacheManager->getCache('cache_runtime');
+                $cache = $cacheManager->getCache(CacheNamingUtility::getCacheName('cache_runtime'));
             }
         }
         return $cache;

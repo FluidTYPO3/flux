@@ -322,8 +322,8 @@ class ControllerActions extends Select
         $extensionName = $this->getControllerExtensionName();
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
         $pluginName = $this->getPluginName();
-        $actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']
-            [$extensionName]['plugins'][$pluginName]['controllers'];
+        $actions = (array) ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']
+            [$extensionName]['plugins'][$pluginName]['controllers'] ?? []);
         foreach ($actions as $controllerName => $definitions) {
             $actions[$controllerName] = $definitions['actions'];
         }
@@ -380,7 +380,8 @@ class ControllerActions extends Select
             $label = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
         } elseif (method_exists($controllerClassName, $actionName . 'Action') && true === $disableLocalLanguageLabels) {
             $methodReflection = $this->reflectAction($controllerName, $actionName);
-            $line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
+            $parts = explode("\n", trim($methodReflection->getDocComment(), "/*\n"));
+            $line = array_shift($parts);
             $line = trim(trim($line), '* ');
             if (substr($line, 0, 1) !== '@') {
                 $label = $line;
@@ -463,7 +464,7 @@ class ControllerActions extends Select
                 continue;
             }
             foreach ($controllerActions as $actionName) {
-                if (is_array($exclusions[$controllerName]) && in_array($actionName, $exclusions[$controllerName])) {
+                if (is_array($exclusions[$controllerName] ?? false) && in_array($actionName, $exclusions[$controllerName])) {
                     continue;
                 } elseif ($limitByControllerName && $controllerName !== $limitByControllerName) {
                     continue;

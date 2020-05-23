@@ -126,7 +126,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
      */
     public function getSubject()
     {
-        return $this->subject;
+        return $this->subject ?? 'Subject';
     }
 
     /**
@@ -200,13 +200,13 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
             list ($recipientAddress, $recipientName) = $recipient;
         } else {
             $recipientAddress = $recipient;
-            $recipientName = null;
+            $recipientName = '';
         }
         if (true === is_array($sender)) {
             list ($senderAddress, $senderName) = $sender;
         } else {
             $senderAddress = $sender;
-            $senderName = null;
+            $senderName = '';
         }
         $subject = $this->getSubject();
         if (true === is_string($data)) {
@@ -214,8 +214,8 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
         }
         $message = new MailMessage();
         $message->setSubject($subject);
-        $message->setFrom($senderAddress, $senderName);
-        $message->setTo($recipientAddress, $recipientName);
+        $message->setFrom($senderAddress ?? 'www@localhost', $senderName ?? 'Sender Name');
+        $message->setTo($recipientAddress ?? 'www@localhost', $recipientName ?? 'Recipient Name');
         $message->setBody($body);
 
         return $message;

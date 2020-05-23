@@ -72,10 +72,10 @@ class PageController extends AbstractFluxController implements PageControllerInt
     }
 
     /**
-     * @return array|null
+     * @return array
      */
     public function getRecord()
     {
-        return $GLOBALS['TSFE']->page ?? null;
+        return $GLOBALS['TSFE']->page ?? [];
     }
 }

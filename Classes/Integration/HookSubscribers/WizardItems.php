@@ -21,7 +21,6 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * WizardItemsHookSubscriber
@@ -99,7 +98,9 @@ class WizardItems implements NewContentElementWizardHookInterface
         $pageUid = 0;
         if (class_exists(SiteFinder::class)) {
             $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
-            $pageUid = (int) (key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true));
+            $idProperty = new \ReflectionProperty($parentObject, 'id');
+            $idProperty->setAccessible(true);
+            $pageUid = (int) (key($dataArray) ?? $idProperty->getValue($parentObject));
             if ($pageUid > 0) {
                 try {
                     $enabledContentTypes = [];
@@ -129,9 +130,11 @@ class WizardItems implements NewContentElementWizardHookInterface
 
     protected function filterPermittedFluidContentTypesByInsertionPosition(array $items, NewContentElementController $parentObject, int $pageUid): array
     {
+        $colPosProperty = new \ReflectionProperty($parentObject, 'colPos');
+        $colPosProperty->setAccessible(true);
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
             $pageUid,
-            (int) ($dataArray['colPos'] ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
+            (int) ($dataArray['colPos'] ?? $colPosProperty->getValue($parentObject))
         );
         $overrides = HookHandler::trigger(
             HookHandler::ALLOWED_CONTENT_RULES_FETCHED,
@@ -260,11 +263,12 @@ class WizardItems implements NewContentElementWizardHookInterface
         $preserveHeaders = [];
         foreach ($items as $name => $item) {
             if (false !== strpos($name, '_')) {
-                array_push($preserveHeaders, reset(explode('_', $name)));
+                $parts = explode('_', $name);
+                array_push($preserveHeaders, reset($parts));
             }
         }
         foreach ($items as $name => $item) {
-            if (false === strpos($name, '_') && false === in_array($name, $preserveHeaders)) {
+            if (false === strpos($name, '_') && false === in_array($name, $preserveHeaders, true)) {
                 unset($items[$name]);
             }
         }
@@ -282,7 +286,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         if (0 < count($blacklist)) {
             foreach ($blacklist as $contentElementType) {
                 foreach ($items as $name => $item) {
-                    if ($item['tt_content_defValues']['CType'] === $contentElementType) {
+                    if (($item['tt_content_defValues']['CType'] ?? null) === $contentElementType) {
                         unset($items[$name]);
                     }
                 }
@@ -301,7 +305,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         $whitelist = array_unique($whitelist);
         if (0 < count($whitelist)) {
             foreach ($items as $name => $item) {
-                if (false !== strpos($name, '_') && !in_array($item['tt_content_defValues']['CType'], $whitelist)) {
+                if (false !== strpos($name, '_') && !in_array($item['tt_content_defValues']['CType'] ?? null, $whitelist, true)) {
                     unset($items[$name]);
                 }
             }

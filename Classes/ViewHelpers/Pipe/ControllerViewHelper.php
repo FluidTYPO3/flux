@@ -57,8 +57,8 @@ class ControllerViewHelper extends AbstractPipeViewHelper
         iterable $arguments,
         \Closure $renderChildrenClosure = null
     ) {
-        $extensionName = $arguments['extensionName'];
-        $controller = $arguments['controller'];
+        $extensionName = $arguments['extensionName'] ?? 'Flux';
+        $controller = $arguments['controller'] ?? 'Content';
         $controllerContext = $renderingContext->getControllerContext();
         if (true === empty($extensionName)) {
             $extensionName = $controllerContext->getRequest()->getControllerExtensionName();
@@ -68,7 +68,7 @@ class ControllerViewHelper extends AbstractPipeViewHelper
         }
         /** @var ControllerPipe $pipe */
         $pipe = GeneralUtility::makeInstance(ObjectManager::class)->get(ControllerPipe::class);
-        $pipe->setAction($arguments['action']);
+        $pipe->setAction($arguments['action'] ?? 'default');
         $pipe->setController($controller);
         $pipe->setExtensionName($extensionName);
         return $pipe;

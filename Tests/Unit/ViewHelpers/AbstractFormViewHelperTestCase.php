@@ -13,31 +13,26 @@ use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 
 /**
  * AbstractFormViewHelperTestCase
  */
 abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 {
-
     /**
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-        $isSeven = version_compare(TYPO3_version, '8.0', '<') ;
-        $methods = array('getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext');
-        if (!$isSeven) {
-            $methods[] = 'getVariableProvider';
-        }
         $this->viewHelperVariableContainer = $this->getMockBuilder(
-            $isSeven ? \TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer::class : \TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer::class
+            ViewHelperVariableContainer::class
         )->setMethods(
             array('exists', 'get', 'add')
         )->getMock();
         $this->templateVariableContainer = $this->getMockBuilder(
-            $isSeven ? TemplateVariableContainer::class : StandardVariableProvider::class
+            StandardVariableProvider::class
         )->setMethods(
             array('get', 'add')
         )->getMock();
@@ -51,13 +46,8 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
             ->willReturn(new Request());
         $this->renderingContext = new RenderingContext();
         $this->renderingContext->setControllerContext($this->controllerContext);
-        if ($isSeven) {
-            $this->renderingContext->injectViewHelperVariableContainer($this->viewHelperVariableContainer);
-            $this->renderingContext->injectTemplateVariableContainer($this->templateVariableContainer);
-        } else {
-            $this->renderingContext->setViewHelperVariableContainer($this->viewHelperVariableContainer);
-            $this->renderingContext->setVariableProvider($this->templateVariableContainer);
-        }
+        $this->renderingContext->setViewHelperVariableContainer($this->viewHelperVariableContainer);
+        $this->renderingContext->setVariableProvider($this->templateVariableContainer);
     }
 
     /**

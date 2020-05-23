@@ -21,7 +21,9 @@ class ProviderProcessor implements FormDataProviderInterface
      */
     public function addData(array $result)
     {
-        if (class_exists(SiteFinder::class) && $result['tableName'] === 'tt_content') {
+        $tableName = $result['tableName'] ?? null;
+        $databaseRow = $result['databaseRow'] ?? [];
+        if (class_exists(SiteFinder::class) && $tableName === 'tt_content') {
             $pageUid = $result['parentPageRow']['uid'];
             if ($pageUid > 0) {
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
@@ -49,14 +51,14 @@ class ProviderProcessor implements FormDataProviderInterface
 
         $resolver = $this->getProviderResolver();
         $providers = $resolver->resolveConfigurationProviders(
-            $result['tableName'],
+            $tableName,
             null,
-            $result['databaseRow'],
+            $databaseRow,
             null,
             DataStructureProviderInterface::class
         );
         foreach ($providers as $provider) {
-            $result = $provider->processTableConfiguration($result['databaseRow'], $result);
+            $result = $provider->processTableConfiguration($databaseRow, $result);
         }
         return $result;
     }

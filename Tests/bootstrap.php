@@ -1,5 +1,7 @@
 <?php
 // Register composer autoloader
+use FluidTYPO3\Flux\Utility\CacheNamingUtility;
+
 $autoloaderFolders = [
     trim(shell_exec('pwd')) . '/vendor/',
     __DIR__ . '/../vendor/'
@@ -30,16 +32,15 @@ if (!isset($autoloader)) {
 }
 
 $autoloader->addPsr4('FluidTYPO3\\Flux\\Tests\\', getenv('TYPO3_PATH_ROOT') . 'typo3conf/ext/flux/Tests/');
-
 \FluidTYPO3\Development\Bootstrap::initialize(
 	$autoloader,
 	array(
-		'cache_pages' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
-		'cache_hash' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
+        CacheNamingUtility::getCacheName('cache_pages') => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
+        CacheNamingUtility::getCacheName('cache_hash') => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 		'l10n' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 		'fluid_template' => \FluidTYPO3\Development\Bootstrap::CACHE_PHP_NULL,
-		'cache_core' => \FluidTYPO3\Development\Bootstrap::CACHE_PHP_NULL,
-		'cache_runtime' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
+        CacheNamingUtility::getCacheName('cache_core') => \FluidTYPO3\Development\Bootstrap::CACHE_PHP_NULL,
+        CacheNamingUtility::getCacheName('cache_runtime') => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 		'extbase_reflection' => \FluidTYPO3\Development\Bootstrap::CACHE_MEMORY,
 		'extbase_object' => \FluidTYPO3\Development\Bootstrap::CACHE_MEMORY,
 		'extbase_datamapfactory_datamap' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,

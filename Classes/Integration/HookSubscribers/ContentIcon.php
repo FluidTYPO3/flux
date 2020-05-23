@@ -169,7 +169,7 @@ class ContentIcon
         $cookie = $this->getCookie();
         if (null !== $_COOKIE) {
             $cookie = json_decode(urldecode($cookie));
-            $collapsed = in_array($row['uid'], (array) $cookie);
+            $collapsed = in_array($row['uid'] ?? 0, (array) $cookie, true);
         }
         return HookHandler::trigger(
             HookHandler::PREVIEW_GRID_TOGGLE_STATUS_FETCHED,

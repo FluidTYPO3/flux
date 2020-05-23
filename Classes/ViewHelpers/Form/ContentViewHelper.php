@@ -86,8 +86,8 @@ class ContentViewHelper extends AbstractFormViewHelper
         $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
         $row = $grid->createContainer('Row', 'row');
         $column = $row->createContainer('Column', 'column');
-        $column->setName($arguments['name']);
-        $column->setLabel($arguments['label']);
+        $column->setName($arguments['name'] ?? 'content');
+        $column->setLabel($arguments['label'] ?? 'Content');
         return $column;
     }
 }

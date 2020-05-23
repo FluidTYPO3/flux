@@ -9,13 +9,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  */
 
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * WorkspacesAwareRecordServiceTest
  */
 class WorkspacesAwareRecordServiceTest extends RecordServiceTest
 {
-
     /**
      * @test
      */

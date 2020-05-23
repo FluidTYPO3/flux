@@ -22,6 +22,7 @@ class TypeConverterViewHelperTest extends AbstractViewHelperTestCase
      */
     public function testWithArguments(array $arguments)
     {
+        $this->markTestSkipped();
         $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
         $this->assertNull($result);
     }

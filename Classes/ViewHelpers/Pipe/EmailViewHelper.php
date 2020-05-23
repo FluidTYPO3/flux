@@ -61,17 +61,17 @@ class EmailViewHelper extends AbstractPipeViewHelper
         iterable $arguments,
         \Closure $renderChildrenClosure = null
     ) {
-        $body = $arguments['body'];
+        $body = $arguments['body'] ?? '';
         if (true === empty($body) && $renderChildrenClosure instanceof \Closure) {
             $body = $renderChildrenClosure();
         }
         /** @var EmailPipe $pipe */
         $pipe = GeneralUtility::makeInstance(ObjectManager::class)->get(EmailPipe::class);
-        $pipe->setSubject($arguments['subject']);
-        $pipe->setSender($arguments['sender']);
-        $pipe->setRecipient($arguments['recipient']);
+        $pipe->setSubject($arguments['subject'] ?? '');
+        $pipe->setSender($arguments['sender'] ?? '');
+        $pipe->setRecipient($arguments['recipient'] ?? '');
         $pipe->setBody($body);
-        $pipe->setBodySection($arguments['bodySection']);
+        $pipe->setBodySection($arguments['bodySection'] ?? null);
 
         return $pipe;
     }

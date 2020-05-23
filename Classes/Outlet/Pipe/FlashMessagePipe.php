@@ -33,7 +33,7 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface
     /**
      * @var boolean
      */
-    protected $storeInSession = true;
+    protected $storeInSession = false;
 
     /**
      * @var string

@@ -8,17 +8,29 @@ namespace FluidTYPO3\Flux\Tests\Unit;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Development\Bootstrap;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
-use TYPO3\CMS\Core\Charset\CharsetConverter;
+use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\EventDispatcher\ListenerProvider;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Mvc\View\GenericViewResolver;
+use TYPO3\CMS\Extbase\Mvc\View\ViewResolverInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * AbstractTestCase
  */
-abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
+abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
 {
 
     const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/Content/AbsolutelyMinimal.html';
@@ -34,23 +46,44 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
     /**
-     * @param string $name
-     * @param array $data
-     * @param string $dataName
+     * @var ObjectManagerInterface
      */
-    public function __construct($name = null, array $data = array(), $dataName = '')
-    {
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        $this->objectManager = clone $objectManager;
-        parent::__construct($name, $data, $dataName);
-    }
+    protected $objectManager;
 
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
+        parent::setUp();
+        $objectContainer = Bootstrap::getInstance()->getObjectContainer();
+        $objectManager = GeneralUtility::makeInstance(
+            ObjectManager::class,
+            Bootstrap::getInstance()->getContainer(),
+            $objectContainer
+        );
+        $objectContainer->registerImplementation(
+            ViewResolverInterface::class,
+            GenericViewResolver::class
+        );
+        $objectContainer->registerImplementation(
+            ContainerInterface::class,
+            get_class(Bootstrap::getInstance()->getContainer())
+        );
+        $objectContainer->registerImplementation(
+            EventDispatcherInterface::class,
+            EventDispatcher::class
+        );
+        $objectContainer->registerImplementation(
+            ListenerProviderInterface::class,
+            ListenerProvider::class
+        );
+        GeneralUtility::setSingletonInstance(ObjectManagerInterface::class, $objectManager);
+        GeneralUtility::setSingletonInstance(ObjectManager::class, $objectManager);
+        $this->objectManager = clone $objectManager;
+        $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)->disableOriginalConstructor()->getMock();
+        $GLOBALS['BE_USER'] = new BackendUserAuthentication();
+        $GLOBALS['BE_USER']->setLogger($this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass());
     }
 
     /**
@@ -88,46 +121,6 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
             $this->assertNull($chained);
         }
         $this->assertEquals($expectedValue, $instance->$getter());
-    }
-
-    /**
-     * @param mixed $value
-     * @return void
-     */
-    protected function assertIsArray($value)
-    {
-        $isArrayConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
-        $this->assertThat($value, $isArrayConstraint);
-    }
-
-    /**
-     * @param mixed $value
-     * @return void
-     */
-    protected function assertIsString($value)
-    {
-        $isStringConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_STRING);
-        $this->assertThat($value, $isStringConstraint);
-    }
-
-    /**
-     * @param mixed $value
-     * @return void
-     */
-    protected function assertIsInteger($value)
-    {
-        $isIntegerConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_INT);
-        $this->assertThat($value, $isIntegerConstraint);
-    }
-
-    /**
-     * @param mixed $value
-     * @return void
-     */
-    protected function assertIsBoolean($value)
-    {
-        $isBooleanConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_BOOL);
-        $this->assertThat($value, $isBooleanConstraint);
     }
 
     /**
@@ -189,7 +182,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
         /** @var FluxService $fluxService */
         $fluxService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods($methods)->disableOriginalConstructor()->getMock();
         $fluxService->injectObjectManager($this->objectManager);
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->disableOriginalConstructor()->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
         return $fluxService;
     }
@@ -207,8 +200,8 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function createInstance()
     {
-        $instance = $this->objectManager->get($this->createInstanceClassName());
-        return $instance;
+        $className = $this->createInstanceClassName();
+        return $this->getMockBuilder($className)->addMethods(['dummy'])->disableOriginalConstructor()->getMock();
     }
 
 }

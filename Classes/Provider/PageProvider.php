@@ -200,7 +200,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         if (!empty($row[self::FIELD_ACTION_MAIN])) {
             return is_array($row[self::FIELD_ACTION_MAIN]) ? $row[self::FIELD_ACTION_MAIN][0] : $row[self::FIELD_ACTION_MAIN];
         }
-        return ($this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB] ?? 'flux->default') ?: 'flux->default';
+        return ($this->pageService->getPageTemplateConfiguration($row['uid'] ?? 0)[self::FIELD_ACTION_SUB] ?? 'flux->default') ?: 'flux->default';
     }
 
     /**
@@ -223,7 +223,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $fieldName = $this->getFieldName($row);
         $form = $this->getForm($row);
         $immediateConfiguration = $this->configurationService->convertFlexFormContentToArray(
-            $row[$fieldName],
+            $row[$fieldName] ?? '',
             $form,
             null,
             null
@@ -290,10 +290,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         }
         $template = $records[0][self::FIELD_ACTION_SUB];
         foreach ($records as $index => $record) {
-            $hasMainAction = false === empty($record[self::FIELD_ACTION_MAIN]);
-            $hasSubAction = false === empty($record[self::FIELD_ACTION_SUB]);
-            $shouldUseMainTemplate = $template !== $record[self::FIELD_ACTION_SUB];
-            $shouldUseSubTemplate = $template !== $record[self::FIELD_ACTION_MAIN];
+            $hasMainAction = false === empty($record[self::FIELD_ACTION_MAIN] ?? null);
+            $hasSubAction = false === empty($record[self::FIELD_ACTION_SUB] ?? null);
+            $shouldUseMainTemplate = $template !== ($record[self::FIELD_ACTION_SUB] ?? null);
+            $shouldUseSubTemplate = $template !== ($record[self::FIELD_ACTION_MAIN] ?? null);
             if (($hasMainAction && $shouldUseSubTemplate) || ($hasSubAction && $shouldUseMainTemplate)) {
                 return array_slice($records, $index);
             }
@@ -397,7 +397,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     {
         $parentFieldName = $this->getParentFieldName($row);
         if (null !== $parentFieldName && false === isset($row[$parentFieldName])) {
-            $row = $this->recordService->getSingle($this->getTableName($row), '*', $row[$parentFieldName]);
+            $row = $this->recordService->getSingle($this->getTableName($row), '*', $row[$parentFieldName] ?? 0);
         }
         return $row[$parentFieldName];
     }
@@ -413,8 +413,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             $record[$parentFieldName] = $this->getParentFieldValue($record);
         }
         $records = [];
-        while (0 < $record[$parentFieldName]) {
-            $record = $this->recordService->getSingle($this->getTableName($record), '*', $record[$parentFieldName]);
+        while (0 < ($record[$parentFieldName] ?? 0)) {
+            $record = $this->recordService->getSingle($this->getTableName($record), '*', $record[$parentFieldName] ?? 0);
             if (!$record) {
                 break;
             }

@@ -14,8 +14,6 @@ use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class PageServiceTest
@@ -56,7 +54,7 @@ class PageServiceTest extends AbstractTestCase
     public function testGetPageTemplateConfiguration(array $records, $expected)
     {
         /** @var WorkspacesAwareRecordService|\PHPUnit_Framework_MockObject_MockObject $service */
-        $service = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(array('getSingle'))->getMock();
+        $service = $this->getMockBuilder(WorkspacesAwareRecordService::class)->onlyMethods(array('getSingle'))->getMock();
         foreach ($records as $index => $record) {
             $service->expects($this->at($index))->method('getSingle')->willReturn($record);
         }
@@ -74,10 +72,10 @@ class PageServiceTest extends AbstractTestCase
         $m = 'tx_fed_page_controller_action';
         $s = 'tx_fed_page_controller_action_sub';
         return array(
-            array(array(array()), null),
-            array(array(array($m => '', $s => '')), null),
-            array(array(array($m => 'test1->test1', $s => 'test2->test2')), array($m => 'test1->test1', $s => 'test2->test2')),
-            array(array(array($m => ''), array($s => 'test2->test2')), array($m => 'test2->test2', $s => 'test2->test2'))
+            array(array(), null),
+            array(array(array('uid' => 1, 'pid' => 0, $m => '', $s => '')), null),
+            array(array(array('uid' => 1, 'pid' => 0, $m => 'test1->test1', $s => 'test2->test2')), array($m => 'test1->test1', $s => 'test2->test2')),
+            array(array(array('uid' => 1, 'pid' => 3, $m => '', $s => ''), array('uid' => 2, 'pid' => 1, $m => '', $s => 'test2->test2')), array($m => 'test2->test2', $s => 'test2->test2'))
         );
     }
 
@@ -115,7 +113,7 @@ class PageServiceTest extends AbstractTestCase
         $service->expects($this->once())->method('getPageConfiguration')->willReturn($typoScript);
         $instance = new PageService();
         $instance->injectConfigurationService($service);
-        $instance->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
+        $instance->injectObjectManager($this->objectManager);
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces'] = [
             'f' => [
                 'TYPO3\\CMS\\Fluid\\ViewHelpers',

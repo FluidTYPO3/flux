@@ -171,11 +171,11 @@ class ControllerActionsViewHelper extends SelectViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
-        $extensionName = $arguments['controllerExtensionName'];
-        $pluginName = $arguments['pluginName'];
-        $actions = $arguments['actions'];
-        $controllerName = $arguments['controllerName'];
-        $separator = $arguments['separator'];
+        $extensionName = $arguments['controllerExtensionName'] ?? 'Flux';
+        $pluginName = $arguments['pluginName'] ?? 'default';
+        $actions = $arguments['actions'] ?? [];
+        $controllerName = $arguments['controllerName'] ?? 'Content';
+        $separator = $arguments['separator'] ?? '->';
         $controllerContext = $renderingContext->getControllerContext();
         if (true === $actions instanceof \Traversable) {
             $actions = iterator_to_array($actions);

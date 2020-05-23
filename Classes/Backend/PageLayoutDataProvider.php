@@ -93,16 +93,15 @@ class PageLayoutDataProvider
         $typoScript = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
         );
-        $settings = GeneralUtility::removeDotsFromTS((array) $typoScript['plugin.']['tx_flux.']);
+        $settings = GeneralUtility::removeDotsFromTS((array) ($typoScript['plugin.']['tx_flux.'] ?? []));
         if (isset($settings['siteRootInheritance'])) {
             $hideInheritFieldSiteRoot = 1 > $settings['siteRootInheritance'];
         } else {
             $hideInheritFieldSiteRoot = false;
         }
-        $pageIsSiteRoot = (boolean) ($parameters['row']['is_siteroot']);
-        $forceDisplayInheritSiteRoot = 'tx_fed_page_controller_action_sub' === $parameters['field']
-            && !$hideInheritFieldSiteRoot;
-        $forceHideInherit = (boolean) (0 === intval($parameters['row']['pid']));
+        $pageIsSiteRoot = (boolean) ($parameters['row']['is_siteroot'] ?? false);
+        $forceDisplayInheritSiteRoot = 'tx_fed_page_controller_action_sub' === $parameters['field'] && !$hideInheritFieldSiteRoot;
+        $forceHideInherit = (boolean) (0 === intval($parameters['row']['pid'] ?? 0));
         if (!$forceHideInherit) {
             if (!$pageIsSiteRoot || $forceDisplayInheritSiteRoot || !$hideInheritFieldSiteRoot) {
                 $parameters['items'][] = [
@@ -114,7 +113,7 @@ class PageLayoutDataProvider
         }
 
         $allowedTemplates = [];
-        $pageUid = (int) $parameters['row']['uid'];
+        $pageUid = (int) ($parameters['row']['uid'] ?? 0);
         if ($pageUid > 0 && class_exists(SiteFinder::class)) {
             $resolver = GeneralUtility::makeInstance(SiteFinder::class);
             try {
@@ -146,14 +145,15 @@ class PageLayoutDataProvider
                 $groupTitle = ucfirst($extension);
             } else {
                 $emConfigFile = ExtensionManagementUtility::extPath($extensionKey, 'ext_emconf.php');
+                $_EXTKEY = $extensionKey;
                 require $emConfigFile;
-                $groupTitle = $EM_CONF['']['title'];
+                $groupTitle = $EM_CONF[$_EXTKEY]['title'];
             }
 
             $templateOptions = [];
             foreach ($group as $form) {
                 $optionArray = $this->renderOption($form, $parameters);
-                if (!empty($allowedTemplates) && !in_array($optionArray[1], $allowedTemplates)) {
+                if (!in_array($optionArray[1], $allowedTemplates)) {
                     continue;
                 }
                 $templateOptions[] = $optionArray;

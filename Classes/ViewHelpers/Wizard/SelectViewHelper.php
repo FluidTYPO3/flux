@@ -54,8 +54,8 @@ class SelectViewHelper extends AbstractWizardViewHelper
     {
         /** @var Select $component */
         $component = static::getPreparedComponent('Select', $renderingContext, $arguments);
-        $component->setMode($arguments['mode']);
-        $component->setItems($arguments['items']);
+        $component->setMode($arguments['mode'] ?? 'substitution');
+        $component->setItems($arguments['items'] ?? []);
         return $component;
     }
 }

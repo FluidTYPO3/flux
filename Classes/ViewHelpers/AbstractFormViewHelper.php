@@ -102,7 +102,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         if (null !== $controllerContext) {
             /** @var Request $request */
             $request = $controllerContext->getRequest();
-            $controllerExtensionName = $request->getControllerExtensionName();
+            $controllerExtensionName = $request->getControllerExtensionName() ?? 'Flux';
             if (is_callable([$request, 'getControllerVendorName'])) {
                 $controllerVendorName = $request->getControllerVendorName();
             } else {

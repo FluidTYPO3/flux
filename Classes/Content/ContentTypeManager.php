@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefin
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\FluidFileBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
+use FluidTYPO3\Flux\Utility\CacheNamingUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
@@ -116,7 +117,7 @@ class ContentTypeManager implements SingletonInterface
             try {
                 $cache = $cacheManager->getCache('flux');
             } catch (NoSuchCacheException $error) {
-                $cache = $cacheManager->getCache('cache_runtime');
+                $cache = $cacheManager->getCache(CacheNamingUtility::getCacheName('cache_runtime'));
             }
         }
         return $cache;

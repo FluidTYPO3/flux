@@ -30,6 +30,14 @@ class RecordServiceTest extends AbstractTestCase
         return $this->getMockBuilder($this->createInstanceClassName())->setMethods($methods)->getMock();
     }
 
+    public function addWarning(string $warning): void
+    {
+        if ($warning === 'PHPUnit\Framework\TestCase::prophesize() is deprecated and will be removed in PHPUnit 10. Please use the trait provided by phpspec/prophecy-phpunit.') {
+            return;
+        }
+        parent::addWarning($warning);
+    }
+
     /**
      * @return QueryBuilder
      */
@@ -70,7 +78,8 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $mock->get($table, $fields, $clause, $groupBy, $orderBy, $limit);
+        $result = $mock->get($table, $fields, $clause, $groupBy, $orderBy, $limit);
+        $this->assertNull($result);
     }
 
     /**
@@ -85,7 +94,8 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $mock->getSingle($table, $fields, $uid);
+        $result = $mock->getSingle($table, $fields, $uid);
+        $this->assertNull($result);
     }
 
     /**
@@ -100,7 +110,8 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $mock->update($table, $fields);
+        $result = $mock->update($table, $fields);
+        $this->assertNull($result);
     }
 
     /**
@@ -114,7 +125,8 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $mock->delete($table, $uid);
+        $result = $mock->delete($table, $uid);
+        $this->assertNull($result);
     }
 
     /**
@@ -128,6 +140,7 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $mock->delete($table, $record);
+        $result = $mock->delete($table, $record);
+        $this->assertNull($result);
     }
 }

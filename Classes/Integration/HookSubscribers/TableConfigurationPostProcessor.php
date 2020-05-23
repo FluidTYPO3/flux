@@ -117,7 +117,8 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 
                 Core::registerConfigurationProvider($provider);
 
-                $pluginName = $pluginName ?: GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2)));
+                $parts = explode('_', $contentType, 2);
+                $pluginName = $pluginName ?: GeneralUtility::underscoredToUpperCamelCase(end($parts));
                 $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
 
             } catch (Exception $error) {

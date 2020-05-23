@@ -12,7 +12,6 @@ use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Form\Field\Select;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Abstract Pipe
@@ -49,7 +48,8 @@ abstract class AbstractPipe implements PipeInterface
      */
     public function getType()
     {
-        return substr(lcfirst(array_pop(explode('\\', get_class($this)))), 0, -4);
+        $parts = explode('\\', get_class($this));
+        return substr(lcfirst(array_pop($parts)), 0, -4);
     }
 
     /**
@@ -58,8 +58,7 @@ abstract class AbstractPipe implements PipeInterface
     public function getLabel()
     {
         $type = $this->getType();
-        $translated = LocalizationUtility::translate('pipes.' . $type . '.label', 'flux');
-        return (null === $translated ? $type : $translated);
+        return 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pipes.' . $type . '.label';
     }
 
     /**

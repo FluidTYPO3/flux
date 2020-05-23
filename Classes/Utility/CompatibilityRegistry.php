@@ -266,7 +266,7 @@ abstract class CompatibilityRegistry
         $key = $prefix . '-' . $scope . '-' . $version;
         if (true === array_key_exists($key, static::$cache)) {
             return static::$cache[$key];
-        } elseif (is_array($source[$scope])) {
+        } elseif (is_array($source[$scope] ?? false)) {
             $value = static::resolveVersionedValue($source[$scope], $version);
             static::$cache[$key] = $value;
             return $value;

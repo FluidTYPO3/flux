@@ -62,9 +62,9 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
         $component->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
-        $component->setHideParent($arguments['hideParent']);
-        $component->setLabel($arguments['label']);
-        $component->setVariables($arguments['variables']);
+        $component->setHideParent($arguments['hideParent'] ?? false);
+        $component->setLabel($arguments['label'] ?? $name);
+        $component->setVariables($arguments['variables'] ?? []);
         return $component;
     }
 }

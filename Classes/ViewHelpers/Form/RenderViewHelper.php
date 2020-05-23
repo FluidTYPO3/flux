@@ -68,8 +68,8 @@ class RenderViewHelper extends AbstractViewHelper
                 ],
             ],
         ]);
-        $output = $node->render();
-        return $output['html'];
+        $output = (array) $node->render();
+        return $output['html'] ?? '';
     }
 
     /**

@@ -364,7 +364,7 @@ class ControllerActionsTest extends AbstractFieldTest
         ));
         $form->add($instance);
         $label = $instance->getLabel();
-        $this->assertContains('switchableControllerActions', $label);
+        $this->assertStringContainsString('switchableControllerActions', $label);
         $this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux', $label);
     }
 

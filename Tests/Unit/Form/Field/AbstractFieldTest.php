@@ -175,7 +175,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $instance->setName('child');
         $parent->add($instance);
         $output = $instance->getLabel();
-        $this->assertContains('parent.child', $output);
+        $this->assertStringContainsString('parent.child', $output);
     }
 
     /**

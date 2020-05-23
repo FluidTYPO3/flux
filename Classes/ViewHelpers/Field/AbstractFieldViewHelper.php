@@ -127,22 +127,22 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
         $component = static::getContainerFromRenderingContext($renderingContext)
-            ->createField($type, $arguments['name'], $arguments['label']);
-        $component->setConfig((array)$arguments['config']);
+            ->createField($type, $arguments['name'], $arguments['label'] ?? null);
+        $component->setConfig((array)($arguments['config'] ?? []));
         $component->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
-        $component->setDefault($arguments['default']);
-        $component->setRequired($arguments['required']);
-        $component->setExclude($arguments['exclude']);
-        $component->setEnabled($arguments['enabled']);
-        $component->setRequestUpdate($arguments['requestUpdate']);
-        $component->setDisplayCondition($arguments['displayCond']);
-        $component->setInherit($arguments['inherit']);
-        $component->setInheritEmpty($arguments['inheritEmpty']);
-        $component->setTransform($arguments['transform']);
-        $component->setClearable($arguments['clear']);
-        $component->setVariables($arguments['variables']);
+        $component->setDefault($arguments['default'] ?? null);
+        $component->setRequired($arguments['required'] ?? false);
+        $component->setExclude($arguments['exclude'] ?? false);
+        $component->setEnabled($arguments['enabled'] ?? true);
+        $component->setRequestUpdate($arguments['requestUpdate'] ?? null);
+        $component->setDisplayCondition($arguments['displayCond'] ?? null);
+        $component->setInherit($arguments['inherit'] ?? false);
+        $component->setInheritEmpty($arguments['inheritEmpty'] ?? false);
+        $component->setTransform($arguments['transform'] ?? null);
+        $component->setClearable($arguments['clear'] ?? false);
+        $component->setVariables($arguments['variables'] ?? []);
         return $component;
     }
 }

@@ -39,7 +39,8 @@
         "typo3-ter/flux": "self.version"
     },
     "require-dev": {
-        "fluidtypo3/development": "^4"
+        "fluidtypo3/development": "dev-master",
+        "phpspec/prophecy-phpunit": "^1"
     },
     "non-feature-branches": ["development", "staging"]
 }

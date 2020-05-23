@@ -508,7 +508,7 @@ class AbstractProvider implements ProviderInterface
     {
         $fieldName = $this->getFieldName($row);
         $form = $this->getForm($row);
-        return $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form);
+        return $this->configurationService->convertFlexFormContentToArray($row[$fieldName] ?? '', $form);
     }
 
     /**
@@ -629,7 +629,8 @@ class AbstractProvider implements ProviderInterface
             && is_array($row[$fieldName]['data']['options']['lDEF'])) {
             foreach ($row[$fieldName]['data']['options']['lDEF'] as $key => $value) {
                 if (0 === strpos($key, $tableName)) {
-                    $realKey = array_pop(explode('.', $key));
+                    $parts = explode('.', $key);
+                    $realKey = array_pop($parts);
                     if (isset($GLOBALS['TCA'][$tableName]['columns'][$realKey])) {
                         $row[$realKey] = $value['vDEF'];
                     }
@@ -653,8 +654,8 @@ class AbstractProvider implements ProviderInterface
     {
         // TODO: move to single-fire implementation in TceMain (DataHandler)
         if ('update' === $operation || 'new' === $operation) {
-            $record = $reference->datamap[$this->tableName][$id];
-            $stored = $this->recordService->getSingle($this->tableName, '*', $record['uid']) ?? $record;
+            $record = $reference->datamap[$this->tableName][$id] ?? [];
+            $stored = $this->recordService->getSingle($this->tableName, '*', $record['uid'] ?? 0) ?? $record;
             $fieldName = $this->getFieldName((array) $record);
             $dontProcess = (
                 null === $fieldName

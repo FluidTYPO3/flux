@@ -34,10 +34,10 @@ class SelectTest extends AbstractWizardTest
         /** @var WizardInterface $instance */
         $instance = $this->createInstance();
         $instance->setName('suffix');
-        $this->assertNotContains('prefix', $instance->getName());
+        $this->assertStringNotContainsString('prefix', $instance->getName());
         $field = $instance->createField('Input', 'prefix');
         $field->add($instance);
-        $this->assertContains('prefix', $instance->getName());
+        $this->assertStringContainsString('prefix', $instance->getName());
     }
 
     /**

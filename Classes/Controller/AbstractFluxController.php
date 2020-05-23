@@ -166,8 +166,8 @@ abstract class AbstractFluxController extends ActionController
         if (!$this->provider) {
             throw new \RuntimeException(
                 'Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled ' .
-                'Controller - this is a grave error and indicates that EXT: ' . $this->extensionName . ' itself is ' .
-                'broken - or that EXT:' . $this->extensionName . ' has been overridden by another implementation ' .
+                'Controller - this is a grave error and indicates that the controller\'s extension itself is ' .
+                'broken - or that the extension has been overridden by another implementation ' .
                 'which is broken. The controller that caused this error was ' . get_class($this) . '".',
                 1377458581
             );
@@ -331,6 +331,7 @@ abstract class AbstractFluxController extends ActionController
      */
     protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature)
     {
+        $foreignControllerClass = null;
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
         if (!$shouldRelay) {
             if ($this->provider instanceof FluidProviderInterface) {
@@ -395,7 +396,7 @@ abstract class AbstractFluxController extends ActionController
                 $extensionName,
                 $controllerName
             );
-        $isForeign = $extensionName !== $this->extensionName;
+        $isForeign = $extensionName !== ($this->extensionName ?? 'Flux');
         $isValidController = class_exists($potentialControllerClassName);
         return (true === $isForeign && true === $isValidController && method_exists($potentialControllerClassName, $actionName . 'Action'));
     }
@@ -493,10 +494,10 @@ abstract class AbstractFluxController extends ActionController
     {
         $record = $this->getRecord();
         $input = $this->request->getArguments();
-        $targetConfiguration = $this->request->getInternalArguments()['__outlet'];
+        $targetConfiguration = $this->request->getInternalArguments()['__outlet'] ?? [];
         if (
-            $this->provider->getTableName($record) !== $targetConfiguration['table']
-            && $record['uid'] !== (integer) $targetConfiguration['recordUid']
+            $this->provider->getTableName($record) !== ($targetConfiguration['table'] ?? 'tt_content')
+            && ($record['uid'] ?? 0) !== (integer) ($targetConfiguration['recordUid'] ?? 0)
         ) {
             // This instance does not match the instance that rendered the form. Forward the request
             // to the default "render" action.

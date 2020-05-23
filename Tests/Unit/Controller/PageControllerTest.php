@@ -12,26 +12,12 @@ use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class PageControllerTest
  */
 class PageControllerTest extends AbstractTestCase
 {
-
-    /**
-     * @return void
-     */
-    public function testPerformsInjections()
-    {
-        $instance = GeneralUtility::makeInstance(ObjectManager::class)
-            ->get(PageController::class);
-        $this->assertAttributeInstanceOf(PageService::class, 'pageService', $instance);
-        $this->assertAttributeInstanceOf(FluxService::class, 'pageConfigurationService', $instance);
-    }
-
     /**
      * @return void
      */

@@ -100,6 +100,7 @@ class GetViewHelper extends AbstractViewHelper
         );
         $this->registerArgument('loadRegister', 'array', 'List of LOAD_REGISTER variable');
         $this->registerArgument('render', 'boolean', 'Optional returning variable as original table rows', false, true);
+        $this->registerArgument('hideUntranslated', 'boolean', 'Hides records that have not translation', false, false);
     }
 
     /**
@@ -130,7 +131,7 @@ class GetViewHelper extends AbstractViewHelper
         $record = (array) $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
 
         if ($GLOBALS['BE_USER']->workspace) {
-            $placeholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid']);
+            $placeholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid'] ?? 0);
             if ($placeholder) {
                 // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
                 // from the workspace-only placeholder.
@@ -167,9 +168,9 @@ class GetViewHelper extends AbstractViewHelper
      * @param array $arguments
      * @param array $parent
      * @param Grid $grid
-     * @return array
+     * @return iterable
      */
-    protected static function getContentRecords(array $arguments, array $parent, Grid $grid)
+    protected static function getContentRecords(array $arguments, array $parent, Grid $grid): iterable
     {
         $columnPosition = $arguments['area'];
         if (!is_numeric($columnPosition)) {
@@ -190,7 +191,7 @@ class GetViewHelper extends AbstractViewHelper
         $conditions = sprintf(
             'colPos = %d',
             ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                $parent['l18n_parent'] ?: $parent['uid'],
+                ($parent['l18n_parent'] ?? false) ?: ($parent['uid'] ?? 0),
                 $columnPosition
             )
         );
@@ -202,10 +203,10 @@ class GetViewHelper extends AbstractViewHelper
                 'begin' => $arguments['offset'],
                 'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
                 'where' => $conditions,
-                'pidInList' => $parent['pid'],
+                'pidInList' => $parent['pid'] ?? null,
                 'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
             ]
-        );
+        ) ?? [];
 
         return HookHandler::trigger(
             HookHandler::NESTED_CONTENT_FETCHED,
@@ -236,9 +237,9 @@ class GetViewHelper extends AbstractViewHelper
      * it returns a list of elements rendered by typoscript RECORDS function
      *
      * @param array $rows database rows of records (each item is a tt_content table record)
-     * @return array
+     * @return iterable
      */
-    protected static function getRenderedRecords($rows)
+    protected static function getRenderedRecords($rows): iterable
     {
         $elements = [];
         foreach ($rows as $row) {

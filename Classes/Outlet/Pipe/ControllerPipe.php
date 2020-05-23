@@ -60,7 +60,7 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
     public function getFormFields()
     {
         $fields = parent::getFormFields();
-        $extensionNames = array_keys((array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']);
+        $extensionNames = array_keys((array) ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions'] ?? []));
         $extensionNames = array_combine($extensionNames, $extensionNames);
         $fields['action'] = Input::create(['type' => 'Input']);
         $fields['action']->setName('action');
@@ -143,7 +143,7 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
         $request->setControllerActionName($this->getAction());
         list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
         $request->setControllerExtensionName($extensionName);
-        if (null !== $vendorName) {
+        if (null !== $vendorName && method_exists($request, 'setControllerVendorName')) {
             $request->setControllerVendorName($vendorName);
         }
 

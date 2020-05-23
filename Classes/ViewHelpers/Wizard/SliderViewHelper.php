@@ -48,8 +48,8 @@ class SliderViewHelper extends AbstractWizardViewHelper
     {
         /** @var Slider $component */
         $component = static::getPreparedComponent('Slider', $renderingContext, $arguments);
-        $component->setWidth($arguments['width']);
-        $component->setStep($arguments['step']);
+        $component->setWidth($arguments['width'] ?? 32);
+        $component->setStep($arguments['step'] ?? 1);
         return $component;
     }
 }

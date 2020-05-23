@@ -95,7 +95,7 @@ class ObjectViewHelper extends AbstractFormViewHelper
     {
         /** @var SectionObject $object */
         $object = static::getContainerFromRenderingContext($renderingContext)
-            ->createContainer('SectionObject', $arguments['name'], $arguments['label']);
+            ->createContainer('SectionObject', $arguments['name'], $arguments['label'] ?? SectionObject::class);
         $object->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );

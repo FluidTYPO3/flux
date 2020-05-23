@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Service;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Utility\CacheNamingUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use Symfony\Component\Finder\Finder;
@@ -256,6 +257,6 @@ class PageService implements SingletonInterface
      */
     protected function getRuntimeCache()
     {
-        return GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
+        return GeneralUtility::makeInstance(CacheManager::class)->getCache(CacheNamingUtility::getCacheName('cache_runtime'));
     }
 }

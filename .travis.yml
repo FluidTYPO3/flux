@@ -4,16 +4,20 @@ sudo: false
 
 matrix:
   include:
-    - php: "7.1"
+    - php: "7.3"
       env: COVERAGE="NO" TYPO3_VERSION="^8.7"
-    - php: "7.2"
-      env: COVERAGE="NO" TYPO3_VERSION="^9"
-    - php: "7.2"
-      env: COVERAGE="NO" TYPO3_VERSION="dev-master"
+    - php: "7.4"
+      env: COVERAGE="NO" TYPO3_VERSION="^8.7"
     - php: "7.3"
       env: COVERAGE="NO" TYPO3_VERSION="^9"
     - php: "7.4"
       env: COVERAGE="YES" TYPO3_VERSION="^9"
+    - php: "7.3"
+      env: COVERAGE="YES" TYPO3_VERSION="^10.4"
+    - php: "7.4"
+      env: COVERAGE="YES" TYPO3_VERSION="^10.4"
+    - php: "7.4"
+      env: COVERAGE="NO" TYPO3_VERSION="dev-master"
   allow_failures:
     - env: COVERAGE="NO" TYPO3_VERSION="dev-master"
 

@@ -23,10 +23,10 @@ class UserFunctionsTest extends AbstractTestCase
      */
     public function canCallMethodAndReceiveOutput($method, array $parameters, $expectsNull)
     {
-        $reference = $this->getMockBuilder(UserFunctions::class)->getMock();
-        $subject = new UserFunctions();
+        $reference = $this->getMockBuilder(UserFunctions::class)->onlyMethods(['translate'])->getMock();
+        $reference->method('translate')->willReturn('translated');
         $methodParameters = ['parameters' => $parameters];
-        $output = $subject->$method($methodParameters, $reference);
+        $output = $reference->$method($methodParameters, $reference);
         if ($expectsNull) {
             $this->assertNull($output);
         } else {
