@@ -52,7 +52,7 @@ class DataHandlerSubscriber
             GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
         }
 
-        if ($table !== 'tt_content' || $command !== 'new' || !isset($fieldArray['t3_origuid'])) {
+        if ($table !== 'tt_content' || $command !== 'new' || !isset($fieldArray['t3_origuid']) || !$fieldArray['t3_origuid']) {
             // The action was not for tt_content, not a "create new" action, or not a "copy" or "copyToLanguage" action.
             return;
         }
