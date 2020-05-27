@@ -130,7 +130,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     /**
      * @var string
      */
-    protected $foreignSelectorFieldTcaOverride;
+    protected $overrideChildTca;
 
     /**
      * @var array
@@ -145,7 +145,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     {
         $configuration = parent::prepareConfiguration($type);
         $configuration['foreign_match_fields'] = $this->getForeignMatchFields();
-        $configuration['foreign_selector_fieldTcaOverride'] = $this->getForeignSelectorFieldTcaOverride();
+        $configuration['overrideChildTca'] = $this->getOverrideChildTca();
         $configuration['foreign_types'] = $this->getForeignTypes();
         $configuration['appearance'] = [
             'collapseAll' => $this->getCollapseAll(),
@@ -423,21 +423,22 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     }
 
     /**
-     * @param string $foreignSelectorFieldTcaOverride
+     * @param string $overrideChildTca
      * @return RelationFieldInterface
+     * @deprecated
      */
-    public function setForeignSelectorFieldTcaOverride($foreignSelectorFieldTcaOverride)
+    public function setOverrideChildTca($overrideChildTca)
     {
-        $this->foreignSelectorFieldTcaOverride = $foreignSelectorFieldTcaOverride;
+        $this->overrideChildTca = $overrideChildTca;
         return $this;
     }
 
     /**
      * @return string
      */
-    public function getForeignSelectorFieldTcaOverride()
+    public function getOverrideChildTca()
     {
-        return $this->foreignSelectorFieldTcaOverride;
+        return $this->overrideChildTca;
     }
 
     /**
