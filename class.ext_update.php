@@ -203,7 +203,7 @@ class ext_update
                 $queryBuilder->expr()->eq('backend_layout', $queryBuilder->createNamedParameter('fluidpages__fluidpages', \PDO::PARAM_STR)),
                 $queryBuilder->expr()->eq('backend_layout_next_level', $queryBuilder->createNamedParameter('fluidpages__fluidpages', \PDO::PARAM_STR)),
                 $queryBuilder->expr()->eq('backend_layout', $queryBuilder->createNamedParameter('fluidpages__grid', \PDO::PARAM_STR)),
-                $queryBuilder->expr()->eq('backend_layout_next_level', $queryBuilder->createNamedParameter('fluidpages__grid', \PDO::PARAM_STR)),
+                $queryBuilder->expr()->eq('backend_layout_next_level', $queryBuilder->createNamedParameter('fluidpages__grid', \PDO::PARAM_STR))
             )
         );
         return $queryBuilder->execute()->fetchAll();
