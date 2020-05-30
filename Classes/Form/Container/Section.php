@@ -47,7 +47,7 @@ class Section extends AbstractFormContainer implements ContainerInterface
         /** @var Section */
         $section = $objectManager->get(Section::class);
         foreach ($settings as $settingName => $settingValue) {
-            $setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
+            $setterMethodName = 'set' . ucfirst($settingName);
             if (true === method_exists($section, $setterMethodName)) {
                 ObjectAccess::setProperty($section, $settingName, $settingValue);
             }
