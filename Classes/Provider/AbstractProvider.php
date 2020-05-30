@@ -23,7 +23,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Web\Request as WebRequest;
+use TYPO3\CMS\Extbase\Mvc\Request as WebRequest;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -822,8 +822,10 @@ class AbstractProvider implements ProviderInterface
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var WebRequest $request */
         $request = $objectManager->get(WebRequest::class);
-        $request->setRequestUri(GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL'));
-        $request->setBaseUri(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
+        if (method_exists($request, 'setRequestUri')) {
+            $request->setRequestUri(GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL'));
+            $request->setBaseUri(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
+        }
         $request->setControllerExtensionName(ExtensionNamingUtility::getExtensionName($controllerExtensionKey));
         $request->setControllerActionName($this->getControllerActionFromRecord($row));
         $request->setControllerName($this->getControllerNameFromRecord($row));
