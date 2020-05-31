@@ -525,7 +525,7 @@ abstract class AbstractFormComponent implements FormInterface
             unset($structure['options']);
         }
         foreach ($structure as $propertyName => $propertyValue) {
-            $setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
+            $setterMethodName = 'set' . ucfirst($propertyName);
             if (true === method_exists($this, $setterMethodName)) {
                 ObjectAccess::setProperty($this, $propertyName, $propertyValue);
             }
