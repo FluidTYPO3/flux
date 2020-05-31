@@ -11,7 +11,7 @@ handleErrors = 0
 autoload = 1
 
 # cat=basic/enable; type=boolean; label=LLL:EXT:flux/Resources/Private/Language/locallang.xlf:extension_configuration.plugAndPlay
-plugAndPlay = 1
+plugAndPlay = 0
 
 # cat=basic/__default; type=input; label=LLL:EXT:flux/Resources/Private/Language/locallang.xlf:extension_configuration.plugAndPlayDirectory
 plugAndPlayDirectory = design

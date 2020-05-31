@@ -1,14 +1,10 @@
 <?php
 defined ('TYPO3_MODE') or die ('Access denied.');
 
-if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
-    return;
-}
-
-$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['flux']);
-
-if (TRUE === isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['pagesLanguageConfigurationOverlay'])
-    && TRUE === (boolean) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['pagesLanguageConfigurationOverlay']) {
+(function() {
+    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') || !\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_LANGUAGE_OVERLAY)) {
+        return;
+    }
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('pages_language_overlay', [
         'tx_fed_page_flexform' => [
@@ -28,7 +24,7 @@ if (TRUE === isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['page
                 'type' => 'flex',
                 'ds' => [
                     'default' => '<T3DataStructure><ROOT><el></el></ROOT></T3DataStructure>'
-                ]                
+                ]
             ]
         ],
     ]);
@@ -44,4 +40,4 @@ if (TRUE === isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup']['page
         $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform';
         $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform_sub';
     }
-}
+})();

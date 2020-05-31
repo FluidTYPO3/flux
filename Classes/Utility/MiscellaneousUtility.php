@@ -49,11 +49,11 @@ class MiscellaneousUtility
             $templatePathParts = explode('/', $fullTemplatePathAndName);
             $templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
             $controllerName = array_pop($templatePathParts);
+            $relativeIconFolder = 'Resources/Public/Icons/' . $controllerName . '/';
             $iconFolder = ExtensionManagementUtility::extPath(
                 $extensionKey,
-                'Resources/Public/Icons/' . $controllerName . '/'
+                $relativeIconFolder
             );
-            $iconAbsoluteUrl = '/' . str_replace(defined('PATH_site') ? PATH_site : Environment::getPublicPath(), '', $iconFolder);
             $iconPathAndName = $iconFolder . $templateName;
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
@@ -68,7 +68,7 @@ class MiscellaneousUtility
                 }
             }
             $iconFile = (is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : null);
-            $iconRelPathAndFilename = $iconFile ? $iconAbsoluteUrl . str_replace($iconFolder, '', $iconFile) : null;
+            $iconRelPathAndFilename = $iconFile ? 'EXT:' . $extensionKey . '/' . $relativeIconFolder . pathinfo($iconFile, PATHINFO_BASENAME) : null;
             return $iconRelPathAndFilename;
         }
         return null;
