@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
@@ -319,7 +320,7 @@ class Core
         $providerClassName = Provider::class,
         $pluginName = null
     ) {
-        if ($templateFilename[0] !== DIRECTORY_SEPARATOR) {
+        if (!PathUtility::isAbsolutePath($templateFilename)) {
             $templateFilename = GeneralUtility::getFileAbsFileName($templateFilename);
         }
 
