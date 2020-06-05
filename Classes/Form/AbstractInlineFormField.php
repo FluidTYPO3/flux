@@ -1,4 +1,5 @@
 <?php
+
 namespace FluidTYPO3\Flux\Form;
 
 /*
@@ -128,7 +129,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     protected $levelLinksPosition = null;
 
     /**
-     * @var string
+     * @var array
      */
     protected $overrideChildTca;
 
@@ -423,9 +424,32 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     }
 
     /**
-     * @param string $overrideChildTca
+     * @param array $foreignSelectorFieldTcaOverride
      * @return RelationFieldInterface
-     * @deprecated
+     * @deprecated Please switch to overrideChildTca
+     */
+    public function setForeignSelectorFieldTcaOverride($foreignSelectorFieldTcaOverride)
+    {
+        $this->overrideChildTca = [
+            'columns' => [
+                'uid_local' => $foreignSelectorFieldTcaOverride
+            ]
+        ];
+        return $this;
+    }
+
+    /** 
+     * @return array
+     * @deprecated Please switch to overrideChildTca
+     */
+    public function getForeignSelectorFieldTcaOverride()
+    {
+        return isset($this->overrideChildTca['columns']['uid_local']) ? $this->overrideChildTca['columns']['uid_local'] : null;
+    }
+
+    /**
+     * @param array $overrideChildTca
+     * @return RelationFieldInterface
      */
     public function setOverrideChildTca($overrideChildTca)
     {
