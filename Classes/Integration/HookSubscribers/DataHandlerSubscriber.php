@@ -61,6 +61,11 @@ class DataHandlerSubscriber
         $originalParentUid = ColumnNumberUtility::calculateParentUid($originalRecord['colPos']);
         $newColumnPosition = 0;
 
+        if (!empty($fieldArray['l18n_parent'])) {
+            // Command was "localize", do not touch colPos.
+            return;
+        }
+
         if (isset(static::$copiedRecords[$originalParentUid])) {
             // The parent of the original version of the record that was copied, was also copied in the same request;
             // this means the record that was copied, was copied as a recursion operation. Look up the most recent copy
