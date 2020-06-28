@@ -58,8 +58,17 @@ class DataHandlerSubscriber
         }
 
         $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $fieldArray['t3_origuid'], 'colPos');
+        if ($originalRecord === null) {
+            // Original record has been hard-deleted and can no longer be loaded. Processing must stop.
+            return;
+        }
         $originalParentUid = ColumnNumberUtility::calculateParentUid($originalRecord['colPos']);
         $newColumnPosition = 0;
+
+        if (!empty($fieldArray['l18n_parent'])) {
+            // Command was "localize", do not touch colPos.
+            return;
+        }
 
         if (isset(static::$copiedRecords[$originalParentUid])) {
             // The parent of the original version of the record that was copied, was also copied in the same request;

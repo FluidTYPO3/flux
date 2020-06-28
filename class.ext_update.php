@@ -194,7 +194,7 @@ class ext_update
     protected function detectFluidPagesNotInstalledAndBackendLayoutFieldsReferenceFluidpages(): array
     {
         if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
-            return false;
+            return [];
         }
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
         $queryBuilder->getRestrictions()->removeAll();

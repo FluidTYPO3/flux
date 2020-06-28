@@ -21,10 +21,10 @@ class AfterLocalizationControllerColumnsEventListener
             $colPos = (int) $record['colPos'];
             if ($colPos >= ColumnNumberUtility::MULTIPLIER && !isset($columns['columns'][$colPos])) {
                 $columns[$colPos] = 'Nested';
-                $columnList[] = $colPos;
+                $columnList[] = (string) $colPos;
             }
         }
         $event->setColumns($columns);
-        $event->setColumnList(array_unique($columnList));
+        $event->setColumnList(array_values(array_unique($columnList)));
     }
 }

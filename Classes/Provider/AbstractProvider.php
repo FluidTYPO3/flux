@@ -22,6 +22,7 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request as WebRequest;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
@@ -480,7 +481,7 @@ class AbstractProvider implements ProviderInterface
     public function getTemplatePathAndFilename(array $row)
     {
         $templatePathAndFilename = $this->templatePathAndFilename;
-        if (0 === strpos($templatePathAndFilename, 'EXT:') || 0 !== strpos($templatePathAndFilename, '/')) {
+        if (!PathUtility::isAbsolutePath($templatePathAndFilename)) {
             $templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
             if (true === empty($templatePathAndFilename)) {
                 $templatePathAndFilename = null;

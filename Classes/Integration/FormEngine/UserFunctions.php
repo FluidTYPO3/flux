@@ -61,13 +61,11 @@ class UserFunctions
 
     /**
      * @param array $parameters
-     * @param object $pObj Not used
      * @return mixed
      */
-    public function renderHtmlOutputField(array &$parameters, &$pObj)
+    public function renderHtmlOutputField(array &$parameters)
     {
-        unset($pObj);
-        return trim($parameters['parameters']['closure']($parameters));
+        return trim(($parameters['fieldConf']['config']['parameters']['closure'] ?? $parameters['parameters']['closure'])($parameters));
     }
 
     /**
