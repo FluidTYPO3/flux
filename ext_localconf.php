@@ -49,6 +49,11 @@ if (!defined('TYPO3_MODE')) {
             'priority' => 40,
             'class' => \FluidTYPO3\Flux\Integration\FormEngine\ColumnPositionNode::class,
         ];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1593341585] = [
+            'nodeName' => 'fluxHtmlOutput',
+            'priority' => 40,
+            'class' => \FluidTYPO3\Flux\Integration\FormEngine\HtmlOutputNode::class,
+        ];
 
         // Small override for record-localize controller to manipulate the record listing to provide child records in list
         if (!class_exists(\TYPO3\CMS\Backend\Controller\Event\AfterPageColumnsSelectedForLocalizationEvent::class)) {

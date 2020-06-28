@@ -227,11 +227,15 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
                 'fieldname' => $arguments['name']
             ]);
         }
-        $component->setForeignSelectorFieldTcaOverride([
-            'config' => [
-                'appearance' => [
-                    'elementBrowserType' => 'file',
-                    'elementBrowserAllowed' => $allowedExtensions
+        $component->setOverrideChildTca([
+            'columns' => [
+                'uid_local' => [
+                    'config' => [
+                        'appearance' => [
+                            'elementBrowserType' => 'file',
+                            'elementBrowserAllowed' => $allowedExtensions
+                        ]
+                    ]
                 ]
             ]
         ]);

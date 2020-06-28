@@ -28,6 +28,7 @@ class Custom extends UserFunction
     {
         $fieldConfiguration = $this->prepareConfiguration('user');
         $fieldConfiguration['userFunc'] = UserFunctions::class . '->renderHtmlOutputField';
+        $fieldConfiguration['renderType'] = 'fluxHtmlOutput';
         $fieldConfiguration['parameters'] = [
             'closure' => $this->getClosure(),
             'arguments' => $this->getArguments(),
