@@ -58,6 +58,10 @@ class DataHandlerSubscriber
         }
 
         $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $fieldArray['t3_origuid'], 'colPos');
+        if ($originalRecord === null) {
+            // Original record has been hard-deleted and can no longer be loaded. Processing must stop.
+            return;
+        }
         $originalParentUid = ColumnNumberUtility::calculateParentUid($originalRecord['colPos']);
         $newColumnPosition = 0;
 
