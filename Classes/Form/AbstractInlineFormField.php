@@ -1,5 +1,4 @@
 <?php
-
 namespace FluidTYPO3\Flux\Form;
 
 /*
