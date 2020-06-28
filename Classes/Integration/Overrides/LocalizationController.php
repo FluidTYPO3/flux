@@ -60,7 +60,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
             }
             if ($colPos >= ColumnNumberUtility::MULTIPLIER && !isset($columns['columns'][$colPos])) {
                 $columns[$colPos] = 'Unknown';
-                array_push($columns['columnList'], $colPos);
+                $columns['columnList'][] = (string) $colPos;
             }
             $records[$colPos][] = [
                 'icon' => $this->iconFactory->getIconForRecord('tt_content', $row, Icon::SIZE_SMALL)->render(),
@@ -68,6 +68,8 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                 'uid' => $row['uid']
             ];
         }
+
+        $columns['columnList'] = array_values(array_unique($columns['columnList'] ?? []));
 
         $payload = [
             'records' => $records,
