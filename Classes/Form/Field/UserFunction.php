@@ -28,12 +28,18 @@ class UserFunction extends AbstractFormField implements FieldInterface
     protected $function;
 
     /**
+     * @var string
+     */
+    protected $renderType = '';
+
+    /**
      * @return array
      */
     public function buildConfiguration()
     {
         $configuration = $this->prepareConfiguration('user');
         $configuration['userFunc'] = $this->getFunction();
+        $configuration['renderType'] = $this->getRenderType();
         $configuration['arguments'] = $this->getArguments();
         return $configuration;
     }
@@ -72,5 +78,21 @@ class UserFunction extends AbstractFormField implements FieldInterface
     public function getArguments()
     {
         return $this->arguments;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRenderType(): string
+    {
+        return $this->renderType;
+    }
+
+    /**
+     * @param string $renderType
+     */
+    public function setRenderType(string $renderType): void
+    {
+        $this->renderType = $renderType;
     }
 }
