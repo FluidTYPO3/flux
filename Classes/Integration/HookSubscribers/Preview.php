@@ -72,22 +72,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
             $doc = GeneralUtility::makeInstance(ModuleTemplate::class);
             $doc->backPath = $GLOBALS['BACK_PATH'] ?? '';
 
-            /** @var PageRenderer $pageRenderer */
-            $pageRenderer = $doc->getPageRenderer();
-
-            $fullJsPath = PathUtility::getRelativePath(
-                defined('PATH_typo3') ? PATH_typo3 : Environment::getPublicPath(),
-                GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/js/')
-            );
-
-            // requirejs
-            $pageRenderer->addRequireJsConfiguration([
-                'paths' => [
-                    'FluidTypo3/Flux/FluxCollapse' => $fullJsPath . 'fluxCollapse',
-                ],
-            ]);
-            $pageRenderer->loadRequireJsModule('FluidTypo3/Flux/FluxCollapse');
-
+            $doc->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
             static::$assetsIncluded = true;
         }
     }
