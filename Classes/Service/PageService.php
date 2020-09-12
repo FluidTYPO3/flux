@@ -226,7 +226,7 @@ class PageService implements SingletonInterface
 
                     if (false === $form instanceof Form) {
                         $logger->log(
-                            'fatal',
+                            'error',
                             'Template file ' . $file . ' contains an unparsable Form definition'
                         );
                         continue;
