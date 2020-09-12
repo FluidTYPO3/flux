@@ -194,6 +194,12 @@ class PageService implements SingletonInterface
      */
     public function getAvailablePageTemplateFiles()
     {
+        $cache = $this->getRuntimeCache();
+        $cacheKey = 'page_templates';
+        $fromCache = $cache->get($cacheKey);
+        if ($fromCache) {
+            return $fromCache;
+        }
         $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         $typoScript = $this->configurationService->getPageConfiguration();
         $output = [];
@@ -248,6 +254,7 @@ class PageService implements SingletonInterface
                 }
             }
         }
+        $cache->set($cacheKey, $output);
         return $output;
     }
 
