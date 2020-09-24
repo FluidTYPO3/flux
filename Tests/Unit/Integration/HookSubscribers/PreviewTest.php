@@ -63,13 +63,12 @@ class PreviewTest extends AbstractTestCase
      */
     public function testAttachAssets()
     {
-        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['addRequireJsConfiguration', 'loadRequireJsModule'])->getMock();
-        $pageRenderer->expects($this->atLeastOnce())->method('addRequireJsConfiguration');
+        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['loadRequireJsModule'])->getMock();
         $pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');
-        $document = $this->getMockBuilder(ModuleTemplate::class)->setMethods(['getPageRenderer'])->getMock();
-        $document->expects($this->once())->method('getPageRenderer')->willReturn($pageRenderer);
-        GeneralUtility::addInstance(ModuleTemplate::class, $document);
+        $instances = GeneralUtility::getSingletonInstances();
+        GeneralUtility::setSingletonInstance(PageRenderer::class, $pageRenderer);
         $subject = $this->createInstance();
         $this->callInaccessibleMethod($subject, 'attachAssets');
+        GeneralUtility::resetSingletonInstances($instances);
     }
 }
