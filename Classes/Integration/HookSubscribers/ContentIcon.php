@@ -95,8 +95,6 @@ class ContentIcon
             return '';
         }
 
-        $this->attachAssets();
-
         $provider = null;
         $icon = '';
         $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
@@ -202,13 +200,5 @@ class ContentIcon
             }
         }
         return null;
-    }
-
-    /**
-     * @return void
-     */
-    protected function attachAssets()
-    {
-        $GLOBALS['TBE_STYLES']['stylesheet'] = 'EXT:flux/Resources/Public/css/flux.css';
     }
 }

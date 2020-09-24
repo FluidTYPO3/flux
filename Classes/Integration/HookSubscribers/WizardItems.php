@@ -99,7 +99,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         $pageUid = 0;
         if (class_exists(SiteFinder::class)) {
             $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
-            $pageUid = (int) (key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true));
+            $pageUid = (int) (key($dataArray) ?? GeneralUtility::_GET('id') ?? ObjectAccess::getProperty($parentObject, 'id', true));
             if ($pageUid > 0) {
                 try {
                     $enabledContentTypes = [];
@@ -131,7 +131,7 @@ class WizardItems implements NewContentElementWizardHookInterface
     {
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
             $pageUid,
-            (int) ($dataArray['colPos'] ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
+            (int) ($dataArray['colPos'] ?? GeneralUtility::_GET('colPos') ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
         );
         $overrides = HookHandler::trigger(
             HookHandler::ALLOWED_CONTENT_RULES_FETCHED,

@@ -66,11 +66,9 @@ class DataHandlerSubscriber
         $newColumnPosition = 0;
 
         if (!empty($fieldArray['l18n_parent'])) {
-            // Command was "localize", do not touch colPos.
-            return;
-        }
-
-        if (isset(static::$copiedRecords[$originalParentUid])) {
+            // Command was "localize", read colPos value from the translation parent and use directly
+            $newColumnPosition = $this->getSingleRecordWithoutRestrictions($table, $fieldArray['l18n_parent'], 'colPos')['colPos'];
+        } elseif (isset(static::$copiedRecords[$originalParentUid])) {
             // The parent of the original version of the record that was copied, was also copied in the same request;
             // this means the record that was copied, was copied as a recursion operation. Look up the most recent copy
             // of the original record's parent and create a new column position number based on the new parent.
