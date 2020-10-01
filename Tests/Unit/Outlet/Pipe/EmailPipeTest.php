@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -29,28 +30,6 @@ class EmailPipeTest extends AbstractPipeTestCase
         $pipe = $this->getMockBuilder('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe')->setMethods(array('sendEmail'))->getMock();
         ObjectAccess::setProperty($pipe, 'label', 'Mock EmailPipe', true);
         return $pipe;
-    }
-
-    /**
-     * @test
-     */
-    public function supportsSenderArray()
-    {
-        $instance = $this->createInstance();
-        $instance->setSender(array('test@test.com', 'test'));
-        $output = $instance->conduct($this->defaultData);
-        $this->assertNotEmpty($output);
-    }
-
-    /**
-     * @test
-     */
-    public function supportsRecipientArray()
-    {
-        $instance = $this->createInstance();
-        $instance->setRecipient(array('test@test.com', 'test'));
-        $output = $instance->conduct($this->defaultData);
-        $this->assertNotEmpty($output);
     }
 
     /**

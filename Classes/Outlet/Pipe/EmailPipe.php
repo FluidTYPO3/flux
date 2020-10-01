@@ -8,10 +8,9 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Form\Field\Text;
-use FluidTYPO3\Flux\Form\FieldInterface;
+use Symfony\Component\Mime\Email;
 use TYPO3\CMS\Core\Mail\MailMessage;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Email Pipe
@@ -53,24 +52,6 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
      * @var string|null
      */
     protected $bodySection = null;
-
-    /**
-     * @return FieldInterface[]
-     */
-    public function getFormFields()
-    {
-        $fields = parent::getFormFields();
-        $fields['subject'] = Input::create(['type' => 'Input'])
-            ->setName('subject');
-        $fields['body'] = Text::create(['type' => 'Text'])
-            ->setName('body');
-        $fields['receipent'] = Input::create(['type' => 'Input'])
-            ->setName('recipient');
-        $fields['sender'] = Input::create(['type' => 'Input'])
-            ->setName('sender');
-
-        return $fields;
-    }
 
     /**
      * @param string $recipient
@@ -183,13 +164,13 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
 
     /**
      * @param string $data
-     * @return MailMessage
+     * @return MailMessage|Email
      */
     protected function prepareEmail($data)
     {
         $body = null;
         if ($this->getBodySection() !== null) {
-            $body = $this->view->renderStandaloneSection($this->getBodySection(), $data, true);
+            $body = $this->view->renderSection($this->getBodySection(), $data, true);
         }
         if (empty($body)) {
             $body = $this->getBody();
@@ -213,10 +194,17 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
             $body = $data;
         }
         $message = new MailMessage();
-        $message->setSubject($subject);
-        $message->setFrom($senderAddress, $senderName);
-        $message->setTo($recipientAddress, $recipientName);
-        $message->setBody($body);
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '10.4', '>=')) {
+            $message->html($body);
+            $message->subject($subject);
+            $message->from($sender . ' <' . $senderAddress . '>');
+            $message->to($recipient . ' <' . $recipientAddress . '>');
+        } else {
+            $message->setBody($body);
+            $message->setSubject($subject);
+            $message->setFrom($senderAddress, $senderName);
+            $message->setTo($recipientAddress, $recipientName);
+        }
 
         return $message;
     }
@@ -225,7 +213,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
      * @param MailMessage $message
      * @return void
      */
-    protected function sendEmail(MailMessage $message)
+    protected function sendEmail($message)
     {
         $message->send();
     }
