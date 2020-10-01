@@ -193,21 +193,6 @@
 			<trans-unit id="flux.clearValue">
 				<source>Clear value</source>
 			</trans-unit>
-			<trans-unit id="pipes.standard.label">
-				<source>Standard pipe (no action)</source>
-			</trans-unit>
-			<trans-unit id="pipes.controller.label">
-				<source>Controller action pipe</source>
-			</trans-unit>
-			<trans-unit id="pipes.email.label">
-				<source>Email sending pipe</source>
-			</trans-unit>
-			<trans-unit id="pipes.flashMessage.label">
-				<source>FlashMessage dispatch pipe</source>
-			</trans-unit>
-			<trans-unit id="pipes.typeConverter.label">
-				<source>Extbase TypeConverter pipe</source>
-			</trans-unit>
 			<trans-unit id="reference">
 				<source>Reference to content on page '%s' - click to jump to original</source>
 			</trans-unit>

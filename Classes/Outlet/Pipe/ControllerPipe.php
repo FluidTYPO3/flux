@@ -55,28 +55,6 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
     }
 
     /**
-     * @return FieldInterface[]
-     */
-    public function getFormFields()
-    {
-        $fields = parent::getFormFields();
-        $extensionNames = array_keys((array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']);
-        $extensionNames = array_combine($extensionNames, $extensionNames);
-        $fields['action'] = Input::create(['type' => 'Input']);
-        $fields['action']->setName('action');
-        $fields['action']->setValidate('trim,required');
-        $fields['controller'] = Input::create(['type' => 'Input']);
-        $fields['controller']->setName('controller');
-        $fields['controller']->setValidate('trim,required');
-        /** @var Select $selectField */
-        $selectField = Select::create(['type' => 'Select']);
-        $selectField->setName('extensionName');
-        $selectField->setItems($extensionNames);
-        $fields['extensionName'] = $selectField;
-        return $fields;
-    }
-
-    /**
      * @param string $controller
      * @return ControllerPipe
      */
