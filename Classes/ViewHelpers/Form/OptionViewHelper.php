@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\OptionCarryingInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
@@ -46,6 +47,16 @@ class OptionViewHelper extends AbstractFormViewHelper
         RenderingContextInterface $renderingContext
     ) {
         $option = isset($arguments['name']) ? $arguments['name'] : static::$option;
-        static::getContainerFromRenderingContext($renderingContext)->setOption($option, $renderChildrenClosure());
+        $container = static::getContainerFromRenderingContext($renderingContext);
+        $value = $renderChildrenClosure();
+        if ($container instanceof OptionCarryingInterface) {
+            $container->setOption($option, $value);
+            return;
+        }
+        throw new \UnexpectedValueException(
+            'flux:form.option cannot be used as child element of ' . get_class($container) . ' (this class does not support options). '
+            . 'Please correct this in your template file(s). The option had name="' . $option . '" and value="' . $value . '"',
+            1602693000
+        );
     }
 }
