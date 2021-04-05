@@ -48,16 +48,13 @@ jobs:
       - name: Run tests
         run: vendor/bin/phpunit --coverage-clover=build/logs/clover.xml
 
-  finish:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Upload test coverage
         run: vendor/bin/php-coveralls -vvv
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_PARALLEL: true
           COVERALLS_FLAG_NAME: ${{ matrix.name }}
+
   # Use this step to configure a required build pass via gh branch protection rules (currently makes experimental builds unusable due to https://github.com/actions/toolkit/issues/581)
   #buildall:
   #  if: "!contains(github.event.head_commit.message, '[skip ci]')"
