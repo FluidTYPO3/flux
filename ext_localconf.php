@@ -132,11 +132,19 @@ if (!defined('TYPO3_MODE')) {
         }
 
         if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
+            if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.4, '>=')) {
+                $pageControllerName = \FluidTYPO3\Flux\Controller\PageController::class;
+                $pageControllerExtensionName = 'Flux';
+            } else {
+                $pageControllerName = 'Page';
+                $pageControllerExtensionName = 'FluidTYPO3.Flux';
+            }
+
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-                'FluidTYPO3.Flux',
+                $pageControllerExtensionName,
                 'Page',
                 [
-                    'Page' => 'render,error',
+                    $pageControllerName => 'render,error',
                 ],
                 [],
                 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_PLUGIN

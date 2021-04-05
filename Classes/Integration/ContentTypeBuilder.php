@@ -119,7 +119,11 @@ class ContentTypeBuilder
      */
     protected function configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerAction)
     {
-        $controllerName = substr($controllerClassName, strrpos($controllerClassName, '\\') + 1, -10);
+        if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.4, '>=')) {
+            $controllerName = $controllerClassName;
+        } else {
+            $controllerName = substr($controllerClassName, strrpos($controllerClassName, '\\') + 1, -10);
+        }
         $emulatedPluginName = ucfirst(strtolower($controllerAction));
 
         // Sanity check: if controller does not implement a custom method matching the template name, default to "render"
@@ -134,7 +138,7 @@ class ContentTypeBuilder
             $providerExtensionName,
             $emulatedPluginName,
             [$controllerName => $controllerAction . ',outlet,error'],
-            [],
+            [$controllerName => 'outlet'],
             ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
         );
     }
