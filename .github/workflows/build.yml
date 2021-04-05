@@ -51,7 +51,7 @@ jobs:
       - name: Upload test coverage
         run: vendor/bin/php-coveralls -vvv
         env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_PARALLEL: true
           COVERALLS_FLAG_NAME: ${{ matrix.name }}
         continue-on-error: true
@@ -64,7 +64,7 @@ jobs:
         run: |
           curl --header "Content-Type: application/json" \
             --request POST \
-            --data '{"repo_token":"${{ secrets.GITHUB_TOKEN }}","repo_name":"FluidTYPO3/Flux", "payload": {"build_num": "${{ github.sha }}", "status": "done"}}' \
+            --data '{"repo_token":"${{ secrets.COVERALLS_REPO_TOKEN }}","repo_name":"FluidTYPO3/Flux", "payload": {"build_num": "${{ github.sha }}", "status": "done"}}' \
             https://coveralls.io/webhook
   # Use this step to configure a required build pass via gh branch protection rules (currently makes experimental builds unusable due to https://github.com/actions/toolkit/issues/581)
   #buildall:
