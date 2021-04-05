@@ -375,7 +375,7 @@ class FluxService implements SingletonInterface
         }
 
         $plugAndPlayEnabled = ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY);
-        $plugAndPlayTemplatesDirectory = trim(ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY), '/.') . '/';;
+        $plugAndPlayTemplatesDirectory = trim(ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY), '/.') . '/';
         if ($plugAndPlayEnabled && $extensionName === 'Flux') {
             return [
                 TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::TEMPLATES_DIRECTORY . DropInContentTypeDefinition::PAGE_DIRECTORY],

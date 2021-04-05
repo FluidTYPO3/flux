@@ -56,7 +56,7 @@ class Field extends AbstractFormField
      */
     public function build()
     {
-        $filterClosure = function($value) {
+        $filterClosure = function ($value) {
             return $value !== null && $value !== '';
         };
 

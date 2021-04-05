@@ -110,7 +110,6 @@ class FormDataTransformer
                 if ($child instanceof ContainerInterface && count($pathAsArray)) {
                     return $this->extractTransformableObjectByPath($child, implode('.', $pathAsArray));
                 }
-
             }
             $subPath .= '.' . array_shift($pathAsArray);
         }

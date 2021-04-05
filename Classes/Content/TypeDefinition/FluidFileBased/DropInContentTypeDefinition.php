@@ -56,8 +56,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         string $basePath,
         string $relativeFilePath,
         string $providerClassName = Provider::class
-    )
-    {
+    ) {
         $this->extensionIdentity = $extensionIdentity;
         $this->basePath = substr($basePath, 0, 1) !== '/' ? GeneralUtility::getFileAbsFileName($basePath) : $basePath;
         $this->relativeFilePath = $relativeFilePath;

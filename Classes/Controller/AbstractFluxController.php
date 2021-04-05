@@ -433,7 +433,7 @@ abstract class AbstractFluxController extends ActionController
                     'controllerActionName' => $controllerActionName
                 ]
             );
-            $potentialControllerInstance->processRequest($this->request,$response);
+            $potentialControllerInstance->processRequest($this->request, $response);
         } catch (StopActionException $error) {
             // intentionally left blank
         }
@@ -494,8 +494,7 @@ abstract class AbstractFluxController extends ActionController
         $record = $this->getRecord();
         $input = $this->request->getArguments();
         $targetConfiguration = $this->request->getInternalArguments()['__outlet'];
-        if (
-            $this->provider->getTableName($record) !== $targetConfiguration['table']
+        if ($this->provider->getTableName($record) !== $targetConfiguration['table']
             && $record['uid'] !== (integer) $targetConfiguration['recordUid']
         ) {
             // This instance does not match the instance that rendered the form. Forward the request

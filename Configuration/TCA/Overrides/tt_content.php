@@ -1,5 +1,5 @@
 <?php
-defined ('TYPO3_MODE') or die ('Access denied.');
+defined('TYPO3_MODE') or die('Access denied.');
 
 \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
     \FluidTYPO3\Flux\Integration\ContentTypeBuilder::DEFAULT_SHOWITEM,

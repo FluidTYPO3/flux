@@ -119,7 +119,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 
                 $pluginName = $pluginName ?: GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2)));
                 $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
-
             } catch (Exception $error) {
                 if (!ContextUtility::getApplicationContext()->isProduction()) {
                     throw $error;

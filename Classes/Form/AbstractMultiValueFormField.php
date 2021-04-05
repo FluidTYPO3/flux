@@ -384,5 +384,4 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         }
         return $items;
     }
-
 }
