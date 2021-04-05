@@ -49,7 +49,9 @@ jobs:
         run: vendor/bin/phpunit
 
   coverage:
-    needs: build
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    name: "Coveralls upload"
     steps:
       - name: Select TYPO3 version 9.5
         run: "composer require typo3/cms-core:^9.5"
@@ -63,9 +65,10 @@ jobs:
       - name: Upload test coverage
         run: vendor/bin/php-coveralls -vvv
         env:
+
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          COVERALLS_PARALLEL: true
-          COVERALLS_FLAG_NAME: ${{ matrix.name }}
+          COVERALLS_RUN_LOCALLY: 1
+
   # Use this step to configure a required build pass via gh branch protection rules (currently makes experimental builds unusable due to https://github.com/actions/toolkit/issues/581)
   #buildall:
   #  if: "!contains(github.event.head_commit.message, '[skip ci]')"
