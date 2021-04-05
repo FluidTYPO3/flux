@@ -34,7 +34,7 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           extensions: mbstring, json
           coverage: xdebug #optional
-          ini-values: date.timezone="Africa/Tunis", opcache.fast_shutdown=0
+          ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
 
       - name: Select TYPO3 version
         run: "composer require typo3/cms-core:${{ matrix.typo3-version }}"
@@ -46,6 +46,18 @@ jobs:
           composer-options: ${{ matrix.composer-arguments }}
 
       - name: Run tests
+        run: vendor/bin/phpunit
+
+  coverage:
+    needs: build
+    steps:
+      - name: Select TYPO3 version 9.5
+        run: "composer require typo3/cms-core:^9.5"
+
+      - name: Composer install
+        uses: ramsey/composer-install@v1
+
+      - name: Run tests
         run: vendor/bin/phpunit --coverage-clover=build/logs/clover.xml
 
       - name: Upload test coverage
@@ -54,7 +66,6 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_PARALLEL: true
           COVERALLS_FLAG_NAME: ${{ matrix.name }}
-
   # Use this step to configure a required build pass via gh branch protection rules (currently makes experimental builds unusable due to https://github.com/actions/toolkit/issues/581)
   #buildall:
   #  if: "!contains(github.event.head_commit.message, '[skip ci]')"
