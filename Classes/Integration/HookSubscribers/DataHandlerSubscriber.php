@@ -205,7 +205,9 @@ class DataHandlerSubscriber
                             $this->cascadeCommandToChildRecords($table, (int)$id, $command, $value, $dataHandler);
                             break;
                         case 'copy':
-                            unset($value['update']['colPos']);
+                            if (is_array($value)) {
+                                unset($value['update']['colPos']);
+                            }
                             $this->cascadeCommandToChildRecords($table, (int)$id, $command, $value, $dataHandler);
                             break;
                         default:
