@@ -268,7 +268,6 @@ class PreviewView extends TemplateView
             }
 
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;
-
         }
         return $content;
     }

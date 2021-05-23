@@ -437,7 +437,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
         return $this;
     }
 
-    /** 
+    /**
      * @return array
      * @deprecated Please switch to overrideChildTca
      */

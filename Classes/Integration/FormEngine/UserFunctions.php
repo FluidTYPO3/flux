@@ -136,6 +136,8 @@ class UserFunctions
             $queryBuilder->expr()->lt('colPos', $maximumColPosValue)
         );
         $rows = $query->execute()->fetchAll();
-        return empty($rows) ? [] : array_map(function ($colPos) { return ColumnNumberUtility::calculateLocalColumnNumber($colPos); }, array_unique(array_column($rows, 'colPos')));
+        return empty($rows) ? [] : array_map(function ($colPos) {
+            return ColumnNumberUtility::calculateLocalColumnNumber($colPos);
+        }, array_unique(array_column($rows, 'colPos')));
     }
 }

@@ -26,7 +26,7 @@ class FieldViewHelper extends AbstractFieldViewHelper
         $this->registerArgument('type', 'string', 'TCA field type', true);
         $this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', true);
         $this->registerArgument('label', 'string', 'Label for field', true);
-        $this->registerArgument('exclude', 'bool', 'Set to FALSE if field is not an "exclude" field', false, true);
+        $this->registerArgument('exclude', 'bool', 'Set to FALSE if field is not an "exclude" field', false, false);
         $this->registerArgument('config', 'array', 'TCA "config" array', false, []);
         $this->registerArgument(
             'transform',

@@ -67,5 +67,4 @@ interface FluidProviderInterface
      * @return $this
      */
     public function setConfigurationSectionName($configurationSectionName);
-
 }
