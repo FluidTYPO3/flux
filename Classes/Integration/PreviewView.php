@@ -388,6 +388,11 @@ class PreviewView extends TemplateView
             $itemLabels[$name] = ($val['label'] ?? false) ? $this->getLanguageService()->sL($val['label']) : '';
         }
 
+        array_push(
+            $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
+            ...$layoutConfiguration['__items']
+        );
+
         $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList'] ?? []);
 
         $view->script = 'db_layout.php';
