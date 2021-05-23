@@ -71,12 +71,20 @@ class GridViewHelper extends AbstractFormViewHelper
     protected function callRenderMethod()
     {
         $container = static::getContainerFromRenderingContext($this->renderingContext);
+        $viewHelperVariableContainer = $this->renderingContext->getViewHelperVariableContainer();
+        $extensionName = $container->getExtensionName() ?? static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments);
+
         $grid = static::getGridFromRenderingContext($this->renderingContext, $this->arguments['name']);
         $grid->setLabel($this->arguments['label']);
         $grid->setVariables($this->arguments['variables']);
-        $grid->setExtensionName($container->getExtensionName() ?? static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments));
+        $grid->setExtensionName($extensionName);
+
+        $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
         static::setContainerInRenderingContext($this->renderingContext, $grid);
+
         $this->renderChildren();
+
+        $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         static::setContainerInRenderingContext($this->renderingContext, $container);
     }
 
