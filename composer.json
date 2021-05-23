@@ -24,11 +24,11 @@
     },
     "require": {
         "php": "^7.1.0",
-        "typo3/cms-core": "^8.7 || ^9 || ^10 || dev-master",
-        "typo3/cms-fluid": "^8.7 || ^9 || ^10 || dev-master",
-        "typo3/cms-backend": "^8.7 || ^9 || ^10 || dev-master",
-        "typo3/cms-frontend": "^8.7 || ^9 || ^10 || dev-master",
-        "typo3/cms-recordlist": "^8.7 || ^9 || ^10 || dev-master"
+        "typo3/cms-core": "^8.7 || ^9 || ^10 || ^11 || dev-master",
+        "typo3/cms-fluid": "^8.7 || ^9 || ^10 || ^11 || dev-master",
+        "typo3/cms-backend": "^8.7 || ^9 || ^10 || ^11 || dev-master",
+        "typo3/cms-frontend": "^8.7 || ^9 || ^10 || ^11 || dev-master",
+        "typo3/cms-recordlist": "^8.7 || ^9 || ^10 || ^11 || dev-master"
     },
     "extra": {
         "typo3/cms": {
