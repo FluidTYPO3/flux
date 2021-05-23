@@ -35,7 +35,9 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     public function includeStaticTypoScriptHook(array $parameters, TemplateService $caller)
     {
-        if (!ObjectAccess::getProperty($caller, 'extensionStaticsProcessed', true)) {
+        $property = new \ReflectionProperty($caller, 'extensionStaticsProcessed');
+        $property->setAccessible(true);
+        if (!$property->getValue($caller)) {
             $this->processData();
         }
     }

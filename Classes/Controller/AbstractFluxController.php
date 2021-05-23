@@ -43,6 +43,11 @@ abstract class AbstractFluxController extends ActionController
     protected $fallbackExtensionKey = 'flux';
 
     /**
+     * @var string
+     */
+    protected $extensionName = 'FluidTYPO3.Flux';
+
+    /**
      * @var FluxService
      */
     protected $configurationService;
@@ -420,7 +425,11 @@ abstract class AbstractFluxController extends ActionController
         $this->request->setControllerExtensionName($extensionName);
         $this->request->setControllerActionName($controllerActionName);
         $potentialControllerInstance = $this->objectManager->get($controllerClassName);
-        $response = $this->objectManager->get(Response::class);
+        if (isset($this->responseFactory)) {
+            $response = $this->responseFactory->createResponse();
+        } else {
+            $response = $this->objectManager->get(Response::class);
+        }
 
         try {
             HookHandler::trigger(
@@ -447,7 +456,10 @@ abstract class AbstractFluxController extends ActionController
                 'controllerActionName' => $controllerActionName
             ]
         );
-        return $response->getContent();
+        if (method_exists($response, 'getContent')) {
+            return $response->getContent();
+        }
+        return $response->getBody()->getContents();
     }
 
     /**
