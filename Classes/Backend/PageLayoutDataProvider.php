@@ -169,7 +169,7 @@ class PageLayoutDataProvider
     {
         $extension = $form->getExtensionName();
         $thumbnail = MiscellaneousUtility::getIconForTemplate($form);
-        if (NULL !== $thumbnail) {
+        if (null !== $thumbnail) {
             $thumbnail = ltrim($thumbnail, '/');
             $thumbnail = GeneralUtility::getFileAbsFileName($thumbnail);
             $thumbnail = $thumbnail ? MiscellaneousUtility::createIcon($thumbnail) : null;

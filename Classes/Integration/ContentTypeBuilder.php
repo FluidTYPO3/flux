@@ -76,8 +76,7 @@ class ContentTypeBuilder
 
         /** @var Provider $provider */
         $provider = GeneralUtility::makeInstance(ObjectManager::class)->get($providerClassName);
-        if (
-            !$provider instanceof RecordProviderInterface
+        if (!$provider instanceof RecordProviderInterface
             || !$provider instanceof ControllerProviderInterface
             || !$provider instanceof FluidProviderInterface
         ) {

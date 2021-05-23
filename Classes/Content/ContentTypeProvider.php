@@ -26,9 +26,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * for providing a (dynamic) Flux form that allows site admin
  * to configure properties of a content type record.
  */
-class ContentTypeProvider
-    extends AbstractProvider
-    implements RecordProviderInterface,
+class ContentTypeProvider extends AbstractProvider implements
+    RecordProviderInterface,
     PreviewProviderInterface,
     ContentTypeProviderInterface,
     DataStructureProviderInterface,

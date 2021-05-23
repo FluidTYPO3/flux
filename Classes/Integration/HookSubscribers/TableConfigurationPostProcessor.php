@@ -35,7 +35,9 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     public function includeStaticTypoScriptHook(array $parameters, TemplateService $caller)
     {
-        if (!ObjectAccess::getProperty($caller, 'extensionStaticsProcessed', true)) {
+        $property = new \ReflectionProperty($caller, 'extensionStaticsProcessed');
+        $property->setAccessible(true);
+        if (!$property->getValue($caller)) {
             $this->processData();
         }
     }
@@ -119,7 +121,6 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 
                 $pluginName = $pluginName ?: GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2)));
                 $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
-
             } catch (Exception $error) {
                 if (!ContextUtility::getApplicationContext()->isProduction()) {
                     throw $error;
