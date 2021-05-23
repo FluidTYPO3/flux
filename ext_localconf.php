@@ -3,7 +3,7 @@ if (!defined('TYPO3_MODE')) {
     die('Access denied.');
 }
 
-(function() use ($_EXTCONF) {
+(function () use ($_EXTCONF) {
     if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'])) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] = array(
             'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
@@ -109,7 +109,7 @@ if (!defined('TYPO3_MODE')) {
             'requireColumnPositionJavaScript'
         );
 
-        if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
+        if (true === class_exists(\FluidTYPO3\Flux\Core::class)) {
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\ContentTypeProvider::class);
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider::class);
 
@@ -132,11 +132,19 @@ if (!defined('TYPO3_MODE')) {
         }
 
         if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
+            if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.4, '>=')) {
+                $pageControllerName = \FluidTYPO3\Flux\Controller\PageController::class;
+                $pageControllerExtensionName = 'Flux';
+            } else {
+                $pageControllerName = 'Page';
+                $pageControllerExtensionName = 'FluidTYPO3.Flux';
+            }
+
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-                'FluidTYPO3.Flux',
+                $pageControllerExtensionName,
                 'Page',
                 [
-                    'Page' => 'render,error',
+                    $pageControllerName => 'render,error',
                 ],
                 [],
                 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_PLUGIN
@@ -157,6 +165,5 @@ if (!defined('TYPO3_MODE')) {
             $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ($GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] == '' ? '' : ',') .
                 'tx_fed_page_controller_action,tx_fed_page_controller_action_sub,tx_fed_page_flexform,tx_fed_page_flexform_sub,';
         }
-
     }
 })();

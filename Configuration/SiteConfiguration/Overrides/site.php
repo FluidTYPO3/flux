@@ -1,5 +1,5 @@
 <?php
-defined ('TYPO3_MODE') or die ('Access denied.');
+defined('TYPO3_MODE') or die('Access denied.');
 
 $GLOBALS['SiteConfiguration']['site']['columns']['flux_page_templates'] = [
     'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:siteConfiguration.pageTemplates',

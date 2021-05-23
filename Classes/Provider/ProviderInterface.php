@@ -23,8 +23,7 @@ use FluidTYPO3\Flux\View\ViewContext;
 /**
  * ProviderInterface
  */
-interface ProviderInterface
-extends
+interface ProviderInterface extends
     FormProviderInterface,
     GridProviderInterface,
     FluidProviderInterface,

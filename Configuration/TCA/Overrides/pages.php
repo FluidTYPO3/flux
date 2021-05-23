@@ -1,7 +1,7 @@
 <?php
-defined ('TYPO3_MODE') or die ('Access denied.');
+defined('TYPO3_MODE') or die('Access denied.');
 
-(function() {
+(function () {
     if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
         return;
     }
@@ -68,7 +68,7 @@ defined ('TYPO3_MODE') or die ('Access denied.');
 
     $doktypes = '0,1,4';
     $additionalDoktypes = trim(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_DOKTYPES), ',');
-    if (FALSE === empty($additionalDoktypes)) {
+    if (false === empty($additionalDoktypes)) {
         $doktypes .= ',' . $additionalDoktypes;
     }
 

@@ -1,7 +1,7 @@
 <?php
-defined ('TYPO3_MODE') or die ('Access denied.');
+defined('TYPO3_MODE') or die('Access denied.');
 
-(function() {
+(function () {
     if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
         return;
     }

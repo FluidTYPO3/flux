@@ -39,5 +39,4 @@ class ContentGridForm extends Form
         $columnField = $section->createContainer(Form\Container\SectionObject::class, 'column');
         $columnField->createField(Form\Field\ColumnPosition::class, 'colPos', 'Column position value');
     }
-
 }

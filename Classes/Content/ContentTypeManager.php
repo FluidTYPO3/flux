@@ -56,7 +56,7 @@ class ContentTypeManager implements SingletonInterface
                     (array) FluidFileBasedContentTypeDefinition::fetchContentTypes(),
                     (array) RecordBasedContentTypeDefinition::fetchContentTypes()
                 );
-                $this->typeNames = array_keys($types);
+                $this->typeNames = array_merge($this->typeNames, array_keys($types));
             } catch (DBALException $error) {
                 // Suppress schema- or connection-related issues
             } catch (NoSuchCacheException $error) {
