@@ -16,6 +16,7 @@ class ExtensionConfigurationUtility
     public const OPTION_PLUG_AND_PLAY_DIRECTORY = 'plugAndPlayDirectory';
     public const OPTION_PAGE_INTEGRATION = 'pageIntegration';
     public const OPTION_PAGE_LANGUAGE_OVERLAY = 'pagesLanguageConfigurationOverlay';
+    public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
 
     protected static $defaults = [
         self::OPTION_DEBUG_MODE => false,
@@ -26,6 +27,7 @@ class ExtensionConfigurationUtility
         self::OPTION_PLUG_AND_PLAY_DIRECTORY => DropInContentTypeDefinition::DESIGN_DIRECTORY,
         self::OPTION_PAGE_INTEGRATION => true,
         self::OPTION_PAGE_LANGUAGE_OVERLAY => false,
+        self::OPTION_FLEXFORM_TO_IRRE => false,
     ];
 
     public static function initialize(?string $extensionConfiguration): void

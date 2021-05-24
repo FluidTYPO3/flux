@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Controller;
  */
 
 use FluidTYPO3\Flux\Hooks\HookHandler;
+use FluidTYPO3\Flux\Integration\NormalizedData\DataAccessTrait;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -36,6 +37,7 @@ use function get_class;
  */
 abstract class AbstractFluxController extends ActionController
 {
+    use DataAccessTrait;
 
     /**
      * @var string

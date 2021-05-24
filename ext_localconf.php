@@ -168,4 +168,24 @@ if (!defined('TYPO3_MODE')) {
                 'tx_fed_page_controller_action,tx_fed_page_controller_action_sub,tx_fed_page_flexform,tx_fed_page_flexform_sub,';
         }
     }
+
+    if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE)) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\NormalizedDataStructureProvider::class] = [
+            'before' => [
+                \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class,
+            ],
+        ];
+
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\NormalizedDataConfigurationProvider::class] = [
+            'before' => [
+                \TYPO3\CMS\Backend\Form\FormDataProvider\InlineOverrideChildTca::class,
+            ],
+        ];
+
+        \FluidTYPO3\Flux\Integration\NormalizedData\ImplementationRegistry::registerImplementation(
+            \FluidTYPO3\Flux\Integration\NormalizedData\FlexFormImplementation::class
+        );
+
+        \FluidTYPO3\Flux\Integration\NormalizedData\FlexFormImplementation::registerForTableAndField('tt_content', 'pi_flexform');
+    }
 })();
