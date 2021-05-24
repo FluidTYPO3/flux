@@ -30,8 +30,14 @@
 			<trans-unit id="extension_configuration.doktypes">
 				<source>Doktypes: CSV list of doktypes to add the page layout selectors to in addition to the default standard pages and shortcuts (0,1,4). Possible use cases are sysfolders (254) or custom page types.</source>
 			</trans-unit>
+			<trans-unit id="extension_configuration.pageIntegration">
+				<source>Page Integration: If enabled, Flux will integrate with pages to make templates you place in the "Pages" template folder selectable in page properties (the features previously provided by the "Fluidpages" extension). You must flush system caches after changing this option!</source>
+			</trans-unit>
 			<trans-unit id="extension_configuration.pagesLanguageConfigurationOverlay">
 				<source>Translation: Enable translation of Page Configuration through the Pages Language Overlays.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.flexFormToIrre">
+				<source>EXPERIMENTAL - FlexForm-to-IRRE: FlexForm XML to IRRE storage. WARNING - destroys existing FlexForm data in DB when saving records! Enabling this option makes Flux capable of storing FlexForm XML data structures as normalized IRRE records. By using the DataAccessTrait, classes such as controllers can read out the data in an array structure compatible with vanilla FlexForm data.</source>
 			</trans-unit>
 			<trans-unit id="content_types">
 				<source>Flux-based Content Type</source>
@@ -192,21 +198,6 @@
 			</trans-unit>
 			<trans-unit id="flux.clearValue">
 				<source>Clear value</source>
-			</trans-unit>
-			<trans-unit id="pipes.standard.label">
-				<source>Standard pipe (no action)</source>
-			</trans-unit>
-			<trans-unit id="pipes.controller.label">
-				<source>Controller action pipe</source>
-			</trans-unit>
-			<trans-unit id="pipes.email.label">
-				<source>Email sending pipe</source>
-			</trans-unit>
-			<trans-unit id="pipes.flashMessage.label">
-				<source>FlashMessage dispatch pipe</source>
-			</trans-unit>
-			<trans-unit id="pipes.typeConverter.label">
-				<source>Extbase TypeConverter pipe</source>
 			</trans-unit>
 			<trans-unit id="reference">
 				<source>Reference to content on page '%s' - click to jump to original</source>

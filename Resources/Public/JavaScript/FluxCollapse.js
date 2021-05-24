@@ -65,15 +65,15 @@ define(['jquery'], function ($) {
             }
 
             var i, toggle = $(this),
-                toggleContent = $('[data-toggle-uid='+toggle.data('togglerUid')+']'),
-                fluxGrid = $('[data-grid-uid="' + toggle.data('togglerUid') + '"]'),
-                uid = toggleContent.data('toggleUid');
+                uid = toggle.data('togglerUid'),
+                toggleContent = $('[data-toggle-uid=' + uid + ']'),
+                fluxGrid = $('[data-grid-uid="' + uid + '"]');
             if (fluxGrid.hasClass('flux-grid-hidden')) {
                 fluxGrid.removeClass('flux-grid-hidden');
                 toggle.removeClass('toggler-expand').addClass('toggler-collapse');
                 for (i in cookie) {
                     if (cookie.hasOwnProperty(i)) {
-                        if (cookie[i] == uid) {
+                        if (cookie[i] === uid) {
                             delete cookie[i];
                         }
                     }

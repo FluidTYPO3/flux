@@ -21,34 +21,34 @@ $EM_CONF[$_EXTKEY] = array (
   'author_company' => '',
   'CGLcompliance' => '',
   'CGLcompliance_note' => '',
-  'constraints' => 
+  'constraints' =>
   array (
-    'depends' => 
+    'depends' =>
     array (
-      'typo3' => '8.7.0-10.4.99',
+      'typo3' => '8.7.0-11.2.99',
       'php' => '7.1.0-7.4.99',
     ),
-    'conflicts' => 
+    'conflicts' =>
     array (
     ),
-    'suggests' => 
+    'suggests' =>
     array (
     ),
   ),
   '_md5_values_when_last_written' => '',
-  'suggests' => 
+  'suggests' =>
   array (
   ),
-  'autoload' => 
+  'autoload' =>
   array (
-    'psr-4' => 
+    'psr-4' =>
     array (
       'FluidTYPO3\\Flux\\' => 'Classes/',
     ),
   ),
-  'autoload-dev' => 
+  'autoload-dev' =>
   array (
-    'psr-4' => 
+    'psr-4' =>
     array (
       'FluidTYPO3\\Flux\\Tests\\' => 'Tests/',
     ),

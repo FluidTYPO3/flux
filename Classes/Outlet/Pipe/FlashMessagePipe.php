@@ -63,29 +63,6 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface
     }
 
     /**
-     * @return FieldInterface[]
-     */
-    public function getFormFields()
-    {
-        $severities = [
-            FlashMessage::OK => 'OK',
-            FlashMessage::ERROR => 'ERROR',
-            FlashMessage::NOTICE => 'NOTICE',
-            FlashMessage::WARNING => 'WARNING'
-        ];
-        $fields = parent::getFormFields();
-        $fields['message'] = Text::create(['type' => 'Text'])->setName('message');
-        $fields['title'] = Input::create(['type' => 'Input'])->setName('title');
-        /** @var Select $severity */
-        $severity = Select::create(['type' => 'Select']);
-        $severity->setName('severity');
-        $severity->setItems($severities);
-        $severity->setDefault(FlashMessage::OK);
-        $fields['severity'] = $severity;
-        return $fields;
-    }
-
-    /**
      * @param integer $severity
      * @return FlashMessagePipe
      */
