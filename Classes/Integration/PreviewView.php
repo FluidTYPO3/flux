@@ -268,7 +268,6 @@ class PreviewView extends TemplateView
             }
 
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;
-
         }
         return $content;
     }
@@ -388,6 +387,11 @@ class PreviewView extends TemplateView
         foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
             $itemLabels[$name] = ($val['label'] ?? false) ? $this->getLanguageService()->sL($val['label']) : '';
         }
+
+        array_push(
+            $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
+            ...$layoutConfiguration['__items']
+        );
 
         $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList'] ?? []);
 

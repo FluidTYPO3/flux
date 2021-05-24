@@ -43,6 +43,7 @@ class DataHandlerSubscriber
      * @param DataHandler $reference Reference to the parent object (TCEmain)
      * @return void
      */
+    // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processDatamap_afterDatabaseOperations($command, $table, $id, $fieldArray, $reference)
     {
         if ($table === 'content_types') {
@@ -111,6 +112,7 @@ class DataHandlerSubscriber
      * @param int|string $id
      * @param DataHandler $dataHandler
      */
+    // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processDatamap_preProcessFieldArray(array &$fieldArray, $table, $id, DataHandler $dataHandler)
     {
         // Handle "$table.$field" named fields where $table is the valid TCA table name and $field is an existing TCA
@@ -170,6 +172,7 @@ class DataHandlerSubscriber
         }
     }
 
+    // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processCmdmap_beforeStart(DataHandler $dataHandler)
     {
         foreach ($dataHandler->cmdmap as $table => $commandSets) {
@@ -205,7 +208,9 @@ class DataHandlerSubscriber
                             $this->cascadeCommandToChildRecords($table, (int)$id, $command, $value, $dataHandler);
                             break;
                         case 'copy':
-                            unset($value['update']['colPos']);
+                            if (is_array($value)) {
+                                unset($value['update']['colPos']);
+                            }
                             $this->cascadeCommandToChildRecords($table, (int)$id, $command, $value, $dataHandler);
                             break;
                         default:
@@ -236,6 +241,7 @@ class DataHandlerSubscriber
      * @param array $pasteDataMap
      * @return void
      */
+    // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
     {
 

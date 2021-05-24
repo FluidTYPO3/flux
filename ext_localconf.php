@@ -3,7 +3,7 @@ if (!defined('TYPO3_MODE')) {
     die('Access denied.');
 }
 
-(function() use ($_EXTCONF) {
+(function () use ($_EXTCONF) {
     if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'])) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] = array(
             'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
@@ -109,7 +109,7 @@ if (!defined('TYPO3_MODE')) {
             'requireColumnPositionJavaScript'
         );
 
-        if (TRUE === class_exists(\FluidTYPO3\Flux\Core::class)) {
+        if (true === class_exists(\FluidTYPO3\Flux\Core::class)) {
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\ContentTypeProvider::class);
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider::class);
 
@@ -124,19 +124,29 @@ if (!defined('TYPO3_MODE')) {
             \FluidTYPO3\Flux\Core::registerPipe('typeConverter');
         }
 
-        \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageProvider::class);
-        \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\SubPageProvider::class);
+        if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
+            \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageProvider::class);
+            \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\SubPageProvider::class);
+        }
         if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 9.0, '<')) {
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageLanguageOverlayProvider::class);
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\SubPageLanguageOverlayProvider::class);
         }
 
-        if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
+        if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') && \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
+            if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.4, '>=')) {
+                $pageControllerName = \FluidTYPO3\Flux\Controller\PageController::class;
+                $pageControllerExtensionName = 'Flux';
+            } else {
+                $pageControllerName = 'Page';
+                $pageControllerExtensionName = 'FluidTYPO3.Flux';
+            }
+
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-                'FluidTYPO3.Flux',
+                $pageControllerExtensionName,
                 'Page',
                 [
-                    'Page' => 'render,error',
+                    $pageControllerName => 'render,error',
                 ],
                 [],
                 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_PLUGIN
@@ -157,6 +167,25 @@ if (!defined('TYPO3_MODE')) {
             $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ($GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] == '' ? '' : ',') .
                 'tx_fed_page_controller_action,tx_fed_page_controller_action_sub,tx_fed_page_flexform,tx_fed_page_flexform_sub,';
         }
+    }
 
+    if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE)) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\NormalizedDataStructureProvider::class] = [
+            'before' => [
+                \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class,
+            ],
+        ];
+
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\NormalizedDataConfigurationProvider::class] = [
+            'before' => [
+                \TYPO3\CMS\Backend\Form\FormDataProvider\InlineOverrideChildTca::class,
+            ],
+        ];
+
+        \FluidTYPO3\Flux\Integration\NormalizedData\ImplementationRegistry::registerImplementation(
+            \FluidTYPO3\Flux\Integration\NormalizedData\FlexFormImplementation::class
+        );
+
+        \FluidTYPO3\Flux\Integration\NormalizedData\FlexFormImplementation::registerForTableAndField('tt_content', 'pi_flexform');
     }
 })();

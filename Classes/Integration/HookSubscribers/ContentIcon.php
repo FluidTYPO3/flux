@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
@@ -87,7 +88,7 @@ class ContentIcon
      */
     public function addSubIcon(array $parameters, $caller = null)
     {
-        if (!$caller instanceof PageLayoutView) {
+        if (!($caller instanceof PageLayoutView || $caller instanceof GridColumnItem)) {
             return '';
         }
         list ($table, $uid, $record) = $parameters;

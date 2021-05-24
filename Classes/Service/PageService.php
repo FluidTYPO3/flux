@@ -203,14 +203,12 @@ class PageService implements SingletonInterface
         $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         $typoScript = $this->configurationService->getPageConfiguration();
         $output = [];
-        $view = $this->objectManager->get(TemplateView::class);
         foreach ((array) $typoScript as $extensionName => $group) {
             if (true === isset($group['enable']) && 1 > $group['enable']) {
                 continue;
             }
             $output[$extensionName] = [];
             $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName));
-            $view->getRenderingContext()->setTemplatePaths($templatePaths);
             $finder = Finder::create()->in($templatePaths->getTemplateRootPaths())->name('*.html')->sortByName();
             foreach ($finder->files() as $file) {
                 /** @var \SplFileInfo $file */
@@ -225,6 +223,9 @@ class PageService implements SingletonInterface
                     continue;
                 }
 
+                $view = $this->objectManager->get(TemplateView::class);
+                $view->getRenderingContext()->setTemplatePaths($templatePaths);
+                $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::SCOPE, FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
                 $view->setTemplatePathAndFilename($file->getPathname());
                 try {
                     $view->renderSection('Configuration');

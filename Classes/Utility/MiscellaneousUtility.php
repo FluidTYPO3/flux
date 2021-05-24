@@ -57,7 +57,7 @@ class MiscellaneousUtility
             $iconPathAndName = $iconFolder . $templateName;
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
-                if (true === defined(GLOB_BRACE)) {
+                if (true === defined('GLOB_BRACE')) {
                     $allowedExtensions = implode(',', static::$allowedIconTypes);
                     $iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
                     $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);

@@ -280,7 +280,10 @@ class AbstractProvider implements ProviderInterface
      */
     public function getForm(array $row)
     {
-        $form = $this->form ?? $this->createCustomFormInstance($row) ?? $this->extractConfiguration($row, 'form');
+        $form = $this->form
+            ?? $this->createCustomFormInstance($row)
+            ?? $this->extractConfiguration($row, 'form')
+            ?? Form::create();
         $form->setOption(Form::OPTION_RECORD, $row);
         return $form;
     }

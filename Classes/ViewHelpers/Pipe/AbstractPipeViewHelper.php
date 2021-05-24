@@ -40,15 +40,15 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
         );
     }
 
-    protected function callRenderMethod()
+    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-        $form = static::getFormFromRenderingContext($this->renderingContext);
-        $sheet = true === $form->has('pipes') ? $form->get('pipes') : $form->createContainer('Sheet', 'pipes');
-        $pipe = static::preparePipeInstance($this->renderingContext, $this->arguments);
-        foreach ($pipe->getFormFields() as $formField) {
-            $sheet->add($formField);
+        $form = static::getFormFromRenderingContext($renderingContext);
+        $pipe = static::preparePipeInstance($renderingContext, $arguments);
+        if ($arguments['direction'] === static::DIRECTION_IN) {
+            $form->getOutlet()->addPipeIn($pipe);
+        } else {
+            $form->getOutlet()->addPipeOut($pipe);
         }
-        $form->getOutlet()->addPipeOut($pipe);
     }
 
     /**

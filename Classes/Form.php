@@ -23,7 +23,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 /**
  * Form
  */
-class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface
+class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface, Form\OptionCarryingInterface
 {
 
     const OPTION_STATIC = 'static';

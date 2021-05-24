@@ -15,21 +15,8 @@ class StandardPipeTest extends AbstractPipeTestCase
 {
 
     /**
-     * @test
+     * @var array
      */
-    public function canConductData()
-    {
-        $instance = $this->createInstance();
-        $output = $instance->conduct($this->defaultData);
-        $this->assertEmpty($output);
-    }
+    protected $defaultData = array('foo' => 'bar');
 
-    /**
-     * @test
-     */
-    public function canLoadSettings()
-    {
-        $result = $this->createInstance()->loadSettings(array());
-        $this->assertEmpty($result);
-    }
 }

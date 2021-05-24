@@ -1,5 +1,5 @@
 <?php
-defined ('TYPO3_MODE') or die ('Access denied.');
+defined('TYPO3_MODE') or die('Access denied.');
 
 \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
     \FluidTYPO3\Flux\Integration\ContentTypeBuilder::DEFAULT_SHOWITEM,
@@ -32,3 +32,7 @@ defined ('TYPO3_MODE') or die ('Access denied.');
 $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['itemsProcFunc'] =
     \FluidTYPO3\Flux\Integration\Overrides\BackendLayoutView::class . '->colPosListItemProcFunc';
 $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['label'] = 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.pi_flexform';
+
+if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE)) {
+    \FluidTYPO3\Flux\Integration\NormalizedData\FlexFormImplementation::registerForTableAndField('tt_content', 'pi_flexform');
+}

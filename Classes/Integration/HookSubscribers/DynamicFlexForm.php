@@ -166,7 +166,7 @@ class DynamicFlexForm extends FlexFormTools
             $record = BackendUtility::getRecord($identifier['tableName'], $record['uid'], '*', '', false);
         }
         $fieldName = $identifier['fieldName'];
-        $dataStructArray = $dataStructureArray = $this->parseDataStructureByIdentifier($identifier['originalIdentifier']);;
+        $dataStructArray = $dataStructureArray = $this->parseDataStructureByIdentifier($identifier['originalIdentifier']);
         $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
             $identifier['tableName'],
             $fieldName,
