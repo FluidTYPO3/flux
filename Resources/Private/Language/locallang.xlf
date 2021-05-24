@@ -30,6 +30,9 @@
 			<trans-unit id="extension_configuration.doktypes">
 				<source>Doktypes: CSV list of doktypes to add the page layout selectors to in addition to the default standard pages and shortcuts (0,1,4). Possible use cases are sysfolders (254) or custom page types.</source>
 			</trans-unit>
+			<trans-unit id="extension_configuration.pageIntegration">
+				<source>Page Integration: If enabled, Flux will integrate with pages to make templates you place in the "Pages" template folder selectable in page properties (the features previously provided by the "Fluidpages" extension). You must flush system caches after changing this option!</source>
+			</trans-unit>
 			<trans-unit id="extension_configuration.pagesLanguageConfigurationOverlay">
 				<source>Translation: Enable translation of Page Configuration through the Pages Language Overlays.</source>
 			</trans-unit>

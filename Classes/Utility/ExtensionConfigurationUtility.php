@@ -14,6 +14,7 @@ class ExtensionConfigurationUtility
     public const OPTION_AUTOLOAD = 'autoload';
     public const OPTION_PLUG_AND_PLAY = 'plugAndPlay';
     public const OPTION_PLUG_AND_PLAY_DIRECTORY = 'plugAndPlayDirectory';
+    public const OPTION_PAGE_INTEGRATION = 'pageIntegration';
     public const OPTION_PAGE_LANGUAGE_OVERLAY = 'pagesLanguageConfigurationOverlay';
 
     protected static $defaults = [
@@ -23,6 +24,7 @@ class ExtensionConfigurationUtility
         self::OPTION_AUTOLOAD => true,
         self::OPTION_PLUG_AND_PLAY => false,
         self::OPTION_PLUG_AND_PLAY_DIRECTORY => DropInContentTypeDefinition::DESIGN_DIRECTORY,
+        self::OPTION_PAGE_INTEGRATION => true,
         self::OPTION_PAGE_LANGUAGE_OVERLAY => false,
     ];
 
