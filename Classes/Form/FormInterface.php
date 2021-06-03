@@ -22,6 +22,8 @@ interface FormInterface
     public function setEnabled(bool $enabled): self;
     public function setLabel(?string $label): self;
     public function getLabel(): ?string;
+    public function setDescription(?string $description): self;
+    public function getDescription(): ?string;
     public function setLocalLanguageFileRelativePath(string $localLanguageFileRelativePath): self;
     public function getLocalLanguageFileRelativePath(): string;
     public function setDisableLocalLanguageLabels(bool $disableLocalLanguageLabels): self;

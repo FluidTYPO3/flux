@@ -65,6 +65,7 @@ class Field extends AbstractFormField
 
         $fieldStructureArray = [
             'label' => $this->getLabel(),
+            'description' => $this->getDescription(),
             'exclude' => intval($this->getExclude()),
             'config' => array_filter($this->getConfig(), $filterClosure),
             'displayCond' => $this->getDisplayCondition(),
