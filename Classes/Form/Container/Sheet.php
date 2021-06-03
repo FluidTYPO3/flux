@@ -17,7 +17,6 @@ use FluidTYPO3\Flux\Form\FormInterface;
 
 class Sheet extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
 {
-    protected ?string $description = null;
     protected ?string $shortDescription = null;
 
     public function setShortDescription(?string $shortDescription): self
@@ -29,12 +28,6 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
     public function getShortDescription(): ?string
     {
         return $this->resolveLocalLanguageValueOfLabel($this->shortDescription, $this->getPath() . '.shortDescription');
-    }
-
-    public function setDescription(?string $description): self
-    {
-        $this->description = $description;
-        return $this;
     }
 
     public function getDescription(): ?string
