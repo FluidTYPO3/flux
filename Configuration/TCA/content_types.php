@@ -26,9 +26,9 @@ return [
         'iconfile' => 'EXT:flux/Resources/Public/Icons/Plugin.png',
         'searchFields' => 'uid,title',
     ],
-    'interface' => [
+    'interface' => (version_compare(TYPO3_branch, '10.3', '<') ? [
         'showRecordFieldList' => 'cruser_id,pid,hidden,starttime,endtime,fe_group,title,content_type,content_configuration,grid,template_file,template_source'
-    ],
+    ] : []),
     'columns' => [
         'hidden' => [
             'label' => 'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
