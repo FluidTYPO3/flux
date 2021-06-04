@@ -266,6 +266,16 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
+     * @param string $description
+     * @return FormInterface
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getPath()
@@ -299,6 +309,14 @@ abstract class AbstractFormComponent implements FormInterface
     public function getLabel()
     {
         return $this->resolveLocalLanguageValueOfLabel($this->label);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     /**

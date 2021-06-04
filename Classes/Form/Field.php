@@ -1,6 +1,8 @@
 <?php
 namespace FluidTYPO3\Flux\Form;
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 /**
  * Generic TCA field
  */
@@ -67,6 +69,10 @@ class Field extends AbstractFormField
             'displayCond' => $this->getDisplayCondition(),
             'onChange' => $this->getOnChange(),
         ];
+
+        if (version_compare(ExtensionManagementUtility::getExtensionVersion('core'), '9.4', '>=')) {
+            $fieldStructureArray['description'] = $this->getDescription();
+        }
 
         $fieldStructureArray = array_filter($fieldStructureArray, $filterClosure);
         return $fieldStructureArray;

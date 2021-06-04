@@ -62,6 +62,16 @@ interface FormInterface
     public function getLabel();
 
     /**
+     * @param string $description
+     */
+    public function setDescription($description);
+
+    /**
+     * @return string
+     */
+    public function getDescription();
+
+    /**
      * @param string $localLanguageFileRelativePath
      * @return FormInterface
      */
