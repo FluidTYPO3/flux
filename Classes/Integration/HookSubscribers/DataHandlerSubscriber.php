@@ -99,7 +99,12 @@ class DataHandlerSubscriber
         if ($newColumnPosition > 0) {
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
             $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, \PDO::PARAM_INT)->where(
-                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)),
+            )->orWhere(
+                $queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->eq('t3ver_oid', $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)),
+                    $queryBuilder->expr()->eq('t3ver_wsid', $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, \PDO::PARAM_INT))
+                )
             )->execute();
         }
 
@@ -364,7 +369,10 @@ class DataHandlerSubscriber
             ->from('tt_content')
             ->orderBy('uid', 'DESC')
             ->setMaxResults(1)
-            ->where($queryBuilder->expr()->eq('t3_origuid', $uid));
+            ->where(
+                $queryBuilder->expr()->eq('t3_origuid', $uid),
+                $queryBuilder->expr()->neq('t3ver_state', -1),
+            );
         return $queryBuilder->execute()->fetch() ?: null;
     }
 
