@@ -128,13 +128,13 @@ if (!defined('TYPO3_MODE')) {
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageProvider::class);
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\SubPageProvider::class);
         }
-        if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 9.0, '<')) {
+        if (version_compare(\FluidTYPO3\Flux\Utility\MiscellaneousUtility::getRawCoreVersion(), 9.0, '<')) {
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageLanguageOverlayProvider::class);
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\SubPageLanguageOverlayProvider::class);
         }
 
         if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') && \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
-            if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.4, '>=')) {
+            if (version_compare(\FluidTYPO3\Flux\Utility\MiscellaneousUtility::getRawCoreVersion(), 10.4, '>=')) {
                 $pageControllerName = \FluidTYPO3\Flux\Controller\PageController::class;
                 $pageControllerExtensionName = 'Flux';
             } else {

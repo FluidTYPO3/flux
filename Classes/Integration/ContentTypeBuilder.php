@@ -118,7 +118,7 @@ class ContentTypeBuilder
      */
     protected function configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerAction)
     {
-        if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.4, '>=')) {
+        if (version_compare(MiscellaneousUtility::getRawCoreVersion(), 10.4, '>=')) {
             $controllerName = $controllerClassName;
         } else {
             $controllerName = substr($controllerClassName, strrpos($controllerClassName, '\\') + 1, -10);

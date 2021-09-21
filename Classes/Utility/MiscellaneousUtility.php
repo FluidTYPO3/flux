@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
+use TYPO3\CMS\Core\Package\Exception;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -181,5 +182,20 @@ class MiscellaneousUtility
         $xml = preg_replace('#<el index="el">\s*</el>#', '', $xml);
         $xml = preg_replace('#<field index="[^"]*">\s*</field>#', '', $xml);
         return $xml;
+    }
+
+    /**
+     * TYPO3-11 core version includes "v" prefix (ex. v11.4.0).
+     * Version compare function required same versions format for correct execution.
+     *
+     * @return string Clean version without "v" prefix.
+     *
+     * @throws Exception
+     */
+    public static function getRawCoreVersion(): string
+    {
+        $coreVersion = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core');
+
+        return str_replace('v', '', $coreVersion);
     }
 }

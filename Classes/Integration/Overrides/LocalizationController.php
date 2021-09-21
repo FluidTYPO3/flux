@@ -9,12 +9,12 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
  */
 
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
 
 class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\LocalizationController
@@ -27,7 +27,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
      */
     public function getRecordLocalizeSummary(ServerRequestInterface $request, ResponseInterface $response = null): ResponseInterface
     {
-        if (version_compare(ExtensionManagementUtility::getExtensionVersion('core'), '9.0', '<=')) {
+        if (version_compare(MiscellaneousUtility::getRawCoreVersion(), '9.0', '<=')) {
             return parent::getRecordLocalizeSummary($request, $response);
         }
         $params = $request->getQueryParams();
