@@ -134,7 +134,12 @@ if (!defined('TYPO3_MODE')) {
         }
 
         if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') && \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
-            if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.4, '>=')) {
+            if (class_exists(\TYPO3\CMS\Core\Information\Typo3Version::class)) {
+                $version = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class)->getVersion();
+            } else {
+                $version = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core');
+            }
+            if (version_compare($version, 10.4, '>=')) {
                 $pageControllerName = \FluidTYPO3\Flux\Controller\PageController::class;
                 $pageControllerExtensionName = 'Flux';
             } else {

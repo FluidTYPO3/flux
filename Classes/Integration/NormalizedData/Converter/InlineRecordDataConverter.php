@@ -159,14 +159,18 @@ class InlineRecordDataConverter implements ConverterInterface
      * and the *original* TCA of the source record field.
      *
      * @param array $structure
-     * @return array
+     * @return array|null
      */
-    protected function resolveDataSourceDefinition(array $structure): array
+    protected function resolveDataSourceDefinition(array $structure): ?array
     {
         $flexFormTools = GeneralUtility::makeInstance(FlexFormTools::class);
         $config = $structure['processedTca']['columns'][$this->field]['config'];
-        $identifier = $flexFormTools->getDataStructureIdentifier($config, $this->table, $this->field, $this->record);
-        return $flexFormTools->parseDataStructureByIdentifier($identifier);
+        try {
+            $identifier = $flexFormTools->getDataStructureIdentifier($config, $this->table, $this->field, $this->record);
+            return $flexFormTools->parseDataStructureByIdentifier($identifier);
+        } catch (\RuntimeException $exception) {
+        }
+        return null;
     }
 
     /**
