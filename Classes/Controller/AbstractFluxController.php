@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
@@ -426,6 +427,7 @@ abstract class AbstractFluxController extends ActionController
         $this->request->setArguments($arguments);
         $this->request->setControllerExtensionName($extensionName);
         $this->request->setControllerActionName($controllerActionName);
+        $typo3Version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
         $potentialControllerInstance = $this->objectManager->get($controllerClassName);
         if (isset($this->responseFactory)) {
             $response = $this->responseFactory->createResponse();
@@ -444,7 +446,11 @@ abstract class AbstractFluxController extends ActionController
                     'controllerActionName' => $controllerActionName
                 ]
             );
-            $potentialControllerInstance->processRequest($this->request, $response);
+            if ($typo3VersionArray['version_main'] < 11) {
+                $potentialControllerInstance->processRequest($this->request, $response);
+            } else {
+                $response = $potentialControllerInstance->processRequest($this->request);
+            }
         } catch (StopActionException $error) {
             // intentionally left blank
         }
