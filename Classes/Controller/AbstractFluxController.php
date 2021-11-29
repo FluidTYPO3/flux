@@ -426,7 +426,6 @@ abstract class AbstractFluxController extends ActionController
         $this->request->setArguments($arguments);
         $this->request->setControllerExtensionName($extensionName);
         $this->request->setControllerActionName($controllerActionName);
-        $typo3Version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
         $potentialControllerInstance = $this->objectManager->get($controllerClassName);
         if (isset($this->responseFactory)) {
             $response = $this->responseFactory->createResponse();
