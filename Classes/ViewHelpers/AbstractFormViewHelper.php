@@ -123,7 +123,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         $form = $renderingContext->getViewHelperVariableContainer()->get(static::SCOPE, static::SCOPE_VARIABLE_FORM);
         if (!$form) {
             $form = Form::create([
-                'extensionName' => $renderingContext->getControllerContext()->getRequest()->getControllerExtensionName()
+                'extensionName' => $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::SCOPE, FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME)
             ]);
             $renderingContext->getViewHelperVariableContainer()->add(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
         }
