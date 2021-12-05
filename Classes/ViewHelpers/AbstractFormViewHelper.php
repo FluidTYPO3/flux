@@ -99,7 +99,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
             return $extensionName;
         }
         $controllerContext = $renderingContext->getControllerContext();
-        if (null !== $controllerContext) {
+        if (null !== $controllerContext && null !== $controllerContext->getRequest()) {
             /** @var Request $request */
             $request = $controllerContext->getRequest();
             $controllerExtensionName = $request->getControllerExtensionName();
