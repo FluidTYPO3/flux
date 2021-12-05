@@ -234,27 +234,6 @@ class PageProviderTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canLoadRecordTreeFromDatabase()
-    {
-        $record = $this->getBasicRecord();
-        $provider = $this->getMockBuilder(
-            str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4))
-        )->setMethods(
-            array('loadRecordFromDatabase', 'getParentFieldName', 'getParentFieldValue')
-        )->getMock();
-        $provider->expects($this->exactly(2))->method('getParentFieldName')->will($this->returnValue('somefield'));
-        $provider->expects($this->exactly(1))->method('getParentFieldValue')->will($this->returnValue(1));
-        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(['getSingle'])->getMock();
-        $recordService->expects($this->exactly(1))->method('getSingle')->will($this->returnValue($record));
-        $provider->injectRecordService($recordService);
-        $output = $this->callInaccessibleMethod($provider, 'loadRecordTreeFromDatabase', $record);
-        $expected = array($record);
-        $this->assertEquals($expected, $output);
-    }
-
-    /**
-     * @test
-     */
     public function setsDefaultValueInFieldsBasedOnInheritedValue()
     {
         $row = array();
