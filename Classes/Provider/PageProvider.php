@@ -409,6 +409,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     protected function loadRecordTreeFromDatabase($record)
     {
+    	//fix issue https://github.com/FluidTYPO3/flux/issues/1912
+	if(empty($record['uid'])) {
+            return array();
+        }
         $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid']);
         return array_slice($rootLineUtility->get(), 1);
     }
