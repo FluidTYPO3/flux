@@ -18,6 +18,8 @@ use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDef
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -116,7 +118,18 @@ class ContentTypeManager implements SingletonInterface
             try {
                 $cache = $cacheManager->getCache('flux');
             } catch (NoSuchCacheException $error) {
-                $cache = $cacheManager->getCache('cache_runtime');
+                if (class_exists(Typo3Version::class)) {
+                    $version = GeneralUtility::makeInstance(Typo3Version::class)->getVersion();
+                } else {
+                    $version = ExtensionManagementUtility::getExtensionVersion('core');
+                }
+
+                $cacheName = 'runtime';
+                if (version_compare($version, 11, '<')) {
+                    $cacheName = 'cache_runtime';
+                }
+
+                $cache = $cacheManager->getCache($cacheName);
             }
         }
         return $cache;
