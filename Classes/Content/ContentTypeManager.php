@@ -125,7 +125,7 @@ class ContentTypeManager implements SingletonInterface
                 }
 
                 $cacheName = 'runtime';
-                if (version_compare($version, 11, '<')) {
+                if (version_compare($version, 10, '<')) {
                     $cacheName = 'cache_runtime';
                 }
 
