@@ -17,6 +17,11 @@ if (!defined('TYPO3_MODE')) {
 
     \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::initialize($_EXTCONF);
 
+    if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL) {
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\FluidTYPO3\Flux\Updates\MigrateColPosWizard::class]
+            = \FluidTYPO3\Flux\Updates\MigrateColPosWizard::class;
+    }
+
     if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         // Globally registered fluid namespace
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['flux'] = ['FluidTYPO3\\Flux\\ViewHelpers'];
