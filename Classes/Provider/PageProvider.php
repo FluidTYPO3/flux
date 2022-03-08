@@ -409,6 +409,9 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     protected function loadRecordTreeFromDatabase($record)
     {
+        if (empty($record['uid'])) {
+            return array();
+        }
         $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid']);
         return array_slice($rootLineUtility->get(), 1);
     }
