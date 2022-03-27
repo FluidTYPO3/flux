@@ -108,7 +108,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         $copy = false;
         if (null !== $GLOBALS['BE_USER']) {
             $copy = $record;
-            BackendUtility::workspaceOL($table, $copy, -99, true);
+            BackendUtility::workspaceOL($table, $copy, -99, false);
             if (!$copy) {
                 return false;
             }

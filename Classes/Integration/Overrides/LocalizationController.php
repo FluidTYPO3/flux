@@ -50,7 +50,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
         $columns = $this->getPageColumns($pageId);
 
         while ($row = $result->fetch()) {
-            BackendUtility::workspaceOL('tt_content', $row, -99, true);
+            BackendUtility::workspaceOL('tt_content', $row, -99, false);
             if (!$row || VersionState::cast($row['t3ver_state'])->equals(VersionState::DELETE_PLACEHOLDER)) {
                 continue;
             }
