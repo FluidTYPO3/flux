@@ -147,7 +147,7 @@ class PageLayoutDataProvider
             } else {
                 $emConfigFile = ExtensionManagementUtility::extPath($extensionKey, 'ext_emconf.php');
                 require $emConfigFile;
-                $groupTitle = $EM_CONF['']['title'];
+                $groupTitle = reset($EM_CONF)['title'];
             }
 
             $templateOptions = [];

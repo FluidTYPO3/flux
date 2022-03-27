@@ -26,6 +26,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class DynamicFlexForm extends FlexFormTools
 {
+    private const DUMMY_SOURCE = ['sheets' => ['lDEF' => ['ROOT' => ['type' => 'array', 'el' => []]]]];
 
     /**
      * @var ObjectManagerInterface
@@ -124,7 +125,7 @@ class DynamicFlexForm extends FlexFormTools
         }
         $provider = $this->configurationService->resolvePrimaryConfigurationProvider($tableName, $fieldName, $record);
         if (!$provider) {
-            return [];
+            return static::DUMMY_SOURCE;
         }
         static::$recursed = true;
         $identifier = [
@@ -150,11 +151,11 @@ class DynamicFlexForm extends FlexFormTools
     public function parseDataStructureByIdentifierPreProcess(array $identifier)
     {
         if ($identifier['type'] !== 'flux') {
-            return [];
+            return static::DUMMY_SOURCE;
         }
         $record = $identifier['record'];
         if (!$record) {
-            return [];
+            return static::DUMMY_SOURCE;
         }
 
         $fromCache = $this->configurationService->getFromCaches($identifier);
@@ -166,7 +167,7 @@ class DynamicFlexForm extends FlexFormTools
             $record = BackendUtility::getRecord($identifier['tableName'], $record['uid'], '*', '', false);
         }
         $fieldName = $identifier['fieldName'];
-        $dataStructArray = $dataStructureArray = $this->parseDataStructureByIdentifier($identifier['originalIdentifier']);
+        $dataStructArray = $this->parseDataStructureByIdentifier($identifier['originalIdentifier']);
         $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
             $identifier['tableName'],
             $fieldName,

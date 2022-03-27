@@ -312,6 +312,7 @@ abstract class AbstractFluxController extends ActionController
         $controllerActionName = $this->provider->getControllerActionFromRecord($row);
         $actualActionName = null !== $requestActionName ? $requestActionName : $controllerActionName;
         $controllerName = $this->request->getControllerName();
+
         return $this->performSubRendering(
             $controllerExtensionKey,
             $controllerName,
@@ -475,6 +476,7 @@ abstract class AbstractFluxController extends ActionController
         if (method_exists($response, 'getContent')) {
             return $response->getContent();
         }
+        $response->getBody()->rewind();
         return $response->getBody()->getContents();
     }
 
