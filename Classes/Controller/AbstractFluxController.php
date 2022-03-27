@@ -17,6 +17,8 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -310,6 +312,7 @@ abstract class AbstractFluxController extends ActionController
         $controllerActionName = $this->provider->getControllerActionFromRecord($row);
         $actualActionName = null !== $requestActionName ? $requestActionName : $controllerActionName;
         $controllerName = $this->request->getControllerName();
+
         return $this->performSubRendering(
             $controllerExtensionKey,
             $controllerName,
@@ -427,10 +430,17 @@ abstract class AbstractFluxController extends ActionController
         $this->request->setControllerExtensionName($extensionName);
         $this->request->setControllerActionName($controllerActionName);
         $potentialControllerInstance = $this->objectManager->get($controllerClassName);
+
         if (isset($this->responseFactory)) {
             $response = $this->responseFactory->createResponse();
         } else {
             $response = $this->objectManager->get(Response::class);
+        }
+
+        if (class_exists(Typo3Version::class)) {
+            $version = GeneralUtility::makeInstance(Typo3Version::class)->getVersion();
+        } else {
+            $version = ExtensionManagementUtility::getExtensionVersion('core');
         }
 
         try {
@@ -444,7 +454,12 @@ abstract class AbstractFluxController extends ActionController
                     'controllerActionName' => $controllerActionName
                 ]
             );
-            $potentialControllerInstance->processRequest($this->request, $response);
+
+            if (version_compare($version, 11, '<')) {
+                $potentialControllerInstance->processRequest($this->request, $response);
+            } else {
+                $response = $potentialControllerInstance->processRequest($this->request);
+            }
         } catch (StopActionException $error) {
             // intentionally left blank
         }
@@ -461,6 +476,7 @@ abstract class AbstractFluxController extends ActionController
         if (method_exists($response, 'getContent')) {
             return $response->getContent();
         }
+        $response->getBody()->rewind();
         return $response->getBody()->getContents();
     }
 

@@ -14,7 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
 
 class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\LocalizationController
@@ -27,7 +27,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
      */
     public function getRecordLocalizeSummary(ServerRequestInterface $request, ResponseInterface $response = null): ResponseInterface
     {
-        if (version_compare(ExtensionManagementUtility::getExtensionVersion('core'), '9.0', '<=')) {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0', '<=')) {
             return parent::getRecordLocalizeSummary($request, $response);
         }
         $params = $request->getQueryParams();
@@ -50,7 +50,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
         $columns = $this->getPageColumns($pageId);
 
         while ($row = $result->fetch()) {
-            BackendUtility::workspaceOL('tt_content', $row, -99, true);
+            BackendUtility::workspaceOL('tt_content', $row, -99, false);
             if (!$row || VersionState::cast($row['t3ver_state'])->equals(VersionState::DELETE_PLACEHOLDER)) {
                 continue;
             }

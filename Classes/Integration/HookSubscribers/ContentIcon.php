@@ -32,10 +32,10 @@ class ContentIcon
      * @var array
      */
     protected $templates = [
-        'gridToggle' => '</div><div class="fluidcontent-toggler">
+        'gridToggle' => '<div class="fluidcontent-toggler col-auto">
                             <div class="btn-group btn-group-sm" role="group">
                             <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a> 
-                        </div></div><div>'
+                        </div></div>'
     ];
 
     /**

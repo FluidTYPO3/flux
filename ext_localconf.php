@@ -3,8 +3,10 @@ if (!defined('TYPO3_MODE')) {
     die('Access denied.');
 }
 
-(function () use ($_EXTCONF) {
-    if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'])) {
+$conf = isset($_EXTCONF) ? $_EXTCONF : null;
+
+(function () use ($conf) {
+    if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] ?? null)) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] = array(
             'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
             'backend' => \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class,
@@ -15,7 +17,12 @@ if (!defined('TYPO3_MODE')) {
         );
     }
 
-    \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::initialize($_EXTCONF);
+    \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::initialize($conf);
+
+    if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL) {
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\FluidTYPO3\Flux\Updates\MigrateColPosWizard::class]
+            = \FluidTYPO3\Flux\Updates\MigrateColPosWizard::class;
+    }
 
     if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
         // Globally registered fluid namespace
@@ -134,7 +141,12 @@ if (!defined('TYPO3_MODE')) {
         }
 
         if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') && \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
-            if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.4, '>=')) {
+            if (class_exists(\TYPO3\CMS\Core\Information\Typo3Version::class)) {
+                $version = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class)->getVersion();
+            } else {
+                $version = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core');
+            }
+            if (version_compare($version, 10.4, '>=')) {
                 $pageControllerName = \FluidTYPO3\Flux\Controller\PageController::class;
                 $pageControllerExtensionName = 'Flux';
             } else {

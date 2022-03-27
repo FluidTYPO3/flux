@@ -17,6 +17,7 @@ use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
@@ -110,25 +111,18 @@ class PageService implements SingletonInterface
         if ($fromCache) {
             return $fromCache;
         }
-        $fieldList = 'tx_fed_page_controller_action_sub,t3ver_oid,pid,uid';
-        $page = $this->workspacesAwareRecordService->getSingle(
-            'pages',
-            'tx_fed_page_controller_action,' . $fieldList,
-            $pageUid
-        );
-        if (null === $page) {
-            return null;
-        }
+
+        $rootLineUtility = $this->getRootLineUtility($pageUid);
 
         // Initialize with possibly-empty values and loop root line
         // to fill values as they are detected.
-        do {
-            $resolvedMainTemplateIdentity = is_array($page['tx_fed_page_controller_action']) ? $page['tx_fed_page_controller_action'][0] : $page['tx_fed_page_controller_action'];
-            $resolvedSubTemplateIdentity = is_array($page['tx_fed_page_controller_action_sub']) ? $page['tx_fed_page_controller_action_sub'][0] : $page['tx_fed_page_controller_action_sub'];
-            $containsSubDefinition = (false !== strpos($page['tx_fed_page_controller_action_sub'], '->'));
+        foreach ($rootLineUtility->get() as $page) {
+            $resolvedMainTemplateIdentity = is_array($page['tx_fed_page_controller_action'] ?? null) ? $page['tx_fed_page_controller_action'][0] : $page['tx_fed_page_controller_action'] ?? null;
+            $resolvedSubTemplateIdentity = is_array($page['tx_fed_page_controller_action_sub'] ?? null) ? $page['tx_fed_page_controller_action_sub'][0] : $page['tx_fed_page_controller_action_sub'] ?? null;
+            $containsSubDefinition = (false !== strpos($page['tx_fed_page_controller_action_sub'] ?? '', '->'));
             $isCandidate = ((integer) $page['uid'] !== $pageUid);
             if (true === $containsSubDefinition && true === $isCandidate) {
-                $resolvedSubTemplateIdentity = $page['tx_fed_page_controller_action_sub'];
+                $resolvedSubTemplateIdentity = $page['tx_fed_page_controller_action_sub'] ?? null;
                 if (true === empty($resolvedMainTemplateIdentity)) {
                     // Conditions met: current page is not $pageUid, original page did not
                     // contain a "this page" layout, current rootline page has "sub" selection.
@@ -137,30 +131,18 @@ class PageService implements SingletonInterface
                 }
                 break;
             }
-            // Note: 't3ver_oid' is analysed in order to make versioned records inherit the original record's
-            // configuration as an emulated first parent page.
-            $resolveParentPageUid = $page['pid'];
-            // Avoid useless SQL query if uid is 0, because uids in the database start from 1.
-            if (0 === $resolveParentPageUid) {
-                break;
-            }
-            $page = $this->workspacesAwareRecordService->getSingle(
-                'pages',
-                $fieldList,
-                $resolveParentPageUid
-            );
-        } while (null !== $page);
+        };
         if (true === empty($resolvedMainTemplateIdentity) && true === empty($resolvedSubTemplateIdentity)) {
             // Neither directly configured "this page" nor inherited "sub" contains a valid value;
             // no configuration was detected at all.
             return null;
         }
-        $configurarion = [
+        $configuration = [
             'tx_fed_page_controller_action' => $resolvedMainTemplateIdentity,
             'tx_fed_page_controller_action_sub' => $resolvedSubTemplateIdentity
         ];
-        $runtimeCache->set($cacheId, $configurarion);
-        return $configurarion;
+        $runtimeCache->set($cacheId, $configuration);
+        return $configuration;
     }
 
     /**
@@ -265,5 +247,10 @@ class PageService implements SingletonInterface
     protected function getRuntimeCache()
     {
         return GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
+    }
+
+    protected function getRootLineUtility(int $pageUid): RootlineUtility
+    {
+        return GeneralUtility::makeInstance(RootlineUtility::class, $pageUid);
     }
 }
