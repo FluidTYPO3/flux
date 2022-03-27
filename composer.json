@@ -23,7 +23,7 @@
         "fluidtypo3/vhs": "ViewHelper library for Fluid templates."
     },
     "require": {
-        "php": "^7.1.0",
+        "php": "^7.4.0 || ^8",
         "ext-json": "*",
         "typo3/cms-core": "^8.7 || ^9 || ^10 || ^11 || dev-master",
         "typo3/cms-fluid": "^8.7 || ^9 || ^10 || ^11 || dev-master",

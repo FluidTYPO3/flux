@@ -295,7 +295,7 @@ class AbstractProvider implements ProviderInterface
     protected function createCustomFormInstance(array $row)
     {
         $formClassName = $this->resolveFormClassName($row);
-        if (class_exists($formClassName)) {
+        if ($formClassName !== null && class_exists($formClassName)) {
             return $formClassName::create(['row']);
         }
         return null;
@@ -404,7 +404,7 @@ class AbstractProvider implements ProviderInterface
             }
         }
 
-        $returnValue = $name ? $variables[$name] : $variables;
+        $returnValue = $name ? ($variables[$name] ?? null) : $variables;
 
         return HookHandler::trigger(
             HookHandler::PROVIDER_EXTRACTED_OBJECT,
@@ -773,7 +773,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessDataStructure(array &$row, &$dataStructure, array $conf)
     {
-        $defaultDataStructure = ['sheets' => ['sDEF' => ['ROOT' => ['type' => 'array', 'el' => ['xmlTitle' => ['TCEforms' => ['label' => 'The Title:', 'config' => ['type' => 'input', 'size' => '48']]]]]]]];
+        $defaultDataStructure = ['sheets' => ['lDEF' => ['ROOT' => ['type' => 'array', 'el' => ['xmlTitle' => ['TCEforms' => ['label' => 'The Title:', 'config' => ['type' => 'input', 'size' => '48']]]]]]]];
         $form = $this->getForm($row);
         if (null !== $form) {
             $newDataStructure = $form->build();

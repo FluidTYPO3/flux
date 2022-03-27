@@ -32,22 +32,26 @@ class ExtensionConfigurationUtility
 
     public static function initialize(?string $extensionConfiguration): void
     {
-        if (class_exists(ExtensionConfiguration::class)) {
-            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('flux');
-        } else {
-            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] ?? unserialize($extensionConfiguration);
-        }
+        if (empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'])) {
+            if (class_exists(ExtensionConfiguration::class)) {
+                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('flux');
+            } elseif (is_string($extensionConfiguration)) {
+                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] ?? unserialize($extensionConfiguration);
+            }
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] ?? [];
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] ??= [];
+        } else {
+            $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux']['hooks'] ??= [];
+        }
     }
 
     public static function getOptions(): array
     {
-        return $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux'];
+        return ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'] ?? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'])['flux'];
     }
 
     public static function getOption(string $optionName)
     {
-        return $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'][$optionName] ?? static::$defaults[$optionName] ?? null;
+        return ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'] ?? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'])['flux']['setup'][$optionName] ?? static::$defaults[$optionName] ?? null;
     }
 }
