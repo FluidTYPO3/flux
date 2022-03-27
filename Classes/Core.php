@@ -329,7 +329,8 @@ class Core
             $templateFilename,
             $providerClassName,
             $contentTypeName,
-            $pluginName
+            $pluginName,
+            null
         ];
     }
 
