@@ -117,12 +117,12 @@ class PageService implements SingletonInterface
         // Initialize with possibly-empty values and loop root line
         // to fill values as they are detected.
         foreach ($rootLineUtility->get() as $page) {
-            $resolvedMainTemplateIdentity = is_array($page['tx_fed_page_controller_action']) ? $page['tx_fed_page_controller_action'][0] : $page['tx_fed_page_controller_action'];
-            $resolvedSubTemplateIdentity = is_array($page['tx_fed_page_controller_action_sub']) ? $page['tx_fed_page_controller_action_sub'][0] : $page['tx_fed_page_controller_action_sub'];
-            $containsSubDefinition = (false !== strpos($page['tx_fed_page_controller_action_sub'], '->'));
+            $resolvedMainTemplateIdentity = is_array($page['tx_fed_page_controller_action'] ?? null) ? $page['tx_fed_page_controller_action'][0] : $page['tx_fed_page_controller_action'] ?? null;
+            $resolvedSubTemplateIdentity = is_array($page['tx_fed_page_controller_action_sub'] ?? null) ? $page['tx_fed_page_controller_action_sub'][0] : $page['tx_fed_page_controller_action_sub'] ?? null;
+            $containsSubDefinition = (false !== strpos($page['tx_fed_page_controller_action_sub'] ?? '', '->'));
             $isCandidate = ((integer) $page['uid'] !== $pageUid);
             if (true === $containsSubDefinition && true === $isCandidate) {
-                $resolvedSubTemplateIdentity = $page['tx_fed_page_controller_action_sub'];
+                $resolvedSubTemplateIdentity = $page['tx_fed_page_controller_action_sub'] ?? null;
                 if (true === empty($resolvedMainTemplateIdentity)) {
                     // Conditions met: current page is not $pageUid, original page did not
                     // contain a "this page" layout, current rootline page has "sub" selection.

@@ -104,7 +104,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
-            list ($providerExtensionName, $templateFilename, $providerClassName, $contentType, $pluginName, $controllerActionName) = $queuedRegistration;
+            [$providerExtensionName, $templateFilename, $providerClassName, $contentType, $pluginName, $controllerActionName] = $queuedRegistration;
             try {
                 $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templateFilename);
                 $defaultControllerExtensionName = 'FluidTYPO3.Flux';
@@ -119,7 +119,8 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 
                 Core::registerConfigurationProvider($provider);
 
-                $pluginName = $pluginName ?: GeneralUtility::underscoredToUpperCamelCase(end(explode('_', $contentType, 2)));
+                $splitContentType = explode('_', $contentType, 2);
+                $pluginName = $pluginName ?: GeneralUtility::underscoredToUpperCamelCase(end($splitContentType));
                 $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
             } catch (Exception $error) {
                 if (!ContextUtility::getApplicationContext()->isProduction()) {
