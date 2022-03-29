@@ -129,11 +129,11 @@ class GetViewHelper extends AbstractViewHelper
         $record = (array) $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
 
         if ($GLOBALS['BE_USER']->workspace) {
-            $placeholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid']);
-            if ($placeholder) {
+            $movePlaceholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid']);
+            if ($movePlaceholder) {
                 // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
                 // from the workspace-only placeholder.
-                $record = $placeholder;
+                $record = $movePlaceholder;
             }
         }
 
@@ -205,6 +205,29 @@ class GetViewHelper extends AbstractViewHelper
                 'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
             ]
         );
+
+        if (empty($rows) && $GLOBALS['BE_USER']->workspace) {
+            $liveUid = $parent['t3ver_move_id'] > 0 ? $parent['t3ver_move_id'] : $parent['t3ver_oid'];
+            $placeholder = BackendUtility::getMovePlaceholder('tt_content', $liveUid);
+            $conditions = sprintf(
+                'colPos = %d',
+                ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                    $liveUid,
+                    $columnPosition
+                )
+            );
+            $rows = static::getContentObjectRenderer()->getRecords(
+                'tt_content',
+                [
+                    'max' => $arguments['limit'],
+                    'begin' => $arguments['offset'],
+                    'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
+                    'where' => $conditions,
+                    'pidInList' => $placeholder ? $placeholder['pid'] : $parent['pid'],
+                    'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
+                ]
+            );
+        }
 
         return HookHandler::trigger(
             HookHandler::NESTED_CONTENT_FETCHED,

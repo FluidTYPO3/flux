@@ -22,6 +22,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3Fluid\Fluid\Component\Error\ChildNotFoundException;
 use TYPO3Fluid\Fluid\View\Exception\InvalidSectionException;
 
@@ -105,6 +106,12 @@ class PageService implements SingletonInterface
         if (1 > $pageUid) {
             return null;
         }
+        $allDataRecord = BackendUtility::getRecord('pages', $pageUid, $fields = '*', $where = '', $useDeleteClause = false);
+
+        if ($allDataRecord["deleted"] == 1) {
+            return null;
+        }
+
         $cacheId = 'flux-template-configuration-' . $pageUid;
         $runtimeCache = $this->getRuntimeCache();
         $fromCache = $runtimeCache->get($cacheId);
