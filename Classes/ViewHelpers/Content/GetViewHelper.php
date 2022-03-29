@@ -24,6 +24,8 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * Gets all child content of a record based on area.
@@ -129,12 +131,30 @@ class GetViewHelper extends AbstractViewHelper
         $record = (array) $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
 
         if ($GLOBALS['BE_USER']->workspace) {
-            $placeholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid']);
-            if ($placeholder) {
-                // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
-                // from the workspace-only placeholder.
-                $record = $placeholder;
+            if (class_exists(Typo3Version::class)) {
+                $version = GeneralUtility::makeInstance(Typo3Version::class)->getVersion();
+            } else {
+                $version = ExtensionManagementUtility::getExtensionVersion('core');
             }
+            if (version_compare($version, 10, '<')) {
+                $movePlaceholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid']);
+                if ($movePlaceholder) {
+                    // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
+                    // from the workspace-only placeholder.
+                    $record = $movePlaceholder;
+                }
+            } else {
+                $workspaceVersion = BackendUtility::getWorkspaceVersionOfRecord(
+                    $GLOBALS['BE_USER']->workspace,
+                    'tt_content',
+                    $record['uid']
+                );
+                if ($workspaceVersion) {
+                    $movePlaceholder = $workspaceVersion['pid'] ?? $originalRecord['uid'];
+                    $record[] = $movePlaceholder;
+                }
+            }
+
         }
 
         $grid = $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'provider')->getGrid($record);
@@ -205,6 +225,45 @@ class GetViewHelper extends AbstractViewHelper
                 'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
             ]
         );
+
+        if (empty($rows) && $GLOBALS['BE_USER']->workspace) {
+            $liveUid = $parent['t3ver_move_id'] > 0 ? $parent['t3ver_move_id'] : $parent['t3ver_oid'];
+            if (class_exists(Typo3Version::class)) {
+                $version = GeneralUtility::makeInstance(Typo3Version::class)->getVersion();
+            } else {
+                $version = ExtensionManagementUtility::getExtensionVersion('core');
+            }
+            if (version_compare($version, 10, '<')) {
+                $placeholder = BackendUtility::getMovePlaceholder('tt_content', $liveUid);
+            } else {
+                $workspaceVersion = BackendUtility::getWorkspaceVersionOfRecord(
+                    $GLOBALS['BE_USER']->workspace,
+                    'tt_content',
+                    $originalRecord['uid']
+                );
+                if ($workspaceVersion) {
+                    $placeholder = $workspaceVersion['pid'] ?? $liveUid;
+                }
+            }
+            $conditions = sprintf(
+                'colPos = %d',
+                ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                    $liveUid,
+                    $columnPosition
+                )
+            );
+            $rows = static::getContentObjectRenderer()->getRecords(
+                'tt_content',
+                [
+                    'max' => $arguments['limit'],
+                    'begin' => $arguments['offset'],
+                    'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
+                    'where' => $conditions,
+                    'pidInList' => $placeholder ? $placeholder['pid'] : $parent['pid'],
+                    'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
+                ]
+            );
+        }
 
         return HookHandler::trigger(
             HookHandler::NESTED_CONTENT_FETCHED,
