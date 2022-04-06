@@ -353,7 +353,7 @@ class PreviewView extends TemplateView
                 // TYPO3 10.4+
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                 $site = $siteFinder->getSiteByPageId($pageId);
-                $language = $site->getLanguageById((int) $row['sys_language_uid']);
+                $language = $site->getLanguageById(max(0, (int) $row['sys_language_uid']));
 
                 $context = GeneralUtility::makeInstance(PageLayoutContext::class, BackendUtility::getRecord('pages', $pageId), $backendLayout);
                 $context = $context->cloneForLanguage($language);
