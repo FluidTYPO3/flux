@@ -2,10 +2,10 @@
 declare(strict_types=1);
 
 if (!\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE)) {
-    return [];
+    return;
 }
 
-return [
+$GLOBALS['TCA']['flux_field'] = [
     'label' => 'Flux IRRE Field',
     'ctrl' => [
         'title' => 'Flux IRRE Field',
