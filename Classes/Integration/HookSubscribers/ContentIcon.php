@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
@@ -32,10 +33,14 @@ class ContentIcon
      * @var array
      */
     protected $templates = [
-        'gridToggle' => '</div><div class="fluidcontent-toggler">
+        'gridToggle' => '<div class="fluidcontent-toggler col-auto">
                             <div class="btn-group btn-group-sm" role="group">
                             <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a> 
-                        </div></div><div>'
+                        </div></div>',
+        'legacyGridToggle' => '</div><div class="fluidcontent-toggler">
+                            <div class="btn-group btn-group-sm" role="group">
+                            <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a>
+                        </div></div><div>',
     ];
 
     /**
@@ -145,7 +150,9 @@ class ContentIcon
         $label = $GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
         $icon = $collapseIcon . $expandIcon;
 
-        $rendered = sprintf($this->templates['gridToggle'], $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
+        $template = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11', '<') ? $this->templates['legacyGridToggle'] : $this->templates['gridToggle'];
+
+        $rendered = sprintf($template, $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
 
         return HookHandler::trigger(
             HookHandler::PREVIEW_GRID_TOGGLE_RENDERED,

@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
@@ -55,13 +56,10 @@ class PageServiceTest extends AbstractTestCase
      */
     public function testGetPageTemplateConfiguration(array $records, $expected)
     {
-        /** @var WorkspacesAwareRecordService|\PHPUnit_Framework_MockObject_MockObject $service */
-        $service = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(array('getSingle'))->getMock();
-        foreach ($records as $index => $record) {
-            $service->expects($this->at($index))->method('getSingle')->willReturn($record);
-        }
-        $instance = new PageService();
-        $instance->injectWorkspacesAwareRecordService($service);
+        $rootLineUtility = $this->getMockBuilder(RootlineUtility::class)->setMethods(['get'])->disableOriginalConstructor()->getMock();
+        $rootLineUtility->expects(self::once())->method('get')->willReturn($records);
+        $instance = $this->getMockBuilder(PageService::class)->setMethods(['getRootLineUtility'])->getMock();
+        $instance->expects(self::once())->method('getRootLineUtility')->willReturn($rootLineUtility);
         $result = $instance->getPageTemplateConfiguration(1);
         $this->assertEquals($expected, $result);
     }

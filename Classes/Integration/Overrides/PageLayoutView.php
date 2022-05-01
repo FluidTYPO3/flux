@@ -68,7 +68,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
         // time - something which has started happening since the "unused content" feature was introduced. To avoid
         // the infinite recursion that happens because of this combined with the recursive usage of PageLayoutView,
         // we restrict the content elements this sub-view is capable of loading.
-        $columns = array_filter($columns, 'is_numeric');
+        $columns = array_filter($columns, function($item) { return ctype_digit($item) || is_int($item); });
         if (empty($columns)) {
             return [];
         }

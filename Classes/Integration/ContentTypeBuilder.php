@@ -22,6 +22,7 @@ use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -118,7 +119,13 @@ class ContentTypeBuilder
      */
     protected function configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerAction)
     {
-        if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.4, '>=')) {
+        if (class_exists(Typo3Version::class)) {
+            $version = GeneralUtility::makeInstance(Typo3Version::class)->getVersion();
+        } else {
+            $version = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core');
+        }
+
+        if (version_compare($version, 10.4, '>=')) {
             $controllerName = $controllerClassName;
         } else {
             $controllerName = substr($controllerClassName, strrpos($controllerClassName, '\\') + 1, -10);
@@ -211,8 +218,10 @@ class ContentTypeBuilder
             return $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType];
         }
         $icon = MiscellaneousUtility::getIconForTemplate($form);
-        if (strpos($icon, 'EXT:') === 0 || $icon[0] !== '/') {
-            $icon = GeneralUtility::getFileAbsFileName($icon);
+        if ($icon !== null) {
+            if (strpos($icon, 'EXT:') === 0 || $icon[0] !== '/') {
+                $icon = GeneralUtility::getFileAbsFileName($icon);
+            }
         }
         if (!$icon) {
             $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Extension.svg');

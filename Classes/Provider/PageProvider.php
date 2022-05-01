@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
@@ -408,20 +409,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     protected function loadRecordTreeFromDatabase($record)
     {
-        $parentFieldName = $this->getParentFieldName($record);
-        if (false === isset($record[$parentFieldName])) {
-            $record[$parentFieldName] = $this->getParentFieldValue($record);
+        if (empty($record)) {
+            return [];
         }
-        $records = [];
-        while (0 < $record[$parentFieldName]) {
-            $record = $this->recordService->getSingle($this->getTableName($record), '*', $record[$parentFieldName]);
-            if (!$record) {
-                break;
-            }
-            $parentFieldName = $this->getParentFieldName($record);
-            array_push($records, $record);
-        }
-        $records = array_reverse($records);
-        return $records;
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid']);
+        return array_slice($rootLineUtility->get(), 1);
     }
 }

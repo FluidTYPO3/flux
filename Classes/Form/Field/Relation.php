@@ -19,7 +19,7 @@ class Relation extends AbstractRelationFormField
     /**
      * @var string|null
      */
-    protected $renderType = null;
+    protected $renderType = 'selectSingle';
 
     /**
      * @return array

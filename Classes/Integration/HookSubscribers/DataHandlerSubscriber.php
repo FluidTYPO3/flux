@@ -100,6 +100,11 @@ class DataHandlerSubscriber
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
             $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, \PDO::PARAM_INT)->where(
                 $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT))
+            )->orWhere(
+                $queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->eq('t3ver_oid', $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)),
+                    $queryBuilder->expr()->eq('t3ver_wsid', $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, \PDO::PARAM_INT))
+                )
             )->execute();
         }
 
@@ -158,7 +163,9 @@ class DataHandlerSubscriber
         list (, $childRecords) = $this->getParentAndRecordsNestedInGrid(
             $table,
             (int)$id,
-            'uid, pid'
+            'uid, pid',
+            false,
+            $command
         );
 
         if (empty($childRecords)) {
@@ -280,7 +287,9 @@ class DataHandlerSubscriber
         list ($originalRecord, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
             $table,
             $id,
-            'uid, pid, colPos'
+            'uid, pid, colPos',
+            false,
+            $command
         );
 
         if (empty($recordsToProcess)) {
@@ -346,6 +355,15 @@ class DataHandlerSubscriber
         return $dataMap;
     }
 
+    protected function getSingleRecordWithRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
+            ->from($table)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
+        return $queryBuilder->execute()->fetch() ?: null;
+    }
+
     protected function getSingleRecordWithoutRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
@@ -364,7 +382,10 @@ class DataHandlerSubscriber
             ->from('tt_content')
             ->orderBy('uid', 'DESC')
             ->setMaxResults(1)
-            ->where($queryBuilder->expr()->eq('t3_origuid', $uid));
+            ->where(
+                $queryBuilder->expr()->eq('t3_origuid', $uid),
+                $queryBuilder->expr()->neq('t3ver_state', -1)
+            );
         return $queryBuilder->execute()->fetch() ?: null;
     }
 
@@ -384,11 +405,15 @@ class DataHandlerSubscriber
         return $queryBuilder->execute()->fetch() ?: null;
     }
 
-    protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect, bool $respectPid = false)
+    protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect, bool $respectPid = false, ?string $command = null)
     {
         // A Provider must be resolved which implements the GridProviderInterface
         $resolver = GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class);
-        $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
+        if ($command === 'undelete') {
+            $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
+        } else {
+            $originalRecord = $this->getSingleRecordWithRestrictions($table, $parentUid, '*');
+        }
         $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
             $table,
             null,
@@ -417,7 +442,9 @@ class DataHandlerSubscriber
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-        $queryBuilder->getRestrictions()->removeAll();
+        if ($command === 'undelete') {
+            $queryBuilder->getRestrictions()->removeAll();
+        }
 
         $query = $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)

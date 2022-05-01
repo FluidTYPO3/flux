@@ -249,5 +249,5 @@ Known issues
 Documentation
 -------------
 
-* [ViewHelper Reference for Flux](https://fluidtypo3.org/viewhelpers/flux.html)
+* [ViewHelper Reference for Flux](https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/)
 * [How to use the Flux APIs](https://fluidtypo3.org/documentation/templating-manual/templating/creating-templates/flux-fields.html)
