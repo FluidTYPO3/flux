@@ -23,7 +23,7 @@ class DynamicFlexFormTest extends AbstractTestCase
     {
         $subject = $this->objectManager->get(DynamicFlexForm::class);
         $result = $subject->getDataStructureIdentifierPreProcess(['foo' => 'bar'], 'sometable', 'somefield', ['uid' => 123]);
-        $this->assertSame(['sheets' => ['lDEF' => ['ROOT' => ['type' => 'array', 'el' => []]]]], $result);
+        $this->assertSame([], $result);
     }
 
     /**
@@ -34,7 +34,7 @@ class DynamicFlexFormTest extends AbstractTestCase
     {
         $subject = $this->objectManager->get(DynamicFlexForm::class);
         $result = $subject->parseDataStructureByIdentifierPreProcess($identifier);
-        $this->assertSame(['sheets' => ['lDEF' => ['ROOT' => ['type' => 'array', 'el' => []]]]], $result);
+        $this->assertSame([], $result);
     }
 
     /**
