@@ -419,6 +419,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             return [];
         }
 
+        if(!is_int($record['uid'])) {
+            return [];
+        }
+
         $contextUid = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, 'pages', $record['uid']);
 
         if(!empty($contextUid["uid"]) && $contextUid["t3ver_state"] != 4) {

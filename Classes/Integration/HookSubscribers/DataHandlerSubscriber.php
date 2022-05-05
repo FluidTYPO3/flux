@@ -138,7 +138,7 @@ class DataHandlerSubscriber
                 if ($primaryConfigurationProvider && is_array($fieldArray[$fieldName]) && array_key_exists('data', $fieldArray[$fieldName])) {
                     foreach ($fieldArray[$fieldName]['data'] as $sheet) {
                         foreach ($sheet['lDEF'] as $key => $value) {
-                            list ($possibleTableName, $columnName) = explode('.', $key, 2);
+                            [$possibleTableName, $columnName] = explode('.', $key, 2);
                             if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName])) {
                                 $fieldArray[$columnName] = $value['vDEF'];
                             }
@@ -165,7 +165,7 @@ class DataHandlerSubscriber
 
     protected function cascadeCommandToChildRecords(string $table, int $id, string $command, $value, DataHandler $dataHandler)
     {
-        list (, $childRecords) = $this->getParentAndRecordsNestedInGrid(
+        [, $childRecords] = $this->getParentAndRecordsNestedInGrid(
             $table,
             (int)$id,
             'uid, pid',
@@ -285,11 +285,35 @@ class DataHandlerSubscriber
         }
 
 
+        if ($GLOBALS['BE_USER']->workspace) {
+            if ($command === 'copy' || $command === 'move' || $command === 'copyToLanguage') {
+                if ($reference->copyMappingArray['sys_file_reference'] && $reference->copyMappingArray['tt_content']) {
+                    foreach ($reference->copyMappingArray['sys_file_reference'] as $ttUidOld => $ttUidNew) {
+                        if (isset($reference->autoVersionIdMap['sys_file_reference'][$ttUidNew])) {
+                            //get uid_foreign of initial placeholder record
+                            $placeholderRecord = BackendUtility::getRecord('sys_file_reference', $ttUidNew,
+                                'uid_foreign');
+                            if ($placeholderRecord) {
+                                $placeholderUidForeign = $placeholderRecord['uid_foreign'];
+                                $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+                                    'sys_file_reference',
+                                    'uid = ' .
+                                    $reference->autoVersionIdMap['sys_file_reference'][$ttUidNew],
+                                    ['uid_foreign' => $placeholderUidForeign]
+                                );
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
         if ($table !== 'tt_content' || $command !== 'move') {
             return;
         }
 
-        list ($originalRecord, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
+        [$originalRecord, $recordsToProcess] = $this->getParentAndRecordsNestedInGrid(
             $table,
             $id,
             'uid, pid, colPos',
@@ -331,7 +355,7 @@ class DataHandlerSubscriber
 
     protected function fetchAllColumnNumbersBeneathParent(int $parentUid): array
     {
-        list (, $recordsToProcess, $bannedColumnNumbers) = $this->getParentAndRecordsNestedInGrid(
+        [, $recordsToProcess, $bannedColumnNumbers] = $this->getParentAndRecordsNestedInGrid(
             'tt_content',
             $parentUid,
             'uid, colPos'
@@ -347,7 +371,7 @@ class DataHandlerSubscriber
     {
         $dataMap = [];
 
-        list (, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
+        [, $recordsToProcess] = $this->getParentAndRecordsNestedInGrid(
             $table,
             $parentUid,
             'uid, colPos'
