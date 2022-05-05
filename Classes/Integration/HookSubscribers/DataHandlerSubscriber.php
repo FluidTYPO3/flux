@@ -285,6 +285,30 @@ class DataHandlerSubscriber
         }
 
 
+        if ($GLOBALS['BE_USER']->workspace) {
+            if ($command === 'copy' || $command === 'move' || $command === 'copyToLanguage') {
+                if ($reference->copyMappingArray['sys_file_reference'] && $reference->copyMappingArray['tt_content']) {
+                    foreach ($reference->copyMappingArray['sys_file_reference'] as $ttUidOld => $ttUidNew) {
+                        if (isset($reference->autoVersionIdMap['sys_file_reference'][$ttUidNew])) {
+                            //get uid_foreign of initial placeholder record
+                            $placeholderRecord = BackendUtility::getRecord('sys_file_reference', $ttUidNew,
+                                'uid_foreign');
+                            if ($placeholderRecord) {
+                                $placeholderUidForeign = $placeholderRecord['uid_foreign'];
+                                $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+                                    'sys_file_reference',
+                                    'uid = ' .
+                                    $reference->autoVersionIdMap['sys_file_reference'][$ttUidNew],
+                                    ['uid_foreign' => $placeholderUidForeign]
+                                );
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
         if ($table !== 'tt_content' || $command !== 'move') {
             return;
         }
