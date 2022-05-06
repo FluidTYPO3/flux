@@ -2,8 +2,10 @@
 namespace FluidTYPO3\Flux\Updates;
 
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -25,20 +27,67 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @author Christian Weiske <weiske@mogic.com>
  */
-class MigrateColPosWizard extends \TYPO3\CMS\Install\Updates\AbstractUpdate
+class MigrateColPosWizard
+    implements \TYPO3\CMS\Install\Updates\UpgradeWizardInterface,
+    \TYPO3\CMS\Install\Updates\ChattyInterface
 {
     /**
-     * @var string
+     * @var OutputInterface
      */
-    protected $title = 'Flux: Fix content "sorting" values';
+    protected $output;
 
     /**
-     * Checks whether updates are required.
+     * Returns the title attribute
      *
-     * @param string $description The description for the update
-     * @return bool Whether an update is required (TRUE) or not (FALSE)
+     * @return string The title of this update wizard
      */
-    public function checkForUpdate(&$description)
+    public function getTitle(): string
+    {
+        return 'Flux: Fix content "sorting" values';
+    }
+
+    /**
+     * Returns the identifier of this class
+     *
+     * @return string The identifier of this update wizard
+     */
+    public function getIdentifier(): string
+    {
+        return static::class;
+    }
+
+    /**
+     * Return the description for this wizard
+     *
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return '';
+    }
+
+    /**
+     * Returns an array of class names of Prerequisite classes
+     * This way a wizard can define dependencies like "database up-to-date" or
+     * "reference index updated"
+     *
+     * @return string[]
+     */
+    public function getPrerequisites(): array
+    {
+        return [
+            DatabaseUpdatedPrerequisite::class
+        ];
+    }
+
+    /**
+     * Is an update necessary?
+     * Is used to determine whether a wizard needs to be run.
+     * Check if data for migration exists.
+     *
+     * @return bool
+     */
+    public function updateNecessary(): bool
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
         $queryBuilder
@@ -57,19 +106,18 @@ class MigrateColPosWizard extends \TYPO3\CMS\Install\Updates\AbstractUpdate
             ->execute()
             ->fetchColumn(0);
 
-        $description = $numRows . ' content elements need to be fixed';
+        $this->output->write($numRows . ' content elements need to be fixed');
 
         return $numRows > 0;
     }
 
-   /**
-    * Performs the required update.
-    *
-    * @param array $dbQueries Queries done in this update
-    * @param string $customMessage Custom message to be displayed after the update process finished
-    * @return bool Whether everything went smoothly or not
-    */
-    public function performUpdate(array &$dbQueries, &$customMessage)
+    /**
+     * Execute the update
+     * Called when a wizard reports that an update is necessary
+     *
+     * @return bool
+     */
+    public function executeUpdate(): bool
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
         $queryBuilder
@@ -153,13 +201,33 @@ class MigrateColPosWizard extends \TYPO3\CMS\Install\Updates\AbstractUpdate
             }
         }
 
-        $customMessage .= $modified . " content element records modified\n";
+        $this->output->write($modified . " content element records modified\n");
 
         if ($tryAgain) {
-            return $this->performUpdate($dbQueries, $customMessage);
+            return $this->executeUpdate();
         }
 
         $this->markWizardAsDone();
         return true;
+    }
+
+    /**
+     * Setter injection for output into upgrade wizards
+     *
+     * @param OutputInterface $output
+     */
+    public function setOutput(OutputInterface $output): void
+    {
+        $this->output = $output;
+    }
+
+    /**
+     * Marks some wizard as being "seen" so that it not shown again.
+     *
+     * Writes the info in LocalConfiguration.php
+     */
+    protected function markWizardAsDone()
+    {
+        GeneralUtility::makeInstance(Registry::class)->set('installUpdate', static::class, 1);
     }
 }

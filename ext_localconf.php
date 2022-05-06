@@ -19,7 +19,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
     \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::initialize($conf);
 
-    if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL) {
+    if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 9.0, '>=') && TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\FluidTYPO3\Flux\Updates\MigrateColPosWizard::class]
             = \FluidTYPO3\Flux\Updates\MigrateColPosWizard::class;
     }
