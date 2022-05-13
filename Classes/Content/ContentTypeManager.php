@@ -116,7 +116,8 @@ class ContentTypeManager implements SingletonInterface
             try {
                 $cache = $cacheManager->getCache('flux');
             } catch (NoSuchCacheException $error) {
-                $cache = $cacheManager->getCache('cache_runtime');
+                $cacheKey = version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.0, '>=') ? 'runtime' : 'cache_runtime';
+                $cache = $cacheManager->getCache($cacheKey);
             }
         }
         return $cache;

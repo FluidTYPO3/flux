@@ -434,7 +434,11 @@ class FluxService implements SingletonInterface
     protected function getRuntimeCache()
     {
         static $cache;
-        return $cache ?? ($cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime'));
+        if (!$cache) {
+            $cacheKey = version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.0, '>=') ? 'runtime' : 'cache_runtime';
+            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache($cacheKey);
+        }
+        return $cache;
     }
 
     /**
@@ -448,7 +452,7 @@ class FluxService implements SingletonInterface
             try {
                 $cache = $cacheManager->getCache('flux');
             } catch (NoSuchCacheException $error) {
-                $cache = $cacheManager->getCache('cache_runtime');
+                $cache = $this->getRuntimeCache();
             }
         }
         return $cache;

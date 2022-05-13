@@ -239,7 +239,8 @@ class DynamicFlexForm extends FlexFormTools
     {
         static $cache;
         if (!$cache) {
-            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
+            $cacheKey = version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.0, '>=') ? 'runtime' : 'cache_runtime';
+            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache($cacheKey);
         }
         return $cache;
     }

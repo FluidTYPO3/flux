@@ -246,7 +246,8 @@ class PageService implements SingletonInterface
      */
     protected function getRuntimeCache()
     {
-        return GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
+        $cacheKey = version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.0, '>=') ? 'runtime' : 'cache_runtime';
+        return GeneralUtility::makeInstance(CacheManager::class)->getCache($cacheKey);
     }
 
     protected function getRootLineUtility(int $pageUid): RootlineUtility

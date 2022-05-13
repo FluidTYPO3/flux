@@ -202,8 +202,9 @@ class ContentTypeBuilder
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
         // all TypoScript is finally loaded.
+        $cacheKey = version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.0, '>=') ? 'runtime' : 'cache_runtime';
         GeneralUtility::makeInstance(CacheManager::class)
-            ->getCache('cache_runtime')
+            ->getCache($cacheKey)
             ->remove('viewpaths_' . ExtensionNamingUtility::getExtensionKey($providerExtensionName));
     }
 
