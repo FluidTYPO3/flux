@@ -1,7 +1,7 @@
 <?php
 defined('TYPO3_MODE') or die();
 
-return [
+$data = [
     'ctrl' => [
         'title' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types',
         'descriptionColumn' => 'description',
@@ -179,3 +179,9 @@ return [
     ],
     'palettes' => []
 ];
+
+if (!defined('TYPO3_version') || version_compare(TYPO3_version, 10.3, '>=')) {
+    unset($data['interface']['showRecordFieldList']);
+}
+
+return $data;
