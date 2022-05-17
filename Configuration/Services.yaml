@@ -5,3 +5,9 @@ services:
         identifier: 'flux-after-localization-controller-columns'
         method: 'modifyColumnsManifest'
         event: TYPO3\CMS\Backend\Controller\Event\AfterPageColumnsSelectedForLocalizationEvent
+  FluidTYPO3\Flux\Integration\HookSubscribers\EditDocumentController:
+    tags:
+      - name: event.listener
+        identifier: 'flux-requireColumnPositionJavaScript'
+        method: 'requireColumnPositionJavaScript'
+        event: TYPO3\CMS\Backend\Controller\Event\AfterFormEnginePageInitializedEvent
