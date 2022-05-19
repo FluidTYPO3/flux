@@ -112,6 +112,14 @@ class PageService implements SingletonInterface
             return null;
         }
 
+        if ($allDataRecord["t3ver_state"] == 2) {
+            return null;
+        }
+
+        if ($allDataRecord["t3ver_state"] == 4) {
+            return null;
+        }
+
         $cacheId = 'flux-template-configuration-' . $pageUid;
         $runtimeCache = $this->getRuntimeCache();
         $fromCache = $runtimeCache->get($cacheId);

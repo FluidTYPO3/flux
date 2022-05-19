@@ -291,16 +291,21 @@ class DataHandlerSubscriber
                     foreach ($reference->copyMappingArray['sys_file_reference'] as $ttUidOld => $ttUidNew) {
                         if (isset($reference->autoVersionIdMap['sys_file_reference'][$ttUidNew])) {
                             //get uid_foreign of initial placeholder record
-                            $placeholderRecord = BackendUtility::getRecord('sys_file_reference', $ttUidNew,
-                                'uid_foreign');
+                            $placeholderRecord = BackendUtility::getRecord(
+                                'sys_file_reference',
+                                $ttUidNew,
+                                'uid_foreign'
+                            );
                             if ($placeholderRecord) {
                                 $placeholderUidForeign = $placeholderRecord['uid_foreign'];
-                                $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-                                    'sys_file_reference',
-                                    'uid = ' .
-                                    $reference->autoVersionIdMap['sys_file_reference'][$ttUidNew],
-                                    ['uid_foreign' => $placeholderUidForeign]
-                                );
+
+                                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_reference');
+                                $queryBuilder->update('sys_file_reference')
+                                ->
+                                where($queryBuilder->expr()
+                                    ->eq('uid', $reference->autoVersionIdMap['sys_file_reference'][$ttUidNew]))
+                                    ->set('uid_foreign', $placeholderUidForeign)
+                                    ->execute();
                             }
                         }
                     }

@@ -411,28 +411,31 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     protected function loadRecordTreeFromDatabase($record)
     {
 
-        if(empty($record['uid'])) {
+        if (empty($record['uid'])) {
             return [];
         }
 
-        if($record['deleted'] == 1) {
+        if ($record['deleted'] == 1) {
             return [];
         }
 
-        if(!is_int($record['uid'])) {
+        if (!is_int($record['uid'])) {
+            return [];
+        }
+
+        if ($record['t3ver_state'] == 2) {
             return [];
         }
 
         $contextUid = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, 'pages', $record['uid']);
 
-        if(!empty($contextUid["uid"]) && $contextUid["t3ver_state"] != 4) {
-            $contextUid = $contextUid["uid"];
-        }
-        else {
-            $contextUid = $record['uid'];
+        if (!empty($contextUid["uid"]) && $contextUid["t3ver_state"] != 4 && $contextUid["t3ver_state"] != 2) {
+            $pageUid = $contextUid["uid"];
+        } else {
+            $pageUid = $record['uid'];
         }
 
-        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $contextUid);
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageUid);
 
         return array_slice($rootLineUtility->get(), 1);
     }
