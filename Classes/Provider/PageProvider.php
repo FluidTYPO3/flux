@@ -119,6 +119,9 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     public function getForm(array $row)
     {
+        if ($row['deleted']) {
+            return null;
+        }
         $form = parent::getForm($row);
         if ($form) {
             $form->setOption(PreviewView::OPTION_PREVIEW, [PreviewView::OPTION_MODE => 'none']);
