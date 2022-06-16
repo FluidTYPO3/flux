@@ -167,7 +167,7 @@ Defines a single field data structure.
           <xsd:documentation><![CDATA[Name of the attribute, FlexForm XML-valid tag name string]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="label" default="NULL" use="required">
+      <xsd:attribute type="xsd:string" name="label" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Label for field]]></xsd:documentation>
         </xsd:annotation>
@@ -1332,8 +1332,6 @@ The crop configuration can now be passed to the image viewhelper:
     <f:for each="{v:content.resources.fal(field: 'settings.image')}" as="image">
         <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
     </f:for>
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -1642,7 +1640,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Level links position.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="allowedExtensions" default="'gif,jpg,jpeg,tif,tiff,bmp,pcx,tga,png,pdf,ai,svg'">
+      <xsd:attribute type="xsd:string" name="allowedExtensions" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Allowed File Extensions .]]></xsd:documentation>
         </xsd:annotation>
@@ -4153,9 +4151,7 @@ in `tt_content.CType` column.
 It is also possible to limit the allowed fluid content elements:
 
     <flux:grid.column name="elements" colPos="0">
-        <flux:form.variable name="allowedContentTypes" value="fluidcontent_content"/>
-        <flux:form.variable name="Fluidcontent"
-            value="{allowedContentTypes: 'Vendor.Extension:ContentElement.html'}"/>
+        <flux:form.variable name="allowedContentTypes" value="extkey_vehicledetailssectionusedcarseal"/>
     </flux:grid.column>
 /]]></xsd:documentation>
     </xsd:annotation>
