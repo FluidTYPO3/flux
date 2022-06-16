@@ -1,0 +1,53 @@
+name: Flux Schema Generation
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - development
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      - name: Checkout Flux project
+        uses: actions/checkout@v2
+        with:
+          path: flux
+          persist-credentials: false
+
+      - name: Install Schema Generator
+        working-directory: ./flux
+        run: |
+          composer require -n -o --no-progress typo3/fluid-schema-generator "^2.1"
+
+      - name: Install XML Linter
+        working-directory: ./flux
+        run: |
+          sudo apt install libxml2-utils
+
+      - name: Generate Schemata
+        working-directory: ./flux
+        run: |
+          mkdir -p ../schemas/fluidtypo3/flux/latest
+          ./vendor/bin/generateschema FluidTYPO3\\\Flux > ../schemas/fluidtypo3/flux/latest/schema.xsd
+
+      - name: Compare and Commit if changed
+        working-directory: ./flux
+        continue-on-error: true
+        run: |
+          if [[ `diff ../schemas/fluidtypo3/flux/latest/schema.xsd ./Resources/Private/Schemas/Flux.xsd` != "" ]]; then
+            xmllint --format ../schemas/fluidtypo3/flux/latest/schema.xsd > ./Resources/Private/Schemas/Flux.xsd
+            git config user.name "FluidTYPO3 Flux"
+            git config user.email "claus@namelesscoder.net"
+            git add ./Resources/Private/Schemas/Flux.xsd
+            git commit -m '[TASK] Update XSD schema'
+            git push https://${{ secrets.EXEMPT_PUSH_TOKEN }}@github.com/FluidTYPO3/flux HEAD:development
+          fi
