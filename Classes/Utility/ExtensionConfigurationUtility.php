@@ -41,6 +41,10 @@ class ExtensionConfigurationUtility
 
             $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] ??= [];
         } else {
+            // Move flux configuration into `setup` sub key
+            $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'] = [
+                'setup' => $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux']
+            ];
             $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux']['hooks'] ??= [];
         }
     }
