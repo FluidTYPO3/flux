@@ -225,13 +225,9 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         }
         $wizards = $this->buildChildren($this->wizards);
         if (true === $this->getClearable()) {
-            array_push($wizards, [
-                'type' => 'userFunc',
-                'userFunc' => UserFunctions::class . '->renderClearValueWizardField',
-                'params' => [
-                    'itemName' => $this->getName(),
-                ],
-            ]);
+            $fieldStructureArray['config']['fieldWizard']['fluxClearValue'] = [
+                'renderType' => 'fluxClearValue',
+            ];
         }
         if (!empty($wizards)) {
             $fieldStructureArray['config']['wizards'] = $wizards;

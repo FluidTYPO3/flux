@@ -19,22 +19,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class UserFunctions
 {
     /**
-     * @param array $parameters
-     * @param object $pObj Not used
-     * @return string
-     */
-    public function renderClearValueWizardField(&$parameters, &$pObj)
-    {
-        unset($pObj);
-        $nameSegments = explode('][', $parameters['itemName']);
-        $nameSegments[6] .= '_clear';
-        $fieldName = implode('][', $nameSegments);
-        $html = '<label style="opacity: 0.65; padding-left: 2em"><input type="checkbox" name="' . $fieldName .
-            '_clear"  value="1" /> ' . LocalizationUtility::translate('flux.clearValue', 'Flux') . '</label>';
-        return $html;
-    }
-
-    /**
      * User function for TCA fields to hide a Flux-enabled "flex" type field if
      * there are no fields in the DS.
      *
