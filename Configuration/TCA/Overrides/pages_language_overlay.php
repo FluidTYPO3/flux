@@ -41,7 +41,7 @@ defined('TYPO3_MODE') or die('Access denied.');
     if (is_callable([$userFunctionsClass, 'fluxFormFieldDisplayCondition'])) {
         // Flux version is recent enough to support the custom displayCond from Flux that hides the entire "flex" field
         // if there are no fields in the DS it uses.
-        $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . $userFunctionsClass . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform';
-        $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . $userFunctionsClass . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform_sub';
+        $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . $userFunctionsClass::class . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform';
+        $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . $userFunctionsClass::class . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform_sub';
     }
 })();
