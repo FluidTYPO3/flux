@@ -42,5 +42,10 @@
     "require-dev": {
         "fluidtypo3/development": "^4"
     },
-    "non-feature-branches": ["development", "staging"]
+    "non-feature-branches": ["development", "staging"],
+    "config": {
+        "allow-plugins": {
+            "typo3/cms-composer-installers": true
+        }
+    }
 }
