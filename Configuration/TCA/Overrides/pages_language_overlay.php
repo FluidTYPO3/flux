@@ -37,10 +37,11 @@ defined('TYPO3_MODE') or die('Access denied.');
         '--div--;LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_configuration,tx_fed_page_flexform,tx_fed_page_flexform_sub'
     );
 
-    if (is_callable([\FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class, 'fluxFormFieldDisplayCondition'])) {
+    $userFunctionsClass = new \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions();
+    if (is_callable([$userFunctionsClass, 'fluxFormFieldDisplayCondition'])) {
         // Flux version is recent enough to support the custom displayCond from Flux that hides the entire "flex" field
         // if there are no fields in the DS it uses.
-        $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform';
-        $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform_sub';
+        $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . $userFunctionsClass . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform';
+        $GLOBALS['TCA']['pages_language_overlay']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . $userFunctionsClass . '->fluxFormFieldDisplayCondition:pages_language_overlay:tx_fed_page_flexform_sub';
     }
 })();
