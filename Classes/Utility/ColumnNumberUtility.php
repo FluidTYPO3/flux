@@ -45,7 +45,7 @@ abstract class ColumnNumberUtility
 
     public static function calculateColumnNumberForParentAndColumn($parentUid, $columnNumber): int
     {
-        return ($parentUid * static::MULTIPLIER) + $columnNumber;
+        return (int) floor(($parentUid * static::MULTIPLIER) + $columnNumber);
     }
 
     public static function calculateParentUidAndColumnFromVirtualColumnNumber($virtualColumnNumber): array
