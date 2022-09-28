@@ -353,14 +353,25 @@ class PreviewView extends TemplateView
                 // TYPO3 10.4+
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                 $site = $siteFinder->getSiteByPageId($pageId);
-                $language = $site->getLanguageById((int) $row['sys_language_uid']);
-
+                $language = null;
+                if ($row['sys_language_uid'] >= 0 )
+                {
+                	$language = $site->getLanguageById((int) $row['sys_language_uid']);
+                }
+                
                 $context = GeneralUtility::makeInstance(PageLayoutContext::class, BackendUtility::getRecord('pages', $pageId), $backendLayout);
-                $context = $context->cloneForLanguage($language);
+                if (isset($language))
+                {
+                	 $context = $context->cloneForLanguage($language);
+                }
 
                 $configuration = $context->getDrawingConfiguration();
                 $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
-                $configuration->setSelectedLanguageId($language->getLanguageId());
+                
+                if (isset($language))
+                {
+                	$configuration->setSelectedLanguageId($language->getLanguageId());
+                }
 
                 return GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
             } else {
