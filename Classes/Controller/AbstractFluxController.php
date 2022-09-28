@@ -24,7 +24,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
-use TYPO3\CMS\Extbase\Mvc\Response;
+use TYPO3\CMS\Extbase\Mvc\response;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use function get_class;
@@ -341,6 +341,13 @@ abstract class AbstractFluxController extends ActionController
      */
     protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature)
     {
+    
+    	if (isset($this->responseFactory)) {
+            $response = $this->responseFactory->createResponse();
+        } else {
+            $response = $this->objectManager->get(Response::class);
+        }
+    
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
         if (!$shouldRelay) {
             if ($this->provider instanceof FluidProviderInterface) {
@@ -384,7 +391,7 @@ abstract class AbstractFluxController extends ActionController
                 'view' => $this->view,
                 'content' => $content,
                 'request' => $this->request,
-                'response' => $this->response,
+                'response' => $response,
                 'extensionName' => $extensionName,
                 'controllerClassName' => $foreignControllerClass,
                 'controllerActionName' => $actionName
@@ -448,7 +455,7 @@ abstract class AbstractFluxController extends ActionController
                 HookHandler::CONTROLLER_BEFORE_REQUEST,
                 [
                     'request' => $this->request,
-                    'response' => $this->response,
+                    'response' => $response,
                     'extensionName' => $extensionName,
                     'controllerClassName' => $controllerClassName,
                     'controllerActionName' => $controllerActionName
