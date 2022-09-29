@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -99,6 +100,7 @@ class GetViewHelper extends AbstractViewHelper
         );
         $this->registerArgument('loadRegister', 'array', 'List of LOAD_REGISTER variable');
         $this->registerArgument('render', 'boolean', 'Optional returning variable as original table rows', false, true);
+        $this->registerArgument('hideUntranslated', 'boolean', 'Exclude untranslated records', false, false);
     }
 
     /**
@@ -127,7 +129,7 @@ class GetViewHelper extends AbstractViewHelper
         }
         $templateVariableContainer = $renderingContext->getVariableProvider();
         $record = (array) $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
-
+        
         if ($GLOBALS['BE_USER']->workspace) {
             $placeholder = BackendUtility::getMovePlaceholder('tt_content', $record['uid']);
             if ($placeholder) {
