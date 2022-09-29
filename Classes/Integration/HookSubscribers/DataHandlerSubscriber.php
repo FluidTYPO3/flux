@@ -137,8 +137,9 @@ class DataHandlerSubscriber
                         	$expArr = explode('.', $key, 2);
                         	if ( count( $expArr ) > 1 )
                         	{
-                        		list ($possibleTableName, $columnName) = explode('.', $key, 2);
-								if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName])) {
+                        		list ($possibleTableName, $columnName) = $expArr;
+								if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName]))
+                                {
 									$fieldArray[$columnName] = $value['vDEF'];
 								}
                         	}                          
