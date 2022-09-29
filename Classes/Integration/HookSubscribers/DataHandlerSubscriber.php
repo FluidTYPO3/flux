@@ -364,6 +364,7 @@ class DataHandlerSubscriber
     protected function getSingleRecordWithRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+	$queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
