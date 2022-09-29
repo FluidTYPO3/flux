@@ -1,0 +1,5 @@
+include:
+  - project: devops/gitlab-ci
+    ref: release/1.1.0
+    file: /templates/composer.gitlab-ci.yaml
+
