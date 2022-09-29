@@ -30,7 +30,7 @@ class DataHandlerSubscriber
 
     public function clearCacheCommand($command)
     {
-        if ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system') {
+        if (isset($command['cacheCmd']) && ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system')) {
             GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
         }
     }
@@ -132,11 +132,16 @@ class DataHandlerSubscriber
 
                 if ($primaryConfigurationProvider && is_array($fieldArray[$fieldName]) && array_key_exists('data', $fieldArray[$fieldName])) {
                     foreach ($fieldArray[$fieldName]['data'] as $sheet) {
-                        foreach ($sheet['lDEF'] as $key => $value) {
-                            list ($possibleTableName, $columnName) = explode('.', $key, 2);
-                            if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName])) {
-                                $fieldArray[$columnName] = $value['vDEF'];
-                            }
+                        foreach ($sheet['lDEF'] as $key => $value) 
+                        {
+                        	$expArr = explode('.', $key, 2);
+                        	if ( count( $expArr ) > 1 )
+                        	{
+                        		list ($possibleTableName, $columnName) = explode('.', $key, 2);
+								if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName])) {
+									$fieldArray[$columnName] = $value['vDEF'];
+								}
+                        	}                          
                         }
                     }
                 }
