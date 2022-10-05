@@ -124,7 +124,7 @@ class DataHandlerSubscriber
         // field. Updated value will still be subject to permission checks.
         $resolver = GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class);
         foreach ($fieldArray as $fieldName => $fieldValue) {
-            if ($GLOBALS["TCA"][$table]["columns"][$fieldName]["config"]["type"] === 'flex') {
+            if (isset($GLOBALS["TCA"][$table]["columns"][$fieldName]["config"]["type"]) && $GLOBALS["TCA"][$table]["columns"][$fieldName]["config"]["type"] === 'flex') {
                 $primaryConfigurationProvider = $resolver->resolvePrimaryConfigurationProvider(
                     $table,
                     $fieldName
