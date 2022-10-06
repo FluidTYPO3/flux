@@ -342,11 +342,15 @@ class AbstractProvider implements ProviderInterface
                         $gridColumn->setColSpan($object['colspan'] ?? 1);
                     }
                 }
+                $grid->setParent($form);
                 return $grid;
             }
         }
         $grid = $this->grid ?? $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
         $grid->setExtensionName($grid->getExtensionName() ?: $this->getControllerExtensionKeyFromRecord($row));
+        if ($form) {
+            $grid->setParent($form);
+        }
         return $grid;
     }
 

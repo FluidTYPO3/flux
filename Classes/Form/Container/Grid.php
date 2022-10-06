@@ -142,7 +142,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
      * @param int $parentRecordUid
      * @return BackendLayout
      */
-    public function buildBackendLayout(int $parentRecordUid): BackendLayout
+    public function buildBackendLayout(int $parentRecordUid): ?BackendLayout
     {
         $configuration = $this->buildBackendLayoutArray($parentRecordUid);
         $configuration = $this->ensureDottedKeys($configuration);
@@ -153,9 +153,12 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         foreach ($this->flattenSetup($configuration, 'backend_layout.') as $name => $value) {
             $typoScriptString .= $name . ' = ' . $value . LF;
         }
+        if ($root->getName() === null) {
+            return null;
+        }
         return new BackendLayout(
             $this->getRoot()->getName(),
-            LocalizationUtility::translate($label)
+            LocalizationUtility::translate($label, $root->getExtensionName())
                 ? $label
                 : 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.grid.grids.grid',
             $typoScriptString
