@@ -130,7 +130,12 @@ class GetViewHelper extends AbstractViewHelper
         $templateVariableContainer = $renderingContext->getVariableProvider();
         $record = (array) $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
         
-        $workspaceId = GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('workspace', 'id');
+        if (class_exists(Context::class)) {
+            $workspaceId = GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('workspace', 'id');
+        } else {
+            $workspaceId = $GLOBALS['BE_USER']->workspace;
+        }
+
         if ($workspaceId) {
             $placeholder = BackendUtility::getWorkspaceVersionOfRecord($workspaceId,'tt_content', $record['uid']);
             if ($placeholder) {
