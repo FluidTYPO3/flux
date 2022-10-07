@@ -167,7 +167,7 @@ class ContentTypeBuilder
                 // errors use the most base Exception class in PHP. So instead we check for a
                 // specific dispatcher in the stack trace and re-throw if not matched.
                 $pitcher = $error->getTrace()[0] ?? false;
-                if ($pitcher && $pitcher['class'] !== 'SplObjectStorage' && $pitcher['function'] !== 'serialize') {
+                if ($pitcher && ($pitcher['class'] ?? '') !== 'SplObjectStorage' && ($pitcher['function'] ?? '') !== 'serialize') {
                     throw $error;
                 }
             }
