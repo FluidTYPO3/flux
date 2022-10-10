@@ -28,6 +28,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3Fluid\Fluid\View\TemplateView;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * PreviewView
@@ -253,13 +255,24 @@ class PreviewView extends TemplateView
 
             $pageUid = $row['pid'];
             if ($GLOBALS['BE_USER']->workspace > 0) {
-                $workspaceVersion = BackendUtility::getWorkspaceVersionOfRecord(
-                    $GLOBALS['BE_USER']->workspace,
-                    'tt_content',
-                    $row['uid']
-                );
-                if ($workspaceVersion) {
-                    $pageUid = $workspaceVersion['pid'] ?? $pageUid;
+                if (class_exists(Typo3Version::class)) {
+                    $version = GeneralUtility::makeInstance(Typo3Version::class)->getVersion();
+                } else {
+                    $version = ExtensionManagementUtility::getExtensionVersion('core');
+                }
+
+                if (version_compare($version, 10, '<')) {
+                    $placeholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid'], 'pid', $GLOBALS['BE_USER']->workspace);
+                    $pageUid = $placeholder['pid'] ?? $pageUid;
+                } else {
+                    $workspaceVersion = BackendUtility::getWorkspaceVersionOfRecord(
+                        $GLOBALS['BE_USER']->workspace,
+                        'tt_content',
+                        $row['uid']
+                    );
+                    if ($workspaceVersion) {
+                        $pageUid = $workspaceVersion['pid'] ?? $pageUid;
+                    }
                 }
             }
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);

@@ -13,13 +13,17 @@ use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * TCEMain
@@ -85,7 +89,8 @@ class DataHandlerSubscriber
             // right parent for the language and update the column position accordingly.
             $originalParentUid = ColumnNumberUtility::calculateParentUid($fieldArray['colPos']);
             $originalParent = $this->getSingleRecordWithoutRestrictions($table, $originalParentUid, 'sys_language_uid');
-            if ($originalParent['sys_language_uid'] !== $fieldArray['sys_language_uid']) {
+
+            if ($originalParent['sys_language_uid'] != $fieldArray['sys_language_uid']) {
                 // copyToLanguage case. Resolve the most recent translated version of the parent record in language of
                 // child record, and calculate the new column position number based on it.
                 $newParentRecord = $this->getTranslatedVersionOfParentInLanguageOnPage((int) $fieldArray['sys_language_uid'], (int) $fieldArray['pid'], (int) $originalParentUid);
@@ -133,7 +138,7 @@ class DataHandlerSubscriber
                 if ($primaryConfigurationProvider && is_array($fieldArray[$fieldName]) && array_key_exists('data', $fieldArray[$fieldName])) {
                     foreach ($fieldArray[$fieldName]['data'] as $sheet) {
                         foreach ($sheet['lDEF'] as $key => $value) {
-                            list ($possibleTableName, $columnName) = explode('.', $key, 2);
+                            [$possibleTableName, $columnName] = explode('.', $key, 2);
                             if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName])) {
                                 $fieldArray[$columnName] = $value['vDEF'];
                             }
@@ -160,7 +165,7 @@ class DataHandlerSubscriber
 
     protected function cascadeCommandToChildRecords(string $table, int $id, string $command, $value, DataHandler $dataHandler)
     {
-        list (, $childRecords) = $this->getParentAndRecordsNestedInGrid(
+        [, $childRecords] = $this->getParentAndRecordsNestedInGrid(
             $table,
             (int)$id,
             'uid, pid',
@@ -251,8 +256,6 @@ class DataHandlerSubscriber
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
     {
-
-        /*
         if ($table === 'pages' && $command === 'copy') {
             foreach ($reference->copyMappingArray['tt_content'] ?? [] as $originalRecordUid => $copiedRecordUid) {
                 $copiedRecord = $this->getSingleRecordWithoutRestrictions('tt_content', $copiedRecordUid, 'colPos');
@@ -260,7 +263,9 @@ class DataHandlerSubscriber
                     continue;
                 }
 
-                $oldParentUid = ColumnNumberUtility::calculateParentUid($copiedRecord['colPos']);
+                $originalRecord = $this->getSingleRecordWithoutRestrictions('tt_content', $originalRecordUid, 'colPos');
+
+                $oldParentUid = ColumnNumberUtility::calculateParentUid($originalRecord['colPos']);
                 $newParentUid = $reference->copyMappingArray['tt_content'][$oldParentUid];
 
                 $overrideArray['colPos'] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
@@ -278,13 +283,42 @@ class DataHandlerSubscriber
                 }
             }
         }
-        */
+
+
+        if ($GLOBALS['BE_USER']->workspace) {
+            if ($command === 'copy' || $command === 'move' || $command === 'copyToLanguage') {
+                if ($reference->copyMappingArray['sys_file_reference'] && $reference->copyMappingArray['tt_content']) {
+                    foreach ($reference->copyMappingArray['sys_file_reference'] as $ttUidOld => $ttUidNew) {
+                        if (isset($reference->autoVersionIdMap['sys_file_reference'][$ttUidNew])) {
+                            //get uid_foreign of initial placeholder record
+                            $placeholderRecord = BackendUtility::getRecord(
+                                'sys_file_reference',
+                                $ttUidNew,
+                                'uid_foreign'
+                            );
+                            if ($placeholderRecord) {
+                                $placeholderUidForeign = $placeholderRecord['uid_foreign'];
+
+                                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_reference');
+                                $queryBuilder->update('sys_file_reference')
+                                ->
+                                where($queryBuilder->expr()
+                                    ->eq('uid', $reference->autoVersionIdMap['sys_file_reference'][$ttUidNew]))
+                                    ->set('uid_foreign', $placeholderUidForeign)
+                                    ->execute();
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
 
         if ($table !== 'tt_content' || $command !== 'move') {
             return;
         }
 
-        list ($originalRecord, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
+        [$originalRecord, $recordsToProcess] = $this->getParentAndRecordsNestedInGrid(
             $table,
             $id,
             'uid, pid, colPos',
@@ -292,35 +326,41 @@ class DataHandlerSubscriber
             $command
         );
 
-        if (empty($recordsToProcess)) {
-            return;
-        }
+        //complete a case of an FCE which is moved back to original position
+        if ($GLOBALS['BE_USER']->workspace) {
+            $workspaceRecord = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, 'tt_content', $originalRecord['uid']);
+            if ($workspaceRecord) {
+                if (class_exists(Typo3Version::class)) {
+                    $version = GeneralUtility::makeInstance(Typo3Version::class)->getVersion();
+                } else {
+                    $version = ExtensionManagementUtility::getExtensionVersion('core');
+                }
 
-        $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
-        $languageUid = (int)($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $originalRecord[$languageField]);
+                if (version_compare($version, 10, '<')) {
+                    $placeholder = BackendUtility::getMovePlaceholder('tt_content', $originalRecord['uid']);
+                } else {
+                    $workspaceVersion = BackendUtility::getWorkspaceVersionOfRecord(
+                        $GLOBALS['BE_USER']->workspace,
+                        'tt_content',
+                        $originalRecord['uid']
+                    );
+                    if ($workspaceVersion) {
+                        $placeholder = $workspaceVersion['pid'] ?? $originalRecord['uid'];
+                    }
+                }
 
-        if ($relativeTo > 0) {
-            $destinationPid = $relativeTo;
-        } else {
-            $relativeRecord = $this->getSingleRecordWithoutRestrictions($table, abs($relativeTo), 'pid');
-            $destinationPid = (int)($relativeRecord['pid'] ?? $relativeTo);
-        }
 
-        if ($command === 'move') {
-            $subCommandMap = $this->recursivelyMoveChildRecords($table, $id, $destinationPid, $languageUid, $reference);
-        }
-
-        if (!empty($subCommandMap)) {
-            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-            $dataHandler->copyMappingArray = $reference->copyMappingArray;
-            $dataHandler->start([], $subCommandMap);
-            $dataHandler->process_cmdmap();
+                if ($placeholder && $placeholder['colPos'] != $workspaceRecord['colPos']) {
+                    $recordUid = $placeholder['uid'];
+                    $reference->updateDB('tt_content', $recordUid, ['colPos' => intval($workspaceRecord['colPos'])]);
+                }
+            }
         }
     }
 
     protected function fetchAllColumnNumbersBeneathParent(int $parentUid): array
     {
-        list (, $recordsToProcess, $bannedColumnNumbers) = $this->getParentAndRecordsNestedInGrid(
+        [, $recordsToProcess, $bannedColumnNumbers] = $this->getParentAndRecordsNestedInGrid(
             'tt_content',
             $parentUid,
             'uid, colPos'
@@ -336,7 +376,7 @@ class DataHandlerSubscriber
     {
         $dataMap = [];
 
-        list (, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
+        [, $recordsToProcess] = $this->getParentAndRecordsNestedInGrid(
             $table,
             $parentUid,
             'uid, colPos'
@@ -376,6 +416,7 @@ class DataHandlerSubscriber
 
     protected function getMostRecentCopyOfRecord(int $uid, string $fieldsToSelect = 'uid'): ?array
     {
+        /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
@@ -384,7 +425,9 @@ class DataHandlerSubscriber
             ->setMaxResults(1)
             ->where(
                 $queryBuilder->expr()->eq('t3_origuid', $uid),
-                $queryBuilder->expr()->neq('t3ver_state', -1)
+                $queryBuilder->expr()->neq('t3ver_state', -1),
+                //remove deleted but not published
+                $queryBuilder->expr()->neq('t3ver_state', 2)
             );
         return $queryBuilder->execute()->fetch() ?: null;
     }
@@ -405,15 +448,11 @@ class DataHandlerSubscriber
         return $queryBuilder->execute()->fetch() ?: null;
     }
 
-    protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect, bool $respectPid = false, ?string $command = null)
+    protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect, bool $respectPid = false)
     {
         // A Provider must be resolved which implements the GridProviderInterface
         $resolver = GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class);
-        if ($command === 'undelete') {
-            $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
-        } else {
-            $originalRecord = $this->getSingleRecordWithRestrictions($table, $parentUid, '*');
-        }
+        $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
         $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
             $table,
             null,
@@ -441,18 +480,45 @@ class DataHandlerSubscriber
 
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
+        /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-        if ($command === 'undelete') {
-            $queryBuilder->getRestrictions()->removeAll();
-        }
+        $queryBuilder->getRestrictions()->removeAll();
+
+        $currentWsId =  $GLOBALS['BE_USER']->workspace;
 
         $query = $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
-            ->from($table)
+            ->from($table, 'main_table')
             ->andWhere(
                 $queryBuilder->expr()->in('colPos', $queryBuilder->createNamedParameter($childColPosValues, Connection::PARAM_INT_ARRAY)),
                 $queryBuilder->expr()->eq($languageField, (int)$originalRecord[$languageField]),
-                $queryBuilder->expr()->in('t3ver_wsid', $queryBuilder->createNamedParameter([0, $GLOBALS['BE_USER']->workspace], Connection::PARAM_INT_ARRAY))
+                $queryBuilder->expr()->in('t3ver_wsid', $queryBuilder->createNamedParameter([0, $currentWsId], Connection::PARAM_INT_ARRAY)),
+                //remove deleted records
+                $queryBuilder->expr()->eq('deleted', 0),
+                //remove  workspace pending records
+                $queryBuilder->expr()->neq('t3ver_state', -1),
+                //remove deleted records but not published
+                $queryBuilder->expr()->neq('t3ver_state', 2),
+                //remove move-to pointer
+                $queryBuilder->expr()->neq('t3ver_state', 4)
             )->orderBy('sorting', 'DESC');
+
+
+        //remove from the copy the LIVE records that are:
+        //- deleted into the current WORKSPACE [t3ver_state=2]
+        //- moved into the current WORKSPACE [t3ver_state=4]
+        if ($currentWsId > 0) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->notIn(
+                    'uid',
+                    sprintf('(select a.t3_origuid
+                            from %s a
+                            where a.t3_origuid = main_table.uid and
+                                  a.t3ver_oid = main_table.uid and
+                                  t3ver_wsid = %s and
+                                  t3ver_state in (2,4))', $table, $currentWsId)
+                )
+            );
+        }
 
         if ($respectPid) {
             $query->andWhere($queryBuilder->expr()->eq('pid', $originalRecord['pid']));

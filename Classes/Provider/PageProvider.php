@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 
 /**
  * Page Configuration Provider
@@ -409,10 +410,33 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     protected function loadRecordTreeFromDatabase($record)
     {
-        if (empty($record)) {
+
+        if (empty($record['uid'])) {
             return [];
         }
-        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid']);
+
+        if ($record['deleted'] == 1) {
+            return [];
+        }
+
+        if (!is_int($record['uid'])) {
+            return [];
+        }
+
+        if ($record['t3ver_state'] == 2) {
+            return [];
+        }
+
+        $contextUid = BackendUtility::getWorkspaceVersionOfRecord($GLOBALS['BE_USER']->workspace, 'pages', $record['uid']);
+
+        if (!empty($contextUid["uid"]) && $contextUid["t3ver_state"] != 4 && $contextUid["t3ver_state"] != 2) {
+            $pageUid = $contextUid["uid"];
+        } else {
+            $pageUid = $record['uid'];
+        }
+
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageUid);
+
         return array_slice($rootLineUtility->get(), 1);
     }
 }
