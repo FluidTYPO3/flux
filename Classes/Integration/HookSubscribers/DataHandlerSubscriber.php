@@ -30,7 +30,7 @@ class DataHandlerSubscriber
 
     public function clearCacheCommand($command)
     {
-        if ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system') {
+        if (isset($command['cacheCmd']) && ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system')) {
             GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
         }
     }
