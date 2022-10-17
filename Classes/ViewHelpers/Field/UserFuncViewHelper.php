@@ -48,13 +48,11 @@ class UserFuncViewHelper extends AbstractFieldViewHelper
     /**
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
-     * @param \Closure $renderChildrenClosure
      * @return UserFunction
      */
     public static function getComponent(
         RenderingContextInterface $renderingContext,
-        iterable $arguments,
-        \Closure $renderChildrenClosure
+        iterable $arguments
     ) {
         /** @var UserFunction $user */
         $user = static::getPreparedComponent('UserFunction', $renderingContext, $arguments);

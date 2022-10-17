@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
@@ -73,6 +74,11 @@ class FormViewHelper extends AbstractFormViewHelper
             'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
             'is otherwise automatically detected from rendering context.'
         );
+    }
+
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    {
+        return Form::create();
     }
 
     /**

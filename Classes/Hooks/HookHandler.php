@@ -79,7 +79,6 @@ class HookHandler
      *
      * @param string $hook
      * @param string $subscriber
-     * @return bool
      */
     public static function subscribe(string $hook, string $subscriber)
     {

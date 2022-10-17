@@ -1,0 +1,51 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Undefined variable\\: \\$EM_CONF$#"
+			count: 1
+			path: Classes/Backend/PageLayoutDataProvider.php
+
+		-
+			message: "#^Instantiated class TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source not found\\.$#"
+			count: 1
+			path: Classes/Content/ContentTypeFluxTemplateDumper.php
+
+		-
+			message: "#^Instantiated class TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source not found\\.$#"
+			count: 1
+			path: Classes/Content/ContentTypeValidator.php
+
+		-
+			message: "#^Parameter \\$event of method FluidTYPO3\\\\Flux\\\\Integration\\\\Event\\\\AfterLocalizationControllerColumnsEventListener\\:\\:modifyColumnsManifest\\(\\) has invalid type TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\AfterPageColumnsSelectedForLocalizationEvent\\.$#"
+			count: 1
+			path: Classes/Integration/Event/AfterLocalizationControllerColumnsEventListener.php
+
+		-
+			message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\Grid\\\\GridColumnItem not found\\.$#"
+			count: 1
+			path: Classes/Integration/HookSubscribers/ContentIcon.php
+
+		-
+			message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer not found\\.$#"
+			count: 2
+			path: Classes/Integration/PreviewView.php
+
+		-
+			message: "#^Caught class TYPO3Fluid\\\\Fluid\\\\Component\\\\Error\\\\ChildNotFoundException not found\\.$#"
+			count: 1
+			path: Classes/Service/PageService.php
+
+		-
+			message: "#^Class FluidTYPO3\\\\Flux\\\\Updates\\\\DatabaseUpdatedPrerequisite not found\\.$#"
+			count: 1
+			path: Classes/Updates/MigrateColPosWizard.php
+
+		-
+			message: "#^Call to an undefined static method TYPO3\\\\CMS\\\\Extbase\\\\Utility\\\\ExtensionUtility\\:\\:resolveVendorFromExtensionAndControllerClassName\\(\\)\\.$#"
+			count: 1
+			path: Classes/ViewHelpers/AbstractFormViewHelper.php
+
+		-
+			message: "#^Instantiated class TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source not found\\.$#"
+			count: 1
+			path: Classes/ViewHelpers/InlineViewHelper.php

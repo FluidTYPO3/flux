@@ -1,6 +1,8 @@
 <?php
 namespace FluidTYPO3\Flux\Form;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Generic TCA field
  */
@@ -24,6 +26,7 @@ class Field extends AbstractFormField
     public function buildConfiguration()
     {
         // void, not required by generic field type
+        return [];
     }
 
     /**
@@ -37,7 +40,7 @@ class Field extends AbstractFormField
         $settings['displayCondition'] = $settings['displayCond'];
         unset($settings['type'], $settings['displayCond']);
 
-        $field = new static();
+        $field = GeneralUtility::makeInstance(static::class);
         foreach ($settings as $propertyName => $value) {
             $setterMethodName = 'set' . ucfirst($propertyName);
             $field->$setterMethodName($value);

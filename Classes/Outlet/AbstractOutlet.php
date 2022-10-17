@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Outlet;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
@@ -66,7 +67,7 @@ abstract class AbstractOutlet implements OutletInterface
      */
     public static function create(array $settings)
     {
-        $instance = new static();
+        $instance = GeneralUtility::makeInstance(static::class);
         if (isset($settings['pipesIn'])) {
             foreach ($settings['pipesIn'] as $pipeSettings) {
                 $instance->addPipeIn($pipeSettings['type']::create($pipeSettings));

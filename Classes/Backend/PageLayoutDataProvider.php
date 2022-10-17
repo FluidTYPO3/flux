@@ -135,6 +135,8 @@ class PageLayoutDataProvider
                 $this->renderOptions($extension, $group, $parameters, $allowedTemplates)
             );
         }
+
+        return $parameters;
     }
 
     protected function renderOptions($extension, array $group, array $parameters, array $allowedTemplates): array
