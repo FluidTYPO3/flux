@@ -1,6 +1,36 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Page\\\\LocalizationController\\:\\:getRecordLocalizeSummary\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: Classes/Integration/Overrides/LocalizationController.php
+
+		-
+			message: "#^Constructor of class FluidTYPO3\\\\Flux\\\\Integration\\\\FormEngine\\\\TemplateSourceDumperNode has an unused parameter \\$nodeFactory\\.$#"
+			count: 1
+			path: Classes/Integration/FormEngine/TemplateSourceDumperNode.php
+
+		-
+			message: "#^Constructor of class FluidTYPO3\\\\Flux\\\\Integration\\\\FormEngine\\\\HtmlOutputNode has an unused parameter \\$nodeFactory\\.$#"
+			count: 1
+			path: Classes/Integration/FormEngine/HtmlOutputNode.php
+
+		-
+			message: "#^Constructor of class FluidTYPO3\\\\Flux\\\\Integration\\\\FormEngine\\\\ContentTypeValidatorNode has an unused parameter \\$nodeFactory\\.$#"
+			count: 1
+			path: Classes/Integration/FormEngine/ContentTypeValidatorNode.php
+
+		-
+			message: "#^Constructor of class FluidTYPO3\\\\Flux\\\\Integration\\\\FormEngine\\\\ColumnPositionNode has an unused parameter \\$nodeFactory\\.$#"
+			count: 1
+			path: Classes/Integration/FormEngine/ColumnPositionNode.php
+
+		-
+			message: "#^Static method TYPO3\\\\CMS\\\\Extbase\\\\Utility\\\\ExtensionUtility\\:\\:registerPlugin\\(\\) invoked with 5 parameters, 3-4 required\\.$#"
+			count: 1
+			path: Classes/Integration/ContentTypeBuilder.php
+
+		-
 			message: "#^Caught class TYPO3\\\\CMS\\\\Core\\\\Exception\\\\SiteNotFoundException not found\\.$#"
 			count: 1
 			path: Classes/Backend/PageLayoutDataProvider.php

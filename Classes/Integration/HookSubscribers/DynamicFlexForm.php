@@ -178,7 +178,7 @@ class DynamicFlexForm extends FlexFormTools
             return [];
         }
 
-        $form = $form ?? ($provider instanceof FormProviderInterface ? $provider->getForm($record) : null);
+        $form = $provider instanceof FormProviderInterface ? $provider->getForm($record) : null;
         $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
         if ($form && $form->getOption(Form::OPTION_STATIC)) {
             // This provider has requested static DS caching; stop attempting

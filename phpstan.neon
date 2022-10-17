@@ -2,8 +2,10 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-    level: 0
+    level: 1
     reportUnmatchedIgnoredErrors: false
+    bootstrapFiles:
+        - phpstan-bootstrap.php
     paths:
         - Classes
     excludePaths:

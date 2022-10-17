@@ -302,7 +302,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @param string $label
+     * @param string|null $label
      * @param string $path
      * @return NULL|string
      */

@@ -131,7 +131,7 @@ class WizardItems implements NewContentElementWizardHookInterface
     {
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
             $pageUid,
-            (int) ($dataArray['colPos'] ?? GeneralUtility::_GET('colPos') ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
+            (int) (GeneralUtility::_GET('colPos') ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
         );
         $overrides = HookHandler::trigger(
             HookHandler::ALLOWED_CONTENT_RULES_FETCHED,

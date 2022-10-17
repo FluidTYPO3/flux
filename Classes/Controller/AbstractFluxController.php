@@ -342,6 +342,7 @@ abstract class AbstractFluxController extends ActionController
     protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature)
     {
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
+        $foreignControllerClass = null;
         if (!$shouldRelay) {
             if ($this->provider instanceof FluidProviderInterface) {
                 $templatePathAndFilename = $this->provider->getTemplatePathAndFilename($this->getRecord());

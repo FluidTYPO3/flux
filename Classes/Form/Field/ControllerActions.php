@@ -303,10 +303,7 @@ class ControllerActions extends Select
         } else {
             $actions = $this->getActions();
             if (0 === count($actions)) {
-                $actions = $this->getActionsForExtensionNameAndPluginName(
-                    $this->controllerExtensionName,
-                    $this->pluginName
-                );
+                $actions = $this->getActionsForExtensionNameAndPluginName();
             }
             return $this->buildItemsForActions($actions);
         }

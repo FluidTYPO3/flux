@@ -51,7 +51,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     ) {
         $container = static::getContainerFromRenderingContext($renderingContext);
         if (method_exists(static::class, 'getComponent')) {
-            $component = static::getComponent($renderingContext, $arguments, $renderChildrenClosure);
+            $component = static::getComponent($renderingContext, $arguments);
             // rendering child nodes with Form's last sheet as active container
             static::setContainerInRenderingContext($renderingContext, $component);
         }

@@ -112,6 +112,9 @@ class PageService implements SingletonInterface
             return $fromCache;
         }
 
+
+        $resolvedMainTemplateIdentity = null;
+        $resolvedSubTemplateIdentity = null;
         $rootLineUtility = $this->getRootLineUtility($pageUid);
 
         // Initialize with possibly-empty values and loop root line
