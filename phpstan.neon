@@ -2,6 +2,9 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-	level: 0
-	paths:
-		- Classes
+    level: 0
+    reportUnmatchedIgnoredErrors: false
+    paths:
+        - Classes
+    excludePaths:
+        - Classes/Updates/MigrateColPosWizard.php

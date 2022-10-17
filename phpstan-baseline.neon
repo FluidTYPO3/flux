@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Caught class TYPO3\\\\CMS\\\\Core\\\\Exception\\\\SiteNotFoundException not found\\.$#"
+			count: 1
+			path: Classes/Backend/PageLayoutDataProvider.php
+
+		-
 			message: "#^Undefined variable\\: \\$EM_CONF$#"
 			count: 1
 			path: Classes/Backend/PageLayoutDataProvider.php
@@ -21,13 +26,38 @@ parameters:
 			path: Classes/Integration/Event/AfterLocalizationControllerColumnsEventListener.php
 
 		-
+			message: "#^Caught class TYPO3\\\\CMS\\\\Core\\\\Exception\\\\SiteNotFoundException not found\\.$#"
+			count: 1
+			path: Classes/Integration/FormEngine/ProviderProcessor.php
+
+		-
 			message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\Grid\\\\GridColumnItem not found\\.$#"
 			count: 1
 			path: Classes/Integration/HookSubscribers/ContentIcon.php
 
 		-
+			message: "#^Caught class TYPO3\\\\CMS\\\\Core\\\\Exception\\\\SiteNotFoundException not found\\.$#"
+			count: 1
+			path: Classes/Integration/HookSubscribers/WizardItems.php
+
+		-
+			message: "#^Call to an undefined method FluidTYPO3\\\\Flux\\\\Integration\\\\Overrides\\\\LocalizationController\\:\\:getPageColumns\\(\\)\\.$#"
+			count: 1
+			path: Classes/Integration/Overrides/LocalizationController.php
+
+		-
+			message: "#^Instantiated class TYPO3\\\\CMS\\\\Core\\\\Http\\\\JsonResponse not found\\.$#"
+			count: 2
+			path: Classes/Integration/Overrides/LocalizationController.php
+
+		-
 			message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer not found\\.$#"
 			count: 2
+			path: Classes/Integration/PreviewView.php
+
+		-
+			message: "#^Class TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteFinder not found\\.$#"
+			count: 1
 			path: Classes/Integration/PreviewView.php
 
 		-
@@ -36,9 +66,9 @@ parameters:
 			path: Classes/Service/PageService.php
 
 		-
-			message: "#^Class FluidTYPO3\\\\Flux\\\\Updates\\\\DatabaseUpdatedPrerequisite not found\\.$#"
+			message: "#^Instantiated class TYPO3\\\\CMS\\\\Core\\\\Context\\\\Context not found\\.$#"
 			count: 1
-			path: Classes/Updates/MigrateColPosWizard.php
+			path: Classes/Service/RecordService.php
 
 		-
 			message: "#^Call to an undefined static method TYPO3\\\\CMS\\\\Extbase\\\\Utility\\\\ExtensionUtility\\:\\:resolveVendorFromExtensionAndControllerClassName\\(\\)\\.$#"
