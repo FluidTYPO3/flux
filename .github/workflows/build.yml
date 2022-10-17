@@ -45,6 +45,9 @@ jobs:
           dependency-versions: ${{ matrix.dependencies }}
           composer-options: ${{ matrix.composer-arguments }}
 
+      - name: Run phpstan
+        run: vendor/bin/phpstan analyze
+
       - name: Run tests
         run: vendor/bin/phpunit
 
