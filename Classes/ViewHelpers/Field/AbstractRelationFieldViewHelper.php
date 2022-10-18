@@ -168,10 +168,11 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
     }
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param RenderingContextInterface $renderingContext
      * @param array $arguments
-     * @return RelationFieldInterface
+     * @return T
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {

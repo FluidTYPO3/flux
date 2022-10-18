@@ -18,7 +18,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 {
 
     /**
-     * @var FormInterface[]
+     * @var FormInterface[]|\SplObjectStorage
      */
     protected $children;
 

@@ -23,6 +23,11 @@ interface ContainerInterface extends FormInterface
     public function get($childName, $recursive = false, $requiredClass = null);
 
     /**
+     * @return FormInterface[]
+     */
+    public function getChildren();
+
+    /**
      * @param FormInterface $child
      * @return FormInterface
      */

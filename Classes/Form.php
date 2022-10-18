@@ -377,7 +377,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 if (true === $this->has($sheetName)) {
                     $sheet = $this->get($sheetName);
                 } else {
-                    $sheet = $this->createContainer('Sheet', $sheetName);
+                    $sheet = $this->createContainer(Sheet::class, $sheetName);
                 }
                 $sheet->modify($sheetData);
             }

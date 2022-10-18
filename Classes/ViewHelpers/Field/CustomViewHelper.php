@@ -53,7 +53,6 @@ class CustomViewHelper extends UserFuncViewHelper
     /**
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
-     * @param \Closure $renderChildrenClosure
      * @return Custom
      */
     public static function getComponent(

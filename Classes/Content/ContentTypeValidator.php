@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Content;
 
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -88,12 +89,16 @@ class ContentTypeValidator
 
     protected function validateTemplateSource(ContentTypeDefinitionInterface $definition): ?string
     {
+        if (!$definition instanceof RecordBasedContentTypeDefinition) {
+            return null;
+        }
+        $source = $definition->getTemplatesource();
         $parser = GeneralUtility::makeInstance(ObjectManager::class)->get(TemplateView::class)->getRenderingContext()->getTemplateParser();
         try {
             if (class_exists(Sequencer::class)) {
-                $parser->parse(new Source($definition->getTemplatesource()));
+                $parser->parse(new Source($source));
             } else {
-                $parser->parse($definition->getTemplateSource());
+                $parser->parse($source);
             }
         } catch (\Exception $error) {
             return $error->getMessage();

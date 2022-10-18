@@ -394,8 +394,8 @@ class ControllerActions extends Select
     protected function reflectAction($controllerName, $actionName)
     {
         $controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
-        /** @var \ReflectionMethod $methodReflection */
         $controllerClassReflection = new \ReflectionClass($controllerClassName);
+        /** @var \ReflectionMethod $methodReflection */
         $methodReflection = $controllerClassReflection->getMethod($actionName . 'Action');
         return $methodReflection;
     }

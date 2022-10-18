@@ -322,19 +322,19 @@ class AbstractProvider implements ProviderInterface
                 $grid = Grid::create();
                 if ($container->getGridMode() === Form\Container\Section::GRID_MODE_ROWS) {
                     foreach ($persistedObjects as $index => $object) {
-                        $gridRow = $grid->createContainer('Row', 'row' . $index);
+                        $gridRow = $grid->createContainer(Form\Container\Row::class, 'row' . $index);
                         $gridColumn = $gridRow->createContainer(
-                            'Column',
+                            Form\Container\Column::class,
                             'column' . $object['colPos'],
                             $object['label'] ?? 'Column ' . $object['colPos']
                         );
                         $gridColumn->setColumnPosition($object['colPos']);
                     }
                 } elseif ($container->getGridMode() === Form\Container\Section::GRID_MODE_COLUMNS) {
-                    $gridRow = $grid->createContainer('Row', 'row');
+                    $gridRow = $grid->createContainer(Form\Container\Row::class, 'row');
                     foreach ($persistedObjects as $index => $object) {
                         $gridColumn = $gridRow->createContainer(
-                            'Column',
+                            Form\Container\Column::class,
                             'column' . $object['colPos'],
                             $object['label'] ?? 'Column ' . $object['colPos']
                         );
@@ -807,9 +807,10 @@ class AbstractProvider implements ProviderInterface
     }
 
     /**
+     * @template T
      * @param array $row
-     * @param string $viewClassName
-     * @return TemplateView
+     * @param class-string<T> $viewClassName
+     * @return T
      */
     public function getViewForRecord(array $row, $viewClassName = TemplateView::class)
     {
@@ -820,6 +821,8 @@ class AbstractProvider implements ProviderInterface
         $request = $objectManager->get(WebRequest::class);
         if (method_exists($request, 'setRequestUri')) {
             $request->setRequestUri(GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL'));
+        }
+        if (method_exists($request, 'setBaseUri')) {
             $request->setBaseUri(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
         }
         $request->setControllerExtensionName(ExtensionNamingUtility::getExtensionName($controllerExtensionKey));

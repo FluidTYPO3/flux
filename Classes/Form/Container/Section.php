@@ -83,7 +83,7 @@ class Section extends AbstractFormContainer implements ContainerInterface
     public function getContentContainer()
     {
         foreach ($this->children as $child) {
-            if ($child->isContentContainer()) {
+            if ($child instanceof SectionObject && $child->isContentContainer()) {
                 return $child;
             }
         }

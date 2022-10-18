@@ -2,11 +2,21 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-    level: 1
+    level: 2
     reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:getControllerContext\\(\\)\\.$#"
+        - "#^Call to an undefined method SplFileInfo\\:\\:getRelativePathname\\(\\)\\.$#"
+        - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:getRenderingContext\\(\\)\\.$#"
+        - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:renderSection\\(\\)\\.$#"
+        - "#TYPO3Fluid\\\\Fluid\\\\Component\\\\Error\\\\ChildNotFoundException#"
     bootstrapFiles:
         - phpstan-bootstrap.php
     paths:
         - Classes
     excludePaths:
         - Classes/Updates/MigrateColPosWizard.php
+        - Classes/Integration/Event/AfterLocalizationControllerColumnsEventListener.php
+        - Classes/Integration/PreviewView.php
+        - Classes/Outlet/Pipe/EmailPipe.php
+        - Classes/Utility/ContextUtility.php

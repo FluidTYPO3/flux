@@ -58,11 +58,11 @@ class MiscellaneousUtility
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
                 if (true === defined('GLOB_BRACE')) {
-                    $allowedExtensions = implode(',', static::$allowedIconTypes);
+                    $allowedExtensions = implode(',', self::$allowedIconTypes);
                     $iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
                     $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);
                 } else {
-                    foreach (static::$allowedIconTypes as $allowedIconType) {
+                    foreach (self::$allowedIconTypes as $allowedIconType) {
                         $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType));
                     }
                 }

@@ -141,7 +141,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @param WizardInterface $wizard
-     * @return FieldInterface
+     * @return $this
      */
     public function add(WizardInterface $wizard)
     {
@@ -330,7 +330,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @param boolean $exclude
-     * @return FieldInterface
+     * @return $this
      */
     public function setExclude($exclude)
     {
@@ -348,7 +348,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @param string $validate
-     * @return FieldInterface
+     * @return $this
      */
     public function setValidate($validate)
     {
@@ -366,7 +366,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @param array $config
-     * @return FieldInterface
+     * @return $this
      */
     public function setConfig(array $config)
     {
@@ -395,7 +395,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @param boolean $clearable
-     * @return FieldInterface
+     * @return $this
      */
     public function setClearable($clearable)
     {
@@ -421,7 +421,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @param array $structure
-     * @return ContainerInterface
+     * @return $this
      */
     public function modify(array $structure)
     {

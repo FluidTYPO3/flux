@@ -75,10 +75,11 @@ class SheetViewHelper extends AbstractFormViewHelper
         $form = static::getContainerFromRenderingContext($renderingContext);
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
         if (true === $form->has($arguments['name'])) {
+            /** @var Sheet $sheet */
             $sheet = $form->get($arguments['name']);
         } else {
             /** @var Sheet $sheet */
-            $sheet = $form->createContainer('Sheet', $arguments['name'], $arguments['label']);
+            $sheet = $form->createContainer(Sheet::class, $arguments['name'], $arguments['label']);
         }
         $sheet->setExtensionName($extensionName);
         $sheet->setVariables($arguments['variables']);

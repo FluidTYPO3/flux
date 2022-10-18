@@ -173,7 +173,7 @@ class FormDataTransformer
         // slower decisions with support for type-hinted collection objects
         if ($container && $object) {
             if (true === $isModel && true === class_exists($repositoryClassName) && 0 < count($identifiers)) {
-                /** @var $repository RepositoryInterface */
+                /** @var RepositoryInterface $repository */
                 $repository = $this->objectManager->get($repositoryClassName);
                 return $this->loadObjectsFromRepository($repository, $identifiers);
             } else {

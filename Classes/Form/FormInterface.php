@@ -152,26 +152,29 @@ interface FormInterface
     public function hasChildren();
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
      * @param string $label
-     * @return FieldInterface
+     * @return T
      */
     public function createField($type, $name, $label = null);
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
      * @param string $label
-     * @return ContainerInterface
+     * @return T
      */
     public function createContainer($type, $name, $label = null);
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
      * @param string $label
-     * @return WizardInterface
+     * @return T
      */
     public function createWizard($type, $name, $label = null);
 

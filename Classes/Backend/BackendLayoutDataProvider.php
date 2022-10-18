@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -100,21 +101,27 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
      *
      * @param string $identifier
      * @param integer $pageUid
-     * @return BackendLayout
+     * @return BackendLayout|null
      */
     public function getBackendLayout($identifier, $pageUid)
     {
+        $emptyLayout = new BackendLayout($identifier, 'Empty', '');
         $record = $this->recordService->getSingle('pages', '*', $pageUid);
         if (null === $record) {
-            return new BackendLayout($identifier, 'Empty', '');
+            return $emptyLayout;
         }
-        $grid = $this->resolveProvider($record)->getGrid($record);
+        $provider = $this->resolveProvider($record);
+        if (!$provider instanceof PageProvider)
+        {
+            return $emptyLayout;
+        }
+        $grid = $provider->getGrid($record);
         return $grid->buildBackendLayout(0);
     }
 
     /**
-     * @param int $pageUid
-     * @return ProviderInterface
+     * @param array $record
+     * @return ProviderInterface|null
      */
     protected function resolveProvider(array $record)
     {
@@ -122,7 +129,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
 
         // Stop processing if no template configured in rootline
         if (null === $record) {
-            return [];
+            return null;
         }
 
         return $this->configurationService->resolvePageProvider($record);

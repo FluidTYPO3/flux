@@ -29,6 +29,7 @@ class ContentTypeForm extends Form
     {
         parent::__construct();
 
+        /** @var Form\Container\Sheet $sheet */
         $sheet = $this->createContainer(Form\Container\Sheet::class, 'sheets', 'Define sheets');
         $sheet->setDescription('Define the sheets that contain form fields when editors edit your content type. Save the content type record to refresh changes.');
         $section = $sheet->createContainer(Form\Container\Section::class, 'sheets');
@@ -39,6 +40,7 @@ class ContentTypeForm extends Form
 
     public function createSheet(string $name, string $label)
     {
+        /** @var Form\Container\Sheet $sheet */
         $sheet = $this->createContainer(Form\Container\Sheet::class, $name, $label);
         $sheet->setDescription('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types.sheetDescription');
         $section = $sheet->createContainer(Form\Container\Section::class, 'fields', 'Fields');

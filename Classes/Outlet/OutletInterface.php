@@ -9,6 +9,8 @@ namespace FluidTYPO3\Flux\Outlet;
  */
 
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
+use TYPO3\CMS\Extbase\Error\Result;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * Outlet Interface
@@ -20,7 +22,7 @@ interface OutletInterface
 
     /**
      * @param boolean $enabled
-     * @return void
+     * @return $this
      * @abstract
      */
     public function setEnabled($enabled);
@@ -46,8 +48,7 @@ interface OutletInterface
 
     /**
      * @param PipeInterface[] $pipes
-     * @return OutletInterface
-     * @return void
+     * @return $this
      */
     public function setPipesIn(array $pipes);
 
@@ -58,8 +59,7 @@ interface OutletInterface
 
     /**
      * @param PipeInterface[] $pipes
-     * @return OutletInterface
-     * @return void
+     * @return $this
      */
     public function setPipesOut(array $pipes);
 
@@ -70,13 +70,46 @@ interface OutletInterface
 
     /**
      * @param PipeInterface $pipe
-     * @return OutletInterface
+     * @return $this
      */
     public function addPipeIn(PipeInterface $pipe);
 
     /**
      * @param PipeInterface $pipe
-     * @return OutletInterface
+     * @return $this
      */
     public function addPipeOut(PipeInterface $pipe);
+
+    /**
+     * @param OutletArgument $argument
+     * @return $this
+     */
+    public function addArgument(OutletArgument $argument);
+
+    /**
+     * @param OutletArgument[] $arguments
+     * @return $this
+     */
+    public function setArguments(array $arguments);
+
+    /**
+     * @return OutletArgument[]
+     */
+    public function getArguments();
+
+    /**
+     * @param ViewInterface $view
+     * @return $this
+     */
+    public function setView($view);
+
+    /**
+     * @return bool
+     */
+    public function isValid();
+
+    /**
+     * @return Result Validation errors which have occurred.
+     */
+    public function getValidationResults();
 }

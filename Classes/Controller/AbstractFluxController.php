@@ -11,7 +11,11 @@ namespace FluidTYPO3\Flux\Controller;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\NormalizedData\DataAccessTrait;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -57,7 +61,7 @@ abstract class AbstractFluxController extends ActionController
     protected $configurationService;
 
     /**
-     * @var \FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface
+     * @var ControllerProviderInterface|DataStructureProviderInterface|FluidProviderInterface|FormProviderInterface|RecordProviderInterface
      */
     protected $provider;
 
@@ -106,7 +110,7 @@ abstract class AbstractFluxController extends ActionController
     protected function initializeSettings()
     {
         $row = $this->getRecord();
-        $extensionKey = $this->provider->getExtensionKey($row);
+        $extensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
         $pluginName = $this->request->getPluginName();
         $this->settings = RecursiveArrayUtility::merge(
@@ -141,7 +145,7 @@ abstract class AbstractFluxController extends ActionController
     protected function initializeOverriddenSettings()
     {
         $row = $this->getRecord();
-        $extensionKey = $this->provider->getExtensionKey($row);
+        $extensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
         if (true === isset($this->data['settings']) && true === is_array($this->data['settings'])) {
             // a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
@@ -304,7 +308,7 @@ abstract class AbstractFluxController extends ActionController
     public function renderAction()
     {
         $row = $this->getRecord();
-        $extensionKey = $this->provider->getExtensionKey($row);
+        $extensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
         $extensionSignature = ExtensionNamingUtility::getExtensionSignature($extensionKey);
         $pluginSignature = strtolower('tx_' . $extensionSignature . '_' . $this->request->getPluginName());
         $controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
@@ -424,7 +428,6 @@ abstract class AbstractFluxController extends ActionController
         $controllerActionName,
         $pluginSignature
     ) {
-        /** @var Response $response */
         $post = GeneralUtility::_POST($pluginSignature);
         $arguments = (array) (true === is_array($post) ? $post : GeneralUtility::_GET($pluginSignature));
         $this->request->setArguments($arguments);

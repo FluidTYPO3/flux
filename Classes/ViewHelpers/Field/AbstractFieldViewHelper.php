@@ -119,10 +119,11 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
     }
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
-     * @return FieldInterface
+     * @return T
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {

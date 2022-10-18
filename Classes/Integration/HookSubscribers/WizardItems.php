@@ -89,7 +89,7 @@ class WizardItems implements NewContentElementWizardHookInterface
 
     /**
      * @param array $items
-     * @param \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController
+     * @param NewContentElementController $parentObject
      * @return void
      */
     public function manipulateWizardItems(&$items, &$parentObject)
@@ -161,7 +161,6 @@ class WizardItems implements NewContentElementWizardHookInterface
     /**
      * @param integer $pageUid
      * @param integer $columnPosition
-     * @param integer $relativeUid
      * @return array
      */
     protected function getWhiteAndBlackListsFromPageAndContentColumn($pageUid, $columnPosition)
