@@ -18,5 +18,6 @@ parameters:
         - Classes/Updates/MigrateColPosWizard.php
         - Classes/Integration/Event/AfterLocalizationControllerColumnsEventListener.php
         - Classes/Integration/PreviewView.php
+        - Classes/Integration/Overrides/LocalizationController.php
         - Classes/Outlet/Pipe/EmailPipe.php
         - Classes/Utility/ContextUtility.php
