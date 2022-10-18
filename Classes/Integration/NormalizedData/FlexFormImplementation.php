@@ -1,8 +1,8 @@
 <?php
 namespace FluidTYPO3\Flux\Integration\NormalizedData;
 
-use FluidTYPO3\Flux\Integration\NormalizedData\Converter\InlineRecordDataConverter;
 use FluidTYPO3\Flux\Integration\NormalizedData\Converter\ConverterInterface;
+use FluidTYPO3\Flux\Integration\NormalizedData\Converter\InlineRecordDataConverter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class FlexFormImplementation extends AbstractImplementation implements ImplementationInterface

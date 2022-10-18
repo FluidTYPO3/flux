@@ -9,8 +9,6 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 

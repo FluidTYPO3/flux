@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\MultiValueFieldInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**

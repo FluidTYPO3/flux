@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Outlet;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
-use phpDocumentor\Reflection\Types\This;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
