@@ -98,7 +98,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param array $settings
-     * @return FormInterface
+     * @return static
      */
     public static function create(array $settings = [])
     {
@@ -442,10 +442,11 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return ContainerInterface
+     * @return ContainerInterface|$this
      */
     public function getRoot()
     {
+        /** @var ContainerInterface $parent */
         $parent = $this->getParent();
         if (null === $parent || $this === $parent) {
             return $this;
@@ -477,7 +478,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return integer
+     * @return bool
      */
     public function getInherit()
     {

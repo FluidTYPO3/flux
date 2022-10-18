@@ -2,7 +2,7 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-    level: 2
+    level: 3
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:getControllerContext\\(\\)\\.$#"

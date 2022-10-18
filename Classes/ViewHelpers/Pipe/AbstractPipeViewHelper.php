@@ -49,6 +49,7 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
         } else {
             $form->getOutlet()->addPipeOut($pipe);
         }
+        return '';
     }
 
     /**

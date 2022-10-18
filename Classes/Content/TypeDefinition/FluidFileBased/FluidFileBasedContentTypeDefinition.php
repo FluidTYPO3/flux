@@ -55,7 +55,7 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
         $this->providerClassName = $providerClassName;
     }
 
-    public function getForm(array $record = []): Form\FormInterface
+    public function getForm(array $record = []): Form
     {
         return GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class)->resolvePrimaryConfigurationProvider(
             'tt_content',

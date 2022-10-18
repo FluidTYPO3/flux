@@ -23,7 +23,7 @@ interface ContainerInterface extends FormInterface
     public function get($childName, $recursive = false, $requiredClass = null);
 
     /**
-     * @return FormInterface[]
+     * @return FormInterface[]|\SplObjectStorage
      */
     public function getChildren();
 

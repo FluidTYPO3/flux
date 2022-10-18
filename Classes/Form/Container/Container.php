@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 
 /**
  * Container
@@ -34,7 +35,7 @@ class Container extends AbstractFormContainer implements ContainerInterface, Fie
     }
 
     /**
-     * @return FieldInterface[]
+     * @return FormInterface[]
      */
     public function getFields()
     {

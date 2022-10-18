@@ -10,12 +10,17 @@ namespace FluidTYPO3\Flux\Form\Container;
 
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 
 /**
  * Row
  */
 class Row extends AbstractFormContainer implements ContainerInterface
 {
+    /**
+     * @var Column[]|\SplObjectStorage
+     */
+    protected $children;
 
     /**
      * @return array

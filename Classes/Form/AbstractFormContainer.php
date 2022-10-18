@@ -142,7 +142,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     }
 
     /**
-     * @return FormInterface[]
+     * @return FormInterface[]|\SplObjectStorage
      */
     public function getChildren()
     {

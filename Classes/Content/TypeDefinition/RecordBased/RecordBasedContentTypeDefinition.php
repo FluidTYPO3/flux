@@ -113,7 +113,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         }
     }
 
-    public function getForm(array $record = []): Form\FormInterface
+    public function getForm(array $record = []): Form
     {
         $instance = GeneralUtility::makeInstance(ObjectManager::class)->get(Form::class);
         $instance->remove('options');

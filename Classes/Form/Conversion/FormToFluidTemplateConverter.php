@@ -48,13 +48,17 @@ TEMPLATE;
     protected function renderSheetsAndFields(Form $form): string
     {
         $rendered = '';
-        foreach ($form->getSheets() as $sheet) {
+        /** @var Form\Container\Sheet[] $sheets */
+        $sheets = $form->getSheets();
+        foreach ($sheets as $sheet) {
             $rendered .= sprintf(
                 '<flux:form.sheet name="%s" label="%s">' . PHP_EOL,
                 $sheet->getName(),
                 $sheet->getLabel()
             );
-            foreach ($sheet->getFields() as $field) {
+            /** @var Form\FieldInterface[] $fields */
+            $fields = $sheet->getFields();
+            foreach ($fields as $field) {
                 $rendered .= sprintf(
                     '<flux:field.%s name="%s" label="%s"%s />' . PHP_EOL,
                     $this->getViewHelperNameForFieldType($field),

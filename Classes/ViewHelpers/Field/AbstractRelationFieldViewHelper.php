@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Field\Relation;
 use FluidTYPO3\Flux\Form\RelationFieldInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -164,7 +165,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
-        return static::getPreparedComponent('Relation', $renderingContext, $arguments);
+        return static::getPreparedComponent(Relation::class, $renderingContext, $arguments);
     }
 
     /**
@@ -176,7 +177,6 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
-        /** @var RelationFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setTable($arguments['table']);
         $component->setCondition($arguments['condition']);

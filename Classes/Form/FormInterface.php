@@ -179,13 +179,13 @@ interface FormInterface
     public function createWizard($type, $name, $label = null);
 
     /**
-     * @param integer $inherit
+     * @param boolean $inherit
      * @return FormInterface
      */
     public function setInherit($inherit);
 
     /**
-     * @return integer
+     * @return boolean
      */
     public function getInherit();
 

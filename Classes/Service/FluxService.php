@@ -146,7 +146,7 @@ class FluxService implements SingletonInterface
      * dotted path expression.
      *
      * @param string $path
-     * @return array
+     * @return array|mixed
      */
     public function getTypoScriptByPath($path)
     {
@@ -331,7 +331,7 @@ class FluxService implements SingletonInterface
     {
         $filename = array_pop(explode(':', $reference));
         if (true === ctype_digit($filename)) {
-            return $this->resourceFactory->getFileObjectFromCombinedIdentifier($reference);
+            return $this->resourceFactory->getFileObjectFromCombinedIdentifier($reference)->getIdentifier();
         }
         $reference = GeneralUtility::getFileAbsFileName($reference);
         return $reference;

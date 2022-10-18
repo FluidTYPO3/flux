@@ -52,7 +52,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * Special rendering type of this component - supports all values normally
      * supported by TCA of the "select" field type.
      *
-     * @var string
+     * @var string|null
      * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#rendertype
      */
     protected $renderType = 'selectSingle';

@@ -83,7 +83,7 @@ class FormViewHelper extends AbstractFormViewHelper
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
-     * @return void
+     * @return string
      */
     public static function renderStatic(
         array $arguments,
@@ -117,5 +117,7 @@ class FormViewHelper extends AbstractFormViewHelper
 
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
+
+        return '';
     }
 }

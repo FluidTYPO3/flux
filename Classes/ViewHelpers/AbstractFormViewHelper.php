@@ -30,19 +30,18 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
 
     protected function callRenderMethod()
     {
-        static::renderStatic(
+        return static::renderStatic(
             $this->arguments instanceof ArgumentCollection ? $this->arguments->getArrayCopy() : $this->arguments,
             $this->buildRenderChildrenClosure(),
             $this->renderingContext
         );
-        return '';
     }
 
     /**
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
-     * @return void
+     * @return string
      */
     public static function renderStatic(
         array $arguments,
@@ -57,6 +56,8 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         }
         $renderChildrenClosure();
         static::setContainerInRenderingContext($renderingContext, $container);
+
+        return '';
     }
 
     public static function getComponent(

@@ -276,7 +276,7 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * @param array $row
-     * @return Form|NULL
+     * @return Form|null
      */
     public function getForm(array $row)
     {
@@ -357,7 +357,9 @@ class AbstractProvider implements ProviderInterface
     protected function detectContentContainerParent(Form\ContainerInterface $container)
     {
         if ($container instanceof Form\Container\SectionObject && $container->isContentContainer()) {
-            return $container->getParent();
+            /** @var Form\Container\Section $parent */
+            $parent = $container->getParent();
+            return $parent;
         }
         foreach ($container->getChildren() as $child) {
             if ($child instanceof Form\ContainerInterface && ($detected = $this->detectContentContainerParent($child))) {

@@ -60,7 +60,7 @@ abstract class AbstractWizard extends AbstractFormComponent implements WizardInt
 
     /**
      * @param boolean $hideParent
-     * @return Add
+     * @return $this
      */
     public function setHideParent($hideParent)
     {

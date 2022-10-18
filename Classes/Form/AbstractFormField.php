@@ -89,7 +89,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * @param array $settings
-     * @return FieldInterface
+     * @return FieldInterface|Section
      * @throws \RuntimeException
      */
     public static function create(array $settings = [])
@@ -115,7 +115,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
                 1375373527
             );
         }
-        /** @var FormInterface $object */
+        /** @var FieldInterface $object */
         $object = GeneralUtility::makeInstance(ObjectManager::class)->get($className);
         foreach ($settings as $settingName => $settingValue) {
             $setterMethodName = 'set' . ucfirst($settingName);

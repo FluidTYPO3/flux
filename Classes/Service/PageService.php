@@ -152,7 +152,7 @@ class PageService implements SingletonInterface
      * Get a usable page configuration flexform from rootline
      *
      * @param integer $pageUid
-     * @return string
+     * @return string|null
      * @api
      */
     public function getPageFlexFormSource($pageUid)
@@ -174,7 +174,7 @@ class PageService implements SingletonInterface
      * Gets a list of usable Page Templates from defined page template TypoScript.
      * Returns a list of Form instances indexed by the path ot the template file.
      *
-     * @return Form[]
+     * @return Form[][]
      * @api
      */
     public function getAvailablePageTemplateFiles()

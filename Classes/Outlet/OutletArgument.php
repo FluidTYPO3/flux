@@ -145,7 +145,7 @@ class OutletArgument
      * Sets custom validators which are used supplementary to the base validation
      *
      * @param ValidatorInterface[] $validators The actual validator object
-     * @return ControllerArgument Returns $this (used for fluent interface)
+     * @return $this
      */
     public function setValidators(array $validators)
     {
@@ -183,7 +183,7 @@ class OutletArgument
      *
      * @param mixed $rawValue The value of this argument
      *
-     * @return OutletArgument
+     * @return $this
      */
     public function setValue($rawValue)
     {
