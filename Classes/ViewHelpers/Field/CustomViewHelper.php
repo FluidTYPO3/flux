@@ -60,7 +60,7 @@ class CustomViewHelper extends UserFuncViewHelper
         iterable $arguments
     ) {
         /** @var Custom $component */
-        $component = parent::getPreparedComponent('Custom', $renderingContext, $arguments);
+        $component = parent::getPreparedComponent(Custom::class, $renderingContext, $arguments);
         return $component;
     }
 

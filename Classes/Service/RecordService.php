@@ -62,7 +62,7 @@ class RecordService implements SingletonInterface
     /**
      * @param string $table
      * @param string $fields
-     * @param string $uid
+     * @param integer $uid
      * @return array|NULL
      */
     public function getSingle($table, $fields, $uid)

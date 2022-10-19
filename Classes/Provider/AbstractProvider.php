@@ -637,7 +637,8 @@ class AbstractProvider implements ProviderInterface
             && is_array($row[$fieldName]['data']['options']['lDEF'])) {
             foreach ($row[$fieldName]['data']['options']['lDEF'] as $key => $value) {
                 if (0 === strpos($key, $tableName)) {
-                    $realKey = array_pop(explode('.', $key));
+                    $parts = explode('.', $key);
+                    $realKey = array_pop($parts);
                     if (isset($GLOBALS['TCA'][$tableName]['columns'][$realKey])) {
                         $row[$realKey] = $value['vDEF'];
                     }

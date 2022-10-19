@@ -107,6 +107,7 @@ TEMPLATE;
 
     protected function getViewHelperNameForFieldType(Form\FieldInterface $field): string
     {
-        return lcfirst(end(explode('\\', get_class($field))));
+        $parts = explode('\\', get_class($field));
+        return lcfirst(end($parts));
     }
 }

@@ -259,7 +259,8 @@ class WizardItems implements NewContentElementWizardHookInterface
         $preserveHeaders = [];
         foreach ($items as $name => $item) {
             if (false !== strpos($name, '_')) {
-                array_push($preserveHeaders, reset(explode('_', $name)));
+                $parts = explode('_', $name);
+                array_push($preserveHeaders, reset($parts));
             }
         }
         foreach ($items as $name => $item) {

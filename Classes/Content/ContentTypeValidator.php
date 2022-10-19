@@ -108,7 +108,8 @@ class ContentTypeValidator
 
     protected function validateContextMatchesSignature(ContentTypeDefinitionInterface $definition): bool
     {
-        return str_replace('_', '', ExtensionNamingUtility::getExtensionKey($definition->getExtensionIdentity())) === reset(explode('_', $definition->getContentTypeName()));
+        $parts = explode('_', $definition->getContentTypeName());
+        return str_replace('_', '', ExtensionNamingUtility::getExtensionKey($definition->getExtensionIdentity())) === reset($parts);
     }
 
     protected function validateContextExtensionIsInstalled(ContentTypeDefinitionInterface $definition): bool

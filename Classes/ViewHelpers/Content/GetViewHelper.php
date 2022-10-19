@@ -157,7 +157,7 @@ class GetViewHelper extends AbstractViewHelper
             }
         }
         if ($loadRegister) {
-            $contentObjectRenderer->cObjGetSingle('RESTORE_REGISTER', '');
+            $contentObjectRenderer->cObjGetSingle('RESTORE_REGISTER', []);
         }
         return $content;
     }

@@ -286,7 +286,7 @@ class DataHandlerSubscriber
 
         list ($originalRecord, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
             $table,
-            $id,
+            (integer) $id,
             'uid, pid, colPos',
             false,
             $command
@@ -307,7 +307,7 @@ class DataHandlerSubscriber
         }
 
         if ($command === 'move') {
-            $subCommandMap = $this->recursivelyMoveChildRecords($table, $id, $destinationPid, $languageUid, $reference);
+            $subCommandMap = $this->recursivelyMoveChildRecords($table, (integer) $id, $destinationPid, $languageUid, $reference);
         }
 
         if (!empty($subCommandMap)) {

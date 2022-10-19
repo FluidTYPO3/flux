@@ -458,7 +458,7 @@ abstract class AbstractFluxController extends ActionController
                 ]
             );
 
-            if (version_compare($version, 11, '<')) {
+            if (version_compare($version, '11', '<')) {
                 $potentialControllerInstance->processRequest($this->request, $response);
             } else {
                 $response = $potentialControllerInstance->processRequest($this->request);

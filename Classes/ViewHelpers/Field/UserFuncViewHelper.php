@@ -55,7 +55,7 @@ class UserFuncViewHelper extends AbstractFieldViewHelper
         iterable $arguments
     ) {
         /** @var UserFunction $user */
-        $user = static::getPreparedComponent('UserFunction', $renderingContext, $arguments);
+        $user = static::getPreparedComponent(UserFunction::class, $renderingContext, $arguments);
         $user->setFunction($arguments['userFunc']);
         $user->setRenderType($arguments['renderType'] ?? '');
         $user->setArguments($arguments['arguments']);

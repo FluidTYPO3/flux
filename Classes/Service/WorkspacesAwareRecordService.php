@@ -38,7 +38,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     /**
      * @param string $table
      * @param string $fields
-     * @param string $uid
+     * @param integer $uid
      * @return array|null
      */
     public function getSingle($table, $fields, $uid)

@@ -161,7 +161,8 @@ class FormDataTransformer
         if (true === $isModel && null === $container) {
             if (true === class_exists($repositoryClassName)) {
                 $repository = $this->objectManager->get($repositoryClassName);
-                return reset($this->loadObjectsFromRepository($repository, $identifiers));
+                $repositoryObjects = $this->loadObjectsFromRepository($repository, $identifiers);
+                return reset($repositoryObjects);
             }
         } elseif (true === class_exists($dataType)) {
             // using constructor value to support objects like DateTime

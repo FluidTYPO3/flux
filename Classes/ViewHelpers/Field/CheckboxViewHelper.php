@@ -28,7 +28,7 @@ class CheckboxViewHelper extends AbstractFieldViewHelper
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Checkbox $checkbox */
-        $checkbox = static::getPreparedComponent('Checkbox', $renderingContext, $arguments);
+        $checkbox = static::getPreparedComponent(Checkbox::class, $renderingContext, $arguments);
         return $checkbox;
     }
 }

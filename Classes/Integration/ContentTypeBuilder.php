@@ -336,7 +336,7 @@ class ContentTypeBuilder
 
     private function getExtensionIdentityForPluginRegistration(string $extensionIdentity): string
     {
-        if (version_compare($this->getCoreVersion(), 10.4, '>=')) {
+        if (version_compare($this->getCoreVersion(), '10.4', '>=')) {
             if (($dotPosition = strpos($extensionIdentity, '.'))) {
                 $extensionIdentity = substr($extensionIdentity, $dotPosition + 1);
             }
@@ -346,7 +346,7 @@ class ContentTypeBuilder
 
     private function getControllerNameForPluginRegistration(string $controllerClassName): string
     {
-        if (version_compare($this->getCoreVersion(), 10.4, '>=')) {
+        if (version_compare($this->getCoreVersion(), '10.4', '>=')) {
             return $controllerClassName;
         }
         return substr($controllerClassName, strrpos($controllerClassName, '\\') + 1, -10);

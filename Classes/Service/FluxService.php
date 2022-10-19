@@ -214,7 +214,7 @@ class FluxService implements SingletonInterface
      * configuration based on the given parameters.
      *
      * @param string $table
-     * @param string $fieldName
+     * @param string|null $fieldName
      * @param array $row
      * @param string $extensionKey
      * @param string|array $interfaces
@@ -254,8 +254,8 @@ class FluxService implements SingletonInterface
      * @param string $flexFormContent flexForm xml string
      * @param Form $form An instance of \FluidTYPO3\Flux\Form. If transformation instructions are contained in this
      *                   configuration they are applied after conversion to array
-     * @param string $languagePointer language pointer used in the flexForm
-     * @param string $valuePointer value pointer used in the flexForm
+     * @param string|null $languagePointer language pointer used in the flexForm
+     * @param string|null $valuePointer value pointer used in the flexForm
      * @return array the processed array
      */
     public function convertFlexFormContentToArray(
@@ -329,7 +329,8 @@ class FluxService implements SingletonInterface
      */
     public function convertFileReferenceToTemplatePathAndFilename($reference)
     {
-        $filename = array_pop(explode(':', $reference));
+        $parts = explode(':', $reference);
+        $filename = array_pop($parts);
         if (true === ctype_digit($filename)) {
             return $this->resourceFactory->getFileObjectFromCombinedIdentifier($reference)->getIdentifier();
         }

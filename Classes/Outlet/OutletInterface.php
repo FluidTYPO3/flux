@@ -98,7 +98,7 @@ interface OutletInterface
     public function getArguments();
 
     /**
-     * @param ViewInterface $view
+     * @param ViewInterface|\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
      * @return $this
      */
     public function setView($view);

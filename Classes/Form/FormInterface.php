@@ -85,7 +85,7 @@ interface FormInterface
     public function getDisableLocalLanguageLabels();
 
     /**
-     * @param ContainerInterface $parent
+     * @param ContainerInterface|FieldInterface|null $parent
      * @return FormInterface
      */
     public function setParent($parent);
