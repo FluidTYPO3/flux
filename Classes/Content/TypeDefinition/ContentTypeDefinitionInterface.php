@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
-use FluidTYPO3\Flux\Form\FormInterface;
 
 /**
  * Public contract for objects that contains one content

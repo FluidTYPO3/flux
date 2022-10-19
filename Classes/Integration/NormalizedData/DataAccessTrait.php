@@ -9,7 +9,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-trait DataAccessTrait {
+trait DataAccessTrait
+{
 
     /**
      * @var ConfigurationManagerInterface;

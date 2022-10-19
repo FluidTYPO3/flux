@@ -61,17 +61,17 @@ class GetViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
-     * @var FluxService
+     * @var FluxService|null
      */
     protected static $configurationService;
 
     /**
-     * @var ConfigurationManagerInterface
+     * @var ConfigurationManagerInterface|null
      */
     protected static $configurationManager;
 
     /**
-     * @var WorkspacesAwareRecordService
+     * @var WorkspacesAwareRecordService|null
      */
     protected static $recordService;
 

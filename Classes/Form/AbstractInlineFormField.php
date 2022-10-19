@@ -465,7 +465,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     }
 
     /**
-     * @param array $foreignTypes
+     * @param array|null $foreignTypes
      * @return RelationFieldInterface
      */
     public function setForeignTypes($foreignTypes)

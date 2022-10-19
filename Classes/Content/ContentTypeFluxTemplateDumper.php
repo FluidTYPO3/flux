@@ -27,7 +27,7 @@ class ContentTypeFluxTemplateDumper
             return '';
         }
 
-        /** @var RecordBasedContentTypeDefinition $definition */
+        /** @var RecordBasedContentTypeDefinition|null $definition */
         $definition = $this->getContentType($parameters['row']['content_type']);
         if (!$definition) {
             return '';

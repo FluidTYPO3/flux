@@ -126,6 +126,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     public function get($childName, $recursive = false, $requiredClass = null)
     {
         foreach ($this->children as $index => $existingChild) {
+            /** @var string|int $index */
             if (($childName === $existingChild->getName() || $childName === $index)
                 && (!$requiredClass || $existingChild instanceof $requiredClass)
             ) {

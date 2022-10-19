@@ -211,7 +211,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getExtensionName()
     {

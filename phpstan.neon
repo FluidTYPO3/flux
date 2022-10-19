@@ -2,7 +2,7 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-    level: 3
+    level: 4
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:getControllerContext\\(\\)\\.$#"
@@ -10,6 +10,7 @@ parameters:
         - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:getRenderingContext\\(\\)\\.$#"
         - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:renderSection\\(\\)\\.$#"
         - "#TYPO3Fluid\\\\Fluid\\\\Component\\\\Error\\\\ChildNotFoundException#"
+        - "#^Instanceof between (iterable|array) and TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection will always evaluate to false\\.$#"
     bootstrapFiles:
         - phpstan-bootstrap.php
     paths:

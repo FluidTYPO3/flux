@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Outlet;
  */
 
 use TYPO3\CMS\Extbase\Error\Result;
-use TYPO3\CMS\Extbase\Mvc\Controller\Argument as ControllerArgument;
 use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
 use TYPO3\CMS\Extbase\Property\PropertyMapper;
 use TYPO3\CMS\Extbase\Utility\TypeHandlingUtility;

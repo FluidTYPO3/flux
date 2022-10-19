@@ -346,7 +346,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     }
 
     /**
-     * @return boolean|string
+     * @return boolean|string|array
      */
     public function getEmptyOption()
     {

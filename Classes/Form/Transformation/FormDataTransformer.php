@@ -95,9 +95,6 @@ class FormDataTransformer
      */
     protected function extractTransformableObjectByPath(ContainerInterface $subject, $path)
     {
-        if (is_scalar($subject) || is_null($subject)) {
-            return $subject;
-        }
         $pathAsArray = explode('.', $path);
         $subPath = array_shift($pathAsArray);
         $child = null;
@@ -145,7 +142,7 @@ class FormDataTransformer
      * Gets a DomainObject or QueryResult of $dataType
      *
      * @param string $dataType
-     * @param string $uids
+     * @param string|array $uids
      * @return mixed
      */
     protected function getObjectOfType($dataType, $uids)

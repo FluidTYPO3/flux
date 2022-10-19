@@ -237,8 +237,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder(
             $controllerClassName
         )->setMethods(
-            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer'
-            )
+            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer', 'getRecord')
         )->getMock();
         $instance->injectConfigurationManager($this->getMockBuilder(ConfigurationManagerInterface::class)->getMock());
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMock();
@@ -251,6 +250,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
+        $instance->method('getRecord')->willReturn(['uid' => 1]);
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }
 
@@ -265,7 +265,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder(
             $controllerClassName
         )->setMethods(
-            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer')
+            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer', 'getRecord')
         )->getMock();
         $instance->injectConfigurationManager($this->getMockBuilder(ConfigurationManagerInterface::class)->getMock());
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMock();
@@ -278,6 +278,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
+        $instance->method('getRecord')->willReturn(['uid' => 1]);
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }
 

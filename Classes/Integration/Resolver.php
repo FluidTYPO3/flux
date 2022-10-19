@@ -56,7 +56,7 @@ class Resolver
     /**
      * @param string $extensionKey
      * @param string $controllerName
-     * @return boolean|string
+     * @return string
      */
     private static function buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerName)
     {

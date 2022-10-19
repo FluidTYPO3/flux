@@ -50,7 +50,7 @@ class AbstractProvider implements ProviderInterface
     /**
      * Fill with the table column name which should trigger this Provider.
      *
-     * @var string
+     * @var string|null
      */
     protected $fieldName = null;
 
@@ -81,12 +81,12 @@ class AbstractProvider implements ProviderInterface
     protected $parentFieldName = null;
 
     /**
-     * @var array|NULL
+     * @var array|null
      */
     protected $row = null;
 
     /**
-     * @var string|NULL
+     * @var string|null
      */
     protected $templatePathAndFilename = null;
 
@@ -96,22 +96,22 @@ class AbstractProvider implements ProviderInterface
     protected $templateVariables = [];
 
     /**
-     * @var array|NULL
+     * @var array|null
      */
     protected $templatePaths = null;
 
     /**
-     * @var string|NULL
+     * @var string|null
      */
     protected $configurationSectionName = 'Configuration';
 
     /**
-     * @var string|NULL
+     * @var string|null
      */
     protected $extensionKey = null;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $controllerName;
 
@@ -126,12 +126,12 @@ class AbstractProvider implements ProviderInterface
     protected $priority = 50;
 
     /**
-     * @var Form
+     * @var Form|null
      */
     protected $form = null;
 
     /**
-     * @var Grid
+     * @var Grid|null
      */
     protected $grid = null;
 
@@ -198,8 +198,8 @@ class AbstractProvider implements ProviderInterface
     /**
      * @param array $row
      * @param string $table
-     * @param string $field
-     * @param string $extensionKey
+     * @param string|null $field
+     * @param string|null $extensionKey
      * @return boolean
      */
     public function trigger(array $row, $table, $field, $extensionKey = null)
@@ -398,7 +398,7 @@ class AbstractProvider implements ProviderInterface
             return null;
         }
 
-        $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class) ?? [];
+        $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class, []);
         if (isset($variables['form'])) {
             $variables['form']->setOption(Form::OPTION_TEMPLATEFILE, $this->getTemplatePathAndFilename($row));
             if ($variables['form']->getOption(Form::OPTION_STATIC)) {

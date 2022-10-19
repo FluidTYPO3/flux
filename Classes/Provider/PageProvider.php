@@ -84,8 +84,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      *
      * @param array $row
      * @param string $table
-     * @param string $field
-     * @param string|NULL $extensionKey
+     * @param string|null $field
+     * @param string|null $extensionKey
      * @return boolean
      */
     public function trigger(array $row, $table, $field, $extensionKey = null)

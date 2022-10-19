@@ -36,7 +36,7 @@ abstract class AbstractFormComponent implements FormInterface
     const NAMESPACE_WIZARD = 'FluidTYPO3\\Flux\\Form\\Wizard';
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $name;
 
@@ -215,7 +215,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -393,7 +393,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return ContainerInterface
+     * @return ContainerInterface|null
      */
     public function getParent()
     {
@@ -446,7 +446,6 @@ abstract class AbstractFormComponent implements FormInterface
      */
     public function getRoot()
     {
-        /** @var ContainerInterface $parent */
         $parent = $this->getParent();
         if (null === $parent || $this === $parent) {
             return $this;

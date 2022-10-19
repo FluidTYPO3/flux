@@ -25,7 +25,7 @@ interface FormInterface
     public function setName($name);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName();
 

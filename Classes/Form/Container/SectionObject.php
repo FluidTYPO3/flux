@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Form\Field\ColumnPosition;
 use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Form\Field\Select;
 use FluidTYPO3\Flux\Form\FieldContainerInterface;
-use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 
 /**

@@ -65,12 +65,12 @@ abstract class AbstractFluxController extends ActionController
     protected $provider;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $fluxRecordField = 'pi_flexform';
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $fluxTableName = 'tt_content';
 
@@ -516,7 +516,7 @@ abstract class AbstractFluxController extends ActionController
      */
     public function getRecord()
     {
-        return (array) ($this->configurationManager->getContentObject()->data ?? []);
+        return $this->configurationManager->getContentObject()->data;
     }
 
     /**

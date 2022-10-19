@@ -40,7 +40,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
     protected $contentTypeName = '';
 
     /**
-     * @var Grid
+     * @var Grid|null
      */
     protected $grid;
 

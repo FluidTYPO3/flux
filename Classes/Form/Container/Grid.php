@@ -12,7 +12,6 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
-use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;

@@ -24,22 +24,22 @@ class Input extends AbstractFormField implements FieldInterface
     protected $size = 32;
 
     /**
-     * @var integer
+     * @var integer|null
      */
     protected $maxCharacters;
 
     /**
-     * @var integer
+     * @var integer|null
      */
     protected $minimum;
 
     /**
-     * @var integer
+     * @var integer|null
      */
     protected $maximum;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $placeholder;
 
@@ -81,7 +81,7 @@ class Input extends AbstractFormField implements FieldInterface
     }
 
     /**
-     * @return integer
+     * @return integer|null
      */
     public function getMaxCharacters()
     {
@@ -99,7 +99,7 @@ class Input extends AbstractFormField implements FieldInterface
     }
 
     /**
-     * @return integer
+     * @return integer|null
      */
     public function getMaximum()
     {
@@ -117,7 +117,7 @@ class Input extends AbstractFormField implements FieldInterface
     }
 
     /**
-     * @return integer
+     * @return integer|null
      */
     public function getMinimum()
     {
@@ -135,7 +135,7 @@ class Input extends AbstractFormField implements FieldInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPlaceholder()
     {

@@ -132,7 +132,7 @@ class MiscellaneousUtility
                 continue;
             }
             foreach ($containerNode->childNodes as $fieldNodeInContainer) {
-                /** @var \DOMElement $fieldNodeInContainer */
+                /** @var \DOMNode $fieldNodeInContainer */
                 if (false === $fieldNodeInContainer instanceof \DOMElement) {
                     continue;
                 }

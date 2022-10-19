@@ -41,12 +41,12 @@ class DataViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
-     * @var FluxService
+     * @var FluxService|null
      */
     protected static $configurationService;
 
     /**
-     * @var WorkspacesAwareRecordService
+     * @var WorkspacesAwareRecordService|null
      */
     protected static $recordService;
 

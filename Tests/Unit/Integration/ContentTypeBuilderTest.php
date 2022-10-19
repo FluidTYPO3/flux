@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Lang\LanguageService;
 
@@ -37,7 +38,7 @@ class ContentTypeBuilderTest extends AbstractTestCase
     {
         $subject = new ContentTypeBuilder();
         $form = Form::create([]);
-        $provider = $this->getMockBuilder(Provider::class)->setMethods(['getForm'])->getMock();
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->expects($this->once())->method('getForm')->willReturn($form);
 
         $GLOBALS['TCA']['tt_content']['columns']['list_type']['config']['items'] = [];

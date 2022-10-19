@@ -11,6 +11,8 @@ namespace FluidTYPO3\Flux\Integration;
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
+use FluidTYPO3\Flux\Provider\Interfaces\BasicProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\ContentTypeProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
@@ -80,17 +82,18 @@ class ContentTypeBuilder
         }
         $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerActionName);
 
-        /** @var Provider $provider */
         $provider = GeneralUtility::makeInstance(ObjectManager::class)->get($providerClassName);
-        if (!$provider instanceof RecordProviderInterface
+        if (!$provider instanceof BasicProviderInterface
+            || !$provider instanceof RecordProviderInterface
             || !$provider instanceof ControllerProviderInterface
             || !$provider instanceof FluidProviderInterface
+            || !$provider instanceof ContentTypeProviderInterface
         ) {
             throw new \RuntimeException(
                 sprintf(
                     'The Flux Provider class "%s" must implement at least the following interfaces to work as content type Provider: %s',
                     $providerClassName,
-                    implode(',', [RecordProviderInterface::class, ControllerProviderInterface::class, FluidProviderInterface::class])
+                    implode(',', [BasicProviderInterface::class, RecordProviderInterface::class, ControllerProviderInterface::class, FluidProviderInterface::class, ContentTypeProviderInterface::class])
                 )
             );
         }
@@ -315,7 +318,7 @@ class ContentTypeBuilder
                     }
                 }',
                 $groupName,
-                'header = ' . $groupLabel ?: 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types'
+                'header = ' . $groupLabel
             )
         );
         $groups[$groupName] = true;

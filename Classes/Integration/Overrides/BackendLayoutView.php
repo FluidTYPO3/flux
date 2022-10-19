@@ -18,7 +18,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
 {
     /**
-     * @var GridProviderInterface
+     * @var GridProviderInterface|null
      */
     protected $provider;
 
