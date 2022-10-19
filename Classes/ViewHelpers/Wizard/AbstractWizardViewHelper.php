@@ -50,7 +50,7 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
     }
 
     /**
-     * @param string $type
+     * @param class-string $type
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
      * @return WizardInterface

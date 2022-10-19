@@ -191,7 +191,7 @@ class FluxService implements SingletonInterface
      * @param array $row
      * @param string $extensionKey
      * @param string|array $interfaces
-     * @return ProviderInterface|NULL
+     * @return ProviderInterface|null
      */
     public function resolvePrimaryConfigurationProvider(
         $table,

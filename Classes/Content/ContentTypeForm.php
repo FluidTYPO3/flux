@@ -38,6 +38,11 @@ class ContentTypeForm extends Form
         $sheetObject->createField(Form\Field\Input::class, 'label', 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types.sheetLabel');
     }
 
+    /**
+     * @param string $name
+     * @param string $label
+     * @return void
+     */
     public function createSheet(string $name, string $label)
     {
         /** @var Form\Container\Sheet $sheet */

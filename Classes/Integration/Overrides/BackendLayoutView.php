@@ -27,13 +27,24 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
      */
     protected $record;
 
+    /**
+     * @var boolean
+     */
     protected $addingItemsForContent = false;
 
+    /**
+     * @param GridProviderInterface $provider
+     * @return void
+     */
     public function setProvider(GridProviderInterface $provider)
     {
         $this->provider = $provider;
     }
 
+    /**
+     * @param array $record
+     * @return void
+     */
     public function setRecord(array $record)
     {
         $this->record = $record;
@@ -45,6 +56,7 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
      * for tt_content.colPos.
      *
      * @param array $parameters
+     * @return void
      */
     public function colPosListItemProcFunc(array $parameters)
     {
@@ -54,6 +66,10 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         $this->addingItemsForContent = false;
     }
 
+    /**
+     * @param $pageId
+     * @return array|null
+     */
     public function getSelectedBackendLayout($pageId)
     {
         if ($this->addingItemsForContent) {
@@ -163,6 +179,12 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         return $query->execute()->fetchAll()[0] ?? null;
     }
 
+    /**
+     * @param string $table
+     * @param array $record
+     * @return \FluidTYPO3\Flux\Provider\ProviderInterface|null
+     * @throws \TYPO3\CMS\Extbase\Object\Exception
+     */
     protected function resolvePrimaryProviderForRecord(string $table, array $record)
     {
         return GeneralUtility::makeInstance(ObjectManager::class)

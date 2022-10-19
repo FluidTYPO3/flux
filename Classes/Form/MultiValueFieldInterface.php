@@ -13,7 +13,6 @@ namespace FluidTYPO3\Flux\Form;
  */
 interface MultiValueFieldInterface extends FieldInterface
 {
-
     /**
      * @param integer $size
      * @return MultiValueFieldInterface
@@ -27,6 +26,7 @@ interface MultiValueFieldInterface extends FieldInterface
 
     /**
      * @param boolean $multiple
+     * @return $this
      */
     public function setMultiple($multiple);
 
@@ -37,7 +37,7 @@ interface MultiValueFieldInterface extends FieldInterface
 
     /**
      * @param integer $maxItems
-     * @return MultiValueFieldInterface
+     * @return $this
      */
     public function setMaxItems($maxItems);
 
@@ -48,7 +48,7 @@ interface MultiValueFieldInterface extends FieldInterface
 
     /**
      * @param integer $minItems
-     * @return MultiValueFieldInterface
+     * @return $this
      */
     public function setMinItems($minItems);
 
@@ -59,7 +59,7 @@ interface MultiValueFieldInterface extends FieldInterface
 
     /**
      * @param string $itemListStyle
-     * @return MultiValueFieldInterface
+     * @return $this
      */
     public function setItemListStyle($itemListStyle);
 
@@ -70,7 +70,7 @@ interface MultiValueFieldInterface extends FieldInterface
 
     /**
      * @param string $selectedListStyle
-     * @return MultiValueFieldInterface
+     * @return $this
      */
     public function setSelectedListStyle($selectedListStyle);
 

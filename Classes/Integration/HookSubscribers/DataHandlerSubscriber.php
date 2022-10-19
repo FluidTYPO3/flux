@@ -26,8 +26,15 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class DataHandlerSubscriber
 {
+    /**
+     * @var array
+     */
     protected static $copiedRecords = [];
 
+    /**
+     * @param array $command
+     * @return void
+     */
     public function clearCacheCommand($command)
     {
         if ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system') {
@@ -116,6 +123,7 @@ class DataHandlerSubscriber
      * @param string $table
      * @param int|string $id
      * @param DataHandler $dataHandler
+     * @return void
      */
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processDatamap_preProcessFieldArray(array &$fieldArray, $table, $id, DataHandler $dataHandler)
@@ -158,6 +166,14 @@ class DataHandlerSubscriber
         }
     }
 
+    /**
+     * @param string $table
+     * @param int $id
+     * @param string $command
+     * @param mixed $value
+     * @param DataHandler $dataHandler
+     * @return void
+     */
     protected function cascadeCommandToChildRecords(string $table, int $id, string $command, $value, DataHandler $dataHandler)
     {
         list (, $childRecords) = $this->getParentAndRecordsNestedInGrid(
@@ -179,6 +195,10 @@ class DataHandlerSubscriber
         }
     }
 
+    /**
+     * @param DataHandler $dataHandler
+     * @return void
+     */
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processCmdmap_beforeStart(DataHandler $dataHandler)
     {
@@ -406,6 +426,14 @@ class DataHandlerSubscriber
         return $queryBuilder->execute()->fetch() ?: null;
     }
 
+    /**
+     * @param string $table
+     * @param int $parentUid
+     * @param string $fieldsToSelect
+     * @param bool $respectPid
+     * @param string|null $command
+     * @return array
+     */
     protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect, bool $respectPid = false, ?string $command = null)
     {
         // A Provider must be resolved which implements the GridProviderInterface

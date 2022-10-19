@@ -5,6 +5,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ImplementationRegistry
 {
+    /**
+     * @var array
+     */
     protected static $implementations = [];
 
     /**

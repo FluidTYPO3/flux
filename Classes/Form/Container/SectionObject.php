@@ -61,6 +61,7 @@ class SectionObject extends AbstractFormContainer implements ContainerInterface,
 
     /**
      * @param bool $contentContainer
+     * @return void
      */
     public function setContentContainer($contentContainer)
     {
@@ -78,6 +79,9 @@ class SectionObject extends AbstractFormContainer implements ContainerInterface,
         return (array) iterator_to_array($this->children);
     }
 
+    /**
+     * @return void
+     */
     protected function createContentContainerFields()
     {
         $this->createField(ColumnPosition::class, ColumnPosition::FIELD_NAME);

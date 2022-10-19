@@ -50,7 +50,7 @@ class PagePreviewRenderer
     }
 
     /**
-     * @param $uid
+     * @param integer $uid
      * @return array|null
      */
     protected function getRecord($uid)

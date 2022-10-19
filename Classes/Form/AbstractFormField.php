@@ -21,7 +21,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface
 {
-
     /**
      * @var boolean
      */
@@ -127,7 +126,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     }
 
     /**
-     * @param string $type
+     * @param class-string $type
      * @param string $name
      * @param string $label
      * @return WizardInterface

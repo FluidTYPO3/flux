@@ -47,6 +47,7 @@ class PageController extends AbstractFluxController implements PageControllerInt
 
     /**
      * @param PageService $pageService
+     * @return void
      */
     public function injectPageService(PageService $pageService)
     {

@@ -7,6 +7,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class FlexFormImplementation extends AbstractImplementation implements ImplementationInterface
 {
+    /**
+     * @var array
+     */
     protected static $registrations = [];
 
     public static function registerForTableAndField(string $table, string $field, ?\Closure $additionalConditionChecker = null): void

@@ -166,6 +166,7 @@ class OutletArgument
     /**
      * @param string $type
      * @param array $options
+     * @return void
      * @throws NoSuchValidatorException
      */
     public function addValidator($type, array $options = [])

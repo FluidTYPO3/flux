@@ -25,7 +25,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class Core
 {
-
     const CONTROLLER_ALL = '_all';
 
     /**
@@ -312,6 +311,7 @@ class Core
      * @param string|null $contentTypeName Optional override for the CType value this template will use
      * @param string|null $providerClassName Optional custom class implementing ProviderInterface from Flux
      * @param string|null $pluginName Optional plugin name used when registering the Extbase plugin for the template
+     * @return void
      */
     public static function registerTemplateAsContentType(
         $providerExtensionName,
@@ -361,6 +361,7 @@ class Core
 
     /**
      * @param string $typeOrClassName
+     * @return void
      */
     public static function unregisterPipe($typeOrClassName)
     {
@@ -383,6 +384,7 @@ class Core
 
     /**
      * @param string $typeOrClassName
+     * @return void
      */
     public static function unregisterOutlet($typeOrClassName)
     {

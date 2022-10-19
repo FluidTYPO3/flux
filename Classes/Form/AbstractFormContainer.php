@@ -32,9 +32,6 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      */
     protected $inheritEmpty = false;
 
-    /**
-     * CONSTRUCTOR
-     */
     public function __construct()
     {
         $this->children = new \SplObjectStorage();
@@ -179,10 +176,14 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
             foreach ((array) $data as $index => $fieldData) {
                 $fieldName = true === isset($fieldData['name']) ? $fieldData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
+
                 if (true === $this->has($fieldName)) {
+                    /** @var FieldInterface|null $field */
                     $field = $this->get($fieldName);
                 } else {
+                    /** @var class-string $fieldType */
                     $fieldType = true === isset($fieldData['type']) ? $fieldData['type'] : 'None';
+                    /** @var FieldInterface|null $field */
                     $field = $this->createField($fieldType, $fieldName);
                 }
                 $field->modify($fieldData);

@@ -100,6 +100,9 @@ class ContentTypeManager implements SingletonInterface
         }
     }
 
+    /**
+     * @return void
+     */
     public function regenerate()
     {
         $cache = $this->getCache();

@@ -74,6 +74,11 @@ class FormViewHelper extends AbstractFormViewHelper
         );
     }
 
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param iterable $arguments
+     * @return Form\FormInterface
+     */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         return Form::create();

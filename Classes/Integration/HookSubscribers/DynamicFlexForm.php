@@ -89,8 +89,8 @@ class DynamicFlexForm extends FlexFormTools
      * can then use to restore the record.
      *
      * @param array $tca
-     * @param $tableName
-     * @param $fieldName
+     * @param string $tableName
+     * @param string $fieldName
      * @param array $record
      * @return array
      */

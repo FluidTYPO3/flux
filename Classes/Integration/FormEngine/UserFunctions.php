@@ -39,7 +39,7 @@ class UserFunctions
      * there are no fields in the DS.
      *
      * @param array $parameters
-     * @param $pObj
+     * @param object $pObj Not used
      * @return bool
      */
     public function fluxFormFieldDisplayCondition(array $parameters, &$pObj)

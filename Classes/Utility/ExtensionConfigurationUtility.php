@@ -18,6 +18,9 @@ class ExtensionConfigurationUtility
     public const OPTION_PAGE_LANGUAGE_OVERLAY = 'pagesLanguageConfigurationOverlay';
     public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
 
+    /**
+     * @var array
+     */
     protected static $defaults = [
         self::OPTION_DEBUG_MODE => false,
         self::OPTION_DOKTYPES => '0,1,4',
@@ -50,6 +53,10 @@ class ExtensionConfigurationUtility
         return ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'] ?? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'])['flux'];
     }
 
+    /**
+     * @param string $optionName
+     * @return mixed|null
+     */
     public static function getOption(string $optionName)
     {
         return ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'] ?? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'])['flux']['setup'][$optionName] ?? static::$defaults[$optionName] ?? null;

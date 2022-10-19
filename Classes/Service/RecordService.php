@@ -34,7 +34,7 @@ class RecordService implements SingletonInterface
      * @param string $orderBy
      * @param integer $limit
      * @param integer $offset
-     * @return array|NULL
+     * @return array|null
      */
     public function get($table, $fields, $clause = null, $groupBy = null, $orderBy = null, $limit = 0, $offset = 0)
     {
@@ -63,7 +63,7 @@ class RecordService implements SingletonInterface
      * @param string $table
      * @param string $fields
      * @param integer $uid
-     * @return array|NULL
+     * @return array|null
      */
     public function getSingle($table, $fields, $uid)
     {
@@ -118,7 +118,7 @@ class RecordService implements SingletonInterface
     }
 
     /**
-     * @param $table
+     * @param string $table
      * @return QueryBuilder
      */
     protected function getQueryBuilder($table)
@@ -128,6 +128,10 @@ class RecordService implements SingletonInterface
         return $queryBuilder;
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @return void
+     */
     protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
     {
         if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE) {

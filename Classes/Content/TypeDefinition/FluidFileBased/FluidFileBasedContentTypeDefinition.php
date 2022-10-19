@@ -25,9 +25,24 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDefinitionInterface
 {
+    /**
+     * @var string
+     */
     protected $extensionIdentity = '';
+
+    /**
+     * @var string
+     */
     protected $basePath = '';
+
+    /**
+     * @var string
+     */
     protected $relativeFilePath = '';
+
+    /**
+     * @var string
+     */
     protected $providerClassName = Provider::class;
 
     /**

@@ -25,7 +25,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class PageLayoutDataProvider
 {
-
     /**
      * @var ConfigurationManagerInterface
      */
@@ -73,9 +72,6 @@ class PageLayoutDataProvider
         $this->pageService = $pageService;
     }
 
-    /**
-     * CONSTRUCTOR
-     */
     public function __construct()
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
@@ -139,6 +135,13 @@ class PageLayoutDataProvider
         return $parameters;
     }
 
+    /**
+     * @param string $extension
+     * @param array $group
+     * @param array $parameters
+     * @param array $allowedTemplates
+     * @return array
+     */
     protected function renderOptions($extension, array $group, array $parameters, array $allowedTemplates): array
     {
         $options = [];

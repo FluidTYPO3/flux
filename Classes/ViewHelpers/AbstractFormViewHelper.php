@@ -60,6 +60,11 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         return '';
     }
 
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param iterable $arguments
+     * @return FormInterface
+     */
     public static function getComponent(
         RenderingContextInterface $renderingContext,
         iterable $arguments
@@ -84,6 +89,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     /**
      * @param RenderingContextInterface $renderingContext
      * @param string $name
+     * @return void
      */
     protected static function setExtensionNameInRenderingContext(RenderingContextInterface $renderingContext, $name)
     {

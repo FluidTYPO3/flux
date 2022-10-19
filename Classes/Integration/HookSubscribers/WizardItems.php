@@ -220,6 +220,7 @@ class WizardItems implements NewContentElementWizardHookInterface
      * @param array $whitelist
      * @param array $blacklist
      * @param integer $columnPosition
+     * @return void
      */
     protected function appendToWhiteAndBlacklistFromProviders(
         array $providers,

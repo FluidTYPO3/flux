@@ -15,6 +15,12 @@ class FormToFluidTemplateConverter implements FormConverterInterface
 {
     const OPTION_TEMPLATE_SOURCE = 'template_source';
 
+    /**
+     * @param Form $form
+     * @param Form\Container\Grid $grid
+     * @param array $configuration
+     * @return string
+     */
     public function convertFormAndGrid(Form $form, Form\Container\Grid $grid, array $configuration)
     {
         $renderingTemplateChunk = $configuration[static::OPTION_TEMPLATE_SOURCE] ?? 'Hello world';

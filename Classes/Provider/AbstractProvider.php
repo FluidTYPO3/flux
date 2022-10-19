@@ -1082,6 +1082,10 @@ class AbstractProvider implements ProviderInterface
         return $this;
     }
 
+    /**
+     * @param \Throwable $error
+     * @return void
+     */
     protected function dispatchFlashMessageForException(\Throwable $error)
     {
         $flashMesasage = GeneralUtility::makeInstance(FlashMessage::class, $error->getMessage(), '', FlashMessage::ERROR);
