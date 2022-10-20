@@ -80,6 +80,7 @@ class RecursiveArrayUtility
         if (strpos($path, '.') === false) {
             $array[$path] = $value;
         } else {
+            /** @var array|mixed $target */
             $target = &$array;
             foreach (explode('.', $path) as $segment) {
                 if (!array_key_exists($segment, $target) || !is_array($target[$segment])) {

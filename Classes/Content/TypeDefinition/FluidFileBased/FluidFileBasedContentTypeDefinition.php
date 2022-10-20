@@ -25,9 +25,24 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDefinitionInterface
 {
+    /**
+     * @var string
+     */
     protected $extensionIdentity = '';
+
+    /**
+     * @var string
+     */
     protected $basePath = '';
+
+    /**
+     * @var string
+     */
     protected $relativeFilePath = '';
+
+    /**
+     * @var string
+     */
     protected $providerClassName = Provider::class;
 
     /**
@@ -55,7 +70,7 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
         $this->providerClassName = $providerClassName;
     }
 
-    public function getForm(array $record = []): Form\FormInterface
+    public function getForm(array $record = []): Form
     {
         return GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class)->resolvePrimaryConfigurationProvider(
             'tt_content',

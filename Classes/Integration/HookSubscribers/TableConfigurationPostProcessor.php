@@ -18,7 +18,6 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3Fluid\Fluid\Exception;
 
 /**
@@ -49,18 +48,15 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     {
         $contentTypeManager = $this->getContentTypeManager();
 
-        foreach ($contentTypeManager->fetchContentTypes() as $contentTypesFromExtension) {
-            foreach ($contentTypesFromExtension as $contentType) {
-                $contentTypeManager->registerTypeDefinition($contentType);
-                Core::registerTemplateAsContentType(
-                    $contentType->getExtensionIdentity(),
-                    $contentType->getTemplatePathAndFilename(),
-                    $contentType->getContentTypeName(),
-                    $contentType->getProviderClassName()
-                );
-            }
+        foreach ($contentTypeManager->fetchContentTypes() as $contentType) {
+            $contentTypeManager->registerTypeDefinition($contentType);
+            Core::registerTemplateAsContentType(
+                $contentType->getExtensionIdentity(),
+                $contentType->getTemplatePathAndFilename(),
+                $contentType->getContentTypeName(),
+                $contentType->getProviderClassName()
+            );
         }
-
 
         $this->spoolQueuedContentTypeRegistrations(Core::getQueuedContentTypeRegistrations());
         Core::clearQueuedContentTypeRegistrations();

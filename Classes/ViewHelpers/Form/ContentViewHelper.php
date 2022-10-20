@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  */
 
 use FluidTYPO3\Flux\Form\Container\Column;
+use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -84,8 +85,8 @@ class ContentViewHelper extends AbstractFormViewHelper
         // get the current Grid and check for existence of one row and one column, if missing then create them:
         $grid = static::getGridFromRenderingContext($renderingContext, 'grid');
         $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
-        $row = $grid->createContainer('Row', 'row');
-        $column = $row->createContainer('Column', 'column');
+        $row = $grid->createContainer(Row::class, 'row');
+        $column = $row->createContainer(Column::class, 'column');
         $column->setName($arguments['name']);
         $column->setLabel($arguments['label']);
         return $column;

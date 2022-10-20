@@ -18,7 +18,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 {
 
     /**
-     * @var FormInterface[]
+     * @var FormInterface[]|\SplObjectStorage
      */
     protected $children;
 
@@ -32,9 +32,6 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      */
     protected $inheritEmpty = false;
 
-    /**
-     * CONSTRUCTOR
-     */
     public function __construct()
     {
         $this->children = new \SplObjectStorage();
@@ -126,6 +123,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     public function get($childName, $recursive = false, $requiredClass = null)
     {
         foreach ($this->children as $index => $existingChild) {
+            /** @var string|int $index */
             if (($childName === $existingChild->getName() || $childName === $index)
                 && (!$requiredClass || $existingChild instanceof $requiredClass)
             ) {
@@ -142,7 +140,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     }
 
     /**
-     * @return FormInterface[]
+     * @return FormInterface[]|\SplObjectStorage
      */
     public function getChildren()
     {
@@ -178,10 +176,14 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
             foreach ((array) $data as $index => $fieldData) {
                 $fieldName = true === isset($fieldData['name']) ? $fieldData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
+
                 if (true === $this->has($fieldName)) {
+                    /** @var FieldInterface|null $field */
                     $field = $this->get($fieldName);
                 } else {
+                    /** @var class-string $fieldType */
                     $fieldType = true === isset($fieldData['type']) ? $fieldData['type'] : 'None';
+                    /** @var FieldInterface|null $field */
                     $field = $this->createField($fieldType, $fieldName);
                 }
                 $field->modify($fieldData);

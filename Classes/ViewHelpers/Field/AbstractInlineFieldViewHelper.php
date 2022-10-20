@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Field\Inline;
 use FluidTYPO3\Flux\Form\InlineRelationFieldInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -125,19 +126,19 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
-        $component = static::getPreparedComponent('Inline', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Inline::class, $renderingContext, $arguments);
         return $component;
     }
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
-     * @return InlineRelationFieldInterface
+     * @return T
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
-        /** @var InlineRelationFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setCollapseAll($arguments['collapseAll']);
         $component->setExpandSingle($arguments['expandSingle']);

@@ -77,7 +77,7 @@ class ContainerViewHelper extends AbstractFieldViewHelper
     {
         /** @var Container $container */
         $container = static::getContainerFromRenderingContext($renderingContext)
-            ->createContainer('Container', $arguments['name'], $arguments['label']);
+            ->createContainer(Container::class, $arguments['name'], $arguments['label']);
         $container->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );

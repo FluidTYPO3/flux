@@ -198,7 +198,7 @@ class ContentIcon
     /**
      * @param string $table
      * @param array $fields
-     * @return string
+     * @return string|null
      */
     protected function detectFirstFlexTypeFieldInTableFromPossibilities($table, $fields)
     {

@@ -29,7 +29,8 @@
         "typo3/cms-fluid": "^8.7 || ^9 || ^10 || ^11 || dev-master",
         "typo3/cms-backend": "^8.7 || ^9 || ^10 || ^11 || dev-master",
         "typo3/cms-frontend": "^8.7 || ^9 || ^10 || ^11 || dev-master",
-        "typo3/cms-recordlist": "^8.7 || ^9 || ^10 || ^11 || dev-master"
+        "typo3/cms-recordlist": "^8.7 || ^9 || ^10 || ^11 || dev-master",
+        "phpstan/phpstan": "^1.8"
     },
     "extra": {
         "typo3/cms": {

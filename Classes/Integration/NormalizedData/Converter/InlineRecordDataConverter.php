@@ -68,7 +68,7 @@ class InlineRecordDataConverter implements ConverterInterface
      * the data coming from IRRE records.
      *
      * @param array $data
-     * @return array|\ArrayAccess
+     * @return array
      */
     public function convertData(array $data): array
     {

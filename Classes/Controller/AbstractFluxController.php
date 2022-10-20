@@ -11,7 +11,10 @@ namespace FluidTYPO3\Flux\Controller;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\NormalizedData\DataAccessTrait;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -23,8 +26,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Response;
+use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use function get_class;
@@ -57,17 +60,17 @@ abstract class AbstractFluxController extends ActionController
     protected $configurationService;
 
     /**
-     * @var \FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface
+     * @var ControllerProviderInterface|DataStructureProviderInterface|FluidProviderInterface|FormProviderInterface|RecordProviderInterface
      */
     protected $provider;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $fluxRecordField = 'pi_flexform';
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $fluxTableName = 'tt_content';
 
@@ -106,7 +109,7 @@ abstract class AbstractFluxController extends ActionController
     protected function initializeSettings()
     {
         $row = $this->getRecord();
-        $extensionKey = $this->provider->getExtensionKey($row);
+        $extensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
         $pluginName = $this->request->getPluginName();
         $this->settings = RecursiveArrayUtility::merge(
@@ -141,7 +144,7 @@ abstract class AbstractFluxController extends ActionController
     protected function initializeOverriddenSettings()
     {
         $row = $this->getRecord();
-        $extensionKey = $this->provider->getExtensionKey($row);
+        $extensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
         if (true === isset($this->data['settings']) && true === is_array($this->data['settings'])) {
             // a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
@@ -304,7 +307,7 @@ abstract class AbstractFluxController extends ActionController
     public function renderAction()
     {
         $row = $this->getRecord();
-        $extensionKey = $this->provider->getExtensionKey($row);
+        $extensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
         $extensionSignature = ExtensionNamingUtility::getExtensionSignature($extensionKey);
         $pluginSignature = strtolower('tx_' . $extensionSignature . '_' . $this->request->getPluginName());
         $controllerExtensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
@@ -342,6 +345,7 @@ abstract class AbstractFluxController extends ActionController
     protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature)
     {
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
+        $foreignControllerClass = null;
         if (!$shouldRelay) {
             if ($this->provider instanceof FluidProviderInterface) {
                 $templatePathAndFilename = $this->provider->getTemplatePathAndFilename($this->getRecord());
@@ -423,7 +427,6 @@ abstract class AbstractFluxController extends ActionController
         $controllerActionName,
         $pluginSignature
     ) {
-        /** @var Response $response */
         $post = GeneralUtility::_POST($pluginSignature);
         $arguments = (array) (true === is_array($post) ? $post : GeneralUtility::_GET($pluginSignature));
         $this->request->setArguments($arguments);
@@ -455,7 +458,7 @@ abstract class AbstractFluxController extends ActionController
                 ]
             );
 
-            if (version_compare($version, 11, '<')) {
+            if (version_compare($version, '11', '<')) {
                 $potentialControllerInstance->processRequest($this->request, $response);
             } else {
                 $response = $potentialControllerInstance->processRequest($this->request);
@@ -513,7 +516,7 @@ abstract class AbstractFluxController extends ActionController
      */
     public function getRecord()
     {
-        return (array) ($this->configurationManager->getContentObject()->data ?? []);
+        return $this->configurationManager->getContentObject()->data;
     }
 
     /**

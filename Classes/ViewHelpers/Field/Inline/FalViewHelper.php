@@ -218,7 +218,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
         $cropVariants = $arguments['cropVariants'];
 
         /** @var Fal $component */
-        $component = static::getPreparedComponent('Inline/Fal', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Fal::class, $renderingContext, $arguments);
         if (false === is_array($arguments['foreignMatchFields'])) {
             $component->setForeignMatchFields([
                 'fieldname' => $arguments['name']

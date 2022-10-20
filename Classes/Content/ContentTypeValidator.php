@@ -11,12 +11,13 @@ namespace FluidTYPO3\Flux\Content;
 
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
@@ -88,12 +89,16 @@ class ContentTypeValidator
 
     protected function validateTemplateSource(ContentTypeDefinitionInterface $definition): ?string
     {
+        if (!$definition instanceof RecordBasedContentTypeDefinition) {
+            return null;
+        }
+        $source = $definition->getTemplatesource();
         $parser = GeneralUtility::makeInstance(ObjectManager::class)->get(TemplateView::class)->getRenderingContext()->getTemplateParser();
         try {
             if (class_exists(Sequencer::class)) {
-                $parser->parse(new Source($definition->getTemplatesource()));
+                $parser->parse(new Source($source));
             } else {
-                $parser->parse($definition->getTemplateSource());
+                $parser->parse($source);
             }
         } catch (\Exception $error) {
             return $error->getMessage();
@@ -103,7 +108,8 @@ class ContentTypeValidator
 
     protected function validateContextMatchesSignature(ContentTypeDefinitionInterface $definition): bool
     {
-        return str_replace('_', '', ExtensionNamingUtility::getExtensionKey($definition->getExtensionIdentity())) === reset(explode('_', $definition->getContentTypeName()));
+        $parts = explode('_', $definition->getContentTypeName());
+        return str_replace('_', '', ExtensionNamingUtility::getExtensionKey($definition->getExtensionIdentity())) === reset($parts);
     }
 
     protected function validateContextExtensionIsInstalled(ContentTypeDefinitionInterface $definition): bool

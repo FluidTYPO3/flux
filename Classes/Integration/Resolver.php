@@ -29,7 +29,7 @@ class Resolver
         $controllerObjectShortName,
         $failHard = false
     ) {
-        $potentialControllerClassName = static::buildControllerClassNameFromExtensionKeyAndControllerType(
+        $potentialControllerClassName = self::buildControllerClassNameFromExtensionKeyAndControllerType(
             $extensionKey,
             $controllerObjectShortName
         );
@@ -56,7 +56,7 @@ class Resolver
     /**
      * @param string $extensionKey
      * @param string $controllerName
-     * @return boolean|string
+     * @return string
      */
     private static function buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerName)
     {

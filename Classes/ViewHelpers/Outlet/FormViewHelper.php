@@ -44,7 +44,7 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
     protected $record;
 
     /**
-     * @return void
+     * @return string
      */
     public function render()
     {

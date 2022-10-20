@@ -89,7 +89,7 @@ class WizardItems implements NewContentElementWizardHookInterface
 
     /**
      * @param array $items
-     * @param \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController
+     * @param NewContentElementController $parentObject
      * @return void
      */
     public function manipulateWizardItems(&$items, &$parentObject)
@@ -131,7 +131,7 @@ class WizardItems implements NewContentElementWizardHookInterface
     {
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
             $pageUid,
-            (int) ($dataArray['colPos'] ?? GeneralUtility::_GET('colPos') ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
+            (int) (GeneralUtility::_GET('colPos') ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
         );
         $overrides = HookHandler::trigger(
             HookHandler::ALLOWED_CONTENT_RULES_FETCHED,
@@ -161,7 +161,6 @@ class WizardItems implements NewContentElementWizardHookInterface
     /**
      * @param integer $pageUid
      * @param integer $columnPosition
-     * @param integer $relativeUid
      * @return array
      */
     protected function getWhiteAndBlackListsFromPageAndContentColumn($pageUid, $columnPosition)
@@ -221,6 +220,7 @@ class WizardItems implements NewContentElementWizardHookInterface
      * @param array $whitelist
      * @param array $blacklist
      * @param integer $columnPosition
+     * @return void
      */
     protected function appendToWhiteAndBlacklistFromProviders(
         array $providers,
@@ -260,7 +260,8 @@ class WizardItems implements NewContentElementWizardHookInterface
         $preserveHeaders = [];
         foreach ($items as $name => $item) {
             if (false !== strpos($name, '_')) {
-                array_push($preserveHeaders, reset(explode('_', $name)));
+                $parts = explode('_', $name);
+                array_push($preserveHeaders, reset($parts));
             }
         }
         foreach ($items as $name => $item) {

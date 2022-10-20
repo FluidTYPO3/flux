@@ -49,7 +49,7 @@ class EditViewHelper extends AbstractWizardViewHelper
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         /** @var Edit $component */
-        $component = static::getPreparedComponent('Edit', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Edit::class, $renderingContext, $arguments);
         $component->setOpenOnlyIfSelected($arguments['openOnlyIfSelected']);
         $component->setHeight($arguments['height']);
         $component->setWidth($arguments['width']);

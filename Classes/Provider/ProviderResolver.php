@@ -82,7 +82,7 @@ class ProviderResolver implements SingletonInterface
      * configuration based on the given parameters.
      *
      * @param string $table Table the Provider must match.
-     * @param string $fieldName Field in the table the Provider must match.
+     * @param string|null $fieldName Field in the table the Provider must match.
      * @param array|null $row The record from table which the Provider must handle, or null if any record.
      * @param string|null $extensionKey The extension key the Provider must match, or null if any extension key.
      * @param string|array $interfaces One or more specific interfaces the Provider must implement.

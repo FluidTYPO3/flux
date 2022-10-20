@@ -276,13 +276,13 @@ class Suggest extends AbstractWizard
     }
 
     /**
-     * @param array $storagePageUids
+     * @param array|string|null $storagePageUids
      * @return Suggest
      */
     public function setStoragePageUids($storagePageUids)
     {
         if (false === is_array($storagePageUids)) {
-            $this->storagePageUids = GeneralUtility::trimExplode(',', $storagePageUids);
+            $this->storagePageUids = GeneralUtility::trimExplode(',', (string) $storagePageUids);
         } else {
             $this->storagePageUids = $storagePageUids;
         }

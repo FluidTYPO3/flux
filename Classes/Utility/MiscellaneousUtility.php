@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
@@ -58,11 +57,11 @@ class MiscellaneousUtility
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
                 if (true === defined('GLOB_BRACE')) {
-                    $allowedExtensions = implode(',', static::$allowedIconTypes);
+                    $allowedExtensions = implode(',', self::$allowedIconTypes);
                     $iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
                     $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);
                 } else {
-                    foreach (static::$allowedIconTypes as $allowedIconType) {
+                    foreach (self::$allowedIconTypes as $allowedIconType) {
                         $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType));
                     }
                 }
@@ -133,7 +132,7 @@ class MiscellaneousUtility
                 continue;
             }
             foreach ($containerNode->childNodes as $fieldNodeInContainer) {
-                /** @var \DOMElement $fieldNodeInContainer */
+                /** @var \DOMNode $fieldNodeInContainer */
                 if (false === $fieldNodeInContainer instanceof \DOMElement) {
                     continue;
                 }

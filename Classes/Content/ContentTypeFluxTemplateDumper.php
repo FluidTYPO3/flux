@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace FluidTYPO3\Flux\Content;
 
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Form\Conversion\FormToFluidTemplateConverter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -26,6 +27,7 @@ class ContentTypeFluxTemplateDumper
             return '';
         }
 
+        /** @var RecordBasedContentTypeDefinition|null $definition */
         $definition = $this->getContentType($parameters['row']['content_type']);
         if (!$definition) {
             return '';

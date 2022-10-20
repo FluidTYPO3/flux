@@ -26,8 +26,15 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class DataHandlerSubscriber
 {
+    /**
+     * @var array
+     */
     protected static $copiedRecords = [];
 
+    /**
+     * @param array $command
+     * @return void
+     */
     public function clearCacheCommand($command)
     {
         if ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system') {
@@ -116,6 +123,7 @@ class DataHandlerSubscriber
      * @param string $table
      * @param int|string $id
      * @param DataHandler $dataHandler
+     * @return void
      */
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processDatamap_preProcessFieldArray(array &$fieldArray, $table, $id, DataHandler $dataHandler)
@@ -158,6 +166,14 @@ class DataHandlerSubscriber
         }
     }
 
+    /**
+     * @param string $table
+     * @param int $id
+     * @param string $command
+     * @param mixed $value
+     * @param DataHandler $dataHandler
+     * @return void
+     */
     protected function cascadeCommandToChildRecords(string $table, int $id, string $command, $value, DataHandler $dataHandler)
     {
         list (, $childRecords) = $this->getParentAndRecordsNestedInGrid(
@@ -179,6 +195,10 @@ class DataHandlerSubscriber
         }
     }
 
+    /**
+     * @param DataHandler $dataHandler
+     * @return void
+     */
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processCmdmap_beforeStart(DataHandler $dataHandler)
     {
@@ -286,7 +306,7 @@ class DataHandlerSubscriber
 
         list ($originalRecord, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
             $table,
-            $id,
+            (integer) $id,
             'uid, pid, colPos',
             false,
             $command
@@ -307,7 +327,7 @@ class DataHandlerSubscriber
         }
 
         if ($command === 'move') {
-            $subCommandMap = $this->recursivelyMoveChildRecords($table, $id, $destinationPid, $languageUid, $reference);
+            $subCommandMap = $this->recursivelyMoveChildRecords($table, (integer) $id, $destinationPid, $languageUid, $reference);
         }
 
         if (!empty($subCommandMap)) {
@@ -358,6 +378,7 @@ class DataHandlerSubscriber
     protected function getSingleRecordWithRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
@@ -405,15 +426,20 @@ class DataHandlerSubscriber
         return $queryBuilder->execute()->fetch() ?: null;
     }
 
+    /**
+     * @param string $table
+     * @param int $parentUid
+     * @param string $fieldsToSelect
+     * @param bool $respectPid
+     * @param string|null $command
+     * @return array
+     */
     protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect, bool $respectPid = false, ?string $command = null)
     {
         // A Provider must be resolved which implements the GridProviderInterface
         $resolver = GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class);
-        if ($command === 'undelete') {
-            $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
-        } else {
-            $originalRecord = $this->getSingleRecordWithRestrictions($table, $parentUid, '*');
-        }
+        $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
+
         $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
             $table,
             null,

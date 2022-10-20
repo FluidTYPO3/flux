@@ -89,8 +89,8 @@ class DynamicFlexForm extends FlexFormTools
      * can then use to restore the record.
      *
      * @param array $tca
-     * @param $tableName
-     * @param $fieldName
+     * @param string $tableName
+     * @param string $fieldName
      * @param array $record
      * @return array
      */
@@ -173,12 +173,12 @@ class DynamicFlexForm extends FlexFormTools
             null,
             DataStructureProviderInterface::class
         );
-        if (!$provider) {
+        if (!$provider instanceof FormProviderInterface) {
             // No Providers detected - return empty data structure (reported as invalid DS in backend)
             return [];
         }
 
-        $form = $form ?? ($provider instanceof FormProviderInterface ? $provider->getForm($record) : null);
+        $form = $provider->getForm($record);
         $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
         if ($form && $form->getOption(Form::OPTION_STATIC)) {
             // This provider has requested static DS caching; stop attempting

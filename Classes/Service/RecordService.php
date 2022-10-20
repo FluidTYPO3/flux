@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use Doctrine\DBAL\Statement;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\VisibilityAspect;
@@ -33,7 +34,7 @@ class RecordService implements SingletonInterface
      * @param string $orderBy
      * @param integer $limit
      * @param integer $offset
-     * @return array|NULL
+     * @return array|null
      */
     public function get($table, $fields, $clause = null, $groupBy = null, $orderBy = null, $limit = 0, $offset = 0)
     {
@@ -61,8 +62,8 @@ class RecordService implements SingletonInterface
     /**
      * @param string $table
      * @param string $fields
-     * @param string $uid
-     * @return array|NULL
+     * @param integer $uid
+     * @return array|null
      */
     public function getSingle($table, $fields, $uid)
     {
@@ -81,7 +82,7 @@ class RecordService implements SingletonInterface
     /**
      * @param string $table
      * @param array $record
-     * @return boolean
+     * @return boolean|Statement|int
      */
     public function update($table, array $record)
     {
@@ -117,7 +118,7 @@ class RecordService implements SingletonInterface
     }
 
     /**
-     * @param $table
+     * @param string $table
      * @return QueryBuilder
      */
     protected function getQueryBuilder($table)
@@ -127,6 +128,10 @@ class RecordService implements SingletonInterface
         return $queryBuilder;
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @return void
+     */
     protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
     {
         if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE) {

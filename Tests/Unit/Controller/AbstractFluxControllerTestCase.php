@@ -237,8 +237,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder(
             $controllerClassName
         )->setMethods(
-            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer'
-            )
+            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer', 'getRecord')
         )->getMock();
         $instance->injectConfigurationManager($this->getMockBuilder(ConfigurationManagerInterface::class)->getMock());
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMock();
@@ -251,6 +250,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
+        $instance->method('getRecord')->willReturn(['uid' => 1]);
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }
 
@@ -265,7 +265,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder(
             $controllerClassName
         )->setMethods(
-            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer')
+            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer', 'getRecord')
         )->getMock();
         $instance->injectConfigurationManager($this->getMockBuilder(ConfigurationManagerInterface::class)->getMock());
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMock();
@@ -278,6 +278,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
+        $instance->method('getRecord')->willReturn(['uid' => 1]);
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }
 
@@ -290,8 +291,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = $this->getMockBuilder($controllerClassName)->setMethods(array('getRecord'))->getMock();
         $instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
-        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getExtensionKey', 'getFlexFormValues'))->getMock();
-        $provider->expects($this->once())->method('getExtensionKey')->with($row)->will($this->returnValue($this->extensionKey));
+        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getControllerExtensionKeyFromRecord', 'getFlexFormValues'))->getMock();
+        $provider->expects($this->atLeastOnce())->method('getControllerExtensionKeyFromRecord')->with($row)->will($this->returnValue($this->extensionKey));
         $provider->expects($this->once())->method('getFlexFormValues')->with($row)->will($this->returnValue(array()));
         $request = $this->getMockBuilder(Request::class)->setMethods(array('getPluginName'))->getMock();
         $request->expects($this->once())->method('getPluginName')->will($this->returnValue('void'));
@@ -309,8 +310,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
     public function testInitializeOverriddenSettings(array $data, array $settings)
     {
         $record = array('uid' => 1);
-        $provider = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getExtensionKey'))->getMock();
-        $provider->expects($this->once())->method('getExtensionKey')->with($record);
+        $provider = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getControllerExtensionKeyFromRecord'))->getMock();
+        $provider->expects($this->once())->method('getControllerExtensionKeyFromRecord')->with($record);
         $mock = $this->getMockBuilder(
             'FluidTYPO3\\Flux\\Controller\\AbstractFluxController'
         )->setMethods(
@@ -392,9 +393,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder($controllerClassName)->setMethods(array('getRecord', 'performSubRendering'))->getMock();
         $instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
         $instance->expects($this->once())->method('performSubRendering')->with($this->extensionKey, 'Void', 'default', 'tx_flux_void')->will($this->returnValue('test'));
-        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getExtensionKey', 'getControllerExtensionKeyFromRecord'))->getMock();
-        $provider->expects($this->once())->method('getExtensionKey')->with($row)->will($this->returnValue('flux'));
-        $provider->expects($this->once())->method('getControllerExtensionKeyFromRecord')->with($row)->will($this->returnValue($this->extensionKey));
+        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getControllerExtensionKeyFromRecord'))->getMock();
+        $provider->expects($this->atLeastOnce())->method('getControllerExtensionKeyFromRecord')->with($row)->will($this->returnValue($this->extensionKey));
         $request = $this->getMockBuilder('TYPO3\CMS\Extbase\Mvc\Web\Request')->setMethods(array('getPluginName', 'getControllerName'))->getMock();
         $request->expects($this->once())->method('getPluginName')->will($this->returnValue('void'));
         $request->expects($this->once())->method('getControllerName')->will($this->returnValue('Void'));

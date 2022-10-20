@@ -8,9 +8,6 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Form\Field\Select;
-use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
@@ -115,7 +112,7 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
     public function conduct($data)
     {
         $extensionName = $this->getExtensionName();
-        /** @var $request Request */
+        /** @var Request $request */
         $request = $this->objectManager->get(Request::class);
         $request->setControllerName($this->getController());
         $request->setControllerActionName($this->getAction());
@@ -126,9 +123,9 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
         }
 
         $request->setArguments($data);
-        /** @var $response Response */
+        /** @var Response $response */
         $response = $this->objectManager->get(Response::class);
-        /** @var $dispatcher Dispatcher */
+        /** @var Dispatcher $dispatcher */
         $dispatcher = $this->objectManager->get(Dispatcher::class);
         $dispatcher->dispatch($request, $response);
         return $response->getContent();

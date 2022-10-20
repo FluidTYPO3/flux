@@ -35,12 +35,18 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
 {
     use SerializeSafeTrait;
 
+    /**
+     * @var array
+     */
     protected $record = [];
 
+    /**
+     * @var string
+     */
     protected $contentTypeName = '';
 
     /**
-     * @var Grid
+     * @var Grid|null
      */
     protected $grid;
 
@@ -113,7 +119,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         }
     }
 
-    public function getForm(array $record = []): Form\FormInterface
+    public function getForm(array $record = []): Form
     {
         $instance = GeneralUtility::makeInstance(ObjectManager::class)->get(Form::class);
         $instance->remove('options');
@@ -242,6 +248,13 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         return $this->record['template_source'];
     }
 
+    /**
+     * @param Grid $grid
+     * @param int $currentNumberOfColumns
+     * @param int $totalNumberOfColumns
+     * @param string $mode
+     * @return void
+     */
     protected function createAutomaticGridColumns(Grid $grid, int $currentNumberOfColumns, int $totalNumberOfColumns, string $mode)
     {
         if ($mode === Section::GRID_MODE_ROWS) {

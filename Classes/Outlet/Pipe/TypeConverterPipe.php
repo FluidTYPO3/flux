@@ -135,7 +135,7 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
                     $targetType,
                     $output->getMessage()
                 ),
-                $output->getCode()
+                (integer) $output->getCode()
             );
         }
         return $output;

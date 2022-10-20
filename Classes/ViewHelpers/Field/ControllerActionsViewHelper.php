@@ -197,7 +197,7 @@ class ControllerActionsViewHelper extends SelectViewHelper
             );
         }
         /** @var ControllerActions $component */
-        $component = static::getPreparedComponent('ControllerActions', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(ControllerActions::class, $renderingContext, $arguments);
         $component->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );

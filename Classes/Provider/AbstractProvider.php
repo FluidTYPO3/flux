@@ -50,7 +50,7 @@ class AbstractProvider implements ProviderInterface
     /**
      * Fill with the table column name which should trigger this Provider.
      *
-     * @var string
+     * @var string|null
      */
     protected $fieldName = null;
 
@@ -81,12 +81,12 @@ class AbstractProvider implements ProviderInterface
     protected $parentFieldName = null;
 
     /**
-     * @var array|NULL
+     * @var array|null
      */
     protected $row = null;
 
     /**
-     * @var string|NULL
+     * @var string|null
      */
     protected $templatePathAndFilename = null;
 
@@ -96,22 +96,22 @@ class AbstractProvider implements ProviderInterface
     protected $templateVariables = [];
 
     /**
-     * @var array|NULL
+     * @var array|null
      */
     protected $templatePaths = null;
 
     /**
-     * @var string|NULL
+     * @var string|null
      */
     protected $configurationSectionName = 'Configuration';
 
     /**
-     * @var string|NULL
+     * @var string|null
      */
     protected $extensionKey = null;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $controllerName;
 
@@ -126,12 +126,12 @@ class AbstractProvider implements ProviderInterface
     protected $priority = 50;
 
     /**
-     * @var Form
+     * @var Form|null
      */
     protected $form = null;
 
     /**
-     * @var Grid
+     * @var Grid|null
      */
     protected $grid = null;
 
@@ -198,8 +198,8 @@ class AbstractProvider implements ProviderInterface
     /**
      * @param array $row
      * @param string $table
-     * @param string $field
-     * @param string $extensionKey
+     * @param string|null $field
+     * @param string|null $extensionKey
      * @return boolean
      */
     public function trigger(array $row, $table, $field, $extensionKey = null)
@@ -276,7 +276,7 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * @param array $row
-     * @return Form|NULL
+     * @return Form|null
      */
     public function getForm(array $row)
     {
@@ -322,19 +322,19 @@ class AbstractProvider implements ProviderInterface
                 $grid = Grid::create();
                 if ($container->getGridMode() === Form\Container\Section::GRID_MODE_ROWS) {
                     foreach ($persistedObjects as $index => $object) {
-                        $gridRow = $grid->createContainer('Row', 'row' . $index);
+                        $gridRow = $grid->createContainer(Form\Container\Row::class, 'row' . $index);
                         $gridColumn = $gridRow->createContainer(
-                            'Column',
+                            Form\Container\Column::class,
                             'column' . $object['colPos'],
                             $object['label'] ?? 'Column ' . $object['colPos']
                         );
                         $gridColumn->setColumnPosition($object['colPos']);
                     }
                 } elseif ($container->getGridMode() === Form\Container\Section::GRID_MODE_COLUMNS) {
-                    $gridRow = $grid->createContainer('Row', 'row');
+                    $gridRow = $grid->createContainer(Form\Container\Row::class, 'row');
                     foreach ($persistedObjects as $index => $object) {
                         $gridColumn = $gridRow->createContainer(
-                            'Column',
+                            Form\Container\Column::class,
                             'column' . $object['colPos'],
                             $object['label'] ?? 'Column ' . $object['colPos']
                         );
@@ -357,7 +357,9 @@ class AbstractProvider implements ProviderInterface
     protected function detectContentContainerParent(Form\ContainerInterface $container)
     {
         if ($container instanceof Form\Container\SectionObject && $container->isContentContainer()) {
-            return $container->getParent();
+            /** @var Form\Container\Section $parent */
+            $parent = $container->getParent();
+            return $parent;
         }
         foreach ($container->getChildren() as $child) {
             if ($child instanceof Form\ContainerInterface && ($detected = $this->detectContentContainerParent($child))) {
@@ -396,7 +398,7 @@ class AbstractProvider implements ProviderInterface
             return null;
         }
 
-        $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class) ?? [];
+        $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class, []);
         if (isset($variables['form'])) {
             $variables['form']->setOption(Form::OPTION_TEMPLATEFILE, $this->getTemplatePathAndFilename($row));
             if ($variables['form']->getOption(Form::OPTION_STATIC)) {
@@ -635,7 +637,8 @@ class AbstractProvider implements ProviderInterface
             && is_array($row[$fieldName]['data']['options']['lDEF'])) {
             foreach ($row[$fieldName]['data']['options']['lDEF'] as $key => $value) {
                 if (0 === strpos($key, $tableName)) {
-                    $realKey = array_pop(explode('.', $key));
+                    $parts = explode('.', $key);
+                    $realKey = array_pop($parts);
                     if (isset($GLOBALS['TCA'][$tableName]['columns'][$realKey])) {
                         $row[$realKey] = $value['vDEF'];
                     }
@@ -807,9 +810,10 @@ class AbstractProvider implements ProviderInterface
     }
 
     /**
+     * @template T
      * @param array $row
-     * @param string $viewClassName
-     * @return TemplateView
+     * @param class-string<T> $viewClassName
+     * @return T
      */
     public function getViewForRecord(array $row, $viewClassName = TemplateView::class)
     {
@@ -820,6 +824,8 @@ class AbstractProvider implements ProviderInterface
         $request = $objectManager->get(WebRequest::class);
         if (method_exists($request, 'setRequestUri')) {
             $request->setRequestUri(GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL'));
+        }
+        if (method_exists($request, 'setBaseUri')) {
             $request->setBaseUri(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
         }
         $request->setControllerExtensionName(ExtensionNamingUtility::getExtensionName($controllerExtensionKey));
@@ -1076,6 +1082,10 @@ class AbstractProvider implements ProviderInterface
         return $this;
     }
 
+    /**
+     * @param \Throwable $error
+     * @return void
+     */
     protected function dispatchFlashMessageForException(\Throwable $error)
     {
         $flashMesasage = GeneralUtility::makeInstance(FlashMessage::class, $error->getMessage(), '', FlashMessage::ERROR);

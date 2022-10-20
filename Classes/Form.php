@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux;
 
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
@@ -25,7 +26,6 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  */
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface, Form\OptionCarryingInterface
 {
-
     const OPTION_STATIC = 'static';
     const OPTION_SORTING = 'sorting';
     const OPTION_GROUP = 'group';
@@ -168,7 +168,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 
     /**
      * @param boolean $includeEmpty
-     * @return Form\Container\Sheet[]
+     * @return Sheet[]|FormInterface[]
      */
     public function getSheets($includeEmpty = false)
     {
@@ -188,9 +188,13 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     public function getFields()
     {
+        /** @var Sheet[] $sheets */
+        $sheets = $this->getSheets();
+        /** @var FieldInterface[] $fields */
         $fields = [];
-        foreach ($this->getSheets() as $sheet) {
+        foreach ($sheets as $sheet) {
             $fieldsInSheet = $sheet->getFields();
+            /** @var FieldInterface[] $fields */
             $fields = array_merge($fields, $fieldsInSheet);
         }
         return $fields;
@@ -207,7 +211,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getExtensionName()
     {
@@ -377,7 +381,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 if (true === $this->has($sheetName)) {
                     $sheet = $this->get($sheetName);
                 } else {
-                    $sheet = $this->createContainer('Sheet', $sheetName);
+                    $sheet = $this->createContainer(Sheet::class, $sheetName);
                 }
                 $sheet->modify($sheetData);
             }
