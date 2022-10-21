@@ -182,7 +182,7 @@ class GetViewHelper extends AbstractViewHelper
     protected static function getContentRecords(array $arguments, array $parent, Grid $grid)
     {
         $columnPosition = $arguments['area'];
-        if (!ctype_digit($columnPosition)) {
+        if (!ctype_digit((string) $columnPosition)) {
             $column = $grid->get($columnPosition, true, Column::class);
             if ($column instanceof Column) {
                 $columnPosition = $column->getColumnPosition();
