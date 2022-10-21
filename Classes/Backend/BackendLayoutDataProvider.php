@@ -76,6 +76,8 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     {
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->objectManager = $objectManager;
+
         /** @var FluxService $fluxService */
         $fluxService = $this->objectManager->get(FluxService::class);
         $this->injectConfigurationService($fluxService);
@@ -83,7 +85,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
         $workspacesAwareRecordService = $this->objectManager->get(WorkspacesAwareRecordService::class);
         $this->injectWorkspacesAwareRecordService($workspacesAwareRecordService);
 
-        $this->objectManager = $objectManager;
+
     }
 
     /**
