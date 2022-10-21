@@ -183,7 +183,7 @@ class ContentIcon
     {
         $collapsed = false;
         $cookie = $this->getCookie();
-        if (null !== $_COOKIE) {
+        if (null !== $cookie) {
             $cookie = json_decode(urldecode($cookie));
             $collapsed = in_array($row['uid'], (array) $cookie);
         }
