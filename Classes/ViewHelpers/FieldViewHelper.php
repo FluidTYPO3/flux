@@ -77,6 +77,7 @@ class FieldViewHelper extends AbstractFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $parent = static::getContainerFromRenderingContext($renderingContext);
         $field = Field::create($arguments instanceof ArgumentCollection ? $arguments->getArrayCopy() : $arguments);
         $parent->add($field);

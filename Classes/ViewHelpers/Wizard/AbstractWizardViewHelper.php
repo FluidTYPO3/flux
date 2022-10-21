@@ -50,14 +50,16 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
     }
 
     /**
-     * @param string $type
+     * @param class-string $type
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
      * @return WizardInterface
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $name = (true === isset($arguments['name']) ? $arguments['name'] : 'wizard');
+        /** @var WizardInterface $component */
         $component = static::getContainerFromRenderingContext($renderingContext)->createWizard($type, $name);
         $component->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)

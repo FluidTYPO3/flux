@@ -58,6 +58,7 @@ class RowViewHelper extends AbstractFormViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $name = ('row' === $arguments['name'] ? uniqid('row', true) : $arguments['name']);
         $row = static::getContainerFromRenderingContext($renderingContext)->createContainer(Row::class, $name, $arguments['label']);
         $row->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));

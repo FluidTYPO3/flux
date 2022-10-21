@@ -34,6 +34,9 @@ class Section extends AbstractFormContainer implements ContainerInterface
     const GRID_MODE_ROWS = 'rows';
     const GRID_MODE_COLUMNS = 'columns';
 
+    /**
+     * @var string
+     */
     protected $gridMode = self::GRID_MODE_ROWS;
 
     /**
@@ -74,19 +77,24 @@ class Section extends AbstractFormContainer implements ContainerInterface
 
     /**
      * @param string $gridMode
+     * @return void
      */
     public function setGridMode($gridMode)
     {
         $this->gridMode = $gridMode;
     }
 
+    /**
+     * @return SectionObject|null
+     */
     public function getContentContainer()
     {
         foreach ($this->children as $child) {
-            if ($child->isContentContainer()) {
+            if ($child instanceof SectionObject && $child->isContentContainer()) {
                 return $child;
             }
         }
+        return null;
     }
 
     /**

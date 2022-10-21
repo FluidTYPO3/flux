@@ -41,7 +41,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
-     * @return void
+     * @return string
      */
     public static function renderStatic(
         array $arguments,
@@ -50,12 +50,26 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     ) {
         $container = static::getContainerFromRenderingContext($renderingContext);
         if (method_exists(static::class, 'getComponent')) {
-            $component = static::getComponent($renderingContext, $arguments, $renderChildrenClosure);
+            $component = static::getComponent($renderingContext, $arguments);
             // rendering child nodes with Form's last sheet as active container
             static::setContainerInRenderingContext($renderingContext, $component);
         }
         $renderChildrenClosure();
         static::setContainerInRenderingContext($renderingContext, $container);
+
+        return '';
+    }
+
+    /**
+     * @param RenderingContextInterface $renderingContext
+     * @param iterable $arguments
+     * @return FormInterface
+     */
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ) {
+        return Form::create();
     }
 
     /**
@@ -75,6 +89,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     /**
      * @param RenderingContextInterface $renderingContext
      * @param string $name
+     * @return void
      */
     protected static function setExtensionNameInRenderingContext(RenderingContextInterface $renderingContext, $name)
     {

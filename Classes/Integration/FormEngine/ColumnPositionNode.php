@@ -18,6 +18,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ColumnPositionNode extends AbstractNode implements NodeInterface
 {
+    /**
+     * @var array
+     */
     private $parameters = [];
 
     public function __construct(NodeFactory $nodeFactory, array $data)
@@ -25,10 +28,15 @@ class ColumnPositionNode extends AbstractNode implements NodeInterface
         $this->parameters = $data;
     }
 
+    /**
+     * @return array
+     */
     public function render()
     {
         $return = $this->initializeResultArray();
-        $return['html'] = GeneralUtility::makeInstance(UserFunctions::class)->renderColumnPositionField($this->parameters['parameterArray']);
+        /** @var UserFunctions $userFunctions */
+        $userFunctions = GeneralUtility::makeInstance(UserFunctions::class);
+        $return['html'] = $userFunctions->renderColumnPositionField($this->parameters['parameterArray']);
         return $return;
     }
 }

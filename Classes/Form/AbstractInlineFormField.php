@@ -415,7 +415,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     }
 
     /**
-     * @return array
+     * @return string|null
      */
     public function getLevelLinksPosition()
     {
@@ -457,7 +457,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getOverrideChildTca()
     {
@@ -465,7 +465,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     }
 
     /**
-     * @param array $foreignTypes
+     * @param array|null $foreignTypes
      * @return RelationFieldInterface
      */
     public function setForeignTypes($foreignTypes)

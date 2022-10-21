@@ -99,7 +99,7 @@ class Select extends AbstractWizard
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getFormattedItems()
     {

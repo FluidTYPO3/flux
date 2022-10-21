@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Field\MultiRelation;
 use FluidTYPO3\Flux\Form\RelationFieldInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -51,6 +52,6 @@ class MultiRelationViewHelper extends AbstractRelationFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
-        return static::getPreparedComponent('MultiRelation', $renderingContext, $arguments);
+        return static::getPreparedComponent(MultiRelation::class, $renderingContext, $arguments);
     }
 }

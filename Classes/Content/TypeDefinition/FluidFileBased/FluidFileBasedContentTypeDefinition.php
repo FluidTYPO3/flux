@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Fluid File-based Content Type Definition
@@ -25,9 +26,24 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDefinitionInterface
 {
+    /**
+     * @var string
+     */
     protected $extensionIdentity = '';
+
+    /**
+     * @var string
+     */
     protected $basePath = '';
+
+    /**
+     * @var string
+     */
     protected $relativeFilePath = '';
+
+    /**
+     * @var string
+     */
     protected $providerClassName = Provider::class;
 
     /**
@@ -55,9 +71,13 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
         $this->providerClassName = $providerClassName;
     }
 
-    public function getForm(array $record = []): Form\FormInterface
+    public function getForm(array $record = []): Form
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class)->resolvePrimaryConfigurationProvider(
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = $objectManager->get(ProviderResolver::class);
+        return $providerResolver->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',
             $record
@@ -66,7 +86,11 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
 
     public function getGrid(array $record = []): Form\Container\Grid
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class)->resolvePrimaryConfigurationProvider(
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = $objectManager->get(ProviderResolver::class);
+        return $providerResolver->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',
             $record

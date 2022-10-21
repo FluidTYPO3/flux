@@ -303,10 +303,7 @@ class ControllerActions extends Select
         } else {
             $actions = $this->getActions();
             if (0 === count($actions)) {
-                $actions = $this->getActionsForExtensionNameAndPluginName(
-                    $this->controllerExtensionName,
-                    $this->pluginName
-                );
+                $actions = $this->getActionsForExtensionNameAndPluginName();
             }
             return $this->buildItemsForActions($actions);
         }
@@ -380,7 +377,8 @@ class ControllerActions extends Select
             $label = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
         } elseif (method_exists($controllerClassName, $actionName . 'Action') && true === $disableLocalLanguageLabels) {
             $methodReflection = $this->reflectAction($controllerName, $actionName);
-            $line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
+            $parts = explode("\n", trim((string) $methodReflection->getDocComment(), "/*\n"));
+            $line = array_shift($parts);
             $line = trim(trim($line), '* ');
             if (substr($line, 0, 1) !== '@') {
                 $label = $line;
@@ -396,9 +394,10 @@ class ControllerActions extends Select
      */
     protected function reflectAction($controllerName, $actionName)
     {
+        /** @var class-string $controllerClassName */
         $controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
-        /** @var \ReflectionMethod $methodReflection */
         $controllerClassReflection = new \ReflectionClass($controllerClassName);
+        /** @var \ReflectionMethod $methodReflection */
         $methodReflection = $controllerClassReflection->getMethod($actionName . 'Action');
         return $methodReflection;
     }

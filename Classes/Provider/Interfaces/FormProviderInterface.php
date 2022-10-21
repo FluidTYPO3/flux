@@ -28,6 +28,7 @@ interface FormProviderInterface
 
     /**
      * @param Form $form
+     * @return void
      */
     public function setForm(Form $form);
 }

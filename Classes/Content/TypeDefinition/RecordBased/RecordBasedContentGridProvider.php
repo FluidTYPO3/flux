@@ -11,9 +11,11 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\RecordBased;
 use FluidTYPO3\Flux\Content\ContentGridForm;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
+use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Flux provider class to handle Grid integration with content types
@@ -36,16 +38,33 @@ class RecordBasedContentGridProvider extends AbstractProvider implements GridPro
      */
     protected $contentTypeDefinitions;
 
+    /**
+     * @param ContentTypeManager $contentTypes
+     * @return void
+     */
     public function injectContentTypes(ContentTypeManager $contentTypes)
     {
         $this->contentTypeDefinitions = $contentTypes;
     }
 
+    /**
+     * @param array $row
+     * @param string $table
+     * @param string|null $field
+     * @param string|null $extensionKey
+     * @return bool
+     */
     public function trigger(array $row, $table, $field, $extensionKey = null)
     {
         return $table === $this->tableName && $field === $this->fieldName;
     }
 
+    /**
+     * @param array $row
+     * @param array $dataStructure
+     * @param array $conf
+     * @return void
+     */
     public function postProcessDataStructure(array &$row, &$dataStructure, array $conf)
     {
         // Reset the dummy data structure which has no sheets.
@@ -53,11 +72,23 @@ class RecordBasedContentGridProvider extends AbstractProvider implements GridPro
         parent::postProcessDataStructure($row, $dataStructure, $conf);
     }
 
+    /**
+     * @param array $row
+     * @return ContentGridForm
+     */
     public function getForm(array $row)
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(ContentGridForm::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ContentGridForm $contentGridForm */
+        $contentGridForm = $objectManager->get(ContentGridForm::class);
+        return $contentGridForm;
     }
 
+    /**
+     * @param array $row
+     * @return Grid
+     */
     public function getGrid(array $row)
     {
         return $this->contentTypeDefinitions->determineContentTypeForRecord($row)->getGrid() ?? parent::getGrid($row);

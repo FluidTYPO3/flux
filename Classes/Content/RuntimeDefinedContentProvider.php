@@ -27,9 +27,24 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
  */
 class RuntimeDefinedContentProvider extends AbstractProvider implements GridProviderInterface
 {
+    /**
+     * @var string
+     */
     protected $tableName = 'tt_content';
+
+    /**
+     * @var string|null
+     */
     protected $fieldName = 'pi_flexform';
+
+    /**
+     * @var string
+     */
     protected $extensionKey = 'FluidTYPO3.Flux';
+
+    /**
+     * @var integer
+     */
     protected $priority = 90;
 
     /**
@@ -37,6 +52,10 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
      */
     protected $contentTypeDefinitions;
 
+    /**
+     * @param ContentTypeManager $contentTypes
+     * @return void
+     */
     public function injectContentTypes(ContentTypeManager $contentTypes)
     {
         $this->contentTypeDefinitions = $contentTypes;

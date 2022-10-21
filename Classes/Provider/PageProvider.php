@@ -84,8 +84,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      *
      * @param array $row
      * @param string $table
-     * @param string $field
-     * @param string|NULL $extensionKey
+     * @param string|null $field
+     * @param string|null $extensionKey
      * @return boolean
      */
     public function trigger(array $row, $table, $field, $extensionKey = null)
@@ -150,6 +150,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $action = $this->getControllerActionReferenceFromRecord($row);
         if (false === empty($action)) {
             $pathsOrExtensionKey = $this->templatePaths ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row));
+            /** @var TemplatePaths $templatePaths */
             $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $pathsOrExtensionKey);
             $action = $this->getControllerActionFromRecord($row);
             $action = ucfirst($action);
@@ -412,6 +413,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         if (empty($record)) {
             return [];
         }
+        /** @var RootlineUtility $rootLineUtility */
         $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid']);
         return array_slice($rootLineUtility->get(), 1);
     }
