@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
+use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -127,6 +128,7 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
         $response = $this->objectManager->get(Response::class);
         /** @var Dispatcher $dispatcher */
         $dispatcher = $this->objectManager->get(Dispatcher::class);
+        /** @var RequestInterface $request */
         $dispatcher->dispatch($request, $response);
         return $response->getContent();
     }

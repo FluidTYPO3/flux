@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Service;
 
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Result;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\VisibilityAspect;
@@ -82,7 +83,7 @@ class RecordService implements SingletonInterface
     /**
      * @param string $table
      * @param array $record
-     * @return boolean|Statement|ResultStatement|int
+     * @return boolean|Statement|ResultStatement|Result|int
      */
     public function update($table, array $record)
     {

@@ -819,6 +819,8 @@ class AbstractProvider implements ProviderInterface
      */
     public function getViewForRecord(array $row, $viewClassName = TemplateView::class)
     {
+        /** @var class-string $viewClassName */
+
         $controllerExtensionKey = $this->getControllerExtensionKeyFromRecord($row);
 
         /** @var ObjectManagerInterface $objectManager */

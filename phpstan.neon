@@ -21,8 +21,18 @@ parameters:
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\FlexFormService not found\\.$#"
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteFinder#"
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Information\\\\Typo3Version#"
+        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request not found\\.$#"
+        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response not found\\.$#"
+        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response#"
         - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) invoked with [2-9] parameters, 1 required\\.$#"
-        - "#^Cannot call method (rowCount|fetch|fetchAssociative|fetchAll|fetchAllAssociative)\\(\\) on (Doctrine\\\\DBAL\\\\Driver\\\\Statement|Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement)\\|int\\.$#"
+        - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Dispatcher\\:\\:dispatch\\(\\) invoked with 2 parameters, 1 required\\.$#"
+        - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ControllerInterface\\:\\:processRequest\\(\\) invoked with 2 parameters, 1 required\\.$#"
+        - "#^Cannot call method (rowCount|fetch|fetchAssociative|fetchAll|fetchAllAssociative)\\(\\) on (Doctrine\\\\DBAL\\\\Driver\\\\Statement|Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement|Doctrine\\\\DBAL\\\\Result)\\|int\\.$#"
+        - "#^Static method TYPO3\\\\CMS\\\\Extbase\\\\Reflection\\\\ObjectAccess\\:\\:getProperty\\(\\) invoked with 3 parameters, 2 required\\.$#"
+        - "#^Call to an undefined static method TYPO3\\\\CMS\\\\Backend\\\\Utility\\\\BackendUtility\\:\\:getMovePlaceholder\\(\\)\\.$#"
     bootstrapFiles:
         - phpstan-bootstrap.php
     paths:

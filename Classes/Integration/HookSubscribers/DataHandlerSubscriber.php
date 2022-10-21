@@ -165,7 +165,7 @@ class DataHandlerSubscriber
             $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
             $uidInDefaultLanguage = $record['l18n_parent'];
             if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
-                $fieldArray['colPos'] = (int)($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'] ?? $record['colPos']);
+                $fieldArray['colPos'] = (integer) $dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'];
             }
         }
     }
@@ -222,13 +222,13 @@ class DataHandlerSubscriber
                         case 'move':
                             // Verify that the target column is not within the element or any child hereof.
                             if (is_array($value) && isset($value['update']['colPos'])) {
-                                $invalidColumnNumbers = $this->fetchAllColumnNumbersBeneathParent($id);
+                                $invalidColumnNumbers = $this->fetchAllColumnNumbersBeneathParent((integer) $id);
                                 // Only react to move commands which contain a target colPos
                                 if (in_array((int) $value['update']['colPos'], $invalidColumnNumbers, true)) {
                                     // Invalid target detected - delete the "move" command so it does not happen, and
                                     // dispatch an error message.
                                     unset($dataHandler->cmdmap[$table][$id]);
-                                    $dataHandler->log($table, $id, 4, 0, 1, 'Record not moved, would become child of self');
+                                    $dataHandler->log($table, (integer) $id, 4, 0, 1, 'Record not moved, would become child of self');
                                 }
                             }
                             break;

@@ -141,6 +141,6 @@ class ContentTypeValidator
                     $queryBuilder->createNamedParameter($definition->getContentTypeName(), \PDO::PARAM_STR)
                 )
             );
-        return $queryBuilder->execute()->rowCount();
+        return (integer) $queryBuilder->execute()->rowCount();
     }
 }
