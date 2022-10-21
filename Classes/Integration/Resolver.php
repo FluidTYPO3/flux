@@ -22,7 +22,7 @@ class Resolver
      * @param string $controllerObjectShortName
      * @param boolean $failHard
      * @throws \RuntimeException
-     * @return string|NULL
+     * @return class-string|null
      */
     public function resolveFluxControllerClassNameByExtensionKeyAndControllerName(
         $extensionKey,

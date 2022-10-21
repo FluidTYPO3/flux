@@ -45,7 +45,7 @@ class ContentTypeBuilder
     /**
      * @param string $providerExtensionName
      * @param string $templateFilename
-     * @param string|null $providerClassName
+     * @param class-string|null $providerClassName
      * @param string|null $contentType
      * @param string $defaultControllerExtensionName
      * @param string|null $controllerActionName

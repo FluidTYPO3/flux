@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
@@ -378,6 +379,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         $type = $query->getType();
         $table = strtolower(str_replace('\\', '_', $type));
         $propertyName = $this->getLabelPropertyName($table, $type);
+        /** @var DomainObjectInterface $result */
         foreach ($results as $result) {
             $uid = $result->getUid();
             array_push($items, [ObjectAccess::getProperty($result, $propertyName), $uid]);

@@ -57,15 +57,21 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var TypeConverterPipe $pipe */
         $pipe = $objectManager->get(TypeConverterPipe::class);
-        /** @var TypeConverterInterface|string $converter */
-        $converter = $arguments['typeConverter'];
-        if (false === $converter instanceof TypeConverterInterface) {
-            $coreConverterFqn = 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\' . $converter . 'Converter';
+        /** @var TypeConverterInterface|class-string $converterInstanceOrClassName */
+        $converterInstanceOrClassName = $arguments['typeConverter'];
+        if (false === $converterInstanceOrClassName instanceof TypeConverterInterface) {
+            /** @var class-string $coreConverterFqn */
+            $coreConverterFqn = 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\' . $converterInstanceOrClassName . 'Converter';
             if (class_exists($coreConverterFqn)) {
-                $converter = $coreConverterFqn;
+                $converterClassName = $coreConverterFqn;
+            } else {
+                $converterClassName = $converterInstanceOrClassName;
             }
             /** @var TypeConverterInterface $converter */
-            $converter = $objectManager->get($converter);
+            $converter = $objectManager->get($converterClassName);
+        } else {
+            /** @var TypeConverterInterface $converter */
+            $converter = $converterInstanceOrClassName;
         }
 
         $pipe->setPropertyName($arguments['property']);

@@ -274,6 +274,7 @@ class FluxService implements SingletonInterface
         if (true === empty($valuePointer)) {
             $valuePointer = 'vDEF';
         }
+        /** @var class-string $serviceClassName */
         $serviceClassName = class_exists(FlexFormService::class) ? FlexFormService::class : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
         /** @var FlexFormService|\TYPO3\CMS\Extbase\Service\FlexFormService $flexFormService */
         $flexFormService = $this->objectManager->get($serviceClassName);

@@ -97,7 +97,7 @@ class ContentIcon
 
     /**
      * @param array $parameters
-     * @param PageLayoutView|DatabaseRecordList $caller
+     * @param PageLayoutView|GridColumnItem|DatabaseRecordList $caller
      * @return string
      */
     public function addSubIcon(array $parameters, $caller = null)

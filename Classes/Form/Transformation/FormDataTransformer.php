@@ -131,6 +131,7 @@ class FormDataTransformer
         } elseif ('bool' === $dataType || 'boolean' === $dataType) {
             return boolval($value);
         } elseif (strpos($dataType, '->')) {
+            /** @var class-string $class */
             list ($class, $function) = explode('->', $dataType);
             /** @var object $object */
             $object = $this->objectManager->get($class);
@@ -153,6 +154,7 @@ class FormDataTransformer
         $identifiers = array_map('intval', $identifiers);
         $isModel = $this->isDomainModelClassName($dataType);
         if (false !== strpos($dataType, '<')) {
+            /** @var class-string $container */
             list ($container, $object) = explode('<', trim($dataType, '>'));
         } else {
             $container = null;

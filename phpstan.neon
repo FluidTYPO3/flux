@@ -17,10 +17,12 @@ parameters:
         - "#no value type specified in iterable#"
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\ExtensionConfiguration#"
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Service\\\\FlexFormService#"
+        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\FlexFormService#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\FlexFormService not found\\.$#"
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteFinder#"
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Information\\\\Typo3Version#"
         - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) invoked with [2-9] parameters, 1 required\\.$#"
-        - "#^Cannot call method (rowCount|fetch|fetchAssociative|fetchAll|fetchAllAssociative)\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
+        - "#^Cannot call method (rowCount|fetch|fetchAssociative|fetchAll|fetchAllAssociative)\\(\\) on (Doctrine\\\\DBAL\\\\Driver\\\\Statement|Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement)\\|int\\.$#"
     bootstrapFiles:
         - phpstan-bootstrap.php
     paths:

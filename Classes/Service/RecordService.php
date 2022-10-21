@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
@@ -81,7 +82,7 @@ class RecordService implements SingletonInterface
     /**
      * @param string $table
      * @param array $record
-     * @return boolean|Statement|int
+     * @return boolean|Statement|ResultStatement|int
      */
     public function update($table, array $record)
     {

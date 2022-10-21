@@ -51,7 +51,7 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
     }
 
     /**
-     * @param TypeConverterInterface|string $typeConverter
+     * @param TypeConverterInterface|class-string $typeConverter
      * @return TypeConverterPipe
      */
     public function setTypeConverter($typeConverter)
