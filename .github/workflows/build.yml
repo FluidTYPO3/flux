@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         php-versions: ['7.4', '8.0', '8.1']
-        composer-arguments: [''] # to run --ignore-platform-reqs in experimental builds
+        composer-arguments: ['--no-dev'] # to run --ignore-platform-reqs in experimental builds
         typo3-version: ['^8.7', '^9.5', '^10.4', '^11.5']
         experimental: [false]
         exclude:
@@ -46,11 +46,11 @@ jobs:
           ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
           tools: composer:v2.2
 
-      - name: Disable FluidTYPO3 phpunit helper
-        run: "composer remove fluidtypo3/development --dev -W"
-
       - name: Select TYPO3 version
         run: "composer require typo3/cms-core:${{ matrix.typo3-version }} -W"
+
+      - name: Install phpstan
+        run: "composer require phpstan/phpstan:^1.8"
 
       - name: Composer install
         uses: ramsey/composer-install@v2
