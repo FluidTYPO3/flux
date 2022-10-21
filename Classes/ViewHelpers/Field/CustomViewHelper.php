@@ -41,28 +41,26 @@ class CustomViewHelper extends UserFuncViewHelper
     protected function callRenderMethod()
     {
         $container = static::getContainerFromRenderingContext($this->renderingContext);
-        $component = static::getComponent($this->renderingContext, $this->arguments, $this->buildRenderChildrenClosure());
+        $component = static::getComponent($this->renderingContext, $this->arguments);
+        $component->setClosure(static::buildClosure($this->renderingContext, $this->arguments, $this->buildRenderChildrenClosure()));
         // rendering child nodes with Form's last sheet as active container
         static::setContainerInRenderingContext($this->renderingContext, $component);
         $this->renderChildren();
         static::setContainerInRenderingContext($this->renderingContext, $container);
+        return '';
     }
 
     /**
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
-     * @param \Closure $renderChildrenClosure
      * @return Custom
      */
     public static function getComponent(
         RenderingContextInterface $renderingContext,
-        iterable $arguments,
-        \Closure $renderChildrenClosure
+        iterable $arguments
     ) {
         /** @var Custom $component */
-        $component = parent::getPreparedComponent('Custom', $renderingContext, $arguments);
-        $closure = static::buildClosure($renderingContext, $arguments, $renderChildrenClosure);
-        $component->setClosure($closure);
+        $component = parent::getPreparedComponent(Custom::class, $renderingContext, $arguments);
         return $component;
     }
 
@@ -78,7 +76,7 @@ class CustomViewHelper extends UserFuncViewHelper
         \Closure $renderChildrenClosure
     ) {
         $container = $renderingContext->getVariableProvider();
-        $closure = function ($parameters) use ($container, $renderingContext, $renderChildrenClosure) {
+        $closure = function ($parameters) use ($container, $renderChildrenClosure) {
             $backupParameters = null;
             $backupParameters = null;
             if ($container->exists('parameters') === true) {

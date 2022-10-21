@@ -7,9 +7,67 @@ on:
     branches: [ master, development, '[0-9]+.[0-9]', '[0-9]+.[0-9]+.[0-9]+' ]
 
 jobs:
+  phpstan:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    name: "PHPStan, PHP ${{ matrix.php-versions }} TYPO3 ${{ matrix.typo3-version }}"
+
+    continue-on-error: ${{ matrix.experimental }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['7.4', '8.0', '8.1']
+        composer-arguments: [''] # to run --ignore-platform-reqs in experimental builds
+        typo3-version: ['^8.7', '^9.5', '^10.4', '^11.5']
+        experimental: [false]
+        exclude:
+          - php-versions: '7.4'
+            typo3-version: '^11.5'
+          - php-versions: '8.0'
+            typo3-version: '^8.7'
+          - php-versions: '8.0'
+            typo3-version: '^9.5'
+          - php-versions: '8.0'
+            typo3-version: '^10.4'
+          - php-versions: '8.1'
+            typo3-version: '^8.7'
+          - php-versions: '8.1'
+            typo3-version: '^9.5'
+          - php-versions: '8.1'
+            typo3-version: '^10.4'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring, json
+          ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
+          tools: composer:v2.2
+
+      - name: Disable FluidTYPO3 phpunit helper
+        run: "composer remove fluidtypo3/development --dev -W --no-update"
+
+      - name: Select TYPO3 version
+        run: "composer require typo3/cms-core:${{ matrix.typo3-version }} -W --no-update"
+
+      - name: Composer install
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+          composer-options: ${{ matrix.composer-arguments }}
+
+      - name: Run phpstan
+        run: vendor/bin/phpstan analyze
+
   build:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    name: "PHP ${{ matrix.php-versions }} Test (deps: ${{ matrix.dependencies }})"
+    name: "PHPUnit (deps: ${{ matrix.dependencies }}), PHP ${{ matrix.php-versions }} TYPO3 ${{ matrix.typo3-version }}"
 
     continue-on-error: ${{ matrix.experimental }}
 
@@ -19,7 +77,7 @@ jobs:
         php-versions: ['7.4']
         dependencies: ['highest']
         composer-arguments: [''] # to run --ignore-platform-reqs in experimental builds
-        typo3-version: ['^9.5', '^8.7']
+        typo3-version: ['^8.7', '^9.5']
         experimental: [false]
 
     runs-on: ubuntu-latest
@@ -37,7 +95,7 @@ jobs:
           tools: composer:v2.2
 
       - name: Select TYPO3 version
-        run: "composer require typo3/cms-core:${{ matrix.typo3-version }}"
+        run: "composer require typo3/cms-core:${{ matrix.typo3-version }} --no-update"
 
       - name: Composer install
         uses: ramsey/composer-install@v2
@@ -65,7 +123,7 @@ jobs:
           ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
 
       - name: Select TYPO3 version 9.5
-        run: "composer require typo3/cms-core:^9.5"
+        run: "composer require typo3/cms-core:^9.5 --no-update"
 
       - name: Composer install
         uses: ramsey/composer-install@v1

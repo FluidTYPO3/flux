@@ -81,7 +81,7 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param integer $columns
-     * @return Text
+     * @return $this
      */
     public function setColumns($columns)
     {
@@ -100,7 +100,7 @@ class Text extends Input implements FieldInterface
     /**
      * @deprecated Will be removed in next major version
      * @param string $defaultExtras
-     * @return Text
+     * @return $this
      */
     public function setDefaultExtras($defaultExtras)
     {
@@ -119,7 +119,7 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param boolean $enableRichText
-     * @return Text
+     * @return $this
      */
     public function setEnableRichText($enableRichText)
     {
@@ -137,7 +137,7 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param integer $rows
-     * @return Text
+     * @return $this
      */
     public function setRows($rows)
     {
@@ -163,10 +163,12 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param string $renderType
+     * @return $this
      */
     public function setRenderType($renderType)
     {
         $this->renderType = $renderType;
+        return $this;
     }
 
     /**
@@ -179,10 +181,12 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param string $format
+     * @return $this
      */
     public function setFormat($format)
     {
         $this->format = $format;
+        return $this;
     }
 
     /**

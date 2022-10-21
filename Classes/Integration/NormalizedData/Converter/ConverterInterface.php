@@ -29,7 +29,7 @@ interface ConverterInterface {
      * be an array or implement ArrayAccess.
      *
      * @param array $data
-     * @return array|\ArrayAccess
+     * @return array
      */
     public function convertData(array $data): array;
 

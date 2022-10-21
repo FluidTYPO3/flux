@@ -5,6 +5,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ImplementationRegistry
 {
+    /**
+     * @var array
+     */
     protected static $implementations = [];
 
     /**
@@ -48,9 +51,7 @@ class ImplementationRegistry
                 list ($registeredClassName, $registeredSettings) = $implementationData;
                 $instance = GeneralUtility::makeInstance($registeredClassName, $registeredSettings);
             }
-            if ($field === null && $instance->appliesToTable($table)) {
-                $implementations[] = $instance;
-            } elseif ($instance->appliesToTableField($table, $field) && $instance->appliesToRecord($record)) {
+            if ($instance->appliesToTableField($table, $field) && $instance->appliesToRecord($record)) {
                 $implementations[] = $instance;
             }
         }

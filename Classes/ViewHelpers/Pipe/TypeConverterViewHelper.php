@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\TypeConverterPipe;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -51,16 +52,26 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper
         iterable $arguments,
         \Closure $renderChildrenClosure = null
     ) {
+        /** @var array $arguments */
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var TypeConverterPipe $pipe */
         $pipe = $objectManager->get(TypeConverterPipe::class);
-        $converter = $arguments['typeConverter'];
-        if (false === $converter instanceof TypeConverterInterface) {
-            $coreConverterFqn = 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\' . $converter . 'Converter';
+        /** @var TypeConverterInterface|class-string $converterInstanceOrClassName */
+        $converterInstanceOrClassName = $arguments['typeConverter'];
+        if (false === $converterInstanceOrClassName instanceof TypeConverterInterface) {
+            /** @var class-string $coreConverterFqn */
+            $coreConverterFqn = 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\' . $converterInstanceOrClassName . 'Converter';
             if (class_exists($coreConverterFqn)) {
-                $converter = $coreConverterFqn;
+                $converterClassName = $coreConverterFqn;
+            } else {
+                $converterClassName = $converterInstanceOrClassName;
             }
-            $converter = $objectManager->get($converter);
+            /** @var TypeConverterInterface $converter */
+            $converter = $objectManager->get($converterClassName);
+        } else {
+            /** @var TypeConverterInterface $converter */
+            $converter = $converterInstanceOrClassName;
         }
 
         $pipe->setPropertyName($arguments['property']);

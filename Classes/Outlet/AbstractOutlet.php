@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Outlet;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
@@ -66,7 +67,8 @@ abstract class AbstractOutlet implements OutletInterface
      */
     public static function create(array $settings)
     {
-        $instance = new static();
+        /** @var self $instance */
+        $instance = GeneralUtility::makeInstance(static::class);
         if (isset($settings['pipesIn'])) {
             foreach ($settings['pipesIn'] as $pipeSettings) {
                 $instance->addPipeIn($pipeSettings['type']::create($pipeSettings));
@@ -86,9 +88,10 @@ abstract class AbstractOutlet implements OutletInterface
     }
 
     /**
-     * @param string $class
+     * @template T
+     * @param class-string<T> $class
      * @param array $settings
-     * @return PipeInterface
+     * @return T
      */
     protected static function createPipeInstance($class, array $settings)
     {
@@ -97,7 +100,7 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param boolean $enabled
-     * @return OutletInterface
+     * @return $this
      */
     public function setEnabled($enabled)
     {
@@ -116,8 +119,7 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param PipeInterface[] $pipes
-     * @return OutletInterface
-     * @return void
+     * @return $this
      */
     public function setPipesIn(array $pipes)
     {
@@ -139,8 +141,7 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param PipeInterface[] $pipes
-     * @return OutletInterface
-     * @return void
+     * @return $this
      */
     public function setPipesOut(array $pipes)
     {
@@ -162,7 +163,7 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param PipeInterface $pipe
-     * @return OutletInterface
+     * @return $this
      */
     public function addPipeIn(PipeInterface $pipe)
     {
@@ -175,7 +176,7 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param PipeInterface $pipe
-     * @return OutletInterface
+     * @return $this
      */
     public function addPipeOut(PipeInterface $pipe)
     {
@@ -188,7 +189,7 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param mixed $data
-     * @return OutletInterface
+     * @return $this
      */
     public function fill($data)
     {
@@ -236,7 +237,7 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param ViewInterface $view
-     * @return OutletInterface
+     * @return $this
      */
     public function setView($view)
     {
@@ -255,20 +256,22 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param OutletArgument[] $arguments
-     * @return void
+     * @return $this
      */
     public function setArguments(array $arguments)
     {
         $this->arguments = $arguments;
+        return $this;
     }
 
     /**
      * @param OutletArgument $argument
-     * @return void
+     * @return $this
      */
     public function addArgument(OutletArgument $argument)
     {
         $this->arguments[] = $argument;
+        return $this;
     }
 
     /**

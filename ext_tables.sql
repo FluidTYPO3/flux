@@ -51,7 +51,7 @@ CREATE TABLE content_types (
   title varchar(400),
   content_type varchar(128),
   description text,
-  extension_identity varchar(128) DEFAULT 'FluidTYPO3.Builder' NOT NULL,
+  extension_identity varchar(128) DEFAULT 'FluidTYPO3.Flux' NOT NULL,
   content_configuration text,
   grid text,
   template_source text,
@@ -63,6 +63,7 @@ CREATE TABLE content_types (
   PRIMARY KEY (uid),
   KEY parent (pid),
   KEY content_type (content_type),
+  KEY fe_enabled (deleted, hidden),
   KEY extension_identity (extension_identity)
 );
 

@@ -52,8 +52,9 @@ class SelectViewHelper extends AbstractWizardViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var Select $component */
-        $component = static::getPreparedComponent('Select', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Select::class, $renderingContext, $arguments);
         $component->setMode($arguments['mode']);
         $component->setItems($arguments['items']);
         return $component;

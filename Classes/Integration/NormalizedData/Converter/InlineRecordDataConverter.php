@@ -2,7 +2,9 @@
 namespace FluidTYPO3\Flux\Integration\NormalizedData\Converter;
 
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -68,7 +70,7 @@ class InlineRecordDataConverter implements ConverterInterface
      * the data coming from IRRE records.
      *
      * @param array $data
-     * @return array|\ArrayAccess
+     * @return array
      */
     public function convertData(array $data): array
     {
@@ -163,6 +165,7 @@ class InlineRecordDataConverter implements ConverterInterface
      */
     protected function resolveDataSourceDefinition(array $structure): ?array
     {
+        /** @var FlexFormTools $flexFormTools */
         $flexFormTools = GeneralUtility::makeInstance(FlexFormTools::class);
         $config = $structure['processedTca']['columns'][$this->field]['config'];
         try {
@@ -199,13 +202,13 @@ class InlineRecordDataConverter implements ConverterInterface
 
     protected function updateFieldData(int $sheetUid, string $fieldName, array $fieldData): void
     {
-        $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('flux_field');
+        $connection = $this->createConnectionForTable('flux_field');
         $connection->update('flux_field', $fieldData, ['sheet' => $sheetUid, 'field_name' => $fieldName]);
     }
 
     protected function insertFieldData(array $fieldData): int
     {
-        $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('flux_field');
+        $connection = $this->createConnectionForTable('flux_field');
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->insert('flux_field')->values($fieldData)->execute();
         return (int) $connection->lastInsertId('flux_field');
@@ -213,7 +216,7 @@ class InlineRecordDataConverter implements ConverterInterface
 
     protected function insertSheetData(array $sheetData): int
     {
-        $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('flux_sheet');
+        $connection = $this->createConnectionForTable('flux_sheet');
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->insert('flux_sheet')->values($sheetData)->execute();
         return (int) $connection->lastInsertId('flux_sheet');
@@ -222,7 +225,7 @@ class InlineRecordDataConverter implements ConverterInterface
     protected function fetchFieldData(int $uid): array
     {
         $settings = [];
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('flux_field');
+        $queryBuilder = $this->createQueryBuilderForTable('flux_field');
         $result = $queryBuilder->select('uid', 'field_name', 'field_value')->from('flux_field')->where(
             $queryBuilder->expr()->eq('sheet', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT))
         )->execute()->fetchAllAssociative();
@@ -234,7 +237,7 @@ class InlineRecordDataConverter implements ConverterInterface
 
     protected function fetchConfigurationRecords(): array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('flux_sheet');
+        $queryBuilder = $this->createQueryBuilderForTable('flux_sheet');
         return $queryBuilder->select('*')->from('flux_sheet')->where(
             $queryBuilder->expr()->eq('source_table', $queryBuilder->createNamedParameter($this->table, \PDO::PARAM_STR)),
             $queryBuilder->expr()->eq('source_field', $queryBuilder->createNamedParameter($this->field, \PDO::PARAM_STR)),
@@ -243,9 +246,21 @@ class InlineRecordDataConverter implements ConverterInterface
 
     protected function fetchSheetRecord(string $sheetName): ?array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('flux_sheet');
+        $queryBuilder = $this->createQueryBuilderForTable('flux_sheet');
         return $queryBuilder->select('uid', 'name')->from('flux_sheet')->where(
             $queryBuilder->expr()->eq('name', $queryBuilder->createNamedParameter($sheetName, \PDO::PARAM_STR))
         )->execute()->fetchAssociative() ?: null;
+    }
+
+    protected function createConnectionForTable(string $table): Connection
+    {
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        return $connectionPool->getConnectionForTable($table);
+    }
+
+    protected function createQueryBuilderForTable(string $table): QueryBuilder
+    {
+        return $this->createConnectionForTable($table)->createQueryBuilder();
     }
 }

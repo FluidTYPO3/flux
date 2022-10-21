@@ -96,17 +96,6 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
                 \FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor::class . '->includeStaticTypoScriptHook';
         }
 
-        $contentTypeManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\FluidTYPO3\Flux\Content\ContentTypeManager::class);
-        foreach ($contentTypeManager->fetchContentTypes() as $contentType) {
-            $contentTypeManager->registerTypeDefinition($contentType);
-            \FluidTYPO3\Flux\Core::registerTemplateAsContentType(
-                $contentType->getExtensionIdentity(),
-                $contentType->getTemplatePathAndFilename(),
-                $contentType->getContentTypeName(),
-                $contentType->getProviderClassName()
-            );
-        }
-
         /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
         $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
         $signalSlotDispatcher->connect(

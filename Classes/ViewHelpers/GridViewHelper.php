@@ -86,6 +86,7 @@ class GridViewHelper extends AbstractFormViewHelper
 
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         static::setContainerInRenderingContext($this->renderingContext, $container);
+        return '';
     }
 
     /**

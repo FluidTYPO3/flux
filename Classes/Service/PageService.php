@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -112,6 +113,9 @@ class PageService implements SingletonInterface
             return $fromCache;
         }
 
+
+        $resolvedMainTemplateIdentity = null;
+        $resolvedSubTemplateIdentity = null;
         $rootLineUtility = $this->getRootLineUtility($pageUid);
 
         // Initialize with possibly-empty values and loop root line
@@ -149,7 +153,7 @@ class PageService implements SingletonInterface
      * Get a usable page configuration flexform from rootline
      *
      * @param integer $pageUid
-     * @return string
+     * @return string|null
      * @api
      */
     public function getPageFlexFormSource($pageUid)
@@ -171,7 +175,7 @@ class PageService implements SingletonInterface
      * Gets a list of usable Page Templates from defined page template TypoScript.
      * Returns a list of Form instances indexed by the path ot the template file.
      *
-     * @return Form[]
+     * @return Form[][]
      * @api
      */
     public function getAvailablePageTemplateFiles()
@@ -182,7 +186,9 @@ class PageService implements SingletonInterface
         if ($fromCache) {
             return $fromCache;
         }
-        $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        /** @var LogManager $logManager */
+        $logManager = GeneralUtility::makeInstance(LogManager::class);
+        $logger = $logManager->getLogger(__CLASS__);
         $typoScript = $this->configurationService->getPageConfiguration();
         $output = [];
         foreach ((array) $typoScript as $extensionName => $group) {
@@ -190,6 +196,7 @@ class PageService implements SingletonInterface
                 continue;
             }
             $output[$extensionName] = [];
+            /** @var TemplatePaths $templatePaths */
             $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName));
             $finder = Finder::create()->in($templatePaths->getTemplateRootPaths())->name('*.html')->sortByName();
             foreach ($finder->files() as $file) {
@@ -205,6 +212,7 @@ class PageService implements SingletonInterface
                     continue;
                 }
 
+                /** @var TemplateView $view */
                 $view = $this->objectManager->get(TemplateView::class);
                 $view->getRenderingContext()->setTemplatePaths($templatePaths);
                 $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::SCOPE, FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
@@ -242,15 +250,19 @@ class PageService implements SingletonInterface
     }
 
     /**
-     * @return VariableFrontend
+     * @return FrontendInterface
      */
     protected function getRuntimeCache()
     {
-        return GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
+        /** @var CacheManager $cacheManager */
+        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        return $cacheManager->getCache('cache_runtime');
     }
 
     protected function getRootLineUtility(int $pageUid): RootlineUtility
     {
-        return GeneralUtility::makeInstance(RootlineUtility::class, $pageUid);
+        /** @var RootlineUtility $rootLineUtility */
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageUid);
+        return $rootLineUtility;
     }
 }
