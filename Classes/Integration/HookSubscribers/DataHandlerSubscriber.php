@@ -39,7 +39,7 @@ class DataHandlerSubscriber
      */
     public function clearCacheCommand($command)
     {
-        if ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system') {
+        if (($command['cacheCmd'] ?? null) === 'all' || ($command['cacheCmd'] ?? null) === 'system') {
             $this->regenerateContentTypes();
         }
     }
