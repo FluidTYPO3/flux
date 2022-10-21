@@ -20,6 +20,7 @@ parameters:
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteFinder#"
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Information\\\\Typo3Version#"
         - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) invoked with [2-9] parameters, 1 required\\.$#"
+        - "#^Cannot call method (rowCount|fetch|fetchAssociative|fetchAll|fetchAllAssociative)\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
     bootstrapFiles:
         - phpstan-bootstrap.php
     paths:

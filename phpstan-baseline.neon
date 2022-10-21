@@ -1,16 +1,6 @@
 parameters:
     ignoreErrors:
         -
-            message: "#^Cannot call method rowCount\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
-            count: 1
-            path: Classes/Content/ContentTypeValidator.php
-
-        -
-            message: "#^Cannot call method fetchAll\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
-            count: 1
-            path: Classes/Content/TypeDefinition/RecordBased/RecordBasedContentTypeDefinition.php
-
-        -
             message: "#^Cannot call method getContent\\(\\) on class-string\\|object\\.$#"
             count: 1
             path: Classes/Controller/AbstractFluxController.php
@@ -21,39 +11,9 @@ parameters:
             path: Classes/Controller/AbstractFluxController.php
 
         -
-            message: "#^Cannot call method fetchAll\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
-            count: 1
-            path: Classes/Integration/FormEngine/ProviderProcessor.php
-
-        -
-            message: "#^Cannot call method fetchAll\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
-            count: 1
-            path: Classes/Integration/FormEngine/UserFunctions.php
-
-        -
             message: "#^Method TYPO3\\\\CMS\\\\Core\\\\Database\\\\Query\\\\QueryBuilder\\:\\:set\\(\\) invoked with 4 parameters, 2-3 required\\.$#"
             count: 1
             path: Classes/Integration/HookSubscribers/DataHandlerSubscriber.php
-
-        -
-            message: "#^Cannot call method fetch(All)?\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
-            count: 5
-            path: Classes/Integration/HookSubscribers/DataHandlerSubscriber.php
-
-        -
-            message: "#^Cannot call method fetch(All)?Associative\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
-            count: 3
-            path: Classes/Integration/NormalizedData/Converter/InlineRecordDataConverter.php
-
-        -
-            message: "#^Cannot call method fetchAll\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
-            count: 1
-            path: Classes/Integration/Overrides/BackendLayoutView.php
-
-        -
-            message: "#^Cannot call method fetchAll\\(\\) on Doctrine\\\\DBAL\\\\Driver\\\\Statement\\|int\\.$#"
-            count: 3
-            path: Classes/Service/RecordService.php
 
         -
             message: "#^Offset 'function' on array(.+) on left side of \\?\\? always exists and is not nullable\\.$#"
