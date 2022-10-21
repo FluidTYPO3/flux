@@ -100,6 +100,9 @@ class ContentTypeManager implements SingletonInterface
         }
     }
 
+    /**
+     * @return void
+     */
     public function regenerate()
     {
         $cache = $this->getCache();
@@ -109,6 +112,7 @@ class ContentTypeManager implements SingletonInterface
     protected function getCache(): FrontendInterface
     {
         try {
+            /** @var CacheManager $cacheManager */
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
             return $cacheManager->getCache('flux');
         } catch (NoSuchCacheException $error) {

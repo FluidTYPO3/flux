@@ -65,7 +65,7 @@ class ColumnPositionViewHelper extends AbstractFormViewHelper
      * @param array $arguments
      * @return ColumnPosition
      */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
         return static::getContainerFromRenderingContext($renderingContext)->createField(ColumnPosition::class, ColumnPosition::FIELD_NAME);
     }

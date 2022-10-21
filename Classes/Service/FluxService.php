@@ -20,6 +20,7 @@ use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -146,7 +147,7 @@ class FluxService implements SingletonInterface
      * dotted path expression.
      *
      * @param string $path
-     * @return array
+     * @return array|mixed
      */
     public function getTypoScriptByPath($path)
     {
@@ -187,11 +188,11 @@ class FluxService implements SingletonInterface
      * a working FlexForm configuration baed on the given parameters.
      *
      * @param string $table
-     * @param string $fieldName
-     * @param array $row
-     * @param string $extensionKey
+     * @param string|null $fieldName
+     * @param array|null $row
+     * @param string|null $extensionKey
      * @param string|array $interfaces
-     * @return ProviderInterface|NULL
+     * @return ProviderInterface|null
      */
     public function resolvePrimaryConfigurationProvider(
         $table,
@@ -214,7 +215,7 @@ class FluxService implements SingletonInterface
      * configuration based on the given parameters.
      *
      * @param string $table
-     * @param string $fieldName
+     * @param string|null $fieldName
      * @param array $row
      * @param string $extensionKey
      * @param string|array $interfaces
@@ -254,8 +255,8 @@ class FluxService implements SingletonInterface
      * @param string $flexFormContent flexForm xml string
      * @param Form $form An instance of \FluidTYPO3\Flux\Form. If transformation instructions are contained in this
      *                   configuration they are applied after conversion to array
-     * @param string $languagePointer language pointer used in the flexForm
-     * @param string $valuePointer value pointer used in the flexForm
+     * @param string|null $languagePointer language pointer used in the flexForm
+     * @param string|null $valuePointer value pointer used in the flexForm
      * @return array the processed array
      */
     public function convertFlexFormContentToArray(
@@ -273,9 +274,11 @@ class FluxService implements SingletonInterface
         if (true === empty($valuePointer)) {
             $valuePointer = 'vDEF';
         }
+        /** @var class-string $serviceClassName */
         $serviceClassName = class_exists(FlexFormService::class) ? FlexFormService::class : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
-        $settings = $this->objectManager->get($serviceClassName)
-            ->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
+        /** @var FlexFormService|\TYPO3\CMS\Extbase\Service\FlexFormService $flexFormService */
+        $flexFormService = $this->objectManager->get($serviceClassName);
+        $settings = $flexFormService->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
         if (null !== $form && $form->getOption(Form::OPTION_TRANSFORM)) {
             /** @var FormDataTransformer $transformer */
             $transformer = $this->objectManager->get(FormDataTransformer::class);
@@ -295,7 +298,9 @@ class FluxService implements SingletonInterface
      */
     public function getViewConfigurationForExtensionName($extensionName)
     {
-        return GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName))->toArray();
+        /** @var TemplatePaths $templatePaths */
+        $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName));
+        return $templatePaths->toArray();
     }
 
     /**
@@ -329,9 +334,10 @@ class FluxService implements SingletonInterface
      */
     public function convertFileReferenceToTemplatePathAndFilename($reference)
     {
-        $filename = array_pop(explode(':', $reference));
+        $parts = explode(':', $reference);
+        $filename = array_pop($parts);
         if (true === ctype_digit($filename)) {
-            return $this->resourceFactory->getFileObjectFromCombinedIdentifier($reference);
+            return $this->resourceFactory->getFileObjectFromCombinedIdentifier($reference)->getIdentifier();
         }
         $reference = GeneralUtility::getFileAbsFileName($reference);
         return $reference;
@@ -347,7 +353,9 @@ class FluxService implements SingletonInterface
         if (0 === strpos($reference, 'EXT:')) {
             $extensionKey = substr($reference, 4, strpos($reference, '/') - 4);
         }
-        return GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionKey))->toArray();
+        /** @var TemplatePaths $templatePaths */
+        $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionKey));
+        return $templatePaths->toArray();
     }
 
     /**
@@ -364,7 +372,9 @@ class FluxService implements SingletonInterface
             // an empty value that is not null indicates an incorrect caller. Instead
             // of returning ALL paths here, an empty array is the proper return value.
             // However, dispatch a debug message to inform integrators of the problem.
-            GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__)->log(
+            /** @var LogManager $logManager */
+            $logManager = GeneralUtility::makeInstance(LogManager::class);
+            $logManager->getLogger(__CLASS__)->log(
                 'notice',
                 'Template paths have been attempted fetched using an empty value that is NOT NULL in ' .
                 get_class($this) . '. This indicates a potential problem with your TypoScript configuration - a ' .
@@ -384,12 +394,16 @@ class FluxService implements SingletonInterface
             ];
         }
         if (null !== $extensionName) {
-            return GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName))->toArray();
+            /** @var TemplatePaths $templatePaths */
+            $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName));
+            return $templatePaths->toArray();
         }
         $configurations = [];
         $registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Page');
         foreach ($registeredExtensionKeys as $registeredExtensionKey) {
-            $configurations[$registeredExtensionKey] = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($registeredExtensionKey))->toArray();
+            /** @var TemplatePaths $templatePaths */
+            $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($registeredExtensionKey));
+            $configurations[$registeredExtensionKey] = $templatePaths->toArray();
         }
         if ($plugAndPlayEnabled) {
             $configurations['FluidTYPO3.Flux'] = array_replace(
@@ -429,21 +443,27 @@ class FluxService implements SingletonInterface
     }
 
     /**
-     * @return VariableFrontend
+     * @return FrontendInterface
      */
     protected function getRuntimeCache()
     {
         static $cache;
-        return $cache ?? ($cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime'));
+        if (!$cache) {
+            /** @var CacheManager $cacheManager */
+            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+            $cache = $cacheManager->getCache('cache_runtime');
+        }
+        return $cache;
     }
 
     /**
-     * @return VariableFrontend
+     * @return FrontendInterface
      */
     protected function getPersistentCache()
     {
         static $cache;
         if (!$cache) {
+            /** @var CacheManager $cacheManager */
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
             try {
                 $cache = $cacheManager->getCache('flux');

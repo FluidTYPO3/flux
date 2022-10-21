@@ -14,6 +14,7 @@ use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class PagePreviewRenderer
@@ -50,7 +51,7 @@ class PagePreviewRenderer
     }
 
     /**
-     * @param $uid
+     * @param integer $uid
      * @return array|null
      */
     protected function getRecord($uid)
@@ -64,6 +65,10 @@ class PagePreviewRenderer
      */
     protected function getPageProvider()
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(PageProvider::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var PageProvider $pageProvider */
+        $pageProvider = $objectManager->get(PageProvider::class);
+        return $pageProvider;
     }
 }

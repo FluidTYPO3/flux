@@ -16,6 +16,7 @@ use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Fluid Template preview renderer
@@ -66,6 +67,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
     protected function attachAssets()
     {
         if (false === static::$assetsIncluded) {
+            /** @var PageRenderer $pageRenderer */
             $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
             $pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
             $pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
@@ -76,6 +78,10 @@ class Preview implements PageLayoutViewDrawItemHookInterface
 
     protected function getConfigurationService(): FluxService
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(FluxService::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var FluxService $fluxService */
+        $fluxService = $objectManager->get(FluxService::class);
+        return $fluxService;
     }
 }

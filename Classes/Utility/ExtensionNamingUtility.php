@@ -27,7 +27,7 @@ class ExtensionNamingUtility
 
     /**
      * @param string $qualifiedExtensionName
-     * @return string
+     * @return string|null
      */
     public static function getVendorName($qualifiedExtensionName)
     {

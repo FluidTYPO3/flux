@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
@@ -49,6 +50,7 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
         } else {
             $form->getOutlet()->addPipeOut($pipe);
         }
+        return '';
     }
 
     /**
@@ -62,6 +64,11 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
         iterable $arguments,
         \Closure $renderChildrenClosure = null
     ) {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(StandardPipe::class);
+        /** @var ObjectManagerInterface $objectManaager */
+        $objectManaager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var StandardPipe $pipe */
+        $pipe = $objectManaager->get(StandardPipe::class);
+
+        return $pipe;
     }
 }

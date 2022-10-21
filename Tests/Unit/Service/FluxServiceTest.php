@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -58,6 +59,8 @@ class FluxServiceTest extends AbstractTestCase
     {
         $instance = new FluxService();
         if (null !== $resourceFactoryOutput) {
+            $file = $this->getMockBuilder(File::class)->setMethods(['getIdentifier'])->disableOriginalConstructor()->getMock();
+            $file->method('getIdentifier')->willReturn($resourceFactoryOutput);
             /** @var ResourceFactory|\PHPUnit_Framework_MockObject_MockObject $resourceFactory */
             $resourceFactory = $this->getMockBuilder(
                 ResourceFactory::class
@@ -65,7 +68,7 @@ class FluxServiceTest extends AbstractTestCase
                 array('getFileObjectFromCombinedIdentifier')
             )->getMock();
             $resourceFactory->expects($this->once())->method('getFileObjectFromCombinedIdentifier')
-                ->with($reference)->willReturn($resourceFactoryOutput);
+                ->with($reference)->willReturn($file);
             $instance->injectResourceFactory($resourceFactory);
         }
         $result = $instance->convertFileReferenceToTemplatePathAndFilename($reference);

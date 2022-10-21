@@ -1,0 +1,47 @@
+includes:
+	- phpstan-baseline.neon
+
+parameters:
+    level: 7
+    reportUnmatchedIgnoredErrors: false
+    checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+        - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:getControllerContext\\(\\)\\.$#"
+        - "#^Call to an undefined method SplFileInfo\\:\\:getRelativePathname\\(\\)\\.$#"
+        - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:getRenderingContext\\(\\)\\.$#"
+        - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:renderSection\\(\\)\\.$#"
+        - "#TYPO3Fluid\\\\Fluid\\\\Component\\\\Error\\\\ChildNotFoundException#"
+        - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:setControllerContext\\(\\)\\.#"
+        - "#^Instanceof between (iterable|array) and TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection will always evaluate to false\\.$#"
+        - "#^Parameter \\#1 \\$templateString of method TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\TemplateParser\\:\\:parse\\(\\) expects string, TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source given\\.$#"
+        - "#no value type specified in iterable#"
+        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\ExtensionConfiguration#"
+        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Service\\\\FlexFormService#"
+        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\FlexFormService#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\FlexFormService not found\\.$#"
+        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteFinder#"
+        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Information\\\\Typo3Version#"
+        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request not found\\.$#"
+        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response not found\\.$#"
+        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response#"
+        - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) invoked with [2-9] parameters, 1 required\\.$#"
+        - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Dispatcher\\:\\:dispatch\\(\\) invoked with 2 parameters, 1 required\\.$#"
+        - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ControllerInterface\\:\\:processRequest\\(\\) invoked with 2 parameters, 1 required\\.$#"
+        - "#^Cannot call method (rowCount|fetch|fetchAssociative|fetchAll|fetchAllAssociative)\\(\\) on (Doctrine\\\\DBAL\\\\Driver\\\\Statement|Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement|Doctrine\\\\DBAL\\\\Result)\\|int\\.$#"
+        - "#^Static method TYPO3\\\\CMS\\\\Extbase\\\\Reflection\\\\ObjectAccess\\:\\:getProperty\\(\\) invoked with 3 parameters, 2 required\\.$#"
+        - "#^Call to an undefined static method TYPO3\\\\CMS\\\\Backend\\\\Utility\\\\BackendUtility\\:\\:getMovePlaceholder\\(\\)\\.$#"
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    paths:
+        - Classes
+        - Configuration
+    excludePaths:
+        - Classes/Updates/MigrateColPosWizard.php
+        - Classes/Integration/Event/AfterLocalizationControllerColumnsEventListener.php
+        - Classes/Integration/PreviewView.php
+        - Classes/Integration/Overrides/LocalizationController.php
+        - Classes/Outlet/Pipe/EmailPipe.php
+        - Classes/Utility/ContextUtility.php

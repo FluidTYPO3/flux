@@ -16,6 +16,10 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
  */
 class Row extends AbstractFormContainer implements ContainerInterface
 {
+    /**
+     * @var Column[]|\SplObjectStorage
+     */
+    protected $children;
 
     /**
      * @return array

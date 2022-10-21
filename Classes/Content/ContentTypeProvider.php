@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\PreviewProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Flux Provider for content_types table
@@ -44,13 +45,11 @@ class ContentTypeProvider extends AbstractProvider implements
 
     public function getForm(array $row)
     {
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var RecordBasedContentTypeDefinition $contentType */
         $contentType = $objectManager->get(RecordBasedContentTypeDefinition::class, $row);
-        if (!$contentType) {
-            throw new \RuntimeException(
-                sprintf('Content type "%s" from record UID "%d" is not managed by Flux', $row['CType'], $row['uid'])
-            );
-        }
+        /** @var ContentTypeForm $form */
         $form = $objectManager->get(ContentTypeForm::class);
         foreach ($contentType->getSheetNamesAndLabels() as $name => $label) {
             $form->createSheet($name, $label);

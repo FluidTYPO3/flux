@@ -9,6 +9,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TemplateSourceDumperNode extends AbstractNode implements NodeInterface
 {
+    /**
+     * @var array
+     */
     private $parameters = [];
 
     public function __construct(NodeFactory $nodeFactory, array $data)
@@ -16,10 +19,15 @@ class TemplateSourceDumperNode extends AbstractNode implements NodeInterface
         $this->parameters = $data;
     }
 
+    /**
+     * @return array
+     */
     public function render()
     {
         $return = $this->initializeResultArray();
-        $return['html'] = GeneralUtility::makeInstance(ContentTypeFluxTemplateDumper::class)->dumpFluxTemplate(
+        /** @var ContentTypeFluxTemplateDumper $dumper */
+        $dumper = GeneralUtility::makeInstance(ContentTypeFluxTemplateDumper::class);
+        $return['html'] = $dumper->dumpFluxTemplate(
             $this->parameters['parameterArray'] + ['row' => $this->parameters['databaseRow']]
         );
         return $return;

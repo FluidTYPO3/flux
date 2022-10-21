@@ -22,6 +22,7 @@ interface ContentTypeProviderInterface
 {
     /**
      * @param string $contentObjectType
+     * @return void
      */
     public function setContentObjectType($contentObjectType);
 

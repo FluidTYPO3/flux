@@ -15,6 +15,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -54,7 +55,7 @@ class ContentIcon
     protected $fluxService;
 
     /**
-     * @var VariableFrontend
+     * @var FrontendInterface
      */
     protected $cache;
 
@@ -81,14 +82,22 @@ class ContentIcon
      */
     public function __construct()
     {
-        $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
-        $this->injectFluxService($this->objectManager->get(FluxService::class));
-        $this->cache = $this->objectManager->get(CacheManager::class)->getCache('flux');
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->injectObjectManager($objectManager);
+
+        /** @var FluxService $fluxService */
+        $fluxService = $objectManager->get(FluxService::class);
+        $this->injectFluxService($fluxService);
+
+        /** @var CacheManager $cacheManager */
+        $cacheManager = $objectManager->get(CacheManager::class);
+        $this->cache = $cacheManager->getCache('flux');
     }
 
     /**
      * @param array $parameters
-     * @param PageLayoutView|DatabaseRecordList $caller
+     * @param PageLayoutView|GridColumnItem|DatabaseRecordList $caller
      * @return string
      */
     public function addSubIcon(array $parameters, $caller = null)
@@ -143,6 +152,7 @@ class ContentIcon
      */
     protected function drawGridToggle(array $row)
     {
+        /** @var IconFactory $iconFactory */
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
 
         $collapseIcon = $iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
@@ -198,7 +208,7 @@ class ContentIcon
     /**
      * @param string $table
      * @param array $fields
-     * @return string
+     * @return string|null
      */
     protected function detectFirstFlexTypeFieldInTableFromPossibilities($table, $fields)
     {

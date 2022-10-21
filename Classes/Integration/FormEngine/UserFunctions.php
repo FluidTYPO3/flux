@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class UserFunctions
@@ -39,15 +40,17 @@ class UserFunctions
      * there are no fields in the DS.
      *
      * @param array $parameters
-     * @param $pObj
+     * @param object $pObj Not used
      * @return bool
      */
     public function fluxFormFieldDisplayCondition(array $parameters, &$pObj)
     {
         list ($table, $field) = $parameters['conditionParameters'];
-        $provider = GeneralUtility::makeInstance(ObjectManager::class)
-            ->get(ProviderResolver::class)
-            ->resolvePrimaryConfigurationProvider($table, $field, $parameters['record']);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = $objectManager->get(ProviderResolver::class);
+        $provider = $providerResolver->resolvePrimaryConfigurationProvider($table, $field, $parameters['record']);
 
         if (!$provider) {
             return true;
@@ -129,8 +132,10 @@ class UserFunctions
         if ($parentUid === 0) {
             return [];
         }
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         list ($minimumColPosValue, $maximumColPosValue) = ColumnNumberUtility::calculateMinimumAndMaximumColumnNumberWithinParent($parentUid);
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
         $query = $queryBuilder->select('colPos')->from($table)->andWhere(
             $queryBuilder->expr()->gte('colPos', $minimumColPosValue),
             $queryBuilder->expr()->lt('colPos', $maximumColPosValue)

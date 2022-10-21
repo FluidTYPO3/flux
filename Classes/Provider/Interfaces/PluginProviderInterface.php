@@ -21,6 +21,7 @@ interface PluginProviderInterface
 {
     /**
      * @param string $listType
+     * @return void
      */
     public function setListType($listType);
 

@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
@@ -36,7 +35,7 @@ class MiscellaneousUtility
      *   EXT:$extensionKey/Resources/Public/Icons/$controllerName/$templateName.(png|gif)
      *
      * @param Form $form
-     * @return string|NULL
+     * @return string|null
      */
     public static function getIconForTemplate(Form $form)
     {
@@ -58,12 +57,12 @@ class MiscellaneousUtility
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
                 if (true === defined('GLOB_BRACE')) {
-                    $allowedExtensions = implode(',', static::$allowedIconTypes);
+                    $allowedExtensions = implode(',', self::$allowedIconTypes);
                     $iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
                     $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);
                 } else {
-                    foreach (static::$allowedIconTypes as $allowedIconType) {
-                        $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType));
+                    foreach (self::$allowedIconTypes as $allowedIconType) {
+                        $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType) ?: []);
                     }
                 }
             }
@@ -92,6 +91,7 @@ class MiscellaneousUtility
                 $iconProvider = BitmapIconProvider::class;
         }
         $iconIdentifier = $identifier ?? 'icon-' . md5($originalFile);
+        /** @var IconRegistry $iconRegistry */
         $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
         $iconRegistry->registerIcon($iconIdentifier, $iconProvider, ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]);
         return $iconIdentifier;
@@ -133,7 +133,7 @@ class MiscellaneousUtility
                 continue;
             }
             foreach ($containerNode->childNodes as $fieldNodeInContainer) {
-                /** @var \DOMElement $fieldNodeInContainer */
+                /** @var \DOMNode $fieldNodeInContainer */
                 if (false === $fieldNodeInContainer instanceof \DOMElement) {
                     continue;
                 }
@@ -176,7 +176,7 @@ class MiscellaneousUtility
         if (0 === $dataNode->getElementsByTagName('sheet')->length) {
             return '';
         }
-        $xml = $dom->saveXML();
+        $xml = (string) $dom->saveXML();
         // hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
         $xml = preg_replace('#<el index="el">\s*</el>#', '', $xml);
         $xml = preg_replace('#<field index="[^"]*">\s*</field>#', '', $xml);

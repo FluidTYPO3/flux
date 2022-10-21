@@ -77,6 +77,8 @@ class RenderViewHelper extends AbstractViewHelper
      */
     protected static function getNodeFactory()
     {
-        return GeneralUtility::makeInstance(NodeFactory::class);
+        /** @var NodeFactory $nodeFactory */
+        $nodeFactory = GeneralUtility::makeInstance(NodeFactory::class);
+        return $nodeFactory;
     }
 }

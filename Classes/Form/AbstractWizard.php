@@ -8,8 +8,6 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Wizard\Add;
-
 /**
  * AbstractWizard
  */
@@ -60,7 +58,7 @@ abstract class AbstractWizard extends AbstractFormComponent implements WizardInt
 
     /**
      * @param boolean $hideParent
-     * @return Add
+     * @return $this
      */
     public function setHideParent($hideParent)
     {

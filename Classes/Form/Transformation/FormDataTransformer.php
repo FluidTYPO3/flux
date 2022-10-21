@@ -95,9 +95,6 @@ class FormDataTransformer
      */
     protected function extractTransformableObjectByPath(ContainerInterface $subject, $path)
     {
-        if (is_scalar($subject) || is_null($subject)) {
-            return $subject;
-        }
         $pathAsArray = explode('.', $path);
         $subPath = array_shift($pathAsArray);
         $child = null;
@@ -134,8 +131,11 @@ class FormDataTransformer
         } elseif ('bool' === $dataType || 'boolean' === $dataType) {
             return boolval($value);
         } elseif (strpos($dataType, '->')) {
+            /** @var class-string $class */
             list ($class, $function) = explode('->', $dataType);
-            return call_user_func_array([$this->objectManager->get($class), $function], [$value]);
+            /** @var object $object */
+            $object = $this->objectManager->get($class);
+            return $object->{$function}($value);
         } else {
             return $this->getObjectOfType($dataType, $value);
         }
@@ -145,7 +145,7 @@ class FormDataTransformer
      * Gets a DomainObject or QueryResult of $dataType
      *
      * @param string $dataType
-     * @param string $uids
+     * @param string|array $uids
      * @return mixed
      */
     protected function getObjectOfType($dataType, $uids)
@@ -154,6 +154,7 @@ class FormDataTransformer
         $identifiers = array_map('intval', $identifiers);
         $isModel = $this->isDomainModelClassName($dataType);
         if (false !== strpos($dataType, '<')) {
+            /** @var class-string $container */
             list ($container, $object) = explode('<', trim($dataType, '>'));
         } else {
             $container = null;
@@ -163,8 +164,10 @@ class FormDataTransformer
         // Fast decisions
         if (true === $isModel && null === $container) {
             if (true === class_exists($repositoryClassName)) {
+                /** @var RepositoryInterface $repository */
                 $repository = $this->objectManager->get($repositoryClassName);
-                return reset($this->loadObjectsFromRepository($repository, $identifiers));
+                $repositoryObjects = $this->loadObjectsFromRepository($repository, $identifiers);
+                return reset($repositoryObjects);
             }
         } elseif (true === class_exists($dataType)) {
             // using constructor value to support objects like DateTime
@@ -173,7 +176,7 @@ class FormDataTransformer
         // slower decisions with support for type-hinted collection objects
         if ($container && $object) {
             if (true === $isModel && true === class_exists($repositoryClassName) && 0 < count($identifiers)) {
-                /** @var $repository RepositoryInterface */
+                /** @var RepositoryInterface $repository */
                 $repository = $this->objectManager->get($repositoryClassName);
                 return $this->loadObjectsFromRepository($repository, $identifiers);
             } else {

@@ -36,3 +36,15 @@ $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['label'] = 'LLL:EXT:flux
 if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE)) {
     \FluidTYPO3\Flux\Integration\NormalizedData\FlexFormImplementation::registerForTableAndField('tt_content', 'pi_flexform');
 }
+
+/** @var \FluidTYPO3\Flux\Content\ContentTypeManager $contentTypeManager */
+$contentTypeManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\FluidTYPO3\Flux\Content\ContentTypeManager::class);
+foreach ($contentTypeManager->fetchContentTypes() as $contentType) {
+    $contentTypeManager->registerTypeDefinition($contentType);
+    \FluidTYPO3\Flux\Core::registerTemplateAsContentType(
+        $contentType->getExtensionIdentity(),
+        $contentType->getTemplatePathAndFilename(),
+        $contentType->getContentTypeName(),
+        $contentType->getProviderClassName()
+    );
+}

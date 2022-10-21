@@ -24,19 +24,20 @@ class ProviderProcessor implements FormDataProviderInterface
         if (class_exists(SiteFinder::class) && $result['tableName'] === 'tt_content') {
             $pageUid = $result['parentPageRow']['uid'];
             if ($pageUid > 0) {
+                /** @var SiteFinder $siteFinder */
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                 $enabledContentTypes = [];
                 try {
                     $site = $siteFinder->getSiteByPageId($pageUid);
                     $siteConfiguration = $site->getConfiguration();
-                    if (!empty($siteConfiguration['flux_content_types'])) {
-                        $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
-                    }
+                    $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
                 } catch (SiteNotFoundException $exception) {
                     // Suppressed; sites not being found isn't a fatal problem here.
                 }
                 if (!empty($enabledContentTypes)) {
-                    $fluidContentTypeNames = (array) GeneralUtility::makeInstance(ContentTypeManager::class)->fetchContentTypeNames();
+                    /** @var ContentTypeManager $contentTypeManager */
+                    $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+                    $fluidContentTypeNames = (array) $contentTypeManager->fetchContentTypeNames();
                     foreach ($result['processedTca']['columns']['CType']['config']['items'] as $index => $optionArray) {
                         $contentTypeName = $optionArray[1];
                         if (in_array($contentTypeName, $fluidContentTypeNames, true) && !in_array($contentTypeName, $enabledContentTypes)) {
@@ -63,7 +64,9 @@ class ProviderProcessor implements FormDataProviderInterface
 
     protected function loadRecord(string $table, int $uid): array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
         $query = $queryBuilder->select('*')
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $uid))
@@ -77,7 +80,9 @@ class ProviderProcessor implements FormDataProviderInterface
      */
     protected function getProviderResolver()
     {
-        return $this->getObjectManager()->get(ProviderResolver::class);
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = $this->getObjectManager()->get(ProviderResolver::class);
+        return $providerResolver;
     }
 
     /**
@@ -85,6 +90,8 @@ class ProviderProcessor implements FormDataProviderInterface
      */
     protected function getObjectManager()
     {
-        return GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        return $objectManager;
     }
 }

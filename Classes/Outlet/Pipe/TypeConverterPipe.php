@@ -51,12 +51,13 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
     }
 
     /**
-     * @param TypeConverterInterface|string $typeConverter
+     * @param TypeConverterInterface|class-string $typeConverter
      * @return TypeConverterPipe
      */
     public function setTypeConverter($typeConverter)
     {
         if (true === is_string($typeConverter)) {
+            /** @var TypeConverterInterface $typeConverter */
             $typeConverter = $this->objectManager->get($typeConverter);
         }
         $this->typeConverter = $typeConverter;
@@ -135,7 +136,7 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
                     $targetType,
                     $output->getMessage()
                 ),
-                $output->getCode()
+                (integer) $output->getCode()
             );
         }
         return $output;

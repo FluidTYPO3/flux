@@ -23,6 +23,11 @@ class Grid extends AbstractFormContainer implements ContainerInterface
 {
 
     /**
+     * @var Row[]|\SplObjectStorage
+     */
+    protected $children;
+
+    /**
      * @return array
      */
     public function build()

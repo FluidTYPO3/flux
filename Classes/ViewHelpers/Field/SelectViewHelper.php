@@ -82,8 +82,9 @@ class SelectViewHelper extends AbstractMultiValueFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var Select $component */
-        $component = static::getPreparedComponent('Select', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Select::class, $renderingContext, $arguments);
         $component->setRenderType($arguments['renderType']);
         $component->setShowIconTable($arguments['showIconTable']);
         return $component;
