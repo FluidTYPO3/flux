@@ -20,6 +20,17 @@ jobs:
         composer-arguments: [''] # to run --ignore-platform-reqs in experimental builds
         typo3-version: ['^8.7', '^9.5', '^10.4', '^11.5']
         experimental: [false]
+        exclude:
+          - php-version: '7.4'
+            typo3-version: '^11.5'
+          - php-version: '8.0'
+            typo3-version: '^8.7'
+          - php-version: '8.0'
+            typo3-version: '^9.5'
+          - php-version: '8.1'
+            typo3-version: '^8.7'
+          - php-version: '8.1'
+            typo3-version: '^9.5'
 
     runs-on: ubuntu-latest
 
