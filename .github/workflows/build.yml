@@ -27,10 +27,14 @@ jobs:
             typo3-version: '^8.7'
           - php-versions: '8.0'
             typo3-version: '^9.5'
+          - php-versions: '8.0'
+            typo3-version: '^10.4'
           - php-versions: '8.1'
             typo3-version: '^8.7'
           - php-versions: '8.1'
             typo3-version: '^9.5'
+          - php-versions: '8.1'
+            typo3-version: '^10.4'
 
     runs-on: ubuntu-latest
 
@@ -91,7 +95,7 @@ jobs:
           tools: composer:v2.2
 
       - name: Select TYPO3 version
-        run: "composer require typo3/cms-core:${{ matrix.typo3-version }}"
+        run: "composer require typo3/cms-core:${{ matrix.typo3-version }} --no-update"
 
       - name: Composer install
         uses: ramsey/composer-install@v2
@@ -119,7 +123,7 @@ jobs:
           ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
 
       - name: Select TYPO3 version 9.5
-        run: "composer require typo3/cms-core:^9.5"
+        run: "composer require typo3/cms-core:^9.5 --no-update"
 
       - name: Composer install
         uses: ramsey/composer-install@v1
