@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use Doctrine\DBAL\Statement;
+use Doctrine\DBAL\Driver\Statement;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\VisibilityAspect;
@@ -25,7 +25,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RecordService implements SingletonInterface
 {
-
     /**
      * @param string $table
      * @param string $fields
@@ -123,7 +122,9 @@ class RecordService implements SingletonInterface
      */
     protected function getQueryBuilder($table)
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
         $this->setContextDependentRestrictionsForQueryBuilder($queryBuilder);
         return $queryBuilder;
     }
@@ -141,11 +142,14 @@ class RecordService implements SingletonInterface
                     $context = new Context();
                     $visibility = new VisibilityAspect(true, true);
                     $context->setAspect('visibility', $visibility);
+                    /** @var FrontendRestrictionContainer $frontendRestrictions */
                     $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
                     $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
                 } else {
                     // Fallback for TYPO3 8.7
-                    $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
+                    /** @var FrontendRestrictionContainer $frontendRestrictions */
+                    $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class);
+                    $queryBuilder->setRestrictions($frontendRestrictions);
                     if ($GLOBALS['TSFE']->showHiddenRecords) {
                         $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
                     }

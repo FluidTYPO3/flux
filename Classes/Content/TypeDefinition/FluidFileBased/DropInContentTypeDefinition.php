@@ -78,6 +78,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         static::initializeDropInFileSystemStructure($basePath);
 
         $contentTypesPath = realpath($basePath . static::TEMPLATES_DIRECTORY . static::CONTENT_DIRECTORY) . '/';
+        /** @var Finder $finder */
         $finder = GeneralUtility::makeInstance(Finder::class);
         try {
             /** @var \SplFileInfo[] $files */

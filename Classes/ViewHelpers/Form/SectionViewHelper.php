@@ -98,6 +98,7 @@ class SectionViewHelper extends AbstractFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $container = static::getContainerFromRenderingContext($renderingContext);
         /** @var Section $section */
         $section = $container->createContainer(Section::class, $arguments['name'], $arguments['label']);

@@ -40,6 +40,7 @@ class Field extends AbstractFormField
         $settings['displayCondition'] = $settings['displayCond'];
         unset($settings['type'], $settings['displayCond']);
 
+        /** @var FieldInterface $field */
         $field = GeneralUtility::makeInstance(static::class);
         foreach ($settings as $propertyName => $value) {
             $setterMethodName = 'set' . ucfirst($propertyName);

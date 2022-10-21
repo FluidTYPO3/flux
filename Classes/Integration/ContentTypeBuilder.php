@@ -29,6 +29,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 /**
@@ -82,7 +83,10 @@ class ContentTypeBuilder
         }
         $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerActionName);
 
-        $provider = GeneralUtility::makeInstance(ObjectManager::class)->get($providerClassName);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var BasicProviderInterface $provider */
+        $provider = $objectManager->get($providerClassName);
         if (!$provider instanceof BasicProviderInterface
             || !$provider instanceof RecordProviderInterface
             || !$provider instanceof ControllerProviderInterface
@@ -181,8 +185,9 @@ class ContentTypeBuilder
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
         // all TypoScript is finally loaded.
-        GeneralUtility::makeInstance(CacheManager::class)
-            ->getCache('cache_runtime')
+        /** @var CacheManager $cacheManager */
+        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        $cacheManager->getCache('cache_runtime')
             ->remove('viewpaths_' . ExtensionNamingUtility::getExtensionKey($providerExtensionName));
     }
 
@@ -326,6 +331,7 @@ class ContentTypeBuilder
 
     protected function getCache(): FrontendInterface
     {
+        /** @var CacheManager $cacheManager */
         $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
         try {
             return $cacheManager->getCache('flux');
@@ -362,7 +368,9 @@ class ContentTypeBuilder
         static $version;
         if (!isset($version)) {
             if (class_exists(Typo3Version::class)) {
-                $version = GeneralUtility::makeInstance(Typo3Version::class)->getVersion();
+                /** @var Typo3Version $versionClass */
+                $versionClass = GeneralUtility::makeInstance(Typo3Version::class);
+                $version = $versionClass->getVersion();
             } else {
                 $version = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core');
             }

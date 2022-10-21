@@ -37,7 +37,9 @@ class ExtensionConfigurationUtility
     {
         if (empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'])) {
             if (class_exists(ExtensionConfiguration::class)) {
-                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('flux');
+                /** @var ExtensionConfiguration $extensionConfigurationManager */
+                $extensionConfigurationManager = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = $extensionConfigurationManager->get('flux');
             } elseif (is_string($extensionConfiguration)) {
                 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] ?? unserialize($extensionConfiguration);
             }

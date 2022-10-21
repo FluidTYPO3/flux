@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Parser\Source;
@@ -39,10 +40,14 @@ class ContentTypeValidator
     {
         static $content = '';
         if (empty($content)) {
+            /** @var ObjectManagerInterface $objectManager */
             $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            /** @var Request $request */
             $request = $objectManager->get(Request::class);
+            /** @var ControllerContext $context */
             $context = $objectManager->get(ControllerContext::class);
             $context->setRequest($request);
+            /** @var TemplateView $view */
             $view = $objectManager->get(TemplateView::class);
             $view->getRenderingContext()->setControllerContext($context);
             $view->getRenderingContext()->getTemplatePaths()->fillDefaultsByPackageName('flux');
@@ -57,7 +62,9 @@ class ContentTypeValidator
                 return $view->render('validation');
             }
 
-            $contentType = $objectManager->get(ContentTypeManager::class)->determineContentTypeForTypeString($record['content_type']);
+            /** @var ContentTypeManager $contentTypeManager */
+            $contentTypeManager = $objectManager->get(ContentTypeManager::class);
+            $contentType = $contentTypeManager->determineContentTypeForTypeString($record['content_type']);
             if (!$contentType) {
                 $view->assign('recordIsNew', true);
                 return $view->render('validation');
@@ -92,8 +99,12 @@ class ContentTypeValidator
         if (!$definition instanceof RecordBasedContentTypeDefinition) {
             return null;
         }
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var TemplateView $templateView */
+        $templateView = $objectManager->get(TemplateView::class);
         $source = $definition->getTemplatesource();
-        $parser = GeneralUtility::makeInstance(ObjectManager::class)->get(TemplateView::class)->getRenderingContext()->getTemplateParser();
+        $parser = $templateView->getRenderingContext()->getTemplateParser();
         try {
             if (class_exists(Sequencer::class)) {
                 $parser->parse(new Source($source));
@@ -119,7 +130,9 @@ class ContentTypeValidator
 
     protected function countUsages(ContentTypeDefinitionInterface $definition): int
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tt_content');
         $queryBuilder->select('uid')
             ->from('tt_content')
             ->where(

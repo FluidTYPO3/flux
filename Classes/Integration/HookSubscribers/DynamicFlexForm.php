@@ -78,9 +78,17 @@ class DynamicFlexForm extends FlexFormTools
      */
     public function __construct()
     {
-        $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
-        $this->injectConfigurationService($this->objectManager->get(FluxService::class));
-        $this->injectRecordService($this->objectManager->get(WorkspacesAwareRecordService::class));
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->injectObjectManager($objectManager);
+
+        /** @var FluxService $fluxService */
+        $fluxService = $objectManager->get(FluxService::class);
+        $this->injectConfigurationService($fluxService);
+
+        /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
+        $workspacesAwareRecordService = $objectManager->get(WorkspacesAwareRecordService::class);
+        $this->injectRecordService($workspacesAwareRecordService);
     }
 
     /**
@@ -162,7 +170,7 @@ class DynamicFlexForm extends FlexFormTools
         }
         if (count($record) === 1 && isset($record['uid']) && is_numeric($record['uid'])) {
             // The record is a stub, has only "uid" and "uid" is numeric. Reload the full record from DB.
-            $record = BackendUtility::getRecord($identifier['tableName'], $record['uid'], '*', '', false);
+            $record = BackendUtility::getRecord($identifier['tableName'], (integer) $record['uid'], '*', '', false);
         }
         $fieldName = $identifier['fieldName'];
         $dataStructArray = [];
@@ -226,7 +234,9 @@ class DynamicFlexForm extends FlexFormTools
     {
         static $cache;
         if (!$cache) {
-            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
+            /** @var CacheManager $cacheManager */
+            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+            $cache = $cacheManager->getCache('flux');
         }
         return $cache;
     }
@@ -239,7 +249,9 @@ class DynamicFlexForm extends FlexFormTools
     {
         static $cache;
         if (!$cache) {
-            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
+            /** @var CacheManager $cacheManager */
+            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+            $cache = $cacheManager->getCache('cache_runtime');
         }
         return $cache;
     }

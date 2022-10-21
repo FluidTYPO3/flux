@@ -212,6 +212,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $allowedExtensions = $arguments['allowedExtensions'];
         $disallowedExtensions = $arguments['disallowedExtensions'];
         $createNewRelationLinkTitle = $arguments['createNewRelationLinkTitle'];

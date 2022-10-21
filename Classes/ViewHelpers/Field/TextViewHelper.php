@@ -93,6 +93,7 @@ class TextViewHelper extends AbstractFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var Text $text */
         $text = static::getPreparedComponent(Text::class, $renderingContext, $arguments);
         $text->setValidate($arguments['validate']);

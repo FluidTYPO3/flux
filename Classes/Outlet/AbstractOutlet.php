@@ -67,6 +67,7 @@ abstract class AbstractOutlet implements OutletInterface
      */
     public static function create(array $settings)
     {
+        /** @var self $instance */
         $instance = GeneralUtility::makeInstance(static::class);
         if (isset($settings['pipesIn'])) {
             foreach ($settings['pipesIn'] as $pipeSettings) {

@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class for provisioning page layout selections for backend form fields
@@ -74,10 +75,17 @@ class PageLayoutDataProvider
 
     public function __construct()
     {
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->injectConfigurationManager($objectManager->get(ConfigurationManagerInterface::class));
-        $this->injectConfigurationService($objectManager->get(FluxService::class));
-        $this->injectPageService($objectManager->get(PageService::class));
+        /** @var ConfigurationManagerInterface $configurationManager */
+        $configurationManager = $objectManager->get(ConfigurationManagerInterface::class);
+        $this->injectConfigurationManager($configurationManager);
+        /** @var FluxService $fluxService */
+        $fluxService = $objectManager->get(FluxService::class);
+        $this->injectConfigurationService($fluxService);
+        /** @var PageService $pageService */
+        $pageService = $objectManager->get(PageService::class);
+        $this->injectPageService($pageService);
     }
 
     /**
@@ -112,13 +120,12 @@ class PageLayoutDataProvider
         $allowedTemplates = [];
         $pageUid = (int) $parameters['row']['uid'];
         if ($pageUid > 0 && class_exists(SiteFinder::class)) {
+            /** @var SiteFinder $resolver */
             $resolver = GeneralUtility::makeInstance(SiteFinder::class);
             try {
                 $site = $resolver->getSiteByPageId($pageUid);
                 $siteConfiguration = $site->getConfiguration();
-                if (!empty($siteConfiguration['flux_page_templates'])) {
-                    $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '', true);
-                }
+                $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '', true);
             } catch (SiteNotFoundException $exception) {
                 $allowedTemplates = [];
             }

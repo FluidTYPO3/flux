@@ -62,6 +62,7 @@ class LinkViewHelper extends AbstractWizardViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var Link $component */
         $component = static::getPreparedComponent(Link::class, $renderingContext, $arguments);
         $component->setActiveTab($arguments['activeTab']);

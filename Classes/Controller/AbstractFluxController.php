@@ -14,7 +14,9 @@ use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\PluginProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -25,6 +27,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Response;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
@@ -60,7 +63,7 @@ abstract class AbstractFluxController extends ActionController
     protected $configurationService;
 
     /**
-     * @var ControllerProviderInterface|DataStructureProviderInterface|FluidProviderInterface|FormProviderInterface|RecordProviderInterface
+     * @var ProviderInterface
      */
     protected $provider;
 
@@ -251,11 +254,12 @@ abstract class AbstractFluxController extends ActionController
         $this->controllerContext->getRequest()->setControllerExtensionName($extensionName);
         $view->setControllerContext($this->controllerContext);
 
+        /** @var TemplatePaths $templatePaths */
+        $templatePaths = $this->objectManager->get(TemplatePaths::class, $extensionKey);
+
         /** @var RenderingContextInterface $renderingContext */
         $renderingContext = $view->getRenderingContext();
-        $renderingContext->setTemplatePaths(
-            $this->objectManager->get(TemplatePaths::class, $extensionKey)
-        );
+        $renderingContext->setTemplatePaths($templatePaths);
         $renderingContext->setControllerAction(
             $this->provider->getControllerActionFromRecord($record)
         );
@@ -283,7 +287,9 @@ abstract class AbstractFluxController extends ActionController
     protected function resolveView()
     {
         $viewClassName = (!method_exists($this, 'resolveViewObjectName') ? $this->defaultViewObjectName : $this->resolveViewObjectName()) ?: $this->defaultViewObjectName;
-        return $this->objectManager->get($viewClassName);
+        /** @var ViewInterface $view */
+        $view = $this->objectManager->get($viewClassName);
+        return $view;
     }
 
     /**
@@ -432,16 +438,20 @@ abstract class AbstractFluxController extends ActionController
         $this->request->setArguments($arguments);
         $this->request->setControllerExtensionName($extensionName);
         $this->request->setControllerActionName($controllerActionName);
+        /** @var ControllerInterface $potentialControllerInstance */
         $potentialControllerInstance = $this->objectManager->get($controllerClassName);
 
         if (isset($this->responseFactory)) {
             $response = $this->responseFactory->createResponse();
         } else {
+            /** @var Response $response */
             $response = $this->objectManager->get(Response::class);
         }
 
         if (class_exists(Typo3Version::class)) {
-            $version = GeneralUtility::makeInstance(Typo3Version::class)->getVersion();
+            /** @var Typo3Version $versionClass */
+            $versionClass = GeneralUtility::makeInstance(Typo3Version::class);
+            $version = $versionClass->getVersion();
         } else {
             $version = ExtensionManagementUtility::getExtensionVersion('core');
         }
@@ -461,6 +471,7 @@ abstract class AbstractFluxController extends ActionController
             if (version_compare($version, '11', '<')) {
                 $potentialControllerInstance->processRequest($this->request, $response);
             } else {
+                /** @var Response $response */
                 $response = $potentialControllerInstance->processRequest($this->request);
             }
         } catch (StopActionException $error) {

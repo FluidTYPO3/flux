@@ -58,6 +58,7 @@ class AddViewHelper extends AbstractWizardViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var Add $component */
         $component = static::getPreparedComponent(Add::class, $renderingContext, $arguments);
         $component->setTable($arguments['table']);

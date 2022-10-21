@@ -377,7 +377,7 @@ class ControllerActions extends Select
             $label = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
         } elseif (method_exists($controllerClassName, $actionName . 'Action') && true === $disableLocalLanguageLabels) {
             $methodReflection = $this->reflectAction($controllerName, $actionName);
-            $parts = explode("\n", trim($methodReflection->getDocComment(), "/*\n"));
+            $parts = explode("\n", trim((string) $methodReflection->getDocComment(), "/*\n"));
             $line = array_shift($parts);
             $line = trim(trim($line), '* ');
             if (substr($line, 0, 1) !== '@') {
@@ -394,6 +394,7 @@ class ControllerActions extends Select
      */
     protected function reflectAction($controllerName, $actionName)
     {
+        /** @var class-string $controllerClassName */
         $controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
         $controllerClassReflection = new \ReflectionClass($controllerClassName);
         /** @var \ReflectionMethod $methodReflection */

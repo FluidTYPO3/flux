@@ -96,7 +96,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         $defaultSheet->setName('options');
         $defaultSheet->setLabel('LLL:EXT:flux' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
         $this->add($defaultSheet);
-        $this->outlet = $this->getObjectManager()->get(StandardOutlet::class);
+        /** @var StandardOutlet $outlet */
+        $outlet = $this->getObjectManager()->get(StandardOutlet::class);
+        $this->outlet = $outlet;
     }
 
     /**
@@ -125,7 +127,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             $last->add($child);
         } else {
             $this->children->rewind();
-            if ($this->children->count() === 1 && $this->children->current()->getName() === 'options' && !$this->children->current()->hasChildren()) {
+            /** @var FormInterface|null $firstChild */
+            $firstChild = $this->children->current();
+            if ($this->children->count() === 1 && $firstChild->getName() === 'options' && !$firstChild->hasChildren()) {
                 // Form has a single sheet, it's the default sheet and it has no fields. Replace it.
                 $this->children->detach($this->children->current());
             }
@@ -379,8 +383,10 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 $sheetName = isset($sheetData['name']) ? $sheetData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
                 if (true === $this->has($sheetName)) {
+                    /** @var Sheet $sheet */
                     $sheet = $this->get($sheetName);
                 } else {
+                    /** @var Sheet $sheet */
                     $sheet = $this->createContainer(Sheet::class, $sheetName);
                 }
                 $sheet->modify($sheetData);

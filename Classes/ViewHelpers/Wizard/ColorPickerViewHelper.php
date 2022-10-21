@@ -54,6 +54,7 @@ class ColorPickerViewHelper extends AbstractWizardViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var ColorPicker $component */
         $component = static::getPreparedComponent(ColorPicker::class, $renderingContext, $arguments);
         $component->setIcon($arguments['exampleImg']);

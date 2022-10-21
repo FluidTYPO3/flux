@@ -47,7 +47,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         if ($record) {
             $overlay = $this->overlayRecord($table, $record);
             if ($overlay) {
-                return $overlay;
+                return (array) $overlay;
             }
         }
         return $record;

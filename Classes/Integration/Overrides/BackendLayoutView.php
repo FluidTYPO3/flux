@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
 {
@@ -74,9 +75,12 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     {
         if ($this->addingItemsForContent) {
             $identifier = $this->getSelectedCombinedIdentifier($pageId);
+            if ($identifier === false) {
+                return null;
+            }
 
             // Early return parent method's output if selected identifier is not from Flux
-            if (substr($identifier, 0, 6) !== 'flux__') {
+            if (substr((string) $identifier, 0, 6) !== 'flux__') {
                 return parent::getSelectedBackendLayout($pageId);
             }
             $pageRecord = $this->loadRecordFromTable('pages', (int)$pageId);
@@ -171,7 +175,9 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
      */
     protected function loadRecordFromTable(string $table, int $uid)
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
         $query = $queryBuilder->select('*')
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $uid));
@@ -187,8 +193,10 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
      */
     protected function resolvePrimaryProviderForRecord(string $table, array $record)
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)
-            ->get(FluxService::class)
-            ->resolvePrimaryConfigurationProvider($table, null, $record, null, GridProviderInterface::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var FluxService $fluxService */
+        $fluxService = $objectManager->get(FluxService::class);
+        return $fluxService->resolvePrimaryConfigurationProvider($table, null, $record, null, GridProviderInterface::class);
     }
 }

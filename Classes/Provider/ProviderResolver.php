@@ -60,11 +60,11 @@ class ProviderResolver implements SingletonInterface
      * a working FlexForm configuration baed on the given parameters.
      *
      * @param string $table
-     * @param string $fieldName
-     * @param array $row
-     * @param string $extensionKey
+     * @param string|null $fieldName
+     * @param array|null $row
+     * @param string|null $extensionKey
      * @param string|array $interfaces One or more specific interfaces the Provider must implement.
-     * @return ProviderInterface|NULL
+     * @return ProviderInterface|null
      */
     public function resolvePrimaryConfigurationProvider(
         $table,
@@ -190,8 +190,10 @@ class ProviderResolver implements SingletonInterface
                 );
             }
             if (true === is_object($classNameOrInstance)) {
+                /** @var ProviderInterface $provider */
                 $provider = $classNameOrInstance;
             } else {
+                /** @var ProviderInterface $provider */
                 $provider = $this->objectManager->get($classNameOrInstance);
             }
             $instances[] = $provider;

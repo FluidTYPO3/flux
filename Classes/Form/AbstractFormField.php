@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * AbstractFormField
@@ -69,7 +70,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     protected $validate;
 
     /**
-     * @var \SplObjectStorage
+     * @var \SplObjectStorage|WizardInterface[]
      */
     protected $wizards;
 
@@ -114,12 +115,14 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
                 1375373527
             );
         }
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var FieldInterface $object */
-        $object = GeneralUtility::makeInstance(ObjectManager::class)->get($className);
+        $object = $objectManager->get($className);
         foreach ($settings as $settingName => $settingValue) {
             $setterMethodName = 'set' . ucfirst($settingName);
             if (true === method_exists($object, $setterMethodName)) {
-                call_user_func_array([$object, $setterMethodName], [$settingValue]);
+                $object->{$setterMethodName}($settingValue);
             }
         }
         return $object;
@@ -133,6 +136,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public function createWizard($type, $name, $label = null)
     {
+        /** @var WizardInterface $wizard */
         $wizard = parent::createWizard($type, $name, $label);
         $this->add($wizard);
         return $wizard;
@@ -430,9 +434,11 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
                 $wizardName = true === isset($wizardData['name']) ? $wizardData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
                 if (true === $this->has($wizardName)) {
+                    /** @var WizardInterface $field */
                     $field = $this->get($wizardName);
                 } else {
                     $wizardType = true === isset($wizardData['type']) ? $wizardData['type'] : 'None';
+                    /** @var WizardInterface $field */
                     $field = $this->createWizard($wizardType, $wizardName);
                 }
                 $field->modify($wizardData);

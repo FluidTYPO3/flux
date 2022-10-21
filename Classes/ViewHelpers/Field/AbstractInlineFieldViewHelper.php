@@ -139,6 +139,7 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setCollapseAll($arguments['collapseAll']);
         $component->setExpandSingle($arguments['expandSingle']);

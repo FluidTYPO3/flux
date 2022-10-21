@@ -77,6 +77,7 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var File $component */
         $component = static::getPreparedComponent(File::class, $renderingContext, $arguments);
         $component->setMaxSize($arguments['maxSize']);

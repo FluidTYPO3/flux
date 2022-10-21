@@ -126,6 +126,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $component = static::getContainerFromRenderingContext($renderingContext)
             ->createField($type, $arguments['name'], $arguments['label']);
         $component->setConfig((array)$arguments['config']);

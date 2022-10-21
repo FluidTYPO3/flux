@@ -16,10 +16,12 @@ use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * TCEMain
@@ -38,7 +40,7 @@ class DataHandlerSubscriber
     public function clearCacheCommand($command)
     {
         if ($command['cacheCmd'] === 'all' || $command['cacheCmd'] === 'system') {
-            GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
+            $this->regenerateContentTypes();
         }
     }
 
@@ -56,8 +58,10 @@ class DataHandlerSubscriber
         if ($table === 'content_types') {
             // Changing records in table "content_types" has to flush the system cache to regenerate various cached
             // definitions of plugins etc. that are based on those "content_types" records.
-            GeneralUtility::makeInstance(CacheManager::class)->flushCachesInGroup('system');
-            GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
+            /** @var CacheManager $cacheManager */
+            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+            $cacheManager->flushCachesInGroup('system');
+            $this->regenerateContentTypes();
         }
 
         if ($table !== 'tt_content' || $command !== 'new' || !isset($fieldArray['t3_origuid']) || !$fieldArray['t3_origuid']) {
@@ -104,7 +108,7 @@ class DataHandlerSubscriber
         }
 
         if ($newColumnPosition > 0) {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+            $queryBuilder = $this->createQueryBuilderForTable($table);
             $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, \PDO::PARAM_INT)->where(
                 $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT))
             )->orWhere(
@@ -130,7 +134,7 @@ class DataHandlerSubscriber
     {
         // Handle "$table.$field" named fields where $table is the valid TCA table name and $field is an existing TCA
         // field. Updated value will still be subject to permission checks.
-        $resolver = GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class);
+        $resolver = $this->getProviderResolver();
         foreach ($fieldArray as $fieldName => $fieldValue) {
             if ($GLOBALS["TCA"][$table]["columns"][$fieldName]["config"]["type"] === 'flex') {
                 $primaryConfigurationProvider = $resolver->resolvePrimaryConfigurationProvider(
@@ -204,7 +208,7 @@ class DataHandlerSubscriber
     {
         foreach ($dataHandler->cmdmap as $table => $commandSets) {
             if ($table === 'content_types') {
-                GeneralUtility::makeInstance(ContentTypeManager::class)->regenerate();
+                $this->regenerateContentTypes();
                 continue;
             }
 
@@ -322,15 +326,16 @@ class DataHandlerSubscriber
         if ($relativeTo > 0) {
             $destinationPid = $relativeTo;
         } else {
-            $relativeRecord = $this->getSingleRecordWithoutRestrictions($table, abs($relativeTo), 'pid');
-            $destinationPid = (int)($relativeRecord['pid'] ?? $relativeTo);
+            $relativeRecord = $this->getSingleRecordWithoutRestrictions($table, (integer) abs($relativeTo), 'pid');
+            $destinationPid = $relativeRecord['pid'] ?? $relativeTo;
         }
 
         if ($command === 'move') {
-            $subCommandMap = $this->recursivelyMoveChildRecords($table, (integer) $id, $destinationPid, $languageUid, $reference);
+            $subCommandMap = $this->recursivelyMoveChildRecords($table, (integer) $id, (integer) $destinationPid, $languageUid, $reference);
         }
 
         if (!empty($subCommandMap)) {
+            /** @var DataHandler $dataHandler */
             $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
             $dataHandler->copyMappingArray = $reference->copyMappingArray;
             $dataHandler->start([], $subCommandMap);
@@ -377,8 +382,10 @@ class DataHandlerSubscriber
 
     protected function getSingleRecordWithRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        /** @var DeletedRestriction $deletedRestriction */
+        $deletedRestriction = GeneralUtility::makeInstance(DeletedRestriction::class);
+        $queryBuilder = $this->createQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll()->add($deletedRestriction);
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
@@ -387,7 +394,7 @@ class DataHandlerSubscriber
 
     protected function getSingleRecordWithoutRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder = $this->createQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
@@ -397,7 +404,7 @@ class DataHandlerSubscriber
 
     protected function getMostRecentCopyOfRecord(int $uid, string $fieldsToSelect = 'uid'): ?array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+        $queryBuilder = $this->createQueryBuilderForTable('tt_content');
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from('tt_content')
@@ -412,8 +419,10 @@ class DataHandlerSubscriber
 
     protected function getTranslatedVersionOfParentInLanguageOnPage(int $languageUid, int $pageUid, int $originalParentUid, string $fieldsToSelect = '*'): ?array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
-        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        /** @var DeletedRestriction $deletedRestriction */
+        $deletedRestriction = GeneralUtility::makeInstance(DeletedRestriction::class);
+        $queryBuilder = $this->createQueryBuilderForTable('tt_content');
+        $queryBuilder->getRestrictions()->removeAll()->add($deletedRestriction);
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from('tt_content')
             ->setMaxResults(1)
@@ -437,8 +446,8 @@ class DataHandlerSubscriber
     protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect, bool $respectPid = false, ?string $command = null)
     {
         // A Provider must be resolved which implements the GridProviderInterface
-        $resolver = GeneralUtility::makeInstance(ObjectManager::class)->get(ProviderResolver::class);
-        $originalRecord = $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
+        $resolver = $this->getProviderResolver();
+        $originalRecord = (array) $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
 
         $primaryProvider = $resolver->resolvePrimaryConfigurationProvider(
             $table,
@@ -467,7 +476,7 @@ class DataHandlerSubscriber
 
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder = $this->createQueryBuilderForTable($table);
         if ($command === 'undelete') {
             $queryBuilder->getRestrictions()->removeAll();
         }
@@ -495,5 +504,28 @@ class DataHandlerSubscriber
             $records,
             $childColPosValues
         ];
+    }
+
+    protected function getProviderResolver(): ProviderResolver
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = $objectManager->get(ProviderResolver::class);
+        return $providerResolver;
+    }
+
+    protected function createQueryBuilderForTable(string $table): QueryBuilder
+    {
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        return $connectionPool->getQueryBuilderForTable($table);
+    }
+
+    protected function regenerateContentTypes(): void
+    {
+        /** @var ContentTypeManager $contentTypeManager */
+        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+        $contentTypeManager->regenerate();
     }
 }

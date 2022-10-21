@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Flux provider class to handle Grid integration with content types
@@ -77,7 +78,11 @@ class RecordBasedContentGridProvider extends AbstractProvider implements GridPro
      */
     public function getForm(array $row)
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(ContentGridForm::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ContentGridForm $contentGridForm */
+        $contentGridForm = $objectManager->get(ContentGridForm::class);
+        return $contentGridForm;
     }
 
     /**

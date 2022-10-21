@@ -74,9 +74,16 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
      */
     public function __construct()
     {
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->injectConfigurationService($this->objectManager->get(FluxService::class));
-        $this->injectWorkspacesAwareRecordService($this->objectManager->get(WorkspacesAwareRecordService::class));
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var FluxService $fluxService */
+        $fluxService = $this->objectManager->get(FluxService::class);
+        $this->injectConfigurationService($fluxService);
+        /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
+        $workspacesAwareRecordService = $this->objectManager->get(WorkspacesAwareRecordService::class);
+        $this->injectWorkspacesAwareRecordService($workspacesAwareRecordService);
+
+        $this->objectManager = $objectManager;
     }
 
     /**

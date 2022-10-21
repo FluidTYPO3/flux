@@ -115,6 +115,7 @@ class Core
             // detected template files as native CTypes. Remove if/when fluidcontent is discontinued.
             $legacyKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
             $templateRootPath = ExtensionManagementUtility::extPath($legacyKey, 'Resources/Private/Templates/Content/');
+            /** @var ContentTypeManager $contentTypeManager */
             $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
             $finder = Finder::create()->in($templateRootPath)->name('*.html')->sortByName();
             foreach ($finder->files() as $file) {

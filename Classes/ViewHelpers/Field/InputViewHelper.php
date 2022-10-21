@@ -52,6 +52,7 @@ class InputViewHelper extends AbstractFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var Input $input */
         $input = static::getPreparedComponent(Input::class, $renderingContext, $arguments);
         $input->setValidate($arguments['eval']);

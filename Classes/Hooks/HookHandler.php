@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Hooks;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class HookHandler
 {
@@ -138,7 +139,11 @@ class HookHandler
                     )
                 );
             }
-            static::$subscribers[$hook][$subscriber] = GeneralUtility::makeInstance(ObjectManager::class)->get($subscriber);
+            /** @var ObjectManagerInterface $objectManager */
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            /** @var HookSubscriberInterface $subscriberObject */
+            $subscriberObject = $objectManager->get($subscriber);
+            static::$subscribers[$hook][$subscriber] = $subscriberObject;
         }
         return static::$subscribers[$hook][$subscriber];
     }

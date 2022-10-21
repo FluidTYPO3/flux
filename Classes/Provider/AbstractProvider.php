@@ -27,9 +27,11 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request as WebRequest;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplateView;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
 
 /**
@@ -819,6 +821,7 @@ class AbstractProvider implements ProviderInterface
     {
         $controllerExtensionKey = $this->getControllerExtensionKeyFromRecord($row);
 
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var WebRequest $request */
         $request = $objectManager->get(WebRequest::class);
@@ -838,14 +841,15 @@ class AbstractProvider implements ProviderInterface
         $controllerContext = $objectManager->get(ControllerContext::class);
         $controllerContext->setRequest($request);
         $controllerContext->setUriBuilder($uriBuilder);
+        /** @var RenderingContextInterface $renderingContext */
         $renderingContext = $objectManager->get(RenderingContext::class);
         $renderingContext->setControllerContext($controllerContext);
         $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(ExtensionNamingUtility::getExtensionKey($controllerExtensionKey));
         $renderingContext->getTemplatePaths()->setTemplatePathAndFilename($this->getTemplatePathAndFilename($row));
         $renderingContext->setControllerName($this->getControllerNameFromRecord($row));
         $renderingContext->setControllerAction($this->getControllerActionFromRecord($row));
-        /** @var TemplateView $view */
-        $view = GeneralUtility::makeInstance(ObjectManager::class)->get($viewClassName);
+        /** @var T $view */
+        $view = $objectManager->get($viewClassName);
         $view->setRenderingContext($renderingContext);
         return $view;
     }
@@ -1088,8 +1092,11 @@ class AbstractProvider implements ProviderInterface
      */
     protected function dispatchFlashMessageForException(\Throwable $error)
     {
+        /** @var FlashMessage $flashMesasage */
         $flashMesasage = GeneralUtility::makeInstance(FlashMessage::class, $error->getMessage(), '', FlashMessage::ERROR);
-        $flashMesasageQueue = GeneralUtility::makeInstance(FlashMessageService::class)->getMessageQueueByIdentifier();
+        /** @var FlashMessageService $flashMessageService */
+        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+        $flashMesasageQueue = $flashMessageService->getMessageQueueByIdentifier();
         $flashMesasageQueue->enqueue($flashMesasage);
     }
 }

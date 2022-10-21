@@ -7,6 +7,7 @@ use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDef
 use FluidTYPO3\Flux\Form\Conversion\FormToFluidTemplateConverter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Parser\Source;
@@ -37,8 +38,14 @@ class ContentTypeFluxTemplateDumper
         $options = [
             FormToFluidTemplateConverter::OPTION_TEMPLATE_SOURCE => $definition->getTemplateSource()
         ];
-        $dump = GeneralUtility::makeInstance(FormToFluidTemplateConverter::class)->convertFormAndGrid($form, $grid, $options);
-        $parser = GeneralUtility::makeInstance(ObjectManager::class)->get(TemplateView::class)->getRenderingContext()->getTemplateParser();
+        /** @var FormToFluidTemplateConverter $dumper */
+        $dumper = GeneralUtility::makeInstance(FormToFluidTemplateConverter::class);
+        $dump = $dumper->convertFormAndGrid($form, $grid, $options);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var TemplateView $templateView */
+        $templateView = $objectManager->get(TemplateView::class);
+        $parser = $templateView->getRenderingContext()->getTemplateParser();
         try {
             if (class_exists(Sequencer::class)) {
                 $parser->parse(new Source($dump));
@@ -55,6 +62,10 @@ class ContentTypeFluxTemplateDumper
 
     protected function getContentType(string $contentTypeName): ?ContentTypeDefinitionInterface
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(ContentTypeManager::class)->determineContentTypeForTypeString($contentTypeName);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ContentTypeManager $contentTypeManager */
+        $contentTypeManager = $objectManager->get(ContentTypeManager::class);
+        return $contentTypeManager->determineContentTypeForTypeString($contentTypeName);
     }
 }

@@ -25,7 +25,9 @@ class ContentTypeValidatorNode extends AbstractNode implements NodeInterface
     public function render()
     {
         $return = $this->initializeResultArray();
-        $return['html'] = GeneralUtility::makeInstance(ContentTypeValidator::class)->validateContentTypeRecord(
+        /** @var ContentTypeValidator $validator */
+        $validator = GeneralUtility::makeInstance(ContentTypeValidator::class);
+        $return['html'] = $validator->validateContentTypeRecord(
             $this->parameters['parameterArray'] + ['row' => $this->parameters['databaseRow']]
         );
         return $return;

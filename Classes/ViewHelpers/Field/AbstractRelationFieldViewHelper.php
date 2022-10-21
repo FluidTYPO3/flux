@@ -177,6 +177,7 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setTable($arguments['table']);
         $component->setCondition($arguments['condition']);

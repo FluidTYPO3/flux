@@ -68,7 +68,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     public static function spoolQueuedContentTypeTableConfigurations(array $queue)
     {
-        $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
+        $contentTypeBuilder = static::getContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             list ($providerExtensionName, $templatePathAndFilename, , $contentType) = $queuedRegistration;
             $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templatePathAndFilename);
@@ -97,7 +97,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function spoolQueuedContentTypeRegistrations(array $queue)
     {
-        $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
+        $contentTypeBuilder = static::getContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
             [$providerExtensionName, $templateFilename, $providerClassName, $contentType, $pluginName, $controllerActionName] = $queuedRegistration;
@@ -126,8 +126,17 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         }
     }
 
+    protected static function getContentTypeBuilder(): ContentTypeBuilder
+    {
+        /** @var ContentTypeBuilder $contentTypeBuilder */
+        $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
+        return $contentTypeBuilder;
+    }
+
     protected function getContentTypeManager(): ContentTypeManager
     {
-        return GeneralUtility::makeInstance(ContentTypeManager::class);
+        /** @var ContentTypeManager $contentTypeManager */
+        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+        return $contentTypeManager;
     }
 }

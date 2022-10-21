@@ -102,20 +102,20 @@ class WizardItems implements NewContentElementWizardHookInterface
             $pageUid = (int) (key($dataArray) ?? GeneralUtility::_GET('id') ?? ObjectAccess::getProperty($parentObject, 'id', true));
             if ($pageUid > 0) {
                 try {
-                    $enabledContentTypes = [];
+                    /** @var SiteFinder $siteFinder */
                     $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                     $site = $siteFinder->getSiteByPageId($pageUid);
                     $siteConfiguration = $site->getConfiguration();
-                    if (!empty($siteConfiguration['flux_content_types'])) {
-                        $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
-                    }
+                    $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
                 } catch (SiteNotFoundException $exception) {
                     // Suppressed; a site not being found is not a fatal error in this context.
                 }
             }
         }
 
-        $fluidContentTypeNames = GeneralUtility::makeInstance(ContentTypeManager::class)->fetchContentTypeNames();
+        /** @var ContentTypeManager $contentTypeManager */
+        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+        $fluidContentTypeNames = (array) $contentTypeManager->fetchContentTypeNames();
         $items = $this->filterPermittedFluidContentTypesByInsertionPosition($items, $parentObject, $pageUid);
         if (!empty($enabledContentTypes)) {
             foreach ($items as $name => $item) {

@@ -57,6 +57,7 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
     public function setTypeConverter($typeConverter)
     {
         if (true === is_string($typeConverter)) {
+            /** @var TypeConverterInterface $typeConverter */
             $typeConverter = $this->objectManager->get($typeConverter);
         }
         $this->typeConverter = $typeConverter;

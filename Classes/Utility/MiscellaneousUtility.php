@@ -35,7 +35,7 @@ class MiscellaneousUtility
      *   EXT:$extensionKey/Resources/Public/Icons/$controllerName/$templateName.(png|gif)
      *
      * @param Form $form
-     * @return string|NULL
+     * @return string|null
      */
     public static function getIconForTemplate(Form $form)
     {
@@ -62,7 +62,7 @@ class MiscellaneousUtility
                     $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);
                 } else {
                     foreach (self::$allowedIconTypes as $allowedIconType) {
-                        $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType));
+                        $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType) ?: []);
                     }
                 }
             }
@@ -91,6 +91,7 @@ class MiscellaneousUtility
                 $iconProvider = BitmapIconProvider::class;
         }
         $iconIdentifier = $identifier ?? 'icon-' . md5($originalFile);
+        /** @var IconRegistry $iconRegistry */
         $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
         $iconRegistry->registerIcon($iconIdentifier, $iconProvider, ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]);
         return $iconIdentifier;
@@ -175,7 +176,7 @@ class MiscellaneousUtility
         if (0 === $dataNode->getElementsByTagName('sheet')->length) {
             return '';
         }
-        $xml = $dom->saveXML();
+        $xml = (string) $dom->saveXML();
         // hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
         $xml = preg_replace('#<el index="el">\s*</el>#', '', $xml);
         $xml = preg_replace('#<field index="[^"]*">\s*</field>#', '', $xml);

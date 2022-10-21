@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Outlet\OutletArgument;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -62,7 +63,9 @@ class ArgumentViewHelper extends AbstractFormViewHelper
         RenderingContextInterface $renderingContext
     ) {
         $outlet = static::getFormFromRenderingContext($renderingContext)->getOutlet();
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var OutletArgument $argument */
         $argument = $objectManager->get(OutletArgument::class, $arguments['name'], $arguments['type']);
 
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();

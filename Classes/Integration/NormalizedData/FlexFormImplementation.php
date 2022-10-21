@@ -106,6 +106,8 @@ class FlexFormImplementation extends AbstractImplementation implements Implement
      */
     public function getConverterForTableFieldAndRecord(string $table, string $field, array $record): ConverterInterface
     {
-        return GeneralUtility::makeInstance(InlineRecordDataConverter::class, $table, $field, $record);
+        /** @var InlineRecordDataConverter $converter */
+        $converter = GeneralUtility::makeInstance(InlineRecordDataConverter::class, $table, $field, $record);
+        return $converter;
     }
 }

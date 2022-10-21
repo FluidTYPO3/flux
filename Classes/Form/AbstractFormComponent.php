@@ -118,6 +118,7 @@ abstract class AbstractFormComponent implements FormInterface
      */
     protected function createComponentClassName($type, $prefix)
     {
+        /** @var class-string $className */
         $className = str_replace('/', '\\', $type);
         $className = true === class_exists($prefix . '\\' . $className) ? $prefix . '\\' . $className : $className;
         return $className;
@@ -132,7 +133,9 @@ abstract class AbstractFormComponent implements FormInterface
      */
     public function createField($type, $name, $label = null)
     {
-        return $this->createComponent(static::NAMESPACE_FIELD, $type, $name, $label);
+        /** @var T $component */
+        $component = $this->createComponent(static::NAMESPACE_FIELD, $type, $name, $label);
+        return $component;
     }
 
     /**
@@ -144,7 +147,9 @@ abstract class AbstractFormComponent implements FormInterface
      */
     public function createContainer($type, $name, $label = null)
     {
-        return $this->createComponent(static::NAMESPACE_CONTAINER, $type, $name, $label);
+        /** @var T $component */
+        $component = $this->createComponent(static::NAMESPACE_CONTAINER, $type, $name, $label);
+        return $component;
     }
 
     /**
@@ -156,7 +161,9 @@ abstract class AbstractFormComponent implements FormInterface
      */
     public function createWizard($type, $name, $label = null)
     {
-        return $this->createComponent(static::NAMESPACE_WIZARD, $type, $name, $label);
+        /** @var T $component */
+        $component = $this->createComponent(static::NAMESPACE_WIZARD, $type, $name, $label);
+        return $component;
     }
 
     /**
@@ -542,7 +549,9 @@ abstract class AbstractFormComponent implements FormInterface
      */
     protected function getObjectManager()
     {
-        return GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        return $objectManager;
     }
 
     /**
@@ -550,7 +559,9 @@ abstract class AbstractFormComponent implements FormInterface
      */
     protected function getConfigurationService()
     {
-        return $this->getObjectManager()->get(FluxService::class);
+        /** @var FluxService $fluxService */
+        $fluxService = $this->getObjectManager()->get(FluxService::class);
+        return $fluxService;
     }
 
     /**

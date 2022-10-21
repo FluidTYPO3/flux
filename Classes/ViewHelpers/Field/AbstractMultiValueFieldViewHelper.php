@@ -78,6 +78,7 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setItems($arguments['items']);
         $component->setItemsProcFunc($arguments['itemsProcFunc']);

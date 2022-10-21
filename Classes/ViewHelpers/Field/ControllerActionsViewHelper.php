@@ -171,6 +171,7 @@ class ControllerActionsViewHelper extends SelectViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $extensionName = $arguments['controllerExtensionName'];
         $pluginName = $arguments['pluginName'];
         $actions = $arguments['actions'];

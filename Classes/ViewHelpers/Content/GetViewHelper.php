@@ -19,6 +19,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -114,9 +115,18 @@ class GetViewHelper extends AbstractViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        static::$configurationService = static::$configurationService ?? $objectManager->get(FluxService::class);
-        static::$configurationManager = static::$configurationManager ?? $objectManager->get(ConfigurationManagerInterface::class);
+        if (!static::$configurationService instanceof FluxService) {
+            /** @var FluxService $configurationService */
+            $configurationService = $objectManager->get(FluxService::class);
+            static::$configurationService = $configurationService;
+        }
+        if (!static::$configurationManager instanceof ConfigurationManagerInterface) {
+            /** @var ConfigurationManagerInterface $configurationManager */
+            $configurationManager = $objectManager->get(ConfigurationManagerInterface::class);
+            static::$configurationManager = $configurationManager;
+        }
 
         $contentObjectRenderer = static::getContentObjectRenderer();
 
@@ -133,6 +143,7 @@ class GetViewHelper extends AbstractViewHelper
             if ($placeholder) {
                 // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
                 // from the workspace-only placeholder.
+                /** @var array $record */
                 $record = $placeholder;
             }
         }
@@ -190,7 +201,7 @@ class GetViewHelper extends AbstractViewHelper
             'colPos = %d',
             ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                 $parent['l18n_parent'] ?: $parent['uid'],
-                $columnPosition
+                (int) $columnPosition
             )
         );
 
@@ -219,7 +230,11 @@ class GetViewHelper extends AbstractViewHelper
      */
     protected static function getRecordService()
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(WorkspacesAwareRecordService::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var WorkspacesAwareRecordService $service */
+        $service =  $objectManager->get(WorkspacesAwareRecordService::class);
+        return $service;
     }
 
     /**

@@ -132,7 +132,9 @@ class FormDataTransformer
             return boolval($value);
         } elseif (strpos($dataType, '->')) {
             list ($class, $function) = explode('->', $dataType);
-            return call_user_func_array([$this->objectManager->get($class), $function], [$value]);
+            /** @var object $object */
+            $object = $this->objectManager->get($class);
+            return $object->{$function}($value);
         } else {
             return $this->getObjectOfType($dataType, $value);
         }
@@ -160,6 +162,7 @@ class FormDataTransformer
         // Fast decisions
         if (true === $isModel && null === $container) {
             if (true === class_exists($repositoryClassName)) {
+                /** @var RepositoryInterface $repository */
                 $repository = $this->objectManager->get($repositoryClassName);
                 $repositoryObjects = $this->loadObjectsFromRepository($repository, $identifiers);
                 return reset($repositoryObjects);

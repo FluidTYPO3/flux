@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
@@ -196,7 +197,9 @@ class DataViewHelper extends AbstractViewHelper
     protected static function getFluxService()
     {
         if (!isset(static::$configurationService)) {
-            static::$configurationService = GeneralUtility::makeInstance(ObjectManager::class)->get(FluxService::class);
+            /** @var FluxService $fluxService */
+            $fluxService = static::getObjectManager()->get(FluxService::class);
+            static::$configurationService = $fluxService;
         }
         return static::$configurationService;
     }
@@ -207,8 +210,17 @@ class DataViewHelper extends AbstractViewHelper
     protected static function getRecordService()
     {
         if (!isset(static::$recordService)) {
-            static::$recordService = GeneralUtility::makeInstance(ObjectManager::class)->get(WorkspacesAwareRecordService::class);
+            /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
+            $workspacesAwareRecordService = static::getObjectManager()->get(WorkspacesAwareRecordService::class);
+            static::$recordService = $workspacesAwareRecordService;
         }
         return static::$recordService;
+    }
+
+    protected static function getObjectManager(): ObjectManagerInterface
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        return $objectManager;
     }
 }
