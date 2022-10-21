@@ -128,7 +128,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         } else {
             $this->children->rewind();
             /** @var FormInterface|null $firstChild */
-            $firstChild = $this->children->current();
+            $firstChild = $this->children->count() > 0 ? $this->children->current() : null;
             if ($this->children->count() === 1 && $firstChild->getName() === 'options' && !$firstChild->hasChildren()) {
                 // Form has a single sheet, it's the default sheet and it has no fields. Replace it.
                 $this->children->detach($this->children->current());
