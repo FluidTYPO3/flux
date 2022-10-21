@@ -1,6 +1,11 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\RecordService\\:\\:update\\(\\) has invalid return type Doctrine\\\\DBAL\\\\Result\\.$#"
+            count: 1
+            path: Classes/Service/RecordService.php
+
+        -
             message: "#^Property TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ActionController\\:\\:\\$responseFactory \\(Psr\\\\Http\\\\Message\\\\ResponseFactoryInterface\\) in isset\\(\\) is not nullable\\.$#"
             count: 2
             path: Classes/Controller/AbstractFluxController.php
