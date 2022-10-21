@@ -15,6 +15,11 @@ parameters:
         - "#^Instanceof between (iterable|array) and TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection will always evaluate to false\\.$#"
         - "#^Parameter \\#1 \\$templateString of method TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\TemplateParser\\:\\:parse\\(\\) expects string, TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source given\\.$#"
         - "#no value type specified in iterable#"
+        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\ExtensionConfiguration#"
+        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Service\\\\FlexFormService#"
+        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteFinder#"
+        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Information\\\\Typo3Version#"
+        - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) invoked with [2-9] parameters, 1 required\\.$#"
     bootstrapFiles:
         - phpstan-bootstrap.php
     paths:
