@@ -1,6 +1,11 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Parameter \\$caller of method FluidTYPO3\\\\Flux\\\\Integration\\\\HookSubscribers\\\\ContentIcon\\:\\:addSubIcon\\(\\) has invalid type TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\Grid\\\\GridColumnItem\\.$#"
+            count: 1
+            path: Classes/Integration/HookSubscribers/ContentIcon.php
+
+        -
             message: "#^Cannot call method getContent\\(\\) on class-string\\|object\\.$#"
             count: 1
             path: Classes/Controller/AbstractFluxController.php
