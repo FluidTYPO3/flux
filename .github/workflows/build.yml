@@ -9,7 +9,7 @@ on:
 jobs:
   phpstan:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    name: "PHPStantan, PHP ${{ matrix.php-versions }} TYPO3 ${{ matrix.typo3-version }}"
+    name: "PHPStan, PHP ${{ matrix.php-versions }} TYPO3 ${{ matrix.typo3-version }}"
 
     continue-on-error: ${{ matrix.experimental }}
 
@@ -34,6 +34,9 @@ jobs:
           extensions: mbstring, json
           ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
           tools: composer:v2.2
+
+      - name: Disable FluidTYPO3 phpunit helper
+        run: "composer remove fluidtypo3/development --dev -W"
 
       - name: Select TYPO3 version
         run: "composer require typo3/cms-core:${{ matrix.typo3-version }}"
