@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    name: "PHP ${{ matrix.php-versions }} Test (deps: ${{ matrix.dependencies }})"
+    name: "PHP ${{ matrix.php-versions }} Test (deps: ${{ matrix.dependencies }}) TYPO3 ${{ matrix.typo3-version }}"
 
     continue-on-error: ${{ matrix.experimental }}
 
