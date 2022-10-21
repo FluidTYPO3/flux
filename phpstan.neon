@@ -37,6 +37,7 @@ parameters:
         - phpstan-bootstrap.php
     paths:
         - Classes
+        - Configuration
     excludePaths:
         - Classes/Updates/MigrateColPosWizard.php
         - Classes/Integration/Event/AfterLocalizationControllerColumnsEventListener.php
