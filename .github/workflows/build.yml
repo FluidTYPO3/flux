@@ -11,8 +11,6 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     name: "PHPStan, PHP ${{ matrix.php }} TYPO3 ${{ matrix.typo3 }}"
 
-    continue-on-error: ${{ matrix.experimental }}
-
     strategy:
       fail-fast: false
       matrix:
@@ -57,8 +55,6 @@ jobs:
   build:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     name: "PHPUnit, PHP ${{ matrix.php }} TYPO3 ${{ matrix.typo3 }}"
-
-    continue-on-error: ${{ matrix.experimental }}
 
     strategy:
       fail-fast: false
