@@ -44,9 +44,9 @@ class ExtensionConfigurationUtility
                 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] ?? unserialize($extensionConfiguration);
             }
 
-            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] ??= [];
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] ?? [];
         } else {
-            $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux']['hooks'] ??= [];
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux']['hooks'] ?? [];
         }
     }
 
