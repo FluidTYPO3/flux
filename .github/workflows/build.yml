@@ -108,7 +108,7 @@ jobs:
         run: "composer require typo3/cms-core:^9.5 --no-update"
 
       - name: Composer install
-        uses: ramsey/composer-install@v1
+        uses: ramsey/composer-install@v2
 
       - name: Run tests
         run: vendor/bin/phpunit --coverage-clover=build/logs/clover.xml
