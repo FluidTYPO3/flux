@@ -194,7 +194,7 @@ abstract class CompatibilityRegistry
 
     /**
      * @param string $scope
-     * @param string|NULL $version
+     * @param string $version
      * @param mixed $default
      * @return mixed
      */

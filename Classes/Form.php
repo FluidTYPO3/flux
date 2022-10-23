@@ -103,7 +103,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 
     /**
      * @param array $settings
-     * @return FormInterface
+     * @return static
      */
     public static function create(array $settings = [])
     {
@@ -129,7 +129,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             $this->children->rewind();
             /** @var FormInterface|null $firstChild */
             $firstChild = $this->children->count() > 0 ? $this->children->current() : null;
-            if ($this->children->count() === 1 && $firstChild->getName() === 'options' && !$firstChild->hasChildren()) {
+            if ($firstChild instanceof FormInterface && $this->children->count() === 1 && $firstChild->getName() === 'options' && !$firstChild->hasChildren()) {
                 // Form has a single sheet, it's the default sheet and it has no fields. Replace it.
                 $this->children->detach($this->children->current());
             }

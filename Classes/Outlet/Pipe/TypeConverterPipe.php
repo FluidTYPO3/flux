@@ -90,7 +90,7 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
         return $this->targetType;
     }
 
-    public function getPropertyName(): string
+    public function getPropertyName(): ?string
     {
         return $this->propertyName;
     }

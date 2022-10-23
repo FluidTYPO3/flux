@@ -142,7 +142,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
 
     /**
      * @param array $row
-     * @return string
+     * @return string|null
      */
     public function getTemplatePathAndFilename(array $row)
     {
@@ -246,8 +246,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = [])
     {
         if ('update' === $operation) {
-            $record = $this->recordService->getSingle($this->getTableName($row), '*', $id);
-            if (!is_array($record)) {
+            $record = $this->recordService->getSingle((string) $this->getTableName($row), '*', $id);
+            if ($record === null) {
                 return;
             }
             if (isset($reference->datamap[$this->tableName][$id])) {
@@ -260,8 +260,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             if ($form) {
                 $tableFieldName = $this->getFieldName($record);
                 foreach ($form->getFields() as $field) {
-                    $fieldName = $field->getName();
-                    $sheetName = $field->getParent()->getName();
+                    $fieldName = (string) $field->getName();
+                    $sheetName = (string) $field->getParent()->getName();
                     $inherit = (boolean) $field->getInherit();
                     $inheritEmpty = (boolean) $field->getInheritEmpty();
                     if (isset($record[$tableFieldName]['data']) && is_array($record[$tableFieldName]['data'])) {
@@ -315,7 +315,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     {
         $inheritedConfiguration = $this->getInheritedConfiguration($row);
         foreach ($form->getFields() as $field) {
-            $name = $field->getName();
+            $name = (string) $field->getName();
             $inheritedValue = $this->getInheritedPropertyValueByDottedPath($inheritedConfiguration, $name);
             if (null !== $inheritedValue && true === $field instanceof Form\FieldInterface) {
                 $field->setDefault($inheritedValue);
@@ -403,9 +403,9 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     {
         $parentFieldName = $this->getParentFieldName($row);
         if (null !== $parentFieldName && false === isset($row[$parentFieldName])) {
-            $row = $this->recordService->getSingle($this->getTableName($row), '*', $row[$parentFieldName]);
+            $row = $this->recordService->getSingle((string) $this->getTableName($row), '*', $row[$parentFieldName]);
         }
-        return $row[$parentFieldName];
+        return $row[$parentFieldName] ?? null;
     }
 
     /**

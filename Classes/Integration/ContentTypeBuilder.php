@@ -45,7 +45,7 @@ class ContentTypeBuilder
     /**
      * @param string $providerExtensionName
      * @param string $templateFilename
-     * @param class-string|null $providerClassName
+     * @param class-string $providerClassName
      * @param string|null $contentType
      * @param string $defaultControllerExtensionName
      * @param string|null $controllerActionName
@@ -54,7 +54,7 @@ class ContentTypeBuilder
     public function configureContentTypeFromTemplateFile(
         string $providerExtensionName,
         string $templateFilename,
-        ?string $providerClassName = Provider::class,
+        string $providerClassName = Provider::class,
         ?string $contentType = null,
         string $defaultControllerExtensionName = 'FluidTYPO3.Flux',
         ?string $controllerActionName = null
@@ -77,7 +77,7 @@ class ContentTypeBuilder
         $controllerClassName = str_replace('.', '\\', $defaultControllerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $localControllerClassName = str_replace('.', '\\', $providerExtensionName) . '\\Controller\\' . $controllerName . 'Controller';
         $extensionSignature = str_replace('_', '', ExtensionNamingUtility::getExtensionKey($providerExtensionName));
-        $fullContentType = $contentType ?: $extensionSignature . '_' . strtolower($pluginName);
+        $fullContentType = $contentType ?: $extensionSignature . '_' . strtolower((string) $pluginName);
         if (!$this->validateContentController($localControllerClassName)) {
             class_alias($controllerClassName, $localControllerClassName);
         }
@@ -174,7 +174,7 @@ class ContentTypeBuilder
                 // errors use the most base Exception class in PHP. So instead we check for a
                 // specific dispatcher in the stack trace and re-throw if not matched.
                 $pitcher = $error->getTrace()[0] ?? false;
-                if ($pitcher && ($pitcher['class'] ?? '') !== 'SplObjectStorage' && ($pitcher['function'] ?? '') !== 'serialize') {
+                if ($pitcher && ($pitcher['class'] ?? '') !== 'SplObjectStorage' && $pitcher['function'] !== 'serialize') {
                     throw $error;
                 }
             }
@@ -230,7 +230,7 @@ class ContentTypeBuilder
         $formId = $form->getId() ?: $contentType;
         $group = $form->getOption(Form::OPTION_GROUP);
         $groupName = $this->sanitizeString($group ?? 'fluxContent');
-        $extensionName = $form->getExtensionName();
+        $extensionName = $form->getExtensionName() ?? 'FluidTYPO3.Flux';
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 
         $labelSubReference = 'flux.newContentWizard.' . $groupName;
@@ -268,7 +268,7 @@ class ContentTypeBuilder
     protected function sanitizeString(string $string): string
     {
         $pattern = '/([^a-z0-9\-]){1,}/i';
-        $replaced = preg_replace($pattern, '_', $string);
+        $replaced = (string) preg_replace($pattern, '_', $string);
         $replaced = trim($replaced, '_');
         return empty($replaced) ? md5($string) : $replaced;
     }
@@ -298,7 +298,7 @@ class ContentTypeBuilder
         ExtensionUtility::registerPlugin(
             $this->getExtensionIdentityForPluginRegistration($providerExtensionName),
             $this->getPluginNamePartFromContentType($contentType),
-            $form->getLabel(),
+            (string) $form->getLabel(),
             MiscellaneousUtility::getIconForTemplate($form),
             $providerExtensionName
         );

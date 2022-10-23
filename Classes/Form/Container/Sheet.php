@@ -41,7 +41,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getShortDescription()
     {
@@ -59,7 +59,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDescription()
     {

@@ -79,16 +79,18 @@ class DataHandlerSubscriber
 
         if (!empty($fieldArray['l18n_parent'])) {
             // Command was "localize", read colPos value from the translation parent and use directly
-            $newColumnPosition = $this->getSingleRecordWithoutRestrictions($table, $fieldArray['l18n_parent'], 'colPos')['colPos'];
+            $newColumnPosition = $this->getSingleRecordWithoutRestrictions($table, $fieldArray['l18n_parent'], 'colPos')['colPos'] ?? null;
         } elseif (isset(static::$copiedRecords[$originalParentUid])) {
             // The parent of the original version of the record that was copied, was also copied in the same request;
             // this means the record that was copied, was copied as a recursion operation. Look up the most recent copy
             // of the original record's parent and create a new column position number based on the new parent.
             $newParentRecord = $this->getMostRecentCopyOfRecord($originalParentUid);
-            $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                $newParentRecord['uid'],
-                ColumnNumberUtility::calculateLocalColumnNumber($originalRecord['colPos'])
-            );
+            if ($newParentRecord !== null) {
+                $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                    $newParentRecord['uid'],
+                    ColumnNumberUtility::calculateLocalColumnNumber($originalRecord['colPos'])
+                );
+            }
         } elseif (($fieldArray['colPos'] ?? 0) >= ColumnNumberUtility::MULTIPLIER) {
             // Record is a child record, the updated field array still indicates it is a child (was not pasted outside
             // of parent, rather, parent was pasted somewhere else).
@@ -96,14 +98,16 @@ class DataHandlerSubscriber
             // right parent for the language and update the column position accordingly.
             $originalParentUid = ColumnNumberUtility::calculateParentUid($fieldArray['colPos']);
             $originalParent = $this->getSingleRecordWithoutRestrictions($table, $originalParentUid, 'sys_language_uid');
-            if ($originalParent['sys_language_uid'] !== $fieldArray['sys_language_uid']) {
+            if ($originalParent !== null && $originalParent['sys_language_uid'] !== $fieldArray['sys_language_uid']) {
                 // copyToLanguage case. Resolve the most recent translated version of the parent record in language of
                 // child record, and calculate the new column position number based on it.
                 $newParentRecord = $this->getTranslatedVersionOfParentInLanguageOnPage((int) $fieldArray['sys_language_uid'], (int) $fieldArray['pid'], (int) $originalParentUid);
-                $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                    $newParentRecord['uid'],
-                    ColumnNumberUtility::calculateLocalColumnNumber($fieldArray['colPos'])
-                );
+                if ($newParentRecord !== null) {
+                    $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                        $newParentRecord['uid'],
+                        ColumnNumberUtility::calculateLocalColumnNumber($fieldArray['colPos'])
+                    );
+                }
             }
         }
 
@@ -165,7 +169,7 @@ class DataHandlerSubscriber
         // TODO: remove when expected solution, the inclusion of colPos in $fieldArray, is merged and released in TYPO3
         if (!array_key_exists('colPos', $fieldArray)) {
             $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
-            $uidInDefaultLanguage = $record['l18n_parent'];
+            $uidInDefaultLanguage = $record['l18n_parent'] ?? null;
             if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
                 $fieldArray['colPos'] = (integer) $dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'];
             }

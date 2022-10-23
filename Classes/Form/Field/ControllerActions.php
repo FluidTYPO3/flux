@@ -18,7 +18,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ControllerActions extends Select
 {
-
     /**
      * Name of the Extbase extension that contains the Controller
      * to parse, ex. MyExtension. In vendor based extensions use
@@ -357,7 +356,7 @@ class ControllerActions extends Select
     /**
      * @param string $controllerName
      * @param string $actionName
-     * @return string|NULL
+     * @return string
      */
     protected function getLabelForControllerAction($controllerName, $actionName)
     {
@@ -367,6 +366,9 @@ class ControllerActions extends Select
         $pluginName = $this->getPluginName();
         $separator = $this->getSeparator();
         $controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
+        if ($controllerClassName === null) {
+            return 'INVALID: ' . $controllerName . '->' . $actionName;
+        }
         $disableLocalLanguageLabels = $this->getDisableLocalLanguageLabels();
         $labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
         $hasLocalLanguageFile = file_exists(

@@ -77,7 +77,7 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
 
     public function getControllerExtensionKeyFromRecord(array $row)
     {
-        return ExtensionNamingUtility::getExtensionKey($this->getExtensionKey($row));
+        return ExtensionNamingUtility::getExtensionKey((string) $this->getExtensionKey($row));
     }
 
     public function getControllerActionFromRecord(array $row)
@@ -129,7 +129,7 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
                     'Content type definition for %s must implement interface %s, class %s does not.',
                     $row['CType'],
                     FluidRenderingContentTypeDefinitionInterface::class,
-                    get_class($definition)
+                    $definition !== null ? get_class($definition) : '(unknown)'
                 ),
                 1556109085
             );

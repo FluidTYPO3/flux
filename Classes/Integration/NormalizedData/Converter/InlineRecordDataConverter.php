@@ -149,6 +149,9 @@ class InlineRecordDataConverter implements ConverterInterface
     {
         $segments = GeneralUtility::trimExplode('.', $path);
         $lastSegment = array_pop($segments);
+        if ($lastSegment === null) {
+            return false;
+        }
         foreach ($segments as $segment) {
             $array = $array[$segment];
         }

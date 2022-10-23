@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\NormalizedData\DataAccessTrait;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
@@ -28,6 +30,7 @@ use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Response;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -164,16 +167,16 @@ abstract class AbstractFluxController extends ActionController
     protected function initializeProvider()
     {
         $row = $this->getRecord();
-        $table = $this->getFluxTableName();
+        $table = (string) $this->getFluxTableName();
         $field = $this->getFluxRecordField();
-        $this->provider = $this->configurationService->resolvePrimaryConfigurationProvider(
+        $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
             $table,
             $field,
             $row,
             null,
             ControllerProviderInterface::class
         );
-        if (!$this->provider) {
+        if ($provider === null) {
             throw new \RuntimeException(
                 'Unable to resolve a ConfigurationProvider, but controller indicates it is a Flux-enabled ' .
                 'Controller - this is a grave error and indicates that EXT: ' . $this->extensionName . ' itself is ' .
@@ -182,6 +185,7 @@ abstract class AbstractFluxController extends ActionController
                 1377458581
             );
         }
+        $this->provider = $provider;
     }
 
     /**
@@ -354,6 +358,7 @@ abstract class AbstractFluxController extends ActionController
     
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
         $foreignControllerClass = null;
+        $content = null;
         if (!$shouldRelay) {
             if ($this->provider instanceof FluidProviderInterface) {
                 $templatePathAndFilename = $this->provider->getTemplatePathAndFilename($this->getRecord());
@@ -385,7 +390,7 @@ abstract class AbstractFluxController extends ActionController
                 );
             $content = $this->callSubControllerAction(
                 $extensionName,
-                $foreignControllerClass,
+                $foreignControllerClass ?? static::class,
                 $actionName,
                 $pluginSignature
             );
@@ -512,7 +517,7 @@ abstract class AbstractFluxController extends ActionController
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     protected function getFluxRecordField()
     {
@@ -520,7 +525,7 @@ abstract class AbstractFluxController extends ActionController
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     protected function getFluxTableName()
     {
@@ -532,7 +537,11 @@ abstract class AbstractFluxController extends ActionController
      */
     public function getRecord()
     {
-        return $this->configurationManager->getContentObject()->data;
+        $contentObject = $this->configurationManager->getContentObject();
+        if ($contentObject === null) {
+            throw new \UnexpectedValueException("Record of table " . $this->getFluxTableName() . ' not found', 1666538343);
+        }
+        return $contentObject->data;
     }
 
     /**
@@ -541,10 +550,14 @@ abstract class AbstractFluxController extends ActionController
     public function outletAction()
     {
         $record = $this->getRecord();
+        $form = $this->provider->getForm($record);
         $input = $this->request->getArguments();
         $targetConfiguration = $this->request->getInternalArguments()['__outlet'];
-        if ($this->provider->getTableName($record) !== $targetConfiguration['table']
-            && $record['uid'] !== (integer) $targetConfiguration['recordUid']
+        if ($form === null
+            ||
+            ($this->provider->getTableName($record) !== $targetConfiguration['table']
+                && $record['uid'] !== (integer) $targetConfiguration['recordUid']
+            )
         ) {
             // This instance does not match the instance that rendered the form. Forward the request
             // to the default "render" action.
@@ -552,7 +565,8 @@ abstract class AbstractFluxController extends ActionController
         }
         $input['settings'] = $this->settings;
         try {
-            $outlet = $this->provider->getForm($record)->getOutlet();
+            /** @var Form $form */
+            $outlet = $form->getOutlet();
             $outlet->setView($this->view);
             $outlet->fill($input);
             if (!$outlet->isValid()) {

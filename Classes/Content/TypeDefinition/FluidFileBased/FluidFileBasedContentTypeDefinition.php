@@ -77,11 +77,18 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ProviderResolver $providerResolver */
         $providerResolver = $objectManager->get(ProviderResolver::class);
-        return $providerResolver->resolvePrimaryConfigurationProvider(
+        $provider = $providerResolver->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',
             $record
-        )->getForm($record);
+        );
+        /** @var Form $defaultForm */
+        $defaultForm = Form::create();
+
+        if ($provider === null) {
+            return $defaultForm;
+        }
+        return $provider->getForm($record) ?? $defaultForm;
     }
 
     public function getGrid(array $record = []): Form\Container\Grid
@@ -90,11 +97,15 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ProviderResolver $providerResolver */
         $providerResolver = $objectManager->get(ProviderResolver::class);
-        return $providerResolver->resolvePrimaryConfigurationProvider(
+        $provider = $providerResolver->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',
             $record
-        )->getGrid($record);
+        );
+        if ($provider === null) {
+            return Form\Container\Grid::create();
+        }
+        return $provider->getGrid($record);
     }
 
     public static function fetchContentTypes(): iterable

@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\RecordBased;
 
 use FluidTYPO3\Flux\Content\ContentGridForm;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
+use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
@@ -91,6 +92,10 @@ class RecordBasedContentGridProvider extends AbstractProvider implements GridPro
      */
     public function getGrid(array $row)
     {
-        return $this->contentTypeDefinitions->determineContentTypeForRecord($row)->getGrid() ?? parent::getGrid($row);
+        $contentTypeDefinition = $this->contentTypeDefinitions->determineContentTypeForRecord($row);
+        if (!($contentTypeDefinition instanceof ContentTypeDefinitionInterface)) {
+            return parent::getGrid($row);
+        }
+        return $contentTypeDefinition->getGrid() ?? parent::getGrid($row);
     }
 }
