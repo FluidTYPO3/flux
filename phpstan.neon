@@ -27,6 +27,7 @@ parameters:
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response not found\\.$#"
         - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response#"
+        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Context\\\\Context#"
         - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) invoked with [2-9] parameters, 1 required\\.$#"
         - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Dispatcher\\:\\:dispatch\\(\\) invoked with 2 parameters, 1 required\\.$#"
         - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ControllerInterface\\:\\:processRequest\\(\\) invoked with 2 parameters, 1 required\\.$#"
