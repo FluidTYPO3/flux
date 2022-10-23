@@ -417,6 +417,9 @@ abstract class AbstractFluxController extends ActionController
                 $extensionName,
                 $controllerName
             );
+        if ($potentialControllerClassName === null) {
+            return false;
+        }
         $isForeign = $extensionName !== $this->extensionName;
         $isValidController = class_exists($potentialControllerClassName);
         return (true === $isForeign && true === $isValidController && method_exists($potentialControllerClassName, $actionName . 'Action'));
