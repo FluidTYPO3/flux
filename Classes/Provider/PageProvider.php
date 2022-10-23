@@ -202,7 +202,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         if (!empty($row[self::FIELD_ACTION_MAIN])) {
             return is_array($row[self::FIELD_ACTION_MAIN]) ? $row[self::FIELD_ACTION_MAIN][0] : $row[self::FIELD_ACTION_MAIN];
         }
-        return ($this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB] ?? 'flux->default') ?: 'flux->default';
+        if (isset($row['uid'])) {
+            return ($this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB] ?? 'flux->default') ?: 'flux->default';
+        }
+        return 'flux->default';
     }
 
     /**
@@ -329,7 +332,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     {
         $tableName = $this->getTableName($row);
         $tableFieldName = $this->getFieldName($row);
-        $cacheKey = $tableName . $tableFieldName . $row['uid'];
+        $uid = $row['uid'] ?? '';
+        $cacheKey = $tableName . $tableFieldName . $uid;
         if (false === isset(self::$cache[$cacheKey])) {
             $tree = $this->getInheritanceTree($row);
             $data = [];
@@ -414,7 +418,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             return [];
         }
         /** @var RootlineUtility $rootLineUtility */
-        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid']);
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid'] ?? null);
         return array_slice($rootLineUtility->get(), 1);
     }
 }
