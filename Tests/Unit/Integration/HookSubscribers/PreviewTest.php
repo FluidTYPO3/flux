@@ -27,7 +27,7 @@ class PreviewTest extends AbstractTestCase
     /**
      * Setup
      */
-    public function setUp()
+    public function setUp(): void
     {
         $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
         $fluxService = $this->objectManager->get(FluxService::class);

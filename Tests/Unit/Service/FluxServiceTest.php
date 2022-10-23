@@ -30,7 +30,7 @@ class FluxServiceTest extends AbstractTestCase
     /**
      * Setup
      */
-    public function setup()
+    public function setup(): void
     {
         $providers = Core::getRegisteredFlexFormProviders();
         if (true === in_array('FluidTYPO3\Flux\Service\FluxService', $providers)) {

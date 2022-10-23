@@ -25,7 +25,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         $GLOBALS['TCA'] = array(
             'tt_content' => array(
@@ -44,7 +44,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         unset($GLOBALS['TCA']);
     }

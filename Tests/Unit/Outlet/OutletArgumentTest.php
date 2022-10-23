@@ -25,7 +25,7 @@ class OutletArgumentTest extends AbstractTestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['typeConverters'] = [StringConverter::class];
         parent::setUp();

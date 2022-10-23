@@ -31,7 +31,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
     /**
      * Setup
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $GLOBALS['TSFE'] = new TypoScriptFrontendController([], 0, 0);
