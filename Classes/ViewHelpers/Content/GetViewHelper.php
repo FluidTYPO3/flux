@@ -223,7 +223,7 @@ class GetViewHelper extends AbstractViewHelper
                 'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
                 'where' => $conditions,
                 'pidInList' => $parent['pid'],
-                'includeRecordsWithoutDefaultTranslation' => !$arguments['hideUntranslated']
+                'includeRecordsWithoutDefaultTranslation' => !($arguments['hideUntranslated'] ?? false)
             ]
         );
 
