@@ -136,7 +136,7 @@ class DataHandlerSubscriber
         // field. Updated value will still be subject to permission checks.
         $resolver = $this->getProviderResolver();
         foreach ($fieldArray as $fieldName => $fieldValue) {
-            if ($GLOBALS["TCA"][$table]["columns"][$fieldName]["config"]["type"] === 'flex') {
+            if (isset($GLOBALS["TCA"][$table]["columns"][$fieldName]["config"]["type"]) && $GLOBALS["TCA"][$table]["columns"][$fieldName]["config"]["type"] === 'flex') {
                 $primaryConfigurationProvider = $resolver->resolvePrimaryConfigurationProvider(
                     $table,
                     $fieldName
@@ -145,9 +145,11 @@ class DataHandlerSubscriber
                 if ($primaryConfigurationProvider && is_array($fieldArray[$fieldName]) && array_key_exists('data', $fieldArray[$fieldName])) {
                     foreach ($fieldArray[$fieldName]['data'] as $sheet) {
                         foreach ($sheet['lDEF'] as $key => $value) {
-                            list ($possibleTableName, $columnName) = explode('.', $key, 2);
-                            if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName])) {
-                                $fieldArray[$columnName] = $value['vDEF'];
+                            if (strpos($key, '.') !== false) {
+                                list ($possibleTableName, $columnName) = explode('.', $key, 2);
+                                if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName])) {
+                                    $fieldArray[$columnName] = $value['vDEF'];
+                                }
                             }
                         }
                     }
