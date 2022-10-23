@@ -10,8 +10,8 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\RecordBased;
 
 use FluidTYPO3\Flux\Content\ContentGridForm;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
-use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
