@@ -32,9 +32,6 @@ class ContentControllerTest extends AbstractFluxControllerTestCase
      */
     protected function createAndTestDummyControllerInstance()
     {
-        $record = Records::$contentRecordWithoutParentAndWithoutChildren;
-        $record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
-        $record['tx_fed_fcefile'] = 'Flux:Default.html';
         $this->performDummyRegistration();
         $controllerClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
         /** @var AbstractFluxController $instance */

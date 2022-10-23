@@ -22,6 +22,7 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -336,7 +337,9 @@ class FluxService implements SingletonInterface
         $parts = explode(':', $reference);
         $filename = array_pop($parts);
         if (true === ctype_digit($filename)) {
-            return $this->resourceFactory->getFileObjectFromCombinedIdentifier($reference)->getIdentifier();
+            /** @var File $file */
+            $file = $this->resourceFactory->getFileObjectFromCombinedIdentifier($reference);
+            return $file->getIdentifier();
         }
         $reference = GeneralUtility::getFileAbsFileName($reference);
         return $reference;

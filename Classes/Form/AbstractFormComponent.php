@@ -46,7 +46,7 @@ abstract class AbstractFormComponent implements FormInterface
     protected $enabled = true;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $label = null;
 
@@ -170,7 +170,7 @@ abstract class AbstractFormComponent implements FormInterface
      * @param string $namespace
      * @param string|class-string $type
      * @param string $name
-     * @param string|NULL $label
+     * @param string|null $label
      * @return FormInterface
      */
     public function createComponent($namespace, $type, $name, $label = null)
@@ -266,7 +266,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @param string $label
+     * @param string|null $label
      * @return $this
      */
     public function setLabel($label)
@@ -304,7 +304,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLabel()
     {
@@ -334,7 +334,7 @@ abstract class AbstractFormComponent implements FormInterface
         $relativeFilePath = $this->getLocalLanguageFileRelativePath();
         $relativeFilePath = ltrim($relativeFilePath, '/');
         $filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-        if (strpos($label ?? '', 'LLL:') === 0) {
+        if (strpos($label ?? '', 'LLL:') === 0 && strpos($label ?? '', ':') !== false) {
             // Shorthand LLL:name.of.index reference, expand
             list (, $labelIdentifier) = explode(':', $label, 2);
             return $filePrefix . ':' . $labelIdentifier;
@@ -535,6 +535,12 @@ abstract class AbstractFormComponent implements FormInterface
             unset($structure['options']);
         }
         foreach ($structure as $propertyName => $propertyValue) {
+            if ($propertyName === 'children') {
+                foreach ($propertyValue as $child) {
+                    $this->add($child);
+                }
+                continue;
+            }
             $setterMethodName = 'set' . ucfirst($propertyName);
             if (true === method_exists($this, $setterMethodName)) {
                 ObjectAccess::setProperty($this, $propertyName, $propertyValue);

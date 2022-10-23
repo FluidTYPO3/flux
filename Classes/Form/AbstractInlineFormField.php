@@ -470,7 +470,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
      */
     public function setForeignTypes($foreignTypes)
     {
-        $this->foreignTypes = true === is_array($foreignTypes) ? $foreignTypes : null;
+        $this->foreignTypes = $foreignTypes ?? [];
         return $this;
     }
 

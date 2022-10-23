@@ -52,13 +52,13 @@ interface FormInterface
     public function setEnabled($enabled);
 
     /**
-     * @param string $label
+     * @param string|null $label
      * @return $this
      */
     public function setLabel($label);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLabel();
 

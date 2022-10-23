@@ -179,7 +179,7 @@ class DataViewHelper extends AbstractViewHelper
     protected static function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field)
     {
         if (0 === count($providers)) {
-            $dataArray = static::$configurationService->convertFlexFormContentToArray($record[$field]);
+            $dataArray = static::getFluxService()->convertFlexFormContentToArray($record[$field]);
         } else {
             $dataArray = [];
             /** @var ProviderInterface $provider */

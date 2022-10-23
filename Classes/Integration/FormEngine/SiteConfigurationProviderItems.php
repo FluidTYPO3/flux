@@ -34,7 +34,7 @@ class SiteConfigurationProviderItems
         foreach ($pageService->getAvailablePageTemplateFiles() as $extensionName => $templateGroup) {
             foreach ($templateGroup as $form) {
                 $templateFilename = $form->getOption(Form::OPTION_TEMPLATEFILE);
-                $label = $form->getLabel();
+                $label = (string) $form->getLabel();
                 $identity = $extensionName . '->' . lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
                 try {
                     $label = LocalizationUtility::translate($label) ?: $identity;

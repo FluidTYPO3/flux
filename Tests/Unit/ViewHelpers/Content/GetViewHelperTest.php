@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
@@ -56,6 +57,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
+        /** @var ProviderInterface $provider */
         $provider = $this->objectManager->get(Provider::class);
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());

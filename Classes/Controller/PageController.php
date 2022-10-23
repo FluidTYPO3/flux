@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\Interfaces\BasicProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
@@ -69,7 +70,12 @@ class PageController extends AbstractFluxController implements PageControllerInt
      */
     protected function initializeProvider()
     {
-        $this->provider = $this->pageConfigurationService->resolvePageProvider($this->getRecord());
+        $record = $this->getRecord();
+        if ($record !== null) {
+            $provider = $this->pageConfigurationService->resolvePageProvider($record);
+            if ($provider instanceof BasicProviderInterface)
+            $this->provider = $provider;
+        }
     }
 
     /**

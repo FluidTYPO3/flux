@@ -21,7 +21,7 @@ class FormToFluidTemplateConverter implements FormConverterInterface
      * @param array $configuration
      * @return string
      */
-    public function convertFormAndGrid(Form $form, Form\Container\Grid $grid, array $configuration)
+    public function convertFormAndGrid(Form $form, ?Form\Container\Grid $grid, array $configuration)
     {
         $renderingTemplateChunk = $configuration[static::OPTION_TEMPLATE_SOURCE] ?? 'Hello world';
 
@@ -44,7 +44,7 @@ class FormToFluidTemplateConverter implements FormConverterInterface
 TEMPLATE;
 
         $formFieldsChunk = $this->renderSheetsAndFields($form);
-        $gridChunk = $this->renderGrid($grid);
+        $gridChunk = $grid !== null ? $this->renderGrid($grid) : '';
 
         $source = sprintf($template, $form->getId(), $formFieldsChunk, $gridChunk, $renderingTemplateChunk);
 

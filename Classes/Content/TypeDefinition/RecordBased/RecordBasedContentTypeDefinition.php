@@ -245,6 +245,9 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
             $columnTemplateChunk = '<flux:content.render area="%d" />' . PHP_EOL;
 
             $grid = $this->getGrid();
+            if (!($grid instanceof Grid)) {
+                return '';
+            }
             $template = '<div class="flux-grid">' . PHP_EOL;
             foreach ($grid->getRows() as $row) {
                 $template .= '<div class="flux-grid-row">' . PHP_EOL;

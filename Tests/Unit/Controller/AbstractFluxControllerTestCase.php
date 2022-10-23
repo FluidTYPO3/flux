@@ -518,8 +518,9 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $subject->expects($this->once())->method('forward')->with('render')->willThrowException(new StopActionException());
         $subject->expects($this->once())->method('getRecord')->willReturn([]);
         $request = new Request();
-        $provider = $this->getMockBuilder(Provider::class)->setMethods(['getTableName'])->getMock();
+        $provider = $this->getMockBuilder(Provider::class)->setMethods(['getTableName', 'getForm'])->getMock();
         $provider->expects($this->once())->method('getTableName')->willReturn('foobar');
+        $provider->expects($this->once())->method('getForm')->willReturn(Form::create());
         ObjectAccess::setProperty($request, 'internalArguments', ['outlet' => ['table' => 'xyz', 'uid' => 321]], true);
         ObjectAccess::setProperty($subject, 'request', $request, true);
         ObjectAccess::setProperty($subject, 'provider', $provider, true);

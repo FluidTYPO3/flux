@@ -225,7 +225,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getRenderType()
     {

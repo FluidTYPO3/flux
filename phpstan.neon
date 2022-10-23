@@ -2,7 +2,7 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-    level: 7
+    level: 8
     reportUnmatchedIgnoredErrors: false
     checkGenericClassInNonGenericObjectType: false
     ignoreErrors:
@@ -34,6 +34,7 @@ parameters:
         - "#^Cannot call method (rowCount|fetch|fetchAssociative|fetchAll|fetchAllAssociative)\\(\\) on (Doctrine\\\\DBAL\\\\Driver\\\\Statement|Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement|Doctrine\\\\DBAL\\\\Result)\\|int\\.$#"
         - "#^Static method TYPO3\\\\CMS\\\\Extbase\\\\Reflection\\\\ObjectAccess\\:\\:getProperty\\(\\) invoked with 3 parameters, 2 required\\.$#"
         - "#^Call to an undefined static method TYPO3\\\\CMS\\\\Backend\\\\Utility\\\\BackendUtility\\:\\:getMovePlaceholder\\(\\)\\.$#"
+        - "#^Strict comparison using === between TYPO3\\\\CMS\\\\Frontend\\\\ContentObject\\\\ContentObjectRenderer and null will always evaluate to false\\.$#"
     bootstrapFiles:
         - phpstan-bootstrap.php
     paths:

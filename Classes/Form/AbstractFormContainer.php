@@ -148,7 +148,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     }
 
     /**
-     * @return FormInterface|FALSE
+     * @return FormInterface|null
      */
     public function last()
     {
@@ -173,20 +173,21 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     {
         if (isset($structure['fields']) || isset($structure['children'])) {
             $data = isset($structure['children']) ? $structure['children'] : $structure['fields'];
-            foreach ((array) $data as $index => $fieldData) {
-                $fieldName = true === isset($fieldData['name']) ? $fieldData['name'] : $index;
+            foreach ((array) $data as $index => $childData) {
+                $childName = true === isset($childData['name']) ? $childData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
 
-                if (true === $this->has($fieldName)) {
-                    /** @var FieldInterface|null $field */
-                    $field = $this->get($fieldName);
+                if (true === $this->has($childName)) {
+                    /** @var FormInterface $child */
+                    $child = $this->get($childName);
                 } else {
-                    /** @var class-string $fieldType */
-                    $fieldType = true === isset($fieldData['type']) ? $fieldData['type'] : 'None';
-                    /** @var FieldInterface|null $field */
-                    $field = $this->createField($fieldType, $fieldName);
+                    /** @var class-string $type */
+                    $type = true === isset($childData['type']) ? $childData['type'] : 'None';
+                    /** @var FormInterface $child */
+                    $child = $this->createField($type, $childName);
                 }
-                $field->modify($fieldData);
+
+                $child->modify($childData);
             }
             unset($structure['children'], $structure['fields']);
         }
