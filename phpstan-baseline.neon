@@ -1,6 +1,11 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Right side of \\|\\| is always false\\.$#"
+            count: 1
+            path: Configuration/TCA/content_types.php
+
+        -
             message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\RecordService\\:\\:update\\(\\) has invalid return type Doctrine\\\\DBAL\\\\Result\\.$#"
             count: 1
             path: Classes/Service/RecordService.php

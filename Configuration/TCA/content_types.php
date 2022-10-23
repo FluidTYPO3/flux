@@ -180,7 +180,7 @@ $data = [
     'palettes' => []
 ];
 
-if (!defined('TYPO3_version') || version_compare(TYPO3_version, 10.3, '>=')) {
+if (!defined('TYPO3_version') || version_compare(TYPO3_version, '10.3', '>=')) {
     unset($data['interface']['showRecordFieldList']);
 }
 
