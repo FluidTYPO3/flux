@@ -72,6 +72,11 @@ Each element gets a red border:
           <xsd:documentation><![CDATA[Optional returning variable as original table rows]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="hideUntranslated" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Exclude untranslated records]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="content.render">
@@ -142,6 +147,11 @@ be rendered.
       <xsd:attribute type="xsd:boolean" name="render" default="true">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Optional returning variable as original table rows]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="hideUntranslated" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Exclude untranslated records]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
     </xsd:complexType>
