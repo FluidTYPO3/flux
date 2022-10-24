@@ -67,7 +67,7 @@ abstract class AbstractFormComponent implements FormInterface
     protected $localLanguageFileRelativePath = Form::DEFAULT_LANGUAGEFILE;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $extensionName = 'FluidTYPO3.Flux';
 
@@ -248,7 +248,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @param string $extensionName
+     * @param string|null $extensionName
      * @return $this
      */
     public function setExtensionName($extensionName)
@@ -258,7 +258,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getExtensionName()
     {
@@ -323,7 +323,7 @@ abstract class AbstractFormComponent implements FormInterface
         }
 
         $name = $this->getName();
-        $extensionName = $this->extensionName;
+        $extensionName = (string) $this->getExtensionName();
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
         if (empty($label) && !ExtensionManagementUtility::isLoaded($extensionKey)) {
             return $name;

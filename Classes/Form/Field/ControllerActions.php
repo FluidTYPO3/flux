@@ -433,10 +433,10 @@ class ControllerActions extends Select
      */
     protected function convertActionListToArray($actionList)
     {
-        if (false === is_array($actionList)) {
-            return GeneralUtility::trimExplode(',', $actionList, true);
+        if (is_scalar($actionList)) {
+            return GeneralUtility::trimExplode(',', (string) $actionList, true);
         }
-        return $actionList;
+        return (array) $actionList;
     }
 
     /**

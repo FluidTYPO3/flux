@@ -101,7 +101,7 @@ class ContentIconTest extends AbstractTestCase
 
         $GLOBALS['TCA']['tt_content']['columns']['field']['config']['type'] = 'flex';
         $cache = $this->getMockBuilder(VariableFrontend::class)->disableOriginalConstructor()->setMethods(array('get', 'set'))->getMock();
-        $cache->expects($this->once())->method('get')->willReturn(false);
+        $cache->expects($this->once())->method('get')->willReturn(null);
         $cache->expects($this->once())->method('set')->with($this->anything());
 
         $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();

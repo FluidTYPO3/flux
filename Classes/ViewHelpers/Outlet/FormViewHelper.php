@@ -48,11 +48,15 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
      */
     public function render()
     {
-        $this->provider = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'provider');
-        $this->record = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'record');
+        /** @var AbstractProvider $provider */
+        $provider = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'provider');
+        $this->provider = $provider;
+        /** @var array $record */
+        $record = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'record');
+        $this->record = $record;
 
         if (!$this->hasArgument('extensionName')) {
-            $this->arguments['extensionName'] = ExtensionNamingUtility::getExtensionName($this->provider->getControllerExtensionKeyFromRecord($this->record));
+            $this->arguments['extensionName'] = ExtensionNamingUtility::getExtensionName((string) $this->provider->getControllerExtensionKeyFromRecord($this->record));
         }
 
         if (!$this->hasArgument('controller')) {

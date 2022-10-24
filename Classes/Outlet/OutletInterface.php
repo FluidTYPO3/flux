@@ -19,7 +19,6 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
  */
 interface OutletInterface
 {
-
     /**
      * @param boolean $enabled
      * @return $this
@@ -41,7 +40,7 @@ interface OutletInterface
     public function fill($data);
 
     /**
-     * @return mixed
+     * @return array
      * @abstract
      */
     public function produce();

@@ -51,7 +51,9 @@ class ContentTypeProvider extends AbstractProvider implements
         $contentType = $objectManager->get(RecordBasedContentTypeDefinition::class, $row);
         /** @var ContentTypeForm $form */
         $form = $objectManager->get(ContentTypeForm::class);
-        foreach ($contentType->getSheetNamesAndLabels() as $name => $label) {
+        /** @var string[] $labels */
+        $labels = $contentType->getSheetNamesAndLabels();
+        foreach ($labels as $name => $label) {
             $form->createSheet($name, $label);
         }
         return $form;

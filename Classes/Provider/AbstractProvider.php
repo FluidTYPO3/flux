@@ -39,9 +39,7 @@ use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
  */
 class AbstractProvider implements ProviderInterface
 {
-
     const FORM_CLASS_PATTERN = '%s\\Form\\%s\\%sForm';
-
     const CONTENT_OBJECT_TYPE_LIST = 'list';
 
     /**
@@ -282,6 +280,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function getForm(array $row)
     {
+        /** @var Form $form */
         $form = $this->form
             ?? $this->createCustomFormInstance($row)
             ?? $this->extractConfiguration($row, 'form')
@@ -321,7 +320,7 @@ class AbstractProvider implements ProviderInterface
                 $persistedObjects = [];
                 if ($contentContainer instanceof Form\Container\SectionObject) {
                     $persistedObjects = array_column(
-                        ObjectAccess::getProperty($values, (string) $container->getName()) ?? [],
+                        (array) (ObjectAccess::getProperty($values, (string) $container->getName()) ?? []),
                         (string) $contentContainer->getName()
                     );
                 }
@@ -353,7 +352,9 @@ class AbstractProvider implements ProviderInterface
                 return $grid;
             }
         }
-        $grid = $this->extractConfiguration($row, 'grids')['grid'] ?? Grid::create();
+        /** @var array $grids */
+        $grids = $this->extractConfiguration($row, 'grids');
+        $grid = $grids['grid'] ?? Grid::create();
         $grid->setExtensionName($grid->getExtensionName() ?: $this->getControllerExtensionKeyFromRecord($row));
         return $grid;
     }
@@ -385,6 +386,7 @@ class AbstractProvider implements ProviderInterface
     protected function extractConfiguration(array $row, $name = null)
     {
         $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all');
+        /** @var array $allCached */
         $allCached = $this->configurationService->getFromCaches($cacheKeyAll);
         $fromCache = $allCached[$name] ?? null;
         if ($fromCache) {
@@ -783,14 +785,14 @@ class AbstractProvider implements ProviderInterface
      * with this ConfigurationProvider
      *
      * @param array $row
-     * @param mixed $dataStructure
+     * @param array|null $dataStructure
      * @param array $conf
      * @return void
      */
     public function postProcessDataStructure(array &$row, &$dataStructure, array $conf)
     {
         $form = $this->getForm($row);
-        if (null !== $form) {
+        if ($dataStructure !== null && $form !== null) {
             $dataStructure = array_replace_recursive($dataStructure, $form->build());
         }
     }

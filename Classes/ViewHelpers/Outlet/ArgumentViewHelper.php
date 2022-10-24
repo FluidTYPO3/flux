@@ -71,6 +71,7 @@ class ArgumentViewHelper extends AbstractFormViewHelper
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $viewHelperVariableContainer->addOrUpdate(ValidateViewHelper::class, 'validators', []);
         $renderChildrenClosure();
+        /** @var array[] $validators */
         $validators = $viewHelperVariableContainer->get(ValidateViewHelper::class, 'validators');
         foreach ($validators as $validator) {
             $argument->addValidator($validator['type'], (array)$validator['options']);

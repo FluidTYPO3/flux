@@ -73,7 +73,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function renderChildren()
     {
@@ -107,11 +107,11 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         iterable $arguments
     ) {
         if ($extensionName = $arguments[static::SCOPE_VARIABLE_EXTENSIONNAME] ?? false) {
-            return $extensionName;
+            return (string) $extensionName;
         }
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         if ($extensionName = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME)) {
-            return $extensionName;
+            return is_scalar($extensionName) ? (string) $extensionName : 'FluidTYPO3.Flux';
         }
         $controllerContext = $renderingContext->getControllerContext();
         if (null !== $controllerContext && null !== $controllerContext->getRequest()) {
@@ -135,6 +135,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
      */
     public static function getFormFromRenderingContext(RenderingContextInterface $renderingContext)
     {
+        /** @var Form|null $form */
         $form = $renderingContext->getViewHelperVariableContainer()->get(static::SCOPE, static::SCOPE_VARIABLE_FORM);
         if (!$form) {
             $form = Form::create([
@@ -155,6 +156,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         $gridName = 'grid'
     ) {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+        /** @var Grid[] $grids */
         $grids = (array) $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_GRIDS);
 
         if (!isset($grids[$gridName])) {
@@ -170,9 +172,9 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
      */
     protected static function getContainerFromRenderingContext(RenderingContextInterface $renderingContext)
     {
-        return $renderingContext->getViewHelperVariableContainer()
-            ->get(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER)
-            ?? static::getFormFromRenderingContext($renderingContext);
+        /** @var Form\ContainerInterface|null $container */
+        $container = $renderingContext->getViewHelperVariableContainer()->get(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
+        return $container ?? static::getFormFromRenderingContext($renderingContext);
     }
 
     /**

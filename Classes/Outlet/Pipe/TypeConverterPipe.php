@@ -20,7 +20,6 @@ use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
  */
 class TypeConverterPipe extends AbstractPipe implements PipeInterface
 {
-
     /**
      * @var ObjectManagerInterface
      */
@@ -110,8 +109,10 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
         $output = &$data;
         $subject = &$data;
         if (!empty($this->propertyName)) {
-            foreach (explode('.', $this->propertyName) as $segment) {
-                $subject = &$subject[$segment];
+            if (strpos($this->propertyName, '.') !== false && is_array($subject)) {
+                foreach (explode('.', $this->propertyName) as $segment) {
+                    $subject = &$subject[$segment];
+                }
             }
         }
         $targetType = $this->getTargetType();

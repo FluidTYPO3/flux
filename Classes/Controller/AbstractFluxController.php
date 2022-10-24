@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Controller;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\NormalizedData\DataAccessTrait;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
@@ -30,7 +29,6 @@ use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Response;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -332,10 +330,11 @@ abstract class AbstractFluxController extends ActionController
 
     /**
      * @param string $pluginSignature
-     * @return string|NULL
+     * @return string|null
      */
     protected function resolveOverriddenFluxControllerActionNameFromRequestParameters($pluginSignature)
     {
+        /** @var string[] $requestParameters */
         $requestParameters = (array) GeneralUtility::_GET($pluginSignature);
         $overriddenControllerActionName = isset($requestParameters['action']) ? $requestParameters['action'] : null;
         return $overriddenControllerActionName;

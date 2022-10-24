@@ -23,7 +23,6 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
  */
 abstract class AbstractOutlet implements OutletInterface
 {
-
     /**
      * @var boolean
      */
@@ -188,7 +187,7 @@ abstract class AbstractOutlet implements OutletInterface
     }
 
     /**
-     * @param mixed $data
+     * @param array $data
      * @return $this
      */
     public function fill($data)

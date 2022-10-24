@@ -82,7 +82,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * Can also be an array of [$value, $label, $iconName] where label and icon
      * name are optional - use this when you need to specify an icon for "empty".
      *
-     * @var mixed
+     * @var boolean|string|array
      */
     protected $emptyOption = false;
 
@@ -337,7 +337,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     }
 
     /**
-     * @param boolean|string $emptyOption
+     * @param boolean|string|array $emptyOption
      * @return MultiValueFieldInterface
      */
     public function setEmptyOption($emptyOption)

@@ -85,7 +85,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 
     /**
      * @param FieldInterface|string $childName
-     * @return FormInterface|FALSE
+     * @return FormInterface|boolean
      */
     public function remove($childName)
     {
@@ -105,12 +105,12 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     }
 
     /**
-     * @param mixed $childOrChildName
+     * @param FormInterface|string $childOrChildName
      * @return boolean
      */
     public function has($childOrChildName)
     {
-        $name = ($childOrChildName instanceof FormInterface) ? $childOrChildName->getName() : $childOrChildName;
+        $name = ($childOrChildName instanceof FormInterface) ? (string) $childOrChildName->getName() : $childOrChildName;
         return (false !== $this->get($name));
     }
 
@@ -118,7 +118,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      * @param string $childName
      * @param boolean $recursive
      * @param string $requiredClass
-     * @return FormInterface|FALSE
+     * @return FormInterface|boolean
      */
     public function get($childName, $recursive = false, $requiredClass = null)
     {

@@ -69,9 +69,12 @@ defined('TYPO3_MODE') or die('Access denied.');
     }
 
     $doktypes = '0,1,4';
-    $additionalDoktypes = trim(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_DOKTYPES), ',');
-    if (false === empty($additionalDoktypes)) {
-        $doktypes .= ',' . $additionalDoktypes;
+    $doktypesOptionValue = \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_DOKTYPES);
+    if (is_scalar($doktypesOptionValue)) {
+        $additionalDoktypes = trim((string) $doktypesOptionValue, ',');
+        if (false === empty($additionalDoktypes)) {
+            $doktypes .= ',' . $additionalDoktypes;
+        }
     }
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes(
