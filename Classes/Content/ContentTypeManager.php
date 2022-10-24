@@ -34,7 +34,7 @@ class ContentTypeManager implements SingletonInterface
     const CACHE_TAG = 'content_types';
 
     /**
-     * @var ContentTypeDefinitionInterface[]
+     * @var ContentTypeDefinitionInterface[]|null[]
      */
     protected $types = [];
 
@@ -83,11 +83,7 @@ class ContentTypeManager implements SingletonInterface
 
     public function determineContentTypeForTypeString(string $contentTypeName): ?ContentTypeDefinitionInterface
     {
-        $definition = $this->loadSingleDefinitionFromCache($contentTypeName);
-        if ($definition === null) {
-            return null;
-        }
-        return $this->types[$contentTypeName] ?? ($this->types[$contentTypeName] = $definition);
+        return $this->types[$contentTypeName] ?? ($this->types[$contentTypeName] = $this->loadSingleDefinitionFromCache($contentTypeName));
     }
 
     public function determineContentTypeForRecord(array $record): ?ContentTypeDefinitionInterface
@@ -99,7 +95,7 @@ class ContentTypeManager implements SingletonInterface
     {
         try {
             /** @var ContentTypeDefinitionInterface|null $fromCache */
-            $fromCache = $this->getCache()->get(static::CACHE_IDENTIFIER_PREFIX . $name);
+            $fromCache = $this->getCache()->get(static::CACHE_IDENTIFIER_PREFIX . $name) ?: null;
             return $fromCache;
         } catch (NoSuchCacheException $error) {
             return null;
