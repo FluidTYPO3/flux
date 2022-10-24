@@ -96,14 +96,16 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
                 \FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor::class . '->includeStaticTypoScriptHook';
         }
 
-        /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
-        $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-        $signalSlotDispatcher->connect(
-            \TYPO3\CMS\Backend\Controller\EditDocumentController::class,
-            'initAfter',
-            \FluidTYPO3\Flux\Integration\HookSubscribers\EditDocumentController::class,
-            'requireColumnPositionJavaScript'
-        );
+        if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.2, '<')) {
+            /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
+            $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+            $signalSlotDispatcher->connect(
+                \TYPO3\CMS\Backend\Controller\EditDocumentController::class,
+                'initAfter',
+                \FluidTYPO3\Flux\Integration\HookSubscribers\EditDocumentController::class,
+                'requireColumnPositionJavaScript'
+            );
+        }
 
         if (true === class_exists(\FluidTYPO3\Flux\Core::class)) {
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\ContentTypeProvider::class);
