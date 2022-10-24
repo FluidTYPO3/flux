@@ -395,7 +395,9 @@ class DataHandlerSubscriber
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
-        return $queryBuilder->execute()->fetch() ?: null;
+        /** @var array|false $firstResult */
+        $firstResult = $queryBuilder->execute()->fetch();
+        return $firstResult ?: null;
     }
 
     protected function getSingleRecordWithoutRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
@@ -405,7 +407,9 @@ class DataHandlerSubscriber
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
-        return $queryBuilder->execute()->fetch() ?: null;
+        /** @var array|false $firstResult */
+        $firstResult = $queryBuilder->execute()->fetch();
+        return $firstResult ?: null;
     }
 
     protected function getMostRecentCopyOfRecord(int $uid, string $fieldsToSelect = 'uid'): ?array
@@ -420,7 +424,9 @@ class DataHandlerSubscriber
                 $queryBuilder->expr()->eq('t3_origuid', $uid),
                 $queryBuilder->expr()->neq('t3ver_state', -1)
             );
-        return $queryBuilder->execute()->fetch() ?: null;
+        /** @var array|false $firstResult */
+        $firstResult = $queryBuilder->execute()->fetch();
+        return $firstResult ?: null;
     }
 
     protected function getTranslatedVersionOfParentInLanguageOnPage(int $languageUid, int $pageUid, int $originalParentUid, string $fieldsToSelect = '*'): ?array
@@ -438,7 +444,9 @@ class DataHandlerSubscriber
                 $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, \PDO::PARAM_INT)),
                 $queryBuilder->expr()->eq('l10n_source', $queryBuilder->createNamedParameter($originalParentUid, \PDO::PARAM_INT))
             );
-        return $queryBuilder->execute()->fetch() ?: null;
+        /** @var array|false $firstResult */
+        $firstResult = $queryBuilder->execute()->fetch();
+        return $firstResult ?: null;
     }
 
     /**

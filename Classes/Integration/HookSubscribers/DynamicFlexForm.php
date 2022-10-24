@@ -164,6 +164,7 @@ class DynamicFlexForm extends FlexFormTools
             return [];
         }
 
+        /** @var array|null $fromCache */
         $fromCache = $this->configurationService->getFromCaches($identifier);
         if ($fromCache) {
             return $fromCache;

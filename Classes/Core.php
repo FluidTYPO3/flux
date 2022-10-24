@@ -192,12 +192,12 @@ class Core
      * type select box or an ObjectStorage from a list of records. Usual output
      * is completely ignored, only the "Configuration" section is considered.
      *
-     * @param mixed $extensionKey The extension key which registered this FlexForm
-     * @param mixed $pluginSignature The plugin signature this FlexForm belongs to
-     * @param mixed $templateFilename Location of the Fluid template containing field definitions
-     * @param mixed $variables Optional array of variables to pass to Fluid template
-     * @param mixed|NULL $section Optional section name containing the configuration
-     * @param mixed|NULL $paths Optional paths array / Closure to return paths
+     * @param string $extensionKey The extension key which registered this FlexForm
+     * @param string $pluginSignature The plugin signature this FlexForm belongs to
+     * @param string $templateFilename Location of the Fluid template containing field definitions
+     * @param array $variables Optional array of variables to pass to Fluid template
+     * @param string|null $section Optional section name containing the configuration
+     * @param array|null $paths Optional paths array / Closure to return paths
      * @param string $fieldName Optional fieldname if not from pi_flexform
      * @return ProviderInterface
      */
@@ -231,12 +231,12 @@ class Core
      * resolution - use this if you registered your Extbase plugin as a content
      * object in your localconf.
      *
-     * @param mixed $extensionKey The extension key which registered this FlexForm
-     * @param mixed $contentObjectType The cType of the object you registered
-     * @param mixed $templateFilename Location of the Fluid template containing field definitions
-     * @param mixed $variables Optional array of variables to pass to Fluid template
-     * @param mixed|NULL $section Optional section name containing the configuration
-     * @param mixed|NULL $paths Optional paths array / Closure to return paths
+     * @param string $extensionKey The extension key which registered this FlexForm
+     * @param string $contentObjectType The cType of the object you registered
+     * @param string $templateFilename Location of the Fluid template containing field definitions
+     * @param array $variables Optional array of variables to pass to Fluid template
+     * @param string|null $section Optional section name containing the configuration
+     * @param array|null $paths Optional paths array / Closure to return paths
      * @param string $fieldName Optional fieldname if not from pi_flexform
      * @return ProviderInterface
      */
@@ -270,12 +270,12 @@ class Core
      * for any TCA field (type "flex") or field whose TCA you have overridden
      * to display as a FlexForm.
      *
-     * @param mixed $table The SQL table this FlexForm is bound to
-     * @param mixed $fieldName The SQL field this FlexForm is bound to
-     * @param mixed $templateFilename Location of the Fluid template containing field definitions
-     * @param mixed $variables Optional array of variables to pass to Fluid template
-     * @param mixed|NULL $section Optional section name containing the configuration
-     * @param mixed|NULL $paths Optional paths array / Closure to return paths
+     * @param string $table The SQL table this FlexForm is bound to
+     * @param string $fieldName The SQL field this FlexForm is bound to
+     * @param string $templateFilename Location of the Fluid template containing field definitions
+     * @param array $variables Optional array of variables to pass to Fluid template
+     * @param string|null $section Optional section name containing the configuration
+     * @param array|null $paths Optional paths array / Closure to return paths
      * @return ProviderInterface
      */
     public static function registerFluidFlexFormTable(

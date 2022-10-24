@@ -77,7 +77,8 @@ class RecordService implements SingletonInterface
             ->where(sprintf('uid = %d', $uid))
             ->execute()
             ->fetchAll() ?: [];
-        return reset($results) ?: null;
+        $firstResult = reset($results);
+        return $firstResult ? (array) $firstResult : null;
     }
 
     /**

@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
  */
 class Select extends AbstractMultiValueFormField
 {
-
     /**
      * Displays option icons as table beneath the select.
      *

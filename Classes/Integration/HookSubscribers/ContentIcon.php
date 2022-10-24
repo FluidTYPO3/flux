@@ -116,8 +116,9 @@ class ContentIcon
         // filter 1: icon must not already be cached and both record and caller must be provided.
         // we check the cache here because at this point, the cache key is decidedly
         // unique and we have not yet consulted the (potentially costly) Provider.
+        /** @var string|null $cachedIconIdentifier */
         $cachedIconIdentifier = $this->cache->get($cacheIdentity);
-        if ($cachedIconIdentifier !== false) {
+        if ($cachedIconIdentifier !== null) {
             // both empty string and non-empty value means icon was generated and cached, we return
             // the result directly in both such cases, to prevent attempts to re-resolve provider etc.
             return $cachedIconIdentifier;

@@ -131,13 +131,13 @@ interface FormInterface
     public function getPath();
 
     /**
-     * @param string $extensionName
+     * @param string|null $extensionName
      * @return $this
      */
     public function setExtensionName($extensionName);
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getExtensionName();
 

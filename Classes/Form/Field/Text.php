@@ -228,8 +228,15 @@ class Text extends Input implements FieldInterface
      */
     protected function getPageTsConfigForRichTextEditor()
     {
+        $pageUid = 0;
         $root = $this->getRoot();
-        $pageUid = $root instanceof Form ? $root->getOption('record')['pid'] ?? 0 : 0;
+        if ($root instanceof Form) {
+            /** @var array|null $record */
+            $record = $root->getOption('record');
+            if ($record !== null) {
+                $pageUid = (integer) $record['pid'];
+            }
+        }
 
         return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
     }

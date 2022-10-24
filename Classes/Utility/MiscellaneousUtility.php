@@ -24,8 +24,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class MiscellaneousUtility
 {
-
-
     /**
      * @var array
      */
@@ -43,12 +41,16 @@ class MiscellaneousUtility
     public static function getIconForTemplate(Form $form)
     {
         if (true === $form->hasOption(Form::OPTION_ICON)) {
-            return $form->getOption(Form::OPTION_ICON);
+            $iconOptionValue = $form->getOption(Form::OPTION_ICON);
+            return is_scalar($iconOptionValue) ? (string) $iconOptionValue : null;
         }
         if (true === $form->hasOption(Form::OPTION_TEMPLATEFILE)) {
             $extensionKey = ExtensionNamingUtility::getExtensionKey((string) $form->getExtensionName());
             $fullTemplatePathAndName = $form->getOption(Form::OPTION_TEMPLATEFILE);
-            $templatePathParts = explode('/', $fullTemplatePathAndName);
+            $templatePathParts = is_scalar($fullTemplatePathAndName) ? explode('/', (string) $fullTemplatePathAndName) : [];
+            if (empty($templatePathParts)) {
+                return null;
+            }
             $templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
             $controllerName = array_pop($templatePathParts);
             $relativeIconFolder = 'Resources/Public/Icons/' . $controllerName . '/';

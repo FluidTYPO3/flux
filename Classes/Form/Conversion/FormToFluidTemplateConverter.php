@@ -103,7 +103,7 @@ TEMPLATE;
             $attributes .= sprintf(' transform="%s" ', $transform);
         }
         if (($default = $field->getDefault()) !== '') {
-            $attributes .= sprintf(' default="%s" ', $default);
+            $attributes .= sprintf(' default="%s" ', is_scalar($default) ? var_export($default, true) : null);
         }
         if (($clearable = $field->getClearable())) {
             $attributes .= sprintf(' clearable="%d" ', (int)$clearable);

@@ -98,7 +98,9 @@ class ContentTypeManager implements SingletonInterface
     protected function loadSingleDefinitionFromCache(string $name): ?ContentTypeDefinitionInterface
     {
         try {
-            return $this->getCache()->get(static::CACHE_IDENTIFIER_PREFIX . $name) ?: null;
+            /** @var ContentTypeDefinitionInterface|null $fromCache */
+            $fromCache = $this->getCache()->get(static::CACHE_IDENTIFIER_PREFIX . $name);
+            return $fromCache;
         } catch (NoSuchCacheException $error) {
             return null;
         }

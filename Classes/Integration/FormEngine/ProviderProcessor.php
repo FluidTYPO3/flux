@@ -72,7 +72,9 @@ class ProviderProcessor implements FormDataProviderInterface
             ->where($queryBuilder->expr()->eq('uid', $uid))
             ->setMaxResults(1);
         $query->getRestrictions()->removeAll();
-        return $query->execute()->fetchAll()[0] ?? [];
+        /** @var array $results */
+        $results = $query->execute()->fetchAll();
+        return $results[0] ?? [];
     }
 
     /**

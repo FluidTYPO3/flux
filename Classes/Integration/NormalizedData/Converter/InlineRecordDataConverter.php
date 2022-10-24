@@ -229,6 +229,7 @@ class InlineRecordDataConverter implements ConverterInterface
     {
         $settings = [];
         $queryBuilder = $this->createQueryBuilderForTable('flux_field');
+        /** @var array[] $result */
         $result = $queryBuilder->select('uid', 'field_name', 'field_value')->from('flux_field')->where(
             $queryBuilder->expr()->eq('sheet', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT))
         )->execute()->fetchAllAssociative();

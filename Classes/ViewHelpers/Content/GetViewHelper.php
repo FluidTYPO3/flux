@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Content;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Hooks\HookHandler;
+use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
@@ -110,7 +111,7 @@ class GetViewHelper extends AbstractViewHelper
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
-     * @return mixed
+     * @return string|array|null
      */
     public static function renderStatic(
         array $arguments,
@@ -138,7 +139,10 @@ class GetViewHelper extends AbstractViewHelper
             $loadRegister = true;
         }
         $templateVariableContainer = $renderingContext->getVariableProvider();
-        $record = (array) $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
+        $record = $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'record');
+        if (!is_array($record)) {
+            return null;
+        }
         
         if (class_exists(Context::class)) {
             /** @var Context $context */
@@ -149,7 +153,7 @@ class GetViewHelper extends AbstractViewHelper
         }
 
         if ($workspaceId) {
-            $placeholder = BackendUtility::getWorkspaceVersionOfRecord($workspaceId,'tt_content', $record['uid']);
+            $placeholder = BackendUtility::getWorkspaceVersionOfRecord($workspaceId,'tt_content', $record['uid'] ?? 0);
             if ($placeholder) {
                 // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
                 // from the workspace-only placeholder.
@@ -158,7 +162,9 @@ class GetViewHelper extends AbstractViewHelper
             }
         }
 
-        $grid = $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'provider')->getGrid($record);
+        /** @var AbstractProvider $provider */
+        $provider = $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'provider');
+        $grid = $provider->getGrid($record);
         $rows = static::getContentRecords($arguments, $record, $grid);
 
         $elements = false === (boolean) $arguments['render'] ? $rows : static::getRenderedRecords($rows);

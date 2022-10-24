@@ -28,7 +28,6 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  */
 class WizardItems implements NewContentElementWizardHookInterface
 {
-
     /**
      * @var ObjectManagerInterface
      */
@@ -96,10 +95,26 @@ class WizardItems implements NewContentElementWizardHookInterface
     {
         $enabledContentTypes = [];
         $fluidContentTypeNames = [];
+        /** @var int $pageUid */
         $pageUid = 0;
         if (class_exists(SiteFinder::class)) {
-            $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
-            $pageUid = (int) (key($dataArray) ?? GeneralUtility::_GET('id') ?? ObjectAccess::getProperty($parentObject, 'id', true));
+            $defaultValues = (array) GeneralUtility::_GET('defVals');
+            /** @var array $dataArray */
+            $dataArray = $defaultValues['tt_content'] ?? [];
+            $pageUidFromUrl = GeneralUtility::_GET('id');
+            $pageUidFromUrl = is_scalar($pageUidFromUrl) ? (int) $pageUidFromUrl : 0;
+            $pageUidFromDataArray = (int) key($dataArray);
+
+            if ($pageUidFromDataArray > 0) {
+                $pageUid = $pageUidFromDataArray;
+            } elseif ($pageUidFromUrl > 0) {
+                $pageUid = $pageUidFromUrl;
+            }
+
+            if ($pageUid === 0) {
+                $pageUidFroimParentObject = ObjectAccess::getProperty($parentObject, 'id', true);
+                $pageUid = is_scalar($pageUidFroimParentObject) ? (int) $pageUidFroimParentObject : 0;
+            }
             if ($pageUid > 0) {
                 try {
                     /** @var SiteFinder $siteFinder */
@@ -129,9 +144,15 @@ class WizardItems implements NewContentElementWizardHookInterface
 
     protected function filterPermittedFluidContentTypesByInsertionPosition(array $items, NewContentElementController $parentObject, int $pageUid): array
     {
+        /** @var int|null $colPos */
+        $colPos = GeneralUtility::_GET('colPos');
+        if ($colPos === null) {
+            $colPosFromParentObject = ObjectAccess::getProperty($parentObject, 'colPos', true);
+            $colPos = is_scalar($colPosFromParentObject) ? (int) $colPosFromParentObject : 0;
+        }
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
             $pageUid,
-            (int) (GeneralUtility::_GET('colPos') ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
+            (int) $colPos
         );
         $overrides = HookHandler::trigger(
             HookHandler::ALLOWED_CONTENT_RULES_FETCHED,
@@ -321,10 +342,12 @@ class WizardItems implements NewContentElementWizardHookInterface
         array $whitelist,
         array $blacklist
     ) {
+        /** @var string|null $allowed */
         $allowed = $component->getVariable('allowedContentTypes');
         if (null !== $allowed) {
             $whitelist = array_merge($whitelist, GeneralUtility::trimExplode(',', $allowed));
         }
+        /** @var string|null $denied */
         $denied = $component->getVariable('deniedContentTypes');
         if (null !== $denied) {
             $blacklist = array_merge($blacklist, GeneralUtility::trimExplode(',', $denied));

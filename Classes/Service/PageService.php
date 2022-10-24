@@ -33,7 +33,6 @@ use TYPO3Fluid\Fluid\View\Exception\InvalidSectionException;
  */
 class PageService implements SingletonInterface
 {
-
     /**
      * @var ObjectManager
      */
@@ -96,7 +95,7 @@ class PageService implements SingletonInterface
      * record returned may or may not be the same record as defined in $id.
      *
      * @param integer $pageUid
-     * @return array|NULL
+     * @return array|null
      * @api
      */
     public function getPageTemplateConfiguration($pageUid)
@@ -107,6 +106,7 @@ class PageService implements SingletonInterface
         }
         $cacheId = 'flux-template-configuration-' . $pageUid;
         $runtimeCache = $this->getRuntimeCache();
+        /** @var array|null $fromCache */
         $fromCache = $runtimeCache->get($cacheId);
         if ($fromCache) {
             return $fromCache;
@@ -181,6 +181,7 @@ class PageService implements SingletonInterface
     {
         $cache = $this->getRuntimeCache();
         $cacheKey = 'page_templates';
+        /** @var array|null $fromCache */
         $fromCache = $cache->get($cacheKey);
         if ($fromCache) {
             return $fromCache;

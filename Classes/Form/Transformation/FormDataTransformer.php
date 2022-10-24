@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 
@@ -21,7 +22,6 @@ use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
  */
 class FormDataTransformer
 {
-
     /**
      * @var ObjectManagerInterface
      */
@@ -142,11 +142,11 @@ class FormDataTransformer
     }
 
     /**
-     * Gets a DomainObject or QueryResult of $dataType
+     * Gets DomainObject(s) or instance of $dataType identified by, or constructed with parameter $uids
      *
-     * @param string $dataType
+     * @param string|class-string $dataType
      * @param string|array $uids
-     * @return mixed
+     * @return DomainObjectInterface|DomainObjectInterface[]|object|null
      */
     protected function getObjectOfType($dataType, $uids)
     {
@@ -155,6 +155,7 @@ class FormDataTransformer
         $isModel = $this->isDomainModelClassName($dataType);
         if (false !== strpos($dataType, '<')) {
             /** @var class-string $container */
+            /** @var class-string $object */
             list ($container, $object) = explode('<', trim($dataType, '>'));
         } else {
             $container = null;
@@ -167,7 +168,9 @@ class FormDataTransformer
                 /** @var RepositoryInterface $repository */
                 $repository = $this->objectManager->get($repositoryClassName);
                 $repositoryObjects = $this->loadObjectsFromRepository($repository, $identifiers);
-                return reset($repositoryObjects);
+                /** @var DomainObjectInterface|false $firstRepositoryObject */
+                $firstRepositoryObject = reset($repositoryObjects);
+                return $firstRepositoryObject ?: null;
             }
         } elseif (true === class_exists($dataType)) {
             // using constructor value to support objects like DateTime
@@ -184,7 +187,7 @@ class FormDataTransformer
                 return $container;
             }
         }
-        return $uids;
+        return null;
     }
 
     /**
@@ -208,10 +211,12 @@ class FormDataTransformer
     /**
      * @param RepositoryInterface $repository
      * @param array $identifiers
-     * @return mixed
+     * @return DomainObjectInterface[]
      */
     protected function loadObjectsFromRepository(RepositoryInterface $repository, array $identifiers)
     {
-        return array_map([$repository, 'findByUid'], $identifiers);
+        /** @var DomainObjectInterface[] $objects */
+        $objects = array_map([$repository, 'findByUid'], $identifiers);
+        return $objects;
     }
 }

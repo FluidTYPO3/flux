@@ -182,7 +182,9 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $uid));
         $query->getRestrictions()->removeAll();
-        return $query->execute()->fetchAll()[0] ?? null;
+        /** @var array[] $results */
+        $results = $query->execute()->fetchAll();
+        return $results[0] ?? null;
     }
 
     /**

@@ -157,6 +157,7 @@ class ContentTypeBuilder
     ): void {
         $cacheId = 'CType_' . md5($contentType . '__' . $providerExtensionName . '__' . $pluginName);
         $cache = $this->getCache();
+        /** @var Form|null $form */
         $form = $cache->get($cacheId);
         if (!$form) {
             // Provider *must* be able to return a Form without any global configuration or specific content
@@ -228,6 +229,7 @@ class ContentTypeBuilder
     {
         // Icons required solely for use in the "new content element" wizard
         $formId = $form->getId() ?: $contentType;
+        /** @var string|null $group */
         $group = $form->getOption(Form::OPTION_GROUP);
         $groupName = $this->sanitizeString($group ?? 'fluxContent');
         $extensionName = $form->getExtensionName() ?? 'FluidTYPO3.Flux';

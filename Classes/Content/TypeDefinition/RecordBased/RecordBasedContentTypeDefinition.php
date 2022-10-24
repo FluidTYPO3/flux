@@ -71,6 +71,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
                 $queryBuilder = $connectionPool->getQueryBuilderForTable('content_types');
                 /** @var string[] $keys */
                 $keys = array_keys($GLOBALS['TCA']['content_types']['columns'] ?? ['*' => '']);
+                /** @var array[] $typeRecords */
                 $typeRecords = $queryBuilder->select(...$keys)
                     ->from('content_types')
                     ->where(

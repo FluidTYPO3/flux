@@ -143,6 +143,7 @@ class ProviderResolver implements SingletonInterface
      */
     public function loadTypoScriptConfigurationProviderInstances()
     {
+        /** @var array[] $providerConfigurations */
         $providerConfigurations = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_flux.providers');
         $providers = [];
         foreach ($providerConfigurations as $name => $providerSettings) {

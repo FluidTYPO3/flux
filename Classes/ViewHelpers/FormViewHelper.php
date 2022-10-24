@@ -97,8 +97,7 @@ class FormViewHelper extends AbstractFormViewHelper
     ) {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-        $formClassName = Form::class;
-        $form = call_user_func_array([$formClassName, 'create'], []);
+        $form = Form::create();
         // configure Form instance
         $form->setId($arguments['id']);
         $form->setName($arguments['id']);

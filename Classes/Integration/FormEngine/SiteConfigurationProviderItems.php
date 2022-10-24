@@ -33,7 +33,11 @@ class SiteConfigurationProviderItems
         $pageService = $objectManager->get(PageService::class);
         foreach ($pageService->getAvailablePageTemplateFiles() as $extensionName => $templateGroup) {
             foreach ($templateGroup as $form) {
+                /** @var string|null $templateFilename */
                 $templateFilename = $form->getOption(Form::OPTION_TEMPLATEFILE);
+                if ($templateFilename === null) {
+                    continue;
+                }
                 $label = (string) $form->getLabel();
                 $identity = $extensionName . '->' . lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
                 try {
