@@ -1,8 +1,8 @@
 <?php
-defined ('TYPO3_MODE') or die ('Access denied.');
+defined('TYPO3_MODE') or die('Access denied.');
 
-(function() {
-    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
+(function () {
+    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') || !\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
         return;
     }
 
@@ -59,7 +59,9 @@ defined ('TYPO3_MODE') or die ('Access denied.');
         ],
     ]);
 
-    if (is_callable([\FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class, 'fluxFormFieldDisplayCondition'])) {
+    $userFunctionsClass = new \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions();
+    if (is_callable([$userFunctionsClass , 'fluxFormFieldDisplayCondition'])) {
+
         // Flux version is recent enough to support the custom displayCond from Flux that hides the entire "flex" field
         // if there are no fields in the DS it uses.
         $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform';
@@ -67,9 +69,12 @@ defined ('TYPO3_MODE') or die ('Access denied.');
     }
 
     $doktypes = '0,1,4';
-    $additionalDoktypes = trim(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_DOKTYPES), ',');
-    if (FALSE === empty($additionalDoktypes)) {
-        $doktypes .= ',' . $additionalDoktypes;
+    $doktypesOptionValue = \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_DOKTYPES);
+    if (is_scalar($doktypesOptionValue)) {
+        $additionalDoktypes = trim((string) $doktypesOptionValue, ',');
+        if (false === empty($additionalDoktypes)) {
+            $doktypes .= ',' . $additionalDoktypes;
+        }
     }
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes(

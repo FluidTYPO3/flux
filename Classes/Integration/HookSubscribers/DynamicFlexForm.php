@@ -26,7 +26,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class DynamicFlexForm extends FlexFormTools
 {
-
     /**
      * @var ObjectManagerInterface
      */
@@ -79,9 +78,17 @@ class DynamicFlexForm extends FlexFormTools
      */
     public function __construct()
     {
-        $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
-        $this->injectConfigurationService($this->objectManager->get(FluxService::class));
-        $this->injectRecordService($this->objectManager->get(WorkspacesAwareRecordService::class));
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->injectObjectManager($objectManager);
+
+        /** @var FluxService $fluxService */
+        $fluxService = $objectManager->get(FluxService::class);
+        $this->injectConfigurationService($fluxService);
+
+        /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
+        $workspacesAwareRecordService = $objectManager->get(WorkspacesAwareRecordService::class);
+        $this->injectRecordService($workspacesAwareRecordService);
     }
 
     /**
@@ -90,8 +97,8 @@ class DynamicFlexForm extends FlexFormTools
      * can then use to restore the record.
      *
      * @param array $tca
-     * @param $tableName
-     * @param $fieldName
+     * @param string $tableName
+     * @param string $fieldName
      * @param array $record
      * @return array
      */
@@ -108,7 +115,7 @@ class DynamicFlexForm extends FlexFormTools
         // In the latter case we sacrifice some performance (having to reload the record by UID) in order
         // to pass an identifier small enough to be part of GET parameters. This class will then "thaw" the
         // record identified by UID to ensure that for all existing records, Providers receive the FULL data.
-        if ((integer) $record['uid']) {
+        if ((integer) ($record['uid'] ?? 0) > 0) {
             $limitedRecordData = ['uid' => $record['uid']];
         } else {
             $fields = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues']);
@@ -157,16 +164,17 @@ class DynamicFlexForm extends FlexFormTools
             return [];
         }
 
+        /** @var array|null $fromCache */
         $fromCache = $this->configurationService->getFromCaches($identifier);
         if ($fromCache) {
             return $fromCache;
         }
         if (count($record) === 1 && isset($record['uid']) && is_numeric($record['uid'])) {
             // The record is a stub, has only "uid" and "uid" is numeric. Reload the full record from DB.
-            $record = BackendUtility::getRecord($identifier['tableName'], $record['uid'], '*', '', false);
+            $record = BackendUtility::getRecord($identifier['tableName'], (integer) $record['uid'], '*', '', false);
         }
         $fieldName = $identifier['fieldName'];
-        $dataStructArray = $dataStructureArray = $this->parseDataStructureByIdentifier($identifier['originalIdentifier']);;
+        $dataStructArray = [];
         $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
             $identifier['tableName'],
             $fieldName,
@@ -174,12 +182,12 @@ class DynamicFlexForm extends FlexFormTools
             null,
             DataStructureProviderInterface::class
         );
-        if (!$provider) {
+        if (!$provider instanceof FormProviderInterface) {
             // No Providers detected - return empty data structure (reported as invalid DS in backend)
             return [];
         }
 
-        $form = $form ?? ($provider instanceof FormProviderInterface ? $provider->getForm($record) : null);
+        $form = $provider->getForm($record);
         $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
         if ($form && $form->getOption(Form::OPTION_STATIC)) {
             // This provider has requested static DS caching; stop attempting
@@ -227,7 +235,9 @@ class DynamicFlexForm extends FlexFormTools
     {
         static $cache;
         if (!$cache) {
-            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('flux');
+            /** @var CacheManager $cacheManager */
+            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+            $cache = $cacheManager->getCache('flux');
         }
         return $cache;
     }
@@ -240,7 +250,9 @@ class DynamicFlexForm extends FlexFormTools
     {
         static $cache;
         if (!$cache) {
-            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_runtime');
+            /** @var CacheManager $cacheManager */
+            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+            $cache = $cacheManager->getCache('cache_runtime');
         }
         return $cache;
     }

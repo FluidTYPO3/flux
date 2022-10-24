@@ -14,7 +14,7 @@ use FluidTYPO3\Flux\Form\Field\ColumnPosition;
 use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Form\Field\Select;
 use FluidTYPO3\Flux\Form\FieldContainerInterface;
-use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 
 /**
  * Section Object
@@ -61,6 +61,7 @@ class SectionObject extends AbstractFormContainer implements ContainerInterface,
 
     /**
      * @param bool $contentContainer
+     * @return void
      */
     public function setContentContainer($contentContainer)
     {
@@ -71,13 +72,16 @@ class SectionObject extends AbstractFormContainer implements ContainerInterface,
     }
 
     /**
-     * @return FieldInterface[]
+     * @return FormInterface[]
      */
     public function getFields()
     {
         return (array) iterator_to_array($this->children);
     }
 
+    /**
+     * @return void
+     */
     protected function createContentContainerFields()
     {
         $this->createField(ColumnPosition::class, ColumnPosition::FIELD_NAME);

@@ -8,9 +8,6 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Form\Field\Select;
-use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Extbase\Error\Error;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
@@ -23,7 +20,6 @@ use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
  */
 class TypeConverterPipe extends AbstractPipe implements PipeInterface
 {
-
     /**
      * @var ObjectManagerInterface
      */
@@ -40,6 +36,11 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
     protected $targetType;
 
     /**
+     * @var string|null
+     */
+    protected $propertyName = '';
+
+    /**
      * @param ObjectManagerInterface $objectManager
      * @return void
      */
@@ -49,30 +50,13 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
     }
 
     /**
-     * @return FieldInterface[]
-     */
-    public function getFormFields()
-    {
-        $fields = parent::getFormFields();
-        $converters = array_values((array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['typeConverters']);
-        $converters = array_combine($converters, $converters);
-        /** @var Select $typeConverter */
-        $typeConverter = Select::create(['type' => 'Select']);
-        $typeConverter->setName('typeConverter');
-        $typeConverter->setItems($converters);
-        $fields['typeConverter'] = $typeConverter;
-        $fields['targetType'] = Input::create(['type' => 'Input'])->setName('targetType');
-        return $fields;
-    }
-
-
-    /**
-     * @param TypeConverterInterface|string $typeConverter
+     * @param TypeConverterInterface|class-string $typeConverter
      * @return TypeConverterPipe
      */
     public function setTypeConverter($typeConverter)
     {
         if (true === is_string($typeConverter)) {
+            /** @var TypeConverterInterface $typeConverter */
             $typeConverter = $this->objectManager->get($typeConverter);
         }
         $this->typeConverter = $typeConverter;
@@ -105,6 +89,16 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
         return $this->targetType;
     }
 
+    public function getPropertyName(): ?string
+    {
+        return $this->propertyName;
+    }
+
+    public function setPropertyName(?string $propertyName): void
+    {
+        $this->propertyName = $propertyName;
+    }
+
     /**
      * @param mixed $data
      * @return mixed
@@ -112,20 +106,29 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
      */
     public function conduct($data)
     {
+        $output = &$data;
+        $subject = &$data;
+        if (!empty($this->propertyName)) {
+            if (strpos($this->propertyName, '.') !== false && is_array($subject)) {
+                foreach (explode('.', $this->propertyName) as $segment) {
+                    $subject = &$subject[$segment];
+                }
+            }
+        }
         $targetType = $this->getTargetType();
         $typeConverter = $this->getTypeConverter();
-        if (false === $typeConverter->canConvertFrom($data, $targetType)) {
+        if (false === $typeConverter->canConvertFrom($subject, $targetType)) {
             throw new Exception(
                 sprintf(
                     'TypeConverter %s cannot convert %s to %s',
                     get_class($typeConverter),
-                    gettype($data),
+                    gettype($subject),
                     $targetType
                 ),
                 1386292424
             );
         }
-        $output = $this->typeConverter->convertFrom($data, $targetType);
+        $subject= $this->typeConverter->convertFrom($subject, $targetType);
         if (true === $output instanceof Error) {
             throw new Exception(
                 sprintf(
@@ -134,7 +137,7 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
                     $targetType,
                     $output->getMessage()
                 ),
-                $output->getCode()
+                (integer) $output->getCode()
             );
         }
         return $output;

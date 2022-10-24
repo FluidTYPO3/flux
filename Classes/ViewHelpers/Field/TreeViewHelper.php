@@ -74,8 +74,9 @@ class TreeViewHelper extends AbstractRelationFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var Tree $tree */
-        $tree = static::getPreparedComponent('Tree', $renderingContext, $arguments);
+        $tree = static::getPreparedComponent(Tree::class, $renderingContext, $arguments);
         $tree->setParentField($arguments['parentField']);
         $tree->setAllowRecursiveMode($arguments['allowRecursiveMode']);
         $tree->setExpandAll($arguments['expandAll']);

@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
@@ -30,6 +31,19 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  * can use it to access page configuration data:
  *
  *     <flux:form.data table="pages" field="tx_fed_page_flexform" record="{page}" />
+ *
+ * ### Example: Check if page is accessible before loading data
+ *
+ * Data of disabled and deleted pages cannot be loaded with flux:form.data
+ * and lead to an TYPO3FluidFluidCoreViewHelperException.
+ * To prevent this exception, check if the page is accessible by generating
+ * a link to it:
+ *
+ *     <f:if condition="{f:uri.page(pageUid: myUid)}">
+ *         <flux:form.data table="pages" field="tx_fed_page_flexform" uid="{myUid}" as="pageSettings">
+ *             ...
+ *         </flux:form.data>
+ *     </f:if>
  */
 class DataViewHelper extends AbstractViewHelper
 {
@@ -41,12 +55,12 @@ class DataViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
-     * @var FluxService
+     * @var FluxService|null
      */
     protected static $configurationService;
 
     /**
-     * @var WorkspacesAwareRecordService
+     * @var WorkspacesAwareRecordService|null
      */
     protected static $recordService;
 
@@ -165,7 +179,7 @@ class DataViewHelper extends AbstractViewHelper
     protected static function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field)
     {
         if (0 === count($providers)) {
-            $dataArray = static::$configurationService->convertFlexFormContentToArray($record[$field]);
+            $dataArray = static::getFluxService()->convertFlexFormContentToArray($record[$field]);
         } else {
             $dataArray = [];
             /** @var ProviderInterface $provider */
@@ -183,7 +197,9 @@ class DataViewHelper extends AbstractViewHelper
     protected static function getFluxService()
     {
         if (!isset(static::$configurationService)) {
-            static::$configurationService = GeneralUtility::makeInstance(ObjectManager::class)->get(FluxService::class);
+            /** @var FluxService $fluxService */
+            $fluxService = static::getObjectManager()->get(FluxService::class);
+            static::$configurationService = $fluxService;
         }
         return static::$configurationService;
     }
@@ -194,8 +210,17 @@ class DataViewHelper extends AbstractViewHelper
     protected static function getRecordService()
     {
         if (!isset(static::$recordService)) {
-            static::$recordService = GeneralUtility::makeInstance(ObjectManager::class)->get(WorkspacesAwareRecordService::class);
+            /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
+            $workspacesAwareRecordService = static::getObjectManager()->get(WorkspacesAwareRecordService::class);
+            static::$recordService = $workspacesAwareRecordService;
         }
         return static::$recordService;
+    }
+
+    protected static function getObjectManager(): ObjectManagerInterface
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        return $objectManager;
     }
 }

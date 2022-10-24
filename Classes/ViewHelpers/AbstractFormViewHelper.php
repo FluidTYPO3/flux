@@ -41,7 +41,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
-     * @return void
+     * @return string
      */
     public static function renderStatic(
         array $arguments,
@@ -50,16 +50,30 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     ) {
         $container = static::getContainerFromRenderingContext($renderingContext);
         if (method_exists(static::class, 'getComponent')) {
-            $component = static::getComponent($renderingContext, $arguments, $renderChildrenClosure);
+            $component = static::getComponent($renderingContext, $arguments);
             // rendering child nodes with Form's last sheet as active container
             static::setContainerInRenderingContext($renderingContext, $component);
         }
         $renderChildrenClosure();
         static::setContainerInRenderingContext($renderingContext, $container);
+
+        return '';
     }
 
     /**
-     * @return string
+     * @param RenderingContextInterface $renderingContext
+     * @param iterable $arguments
+     * @return FormInterface
+     */
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ) {
+        return Form::create();
+    }
+
+    /**
+     * @return mixed
      */
     public function renderChildren()
     {
@@ -75,6 +89,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     /**
      * @param RenderingContextInterface $renderingContext
      * @param string $name
+     * @return void
      */
     protected static function setExtensionNameInRenderingContext(RenderingContextInterface $renderingContext, $name)
     {
@@ -92,14 +107,14 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         iterable $arguments
     ) {
         if ($extensionName = $arguments[static::SCOPE_VARIABLE_EXTENSIONNAME] ?? false) {
-            return $extensionName;
+            return (string) $extensionName;
         }
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         if ($extensionName = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME)) {
-            return $extensionName;
+            return is_scalar($extensionName) ? (string) $extensionName : 'FluidTYPO3.Flux';
         }
         $controllerContext = $renderingContext->getControllerContext();
-        if (null !== $controllerContext) {
+        if (null !== $controllerContext && null !== $controllerContext->getRequest()) {
             /** @var Request $request */
             $request = $controllerContext->getRequest();
             $controllerExtensionName = $request->getControllerExtensionName();
@@ -120,10 +135,11 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
      */
     public static function getFormFromRenderingContext(RenderingContextInterface $renderingContext)
     {
+        /** @var Form|null $form */
         $form = $renderingContext->getViewHelperVariableContainer()->get(static::SCOPE, static::SCOPE_VARIABLE_FORM);
         if (!$form) {
             $form = Form::create([
-                'extensionName' => $renderingContext->getControllerContext()->getRequest()->getControllerExtensionName()
+                'extensionName' => $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::SCOPE, FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME)
             ]);
             $renderingContext->getViewHelperVariableContainer()->add(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
         }
@@ -140,6 +156,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         $gridName = 'grid'
     ) {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+        /** @var Grid[] $grids */
         $grids = (array) $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_GRIDS);
 
         if (!isset($grids[$gridName])) {
@@ -155,9 +172,9 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
      */
     protected static function getContainerFromRenderingContext(RenderingContextInterface $renderingContext)
     {
-        return $renderingContext->getViewHelperVariableContainer()
-            ->get(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER)
-            ?? static::getFormFromRenderingContext($renderingContext);
+        /** @var Form\ContainerInterface|null $container */
+        $container = $renderingContext->getViewHelperVariableContainer()->get(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
+        return $container ?? static::getFormFromRenderingContext($renderingContext);
     }
 
     /**

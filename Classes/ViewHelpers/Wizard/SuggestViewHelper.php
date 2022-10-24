@@ -89,8 +89,9 @@ class SuggestViewHelper extends AbstractWizardViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var Suggest $component */
-        $component = static::getPreparedComponent('Suggest', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Suggest::class, $renderingContext, $arguments);
         $component->setTable($arguments['table']);
         $component->setStoragePageUids($arguments['pidList']);
         $component->setStoragePageRecursiveDepth($arguments['pidDepth']);

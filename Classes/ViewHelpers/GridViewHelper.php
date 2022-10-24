@@ -71,13 +71,23 @@ class GridViewHelper extends AbstractFormViewHelper
     protected function callRenderMethod()
     {
         $container = static::getContainerFromRenderingContext($this->renderingContext);
+        $viewHelperVariableContainer = $this->renderingContext->getViewHelperVariableContainer();
+        /** @var string|null $extensionName */
+        $extensionName = $container->getExtensionName() ?? static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments);
+
         $grid = static::getGridFromRenderingContext($this->renderingContext, $this->arguments['name']);
         $grid->setLabel($this->arguments['label']);
         $grid->setVariables($this->arguments['variables']);
-        $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments));
+        $grid->setExtensionName($extensionName);
+
+        $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
         static::setContainerInRenderingContext($this->renderingContext, $grid);
+
         $this->renderChildren();
+
+        $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         static::setContainerInRenderingContext($this->renderingContext, $container);
+        return '';
     }
 
     /**
@@ -92,12 +102,21 @@ class GridViewHelper extends AbstractFormViewHelper
         RenderingContextInterface $renderingContext
     ) {
         $container = static::getContainerFromRenderingContext($renderingContext);
+        $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+        /** @var string|null $extensionName */
+        $extensionName = $container->getExtensionName() ?? static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
+
         $grid = static::getGridFromRenderingContext($renderingContext, $arguments['name']);
         $grid->setLabel($arguments['label']);
         $grid->setVariables($arguments['variables']);
-        $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+        $grid->setExtensionName($extensionName);
+
+        $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
         static::setContainerInRenderingContext($renderingContext, $grid);
+
         $renderChildrenClosure();
+
+        $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         static::setContainerInRenderingContext($renderingContext, $container);
     }
 }

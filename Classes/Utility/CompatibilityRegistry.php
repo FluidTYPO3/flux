@@ -194,7 +194,7 @@ abstract class CompatibilityRegistry
 
     /**
      * @param string $scope
-     * @param string|NULL $version
+     * @param string $version
      * @param mixed $default
      * @return mixed
      */
@@ -259,7 +259,7 @@ abstract class CompatibilityRegistry
      * @param string $prefix
      * @param string $scope
      * @param string $version
-     * @return array|NULL
+     * @return mixed
      */
     protected static function cache(array &$source, $prefix, $scope, $version)
     {

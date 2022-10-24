@@ -23,12 +23,14 @@
         "fluidtypo3/vhs": "ViewHelper library for Fluid templates."
     },
     "require": {
-        "php": "^7.1.0",
-        "typo3/cms-core": "^8.7 || ^9 || ^10 || dev-master",
-        "typo3/cms-fluid": "^8.7 || ^9 || ^10 || dev-master",
-        "typo3/cms-backend": "^8.7 || ^9 || ^10 || dev-master",
-        "typo3/cms-frontend": "^8.7 || ^9 || ^10 || dev-master",
-        "typo3/cms-recordlist": "^8.7 || ^9 || ^10 || dev-master"
+        "php": "^7.4.0 || ^8",
+        "ext-json": "*",
+        "typo3/cms-core": "^8.7 || ^9 || ^10 || ^11 || dev-master",
+        "ext-dom": "*",
+        "typo3/cms-fluid": "^8.7 || ^9 || ^10 || ^11 || dev-master",
+        "typo3/cms-backend": "^8.7 || ^9 || ^10 || ^11 || dev-master",
+        "typo3/cms-frontend": "^8.7 || ^9 || ^10 || ^11 || dev-master",
+        "typo3/cms-recordlist": "^8.7 || ^9 || ^10 || ^11 || dev-master"
     },
     "extra": {
         "typo3/cms": {
@@ -39,7 +41,14 @@
         "typo3-ter/flux": "self.version"
     },
     "require-dev": {
-        "fluidtypo3/development": "^4"
+        "fluidtypo3/development": "^4",
+        "phpstan/phpstan": "^1.8"
     },
-    "non-feature-branches": ["development", "staging"]
+    "non-feature-branches": ["development", "staging"],
+    "config": {
+        "allow-plugins": {
+            "typo3/cms-composer-installers": true,
+            "typo3/class-alias-loader": true
+        }
+    }
 }

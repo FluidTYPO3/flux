@@ -18,7 +18,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ControllerActions extends Select
 {
-
     /**
      * Name of the Extbase extension that contains the Controller
      * to parse, ex. MyExtension. In vendor based extensions use
@@ -303,10 +302,7 @@ class ControllerActions extends Select
         } else {
             $actions = $this->getActions();
             if (0 === count($actions)) {
-                $actions = $this->getActionsForExtensionNameAndPluginName(
-                    $this->controllerExtensionName,
-                    $this->pluginName
-                );
+                $actions = $this->getActionsForExtensionNameAndPluginName();
             }
             return $this->buildItemsForActions($actions);
         }
@@ -360,7 +356,7 @@ class ControllerActions extends Select
     /**
      * @param string $controllerName
      * @param string $actionName
-     * @return string|NULL
+     * @return string
      */
     protected function getLabelForControllerAction($controllerName, $actionName)
     {
@@ -370,6 +366,9 @@ class ControllerActions extends Select
         $pluginName = $this->getPluginName();
         $separator = $this->getSeparator();
         $controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
+        if ($controllerClassName === null) {
+            return 'INVALID: ' . $controllerName . '->' . $actionName;
+        }
         $disableLocalLanguageLabels = $this->getDisableLocalLanguageLabels();
         $labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
         $hasLocalLanguageFile = file_exists(
@@ -380,7 +379,8 @@ class ControllerActions extends Select
             $label = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
         } elseif (method_exists($controllerClassName, $actionName . 'Action') && true === $disableLocalLanguageLabels) {
             $methodReflection = $this->reflectAction($controllerName, $actionName);
-            $line = array_shift(explode("\n", trim($methodReflection->getDocComment(), "/*\n")));
+            $parts = explode("\n", trim((string) $methodReflection->getDocComment(), "/*\n"));
+            $line = array_shift($parts);
             $line = trim(trim($line), '* ');
             if (substr($line, 0, 1) !== '@') {
                 $label = $line;
@@ -396,9 +396,10 @@ class ControllerActions extends Select
      */
     protected function reflectAction($controllerName, $actionName)
     {
+        /** @var class-string $controllerClassName */
         $controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
-        /** @var \ReflectionMethod $methodReflection */
         $controllerClassReflection = new \ReflectionClass($controllerClassName);
+        /** @var \ReflectionMethod $methodReflection */
         $methodReflection = $controllerClassReflection->getMethod($actionName . 'Action');
         return $methodReflection;
     }
@@ -432,10 +433,10 @@ class ControllerActions extends Select
      */
     protected function convertActionListToArray($actionList)
     {
-        if (false === is_array($actionList)) {
-            return GeneralUtility::trimExplode(',', $actionList, true);
+        if (is_scalar($actionList)) {
+            return GeneralUtility::trimExplode(',', (string) $actionList, true);
         }
-        return $actionList;
+        return (array) $actionList;
     }
 
     /**

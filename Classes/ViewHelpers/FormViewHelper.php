@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
-use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -76,10 +75,20 @@ class FormViewHelper extends AbstractFormViewHelper
     }
 
     /**
+     * @param RenderingContextInterface $renderingContext
+     * @param iterable $arguments
+     * @return Form\FormInterface
+     */
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    {
+        return Form::create();
+    }
+
+    /**
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
-     * @return void
+     * @return string
      */
     public static function renderStatic(
         array $arguments,
@@ -88,8 +97,7 @@ class FormViewHelper extends AbstractFormViewHelper
     ) {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-        $formClassName = Form::class;
-        $form = call_user_func_array([$formClassName, 'create'], []);
+        $form = Form::create();
         // configure Form instance
         $form->setId($arguments['id']);
         $form->setName($arguments['id']);
@@ -113,5 +121,7 @@ class FormViewHelper extends AbstractFormViewHelper
 
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
+
+        return '';
     }
 }

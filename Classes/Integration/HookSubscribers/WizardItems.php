@@ -28,7 +28,6 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  */
 class WizardItems implements NewContentElementWizardHookInterface
 {
-
     /**
      * @var ObjectManagerInterface
      */
@@ -89,33 +88,49 @@ class WizardItems implements NewContentElementWizardHookInterface
 
     /**
      * @param array $items
-     * @param \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController
+     * @param NewContentElementController $parentObject
      * @return void
      */
     public function manipulateWizardItems(&$items, &$parentObject)
     {
         $enabledContentTypes = [];
         $fluidContentTypeNames = [];
+        /** @var int $pageUid */
         $pageUid = 0;
         if (class_exists(SiteFinder::class)) {
-            $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
-            $pageUid = (int) (key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true));
+            $defaultValues = (array) GeneralUtility::_GET('defVals');
+            /** @var array $dataArray */
+            $dataArray = $defaultValues['tt_content'] ?? [];
+            $pageUidFromUrl = GeneralUtility::_GET('id');
+            $pageUidFromUrl = is_scalar($pageUidFromUrl) ? (int) $pageUidFromUrl : 0;
+            $pageUidFromDataArray = (int) key($dataArray);
+
+            if ($pageUidFromDataArray > 0) {
+                $pageUid = $pageUidFromDataArray;
+            } elseif ($pageUidFromUrl > 0) {
+                $pageUid = $pageUidFromUrl;
+            }
+
+            if ($pageUid === 0) {
+                $pageUidFroimParentObject = ObjectAccess::getProperty($parentObject, 'id', true);
+                $pageUid = is_scalar($pageUidFroimParentObject) ? (int) $pageUidFroimParentObject : 0;
+            }
             if ($pageUid > 0) {
                 try {
-                    $enabledContentTypes = [];
+                    /** @var SiteFinder $siteFinder */
                     $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                     $site = $siteFinder->getSiteByPageId($pageUid);
                     $siteConfiguration = $site->getConfiguration();
-                    if (!empty($siteConfiguration['flux_content_types'])) {
-                        $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
-                    }
+                    $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
                 } catch (SiteNotFoundException $exception) {
                     // Suppressed; a site not being found is not a fatal error in this context.
                 }
             }
         }
 
-        $fluidContentTypeNames = GeneralUtility::makeInstance(ContentTypeManager::class)->fetchContentTypeNames();
+        /** @var ContentTypeManager $contentTypeManager */
+        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+        $fluidContentTypeNames = (array) $contentTypeManager->fetchContentTypeNames();
         $items = $this->filterPermittedFluidContentTypesByInsertionPosition($items, $parentObject, $pageUid);
         if (!empty($enabledContentTypes)) {
             foreach ($items as $name => $item) {
@@ -129,9 +144,15 @@ class WizardItems implements NewContentElementWizardHookInterface
 
     protected function filterPermittedFluidContentTypesByInsertionPosition(array $items, NewContentElementController $parentObject, int $pageUid): array
     {
+        /** @var int|null $colPos */
+        $colPos = GeneralUtility::_GET('colPos');
+        if ($colPos === null) {
+            $colPosFromParentObject = ObjectAccess::getProperty($parentObject, 'colPos', true);
+            $colPos = is_scalar($colPosFromParentObject) ? (int) $colPosFromParentObject : 0;
+        }
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
             $pageUid,
-            (int) ($dataArray['colPos'] ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
+            (int) $colPos
         );
         $overrides = HookHandler::trigger(
             HookHandler::ALLOWED_CONTENT_RULES_FETCHED,
@@ -161,7 +182,6 @@ class WizardItems implements NewContentElementWizardHookInterface
     /**
      * @param integer $pageUid
      * @param integer $columnPosition
-     * @param integer $relativeUid
      * @return array
      */
     protected function getWhiteAndBlackListsFromPageAndContentColumn($pageUid, $columnPosition)
@@ -221,6 +241,7 @@ class WizardItems implements NewContentElementWizardHookInterface
      * @param array $whitelist
      * @param array $blacklist
      * @param integer $columnPosition
+     * @return void
      */
     protected function appendToWhiteAndBlacklistFromProviders(
         array $providers,
@@ -260,7 +281,8 @@ class WizardItems implements NewContentElementWizardHookInterface
         $preserveHeaders = [];
         foreach ($items as $name => $item) {
             if (false !== strpos($name, '_')) {
-                array_push($preserveHeaders, reset(explode('_', $name)));
+                $parts = explode('_', $name);
+                array_push($preserveHeaders, reset($parts));
             }
         }
         foreach ($items as $name => $item) {
@@ -320,10 +342,12 @@ class WizardItems implements NewContentElementWizardHookInterface
         array $whitelist,
         array $blacklist
     ) {
+        /** @var string|null $allowed */
         $allowed = $component->getVariable('allowedContentTypes');
         if (null !== $allowed) {
             $whitelist = array_merge($whitelist, GeneralUtility::trimExplode(',', $allowed));
         }
+        /** @var string|null $denied */
         $denied = $component->getVariable('deniedContentTypes');
         if (null !== $denied) {
             $blacklist = array_merge($blacklist, GeneralUtility::trimExplode(',', $denied));

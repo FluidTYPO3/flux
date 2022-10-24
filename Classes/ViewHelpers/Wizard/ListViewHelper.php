@@ -54,8 +54,9 @@ class ListViewHelper extends AbstractWizardViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         /** @var ListWizard $component */
-        $component = static::getPreparedComponent('ListWizard', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(ListWizard::class, $renderingContext, $arguments);
         $component->setTable($arguments['table']);
         $component->setStoragePageUid($arguments['pid']);
         $component->setWidth($arguments['width']);

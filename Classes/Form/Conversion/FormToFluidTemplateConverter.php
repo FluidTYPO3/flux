@@ -15,7 +15,13 @@ class FormToFluidTemplateConverter implements FormConverterInterface
 {
     const OPTION_TEMPLATE_SOURCE = 'template_source';
 
-    public function convertFormAndGrid(Form $form, Form\Container\Grid $grid, array $configuration)
+    /**
+     * @param Form $form
+     * @param Form\Container\Grid $grid
+     * @param array $configuration
+     * @return string
+     */
+    public function convertFormAndGrid(Form $form, ?Form\Container\Grid $grid, array $configuration)
     {
         $renderingTemplateChunk = $configuration[static::OPTION_TEMPLATE_SOURCE] ?? 'Hello world';
 
@@ -38,7 +44,7 @@ class FormToFluidTemplateConverter implements FormConverterInterface
 TEMPLATE;
 
         $formFieldsChunk = $this->renderSheetsAndFields($form);
-        $gridChunk = $this->renderGrid($grid);
+        $gridChunk = $grid !== null ? $this->renderGrid($grid) : '';
 
         $source = sprintf($template, $form->getId(), $formFieldsChunk, $gridChunk, $renderingTemplateChunk);
 
@@ -48,13 +54,17 @@ TEMPLATE;
     protected function renderSheetsAndFields(Form $form): string
     {
         $rendered = '';
-        foreach ($form->getSheets() as $sheet) {
+        /** @var Form\Container\Sheet[] $sheets */
+        $sheets = $form->getSheets();
+        foreach ($sheets as $sheet) {
             $rendered .= sprintf(
                 '<flux:form.sheet name="%s" label="%s">' . PHP_EOL,
                 $sheet->getName(),
                 $sheet->getLabel()
             );
-            foreach ($sheet->getFields() as $field) {
+            /** @var Form\FieldInterface[] $fields */
+            $fields = $sheet->getFields();
+            foreach ($fields as $field) {
                 $rendered .= sprintf(
                     '<flux:field.%s name="%s" label="%s"%s />' . PHP_EOL,
                     $this->getViewHelperNameForFieldType($field),
@@ -93,7 +103,7 @@ TEMPLATE;
             $attributes .= sprintf(' transform="%s" ', $transform);
         }
         if (($default = $field->getDefault()) !== '') {
-            $attributes .= sprintf(' default="%s" ', $default);
+            $attributes .= sprintf(' default="%s" ', is_scalar($default) ? var_export($default, true) : null);
         }
         if (($clearable = $field->getClearable())) {
             $attributes .= sprintf(' clearable="%d" ', (int)$clearable);
@@ -103,6 +113,7 @@ TEMPLATE;
 
     protected function getViewHelperNameForFieldType(Form\FieldInterface $field): string
     {
-        return lcfirst(end(explode('\\', get_class($field))));
+        $parts = explode('\\', get_class($field));
+        return lcfirst(end($parts));
     }
 }

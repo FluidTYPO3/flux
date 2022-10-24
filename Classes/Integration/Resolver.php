@@ -22,14 +22,14 @@ class Resolver
      * @param string $controllerObjectShortName
      * @param boolean $failHard
      * @throws \RuntimeException
-     * @return string|NULL
+     * @return class-string|null
      */
     public function resolveFluxControllerClassNameByExtensionKeyAndControllerName(
         $extensionKey,
         $controllerObjectShortName,
         $failHard = false
     ) {
-        $potentialControllerClassName = static::buildControllerClassNameFromExtensionKeyAndControllerType(
+        $potentialControllerClassName = self::buildControllerClassNameFromExtensionKeyAndControllerType(
             $extensionKey,
             $controllerObjectShortName
         );
@@ -56,7 +56,7 @@ class Resolver
     /**
      * @param string $extensionKey
      * @param string $controllerName
-     * @return boolean|string
+     * @return string
      */
     private static function buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerName)
     {

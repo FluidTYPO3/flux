@@ -25,7 +25,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class Core
 {
-
     const CONTROLLER_ALL = '_all';
 
     /**
@@ -77,7 +76,7 @@ class Core
      */
     public static function getQueuedContentTypeRegistrations()
     {
-        return static::$queuedContentTypeRegistrations;
+        return self::$queuedContentTypeRegistrations;
     }
 
     /**
@@ -85,7 +84,7 @@ class Core
      */
     public static function clearQueuedContentTypeRegistrations()
     {
-        static::$queuedContentTypeRegistrations = [];
+        self::$queuedContentTypeRegistrations = [];
     }
 
     /**
@@ -101,7 +100,7 @@ class Core
         if (null === $form->getExtensionName() && true === isset($GLOBALS['_EXTKEY'])) {
             $form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
         }
-        static::$forms['tables'][$table] = $form;
+        self::$forms['tables'][$table] = $form;
     }
 
     /**
@@ -116,6 +115,7 @@ class Core
             // detected template files as native CTypes. Remove if/when fluidcontent is discontinued.
             $legacyKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
             $templateRootPath = ExtensionManagementUtility::extPath($legacyKey, 'Resources/Private/Templates/Content/');
+            /** @var ContentTypeManager $contentTypeManager */
             $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
             $finder = Finder::create()->in($templateRootPath)->name('*.html')->sortByName();
             foreach ($finder->files() as $file) {
@@ -123,15 +123,15 @@ class Core
                 $contentTypeName = str_replace('_', '', $legacyKey)
                     . '_'
                     . strtolower(substr(str_replace(DIRECTORY_SEPARATOR, '', $file->getRelativePathname()), 0, -5));
-                static::registerTemplateAsContentType($extensionKey, $file->getPathname(), $contentTypeName);
+                self::registerTemplateAsContentType($extensionKey, $file->getPathname(), $contentTypeName);
                 $contentTypeManager->registerTypeName($contentTypeName);
             }
         }
-        if (false === isset(static::$extensions[$providesControllerName])) {
-            static::$extensions[$providesControllerName] = [];
+        if (false === isset(self::$extensions[$providesControllerName])) {
+            self::$extensions[$providesControllerName] = [];
         }
 
-        if (false === in_array($extensionKey, static::$extensions[$providesControllerName])) {
+        if (false === in_array($extensionKey, self::$extensions[$providesControllerName])) {
             $overrides = HookHandler::trigger(
                 HookHandler::PROVIDER_EXTENSION_REGISTERED,
                 [
@@ -139,7 +139,7 @@ class Core
                     'providesControllerName' => $providesControllerName
                 ]
             );
-            array_push(static::$extensions[$overrides['providesControllerName']], $overrides['extensionKey']);
+            array_push(self::$extensions[$overrides['providesControllerName']], $overrides['extensionKey']);
         }
     }
 
@@ -149,12 +149,12 @@ class Core
      */
     public static function getRegisteredProviderExtensionKeys($forControllerName)
     {
-        if (true === isset(static::$extensions[$forControllerName])) {
+        if (true === isset(self::$extensions[$forControllerName])) {
             return array_unique(
-                array_merge(static::$extensions[static::CONTROLLER_ALL], static::$extensions[$forControllerName])
+                array_merge(self::$extensions[self::CONTROLLER_ALL], self::$extensions[$forControllerName])
             );
         }
-        return static::$extensions[static::CONTROLLER_ALL];
+        return self::$extensions[self::CONTROLLER_ALL];
     }
 
     /**
@@ -167,8 +167,8 @@ class Core
      */
     public static function registerConfigurationProvider($classNameOrInstance)
     {
-        $alreadyRegistered = in_array($classNameOrInstance, static::$providers);
-        $alreadyUnregistered = in_array($classNameOrInstance, static::$unregisteredProviders);
+        $alreadyRegistered = in_array($classNameOrInstance, self::$providers);
+        $alreadyUnregistered = in_array($classNameOrInstance, self::$unregisteredProviders);
         if (!$alreadyUnregistered && !$alreadyRegistered) {
             $classNameOrInstance = HookHandler::trigger(
                 HookHandler::PROVIDER_REGISTERED,
@@ -176,7 +176,7 @@ class Core
                     'provider' => $classNameOrInstance
                 ]
             )['provider'];
-            array_push(static::$providers, $classNameOrInstance);
+            array_push(self::$providers, $classNameOrInstance);
         }
     }
 
@@ -192,12 +192,12 @@ class Core
      * type select box or an ObjectStorage from a list of records. Usual output
      * is completely ignored, only the "Configuration" section is considered.
      *
-     * @param mixed $extensionKey The extension key which registered this FlexForm
-     * @param mixed $pluginSignature The plugin signature this FlexForm belongs to
-     * @param mixed $templateFilename Location of the Fluid template containing field definitions
-     * @param mixed $variables Optional array of variables to pass to Fluid template
-     * @param mixed|NULL Optional section name containing the configuration
-     * @param mixed|NULL Optional paths array / Closure to return paths
+     * @param string $extensionKey The extension key which registered this FlexForm
+     * @param string $pluginSignature The plugin signature this FlexForm belongs to
+     * @param string $templateFilename Location of the Fluid template containing field definitions
+     * @param array $variables Optional array of variables to pass to Fluid template
+     * @param string|null $section Optional section name containing the configuration
+     * @param array|null $paths Optional paths array / Closure to return paths
      * @param string $fieldName Optional fieldname if not from pi_flexform
      * @return ProviderInterface
      */
@@ -212,7 +212,7 @@ class Core
     ) {
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var $provider ProviderInterface */
+        /** @var ProviderInterface $provider */
         $provider = $objectManager->get(Provider::class);
         $provider->setTableName('tt_content');
         $provider->setFieldName($fieldName);
@@ -222,7 +222,7 @@ class Core
         $provider->setTemplateVariables($variables);
         $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
-        static::registerConfigurationProvider($provider);
+        self::registerConfigurationProvider($provider);
         return $provider;
     }
 
@@ -231,12 +231,12 @@ class Core
      * resolution - use this if you registered your Extbase plugin as a content
      * object in your localconf.
      *
-     * @param mixed $extensionKey The extension key which registered this FlexForm
-     * @param mixed $contentObjectType The cType of the object you registered
-     * @param mixed $templateFilename Location of the Fluid template containing field definitions
-     * @param mixed $variables Optional array of variables to pass to Fluid template
-     * @param mixed|NULL Optional section name containing the configuration
-     * @param mixed|NULL Optional paths array / Closure to return paths
+     * @param string $extensionKey The extension key which registered this FlexForm
+     * @param string $contentObjectType The cType of the object you registered
+     * @param string $templateFilename Location of the Fluid template containing field definitions
+     * @param array $variables Optional array of variables to pass to Fluid template
+     * @param string|null $section Optional section name containing the configuration
+     * @param array|null $paths Optional paths array / Closure to return paths
      * @param string $fieldName Optional fieldname if not from pi_flexform
      * @return ProviderInterface
      */
@@ -249,9 +249,9 @@ class Core
         $paths = null,
         $fieldName = 'pi_flexform'
     ) {
-        /** @var $objectManager ObjectManagerInterface */
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var $provider ProviderInterface */
+        /** @var ProviderInterface $provider */
         $provider = $objectManager->get(Provider::class);
         $provider->setTableName('tt_content');
         $provider->setFieldName($fieldName);
@@ -261,7 +261,7 @@ class Core
         $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
         $provider->setContentObjectType($contentObjectType);
-        static::registerConfigurationProvider($provider);
+        self::registerConfigurationProvider($provider);
         return $provider;
     }
 
@@ -270,12 +270,12 @@ class Core
      * for any TCA field (type "flex") or field whose TCA you have overridden
      * to display as a FlexForm.
      *
-     * @param mixed $table The SQL table this FlexForm is bound to
-     * @param mixed $fieldName The SQL field this FlexForm is bound to
-     * @param mixed $templateFilename Location of the Fluid template containing field definitions
-     * @param mixed $variables Optional array of variables to pass to Fluid template
-     * @param mixed|NULL Optional section name containing the configuration
-     * @param mixed|NULL Optional paths array / Closure to return paths
+     * @param string $table The SQL table this FlexForm is bound to
+     * @param string $fieldName The SQL field this FlexForm is bound to
+     * @param string $templateFilename Location of the Fluid template containing field definitions
+     * @param array $variables Optional array of variables to pass to Fluid template
+     * @param string|null $section Optional section name containing the configuration
+     * @param array|null $paths Optional paths array / Closure to return paths
      * @return ProviderInterface
      */
     public static function registerFluidFlexFormTable(
@@ -286,9 +286,9 @@ class Core
         $section = null,
         $paths = null
     ) {
-        /** @var $objectManager ObjectManagerInterface */
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var $provider ProviderInterface */
+        /** @var ProviderInterface $provider */
         $provider = $objectManager->get(Provider::class);
         $provider->setTableName($table);
         $provider->setFieldName($fieldName);
@@ -296,7 +296,7 @@ class Core
         $provider->setTemplateVariables($variables);
         $provider->setTemplatePaths($paths);
         $provider->setConfigurationSectionName($section);
-        static::registerConfigurationProvider($provider);
+        self::registerConfigurationProvider($provider);
         return $provider;
     }
 
@@ -312,6 +312,7 @@ class Core
      * @param string|null $contentTypeName Optional override for the CType value this template will use
      * @param string|null $providerClassName Optional custom class implementing ProviderInterface from Flux
      * @param string|null $pluginName Optional plugin name used when registering the Extbase plugin for the template
+     * @return void
      */
     public static function registerTemplateAsContentType(
         $providerExtensionName,
@@ -324,12 +325,13 @@ class Core
             $templateFilename = GeneralUtility::getFileAbsFileName($templateFilename);
         }
 
-        static::$queuedContentTypeRegistrations[] = [
+        self::$queuedContentTypeRegistrations[] = [
             $providerExtensionName,
             $templateFilename,
             $providerClassName,
             $contentTypeName,
-            $pluginName
+            $pluginName,
+            null
         ];
     }
 
@@ -339,11 +341,11 @@ class Core
      */
     public static function unregisterConfigurationProvider($providerClassName)
     {
-        if (true === in_array($providerClassName, static::$providers)) {
-            $index = array_search($providerClassName, static::$providers);
-            unset(static::$providers[$index]);
-        } elseif (false === in_array($providerClassName, static::$unregisteredProviders)) {
-            array_push(static::$unregisteredProviders, $providerClassName);
+        if (true === in_array($providerClassName, self::$providers)) {
+            $index = array_search($providerClassName, self::$providers);
+            unset(self::$providers[$index]);
+        } elseif (false === in_array($providerClassName, self::$unregisteredProviders)) {
+            array_push(self::$unregisteredProviders, $providerClassName);
         }
     }
 
@@ -355,17 +357,18 @@ class Core
     public static function registerPipe($typeOrClassName, $insteadOfNativeType = null)
     {
         $key = null === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
-        static::$pipes[$key] = $typeOrClassName;
+        self::$pipes[$key] = $typeOrClassName;
     }
 
     /**
      * @param string $typeOrClassName
+     * @return void
      */
     public static function unregisterPipe($typeOrClassName)
     {
-        if (true === in_array($typeOrClassName, static::$pipes)) {
-            $index = array_search($typeOrClassName, static::$pipes);
-            unset(static::$pipes[$index]);
+        if (true === in_array($typeOrClassName, self::$pipes)) {
+            $index = array_search($typeOrClassName, self::$pipes);
+            unset(self::$pipes[$index]);
         }
     }
 
@@ -377,17 +380,18 @@ class Core
     public static function registerOutlet($typeOrClassName, $insteadOfNativeType = null)
     {
         $key = null === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
-        static::$outlets[$key] = $typeOrClassName;
+        self::$outlets[$key] = $typeOrClassName;
     }
 
     /**
      * @param string $typeOrClassName
+     * @return void
      */
     public static function unregisterOutlet($typeOrClassName)
     {
-        if (true === in_array($typeOrClassName, static::$outlets)) {
-            $index = array_search($typeOrClassName, static::$outlets);
-            unset(static::$outlets[$index]);
+        if (true === in_array($typeOrClassName, self::$outlets)) {
+            $index = array_search($typeOrClassName, self::$outlets);
+            unset(self::$outlets[$index]);
         }
     }
 
@@ -397,8 +401,8 @@ class Core
      */
     public static function getRegisteredFlexFormProviders()
     {
-        reset(static::$providers);
-        return static::$providers;
+        reset(self::$providers);
+        return self::$providers;
     }
 
     /**
@@ -406,7 +410,7 @@ class Core
      */
     public static function getRegisteredFormsForTables()
     {
-        return static::$forms['tables'];
+        return self::$forms['tables'];
     }
 
     /**
@@ -415,8 +419,8 @@ class Core
      */
     public static function getRegisteredFormForTable($table)
     {
-        if (true === isset(static::$forms['tables'][$table])) {
-            return static::$forms['tables'][$table];
+        if (true === isset(self::$forms['tables'][$table])) {
+            return self::$forms['tables'][$table];
         }
         return null;
     }
@@ -426,7 +430,7 @@ class Core
      */
     public static function getPipes()
     {
-        return array_values(static::$pipes);
+        return array_values(self::$pipes);
     }
 
     /**
@@ -434,6 +438,6 @@ class Core
      */
     public static function getOutlets()
     {
-        return array_values(static::$outlets);
+        return array_values(self::$outlets);
     }
 }

@@ -26,8 +26,8 @@ interface RecordProviderInterface
      *
      * @param array $row
      * @param string $table
-     * @param string $field
-     * @param string $extensionKey
+     * @param string|null $field
+     * @param string|null $extensionKey
      * @return boolean
      */
     public function trigger(array $row, $table, $field, $extensionKey = null);

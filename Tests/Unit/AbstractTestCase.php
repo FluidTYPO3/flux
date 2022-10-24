@@ -14,11 +14,12 @@ use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * AbstractTestCase
  */
-abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
+abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
 {
 
     const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/Content/AbsolutelyMinimal.html';
@@ -40,7 +41,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function __construct($name = null, array $data = array(), $dataName = '')
     {
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->objectManager = clone $objectManager;
         parent::__construct($name, $data, $dataName);
     }
@@ -48,7 +49,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
     }

@@ -85,9 +85,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *     <f:for each="{v:content.resources.fal(field: 'settings.image')}" as="image">
  *         <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
  *     </f:for>
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class FalViewHelper extends AbstractInlineFieldViewHelper
 {
@@ -215,23 +212,28 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $allowedExtensions = $arguments['allowedExtensions'];
         $disallowedExtensions = $arguments['disallowedExtensions'];
         $createNewRelationLinkTitle = $arguments['createNewRelationLinkTitle'];
         $cropVariants = $arguments['cropVariants'];
 
         /** @var Fal $component */
-        $component = static::getPreparedComponent('Inline/Fal', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Fal::class, $renderingContext, $arguments);
         if (false === is_array($arguments['foreignMatchFields'])) {
             $component->setForeignMatchFields([
                 'fieldname' => $arguments['name']
             ]);
         }
-        $component->setForeignSelectorFieldTcaOverride([
-            'config' => [
-                'appearance' => [
-                    'elementBrowserType' => 'file',
-                    'elementBrowserAllowed' => $allowedExtensions
+        $component->setOverrideChildTca([
+            'columns' => [
+                'uid_local' => [
+                    'config' => [
+                        'appearance' => [
+                            'elementBrowserType' => 'file',
+                            'elementBrowserAllowed' => $allowedExtensions
+                        ]
+                    ]
                 ]
             ]
         ]);

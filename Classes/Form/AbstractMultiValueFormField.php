@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
@@ -52,7 +53,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * Special rendering type of this component - supports all values normally
      * supported by TCA of the "select" field type.
      *
-     * @var string
+     * @var string|null
      * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#rendertype
      */
     protected $renderType = 'selectSingle';
@@ -81,7 +82,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * Can also be an array of [$value, $label, $iconName] where label and icon
      * name are optional - use this when you need to specify an icon for "empty".
      *
-     * @var mixed
+     * @var boolean|string|array
      */
     protected $emptyOption = false;
 
@@ -224,7 +225,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getRenderType()
     {
@@ -336,7 +337,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     }
 
     /**
-     * @param boolean|string $emptyOption
+     * @param boolean|string|array $emptyOption
      * @return MultiValueFieldInterface
      */
     public function setEmptyOption($emptyOption)
@@ -346,7 +347,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     }
 
     /**
-     * @return boolean|string
+     * @return boolean|string|array
      */
     public function getEmptyOption()
     {
@@ -378,11 +379,11 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         $type = $query->getType();
         $table = strtolower(str_replace('\\', '_', $type));
         $propertyName = $this->getLabelPropertyName($table, $type);
+        /** @var DomainObjectInterface $result */
         foreach ($results as $result) {
             $uid = $result->getUid();
             array_push($items, [ObjectAccess::getProperty($result, $propertyName), $uid]);
         }
         return $items;
     }
-
 }

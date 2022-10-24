@@ -22,7 +22,7 @@ class ArgumentViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['typeConverters'] = [];
         parent::setUp();

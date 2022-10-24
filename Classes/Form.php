@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux;
 
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
@@ -23,9 +24,8 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 /**
  * Form
  */
-class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface
+class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface, Form\OptionCarryingInterface
 {
-
     const OPTION_STATIC = 'static';
     const OPTION_SORTING = 'sorting';
     const OPTION_GROUP = 'group';
@@ -96,12 +96,14 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         $defaultSheet->setName('options');
         $defaultSheet->setLabel('LLL:EXT:flux' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
         $this->add($defaultSheet);
-        $this->outlet = $this->getObjectManager()->get(StandardOutlet::class);
+        /** @var StandardOutlet $outlet */
+        $outlet = $this->getObjectManager()->get(StandardOutlet::class);
+        $this->outlet = $outlet;
     }
 
     /**
      * @param array $settings
-     * @return FormInterface
+     * @return static
      */
     public static function create(array $settings = [])
     {
@@ -125,7 +127,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             $last->add($child);
         } else {
             $this->children->rewind();
-            if ($this->children->count() === 1 && $this->children->current()->getName() === 'options' && !$this->children->current()->hasChildren()) {
+            /** @var FormInterface|null $firstChild */
+            $firstChild = $this->children->count() > 0 ? $this->children->current() : null;
+            if ($firstChild instanceof FormInterface && $this->children->count() === 1 && $firstChild->getName() === 'options' && !$firstChild->hasChildren()) {
                 // Form has a single sheet, it's the default sheet and it has no fields. Replace it.
                 $this->children->detach($this->children->current());
             }
@@ -168,7 +172,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 
     /**
      * @param boolean $includeEmpty
-     * @return Form\Container\Sheet[]
+     * @return Sheet[]|FormInterface[]
      */
     public function getSheets($includeEmpty = false)
     {
@@ -188,9 +192,13 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     public function getFields()
     {
+        /** @var Sheet[] $sheets */
+        $sheets = $this->getSheets();
+        /** @var FieldInterface[] $fields */
         $fields = [];
-        foreach ($this->getSheets() as $sheet) {
+        foreach ($sheets as $sheet) {
             $fieldsInSheet = $sheet->getFields();
+            /** @var FieldInterface[] $fields */
             $fields = array_merge($fields, $fieldsInSheet);
         }
         return $fields;
@@ -207,7 +215,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getExtensionName()
     {
@@ -375,9 +383,11 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 $sheetName = isset($sheetData['name']) ? $sheetData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
                 if (true === $this->has($sheetName)) {
+                    /** @var Sheet $sheet */
                     $sheet = $this->get($sheetName);
                 } else {
-                    $sheet = $this->createContainer('Sheet', $sheetName);
+                    /** @var Sheet $sheet */
+                    $sheet = $this->createContainer(Sheet::class, $sheetName);
                 }
                 $sheet->modify($sheetData);
             }

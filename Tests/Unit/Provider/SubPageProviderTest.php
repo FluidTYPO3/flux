@@ -43,8 +43,8 @@ class SubPageProviderTest extends AbstractTestCase
     public function getControllerActionFromRecordTestValues()
     {
         return array(
-            array(array('tx_fed_page_controller_action_sub' => ''), 'tx_fed_page_flexform_sub', 'default'),
-            array(array('tx_fed_page_controller_action_sub' => 'flux->action'), 'tx_fed_page_flexform_sub', 'action'),
+            array(array('uid' => 123, 'tx_fed_page_controller_action_sub' => ''), 'tx_fed_page_flexform_sub', 'default'),
+            array(array('uid' => 123, 'tx_fed_page_controller_action_sub' => 'flux->action'), 'tx_fed_page_flexform_sub', 'action'),
         );
     }
 
@@ -59,6 +59,7 @@ class SubPageProviderTest extends AbstractTestCase
         $instance->setTemplatePaths(array('templateRootPaths' => array('EXT:flux/Tests/Fixtures/Templates/')));
         $instance->injectPageService($service);
         $record = array(
+            'uid' => 123,
             $fieldName => 'Flux->dummy',
         );
         $service->expects($this->any())->method('getPageTemplateConfiguration')->willReturn($record);

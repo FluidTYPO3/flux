@@ -27,6 +27,7 @@ class ContentGridForm extends Form
         parent::__construct();
 
         $this->createContainer(Form\Container\Sheet::class, 'grid');
+        /** @var Form\Field\Select $gridMode */
         $gridMode = $this->createField(Form\Field\Select::class, 'gridMode', 'Grid mode');
         $gridModeOptions = [Form\Container\Section::GRID_MODE_ROWS, Form\Container\Section::GRID_MODE_COLUMNS];
         $gridMode->setDefault(Form\Container\Section::GRID_MODE_ROWS);
@@ -39,5 +40,4 @@ class ContentGridForm extends Form
         $columnField = $section->createContainer(Form\Container\SectionObject::class, 'column');
         $columnField->createField(Form\Field\ColumnPosition::class, 'colPos', 'Column position value');
     }
-
 }

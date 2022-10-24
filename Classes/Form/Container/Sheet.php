@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 
 /**
  * Sheet
@@ -31,7 +32,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 
     /**
      * @param string $shortDescription
-     * @return self
+     * @return $this
      */
     public function setShortDescription($shortDescription)
     {
@@ -40,7 +41,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getShortDescription()
     {
@@ -49,7 +50,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
 
     /**
      * @param string $description
-     * @return self
+     * @return $this
      */
     public function setDescription($description)
     {
@@ -58,7 +59,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDescription()
     {
@@ -83,7 +84,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
     }
 
     /**
-     * @return \FluidTYPO3\Flux\Form\FieldInterface[]
+     * @return FormInterface[]
      */
     public function getFields()
     {

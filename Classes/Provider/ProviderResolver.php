@@ -60,11 +60,11 @@ class ProviderResolver implements SingletonInterface
      * a working FlexForm configuration baed on the given parameters.
      *
      * @param string $table
-     * @param string $fieldName
-     * @param array $row
-     * @param string $extensionKey
+     * @param string|null $fieldName
+     * @param array|null $row
+     * @param string|null $extensionKey
      * @param string|array $interfaces One or more specific interfaces the Provider must implement.
-     * @return ProviderInterface|NULL
+     * @return ProviderInterface|null
      */
     public function resolvePrimaryConfigurationProvider(
         $table,
@@ -82,7 +82,7 @@ class ProviderResolver implements SingletonInterface
      * configuration based on the given parameters.
      *
      * @param string $table Table the Provider must match.
-     * @param string $fieldName Field in the table the Provider must match.
+     * @param string|null $fieldName Field in the table the Provider must match.
      * @param array|null $row The record from table which the Provider must handle, or null if any record.
      * @param string|null $extensionKey The extension key the Provider must match, or null if any extension key.
      * @param string|array $interfaces One or more specific interfaces the Provider must implement.
@@ -143,6 +143,7 @@ class ProviderResolver implements SingletonInterface
      */
     public function loadTypoScriptConfigurationProviderInstances()
     {
+        /** @var array[] $providerConfigurations */
         $providerConfigurations = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_flux.providers');
         $providers = [];
         foreach ($providerConfigurations as $name => $providerSettings) {
@@ -190,8 +191,10 @@ class ProviderResolver implements SingletonInterface
                 );
             }
             if (true === is_object($classNameOrInstance)) {
+                /** @var ProviderInterface $provider */
                 $provider = $classNameOrInstance;
             } else {
+                /** @var ProviderInterface $provider */
                 $provider = $this->objectManager->get($classNameOrInstance);
             }
             $instances[] = $provider;

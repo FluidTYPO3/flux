@@ -21,7 +21,7 @@ interface FluidProviderInterface
      * field and sheets configuration. EXT:myext... syntax allowed
      *
      * @param array $row The record which triggered the processing
-     * @return string|NULL
+     * @return string|null
      */
     public function getTemplatePathAndFilename(array $row);
 
@@ -30,7 +30,7 @@ interface FluidProviderInterface
      * FlexForm configuration
      *
      * @param array $row The record which triggered the processing
-     * @return array|NULL
+     * @return array
      */
     public function getTemplateVariables(array $row);
 
@@ -67,5 +67,4 @@ interface FluidProviderInterface
      * @return $this
      */
     public function setConfigurationSectionName($configurationSectionName);
-
 }

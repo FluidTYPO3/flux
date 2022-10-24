@@ -56,8 +56,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         string $basePath,
         string $relativeFilePath,
         string $providerClassName = Provider::class
-    )
-    {
+    ) {
         $this->extensionIdentity = $extensionIdentity;
         $this->basePath = substr($basePath, 0, 1) !== '/' ? GeneralUtility::getFileAbsFileName($basePath) : $basePath;
         $this->relativeFilePath = $relativeFilePath;
@@ -74,14 +73,19 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         // Steps:
         // 1) auto-create if missing, the required file structure and dummy files
         // 2) iterate all content types found in the file structure
-        $basePath = trim(ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY), '/.') . '/';
+        $plugAndPlayDirectory = ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY);
+        if (!is_scalar($plugAndPlayDirectory)) {
+            return [];
+        }
+        $basePath = trim((string) $plugAndPlayDirectory, '/.') . '/';
         $basePath = realpath(GeneralUtility::getFileAbsFileName($basePath)) . '/';
         static::initializeDropInFileSystemStructure($basePath);
 
         $contentTypesPath = realpath($basePath . static::TEMPLATES_DIRECTORY . static::CONTENT_DIRECTORY) . '/';
+        /** @var Finder $finder */
         $finder = GeneralUtility::makeInstance(Finder::class);
-        /** @var \SplFileInfo[] $files */
         try {
+            /** @var \SplFileInfo[] $files */
             $files = $finder->in($contentTypesPath)->name(static::TEMPLATES_PATTERN)->sortByName();
         } catch (DirectoryNotFoundException $exception) {
             return [];

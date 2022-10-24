@@ -18,7 +18,7 @@ use TYPO3\CMS\Lang\LanguageService;
  */
 class TableConfigurationPostProcessorTest extends AbstractTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)->setMethods(['sL'])->getMock();
     }

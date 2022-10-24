@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
@@ -83,8 +84,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      *
      * @param array $row
      * @param string $table
-     * @param string $field
-     * @param string|NULL $extensionKey
+     * @param string|null $field
+     * @param string|null $extensionKey
      * @return boolean
      */
     public function trigger(array $row, $table, $field, $extensionKey = null)
@@ -118,6 +119,9 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     public function getForm(array $row)
     {
+        if ($row['deleted']) {
+            return null;
+        }
         $form = parent::getForm($row);
         if ($form) {
             $form->setOption(PreviewView::OPTION_PREVIEW, [PreviewView::OPTION_MODE => 'none']);
@@ -141,7 +145,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
 
     /**
      * @param array $row
-     * @return string
+     * @return string|null
      */
     public function getTemplatePathAndFilename(array $row)
     {
@@ -149,6 +153,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $action = $this->getControllerActionReferenceFromRecord($row);
         if (false === empty($action)) {
             $pathsOrExtensionKey = $this->templatePaths ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row));
+            /** @var TemplatePaths $templatePaths */
             $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $pathsOrExtensionKey);
             $action = $this->getControllerActionFromRecord($row);
             $action = ucfirst($action);
@@ -200,7 +205,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         if (!empty($row[self::FIELD_ACTION_MAIN])) {
             return is_array($row[self::FIELD_ACTION_MAIN]) ? $row[self::FIELD_ACTION_MAIN][0] : $row[self::FIELD_ACTION_MAIN];
         }
-        return ($this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB] ?? 'flux->default') ?: 'flux->default';
+        if (isset($row['uid'])) {
+            return ($this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB] ?? 'flux->default') ?: 'flux->default';
+        }
+        return 'flux->default';
     }
 
     /**
@@ -241,8 +249,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = [])
     {
         if ('update' === $operation) {
-            $record = $this->recordService->getSingle($this->getTableName($row), '*', $id);
-            if (!is_array($record)) {
+            $record = $this->recordService->getSingle((string) $this->getTableName($row), '*', $id);
+            if ($record === null) {
                 return;
             }
             if (isset($reference->datamap[$this->tableName][$id])) {
@@ -255,8 +263,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             if ($form) {
                 $tableFieldName = $this->getFieldName($record);
                 foreach ($form->getFields() as $field) {
-                    $fieldName = $field->getName();
-                    $sheetName = $field->getParent()->getName();
+                    $fieldName = (string) $field->getName();
+                    $sheetName = (string) $field->getParent()->getName();
                     $inherit = (boolean) $field->getInherit();
                     $inheritEmpty = (boolean) $field->getInheritEmpty();
                     if (isset($record[$tableFieldName]['data']) && is_array($record[$tableFieldName]['data'])) {
@@ -310,7 +318,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     {
         $inheritedConfiguration = $this->getInheritedConfiguration($row);
         foreach ($form->getFields() as $field) {
-            $name = $field->getName();
+            $name = (string) $field->getName();
             $inheritedValue = $this->getInheritedPropertyValueByDottedPath($inheritedConfiguration, $name);
             if (null !== $inheritedValue && true === $field instanceof Form\FieldInterface) {
                 $field->setDefault($inheritedValue);
@@ -327,7 +335,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     {
         $tableName = $this->getTableName($row);
         $tableFieldName = $this->getFieldName($row);
-        $cacheKey = $tableName . $tableFieldName . $row['uid'];
+        $uid = $row['uid'] ?? '';
+        $cacheKey = $tableName . $tableFieldName . $uid;
         if (false === isset(self::$cache[$cacheKey])) {
             $tree = $this->getInheritanceTree($row);
             $data = [];
@@ -397,9 +406,9 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     {
         $parentFieldName = $this->getParentFieldName($row);
         if (null !== $parentFieldName && false === isset($row[$parentFieldName])) {
-            $row = $this->recordService->getSingle($this->getTableName($row), '*', $row[$parentFieldName]);
+            $row = $this->recordService->getSingle((string) $this->getTableName($row), '*', $row[$parentFieldName]);
         }
-        return $row[$parentFieldName];
+        return $row[$parentFieldName] ?? null;
     }
 
     /**
@@ -408,20 +417,11 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     protected function loadRecordTreeFromDatabase($record)
     {
-        $parentFieldName = $this->getParentFieldName($record);
-        if (false === isset($record[$parentFieldName])) {
-            $record[$parentFieldName] = $this->getParentFieldValue($record);
+        if (empty($record)) {
+            return [];
         }
-        $records = [];
-        while (0 < $record[$parentFieldName]) {
-            $record = $this->recordService->getSingle($this->getTableName($record), '*', $record[$parentFieldName]);
-            if (!$record) {
-                break;
-            }
-            $parentFieldName = $this->getParentFieldName($record);
-            array_push($records, $record);
-        }
-        $records = array_reverse($records);
-        return $records;
+        /** @var RootlineUtility $rootLineUtility */
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid'] ?? null);
+        return array_slice($rootLineUtility->get(), 1);
     }
 }

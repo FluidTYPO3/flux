@@ -36,7 +36,7 @@ abstract class AbstractFormComponent implements FormInterface
     const NAMESPACE_WIZARD = 'FluidTYPO3\\Flux\\Form\\Wizard';
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $name;
 
@@ -46,7 +46,7 @@ abstract class AbstractFormComponent implements FormInterface
     protected $enabled = true;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $label = null;
 
@@ -67,7 +67,7 @@ abstract class AbstractFormComponent implements FormInterface
     protected $localLanguageFileRelativePath = Form::DEFAULT_LANGUAGEFILE;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $extensionName = 'FluidTYPO3.Flux';
 
@@ -98,7 +98,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param array $settings
-     * @return FormInterface
+     * @return static
      */
     public static function create(array $settings = [])
     {
@@ -112,55 +112,65 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @param string $type
+     * @param string|class-string $type
      * @param string $prefix
-     * @return string
+     * @return class-string
      */
     protected function createComponentClassName($type, $prefix)
     {
+        /** @var class-string $className */
         $className = str_replace('/', '\\', $type);
         $className = true === class_exists($prefix . '\\' . $className) ? $prefix . '\\' . $className : $className;
         return $className;
     }
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
      * @param string $label
-     * @return FieldInterface
+     * @return T
      */
     public function createField($type, $name, $label = null)
     {
-        return $this->createComponent(static::NAMESPACE_FIELD, $type, $name, $label);
+        /** @var T $component */
+        $component = $this->createComponent(static::NAMESPACE_FIELD, $type, $name, $label);
+        return $component;
     }
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
      * @param string $label
-     * @return ContainerInterface
+     * @return T
      */
     public function createContainer($type, $name, $label = null)
     {
-        return $this->createComponent(static::NAMESPACE_CONTAINER, $type, $name, $label);
+        /** @var T $component */
+        $component = $this->createComponent(static::NAMESPACE_CONTAINER, $type, $name, $label);
+        return $component;
     }
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
      * @param string $label
-     * @return WizardInterface
+     * @return T
      */
     public function createWizard($type, $name, $label = null)
     {
-        return $this->createComponent(static::NAMESPACE_WIZARD, $type, $name, $label);
+        /** @var T $component */
+        $component = $this->createComponent(static::NAMESPACE_WIZARD, $type, $name, $label);
+        return $component;
     }
 
     /**
      * @param string $namespace
-     * @param string $type
+     * @param string|class-string $type
      * @param string $name
-     * @param string|NULL $label
+     * @param string|null $label
      * @return FormInterface
      */
     public function createComponent($namespace, $type, $name, $label = null)
@@ -179,7 +189,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param string $transform
-     * @return FormInterface
+     * @return self
      */
     public function setTransform($transform)
     {
@@ -203,7 +213,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param string $name
-     * @return FormInterface
+     * @return $this
      */
     public function setName($name)
     {
@@ -212,7 +222,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -229,7 +239,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param boolean $enabled
-     * @return Form\FormInterface
+     * @return $this
      */
     public function setEnabled($enabled)
     {
@@ -238,8 +248,8 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @param string $extensionName
-     * @return FormInterface
+     * @param string|null $extensionName
+     * @return $this
      */
     public function setExtensionName($extensionName)
     {
@@ -248,7 +258,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getExtensionName()
     {
@@ -256,8 +266,8 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @param string $label
-     * @return FormInterface
+     * @param string|null $label
+     * @return $this
      */
     public function setLabel($label)
     {
@@ -294,7 +304,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLabel()
     {
@@ -302,7 +312,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @param string $label
+     * @param string|null $label
      * @param string $path
      * @return NULL|string
      */
@@ -313,18 +323,18 @@ abstract class AbstractFormComponent implements FormInterface
         }
 
         $name = $this->getName();
-        $extensionName = $this->extensionName;
+        $extensionName = (string) $this->getExtensionName();
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
         if (empty($label) && !ExtensionManagementUtility::isLoaded($extensionKey)) {
             return $name;
-        } elseif (strpos($label, 'LLL:EXT:') === 0) {
+        } elseif (strpos($label ?? '', 'LLL:EXT:') === 0) {
             return $label;
         }
 
         $relativeFilePath = $this->getLocalLanguageFileRelativePath();
         $relativeFilePath = ltrim($relativeFilePath, '/');
         $filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-        if (strpos($label, 'LLL:') === 0) {
+        if (strpos($label ?? '', 'LLL:') === 0 && strpos($label ?? '', ':') !== false) {
             // Shorthand LLL:name.of.index reference, expand
             list (, $labelIdentifier) = explode(':', $label, 2);
             return $filePrefix . ':' . $labelIdentifier;
@@ -344,7 +354,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param string $localLanguageFileRelativePath
-     * @return FormInterface
+     * @return $this
      */
     public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath)
     {
@@ -363,7 +373,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param boolean $disableLocalLanguageLabels
-     * @return FormInterface
+     * @return $this
      */
     public function setDisableLocalLanguageLabels($disableLocalLanguageLabels)
     {
@@ -381,7 +391,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param ContainerInterface $parent
-     * @return FormInterface
+     * @return $this
      */
     public function setParent($parent)
     {
@@ -390,7 +400,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return ContainerInterface
+     * @return ContainerInterface|null
      */
     public function getParent()
     {
@@ -399,7 +409,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param array $variables
-     * @return FormInterface
+     * @return $this
      */
     public function setVariables($variables)
     {
@@ -418,7 +428,7 @@ abstract class AbstractFormComponent implements FormInterface
     /**
      * @param string $name
      * @param mixed $value
-     * @return FormInterface
+     * @return $this
      */
     public function setVariable($name, $value)
     {
@@ -439,7 +449,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return ContainerInterface
+     * @return ContainerInterface|$this
      */
     public function getRoot()
     {
@@ -465,7 +475,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param boolean $inherit
-     * @return FormInterface
+     * @return $this
      */
     public function setInherit($inherit)
     {
@@ -474,7 +484,7 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @return integer
+     * @return bool
      */
     public function getInherit()
     {
@@ -483,7 +493,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @param boolean $inheritEmpty
-     * @return FormInterface
+     * @return $this
      */
     public function setInheritEmpty($inheritEmpty)
     {
@@ -514,7 +524,7 @@ abstract class AbstractFormComponent implements FormInterface
      * the recursive modification of all child components.
      *
      * @param array $structure
-     * @return FormInterface
+     * @return $this
      */
     public function modify(array $structure)
     {
@@ -525,6 +535,12 @@ abstract class AbstractFormComponent implements FormInterface
             unset($structure['options']);
         }
         foreach ($structure as $propertyName => $propertyValue) {
+            if ($propertyName === 'children') {
+                foreach ($propertyValue as $child) {
+                    $this->add($child);
+                }
+                continue;
+            }
             $setterMethodName = 'set' . ucfirst($propertyName);
             if (true === method_exists($this, $setterMethodName)) {
                 ObjectAccess::setProperty($this, $propertyName, $propertyValue);
@@ -539,7 +555,9 @@ abstract class AbstractFormComponent implements FormInterface
      */
     protected function getObjectManager()
     {
-        return GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        return $objectManager;
     }
 
     /**
@@ -547,7 +565,9 @@ abstract class AbstractFormComponent implements FormInterface
      */
     protected function getConfigurationService()
     {
-        return $this->getObjectManager()->get(FluxService::class);
+        /** @var FluxService $fluxService */
+        $fluxService = $this->getObjectManager()->get(FluxService::class);
+        return $fluxService;
     }
 
     /**

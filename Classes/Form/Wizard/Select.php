@@ -20,7 +20,6 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  */
 class Select extends AbstractWizard
 {
-
     /**
      * @var string
      */
@@ -45,7 +44,7 @@ class Select extends AbstractWizard
      * Comma-separated, comma-and-semicolon-separated or array
      * list of possible values
      *
-     * @var mixed
+     * @var \Traversable|string|null
      */
     protected $items;
 
@@ -82,9 +81,8 @@ class Select extends AbstractWizard
         } elseif (strpos($itemsString, ',')) {
             $items = explode(',', $itemsString);
             return array_combine($items, $items);
-        } else {
-            return [$itemsString => $itemsString];
         }
+        return [$itemsString => $itemsString];
     }
 
     /**
@@ -99,7 +97,7 @@ class Select extends AbstractWizard
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getFormattedItems()
     {
@@ -110,11 +108,11 @@ class Select extends AbstractWizard
         if (true === is_array($items)) {
             return $items;
         }
-        return $this->buildItems($items);
+        return $this->buildItems((string) $items);
     }
 
     /**
-     * @param mixed $items
+     * @param \Traversable|string|null $items
      * @return Select
      */
     public function setItems($items)
@@ -124,7 +122,7 @@ class Select extends AbstractWizard
     }
 
     /**
-     * @return mixed
+     * @return \Traversable|string|null
      */
     public function getItems()
     {

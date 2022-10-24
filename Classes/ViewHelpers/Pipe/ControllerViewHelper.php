@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -57,6 +58,7 @@ class ControllerViewHelper extends AbstractPipeViewHelper
         iterable $arguments,
         \Closure $renderChildrenClosure = null
     ) {
+        /** @var array $arguments */
         $extensionName = $arguments['extensionName'];
         $controller = $arguments['controller'];
         $controllerContext = $renderingContext->getControllerContext();
@@ -66,8 +68,10 @@ class ControllerViewHelper extends AbstractPipeViewHelper
         if (true === empty($controller)) {
             $controller = $controllerContext->getRequest()->getControllerObjectName();
         }
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ControllerPipe $pipe */
-        $pipe = GeneralUtility::makeInstance(ObjectManager::class)->get(ControllerPipe::class);
+        $pipe = $objectManager->get(ControllerPipe::class);
         $pipe->setAction($arguments['action']);
         $pipe->setController($controller);
         $pipe->setExtensionName($extensionName);

@@ -34,7 +34,7 @@ class ContentTypeManager implements SingletonInterface
     const CACHE_TAG = 'content_types';
 
     /**
-     * @var ContentTypeDefinitionInterface[]
+     * @var ContentTypeDefinitionInterface[]|null[]
      */
     protected $types = [];
 
@@ -56,7 +56,7 @@ class ContentTypeManager implements SingletonInterface
                     (array) FluidFileBasedContentTypeDefinition::fetchContentTypes(),
                     (array) RecordBasedContentTypeDefinition::fetchContentTypes()
                 );
-                $this->typeNames = array_keys($types);
+                $this->typeNames = array_merge($this->typeNames, array_keys($types));
             } catch (DBALException $error) {
                 // Suppress schema- or connection-related issues
             } catch (NoSuchCacheException $error) {
@@ -94,12 +94,17 @@ class ContentTypeManager implements SingletonInterface
     protected function loadSingleDefinitionFromCache(string $name): ?ContentTypeDefinitionInterface
     {
         try {
-            return $this->getCache()->get(static::CACHE_IDENTIFIER_PREFIX . $name) ?: null;
+            /** @var ContentTypeDefinitionInterface|null $fromCache */
+            $fromCache = $this->getCache()->get(static::CACHE_IDENTIFIER_PREFIX . $name) ?: null;
+            return $fromCache;
         } catch (NoSuchCacheException $error) {
             return null;
         }
     }
 
+    /**
+     * @return void
+     */
     public function regenerate()
     {
         $cache = $this->getCache();
@@ -109,6 +114,7 @@ class ContentTypeManager implements SingletonInterface
     protected function getCache(): FrontendInterface
     {
         try {
+            /** @var CacheManager $cacheManager */
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
             return $cacheManager->getCache('flux');
         } catch (NoSuchCacheException $error) {

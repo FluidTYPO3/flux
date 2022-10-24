@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
  */
 
 use FluidTYPO3\Flux\Provider\AbstractProvider;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 
 /**
  * Outlet Form Renderer
@@ -43,31 +44,34 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
     protected $record;
 
     /**
-     * NB: We use this method because 7.6 LTS FormViewHelper uses render() method
-     * arguments which cannot be overridden by other means while preserving
-     * compatibility between 7.6 and 8.x branches. Once 8.x LTS is the only
-     * supported TYPO3 version we can move these.
-     *
-     * @return void
+     * @return string
      */
-    public function initialize()
+    public function render()
     {
-        $this->provider = $this->viewHelperVariableContainer->get(static::class, 'provider');
-        $this->record = $this->viewHelperVariableContainer->get(static::class, 'record');
+        /** @var AbstractProvider $provider */
+        $provider = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'provider');
+        $this->provider = $provider;
+        /** @var array $record */
+        $record = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'record');
+        $this->record = $record;
 
         if (!$this->hasArgument('extensionName')) {
-            $this->arguments['extensionName'] = $this->viewHelperVariableContainer->get(static::class, 'extensionName');
+            $this->arguments['extensionName'] = ExtensionNamingUtility::getExtensionName((string) $this->provider->getControllerExtensionKeyFromRecord($this->record));
+        }
+
+        if (!$this->hasArgument('controller')) {
+            $this->arguments['controller'] = $this->provider->getControllerNameFromRecord($this->record);
         }
 
         if (!$this->hasArgument('pluginName')) {
-            $this->arguments['pluginName'] = $this->viewHelperVariableContainer->get(static::class, 'pluginName');
+            $this->arguments['pluginName'] = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'pluginName');
         }
 
         if (!$this->hasArgument('action')) {
             $this->arguments['action'] = 'outlet';
         }
 
-        parent::initialize();
+        return parent::render();
     }
 
     /**

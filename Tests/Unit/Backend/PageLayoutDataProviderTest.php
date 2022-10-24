@@ -63,27 +63,27 @@ class PageLayoutDataProviderTest extends AbstractTestCase
             [
                 [],
                 [],
-                [['Flux: Fluid Integration', '--div--'], [null, '->', null]]
+                [['Flux: Fluid Integration', '--div--'], []]
             ],
             [
                 [],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['Flux: Fluid Integration', '--div--'], [null, '->', null]]
+                [['foo', 'bar', 'baz'], ['Flux: Fluid Integration', '--div--'], []]
             ],
             [
                 ['field' => 'tx_fed_page_controller_action_sub', 'row' => ['pid' => 1]],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], [null, '->', null]]
+                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], []]
             ],
             [
                 ['field' => 'tx_fed_page_controller_action_sub', 'row' => ['pid' => 1, 'is_siteroot' => false]],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], [null, '->', null]]
+                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], []]
             ],
             [
                 ['field' => 'tx_fed_page_controller_action', 'row' => ['pid' => 0, 'is_siteroot' => true]],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['Flux: Fluid Integration', '--div--'], [null, '->', null]]
+                [['foo', 'bar', 'baz'], ['Flux: Fluid Integration', '--div--'], []]
             ],
 
         ];

@@ -30,7 +30,7 @@ use TYPO3\CMS\Lang\LanguageService;
  */
 class ContentIconTest extends AbstractTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
         // Since it doesn't matter much what this method actually responds for these tests, we mock it for all envs.
@@ -45,7 +45,7 @@ class ContentIconTest extends AbstractTestCase
         GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryMock);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         GeneralUtility::removeSingletonInstance(IconRegistry::class, GeneralUtility::makeInstance(IconRegistry::class));
     }
@@ -101,7 +101,7 @@ class ContentIconTest extends AbstractTestCase
 
         $GLOBALS['TCA']['tt_content']['columns']['field']['config']['type'] = 'flex';
         $cache = $this->getMockBuilder(VariableFrontend::class)->disableOriginalConstructor()->setMethods(array('get', 'set'))->getMock();
-        $cache->expects($this->once())->method('get')->willReturn(false);
+        $cache->expects($this->once())->method('get')->willReturn(null);
         $cache->expects($this->once())->method('set')->with($this->anything());
 
         $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();

@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
@@ -28,7 +27,7 @@ class PreviewTest extends AbstractTestCase
     /**
      * Setup
      */
-    public function setUp()
+    public function setUp(): void
     {
         $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
         $fluxService = $this->objectManager->get(FluxService::class);
@@ -63,13 +62,12 @@ class PreviewTest extends AbstractTestCase
      */
     public function testAttachAssets()
     {
-        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['addRequireJsConfiguration', 'loadRequireJsModule'])->getMock();
-        $pageRenderer->expects($this->atLeastOnce())->method('addRequireJsConfiguration');
+        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['loadRequireJsModule'])->getMock();
         $pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');
-        $document = $this->getMockBuilder(ModuleTemplate::class)->setMethods(['getPageRenderer'])->getMock();
-        $document->expects($this->once())->method('getPageRenderer')->willReturn($pageRenderer);
-        GeneralUtility::addInstance(ModuleTemplate::class, $document);
+        $instances = GeneralUtility::getSingletonInstances();
+        GeneralUtility::setSingletonInstance(PageRenderer::class, $pageRenderer);
         $subject = $this->createInstance();
         $this->callInaccessibleMethod($subject, 'attachAssets');
+        GeneralUtility::resetSingletonInstances($instances);
     }
 }

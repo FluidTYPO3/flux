@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
 
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use PHPUnit\Framework\Constraint\IsType;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
@@ -22,9 +23,9 @@ use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\Variables\CmsVariableProvider;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
-use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 
 /**
  * AbstractViewHelperTestCase
@@ -47,7 +48,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->renderingContext = new RenderingContext();
@@ -69,7 +70,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     {
         $instance = $this->createInstance();
         $arguments = $instance->prepareArguments();
-        $this->assertThat($arguments, new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY));
+        $this->assertIsArray($arguments);
     }
 
     /**
@@ -136,12 +137,12 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
         if (class_exists(CmsVariableProvider::class)) {
             $this->renderingContext->getVariableProvider()->setSource($variables);
         } else {
-            /** @var TemplateVariableContainer $container */
-            $container = $this->objectManager->get(TemplateVariableContainer::class);
+            /** @var StandardVariableProvider $container */
+            $container = $this->objectManager->get(StandardVariableProvider::class);
             if (0 < count($variables)) {
                 ObjectAccess::setProperty($container, 'variables', $variables, true);
             }
-            ObjectAccess::setProperty($this->renderingContext, 'templateVariableContainer', $container, true);
+            ObjectAccess::setProperty($this->renderingContext, 'variableProvider', $container, true);
         }
 
         /** @var ViewHelperVariableContainer $viewHelperContainer */
@@ -195,7 +196,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     protected function executeViewHelper($arguments = [], $variables = [], $childNode = null, $extensionName = null, $pluginName = null)
     {
         $instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
-        return $instance->initializeArgumentsAndRender();
+        return $this->renderingContext->getViewHelperInvoker()->invoke($instance, $arguments, $this->renderingContext, $childNode);
     }
 
     /**

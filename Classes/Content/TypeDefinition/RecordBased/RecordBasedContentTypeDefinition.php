@@ -24,6 +24,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Record-based Content Type Definition
@@ -35,12 +36,18 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
 {
     use SerializeSafeTrait;
 
+    /**
+     * @var array
+     */
     protected $record = [];
 
+    /**
+     * @var string
+     */
     protected $contentTypeName = '';
 
     /**
-     * @var Grid
+     * @var Grid|null
      */
     protected $grid;
 
@@ -59,8 +66,13 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
     {
         if (empty(static::$types)) {
             try {
-                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('content_types');
-                $typeRecords = $queryBuilder->select(...array_keys($GLOBALS['TCA']['content_types']['columns'] ?? ['*' => '']))
+                /** @var ConnectionPool $connectionPool */
+                $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+                $queryBuilder = $connectionPool->getQueryBuilderForTable('content_types');
+                /** @var string[] $keys */
+                $keys = array_keys($GLOBALS['TCA']['content_types']['columns'] ?? ['*' => '']);
+                /** @var array[] $typeRecords */
+                $typeRecords = $queryBuilder->select(...$keys)
                     ->from('content_types')
                     ->where(
                         $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
@@ -113,9 +125,12 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         }
     }
 
-    public function getForm(array $record = []): Form\FormInterface
+    public function getForm(array $record = []): Form
     {
-        $instance = GeneralUtility::makeInstance(ObjectManager::class)->get(Form::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var Form $instance */
+        $instance = $objectManager->get(Form::class);
         $instance->remove('options');
         $instance->setOption(Form::OPTION_ICON, $this->getIconReference());
         $instance->setOption(Form::OPTION_GROUP, 'fluxContent');
@@ -128,6 +143,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
                     $sheet = $instance->createContainer(Form\Container\Sheet::class, $sheetValues['name']['vDEF'], $sheetValues['label']['vDEF']);
 
                     foreach ($item[$sheetValues['name']['vDEF']]['lDEF']['fields']['el'] ?? [] as $fieldObject) {
+                        /** @var class-string $fieldType */
                         $fieldType = ucfirst(key($fieldObject));
 
                         $fieldSettings = reset($fieldObject)['el'];
@@ -135,7 +151,9 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
                             $fieldSettings[$key] = $value['vDEF'];
                         }
 
-                        $sheet->createField($fieldType, $fieldSettings['name'])->modify($fieldSettings);
+                        /** @var Form\FieldInterface $field */
+                        $field = $sheet->createField($fieldType, $fieldSettings['name']);
+                        $field->modify($fieldSettings);
                     }
                 }
             }
@@ -228,6 +246,9 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
             $columnTemplateChunk = '<flux:content.render area="%d" />' . PHP_EOL;
 
             $grid = $this->getGrid();
+            if (!($grid instanceof Grid)) {
+                return '';
+            }
             $template = '<div class="flux-grid">' . PHP_EOL;
             foreach ($grid->getRows() as $row) {
                 $template .= '<div class="flux-grid-row">' . PHP_EOL;
@@ -242,6 +263,13 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         return $this->record['template_source'];
     }
 
+    /**
+     * @param Grid $grid
+     * @param int $currentNumberOfColumns
+     * @param int $totalNumberOfColumns
+     * @param string $mode
+     * @return void
+     */
     protected function createAutomaticGridColumns(Grid $grid, int $currentNumberOfColumns, int $totalNumberOfColumns, string $mode)
     {
         if ($mode === Section::GRID_MODE_ROWS) {

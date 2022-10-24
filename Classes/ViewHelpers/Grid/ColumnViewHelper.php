@@ -38,9 +38,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * It is also possible to limit the allowed fluid content elements:
  *
  *     <flux:grid.column name="elements" colPos="0">
- *         <flux:form.variable name="allowedContentTypes" value="fluidcontent_content"/>
- *         <flux:form.variable name="Fluidcontent"
- *             value="{allowedContentTypes: 'Vendor.Extension:ContentElement.html'}"/>
+ *         <flux:form.variable name="allowedContentTypes" value="extkey_vehicledetailssectionusedcarseal"/>
  *     </flux:grid.column>
  */
 class ColumnViewHelper extends AbstractFormViewHelper
@@ -88,6 +86,7 @@ class ColumnViewHelper extends AbstractFormViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $column = static::getContainerFromRenderingContext($renderingContext)->createContainer(Column::class, $arguments['name'], $arguments['label']);
         $column->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)

@@ -25,11 +25,11 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
      * @param string $clause
      * @param string $groupBy
      * @param string $orderBy
-     * @param string $limit
-     * @param string $offset
+     * @param integer $limit
+     * @param integer $offset
      * @return array|null
      */
-    public function get($table, $fields, $clause = '1=1', $groupBy = '', $orderBy = '', $limit = '', $offset = '')
+    public function get($table, $fields, $clause = '1=1', $groupBy = '', $orderBy = '', $limit = 0, $offset = 0)
     {
         $records = parent::get($table, $fields, $clause, $groupBy, $orderBy, $limit, $offset);
         return null === $records ? null : $this->overlayRecords($table, $records);
@@ -38,7 +38,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     /**
      * @param string $table
      * @param string $fields
-     * @param string $uid
+     * @param integer $uid
      * @return array|null
      */
     public function getSingle($table, $fields, $uid)
@@ -47,7 +47,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         if ($record) {
             $overlay = $this->overlayRecord($table, $record);
             if ($overlay) {
-                return $overlay;
+                return (array) $overlay;
             }
         }
         return $record;
@@ -108,7 +108,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         $copy = false;
         if (null !== $GLOBALS['BE_USER']) {
             $copy = $record;
-            BackendUtility::workspaceOL($table, $copy, -99, true);
+            BackendUtility::workspaceOL($table, $copy, -99, false);
             if (!$copy) {
                 return false;
             }

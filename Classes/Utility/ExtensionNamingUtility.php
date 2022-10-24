@@ -27,7 +27,7 @@ class ExtensionNamingUtility
 
     /**
      * @param string $qualifiedExtensionName
-     * @return string
+     * @return string|null
      */
     public static function getVendorName($qualifiedExtensionName)
     {
@@ -52,7 +52,7 @@ class ExtensionNamingUtility
     public static function getExtensionName($qualifiedExtensionName)
     {
         list(, $extensionName) = static::getVendorNameAndExtensionName($qualifiedExtensionName);
-        return $extensionName;
+        return (string) $extensionName;
     }
 
     /**

@@ -31,7 +31,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
     /**
      * Setup
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $GLOBALS['TSFE'] = new TypoScriptFrontendController([], 0, 0);
@@ -62,6 +62,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);
     }
@@ -86,6 +87,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsString($output);
     }
@@ -113,6 +115,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);
     }

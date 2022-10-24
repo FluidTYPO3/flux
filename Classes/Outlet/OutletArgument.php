@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Outlet;
  */
 
 use TYPO3\CMS\Extbase\Error\Result;
-use TYPO3\CMS\Extbase\Mvc\Controller\Argument as ControllerArgument;
 use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
 use TYPO3\CMS\Extbase\Property\PropertyMapper;
 use TYPO3\CMS\Extbase\Utility\TypeHandlingUtility;
@@ -145,7 +144,7 @@ class OutletArgument
      * Sets custom validators which are used supplementary to the base validation
      *
      * @param ValidatorInterface[] $validators The actual validator object
-     * @return ControllerArgument Returns $this (used for fluent interface)
+     * @return $this
      */
     public function setValidators(array $validators)
     {
@@ -167,6 +166,7 @@ class OutletArgument
     /**
      * @param string $type
      * @param array $options
+     * @return void
      * @throws NoSuchValidatorException
      */
     public function addValidator($type, array $options = [])
@@ -183,7 +183,7 @@ class OutletArgument
      *
      * @param mixed $rawValue The value of this argument
      *
-     * @return OutletArgument
+     * @return $this
      */
     public function setValue($rawValue)
     {

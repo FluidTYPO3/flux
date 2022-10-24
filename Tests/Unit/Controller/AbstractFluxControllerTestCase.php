@@ -23,6 +23,7 @@ use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\Response;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
@@ -216,12 +217,15 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
      */
     public function canPerformSubRenderingWithNotMatchingExtensionName()
     {
+        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
+        $objectManager->method('get')->willReturn($this->getMockBuilder(Response::class)->disableOriginalConstructor()->getMock());
         $controllerName = $this->getControllerName();
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = $this->getMockBuilder($controllerClassName)->setMethods(array('hasSubControllerActionOnForeignController', 'callSubControllerAction'))->getMock();
         $instance->expects($this->once())->method('hasSubControllerActionOnForeignController')->will($this->returnValue(true));
         $instance->expects($this->once())->method('callSubControllerAction');
         $instance->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
+        $instance->injectObjectManager($objectManager);
         ObjectAccess::setProperty($instance, 'extensionName', $this->extensionName, true);
         $this->callInaccessibleMethod($instance, 'performSubRendering', $this->extensionName, $controllerName, $this->defaultAction, 'tx_flux_content');
     }
@@ -237,8 +241,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder(
             $controllerClassName
         )->setMethods(
-            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer'
-            )
+            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer', 'getRecord')
         )->getMock();
         $instance->injectConfigurationManager($this->getMockBuilder(ConfigurationManagerInterface::class)->getMock());
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMock();
@@ -251,6 +254,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
+        $instance->method('getRecord')->willReturn(['uid' => 1]);
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }
 
@@ -265,7 +269,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder(
             $controllerClassName
         )->setMethods(
-            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer')
+            array('initializeProvider', 'initializeSettings', 'initializeOverriddenSettings', 'initializeViewVariables', 'initializeViewHelperVariableContainer', 'getRecord')
         )->getMock();
         $instance->injectConfigurationManager($this->getMockBuilder(ConfigurationManagerInterface::class)->getMock());
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMock();
@@ -278,6 +282,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
         $instance->expects($this->at(1))->method('initializeSettings');
+        $instance->method('getRecord')->willReturn(['uid' => 1]);
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }
 
@@ -290,8 +295,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = $this->getMockBuilder($controllerClassName)->setMethods(array('getRecord'))->getMock();
         $instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
-        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getExtensionKey', 'getFlexFormValues'))->getMock();
-        $provider->expects($this->once())->method('getExtensionKey')->with($row)->will($this->returnValue($this->extensionKey));
+        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getControllerExtensionKeyFromRecord', 'getFlexFormValues'))->getMock();
+        $provider->expects($this->atLeastOnce())->method('getControllerExtensionKeyFromRecord')->with($row)->will($this->returnValue($this->extensionKey));
         $provider->expects($this->once())->method('getFlexFormValues')->with($row)->will($this->returnValue(array()));
         $request = $this->getMockBuilder(Request::class)->setMethods(array('getPluginName'))->getMock();
         $request->expects($this->once())->method('getPluginName')->will($this->returnValue('void'));
@@ -309,8 +314,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
     public function testInitializeOverriddenSettings(array $data, array $settings)
     {
         $record = array('uid' => 1);
-        $provider = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getExtensionKey'))->getMock();
-        $provider->expects($this->once())->method('getExtensionKey')->with($record);
+        $provider = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getControllerExtensionKeyFromRecord'))->getMock();
+        $provider->expects($this->once())->method('getControllerExtensionKeyFromRecord')->with($record);
         $mock = $this->getMockBuilder(
             'FluidTYPO3\\Flux\\Controller\\AbstractFluxController'
         )->setMethods(
@@ -392,9 +397,8 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance = $this->getMockBuilder($controllerClassName)->setMethods(array('getRecord', 'performSubRendering'))->getMock();
         $instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
         $instance->expects($this->once())->method('performSubRendering')->with($this->extensionKey, 'Void', 'default', 'tx_flux_void')->will($this->returnValue('test'));
-        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getExtensionKey', 'getControllerExtensionKeyFromRecord'))->getMock();
-        $provider->expects($this->once())->method('getExtensionKey')->with($row)->will($this->returnValue('flux'));
-        $provider->expects($this->once())->method('getControllerExtensionKeyFromRecord')->with($row)->will($this->returnValue($this->extensionKey));
+        $provider = $this->getMockBuilder('FluidTYPO3\Flux\Provider\Provider')->setMethods(array('getControllerExtensionKeyFromRecord'))->getMock();
+        $provider->expects($this->atLeastOnce())->method('getControllerExtensionKeyFromRecord')->with($row)->will($this->returnValue($this->extensionKey));
         $request = $this->getMockBuilder('TYPO3\CMS\Extbase\Mvc\Web\Request')->setMethods(array('getPluginName', 'getControllerName'))->getMock();
         $request->expects($this->once())->method('getPluginName')->will($this->returnValue('void'));
         $request->expects($this->once())->method('getControllerName')->will($this->returnValue('Void'));
@@ -409,10 +413,13 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
      */
     public function performSubRenderingCallsViewRenderOnNativeTarget()
     {
+        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
+        $objectManager->method('get')->willReturn($this->getMockBuilder(Response::class)->disableOriginalConstructor()->getMock());
         $controllerName = $this->getControllerName();
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = $this->getMockBuilder($controllerClassName)->setMethods(array('callSubControllerAction'))->getMock();
         $instance->expects($this->never())->method('callSubControllerAction');
+        $instance->injectObjectManager($objectManager);
         $instance->injectConfigurationService($this->objectManager->get('FluidTYPO3\\Flux\\Service\\FluxService'));
         $view = $this->getMockBuilder('FluidTYPO3\Flux\View\ExposedTemplateView')->setMethods(array('render'))->getMock();
         $view->expects($this->once())->method('render')->will($this->returnValue('test'));
@@ -511,8 +518,9 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $subject->expects($this->once())->method('forward')->with('render')->willThrowException(new StopActionException());
         $subject->expects($this->once())->method('getRecord')->willReturn([]);
         $request = new Request();
-        $provider = $this->getMockBuilder(Provider::class)->setMethods(['getTableName'])->getMock();
+        $provider = $this->getMockBuilder(Provider::class)->setMethods(['getTableName', 'getForm'])->getMock();
         $provider->expects($this->once())->method('getTableName')->willReturn('foobar');
+        $provider->expects($this->once())->method('getForm')->willReturn(Form::create());
         ObjectAccess::setProperty($request, 'internalArguments', ['outlet' => ['table' => 'xyz', 'uid' => 321]], true);
         ObjectAccess::setProperty($subject, 'request', $request, true);
         ObjectAccess::setProperty($subject, 'provider', $provider, true);

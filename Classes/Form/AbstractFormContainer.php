@@ -18,7 +18,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 {
 
     /**
-     * @var FormInterface[]
+     * @var FormInterface[]|\SplObjectStorage
      */
     protected $children;
 
@@ -32,9 +32,6 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      */
     protected $inheritEmpty = false;
 
-    /**
-     * CONSTRUCTOR
-     */
     public function __construct()
     {
         $this->children = new \SplObjectStorage();
@@ -88,7 +85,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 
     /**
      * @param FieldInterface|string $childName
-     * @return FormInterface|FALSE
+     * @return FormInterface|boolean
      */
     public function remove($childName)
     {
@@ -108,12 +105,12 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     }
 
     /**
-     * @param mixed $childOrChildName
+     * @param FormInterface|string $childOrChildName
      * @return boolean
      */
     public function has($childOrChildName)
     {
-        $name = ($childOrChildName instanceof FormInterface) ? $childOrChildName->getName() : $childOrChildName;
+        $name = ($childOrChildName instanceof FormInterface) ? (string) $childOrChildName->getName() : $childOrChildName;
         return (false !== $this->get($name));
     }
 
@@ -121,13 +118,13 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      * @param string $childName
      * @param boolean $recursive
      * @param string $requiredClass
-     * @return FormInterface|FALSE
+     * @return FormInterface|boolean
      */
     public function get($childName, $recursive = false, $requiredClass = null)
     {
         foreach ($this->children as $index => $existingChild) {
-            if (
-                ($childName === $existingChild->getName() || $childName === $index)
+            /** @var string|int $index */
+            if (($childName === $existingChild->getName() || $childName === $index)
                 && (!$requiredClass || $existingChild instanceof $requiredClass)
             ) {
                 return $existingChild;
@@ -143,7 +140,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     }
 
     /**
-     * @return FormInterface[]
+     * @return FormInterface[]|\SplObjectStorage
      */
     public function getChildren()
     {
@@ -151,7 +148,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     }
 
     /**
-     * @return FormInterface|FALSE
+     * @return FormInterface|null
      */
     public function last()
     {
@@ -176,16 +173,21 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     {
         if (isset($structure['fields']) || isset($structure['children'])) {
             $data = isset($structure['children']) ? $structure['children'] : $structure['fields'];
-            foreach ((array) $data as $index => $fieldData) {
-                $fieldName = true === isset($fieldData['name']) ? $fieldData['name'] : $index;
+            foreach ((array) $data as $index => $childData) {
+                $childName = true === isset($childData['name']) ? $childData['name'] : $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
-                if (true === $this->has($fieldName)) {
-                    $field = $this->get($fieldName);
+
+                if (true === $this->has($childName)) {
+                    /** @var FormInterface $child */
+                    $child = $this->get($childName);
                 } else {
-                    $fieldType = true === isset($fieldData['type']) ? $fieldData['type'] : 'None';
-                    $field = $this->createField($fieldType, $fieldName);
+                    /** @var class-string $type */
+                    $type = true === isset($childData['type']) ? $childData['type'] : 'None';
+                    /** @var FormInterface $child */
+                    $child = $this->createField($type, $childName);
                 }
-                $field->modify($fieldData);
+
+                $child->modify($childData);
             }
             unset($structure['children'], $structure['fields']);
         }

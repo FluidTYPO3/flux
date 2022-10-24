@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -119,13 +118,15 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
     }
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
-     * @return FieldInterface
+     * @return T
      */
     protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
     {
+        /** @var array $arguments */
         $component = static::getContainerFromRenderingContext($renderingContext)
             ->createField($type, $arguments['name'], $arguments['label']);
         $component->setConfig((array)$arguments['config']);

@@ -27,9 +27,24 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
  */
 class RuntimeDefinedContentProvider extends AbstractProvider implements GridProviderInterface
 {
+    /**
+     * @var string
+     */
     protected $tableName = 'tt_content';
+
+    /**
+     * @var string|null
+     */
     protected $fieldName = 'pi_flexform';
+
+    /**
+     * @var string
+     */
     protected $extensionKey = 'FluidTYPO3.Flux';
+
+    /**
+     * @var integer
+     */
     protected $priority = 90;
 
     /**
@@ -37,6 +52,10 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
      */
     protected $contentTypeDefinitions;
 
+    /**
+     * @param ContentTypeManager $contentTypes
+     * @return void
+     */
     public function injectContentTypes(ContentTypeManager $contentTypes)
     {
         $this->contentTypeDefinitions = $contentTypes;
@@ -58,7 +77,7 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
 
     public function getControllerExtensionKeyFromRecord(array $row)
     {
-        return ExtensionNamingUtility::getExtensionKey($this->getExtensionKey($row));
+        return ExtensionNamingUtility::getExtensionKey((string) $this->getExtensionKey($row));
     }
 
     public function getControllerActionFromRecord(array $row)
@@ -110,7 +129,7 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
                     'Content type definition for %s must implement interface %s, class %s does not.',
                     $row['CType'],
                     FluidRenderingContentTypeDefinitionInterface::class,
-                    get_class($definition)
+                    $definition !== null ? get_class($definition) : '(unknown)'
                 ),
                 1556109085
             );

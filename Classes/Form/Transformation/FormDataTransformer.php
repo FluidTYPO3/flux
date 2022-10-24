@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 
@@ -21,7 +22,6 @@ use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
  */
 class FormDataTransformer
 {
-
     /**
      * @var ObjectManagerInterface
      */
@@ -95,9 +95,6 @@ class FormDataTransformer
      */
     protected function extractTransformableObjectByPath(ContainerInterface $subject, $path)
     {
-        if (is_scalar($subject) || is_null($subject)) {
-            return $subject;
-        }
         $pathAsArray = explode('.', $path);
         $subPath = array_shift($pathAsArray);
         $child = null;
@@ -110,7 +107,6 @@ class FormDataTransformer
                 if ($child instanceof ContainerInterface && count($pathAsArray)) {
                     return $this->extractTransformableObjectByPath($child, implode('.', $pathAsArray));
                 }
-
             }
             $subPath .= '.' . array_shift($pathAsArray);
         }
@@ -135,19 +131,22 @@ class FormDataTransformer
         } elseif ('bool' === $dataType || 'boolean' === $dataType) {
             return boolval($value);
         } elseif (strpos($dataType, '->')) {
+            /** @var class-string $class */
             list ($class, $function) = explode('->', $dataType);
-            return call_user_func_array([$this->objectManager->get($class), $function], [$value]);
+            /** @var object $object */
+            $object = $this->objectManager->get($class);
+            return $object->{$function}($value);
         } else {
             return $this->getObjectOfType($dataType, $value);
         }
     }
 
     /**
-     * Gets a DomainObject or QueryResult of $dataType
+     * Gets DomainObject(s) or instance of $dataType identified by, or constructed with parameter $uids
      *
-     * @param string $dataType
-     * @param string $uids
-     * @return mixed
+     * @param string|class-string $dataType
+     * @param string|array $uids
+     * @return DomainObjectInterface|DomainObjectInterface[]|object|null
      */
     protected function getObjectOfType($dataType, $uids)
     {
@@ -155,6 +154,8 @@ class FormDataTransformer
         $identifiers = array_map('intval', $identifiers);
         $isModel = $this->isDomainModelClassName($dataType);
         if (false !== strpos($dataType, '<')) {
+            /** @var class-string $container */
+            /** @var class-string $object */
             list ($container, $object) = explode('<', trim($dataType, '>'));
         } else {
             $container = null;
@@ -164,8 +165,12 @@ class FormDataTransformer
         // Fast decisions
         if (true === $isModel && null === $container) {
             if (true === class_exists($repositoryClassName)) {
+                /** @var RepositoryInterface $repository */
                 $repository = $this->objectManager->get($repositoryClassName);
-                return reset($this->loadObjectsFromRepository($repository, $identifiers));
+                $repositoryObjects = $this->loadObjectsFromRepository($repository, $identifiers);
+                /** @var DomainObjectInterface|false $firstRepositoryObject */
+                $firstRepositoryObject = reset($repositoryObjects);
+                return $firstRepositoryObject ?: null;
             }
         } elseif (true === class_exists($dataType)) {
             // using constructor value to support objects like DateTime
@@ -174,7 +179,7 @@ class FormDataTransformer
         // slower decisions with support for type-hinted collection objects
         if ($container && $object) {
             if (true === $isModel && true === class_exists($repositoryClassName) && 0 < count($identifiers)) {
-                /** @var $repository RepositoryInterface */
+                /** @var RepositoryInterface $repository */
                 $repository = $this->objectManager->get($repositoryClassName);
                 return $this->loadObjectsFromRepository($repository, $identifiers);
             } else {
@@ -182,7 +187,7 @@ class FormDataTransformer
                 return $container;
             }
         }
-        return $uids;
+        return null;
     }
 
     /**
@@ -206,10 +211,12 @@ class FormDataTransformer
     /**
      * @param RepositoryInterface $repository
      * @param array $identifiers
-     * @return mixed
+     * @return DomainObjectInterface[]
      */
     protected function loadObjectsFromRepository(RepositoryInterface $repository, array $identifiers)
     {
-        return array_map([$repository, 'findByUid'], $identifiers);
+        /** @var DomainObjectInterface[] $objects */
+        $objects = array_map([$repository, 'findByUid'], $identifiers);
+        return $objects;
     }
 }

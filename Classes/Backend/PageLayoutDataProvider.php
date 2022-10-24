@@ -19,13 +19,13 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class for provisioning page layout selections for backend form fields
  */
 class PageLayoutDataProvider
 {
-
     /**
      * @var ConfigurationManagerInterface
      */
@@ -73,15 +73,19 @@ class PageLayoutDataProvider
         $this->pageService = $pageService;
     }
 
-    /**
-     * CONSTRUCTOR
-     */
     public function __construct()
     {
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->injectConfigurationManager($objectManager->get(ConfigurationManagerInterface::class));
-        $this->injectConfigurationService($objectManager->get(FluxService::class));
-        $this->injectPageService($objectManager->get(PageService::class));
+        /** @var ConfigurationManagerInterface $configurationManager */
+        $configurationManager = $objectManager->get(ConfigurationManagerInterface::class);
+        $this->injectConfigurationManager($configurationManager);
+        /** @var FluxService $fluxService */
+        $fluxService = $objectManager->get(FluxService::class);
+        $this->injectConfigurationService($fluxService);
+        /** @var PageService $pageService */
+        $pageService = $objectManager->get(PageService::class);
+        $this->injectPageService($pageService);
     }
 
     /**
@@ -116,13 +120,12 @@ class PageLayoutDataProvider
         $allowedTemplates = [];
         $pageUid = (int) $parameters['row']['uid'];
         if ($pageUid > 0 && class_exists(SiteFinder::class)) {
+            /** @var SiteFinder $resolver */
             $resolver = GeneralUtility::makeInstance(SiteFinder::class);
             try {
                 $site = $resolver->getSiteByPageId($pageUid);
                 $siteConfiguration = $site->getConfiguration();
-                if (!empty($siteConfiguration['flux_page_templates'])) {
-                    $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '', true);
-                }
+                $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '', true);
             } catch (SiteNotFoundException $exception) {
                 $allowedTemplates = [];
             }
@@ -135,8 +138,17 @@ class PageLayoutDataProvider
                 $this->renderOptions($extension, $group, $parameters, $allowedTemplates)
             );
         }
+
+        return $parameters;
     }
 
+    /**
+     * @param string $extension
+     * @param array $group
+     * @param array $parameters
+     * @param array $allowedTemplates
+     * @return array
+     */
     protected function renderOptions($extension, array $group, array $parameters, array $allowedTemplates): array
     {
         $options = [];
@@ -147,7 +159,7 @@ class PageLayoutDataProvider
             } else {
                 $emConfigFile = ExtensionManagementUtility::extPath($extensionKey, 'ext_emconf.php');
                 require $emConfigFile;
-                $groupTitle = $EM_CONF['']['title'];
+                $groupTitle = reset($EM_CONF)['title'];
             }
 
             $templateOptions = [];
@@ -169,12 +181,16 @@ class PageLayoutDataProvider
     {
         $extension = $form->getExtensionName();
         $thumbnail = MiscellaneousUtility::getIconForTemplate($form);
-        if (NULL !== $thumbnail) {
+        if (null !== $thumbnail) {
             $thumbnail = ltrim($thumbnail, '/');
             $thumbnail = GeneralUtility::getFileAbsFileName($thumbnail);
             $thumbnail = $thumbnail ? MiscellaneousUtility::createIcon($thumbnail) : null;
         }
+        /** @var string|null $template */
         $template = $form->getOption(Form::OPTION_TEMPLATEFILE_RELATIVE);
+        if ($template === null) {
+            return [];
+        }
         $label = $form->getLabel();
         $optionValue = $extension . '->' . lcfirst($template);
         $option = [$label, $optionValue, $thumbnail];

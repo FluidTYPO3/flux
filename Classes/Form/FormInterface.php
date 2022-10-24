@@ -13,7 +13,6 @@ namespace FluidTYPO3\Flux\Form;
  */
 interface FormInterface
 {
-
     /**
      * @return array
      */
@@ -21,11 +20,12 @@ interface FormInterface
 
     /**
      * @param string $name
+     * @return $this
      */
     public function setName($name);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName();
 
@@ -47,23 +47,24 @@ interface FormInterface
 
     /**
      * @param boolean $enabled
-     * @return FormInterface
+     * @return $this
      */
     public function setEnabled($enabled);
 
     /**
-     * @param string $label
+     * @param string|null $label
+     * @return $this
      */
     public function setLabel($label);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLabel();
 
     /**
      * @param string $localLanguageFileRelativePath
-     * @return FormInterface
+     * @return $this
      */
     public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath);
 
@@ -75,7 +76,7 @@ interface FormInterface
 
     /**
      * @param boolean $disableLocalLanguageLabels
-     * @return FormInterface
+     * @return $this
      */
     public function setDisableLocalLanguageLabels($disableLocalLanguageLabels);
 
@@ -85,8 +86,8 @@ interface FormInterface
     public function getDisableLocalLanguageLabels();
 
     /**
-     * @param ContainerInterface $parent
-     * @return FormInterface
+     * @param ContainerInterface|FieldInterface|null $parent
+     * @return $this
      */
     public function setParent($parent);
 
@@ -97,7 +98,7 @@ interface FormInterface
 
     /**
      * @param array $variables
-     * @return FormInterface
+     * @return $this
      */
     public function setVariables($variables);
 
@@ -109,7 +110,7 @@ interface FormInterface
     /**
      * @param string $name
      * @param mixed $value
-     * @return FormInterface
+     * @return $this
      */
     public function setVariable($name, $value);
 
@@ -130,13 +131,13 @@ interface FormInterface
     public function getPath();
 
     /**
-     * @param string $extensionName
-     * @return FormInterface
+     * @param string|null $extensionName
+     * @return $this
      */
     public function setExtensionName($extensionName);
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getExtensionName();
 
@@ -152,43 +153,46 @@ interface FormInterface
     public function hasChildren();
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
      * @param string $label
-     * @return FieldInterface
+     * @return T
      */
     public function createField($type, $name, $label = null);
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
      * @param string $label
-     * @return ContainerInterface
+     * @return T
      */
     public function createContainer($type, $name, $label = null);
 
     /**
-     * @param string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
      * @param string $label
-     * @return WizardInterface
+     * @return T
      */
     public function createWizard($type, $name, $label = null);
 
     /**
-     * @param integer $inherit
-     * @return FormInterface
+     * @param boolean $inherit
+     * @return $this
      */
     public function setInherit($inherit);
 
     /**
-     * @return integer
+     * @return boolean
      */
     public function getInherit();
 
     /**
      * @param boolean $inheritEmpty
-     * @return FormInterface
+     * @return $this
      */
     public function setInheritEmpty($inheritEmpty);
 
@@ -212,7 +216,7 @@ interface FormInterface
      * the recursive modification of all child components.
      *
      * @param array $structure
-     * @return FormInterface
+     * @return $this
      */
     public function modify(array $structure);
 }

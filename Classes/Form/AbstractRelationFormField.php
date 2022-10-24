@@ -13,7 +13,6 @@ namespace FluidTYPO3\Flux\Form;
  */
 abstract class AbstractRelationFormField extends AbstractMultiValueFormField implements RelationFieldInterface
 {
-
     /**
      * @var string
      */
@@ -604,7 +603,7 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
     }
 
     /**
-     * @return boolean|string
+     * @return boolean|string|array
      */
     public function getEmptyOption()
     {

@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
@@ -30,7 +31,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * Setup
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $GLOBALS['TSFE'] = new TypoScriptFrontendController([], 0, 0);
@@ -56,10 +57,12 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $renderingContext = ObjectAccess::getProperty($viewHelper, 'renderingContext', true);
+        /** @var ProviderInterface $provider */
         $provider = $this->objectManager->get(Provider::class);
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);
     }
@@ -87,6 +90,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);
     }
@@ -112,6 +116,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
         $content = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsString($content);
     }
@@ -136,6 +141,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertSame($node->getText(), $output);
     }
@@ -160,6 +166,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsArray($output);
     }
@@ -184,6 +191,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
         $provider->setForm(Form::create());
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'provider', $provider);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsArray($output);
     }

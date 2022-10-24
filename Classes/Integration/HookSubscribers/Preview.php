@@ -11,14 +11,12 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
-use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Fluid Template preview renderer
@@ -69,24 +67,10 @@ class Preview implements PageLayoutViewDrawItemHookInterface
     protected function attachAssets()
     {
         if (false === static::$assetsIncluded) {
-            $doc = GeneralUtility::makeInstance(ModuleTemplate::class);
-            $doc->backPath = $GLOBALS['BACK_PATH'] ?? '';
-
             /** @var PageRenderer $pageRenderer */
-            $pageRenderer = $doc->getPageRenderer();
-
-            $fullJsPath = PathUtility::getRelativePath(
-                defined('PATH_typo3') ? PATH_typo3 : Environment::getPublicPath(),
-                GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/js/')
-            );
-
-            // requirejs
-            $pageRenderer->addRequireJsConfiguration([
-                'paths' => [
-                    'FluidTypo3/Flux/FluxCollapse' => $fullJsPath . 'fluxCollapse',
-                ],
-            ]);
-            $pageRenderer->loadRequireJsModule('FluidTypo3/Flux/FluxCollapse');
+            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+            $pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
+            $pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
 
             static::$assetsIncluded = true;
         }
@@ -94,6 +78,10 @@ class Preview implements PageLayoutViewDrawItemHookInterface
 
     protected function getConfigurationService(): FluxService
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(FluxService::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var FluxService $fluxService */
+        $fluxService = $objectManager->get(FluxService::class);
+        return $fluxService;
     }
 }

@@ -23,6 +23,11 @@ class Grid extends AbstractFormContainer implements ContainerInterface
 {
 
     /**
+     * @var Row[]|\SplObjectStorage
+     */
+    protected $children;
+
+    /**
      * @return array
      */
     public function build()
@@ -149,13 +154,13 @@ class Grid extends AbstractFormContainer implements ContainerInterface
 
         $typoScriptString = '';
         $root = $this->getRoot();
-        $label = $root->getLabel();
+        $label = (string) $root->getLabel();
         foreach ($this->flattenSetup($configuration, 'backend_layout.') as $name => $value) {
             $typoScriptString .= $name . ' = ' . $value . LF;
         }
         return new BackendLayout(
-            $this->getRoot()->getName(),
-            LocalizationUtility::translate($label)
+            (string) $this->getRoot()->getName(),
+            (string) LocalizationUtility::translate($label)
                 ? $label
                 : 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.grid.grids.grid',
             $typoScriptString

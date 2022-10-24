@@ -8,11 +8,9 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Form\Field\Select;
-use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
+use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -52,28 +50,6 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
     public function injectObjectManager(ObjectManagerInterface $objectManager)
     {
         $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @return FieldInterface[]
-     */
-    public function getFormFields()
-    {
-        $fields = parent::getFormFields();
-        $extensionNames = array_keys((array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']);
-        $extensionNames = array_combine($extensionNames, $extensionNames);
-        $fields['action'] = Input::create(['type' => 'Input']);
-        $fields['action']->setName('action');
-        $fields['action']->setValidate('trim,required');
-        $fields['controller'] = Input::create(['type' => 'Input']);
-        $fields['controller']->setName('controller');
-        $fields['controller']->setValidate('trim,required');
-        /** @var Select $selectField */
-        $selectField = Select::create(['type' => 'Select']);
-        $selectField->setName('extensionName');
-        $selectField->setItems($extensionNames);
-        $fields['extensionName'] = $selectField;
-        return $fields;
     }
 
     /**
@@ -137,21 +113,22 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
     public function conduct($data)
     {
         $extensionName = $this->getExtensionName();
-        /** @var $request Request */
+        /** @var Request $request */
         $request = $this->objectManager->get(Request::class);
         $request->setControllerName($this->getController());
         $request->setControllerActionName($this->getAction());
         list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
         $request->setControllerExtensionName($extensionName);
-        if (null !== $vendorName) {
+        if (null !== $vendorName && method_exists($request, 'setControllerVendorName')) {
             $request->setControllerVendorName($vendorName);
         }
 
         $request->setArguments($data);
-        /** @var $response Response */
+        /** @var Response $response */
         $response = $this->objectManager->get(Response::class);
-        /** @var $dispatcher Dispatcher */
+        /** @var Dispatcher $dispatcher */
         $dispatcher = $this->objectManager->get(Dispatcher::class);
+        /** @var RequestInterface $request */
         $dispatcher->dispatch($request, $response);
         return $response->getContent();
     }

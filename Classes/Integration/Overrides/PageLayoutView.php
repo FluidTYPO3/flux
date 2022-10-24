@@ -25,6 +25,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
 
     /**
      * @param array $pageinfo
+     * @return void
      */
     public function setPageinfo($pageinfo)
     {
@@ -39,12 +40,19 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
         return $this->pageinfo;
     }
 
-
+    /**
+     * @param GridProviderInterface $provider
+     * @return void
+     */
     public function setProvider(GridProviderInterface $provider)
     {
         $this->provider = $provider;
     }
 
+    /**
+     * @param array $record
+     * @return void
+     */
     public function setRecord(array $record)
     {
         $this->record = $record;
@@ -62,13 +70,20 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
         return $view;
     }
 
+    /**
+     * @param string $table
+     * @param int $id
+     * @param array $columns
+     * @param string $additionalWhereClause
+     * @return array
+     */
     protected function getContentRecordsPerColumn($table, $id, array $columns, $additionalWhereClause = '')
     {
         // Vital recursion prevention: each instance of PageLayoutView will attempt to render all records every
         // time - something which has started happening since the "unused content" feature was introduced. To avoid
         // the infinite recursion that happens because of this combined with the recursive usage of PageLayoutView,
         // we restrict the content elements this sub-view is capable of loading.
-        $columns = array_filter($columns, 'is_numeric');
+        $columns = array_filter($columns, function($item) { return ctype_digit($item) || is_int($item); });
         if (empty($columns)) {
             return [];
         }

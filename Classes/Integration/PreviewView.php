@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Integration;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
-use TYPO3\CMS\Backend\View\Drawing\BackendLayoutRenderer;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
@@ -19,14 +18,15 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\View\Drawing\BackendLayoutRenderer;
 use TYPO3\CMS\Backend\View\PageLayoutContext;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3Fluid\Fluid\View\TemplateView;
 
 /**
@@ -48,8 +48,8 @@ class PreviewView extends TemplateView
      */
     protected $templates = [
         'gridToggle' => '<div class="grid-visibility-toggle" data-toggle-uid="%s">
-							%s
-						</div>',
+                            %s
+                        </div>',
         'link' => '<a href="%s" title="%s"
                       class="btn btn-default btn-sm">%s %s</a>'
     ];
@@ -128,7 +128,7 @@ class PreviewView extends TemplateView
 
         $gridContent = $this->renderGrid($provider, $row, $form);
         $collapsedClass = '';
-        if (in_array($row['uid'], (array) json_decode((string) $_COOKIE['fluxCollapseStates']))) {
+        if (in_array($row['uid'], (array) json_decode((string) ($_COOKIE['fluxCollapseStates'] ?? '')))) {
             $collapsedClass = ' flux-grid-hidden';
         }
         $gridContent = sprintf(
@@ -253,8 +253,14 @@ class PreviewView extends TemplateView
 
             $pageUid = $row['pid'];
             if ($GLOBALS['BE_USER']->workspace > 0) {
-                $placeholder = BackendUtility::getMovePlaceholder('tt_content', $row['uid'], 'pid', $GLOBALS['BE_USER']->workspace);
-                $pageUid = $placeholder['pid'] ?? $pageUid;
+                $workspaceVersion = BackendUtility::getWorkspaceVersionOfRecord(
+                    $GLOBALS['BE_USER']->workspace,
+                    'tt_content',
+                    $row['uid']
+                );
+                if ($workspaceVersion) {
+                    $pageUid = $workspaceVersion['pid'] ?? $pageUid;
+                }
             }
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
             if ($pageLayoutView instanceof BackendLayoutRenderer) {
@@ -268,7 +274,6 @@ class PreviewView extends TemplateView
             }
 
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;
-
         }
         return $content;
     }
@@ -348,14 +353,22 @@ class PreviewView extends TemplateView
                 // TYPO3 10.4+
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                 $site = $siteFinder->getSiteByPageId($pageId);
-                $language = $site->getLanguageById((int) $row['sys_language_uid']);
-
+                $language = null;
+                if ($row['sys_language_uid'] >= 0 ) {
+                    $language = $site->getLanguageById((int) $row['sys_language_uid']);
+                }
+                
                 $context = GeneralUtility::makeInstance(PageLayoutContext::class, BackendUtility::getRecord('pages', $pageId), $backendLayout);
-                $context = $context->cloneForLanguage($language);
+                if (isset($language)) {
+                     $context = $context->cloneForLanguage($language);
+                }
 
                 $configuration = $context->getDrawingConfiguration();
                 $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
-                $configuration->setSelectedLanguageId($language->getLanguageId());
+                
+                if (isset($language)) {
+                    $configuration->setSelectedLanguageId($language->getLanguageId());
+                }
 
                 return GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
             } else {
@@ -388,6 +401,11 @@ class PreviewView extends TemplateView
         foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
             $itemLabels[$name] = ($val['label'] ?? false) ? $this->getLanguageService()->sL($val['label']) : '';
         }
+
+        array_push(
+            $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
+            ...$layoutConfiguration['__items']
+        );
 
         $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList'] ?? []);
 

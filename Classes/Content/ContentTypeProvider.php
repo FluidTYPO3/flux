@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\PreviewProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Flux Provider for content_types table
@@ -26,9 +27,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * for providing a (dynamic) Flux form that allows site admin
  * to configure properties of a content type record.
  */
-class ContentTypeProvider
-    extends AbstractProvider
-    implements RecordProviderInterface,
+class ContentTypeProvider extends AbstractProvider implements
+    RecordProviderInterface,
     PreviewProviderInterface,
     ContentTypeProviderInterface,
     DataStructureProviderInterface,
@@ -45,15 +45,15 @@ class ContentTypeProvider
 
     public function getForm(array $row)
     {
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var RecordBasedContentTypeDefinition $contentType */
         $contentType = $objectManager->get(RecordBasedContentTypeDefinition::class, $row);
-        if (!$contentType) {
-            throw new \RuntimeException(
-                sprintf('Content type "%s" from record UID "%d" is not managed by Flux', $row['CType'], $row['uid'])
-            );
-        }
+        /** @var ContentTypeForm $form */
         $form = $objectManager->get(ContentTypeForm::class);
-        foreach ($contentType->getSheetNamesAndLabels() as $name => $label) {
+        /** @var string[] $labels */
+        $labels = $contentType->getSheetNamesAndLabels();
+        foreach ($labels as $name => $label) {
             $form->createSheet($name, $label);
         }
         return $form;

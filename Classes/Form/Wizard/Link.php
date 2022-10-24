@@ -21,7 +21,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Link extends AbstractWizard
 {
-
     /**
      * @var string
      */
@@ -53,17 +52,17 @@ class Link extends AbstractWizard
     protected $width = 400;
 
     /**
-     * @var mixed
+     * @var string|null|array|\Traversable
      */
     protected $blindLinkOptions = '';
 
     /**
-     * @var mixed
+     * @var string|null|array|\Traversable
      */
     protected $blindLinkFields = '';
 
     /**
-     * @var mixed
+     * @var string|null|array|\Traversable
      */
     protected $allowedExtensions;
 
@@ -150,7 +149,7 @@ class Link extends AbstractWizard
     }
 
     /**
-     * @param mixed $blindLinkOptions
+     * @param string|null|array|\Traversable $blindLinkOptions
      * @return Link
      */
     public function setBlindLinkOptions($blindLinkOptions)
@@ -160,18 +159,15 @@ class Link extends AbstractWizard
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getBlindLinkOptions()
     {
-        if (!is_array($this->blindLinkOptions) && !$this->blindLinkOptions instanceof \Traversable) {
-            return GeneralUtility::trimExplode(',', $this->blindLinkOptions);
-        }
-        return $this->blindLinkOptions;
+        return $this->convertValueToArray($this->blindLinkOptions);
     }
 
     /**
-     * @param mixed $blindLinkFields
+     * @param string|null|array|\Traversable $blindLinkFields
      * @return Link
      */
     public function setBlindLinkFields($blindLinkFields)
@@ -181,18 +177,15 @@ class Link extends AbstractWizard
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getBlindLinkFields()
     {
-        if (!is_array($this->blindLinkFields) && !$this->blindLinkFields instanceof \Traversable) {
-            return GeneralUtility::trimExplode(',', $this->blindLinkFields);
-        }
-        return $this->blindLinkFields;
+        return $this->convertValueToArray($this->blindLinkFields);
     }
 
     /**
-     * @param mixed $allowedExtensions
+     * @param string|null|array|\Traversable $allowedExtensions
      * @return Link
      */
     public function setAllowedExtensions($allowedExtensions)
@@ -202,13 +195,29 @@ class Link extends AbstractWizard
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getAllowedExtensions()
     {
-        if (!is_array($this->allowedExtensions) && !$this->allowedExtensions instanceof \Traversable) {
-            return GeneralUtility::trimExplode(',', $this->allowedExtensions);
+        return $this->convertValueToArray($this->allowedExtensions);
+    }
+
+    /**
+     * @param string|null|array|\Traversable $value
+     * @return array
+     */
+    private function convertValueToArray($value): array
+    {
+        if ($value === null) {
+            return [];
         }
-        return $this->allowedExtensions;
+        if (is_scalar($value)) {
+            return GeneralUtility::trimExplode(',', (string) $value);
+        }
+        if ($value instanceof \Traversable) {
+            return iterator_to_array($value);
+        }
+
+        return $value;
     }
 }

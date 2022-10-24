@@ -82,7 +82,7 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param integer $columns
-     * @return Text
+     * @return $this
      */
     public function setColumns($columns)
     {
@@ -101,7 +101,7 @@ class Text extends Input implements FieldInterface
     /**
      * @deprecated Will be removed in next major version
      * @param string $defaultExtras
-     * @return Text
+     * @return $this
      */
     public function setDefaultExtras($defaultExtras)
     {
@@ -120,7 +120,7 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param boolean $enableRichText
-     * @return Text
+     * @return $this
      */
     public function setEnableRichText($enableRichText)
     {
@@ -138,7 +138,7 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param integer $rows
-     * @return Text
+     * @return $this
      */
     public function setRows($rows)
     {
@@ -164,10 +164,12 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param string $renderType
+     * @return $this
      */
     public function setRenderType($renderType)
     {
         $this->renderType = $renderType;
+        return $this;
     }
 
     /**
@@ -180,10 +182,12 @@ class Text extends Input implements FieldInterface
 
     /**
      * @param string $format
+     * @return $this
      */
     public function setFormat($format)
     {
         $this->format = $format;
+        return $this;
     }
 
     /**
@@ -225,8 +229,15 @@ class Text extends Input implements FieldInterface
      */
     protected function getPageTsConfigForRichTextEditor()
     {
+        $pageUid = 0;
         $root = $this->getRoot();
-        $pageUid = $root instanceof Form ? $root->getOption('record')['pid'] ?? 0 : 0;
+        if ($root instanceof Form) {
+            /** @var array|null $record */
+            $record = $root->getOption('record');
+            if ($record !== null) {
+                $pageUid = (integer) $record['pid'];
+            }
+        }
 
         return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
     }

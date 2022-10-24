@@ -30,14 +30,17 @@ class SubPageLanguageOverlayProvider extends PageLanguageOverlayProvider impleme
 
     /**
      * @param array $row
-     * @return string
+     * @return string|null
      */
     public function getControllerActionReferenceFromRecord(array $row)
     {
         $pageRow = $this->recordService->getSingle('pages', '*', $row['pid']);
+        if ($pageRow === null) {
+            return null;
+        }
         if (true === empty($pageRow[self::FIELD_ACTION_SUB])) {
             $pageRow = $this->pageService->getPageTemplateConfiguration($pageRow['uid']);
         }
-        return $pageRow[self::FIELD_ACTION_SUB];
+        return $pageRow[self::FIELD_ACTION_SUB] ?? null;
     }
 }

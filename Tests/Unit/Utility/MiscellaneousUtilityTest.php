@@ -29,7 +29,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
     /**
      * Setup
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
@@ -51,7 +51,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         }
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         GeneralUtility::removeSingletonInstance(IconRegistry::class, GeneralUtility::makeInstance(IconRegistry::class));
     }

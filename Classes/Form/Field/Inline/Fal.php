@@ -168,17 +168,23 @@ class Fal extends AbstractInlineFormField
     {
         $configuration = $this->prepareConfiguration('inline');
         $configuration['appearance']['createNewRelationLinkTitle'] = $this->getCreateNewRelationLinkTitle();
-        if (!empty($this->cropVariants)) {
-            $configuration['overrideChildTca'] = [
-                'columns' => [
-                    'crop' => [
-                        'config' => [
-                            'cropVariants' => $this->cropVariants
-                        ]
-                    ]
-                ]
-            ];
+
+        if (!isset($configuration['overrideChildTca'])) {
+            $configuration['overrideChildTca'] = ['columns' => []];
         }
+        if (!isset($configuration['overrideChildTca']['columns'])) {
+            $configuration['overrideChildTca']['columns'] = [];
+        }
+        $configuration['overrideChildTca']['types'] = $configuration['foreign_types'];
+        if (!empty($this->cropVariants)) {
+            $configuration['overrideChildTca']['columns']['crop'] =
+                [
+                    'config' => [
+                        'cropVariants' => $this->cropVariants
+                    ]
+                ];
+        }
+
         return $configuration;
     }
 
