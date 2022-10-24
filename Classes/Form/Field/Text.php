@@ -69,6 +69,7 @@ class Text extends Input implements FieldInterface
         $configuration['placeholder'] = $this->getPlaceholder();
         if (true === $this->getEnableRichText()) {
             $configuration['enableRichtext'] = true;
+            $configuration['softref'] = 'typolink_tag,images,email[subst],url';
             $configuration['richtextConfiguration'] = $this->getRichtextConfiguration();
         }
         $renderType = $this->getRenderType();
