@@ -119,7 +119,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     public function getForm(array $row)
     {
-        if ($row['deleted']) {
+        if ($row['deleted'] ?? false) {
             return null;
         }
         $form = parent::getForm($row);
