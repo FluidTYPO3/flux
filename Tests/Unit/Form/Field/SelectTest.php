@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 
@@ -16,7 +18,6 @@ use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
  */
 class SelectTest extends AbstractFieldTest
 {
-
     /**
      * @var array
      */
@@ -74,8 +75,13 @@ class SelectTest extends AbstractFieldTest
     public function canConsumeQueryObjectItems()
     {
         $GLOBALS['TCA']['foobar']['ctrl']['label'] = 'username';
+
+        $fluxService = $this->getMockBuilder(FluxService::class)->setMethods(['getTypoScriptByPath'])->getMock();
+        $fluxService->method('getTypoScriptByPath')->willReturn([]);
+
         /** @var Select $instance */
-        $instance = $this->objectManager->get($this->createInstanceClassName());
+        $instance = $this->getMockBuilder(Select::class)->setMethods(['getConfigurationService'])->getMock();
+        $instance->method('getConfigurationService')->willReturn($fluxService);
         $query = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Query')->setMethods(array('execute', 'getType'))->disableOriginalConstructor()->getMock();
         $query->expects($this->any())->method('getType')->will($this->returnValue('foobar'));
         $query->expects($this->any())->method('execute')->will($this->returnValue(array(
@@ -115,7 +121,7 @@ class SelectTest extends AbstractFieldTest
         $instance = $this->createInstance();
         $instance->setExtensionName('flux');
 
-        $form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->add($instance);
         $form->setName('parent');
         $instance->setName('child');

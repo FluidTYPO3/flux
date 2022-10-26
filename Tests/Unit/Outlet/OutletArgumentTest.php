@@ -11,24 +11,54 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet;
 use FluidTYPO3\Flux\Outlet\OutletArgument;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Error\Result;
-use TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface;
-use TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter;
+use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
+use TYPO3\CMS\Extbase\Property\PropertyMapper;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Validation\Error;
 use TYPO3\CMS\Extbase\Validation\Validator\NotEmptyValidator;
+use TYPO3\CMS\Extbase\Validation\ValidatorResolver;
 
 /**
  * OutletArgumentTest
  */
 class OutletArgumentTest extends AbstractTestCase
 {
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject|PropertyMapper&\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $propertyMapper;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject|ValidatorResolver&\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $validatorResolver;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject|MvcPropertyMappingConfiguration&\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $propertyMappingConfiguration;
 
     /**
      * @return void
      */
     protected function setUp(): void
     {
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['typeConverters'] = [StringConverter::class];
         parent::setUp();
+
+        $this->propertyMappingConfiguration = $this->getMockBuilder(MvcPropertyMappingConfiguration::class)->getMock();
+
+        $this->propertyMapper = $this->getMockBuilder(PropertyMapper::class)->setMethods(['convert', 'getMessages'])->getMock();
+        $this->propertyMapper->method('convert')->willReturnArgument(0);
+        $this->propertyMapper->method('getMessages')->willReturn(new Result());
+
+        $this->validatorResolver = $this->getMockBuilder(ValidatorResolver::class)->setMethods(['createValidator'])->getMock();
+        $this->validatorResolver->method('createValidator')->willReturnMap(
+            [
+                ['NotEmpty', [], new NotEmptyValidator()],
+            ]
+        );
+
+        //$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['typeConverters'] = [StringConverter::class];
     }
 
     /**
@@ -37,8 +67,8 @@ class OutletArgumentTest extends AbstractTestCase
     public function testConstructorSetsNameAndDataTypeProperties()
     {
         $argument = new OutletArgument('foobar', 'string');
-        $this->assertAttributeSame('foobar', 'name', $argument);
-        $this->assertAttributeSame('string', 'dataType', $argument);
+        $this->assertSame('foobar', $argument->getName());
+        $this->assertSame('string', $argument->getDataType());
     }
 
     /**
@@ -64,7 +94,8 @@ class OutletArgumentTest extends AbstractTestCase
      */
     public function testGetValueReturnsValue()
     {
-        $argument = $this->objectManager->get(OutletArgument::class, 'foobar', 'string');
+        $argument = new OutletArgument('foobar', 'string');
+        $argument->injectPropertyMapper($this->propertyMapper);
         $argument->setValue('testing');
         $this->assertSame('testing', $argument->getValue());
     }
@@ -77,7 +108,7 @@ class OutletArgumentTest extends AbstractTestCase
         $validators = [new NotEmptyValidator()];
         $argument = new OutletArgument('foobar', 'string');
         $argument->setValidators($validators);
-        $this->assertAttributeSame($validators, 'validators', $argument);
+        $this->assertSame($validators, $argument->getValidators());
     }
 
     /**
@@ -97,9 +128,10 @@ class OutletArgumentTest extends AbstractTestCase
     public function testAddValidator()
     {
         $validators = [new NotEmptyValidator()];
-        $argument = $this->objectManager->get(OutletArgument::class, 'foobar', 'string');
+        $argument = new OutletArgument('foobar', 'string');
+        $argument->injectValidatorResolver($this->validatorResolver);
         $argument->addValidator('NotEmpty', []);
-        $this->assertAttributeEquals($validators, 'validators', $argument);
+        $this->assertEquals($validators, ObjectAccess::getProperty($argument, 'validators', true));
     }
 
     /**
@@ -109,7 +141,9 @@ class OutletArgumentTest extends AbstractTestCase
     {
         $validator = $this->getMockBuilder(NotEmptyValidator::class)->setMethods(['validate'])->getMock();
         $validator->expects($this->once())->method('validate')->with('stringvalue')->willReturn(new Result());
-        $argument = $this->objectManager->get(OutletArgument::class, 'foobar', 'string');
+        $argument = new OutletArgument('foobar', 'string');
+        $argument->injectPropertyMapper($this->propertyMapper);
+        $argument->injectPropertyMappingConfiguration($this->propertyMappingConfiguration);
         $argument->setValidators([$validator]);
         $argument->setValue('stringvalue');
     }
@@ -119,7 +153,7 @@ class OutletArgumentTest extends AbstractTestCase
      */
     public function testGetValidationResultsReturnsNullBeforeSetValue()
     {
-        $argument = $this->objectManager->get(OutletArgument::class, 'foobar', 'string');
+        $argument = new OutletArgument('foobar', 'string');
         $this->assertNull($argument->getValidationResults());
     }
 
@@ -130,7 +164,8 @@ class OutletArgumentTest extends AbstractTestCase
     {
         $validator = $this->getMockBuilder(NotEmptyValidator::class)->setMethods(['validate'])->getMock();
         $validator->expects($this->once())->method('validate')->with('stringvalue')->willReturn(new Result());
-        $argument = $this->objectManager->get(OutletArgument::class, 'foobar', 'string');
+        $argument = new OutletArgument('foobar', 'string');
+        $argument->injectPropertyMapper($this->propertyMapper);
         $argument->setValidators([$validator]);
         $argument->setValue('stringvalue');
         $this->assertInstanceOf(Result::class, $argument->getValidationResults());
@@ -141,7 +176,7 @@ class OutletArgumentTest extends AbstractTestCase
      */
     public function testIsValidReturnsTrueBeforeSetValue()
     {
-        $argument = $this->objectManager->get(OutletArgument::class, 'foobar', 'string');
+        $argument = new OutletArgument('foobar', 'string');
         $this->assertTrue($argument->isValid());
     }
 
@@ -154,7 +189,8 @@ class OutletArgumentTest extends AbstractTestCase
         $result->addError(new Error('Some error', 123));
         $validator = $this->getMockBuilder(NotEmptyValidator::class)->setMethods(['validate'])->getMock();
         $validator->expects($this->once())->method('validate')->with('stringvalue')->willReturn($result);
-        $argument = $this->objectManager->get(OutletArgument::class, 'foobar', 'string');
+        $argument = new OutletArgument('foobar', 'string');
+        $argument->injectPropertyMapper($this->propertyMapper);
         $argument->setValidators([$validator]);
         $argument->setValue('stringvalue');
         $this->assertFalse($argument->isValid());
@@ -163,18 +199,9 @@ class OutletArgumentTest extends AbstractTestCase
     /**
      * @test
      */
-    public function testInjectsAndCanReturnPropertyMappingConfiguration()
-    {
-        $argument = $this->objectManager->get(OutletArgument::class, 'foobar', 'string');
-        $this->assertInstanceOf(PropertyMappingConfigurationInterface::class, $argument->getPropertyMappingConfiguration());
-    }
-
-    /**
-     * @test
-     */
     public function testConstructorThrowsExceptionIfNameIsNotString()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new OutletArgument(123, 'string');
     }
     /**
@@ -182,7 +209,7 @@ class OutletArgumentTest extends AbstractTestCase
      */
     public function testConstructorThrowsExceptionIfNameIsEmpty()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new OutletArgument('', 'string');
     }
 }

@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\Outlet\FormViewHelper;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
@@ -21,32 +20,31 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  */
 class FormViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @return FormViewHelper
      */
     protected function createInstance()
     {
-        $className = $this->getViewHelperClassName();
         /** @var AbstractViewHelper $instance */
-        $instance = $this->objectManager->get($className);
+        $instance = parent::createInstance();
         if (true === method_exists($instance, 'injectConfigurationManager')) {
             $cObject = new ContentObjectRenderer();
             $cObject->start(Records::$contentRecordWithoutParentAndWithoutChildren, 'tt_content');
             /** @var ConfigurationManagerInterface $configurationManager */
-            $configurationManager = $this->objectManager->get(ConfigurationManagerInterface::class);
-            $configurationManager->setContentObject($cObject);
+            $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
+            $configurationManager->method('getContentObject')->willReturn($cObject);
             $instance->injectConfigurationManager($configurationManager);
         }
-        $context = $this->objectManager->get(RenderingContext::class);
         // Note: we initialize the variables here since on LTS, retrieving an unknown variable causes an Exception
         // whereas on 8.x (with Fluid standalone) such unknown variables simply return null.
-        $context->getViewHelperVariableContainer()->add(FormViewHelper::class, 'provider', null);
-        $context->getViewHelperVariableContainer()->add(FormViewHelper::class, 'record', []);
-        $context->getViewHelperVariableContainer()->add(FormViewHelper::class, 'pluginName', 'Content');
-        $context->getViewHelperVariableContainer()->add(FormViewHelper::class, \FluidTYPO3\Flux\ViewHelpers\FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME, 'FluidTYPO3.Flux');
-        $instance->setRenderingContext($context);
+        $this->viewHelperVariableContainer->add(FormViewHelper::class, 'provider', null);
+        $this->viewHelperVariableContainer->add(FormViewHelper::class, 'record', []);
+        $this->viewHelperVariableContainer->add(FormViewHelper::class, 'pluginName', 'Content');
+        $this->viewHelperVariableContainer->add(FormViewHelper::class, \FluidTYPO3\Flux\ViewHelpers\FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME, 'FluidTYPO3.Flux');
+
+        $instance->setRenderingContext($this->renderingContext);
         $instance->initialize();
+
         return $instance;
     }
 
@@ -59,8 +57,8 @@ class FormViewHelperTest extends AbstractViewHelperTestCase
         $provider->expects($this->once())->method('getTableName')->willReturn('foobar');
         $method = new \ReflectionMethod(FormViewHelper::class, 'renderAdditionalIdentityFields');
         $method->setAccessible(true);
-        $subject = $this->objectManager->get(FormViewHelper::class);
-        $subject->setRenderingContext($this->objectManager->get(RenderingContext::class));
+        $subject = $this->createInstance();
+        $subject->setRenderingContext($this->renderingContext);
         $providerProperty = new \ReflectionProperty(FormViewHelper::class, 'provider');
         $providerProperty->setAccessible(true);
         $providerProperty->setValue($subject, $provider);
@@ -68,7 +66,7 @@ class FormViewHelperTest extends AbstractViewHelperTestCase
         $recordProperty->setAccessible(true);
         $recordProperty->setValue($subject, ['uid' => 123]);
         $result = $method->invoke($subject);
-        $this->assertContains('__outlet[table]', $result);
-        $this->assertContains('__outlet[recordUid]', $result);
+        $this->assertStringContainsString('__outlet[table]', $result);
+        $this->assertStringContainsString('__outlet[recordUid]', $result);
     }
 }

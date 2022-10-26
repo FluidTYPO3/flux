@@ -71,23 +71,9 @@ abstract class AbstractFieldTest extends AbstractFormTest
     public function returnsEmptyLabelIfFormExtensionNameIsEmpty()
     {
         $instance = $this->createInstance();
-        /** @var Form $form */
-        $form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->add($instance);
         $form->setExtensionName(null);
-        $this->assertEmpty($form->getLabel());
-    }
-
-    /**
-     * @test
-     */
-    public function returnsEmptyLabelIfFormExtensionNameIsNotLoaded()
-    {
-        $instance = $this->createInstance();
-        /** @var Form $form */
-        $form = $this->objectManager->get('FluidTYPO3\Flux\Form');
-        $form->add($instance);
-        $form->setExtensionName('void');
         $this->assertEmpty($form->getLabel());
     }
 
@@ -175,7 +161,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $instance->setName('child');
         $parent->add($instance);
         $output = $instance->getLabel();
-        $this->assertContains('parent.child', $output);
+        $this->assertStringContainsString('parent.child', $output);
     }
 
     /**
@@ -194,7 +180,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
      */
     public function modifyCreatesWizards()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $field = $form->createField('Input', 'testfield');
         $this->assertFalse($field->has('add'));
         $field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
@@ -206,7 +192,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
      */
     public function modifyModifiesWizards()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $field = $form->createField('Input', 'testfield');
         $wizard = $field->createWizard('Add', 'add', 'Original label');
         $field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));

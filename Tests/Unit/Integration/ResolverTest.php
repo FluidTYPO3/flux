@@ -15,7 +15,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 /**
  * ResolveUtilityTest
  */
-class ResolveUtilityTest extends AbstractTestCase
+class ResolverTest extends AbstractTestCase
 {
     /**
      * @test
@@ -24,7 +24,7 @@ class ResolveUtilityTest extends AbstractTestCase
     {
         $resolver = new Resolver();
         $className = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('FluidTYPO3.Flux', 'Content');
-        $instance = $this->objectManager->get($className);
+        $instance = new $className();
         $this->assertInstanceOf(AbstractFluxController::class, $instance);
     }
 

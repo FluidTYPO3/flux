@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeTrait;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * ViewAwarePipeTraitTest
@@ -25,6 +26,6 @@ class ViewAwarePipeTraitTest extends AbstractTestCase
         $view = $this->getMockBuilder(ViewInterface::class)->disableOriginalConstructor()->getMockForAbstractClass();
         $subject = $this->getMockBuilder(ViewAwarePipeTrait::class)->getMockForTrait();
         $subject->setView($view);
-        $this->assertAttributeSame($view, 'view', $subject);
+        $this->assertSame($view, ObjectAccess::getProperty($subject, 'view', true));
     }
 }

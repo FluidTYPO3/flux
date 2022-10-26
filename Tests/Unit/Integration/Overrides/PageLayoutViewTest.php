@@ -21,10 +21,10 @@ class PageLayoutViewTest extends AbstractTestCase
      */
     public function testSetAndGetPageInfo()
     {
-        $instance = new PageLayoutView();
+        $instance = $this->getMockBuilder(PageLayoutView::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $info = ['foo' => 'bar'];
         $instance->setPageinfo($info);
-        $this->assertAttributeSame($info, 'pageinfo', $instance);
+        $this->assertSame($info, $instance->getPageinfo());
         $result = $instance->getPageinfo();
         $this->assertSame($info, $result);
     }

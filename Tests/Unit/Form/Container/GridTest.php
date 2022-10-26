@@ -10,7 +10,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
-use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
+use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
+use TYPO3Fluid\Fluid\Core\Parser\TemplateProcessor\NamespaceDetectionTemplateProcessor;
+use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInvoker;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperResolver;
+use TYPO3Fluid\Fluid\View\TemplatePaths;
+use TYPO3Fluid\Fluid\View\TemplateView;
 
 /**
  * GridTest
@@ -25,10 +33,55 @@ class GridTest extends AbstractContainerTest
      */
     protected function getDummyGridFromTemplate($gridName = 'grid', $template = self::FIXTURE_TEMPLATE_BASICGRID)
     {
-        $templatePathAndFilename = $this->getAbsoluteFixtureTemplatePathAndFilename($template);
-        $view = $this->objectManager->get(StandaloneView::class);
-        $view->setTemplatePathAndFilename($templatePathAndFilename);
-        $view->renderSection('Configuration', []);
+        $templateCompiler = $this->getMockBuilder(TemplateCompiler::class)->getMock();
+        $templateParser = new TemplateParser();
+        $viewHelperVariableContainer = new ViewHelperVariableContainer();
+        $variableProvider = new StandardVariableProvider();
+        $viewHelperResolver = new ViewHelperResolver();
+        $viewHelperInvoker = new ViewHelperInvoker();
+        $namespaceDetectionTemplateProcessor = new NamespaceDetectionTemplateProcessor();
+        $templatePaths = new TemplatePaths(
+            [
+                'partialRootPaths' => ['Tests/Fixtures/Partials/'],
+                'templateRootPaths' => ['Tests/Fixtures/Templates/'],
+                'layoutRootPaths' => ['Tests/Fixtures/Layouts/'],
+            ]
+        );
+
+        $renderingContext = $this->getMockBuilder(\TYPO3\CMS\Fluid\Core\Rendering\RenderingContext::class)->setMethods(
+            [
+                'getTemplatePaths',
+                'getViewHelperVariableContainer',
+                'getVariableProvider',
+                'getTemplateCompiler',
+                'getViewHelperInvoker',
+                'getTemplateParser',
+                'getViewHelperResolver',
+                'getTemplateProcessors',
+                'getExpressionNodeTypes',
+                'getControllerName',
+                'getControllerAction',
+            ]
+        )->disableOriginalConstructor()->getMock();
+        $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
+        $renderingContext->method('getViewHelperVariableContainer')->willReturn($viewHelperVariableContainer);
+        $renderingContext->method('getVariableProvider')->willReturn($variableProvider);
+        $renderingContext->method('getTemplateCompiler')->willReturn($templateCompiler);
+        $renderingContext->method('getTemplateParser')->willReturn($templateParser);
+        $renderingContext->method('getViewHelperInvoker')->willReturn($viewHelperInvoker);
+        $renderingContext->method('getViewHelperResolver')->willReturn($viewHelperResolver);
+        $renderingContext->method('getTemplateProcessors')->willReturn([$namespaceDetectionTemplateProcessor]);
+        $renderingContext->method('getExpressionNodeTypes')->willReturn([]);
+        $renderingContext->method('getControllerName')->willReturn('Content');
+        $renderingContext->method('getControllerAction')->willReturn(basename($template, '.html'));
+
+        $namespaceDetectionTemplateProcessor->setRenderingContext($renderingContext);
+
+        $templateParser->setRenderingContext($renderingContext);
+
+        $view = new TemplateView($renderingContext);
+
+        $view->renderSection('Configuration', [], true);
         return $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, 'grids')[$gridName] ?? Grid::create();
     }
 

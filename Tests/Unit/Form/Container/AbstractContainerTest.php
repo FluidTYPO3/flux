@@ -28,7 +28,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     protected function createInstance()
     {
         $className = $this->getObjectClassName();
-        $instance = $this->objectManager->get($className);
+        $instance = new $className();
         return $instance;
     }
 

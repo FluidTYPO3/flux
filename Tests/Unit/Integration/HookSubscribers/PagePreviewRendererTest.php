@@ -20,7 +20,6 @@ use TYPO3\CMS\Backend\Controller\PageLayoutController;
  */
 class PagePreviewRendererTest extends AbstractTestCase
 {
-
     /**
      * @param ProviderInterface $provider
      * @param string $expected
@@ -43,16 +42,18 @@ class PagePreviewRendererTest extends AbstractTestCase
      */
     public function getRenderTestValues()
     {
-        $withForm = new Provider();
-        $withForm->setForm(Form::create());
-        $withDisabledForm = new Provider();
+        $withForm = $this->getMockBuilder(Provider::class)->setMethods(['getPreview'])->getMock();
+        $withForm->method('getPreview')->willReturn(['', 'foobarpreview1', '']);
+        $withForm->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
+        $withDisabledForm = $this->getMockBuilder(Provider::class)->setMethods(['getPreview'])->getMock();
+        $withDisabledForm->method('getPreview')->willReturn(['', 'foobarpreview2', '']);
         $withDisabledForm->setForm(Form::create(['enabled' => false]));
         $withPreview = $this->getMockBuilder(Provider::class)->setMethods(['getForm', 'getPreview'])->getMock();
         $withPreview->expects($this->once())->method('getPreview')->willReturn([null, 'preview', true]);
-        $withPreview->expects($this->once())->method('getForm')->willReturn(Form::create());
+        $withPreview->expects($this->once())->method('getForm')->willReturn($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
 
         return [
-            [$withForm, ''],
+            [$withForm, 'foobarpreview1'],
             [$withDisabledForm, ''],
             [$withPreview, 'preview'],
         ];

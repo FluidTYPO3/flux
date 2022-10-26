@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
 use FluidTYPO3\Flux\Provider\SubPageProvider;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
  * Class SubPageProviderTest
@@ -28,7 +28,7 @@ class SubPageProviderTest extends AbstractTestCase
     public function testGetControllerActionFromRecord(array $record, $fieldName, $expected)
     {
         $instance = new SubPageProvider();
-        $service = $this->getMockBuilder(PageService::class)->setMethods(array('getPageTemplateConfiguration'))->getMock();
+        $service = $this->getMockBuilder(PageService::class)->setMethods(['getPageTemplateConfiguration'])->getMock();
         $service->expects($this->any())->method('getPageTemplateConfiguration')->willReturn($record);
         $instance->injectPageService($service);
         // make sure PageProvider is now using the right field name
@@ -50,13 +50,15 @@ class SubPageProviderTest extends AbstractTestCase
 
     public function testGetTemplatePathAndFilename()
     {
-        $expected = ExtensionManagementUtility::extPath('flux', 'Tests/Fixtures/Templates/Page/Dummy.html');
+        $expected = 'Tests/Fixtures/Templates/Page/Dummy.html';
         $dataFieldName = 'tx_fed_page_flexform_sub';
         $fieldName = 'tx_fed_page_controller_action_sub';
         /** @var PageService|\PHPUnit_Framework_MockObject_MockObject $service */
-        $service = $this->getMockBuilder(PageService::class)->setMethods(array('getPageTemplateConfiguration'))->getMock();
-        $instance = new SubPageProvider();
-        $instance->setTemplatePaths(array('templateRootPaths' => array('EXT:flux/Tests/Fixtures/Templates/')));
+        $service = $this->getMockBuilder(PageService::class)->setMethods(['getPageTemplateConfiguration'])->getMock();
+        $templatePaths = $this->getMockBuilder(TemplatePaths::class)->setMethods(['resolveTemplateFileForControllerAndActionAndFormat'])->getMock();
+        $templatePaths->method('resolveTemplateFileForControllerAndActionAndFormat')->willReturn($expected);
+        $instance = $this->getMockBuilder(SubPageProvider::class)->setMethods(['createTemplatePaths'])->getMock();
+        $instance->method('createTemplatePaths')->willReturn($templatePaths);
         $instance->injectPageService($service);
         $record = array(
             'uid' => 123,

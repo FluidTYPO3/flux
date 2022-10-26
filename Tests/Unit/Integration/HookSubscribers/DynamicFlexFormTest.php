@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Integration\HookSubscribers\DynamicFlexForm;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 /**
@@ -21,7 +22,12 @@ class DynamicFlexFormTest extends AbstractTestCase
      */
     public function testReturnsEmptyDataStructureIdentifierForNonMatchingTableAndField()
     {
-        $subject = $this->objectManager->get(DynamicFlexForm::class);
+        $fluxService = $this->getMockBuilder(FluxService::class)->setMethods(['resolvePrimaryConfigurationProvider'])->getMock();
+        $fluxService->method('resolvePrimaryConfigurationProvider')->willReturn(null);
+
+        $subject = $this->getMockBuilder(DynamicFlexForm::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
+        $subject->injectConfigurationService($fluxService);
+
         $result = $subject->getDataStructureIdentifierPreProcess(['foo' => 'bar'], 'sometable', 'somefield', ['uid' => 123]);
         $this->assertSame([], $result);
     }
@@ -32,7 +38,7 @@ class DynamicFlexFormTest extends AbstractTestCase
      */
     public function testReturnsEmptyDataStructureForIdentifier(array $identifier)
     {
-        $subject = $this->objectManager->get(DynamicFlexForm::class);
+        $subject = $this->getMockBuilder(DynamicFlexForm::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $result = $subject->parseDataStructureByIdentifierPreProcess($identifier);
         $this->assertSame([], $result);
     }

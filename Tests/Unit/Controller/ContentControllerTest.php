@@ -9,8 +9,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -18,7 +16,6 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  */
 class ContentControllerTest extends AbstractFluxControllerTestCase
 {
-
     /**
      * @test
      */
@@ -35,7 +32,7 @@ class ContentControllerTest extends AbstractFluxControllerTestCase
         $this->performDummyRegistration();
         $controllerClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
         /** @var AbstractFluxController $instance */
-        $instance = $this->objectManager->get($controllerClassName);
+        $instance = new $controllerClassName();
         ObjectAccess::setProperty($instance, 'extensionName', 'Flux', true);
         return $instance;
     }

@@ -11,17 +11,17 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
+use PHPUnit\Framework\Constraint\IsType;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * AbstractTestCase
  */
-abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
+abstract class AbstractTestCase extends TestCase
 {
-
     const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/Content/AbsolutelyMinimal.html';
     const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/Content/WithoutForm.html';
     const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Content/Sheets.html';
@@ -35,23 +35,26 @@ abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
     const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
     /**
-     * @param string $name
-     * @param array $data
-     * @param string $dataName
-     */
-    public function __construct($name = null, array $data = array(), $dataName = '')
-    {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->objectManager = clone $objectManager;
-        parent::__construct($name, $data, $dataName);
-    }
-
-    /**
      * @return void
      */
     protected function setUp(): void
     {
         $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
+        if (!defined('LF')) {
+            define('LF', PHP_EOL);
+        }
+        if (!defined('TYPO3_MODE')) {
+            define('TYPO3_MODE', 'FE');
+        }
+        if (!defined('TYPO3_REQUESTTYPE')) {
+            define('TYPO3_REQUESTTYPE', 1);
+        }
+        if (!defined('TYPO3_REQUESTTYPE_FE')) {
+            define('TYPO3_REQUESTTYPE_FE', 1);
+        }
+        if (!defined('TYPO3_version')) {
+            define('TYPO3_version', '9.5.0');
+        }
     }
 
     /**
@@ -92,23 +95,25 @@ abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
     }
 
     /**
-     * @param mixed $value
-     * @return void
+     * Asserts that a variable is of type array.
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws ExpectationFailedException
+     *
+     * @psalm-assert array $actual
      */
-    protected function assertIsArray($value)
+    public static function assertIsArray($actual, string $message = ''): void
     {
-        $isArrayConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
-        $this->assertThat($value, $isArrayConstraint);
-    }
-
-    /**
-     * @param mixed $value
-     * @return void
-     */
-    protected function assertIsString($value)
-    {
-        $isStringConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_STRING);
-        $this->assertThat($value, $isStringConstraint);
+        if (class_exists(IsType::class)) {
+            $constraint = new IsType(IsType::TYPE_ARRAY);
+        } else {
+            $constraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
+        }
+        static::assertThat(
+            $actual,
+            $constraint,
+            $message
+        );
     }
 
     /**
@@ -117,7 +122,7 @@ abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
      */
     protected function assertIsInteger($value)
     {
-        $isIntegerConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_INT);
+        $isIntegerConstraint = new IsType(IsType::TYPE_INT);
         $this->assertThat($value, $isIntegerConstraint);
     }
 
@@ -127,7 +132,7 @@ abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
      */
     protected function assertIsBoolean($value)
     {
-        $isBooleanConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_BOOL);
+        $isBooleanConstraint = new IsType(IsType::TYPE_BOOL);
         $this->assertThat($value, $isBooleanConstraint);
     }
 
@@ -136,9 +141,9 @@ abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
      */
     protected function assertIsValidAndWorkingFormObject($value)
     {
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form', $value);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $value);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\ContainerInterface', $value);
+        $this->assertInstanceOf(Form::class, $value);
+        $this->assertInstanceOf(Form\FormInterface::class, $value);
+        $this->assertInstanceOf(Form\ContainerInterface::class, $value);
         /** @var Form $value */
         $structure = $value->build();
         $this->assertIsArray($structure);
@@ -157,8 +162,8 @@ abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
      */
     protected function assertIsValidAndWorkingGridObject($value)
     {
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $value);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\ContainerInterface', $value);
+        $this->assertInstanceOf(Form\Container\Grid::class, $value);
+        $this->assertInstanceOf(Form\ContainerInterface::class, $value);
         /** @var Form $value */
         $structure = $value->build();
         $this->assertIsArray($structure);
@@ -178,7 +183,7 @@ abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
      */
     protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath)
     {
-        return GeneralUtility::getFileAbsFileName($shorthandTemplatePath);
+        return realpath(str_replace('EXT:flux/', './', $shorthandTemplatePath));
     }
 
     /**
@@ -188,15 +193,14 @@ abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
     protected function createFluxServiceInstance($methods = array('dummy'))
     {
         /** @var FluxService $fluxService */
-        $fluxService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods($methods)->disableOriginalConstructor()->getMock();
-        $fluxService->injectObjectManager($this->objectManager);
+        $fluxService = $this->getMockBuilder(FluxService::class)->setMethods($methods)->disableOriginalConstructor()->getMock();
         $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
         return $fluxService;
     }
 
     /**
-     * @return object
+     * @return string
      */
     protected function createInstanceClassName()
     {
@@ -208,8 +212,8 @@ abstract class AbstractTestCase extends \FluidTYPO3\Development\AbstractTestCase
      */
     protected function createInstance()
     {
-        $instance = $this->objectManager->get($this->createInstanceClassName());
-        return $instance;
+        $instanceClassName = $this->createInstanceClassName();
+        return new $instanceClassName();
     }
 
 }

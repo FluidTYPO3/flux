@@ -30,10 +30,10 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
-use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
  * AbstractProvider

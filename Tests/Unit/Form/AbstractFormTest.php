@@ -31,7 +31,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     protected function createInstance()
     {
         $className = $this->getObjectClassName();
-        $instance = $this->objectManager->get($className);
+        $instance = new $className();
         return $instance;
     }
 
@@ -71,7 +71,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     public function canGetLabel()
     {
         $className = $this->getObjectClassName();
-        $instance = $this->objectManager->get($className);
+        $instance = new $className();
         $instance->setName('test');
         $instance->setExtensionName('FluidTYPO3.Flux');
         $label = $instance->getLabel();
@@ -107,10 +107,11 @@ abstract class AbstractFormTest extends AbstractTestCase
                 'name' => 'test',
                 'extensionName' => 'flux'
             ));
+            $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
             $form->add($instance);
         }
         $label = $instance->getLabel();
-        $this->assertContains('testFormId', $label);
+        $this->assertStringContainsString('testFormId', $label);
         $this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux', $label);
     }
 

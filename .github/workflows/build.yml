@@ -40,9 +40,6 @@ jobs:
           ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
           tools: composer:v2.2
 
-      - name: Disable FluidTYPO3 phpunit helper
-        run: "composer remove fluidtypo3/development --dev -W --no-update"
-
       - name: Select TYPO3 version
         run: "composer require typo3/cms-core:${{ matrix.typo3 }} -W --no-update"
 
@@ -61,9 +58,13 @@ jobs:
       matrix:
         include:
           - php: "7.4"
-            typo3: "^8.7"
-          - php: "7.4"
             typo3: "^9.5"
+          - php: "7.4"
+            typo3: "^10.4"
+          - php: "8.0"
+            typo3: "^11.5"
+          - php: "8.1"
+            typo3: "^11.5"
 
     runs-on: ubuntu-latest
 
