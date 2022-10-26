@@ -188,19 +188,6 @@ noCache
 :aspect:`Description`
    Set this to disable caching for the target page. You should not need this.
 
-.. _outlet.form_nocachehash:
-
-noCacheHash
------------
-
-:aspect:`DataType`
-   mixed
-
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Deprecated: Set this to suppress the cHash query parameter created by TypoLink. You should not need this.
-
 .. _outlet.form_section:
 
 section
@@ -293,13 +280,10 @@ addQueryStringMethod
 :aspect:`DataType`
    string
 
-:aspect:`Default`
-   'GET'
-
 :aspect:`Required`
    false
 :aspect:`Description`
-   Method to use when keeping query parameters (only active if $actionUri is not set)
+   This argument is not evaluated anymore and will be removed in TYPO3 v12.
 
 .. _outlet.form_fieldnameprefix:
 
