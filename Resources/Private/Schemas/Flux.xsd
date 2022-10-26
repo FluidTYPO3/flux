@@ -1650,7 +1650,7 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[Level links position.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="allowedExtensions" default="NULL">
+      <xsd:attribute type="xsd:string" name="allowedExtensions" default="''">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Allowed File Extensions .]]></xsd:documentation>
         </xsd:annotation>
