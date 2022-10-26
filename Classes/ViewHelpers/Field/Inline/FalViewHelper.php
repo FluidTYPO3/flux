@@ -88,7 +88,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FalViewHelper extends AbstractInlineFieldViewHelper
 {
-
     /**
      * Initialize
      * @return void
@@ -188,7 +187,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
             'string',
             'Allowed File Extensions .',
             false,
-            $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']
+            $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'] ?? ''
         );
         $this->registerArgument('disallowedExtensions', 'string', 'Disallowed File Extensions .', false, '');
         $this->registerArgument(

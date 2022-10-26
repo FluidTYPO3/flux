@@ -74,7 +74,7 @@ class Select extends AbstractWizard
             $return = [];
             $items = explode(',', $itemsString);
             foreach ($items as $itemPair) {
-                $item = explode(';', $itemPair);
+                $item = strpos($itemPair, ';') !== false ? explode(';', $itemPair) : [$itemPair, $itemPair];
                 $return[$item[0]] = $item[1];
             }
             return $return;

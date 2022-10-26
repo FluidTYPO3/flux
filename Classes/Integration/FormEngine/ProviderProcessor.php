@@ -21,6 +21,12 @@ class ProviderProcessor implements FormDataProviderInterface
      */
     public function addData(array $result)
     {
+        if (!isset($result['tableName'])) {
+            throw new \UnexpectedValueException('Input data requires a "tableName" property', 1666816552);
+        }
+        if (!isset($result['databaseRow'])) {
+            throw new \UnexpectedValueException('Input data requires a "databaseRow" property', 1666816552);
+        }
         if (class_exists(SiteFinder::class) && $result['tableName'] === 'tt_content') {
             $pageUid = $result['parentPageRow']['uid'];
             if ($pageUid > 0) {

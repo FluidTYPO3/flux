@@ -52,7 +52,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ContentViewHelper extends AbstractFormViewHelper
 {
-
     /**
      * Initialize arguments
      * @return void

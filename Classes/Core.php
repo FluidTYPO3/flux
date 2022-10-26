@@ -28,6 +28,11 @@ class Core
     const CONTROLLER_ALL = '_all';
 
     /**
+     * @var ObjectManagerInterface
+     */
+    protected static $objectManager;
+
+    /**
      * Contains all ConfigurationProviders registered with Flux
      * @var array
      */
@@ -210,8 +215,7 @@ class Core
         $paths = null,
         $fieldName = 'pi_flexform'
     ) {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $objectManager = static::getObjectManager();
         /** @var ProviderInterface $provider */
         $provider = $objectManager->get(Provider::class);
         $provider->setTableName('tt_content');
@@ -249,8 +253,7 @@ class Core
         $paths = null,
         $fieldName = 'pi_flexform'
     ) {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $objectManager = static::getObjectManager();
         /** @var ProviderInterface $provider */
         $provider = $objectManager->get(Provider::class);
         $provider->setTableName('tt_content');
@@ -286,8 +289,7 @@ class Core
         $section = null,
         $paths = null
     ) {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $objectManager = static::getObjectManager();
         /** @var ProviderInterface $provider */
         $provider = $objectManager->get(Provider::class);
         $provider->setTableName($table);
@@ -322,7 +324,7 @@ class Core
         $pluginName = null
     ) {
         if (!PathUtility::isAbsolutePath($templateFilename)) {
-            $templateFilename = GeneralUtility::getFileAbsFileName($templateFilename);
+            $templateFilename = static::getAbsolutePathForFilename($templateFilename);
         }
 
         self::$queuedContentTypeRegistrations[] = [
@@ -439,5 +441,20 @@ class Core
     public static function getOutlets()
     {
         return array_values(self::$outlets);
+    }
+
+    protected static function getAbsolutePathForFilename(string $filename): string
+    {
+        return GeneralUtility::getFileAbsFileName($filename);
+    }
+
+    protected static function getObjectManager(): ObjectManagerInterface
+    {
+        if (static::$objectManager === null) {
+            /** @var ObjectManagerInterface $objectManager */
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            static::$objectManager = $objectManager;
+        }
+        return static::$objectManager;
     }
 }

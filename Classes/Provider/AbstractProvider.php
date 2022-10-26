@@ -33,6 +33,7 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
  * AbstractProvider
@@ -494,16 +495,16 @@ class AbstractProvider implements ProviderInterface
 
     /**
      * @param array $row
-     * @return string|NULL
+     * @return string|null
      */
     public function getTemplatePathAndFilename(array $row)
     {
         $templatePathAndFilename = (string) $this->templatePathAndFilename;
-        if (!PathUtility::isAbsolutePath($templatePathAndFilename)) {
-            $templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
-            if (true === empty($templatePathAndFilename)) {
-                $templatePathAndFilename = null;
-            }
+        if ($templatePathAndFilename !== '' && !PathUtility::isAbsolutePath($templatePathAndFilename)) {
+            $templatePathAndFilename = $this->resolveAbsolutePathToFile($templatePathAndFilename);
+        }
+        if (true === empty($templatePathAndFilename)) {
+            $templatePathAndFilename = null;
         }
         return HookHandler::trigger(
             HookHandler::PROVIDER_RESOLVED_TEMPLATE,
@@ -527,7 +528,7 @@ class AbstractProvider implements ProviderInterface
     {
         $fieldName = $this->getFieldName($row);
         $form = $this->getForm($row);
-        return $this->configurationService->convertFlexFormContentToArray($row[$fieldName], $form);
+        return $this->configurationService->convertFlexFormContentToArray($row[$fieldName] ?? '', $form);
     }
 
     /**
@@ -677,8 +678,8 @@ class AbstractProvider implements ProviderInterface
         // TODO: move to single-fire implementation in TceMain (DataHandler)
         if ('update' === $operation || 'new' === $operation) {
             $tableName = (string) $this->getTableName($row);
-            $record = $reference->datamap[$this->tableName][$id];
-            $stored = $this->recordService->getSingle($tableName, '*', $record['uid']) ?? $record;
+            $record = $reference->datamap[$this->tableName][$id] ?? [];
+            $stored = $this->recordService->getSingle($tableName, '*', $record['uid'] ?? 0) ?? $record;
             $fieldName = $this->getFieldName((array) $record);
             $dontProcess = (
                 null === $fieldName
@@ -1113,5 +1114,21 @@ class AbstractProvider implements ProviderInterface
         $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
         $flashMesasageQueue = $flashMessageService->getMessageQueueByIdentifier();
         $flashMesasageQueue->enqueue($flashMesasage);
+    }
+
+    protected function resolveAbsolutePathToFile(?string $file): ?string
+    {
+        return $file === null ? null : GeneralUtility::getFileAbsFileName($file);
+    }
+
+    /**
+     * @param string|array $extensionKeyOrConfiguration
+     * @return TemplatePaths
+     */
+    protected function createTemplatePaths($extensionKeyOrConfiguration): TemplatePaths
+    {
+        /** @var TemplatePaths $paths */
+        $paths = GeneralUtility::makeInstance(TemplatePaths::class, $extensionKeyOrConfiguration);
+        return $paths;
     }
 }

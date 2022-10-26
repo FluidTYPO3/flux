@@ -19,7 +19,6 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -324,10 +323,14 @@ abstract class AbstractFormComponent implements FormInterface
 
         $name = $this->getName();
         $extensionName = (string) $this->getExtensionName();
-        $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-        if (empty($label) && !ExtensionManagementUtility::isLoaded($extensionKey)) {
+
+        if (empty($extensionName) && empty($label)) {
             return $name;
-        } elseif (strpos($label ?? '', 'LLL:EXT:') === 0) {
+        }
+
+        $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+
+        if (strpos($label ?? '', 'LLL:EXT:') === 0) {
             return $label;
         }
 

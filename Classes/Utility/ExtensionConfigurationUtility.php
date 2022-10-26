@@ -52,7 +52,7 @@ class ExtensionConfigurationUtility
 
     public static function getOptions(): array
     {
-        return ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'] ?? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'])['flux'];
+        return ($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'] ?? $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'])['flux'] ?? [];
     }
 
     /**

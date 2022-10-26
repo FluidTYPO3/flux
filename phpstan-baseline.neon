@@ -1,6 +1,10 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\FluxService\\:\\:getFlexFormService\\(\\) has invalid return type TYPO3\\\\CMS\\\\(Core|Extbase)\\\\Service\\\\FlexFormService\\.$#"
+            count: 1
+            path: Classes/Service/FluxService.php
+        -
             message: "#^Right side of \\|\\| is always false\\.$#"
             count: 1
             path: Configuration/TCA/content_types.php

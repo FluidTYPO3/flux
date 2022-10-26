@@ -16,7 +16,6 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
  */
 class Resolver
 {
-
     /**
      * @param string $extensionKey
      * @param string $controllerObjectShortName

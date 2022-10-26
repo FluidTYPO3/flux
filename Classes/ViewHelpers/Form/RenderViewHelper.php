@@ -59,7 +59,7 @@ class RenderViewHelper extends AbstractViewHelper
             'inlineStructure' => [],
             'parameterArray' => [
                 'itemFormElName' => sprintf('data[%s][%d][%s]', $table, (integer) $record['uid'], $field),
-                'itemFormElValue' => GeneralUtility::xml2array($record[$field]),
+                'itemFormElValue' => static::convertXmlToArray($record[$field]),
                 'fieldChangeFunc' => [],
                 'fieldConf' => [
                     'config' => [
@@ -69,7 +69,16 @@ class RenderViewHelper extends AbstractViewHelper
             ],
         ]);
         $output = $node->render();
-        return $output['html'];
+        return $output['html'] ?? '';
+    }
+
+    protected static function convertXmlToArray(string $xml): array
+    {
+        $array = GeneralUtility::xml2array($xml);
+        if (is_array($array)) {
+            return $array;
+        }
+        return [];
     }
 
     /**

@@ -152,8 +152,7 @@ class ContentIcon
      */
     protected function drawGridToggle(array $row)
     {
-        /** @var IconFactory $iconFactory */
-        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        $iconFactory = $this->getIconFactory();
 
         $collapseIcon = $iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
         $expandIcon = $iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
@@ -218,5 +217,12 @@ class ContentIcon
             }
         }
         return null;
+    }
+
+    protected function getIconFactory(): IconFactory
+    {
+        /** @var IconFactory $iconFactory */
+        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        return $iconFactory;
     }
 }

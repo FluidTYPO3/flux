@@ -83,10 +83,8 @@ class ContentTypeBuilder
         }
         $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerActionName);
 
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var BasicProviderInterface $provider */
-        $provider = $objectManager->get($providerClassName);
+        $provider = $this->getObjectManager()->get($providerClassName);
         if (!$provider instanceof BasicProviderInterface
             || !$provider instanceof RecordProviderInterface
             || !$provider instanceof ControllerProviderInterface
@@ -186,10 +184,7 @@ class ContentTypeBuilder
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
         // all TypoScript is finally loaded.
-        /** @var CacheManager $cacheManager */
-        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-        $cacheManager->getCache('cache_runtime')
-            ->remove('viewpaths_' . ExtensionNamingUtility::getExtensionKey($providerExtensionName));
+        $this->getRuntimeCache()->remove('viewpaths_' . ExtensionNamingUtility::getExtensionKey($providerExtensionName));
     }
 
     protected function addIcon(Form $form, string $contentType): string
@@ -206,10 +201,7 @@ class ContentTypeBuilder
         if (!$icon) {
             $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Extension.svg');
         }
-        $iconIdentifier = MiscellaneousUtility::createIcon(
-            $icon,
-            'content-' . $contentType
-        );
+        $iconIdentifier = $this->createIcon($icon, $contentType);
         $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType] = $iconIdentifier;
         return $iconIdentifier;
     }
@@ -331,6 +323,20 @@ class ContentTypeBuilder
         $groups[$groupName] = true;
     }
 
+    protected function getObjectManager(): ObjectManagerInterface
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        return $objectManager;
+    }
+
+    protected function getRuntimeCache(): FrontendInterface
+    {
+        /** @var CacheManager $cacheManager */
+        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        return $cacheManager->getCache('cache_runtime');
+    }
+
     protected function getCache(): FrontendInterface
     {
         /** @var CacheManager $cacheManager */
@@ -340,6 +346,14 @@ class ContentTypeBuilder
         } catch (NoSuchCacheException $error) {
             return $cacheManager->getCache('cache_runtime');
         }
+    }
+
+    protected function createIcon(string $icon, string $contentType): string
+    {
+        return MiscellaneousUtility::createIcon(
+            $icon,
+            'content-' . $contentType
+        );
     }
 
     private function getExtensionIdentityForPluginRegistration(string $extensionIdentity): string

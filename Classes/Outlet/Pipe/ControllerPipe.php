@@ -22,7 +22,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class ControllerPipe extends AbstractPipe implements PipeInterface
 {
-
     /**
      * @var ObjectManagerInterface
      */

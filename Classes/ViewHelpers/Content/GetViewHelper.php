@@ -20,8 +20,6 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -118,19 +116,6 @@ class GetViewHelper extends AbstractViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        if (!static::$configurationService instanceof FluxService) {
-            /** @var FluxService $configurationService */
-            $configurationService = $objectManager->get(FluxService::class);
-            static::$configurationService = $configurationService;
-        }
-        if (!static::$configurationManager instanceof ConfigurationManagerInterface) {
-            /** @var ConfigurationManagerInterface $configurationManager */
-            $configurationManager = $objectManager->get(ConfigurationManagerInterface::class);
-            static::$configurationManager = $configurationManager;
-        }
-
         $contentObjectRenderer = static::getContentObjectRenderer();
 
         $loadRegister = false;
@@ -216,7 +201,7 @@ class GetViewHelper extends AbstractViewHelper
         $conditions = sprintf(
             'colPos = %d',
             ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
-                $parent['l18n_parent'] ?: $parent['uid'],
+                ($parent['l18n_parent'] ?? null) ?: $parent['uid'],
                 (int) $columnPosition
             )
         );
@@ -228,7 +213,7 @@ class GetViewHelper extends AbstractViewHelper
                 'begin' => $arguments['offset'],
                 'orderBy' => $arguments['order'] . ' ' . $arguments['sortDirection'],
                 'where' => $conditions,
-                'pidInList' => $parent['pid'],
+                'pidInList' => $parent['pid'] ?? null,
                 'includeRecordsWithoutDefaultTranslation' => !($arguments['hideUntranslated'] ?? false)
             ]
         );
@@ -239,18 +224,6 @@ class GetViewHelper extends AbstractViewHelper
                 'records' => $rows
             ]
         )['records'];
-    }
-
-    /**
-     * @return WorkspacesAwareRecordService
-     */
-    protected static function getRecordService()
-    {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var WorkspacesAwareRecordService $service */
-        $service =  $objectManager->get(WorkspacesAwareRecordService::class);
-        return $service;
     }
 
     /**
@@ -268,7 +241,7 @@ class GetViewHelper extends AbstractViewHelper
      * @param array $rows database rows of records (each item is a tt_content table record)
      * @return array
      */
-    protected static function getRenderedRecords($rows)
+    protected static function getRenderedRecords(array $rows)
     {
         $elements = [];
         foreach ($rows as $row) {
