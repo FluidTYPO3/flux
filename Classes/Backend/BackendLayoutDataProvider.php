@@ -26,7 +26,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class BackendLayoutDataProvider extends DefaultDataProvider implements DataProviderInterface
 {
-
     /**
      * @var ObjectManagerInterface
      */

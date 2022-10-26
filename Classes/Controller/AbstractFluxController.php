@@ -145,12 +145,12 @@ abstract class AbstractFluxController extends ActionController
         $row = $this->getRecord();
         $extensionKey = $this->provider->getControllerExtensionKeyFromRecord($row);
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
-        if (true === isset($this->data['settings']) && true === is_array($this->data['settings'])) {
+        if (is_array($this->data['settings'] ?? null)) {
             // a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
             // as well as the internal $this->settings array as per expected Extbase behavior.
             $this->settings = RecursiveArrayUtility::merge($this->settings, $this->data['settings']);
         }
-        if (true === isset($this->settings['useTypoScript']) && true === (boolean) $this->settings['useTypoScript']) {
+        if ($this->settings['useTypoScript'] ?? false) {
             // an override shared by all Flux enabled controllers: setting plugin.tx_EXTKEY.settings.useTypoScript = 1
             // will read the "settings" array from that location instead - thus excluding variables from the flexform
             // which are still available as $this->data but no longer available automatically in the template.
@@ -306,6 +306,8 @@ abstract class AbstractFluxController extends ActionController
     }
 
     /**
+     * Render content
+     *
      * @return string
      */
     public function renderAction()
@@ -551,11 +553,11 @@ abstract class AbstractFluxController extends ActionController
         $record = $this->getRecord();
         $form = $this->provider->getForm($record);
         $input = $this->request->getArguments();
-        $targetConfiguration = $this->request->getInternalArguments()['__outlet'];
+        $targetConfiguration = $this->request->getInternalArguments()['__outlet'] ?? [];
         if ($form === null
             ||
-            ($this->provider->getTableName($record) !== $targetConfiguration['table']
-                && $record['uid'] !== (integer) $targetConfiguration['recordUid']
+            ($this->provider->getTableName($record) !== ($targetConfiguration['table'] ?? '')
+                && ($record['uid'] ?? 0) !== (integer) ($targetConfiguration['recordUid'] ?? 0)
             )
         ) {
             // This instance does not match the instance that rendered the form. Forward the request

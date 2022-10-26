@@ -108,9 +108,9 @@ class DataViewHelper extends AbstractViewHelper
         $templateVariableContainer = $renderingContext->getVariableProvider();
         $as = $arguments['as'];
         $record = $arguments['record'];
-        $uid = $arguments['uid'];
-        $field = $arguments['field'];
-        $table = $arguments['table'];
+        $uid = $arguments['uid'] ?? null;
+        $field = $arguments['field'] ?? null;
+        $table = $arguments['table'] ?? null;
 
         if (null === $record && null === $as) {
             $record = $renderChildrenClosure();

@@ -18,7 +18,6 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
  * Page Configuration Provider
@@ -153,8 +152,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $action = $this->getControllerActionReferenceFromRecord($row);
         if (false === empty($action)) {
             $pathsOrExtensionKey = $this->templatePaths ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row));
-            /** @var TemplatePaths $templatePaths */
-            $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $pathsOrExtensionKey);
+            $templatePaths = $this->createTemplatePaths($pathsOrExtensionKey);
             $action = $this->getControllerActionFromRecord($row);
             $action = ucfirst($action);
             $templatePathAndFilename = $templatePaths->resolveTemplateFileForControllerAndActionAndFormat(
@@ -231,7 +229,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $fieldName = $this->getFieldName($row);
         $form = $this->getForm($row);
         $immediateConfiguration = $this->configurationService->convertFlexFormContentToArray(
-            $row[$fieldName],
+            $row[$fieldName] ?? '',
             $form,
             null,
             null
@@ -300,8 +298,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         foreach ($records as $index => $record) {
             $hasMainAction = false === empty($record[self::FIELD_ACTION_MAIN]);
             $hasSubAction = false === empty($record[self::FIELD_ACTION_SUB]);
-            $shouldUseMainTemplate = $template !== $record[self::FIELD_ACTION_SUB];
-            $shouldUseSubTemplate = $template !== $record[self::FIELD_ACTION_MAIN];
+            $shouldUseMainTemplate = $template !== ($record[self::FIELD_ACTION_SUB] ?? null);
+            $shouldUseSubTemplate = $template !== ($record[self::FIELD_ACTION_MAIN] ?? null);
             if (($hasMainAction && $shouldUseSubTemplate) || ($hasSubAction && $shouldUseMainTemplate)) {
                 return array_slice($records, $index);
             }
@@ -341,12 +339,15 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             $tree = $this->getInheritanceTree($row);
             $data = [];
             foreach ($tree as $branch) {
-                /** @var SubPageProvider $provider */
+                /** @var SubPageProvider|null $provider */
                 $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
                     $this->tableName,
                     self::FIELD_NAME_SUB,
                     $branch
                 );
+                if (null === $provider) {
+                    continue;
+                }
                 $form = $provider->getForm($branch);
                 if (null === $form) {
                     continue;
@@ -406,7 +407,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     {
         $parentFieldName = $this->getParentFieldName($row);
         if (null !== $parentFieldName && false === isset($row[$parentFieldName])) {
-            $row = $this->recordService->getSingle((string) $this->getTableName($row), '*', $row[$parentFieldName]);
+            $row = $this->recordService->getSingle((string) $this->getTableName($row), $parentFieldName, $row['uid']);
         }
         return $row[$parentFieldName] ?? null;
     }

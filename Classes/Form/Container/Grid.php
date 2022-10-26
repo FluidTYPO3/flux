@@ -156,7 +156,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         $root = $this->getRoot();
         $label = (string) $root->getLabel();
         foreach ($this->flattenSetup($configuration, 'backend_layout.') as $name => $value) {
-            $typoScriptString .= $name . ' = ' . $value . LF;
+            $typoScriptString .= $name . ' = ' . $value . PHP_EOL;
         }
         return new BackendLayout(
             (string) $this->getRoot()->getName(),

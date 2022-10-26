@@ -28,10 +28,10 @@ class UserFunctions
     {
         unset($pObj);
         $nameSegments = explode('][', $parameters['itemName']);
-        $nameSegments[6] .= '_clear';
+        $nameSegments[count($nameSegments) - 2] .= '_clear';
         $fieldName = implode('][', $nameSegments);
         $html = '<label style="opacity: 0.65; padding-left: 2em"><input type="checkbox" name="' . $fieldName .
-            '_clear"  value="1" /> ' . LocalizationUtility::translate('flux.clearValue', 'Flux') . '</label>';
+            '_clear"  value="1" /> ' . $this->translate('flux.clearValue', 'Flux') . '</label>';
         return $html;
     }
 
@@ -144,5 +144,10 @@ class UserFunctions
         return empty($rows) ? [] : array_map(function ($colPos) {
             return ColumnNumberUtility::calculateLocalColumnNumber($colPos);
         }, array_unique(array_column($rows, 'colPos')));
+    }
+
+    protected function translate(string $key, string $extensionName): string
+    {
+        return LocalizationUtility::translate($key, $extensionName) ?? $key;
     }
 }

@@ -29,6 +29,11 @@ use TYPO3Fluid\Fluid\Exception;
 class TableConfigurationPostProcessor implements TableConfigurationPostProcessingHookInterface
 {
     /**
+     * @var ContentTypeBuilder|null
+     */
+    static $contentTypeBuilder;
+
+    /**
      * @param array $parameters
      * @return void
      */
@@ -128,9 +133,12 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 
     protected static function getContentTypeBuilder(): ContentTypeBuilder
     {
-        /** @var ContentTypeBuilder $contentTypeBuilder */
-        $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
-        return $contentTypeBuilder;
+        if (static::$contentTypeBuilder === null) {
+            /** @var ContentTypeBuilder $contentTypeBuilder */
+            $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
+            static::$contentTypeBuilder = $contentTypeBuilder;
+        }
+        return static::$contentTypeBuilder;
     }
 
     protected function getContentTypeManager(): ContentTypeManager

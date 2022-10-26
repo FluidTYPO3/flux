@@ -83,8 +83,8 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
     protected function renderAdditionalIdentityFields()
     {
         $output = parent::renderAdditionalIdentityFields();
-        $output .= '<input type="hidden" name="' . $this->prefixFieldName('__outlet[table]') . '" value="' . $this->provider->getTableName($this->record) . '" />' . LF;
-        $output .= '<input type="hidden" name="' . $this->prefixFieldName('__outlet[recordUid]') . '" value="' . $this->record['uid'] . '" />' . LF;
+        $output .= '<input type="hidden" name="' . $this->prefixFieldName('__outlet[table]') . '" value="' . $this->provider->getTableName($this->record) . '" />' . PHP_EOL;
+        $output .= '<input type="hidden" name="' . $this->prefixFieldName('__outlet[recordUid]') . '" value="' . $this->record['uid'] . '" />' . PHP_EOL;
         return $output;
     }
 }

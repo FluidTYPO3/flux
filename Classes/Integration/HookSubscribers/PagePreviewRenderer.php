@@ -38,7 +38,7 @@ class PagePreviewRenderer
 
         $form = $pageProvider->getForm($row);
 
-        if ($form) {
+        if ($form && $form->getEnabled()) {
             // Force the preview to *not* generate content column HTML in preview
             $form->setOption(PreviewView::OPTION_PREVIEW, [
                 PreviewView::OPTION_MODE => PreviewView::MODE_NONE

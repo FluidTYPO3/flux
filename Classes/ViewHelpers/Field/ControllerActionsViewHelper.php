@@ -77,7 +77,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ControllerActionsViewHelper extends SelectViewHelper
 {
-
     /**
      * Initialize
      * @return void

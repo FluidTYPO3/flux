@@ -56,7 +56,7 @@ class RenderViewHelper extends GetViewHelper
     ) {
         $content = parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
         if (true === is_array($content)) {
-            return implode(LF, $content);
+            return implode(PHP_EOL, $content);
         }
         return $content;
     }

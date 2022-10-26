@@ -40,6 +40,10 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ArgumentViewHelper extends AbstractFormViewHelper
 {
+    /**
+     * @var ObjectManagerInterface|null
+     */
+    static $objectManager;
 
     /**
      * @return void
@@ -63,8 +67,7 @@ class ArgumentViewHelper extends AbstractFormViewHelper
         RenderingContextInterface $renderingContext
     ) {
         $outlet = static::getFormFromRenderingContext($renderingContext)->getOutlet();
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $objectManager = static::getObjectManager();
         /** @var OutletArgument $argument */
         $argument = $objectManager->get(OutletArgument::class, $arguments['name'], $arguments['type']);
 
@@ -77,5 +80,15 @@ class ArgumentViewHelper extends AbstractFormViewHelper
             $argument->addValidator($validator['type'], (array)$validator['options']);
         }
         $outlet->addArgument($argument);
+    }
+
+    protected static function getObjectManager(): ObjectManagerInterface
+    {
+        if (static::$objectManager === null) {
+            /** @var ObjectManagerInterface $objectManager */
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            static::$objectManager = $objectManager;
+        }
+        return static::$objectManager;
     }
 }

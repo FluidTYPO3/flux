@@ -18,7 +18,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
  */
 class WorkspacesAwareRecordService extends RecordService implements SingletonInterface
 {
-
     /**
      * @param string $table
      * @param string $fields
@@ -108,7 +107,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         $copy = false;
         if (null !== $GLOBALS['BE_USER']) {
             $copy = $record;
-            BackendUtility::workspaceOL($table, $copy, -99, false);
+            $this->overlayRecordInternal($table, $copy);
             if (!$copy) {
                 return false;
             }
@@ -127,5 +126,17 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
             && ExtensionManagementUtility::isLoaded('workspaces')
             && BackendUtility::isTableWorkspaceEnabled($table)
         );
+    }
+
+    /**
+     * @param string $table
+     * @param array $copy
+     * @return array|false
+     */
+    protected function overlayRecordInternal(string $table, array $copy)
+    {
+        BackendUtility::workspaceOL($table, $copy, -99, false);
+        /** array|false */
+        return $copy;
     }
 }

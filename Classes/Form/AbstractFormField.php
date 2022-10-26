@@ -109,7 +109,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             throw new \RuntimeException(
                 sprintf(
                     'Invalid class- or type-name used in type of field "%s"; "%s" is invalid',
-                    $settings['name'],
+                    $settings['name'] ?? '(unknown)',
                     $className
                 ),
                 1375373527

@@ -318,8 +318,8 @@ class ControllerActions extends Select
         $extensionName = $this->getControllerExtensionName();
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
         $pluginName = $this->getPluginName();
-        $actions = (array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']
-            [$extensionName]['plugins'][$pluginName]['controllers'];
+        $actions = (array) ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']
+            [$extensionName]['plugins'][$pluginName]['controllers'] ?? []);
         foreach ($actions as $controllerName => $definitions) {
             $actions[$controllerName] = $definitions['actions'];
         }
@@ -371,9 +371,7 @@ class ControllerActions extends Select
         }
         $disableLocalLanguageLabels = $this->getDisableLocalLanguageLabels();
         $labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
-        $hasLocalLanguageFile = file_exists(
-            ExtensionManagementUtility::extPath($extensionKey, $localLanguageFileRelativePath)
-        );
+        $hasLocalLanguageFile = file_exists($this->resolvePathToFileInExtension($extensionKey, $localLanguageFileRelativePath));
         $label = $actionName . $separator . $controllerName;
         if (false === $disableLocalLanguageLabels && true === $hasLocalLanguageFile) {
             $label = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
@@ -464,7 +462,7 @@ class ControllerActions extends Select
                 continue;
             }
             foreach ($controllerActions as $actionName) {
-                if (is_array($exclusions[$controllerName]) && in_array($actionName, $exclusions[$controllerName])) {
+                if (is_array($exclusions[$controllerName] ?? null) && in_array($actionName, $exclusions[$controllerName])) {
                     continue;
                 } elseif ($limitByControllerName && $controllerName !== $limitByControllerName) {
                     continue;
@@ -486,5 +484,10 @@ class ControllerActions extends Select
             }
         }
         return $items;
+    }
+
+    protected function resolvePathToFileInExtension(string $extensionKey, string $path): string
+    {
+        return ExtensionManagementUtility::extPath($extensionKey, $path);
     }
 }

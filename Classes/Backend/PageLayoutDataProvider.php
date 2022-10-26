@@ -97,16 +97,16 @@ class PageLayoutDataProvider
         $typoScript = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
         );
-        $settings = GeneralUtility::removeDotsFromTS((array) $typoScript['plugin.']['tx_flux.']);
+        $settings = GeneralUtility::removeDotsFromTS((array) ($typoScript['plugin.']['tx_flux.'] ?? []));
         if (isset($settings['siteRootInheritance'])) {
             $hideInheritFieldSiteRoot = 1 > $settings['siteRootInheritance'];
         } else {
             $hideInheritFieldSiteRoot = false;
         }
-        $pageIsSiteRoot = (boolean) ($parameters['row']['is_siteroot']);
-        $forceDisplayInheritSiteRoot = 'tx_fed_page_controller_action_sub' === $parameters['field']
+        $pageIsSiteRoot = (boolean) ($parameters['row']['is_siteroot'] ?? 0);
+        $forceDisplayInheritSiteRoot = 'tx_fed_page_controller_action_sub' === ($parameters['field'] ?? null)
             && !$hideInheritFieldSiteRoot;
-        $forceHideInherit = (boolean) (0 === intval($parameters['row']['pid']));
+        $forceHideInherit = (0 === (int) ($parameters['row']['pid'] ?? 0));
         if (!$forceHideInherit) {
             if (!$pageIsSiteRoot || $forceDisplayInheritSiteRoot || !$hideInheritFieldSiteRoot) {
                 $parameters['items'][] = [
@@ -118,7 +118,7 @@ class PageLayoutDataProvider
         }
 
         $allowedTemplates = [];
-        $pageUid = (int) $parameters['row']['uid'];
+        $pageUid = (int) ($parameters['row']['uid'] ?? 0);
         if ($pageUid > 0 && class_exists(SiteFinder::class)) {
             /** @var SiteFinder $resolver */
             $resolver = GeneralUtility::makeInstance(SiteFinder::class);
@@ -154,7 +154,7 @@ class PageLayoutDataProvider
         $options = [];
         if (false === empty($group)) {
             $extensionKey = ExtensionNamingUtility::getExtensionKey($extension);
-            if (false === ExtensionManagementUtility::isLoaded($extensionKey)) {
+            if (false === $this->isExtensionLoaded($extensionKey)) {
                 $groupTitle = ucfirst($extension);
             } else {
                 $emConfigFile = ExtensionManagementUtility::extPath($extensionKey, 'ext_emconf.php');
@@ -195,5 +195,10 @@ class PageLayoutDataProvider
         $optionValue = $extension . '->' . lcfirst($template);
         $option = [$label, $optionValue, $thumbnail];
         return $option;
+    }
+
+    protected function isExtensionLoaded(string $extensionKey): bool
+    {
+        return ExtensionManagementUtility::isLoaded($extensionKey);
     }
 }

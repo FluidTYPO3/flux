@@ -304,7 +304,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         if (0 < count($blacklist)) {
             foreach ($blacklist as $contentElementType) {
                 foreach ($items as $name => $item) {
-                    if ($item['tt_content_defValues']['CType'] === $contentElementType) {
+                    if (($item['tt_content_defValues']['CType'] ?? null) === $contentElementType) {
                         unset($items[$name]);
                     }
                 }

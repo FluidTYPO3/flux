@@ -41,7 +41,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ValidateViewHelper extends AbstractFormViewHelper
 {
-
     /**
      * @return void
      */
