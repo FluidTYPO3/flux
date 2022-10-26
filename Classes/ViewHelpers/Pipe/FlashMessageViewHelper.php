@@ -12,8 +12,6 @@ use FluidTYPO3\Flux\Outlet\Pipe\FlashMessagePipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -23,7 +21,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FlashMessageViewHelper extends AbstractPipeViewHelper
 {
-
     /**
      * @return void
      */
@@ -54,10 +51,8 @@ class FlashMessageViewHelper extends AbstractPipeViewHelper
         \Closure $renderChildrenClosure = null
     ) {
         /** @var array $arguments */
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var FlashMessagePipe $pipe */
-        $pipe = $objectManager->get(FlashMessagePipe::class);
+        $pipe = GeneralUtility::makeInstance(FlashMessagePipe::class);
         $pipe->setTitle($arguments['title']);
         $pipe->setMessage($arguments['message']);
         $pipe->setSeverity($arguments['severity']);

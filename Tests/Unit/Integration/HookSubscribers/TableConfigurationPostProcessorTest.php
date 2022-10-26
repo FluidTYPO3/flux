@@ -9,7 +9,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
+use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
 use FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleTableConfigurationPostProcessor;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Lang\LanguageService;
 
@@ -18,9 +20,22 @@ use TYPO3\CMS\Lang\LanguageService;
  */
 class TableConfigurationPostProcessorTest extends AbstractTestCase
 {
+    protected $contentTypeBuilder;
+
     protected function setUp(): void
     {
-        $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)->setMethods(['sL'])->getMock();
+        parent::setUp();
+
+        $this->contentTypeBuilder = $this->getMockBuilder(ContentTypeBuilder::class)->getMock();
+        AccessibleTableConfigurationPostProcessor::setContentTypeBuilder($this->contentTypeBuilder);
+        $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)->setMethods(['sL'])->disableOriginalConstructor()->getMock();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        AccessibleTableConfigurationPostProcessor::setContentTypeBuilder(null);
     }
 
     /**

@@ -17,8 +17,6 @@ use FluidTYPO3\Flux\Outlet\OutletInterface;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
@@ -86,6 +84,13 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     protected $outlet;
 
+    public function __construct()
+    {
+        parent::__construct();
+        $this->initializeObject();
+    }
+
+
     /**
      * @return void
      */
@@ -97,7 +102,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         $defaultSheet->setLabel('LLL:EXT:flux' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
         $this->add($defaultSheet);
         /** @var StandardOutlet $outlet */
-        $outlet = $this->getObjectManager()->get(StandardOutlet::class);
+        $outlet = GeneralUtility::makeInstance(StandardOutlet::class);
         $this->outlet = $outlet;
     }
 
@@ -107,10 +112,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     public static function create(array $settings = [])
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var FormInterface $object */
-        $object = $objectManager->get(static::class);
+        /** @var Form $object */
+        $object = GeneralUtility::makeInstance(static::class);
+        $object->initializeObject();
         $object->modify($settings);
         return HookHandler::trigger(HookHandler::FORM_CREATED, ['form' => $object])['form'];
     }

@@ -10,30 +10,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
 
 use FluidTYPO3\Flux\Backend\PageLayoutDataProvider;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class PageLayoutDataProviderTest
  */
 class PageLayoutDataProviderTest extends AbstractTestCase
 {
-
-    /**
-     * @return void
-     */
-    public function testPerformsInjections()
-    {
-        $instance = GeneralUtility::makeInstance(ObjectManager::class)->get(PageLayoutDataProvider::class);
-        $this->assertAttributeInstanceOf(PageService::class, 'pageService', $instance);
-        $this->assertAttributeInstanceOf(FluxService::class, 'configurationService', $instance);
-        $this->assertAttributeInstanceOf(ConfigurationManagerInterface::class, 'configurationManager', $instance);
-    }
-
     /**
      * @param array $parameters
      * @param array $items
@@ -44,11 +29,15 @@ class PageLayoutDataProviderTest extends AbstractTestCase
     public function testAddItems(array $parameters, array $items, array $expected)
     {
         $parameters['items'] = &$items;
-        $instance = new PageLayoutDataProvider();
-        $form = Form::create();
+        $instance = $this->getMockBuilder(PageLayoutDataProvider::class)->setMethods(['isExtensionLoaded'])->disableOriginalConstructor()->getMock();
+        $instance->method('isExtensionLoaded')->willReturn(false);
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
+        $configurationManager->method('getConfiguration')->willReturn([]);
         $pageService = $this->getMockBuilder(PageService::class)->setMethods(['getAvailablePageTemplateFiles'])->getMock();
         $pageService->expects($this->once())->method('getAvailablePageTemplateFiles')->willReturn(['flux' => [$form]]);
         $instance->injectPageService($pageService);
+        $instance->injectConfigurationManager($configurationManager);
         $instance->addItems($parameters);
         $this->assertSame($expected, $items);
     }
@@ -63,27 +52,27 @@ class PageLayoutDataProviderTest extends AbstractTestCase
             [
                 [],
                 [],
-                [['Flux: Fluid Integration', '--div--'], []]
+                [['Flux', '--div--'], []]
             ],
             [
                 [],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['Flux: Fluid Integration', '--div--'], []]
+                [['foo', 'bar', 'baz'], ['Flux', '--div--'], []]
             ],
             [
                 ['field' => 'tx_fed_page_controller_action_sub', 'row' => ['pid' => 1]],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], []]
+                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux', '--div--'], []]
             ],
             [
                 ['field' => 'tx_fed_page_controller_action_sub', 'row' => ['pid' => 1, 'is_siteroot' => false]],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux: Fluid Integration', '--div--'], []]
+                [['foo', 'bar', 'baz'], ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default', '', 'actions-move-down'], ['Flux', '--div--'], []]
             ],
             [
                 ['field' => 'tx_fed_page_controller_action', 'row' => ['pid' => 0, 'is_siteroot' => true]],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['Flux: Fluid Integration', '--div--'], []]
+                [['foo', 'bar', 'baz'], ['Flux', '--div--'], []]
             ],
 
         ];

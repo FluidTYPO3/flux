@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
  */
 abstract class AbstractPipeTestCase extends AbstractTestCase
 {
-
     /**
      * @var array
      */

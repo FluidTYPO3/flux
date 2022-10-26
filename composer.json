@@ -41,8 +41,12 @@
         "typo3-ter/flux": "self.version"
     },
     "require-dev": {
-        "fluidtypo3/development": "^4",
-        "phpstan/phpstan": "^1.8"
+        "phpstan/phpstan": "^1.8",
+        "phpunit/phpunit": "^5.7 || ^9.5",
+        "php-coveralls/php-coveralls": "^2.5",
+        "squizlabs/php_codesniffer": "^3.7",
+        "mikey179/vfsstream": "^1.6",
+        "phpspec/prophecy": "*"
     },
     "non-feature-branches": ["development", "staging"],
     "config": {

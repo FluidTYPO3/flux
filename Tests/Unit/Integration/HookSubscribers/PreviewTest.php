@@ -23,16 +23,15 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
  */
 class PreviewTest extends AbstractTestCase
 {
-
     /**
      * Setup
      */
     public function setUp(): void
     {
         $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
-        $fluxService = $this->objectManager->get(FluxService::class);
+        $fluxService = $this->getMockBuilder(FluxService::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
-        $tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
+        $tempFiles = (array) glob('typo3temp/flux-preview-*.tmp');
         foreach ($tempFiles as $tempFile) {
             if (true === file_exists($tempFile)) {
                 unlink($tempFile);

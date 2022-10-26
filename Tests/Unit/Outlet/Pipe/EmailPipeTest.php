@@ -48,7 +48,7 @@ class EmailPipeTest extends AbstractPipeTestCase
     public function turnsMailboxValidationErrorIntoPipeException()
     {
         $instance = $this->createInstance();
-        $this->setExpectedException('FluidTYPO3\Flux\Outlet\Pipe\Exception');
+        $this->expectException('FluidTYPO3\Flux\Outlet\Pipe\Exception');
         $instance->setRecipient(array('test', 'test'));
         $instance->conduct($this->defaultData);
     }
@@ -58,7 +58,7 @@ class EmailPipeTest extends AbstractPipeTestCase
      */
     public function sendsEmail()
     {
-        $instance = $this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe');
+        $instance = new EmailPipe();
         $message = $this->getMockBuilder('TYPO3\CMS\Core\Mail\MailMessage')->setMethods(array('send'))->getMock();
         $message->expects($this->once())->method('send');
         $this->callInaccessibleMethod($instance, 'sendEmail', $message);

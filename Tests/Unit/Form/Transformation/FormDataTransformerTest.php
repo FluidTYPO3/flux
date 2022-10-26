@@ -11,6 +11,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Transformation;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
+use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 
 /**
  * FormDataTransformerTest
@@ -27,12 +32,20 @@ class FormDataTransformerTest extends AbstractTestCase
      */
     public function testTransformation($value, $transformation, $expected)
     {
-        $instance = $this->getMockBuilder(FormDataTransformer::class)->setMethods(array('loadObjectsFromRepository'))->getMock();
-        $instance->expects($this->any())->method('loadObjectsFromRepository')->willReturn(array());
-        $instance->injectObjectManager($this->objectManager);
-        $form = Form::create();
+        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
+        $objectManager->method('get')->willReturnMap(
+            [
+                ['DateTime', new \DateTime()],
+                [RepositoryInterface::class, $this->getMockBuilder(RepositoryInterface::class)->getMockForAbstractClass()]
+            ]
+        );
+        $instance = $this->getMockBuilder(FormDataTransformer::class)->setMethods(['loadObjectsFromRepository', 'resolveRepositoryClassName'])->getMock();
+        $instance->method('resolveRepositoryClassName')->willReturn(RepositoryInterface::class);
+        $instance->method('loadObjectsFromRepository')->willReturn([]);
+        $instance->injectObjectManager($objectManager);
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->createField('Input', 'field')->setTransform($transformation);
-        $transformed = $instance->transformAccordingToConfiguration(array('field' => $value), $form);
+        $transformed = $instance->transformAccordingToConfiguration(['field' => $value], $form);
         $this->assertTrue($transformed !== $expected, 'Transformation type ' . $transformation . ' failed; values are still identical');
     }
 
@@ -41,17 +54,17 @@ class FormDataTransformerTest extends AbstractTestCase
      */
     public function getValuesAndTransformations()
     {
-        return array(
+        return [
             array(array('1', '2', '3'), 'integer', array(1, 2, 3)),
             array('0', 'integer', 0),
             array('0.12', 'float', 0.12),
             array('1,2,3', 'array', array(1, 2, 3)),
             array('123,321', 'InvalidClass', '123'),
             array(date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))),
-            array('1', 'TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser', null),
-            array('1,2', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<TYPO3\\CMS\\Extbase\\Domain\\Model\\FrontendUser>', null),
-            array('1,2', 'TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage<\\Invalid>', null),
-        );
+            array('1', FrontendUser::class, null),
+            array('1,2', ObjectStorage::class . '<' . FrontendUser::class . '>', null),
+            array('1,2', ObjectStorage::class . '<\\Invalid>', null),
+        ];
     }
 
     /**
@@ -61,11 +74,7 @@ class FormDataTransformerTest extends AbstractTestCase
     {
         $instance = new FormDataTransformer();
         $identifiers = array('foobar', 'foobar2');
-        $repository = $this->getMockBuilder(
-            'TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserGroupRepository'
-        )->setMethods(
-            array('findByUid')
-        )->disableOriginalConstructor()->getMock();
+        $repository = $this->getMockBuilder(FrontendUserGroupRepository::class)->setMethods(array('findByUid'))->disableOriginalConstructor()->getMock();
         $repository->expects($this->exactly(2))->method('findByUid')->will($this->returnArgument(0));
         $result = $this->callInaccessibleMethod($instance, 'loadObjectsFromRepository', $repository, $identifiers);
         $this->assertEquals($result, array('foobar', 'foobar2'));

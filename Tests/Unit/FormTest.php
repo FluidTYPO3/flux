@@ -12,21 +12,27 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
-use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
+use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
+use TYPO3Fluid\Fluid\Core\Parser\TemplateProcessor\NamespaceDetectionTemplateProcessor;
+use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInvoker;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperResolver;
+use TYPO3Fluid\Fluid\View\TemplatePaths;
+use TYPO3Fluid\Fluid\View\TemplateView;
 
 /**
  * FormTest
  */
 class FormTest extends AbstractTestCase
 {
-
     /**
      * @return Form
      */
     protected function getEmptyDummyForm()
     {
-        /** @var Form $form */
-        $form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         return $form;
     }
 
@@ -36,12 +42,54 @@ class FormTest extends AbstractTestCase
      */
     protected function getDummyFormFromTemplate($template = self::FIXTURE_TEMPLATE_BASICGRID)
     {
-        $view = $this->objectManager->get(StandaloneView::class);
-        $view->setPartialRootPaths(['EXT:flux/Tests/Fixtures/Partials/']);
-        $view->setTemplateRootPaths(['EXT:flux/Tests/Fixtures/Templates/']);
-        $view->setLayoutRootPaths(['EXT:flux/Tests/Fixtures/Layouts/']);
-        $view->getRenderingContext()->setControllerAction(basename($template, '.html'));
-        $view->getRenderingContext()->setControllerName('Content');
+        $templateCompiler = $this->getMockBuilder(TemplateCompiler::class)->getMock();
+        $templateParser = new TemplateParser();
+        $viewHelperVariableContainer = new ViewHelperVariableContainer();
+        $variableProvider = new StandardVariableProvider();
+        $viewHelperResolver = new ViewHelperResolver();
+        $viewHelperInvoker = new ViewHelperInvoker();
+        $namespaceDetectionTemplateProcessor = new NamespaceDetectionTemplateProcessor();
+        $templatePaths = new TemplatePaths(
+            [
+                'partialRootPaths' => ['Tests/Fixtures/Partials/'],
+                'templateRootPaths' => ['Tests/Fixtures/Templates/'],
+                'layoutRootPaths' => ['Tests/Fixtures/Layouts/'],
+            ]
+        );
+
+        $renderingContext = $this->getMockBuilder(\TYPO3\CMS\Fluid\Core\Rendering\RenderingContext::class)->setMethods(
+            [
+                'getTemplatePaths',
+                'getViewHelperVariableContainer',
+                'getVariableProvider',
+                'getTemplateCompiler',
+                'getViewHelperInvoker',
+                'getTemplateParser',
+                'getViewHelperResolver',
+                'getTemplateProcessors',
+                'getExpressionNodeTypes',
+                'getControllerName',
+                'getControllerAction',
+            ]
+        )->disableOriginalConstructor()->getMock();
+        $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
+        $renderingContext->method('getViewHelperVariableContainer')->willReturn($viewHelperVariableContainer);
+        $renderingContext->method('getVariableProvider')->willReturn($variableProvider);
+        $renderingContext->method('getTemplateCompiler')->willReturn($templateCompiler);
+        $renderingContext->method('getTemplateParser')->willReturn($templateParser);
+        $renderingContext->method('getViewHelperInvoker')->willReturn($viewHelperInvoker);
+        $renderingContext->method('getViewHelperResolver')->willReturn($viewHelperResolver);
+        $renderingContext->method('getTemplateProcessors')->willReturn([$namespaceDetectionTemplateProcessor]);
+        $renderingContext->method('getExpressionNodeTypes')->willReturn([]);
+        $renderingContext->method('getControllerName')->willReturn('Content');
+        $renderingContext->method('getControllerAction')->willReturn(basename($template, '.html'));
+
+        $namespaceDetectionTemplateProcessor->setRenderingContext($renderingContext);
+
+        $templateParser->setRenderingContext($renderingContext);
+
+        $view = new TemplateView($renderingContext);
+
         $view->renderSection('Configuration', [], true);
         return $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, 'form');
     }
@@ -305,7 +353,7 @@ class FormTest extends AbstractTestCase
      */
     public function canDetermineHasChildrenFalse()
     {
-        $instance = Form::create();
+        $instance = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $this->assertFalse($instance->hasChildren());
     }
 
@@ -314,7 +362,7 @@ class FormTest extends AbstractTestCase
      */
     public function canDetermineHasChildrenTrue()
     {
-        $instance = Form::create();
+        $instance = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $instance->createField('Input', 'test');
         $this->assertTrue($instance->hasChildren());
     }
@@ -324,7 +372,7 @@ class FormTest extends AbstractTestCase
      */
     public function canSetAndGetOptions()
     {
-        $instance = Form::create();
+        $instance = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $instance->setOption('test', 'testing');
         $this->assertSame('testing', $instance->getOption('test'));
         $this->assertIsArray($instance->getOptions());
@@ -343,7 +391,7 @@ class FormTest extends AbstractTestCase
     {
         /** @var StandardOutlet $outlet */
         $outlet = $this->getMockBuilder('FluidTYPO3\Flux\Outlet\StandardOutlet')->getMock();
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->setOutlet($outlet);
         $this->assertSame($outlet, $form->getOutlet());
     }
@@ -353,7 +401,7 @@ class FormTest extends AbstractTestCase
      */
     public function modifySetsProperty()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->modify(array('name' => 'test'));
         $this->assertEquals('test', $form->getName());
     }
@@ -363,7 +411,7 @@ class FormTest extends AbstractTestCase
      */
     public function modifySetsOptions()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->modify(array('options' => array('test' => 'testvalue')));
         $this->assertEquals('testvalue', $form->getOption('test'));
     }
@@ -373,7 +421,7 @@ class FormTest extends AbstractTestCase
      */
     public function modifyCreatesSheets()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->modify(array('sheets' => array('test' => array('name' => 'test', 'label' => 'Test'))));
         $sheets = $form->getSheets(true);
         $this->assertArrayHasKey('test', $sheets);
@@ -384,7 +432,7 @@ class FormTest extends AbstractTestCase
      */
     public function modifyModifiesSheets()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->modify(array('sheets' => array('options' => array('label' => 'Test'))));
         $sheets = $form->getSheets(true);
         $this->assertEquals('Test', reset($sheets)->getLabel());

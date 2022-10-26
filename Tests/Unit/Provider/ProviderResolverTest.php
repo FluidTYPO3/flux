@@ -9,8 +9,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  */
 
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\InvalidConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * ProviderResolverTest
@@ -23,11 +28,10 @@ class ProviderResolverTest extends AbstractTestCase
      */
     public function loadTypoScriptProvidersReturnsEmptyArrayEarlyIfSetupNotFound()
     {
-        /** @var \FluidTYPO3\Flux\Provider\ProviderResolver $instance */
-        $instance = $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver');
-        $configurationService = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
+        $instance = new ProviderResolver();
+        $configurationService = $this->getMockBuilder(FluxService::class)->setMethods(array('getTypoScriptByPath'))->getMock();
         $configurationService->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue(array()));
-        $objectManager = $this->getMockBuilder('TYPO3\CMS\Extbase\Object\ObjectManager')->setMethods(array('get'))->getMock();
+        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
         $objectManager->expects($this->never())->method('get');
         $instance->injectConfigurationService($configurationService);
         $providers = $instance->loadTypoScriptConfigurationProviderInstances();
@@ -41,24 +45,24 @@ class ProviderResolverTest extends AbstractTestCase
     public function loadTypoScriptProvidersSupportsCustomClassName()
     {
         /** @var \FluidTYPO3\Flux\Provider\ProviderResolver $instance */
-        $instance = $this->objectManager->get('FluidTYPO3\Flux\Provider\ProviderResolver');
-        $configurationService = $this->getMockBuilder('FluidTYPO3\Flux\Service\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
-        $objectManager = $this->getMockBuilder('TYPO3\CMS\Extbase\Object\ObjectManager')->setMethods(array('get'))->getMock();
+        $instance = new ProviderResolver();
+        $configurationService = $this->getMockBuilder(FluxService::class)->setMethods(array('getTypoScriptByPath'))->getMock();
+        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
         $mockedTypoScript = array(
             'dummy.' => array(
-                'className' => 'FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider'
+                'className' => DummyConfigurationProvider::class,
             )
         );
-        $dummyProvider = $this->objectManager->get('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider');
+        $dummyProvider = new DummyConfigurationProvider();
         $configurationService->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue($mockedTypoScript));
-        $objectManager->expects($this->once())->method('get')->with('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider')->will($this->returnValue($dummyProvider));
+        $objectManager->expects($this->once())->method('get')->with(DummyConfigurationProvider::class)->will($this->returnValue($dummyProvider));
         $instance->injectConfigurationService($configurationService);
         $instance->injectObjectManager($objectManager);
         $providers = $instance->loadTypoScriptConfigurationProviderInstances();
         $this->assertIsArray($providers);
         $this->assertNotEmpty($providers);
         $this->assertContains($dummyProvider, $providers);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider', reset($providers));
+        $this->assertInstanceOf(DummyConfigurationProvider::class, reset($providers));
     }
 
     /**
@@ -68,12 +72,14 @@ class ProviderResolverTest extends AbstractTestCase
      */
     public function validateAndInstantiateProvidersCreatesInstances(array $providers)
     {
+        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
+        $objectManager->method('get')->willReturn(new Provider());
         $instance = $this->createInstance();
-        $instance->injectObjectManager($this->objectManager);
+        $instance->injectObjectManager($objectManager);
         $result = $this->callInaccessibleMethod($instance, 'validateAndInstantiateProviders', $providers);
         $this->assertSameSize($providers, $result);
         foreach ($result as $provider) {
-            $this->assertInstanceOf('FluidTYPO3\\Flux\\Provider\\ProviderInterface', $provider);
+            $this->assertInstanceOf(ProviderInterface::class, $provider);
         }
     }
 
@@ -84,7 +90,7 @@ class ProviderResolverTest extends AbstractTestCase
     {
         return array(
             array(array()),
-            array(array('FluidTYPO3\\Flux\\Provider\\Provider')),
+            array(array(Provider::class)),
             array(array(new Provider())),
         );
     }
@@ -97,7 +103,7 @@ class ProviderResolverTest extends AbstractTestCase
     public function validateAndInstantiateProvidersThrowsExceptionOnInvalidClasses(array $providers)
     {
         $instance = $this->createInstance();
-        $this->setExpectedException('RuntimeException');
+        $this->expectException('RuntimeException');
         $this->callInaccessibleMethod($instance, 'validateAndInstantiateProviders', $providers);
     }
 

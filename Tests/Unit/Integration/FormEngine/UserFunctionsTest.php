@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class UserFunctionsTest extends AbstractTestCase
 {
-
     /**
      * @param string $method
      * @param array $parameters
@@ -24,9 +23,9 @@ class UserFunctionsTest extends AbstractTestCase
     public function canCallMethodAndReceiveOutput($method, array $parameters, $expectsNull)
     {
         $reference = $this->getMockBuilder(UserFunctions::class)->getMock();
-        $subject = new UserFunctions();
-        $methodParameters = ['parameters' => $parameters];
-        $output = $subject->$method($methodParameters, $reference);
+        $subject = $this->getMockBuilder(UserFunctions::class)->setMethods(['translate'])->getMock();
+        $subject->method('translate')->willReturnArgument(0);
+        $output = $subject->$method($parameters, $reference);
         if ($expectsNull) {
             $this->assertNull($output);
         } else {
@@ -39,12 +38,12 @@ class UserFunctionsTest extends AbstractTestCase
         return [
             'clear value field' => [
                 'renderClearValueWizardField',
-                ['itemName' => 'test[foo][bar]'],
+                ['itemName' => 'data[tt_content][1][pi_flexform][data][options][lDEF][settings.distribution][vDEF]'],
                 false
             ],
             'HTML output field' => [
                 'renderHtmlOutputField',
-                ['closure' => function() { return 'test'; }],
+                ['parameters' => ['closure' => function() { return 'test'; }]],
                 false
             ],
         ];

@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
  */
 class WorkspacesAwareRecordServiceTest extends RecordServiceTest
 {
-
     /**
      * @test
      */
@@ -36,7 +35,8 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest
     public function getWorkspaceVersionOfRecordOrRecordItselfReturnsSelf()
     {
         $GLOBALS['BE_USER'] = new \stdClass();
-        $instance = new WorkspacesAwareRecordService();
+        $instance = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(['overlayRecordInternal'])->getMock();
+        $instance->method('overlayRecordInternal')->willReturn(false);
         $result = $this->callInaccessibleMethod($instance, 'getWorkspaceVersionOfRecordOrRecordItself', 'void', array('uid' => 1));
         $this->assertEquals(array('uid' => 1), $result);
         unset($GLOBALS['BE_USER']);

@@ -12,26 +12,12 @@ use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class PageControllerTest
  */
 class PageControllerTest extends AbstractTestCase
 {
-
-    /**
-     * @return void
-     */
-    public function testPerformsInjections()
-    {
-        $instance = GeneralUtility::makeInstance(ObjectManager::class)
-            ->get(PageController::class);
-        $this->assertAttributeInstanceOf(PageService::class, 'pageService', $instance);
-        $this->assertAttributeInstanceOf(FluxService::class, 'pageConfigurationService', $instance);
-    }
-
     /**
      * @return void
      */
@@ -39,7 +25,7 @@ class PageControllerTest extends AbstractTestCase
     {
         $GLOBALS['TSFE'] = (object) ['page' => ['foo' => 'bar']];
         /** @var PageController $subject */
-        $subject = $this->getMockBuilder(PageController::class)->setMethods(array('dummy'))->getMock();
+        $subject = $this->getMockBuilder(PageController::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $record = $subject->getRecord();
         $this->assertSame(['foo' => 'bar'], $record);
     }
@@ -50,22 +36,18 @@ class PageControllerTest extends AbstractTestCase
         $pageConfigurationService = $this->getMockBuilder(
             FluxService::class
         )->setMethods(
-            array(
-                'resolvePrimaryConfigurationProvider',
-            )
+            ['resolvePrimaryConfigurationProvider']
         )->getMock();
         /** @var PageService $pageService */
         $pageService = $this->getMockBuilder(
             PageService::class
         )->setMethods(
-            array(
-                'getPageTemplateConfiguration'
-            )
+            ['getPageTemplateConfiguration']
         )->getMock();
         $pageConfigurationService->expects($this->once())->method('resolvePrimaryConfigurationProvider');
         /** @var PageController|\PHPUnit_Framework_MockObject_MockObject $instance */
-        $instance = $this->getMockBuilder(PageController::class)->setMethods(array('getRecord'))->getMock();
-        $instance->expects($this->once())->method('getRecord')->willReturn(array());
+        $instance = $this->getMockBuilder(PageController::class)->setMethods(['getRecord'])->disableOriginalConstructor()->getMock();
+        $instance->expects($this->once())->method('getRecord')->willReturn([]);
         $instance->injectpageConfigurationService($pageConfigurationService);
         $instance->injectPageService($pageService);
         $this->callInaccessibleMethod($instance, 'initializeProvider');

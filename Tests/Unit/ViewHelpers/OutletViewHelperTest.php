@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 
 /**
  * OutletViewHelperTest
@@ -27,7 +26,7 @@ class OutletViewHelperTest extends AbstractViewHelperTestCase
         $outlet->expects($this->once())->method('setEnabled')->with(false);
         $form = $this->getMockBuilder(Form::class)->setMethods(['getOutlet'])->getMock();
         $form->expects($this->once())->method('getOutlet')->willReturn($outlet);
-        $renderingContext = $this->objectManager->get(RenderingContext::class);
+        $renderingContext = $this->renderingContext;
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(OutletViewHelper::class, 'provider', null);
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(OutletViewHelper::class, 'record', []);
         $renderingContext->getViewHelperVariableContainer()->add(AbstractFormViewHelper::SCOPE, 'form', $form);

@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 /**
@@ -30,7 +31,7 @@ abstract class AbstractOutletTestCase extends AbstractTestCase
     public function canGetAndSetPipesIn()
     {
         $pipes = array(
-            $this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe')
+            new StandardPipe()
         );
         $this->assertGetterAndSetterWorks('pipesIn', $pipes, $pipes, true);
     }
@@ -41,7 +42,7 @@ abstract class AbstractOutletTestCase extends AbstractTestCase
     public function canAddAndRetrievePipeIn()
     {
         $instance = $this->createInstance();
-        $pipe = $this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe');
+        $pipe = new StandardPipe();
         $instance->addPipeIn($pipe);
         $this->assertContains($pipe, $instance->getPipesIn());
     }
@@ -52,7 +53,7 @@ abstract class AbstractOutletTestCase extends AbstractTestCase
     public function canGetAndSetPipesOut()
     {
         $pipes = array(
-            $this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe')
+            new StandardPipe()
         );
         $this->assertGetterAndSetterWorks('pipesOut', $pipes, $pipes, true);
     }
@@ -63,7 +64,7 @@ abstract class AbstractOutletTestCase extends AbstractTestCase
     public function canAddAndRetrievePipeOut()
     {
         $instance = $this->createInstance();
-        $pipe = $this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\StandardPipe');
+        $pipe = new StandardPipe();
         $instance->addPipeOut($pipe);
         $this->assertContains($pipe, $instance->getPipesOut());
     }

@@ -8,7 +8,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 
 /**
@@ -95,10 +97,10 @@ class ProviderTest extends AbstractProviderTest
         $service = $this->createFluxServiceInstance();
         $provider = new Provider();
         $provider->setExtensionKey('test');
-        $resolver = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\ProviderResolver')->setMethods(array('resolvePrimaryConfigurationProvider'))->getMock();
+        $resolver = $this->getMockBuilder(ProviderResolver::class)->setMethods(['resolvePrimaryConfigurationProvider'])->getMock();
         $resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $service->injectProviderResolver($resolver);
-        $result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', array(), 'flux');
+        $result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', [], 'flux');
         $this->assertSame($provider, $result);
         $extensionKey = $result->getExtensionKey($record);
         $this->assertNotEmpty($extensionKey);
@@ -128,6 +130,6 @@ class ProviderTest extends AbstractProviderTest
         $record = $this->getBasicRecord();
         $provider->loadSettings($this->definition);
         $grid = $provider->getGrid($record);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $grid);
+        $this->assertInstanceOf(Grid::class, $grid);
     }
 }

@@ -1,6 +1,10 @@
 parameters:
     ignoreErrors:
         -
+            message: "#Elseif branch is unreachable because previous condition is always true\\.$#"
+            count: 1
+            path: Classes/ViewHelpers/AbstractFormViewHelper.php
+        -
             message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\FluxService\\:\\:getFlexFormService\\(\\) has invalid return type TYPO3\\\\CMS\\\\(Core|Extbase)\\\\Service\\\\FlexFormService\\.$#"
             count: 1
             path: Classes/Service/FluxService.php

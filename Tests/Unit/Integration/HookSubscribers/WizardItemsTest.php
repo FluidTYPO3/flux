@@ -20,7 +20,6 @@ use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 
 class WizardItemsTest extends AbstractTestCase
 {
-
     /**
      * @dataProvider getTestElementsWhiteAndBlackListsAndExpectedList
      * @test
@@ -33,6 +32,7 @@ class WizardItemsTest extends AbstractTestCase
     {
         $instance = $this->getMockBuilder(WizardItems::class)
             ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
             ->getMock();
         $emulatedPageAndContentRecord = ['uid' => 1, 'tx_flux_column' => 'area'];
 
@@ -53,11 +53,11 @@ class WizardItemsTest extends AbstractTestCase
         $row->add($column);
         $grid->add($row);
 
-        $provider1 = $this->objectManager->get(Provider::class);
+        $provider1 = new Provider();
         $provider1->setTemplatePaths([]);
         $provider1->setTemplateVariables([]);
         $provider1->setGrid($grid);
-        $provider1->setForm(Form::create());
+        $provider1->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
 
         $provider2 = $this->getMockBuilder(Provider::class)->setMethods(['getGrid'])->getMock();
         $provider2->expects($this->once())->method('getGrid')->will($this->returnValue(null));
@@ -144,7 +144,7 @@ class WizardItemsTest extends AbstractTestCase
                     'applyWhitelist', 'applyBlacklist', 'trimItems'
                 ]
             )
-            ->getMock();
+            ->disableOriginalConstructor()->getMock();
 
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(DatabaseConnection::class)
             ->setMethods(['exec_SELECTgetSingleRow'])

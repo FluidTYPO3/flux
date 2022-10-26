@@ -9,14 +9,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  */
 
 use TYPO3\CMS\Extbase\Mvc\Web\Request;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * ControllerActionsViewHelperTest
  */
 class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-
     /**
      * @var array
      */
@@ -54,8 +52,8 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
         );
         $instance = $this->buildViewHelperInstance($arguments);
         $component = $instance->getComponent(
-            ObjectAccess::getProperty($instance, 'renderingContext', true),
-            ObjectAccess::getProperty($instance, 'arguments', true)
+            $this->renderingContext,
+            $this->buildViewHelperArguments($instance, $arguments)
         );
         $this->assertSame($array, $component->getActions());
     }
@@ -68,6 +66,7 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
         $arguments = array(
             'label' => 'Test field',
             'controllerExtensionName' => '',
+            'extensionName' => '',
             'pluginName' => '',
             'controllerName' => '',
             'actions' => array(),
@@ -78,7 +77,6 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
             'subActions' => array()
         );
         $instance = $this->buildViewHelperInstance($arguments, array(), null, $arguments['extensionName'], $arguments['pluginName']);
-        ;
         $this->expectExceptionCode(1346514748);
         $instance->initializeArgumentsAndRender();
     }
@@ -91,6 +89,7 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
             'label' => 'Test field',
             'controllerExtensionName' => 'Flux',
             'pluginName' => 'API',
+            'extensionName' => '',
             'controllerName' => 'Flux',
             'actions' => array(),
             'disableLocalLanguageLabels' => false,
@@ -104,8 +103,8 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
         ;
         $instance->initializeArgumentsAndRender();
         $component = $instance->getComponent(
-            ObjectAccess::getProperty($instance, 'renderingContext', true),
-            ObjectAccess::getProperty($instance, 'arguments', true)
+            $this->renderingContext,
+            $this->buildViewHelperArguments($instance, $arguments)
         );
         $this->assertSame($arguments['separator'], $component->getSeparator());
     }

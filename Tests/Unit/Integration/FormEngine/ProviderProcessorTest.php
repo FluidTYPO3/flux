@@ -21,16 +21,6 @@ class ProviderProcessorTest extends AbstractTestCase
     /**
      * @test
      */
-    public function testGetProviderResolver()
-    {
-        $instance = new ProviderProcessor();
-        $result = $this->callInaccessibleMethod($instance, 'getProviderResolver');
-        $this->assertInstanceOf(ProviderResolver::class, $result);
-    }
-
-    /**
-     * @test
-     */
     public function testCallsProcessTableConfigurationOnProviders()
     {
         $provider = $this->getMockBuilder(Provider::class)->setMethods(['processTableConfiguration'])->getMock();
@@ -42,7 +32,7 @@ class ProviderProcessorTest extends AbstractTestCase
         $instance = $this->getMockBuilder(ProviderProcessor::class)->setMethods(['getProviderResolver'])->getMock();
         $instance->expects($this->once())->method('getProviderResolver')->willReturn($providerResolver);
 
-        $result = $instance->addData(['table' => 'foo', 'databaseRow' => []]);
+        $result = $instance->addData(['tableName' => 'foo', 'databaseRow' => []]);
         $this->assertEquals('test', $result);
 
     }

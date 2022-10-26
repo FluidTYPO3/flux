@@ -8,52 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Web\Request;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
-use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInterface;
-use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 
 /**
  * AbstractFormViewHelperTestCase
  */
 abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 {
-
-    /**
-     * @return void
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $methods = array('getViewHelperVariableContainer', 'getControllerContext', 'getVariableProvider');
-
-        $this->viewHelperVariableContainer = $this->getMockBuilder(
-            ViewHelperVariableContainer::class
-        )->setMethods(
-            array('exists', 'get', 'add')
-        )->getMock();
-        $this->templateVariableContainer = $this->getMockBuilder(
-            StandardVariableProvider::class
-        )->setMethods(
-            array('get', 'add')
-        )->getMock();
-        $this->controllerContext = $this->getMockBuilder(
-            ControllerContext::class
-        )->setMethods(
-            array('getRequest')
-        )->getMock();
-        $this->controllerContext->expects($this->any())
-            ->method('getRequest')
-            ->willReturn(new Request());
-        $this->renderingContext = new RenderingContext();
-        $this->renderingContext->setControllerContext($this->controllerContext);
-        $this->renderingContext->setViewHelperVariableContainer($this->viewHelperVariableContainer);
-        $this->renderingContext->setVariableProvider($this->templateVariableContainer);
-    }
-
     /**
      * @test
      */
@@ -74,11 +35,7 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
         if (true === empty($methods)) {
             $methods[] = 'dummy';
         }
-        if (method_exists($this->renderingContext, 'setViewHelperVariableContainer')) {
-            $this->renderingContext->setViewHelperVariableContainer($this->viewHelperVariableContainer);
-        } else {
-            $this->renderingContext->injectViewHelperVariableContainer($this->viewHelperVariableContainer);
-        }
+        $this->renderingContext->setViewHelperVariableContainer($this->viewHelperVariableContainer);
         $instance = $this->getMockBuilder($this->getViewHelperClassName())->setMethods($methods)->getMock();
         $instance->setRenderingContext($this->renderingContext);
         return $instance;

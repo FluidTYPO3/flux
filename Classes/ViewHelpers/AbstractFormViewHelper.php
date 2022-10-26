@@ -117,12 +117,17 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         if (null !== $controllerContext && null !== $controllerContext->getRequest()) {
             /** @var Request $request */
             $request = $controllerContext->getRequest();
+            /** @var string|null $controllerExtensionName */
             $controllerExtensionName = $request->getControllerExtensionName();
+            /** @var string|null $controllerVendorName */
+            $controllerVendorName = null;
             if (is_callable([$request, 'getControllerVendorName'])) {
                 $controllerVendorName = $request->getControllerVendorName();
-            } else {
+            } elseif (is_string($controllerExtensionName)) {
                 $controllerClassName = $request->getControllerObjectName();
-                $controllerVendorName = ExtensionUtility::resolveVendorFromExtensionAndControllerClassName($controllerExtensionName, $controllerClassName);
+                if (is_string($controllerClassName)) {
+                    $controllerVendorName = ExtensionUtility::resolveVendorFromExtensionAndControllerClassName($controllerExtensionName, $controllerClassName);
+                }
             }
             return (!empty($controllerVendorName) ? $controllerVendorName . '.' : '') . $controllerExtensionName;
         }
