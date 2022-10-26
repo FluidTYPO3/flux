@@ -4438,11 +4438,6 @@ your "ContentController", "PageController" etc.
           <xsd:documentation><![CDATA[set this to disable caching for the target page. You should not need this.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="noCacheHash" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Deprecated: Set this to suppress the cHash query parameter created by TypoLink. You should not need this.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
       <xsd:attribute type="xsd:string" name="section" default="''">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The anchor to be added to the action URI (only active if $actionUri is not set)]]></xsd:documentation>
@@ -4473,9 +4468,9 @@ your "ContentController", "PageController" etc.
           <xsd:documentation><![CDATA[arguments to be removed from the action URI. Only active if $addQueryString = TRUE and $actionUri is not set]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="addQueryStringMethod" default="'GET'">
+      <xsd:attribute type="xsd:string" name="addQueryStringMethod" default="NULL">
         <xsd:annotation>
-          <xsd:documentation><![CDATA[Method to use when keeping query parameters (only active if $actionUri is not set)]]></xsd:documentation>
+          <xsd:documentation><![CDATA[This argument is not evaluated anymore and will be removed in TYPO3 v12.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:string" name="fieldNamePrefix" default="NULL">
