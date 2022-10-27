@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\Exception;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * EmailPipeTest
@@ -31,7 +30,7 @@ class EmailPipeTest extends AbstractPipeTestCase
         $pipe->setSubject('Test subject')
             ->setSender('test@test.com')
             ->setRecipient('test@test.com');
-        ObjectAccess::setProperty($pipe, 'label', 'Mock EmailPipe', true);
+        $this->setInaccessiblePropertyValue($pipe, 'subject', 'Mock EmailPipe');
         return $pipe;
     }
 

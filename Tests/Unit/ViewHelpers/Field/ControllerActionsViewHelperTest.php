@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Extbase\Mvc\Web\Request;
+use TYPO3\CMS\Extbase\Mvc\Request;
 
 /**
  * ControllerActionsViewHelperTest

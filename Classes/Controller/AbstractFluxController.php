@@ -479,12 +479,8 @@ abstract class AbstractFluxController extends ActionController
                 ]
             );
 
-            if (version_compare($version, '11', '<')) {
-                $potentialControllerInstance->processRequest($this->request, $response);
-            } else {
-                /** @var Response $response */
-                $response = $potentialControllerInstance->processRequest($this->request);
-            }
+            /** @var Response $response */
+            $response = $potentialControllerInstance->processRequest($this->request, $response);
         } catch (StopActionException $error) {
             // intentionally left blank
         }

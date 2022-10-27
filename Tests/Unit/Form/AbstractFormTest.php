@@ -138,7 +138,7 @@ abstract class AbstractFormTest extends AbstractTestCase
         }
         $instance = $this->createInstance();
         foreach ($chainPropertiesAndValues as $propertyName => $propertValue) {
-            $setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
+            $setterMethodName = 'set' . ucfirst($propertyName);
             $chained = call_user_func_array(array($instance, $setterMethodName), array($propertValue));
             $this->assertSame($instance, $chained, 'The setter ' . $setterMethodName . ' on ' . $this->getObjectClassName() . ' does not support chaining.');
             if ($chained === $instance) {
@@ -168,7 +168,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     {
         $instance = $this->createInstance();
         foreach ($this->chainProperties as $propertyName => $propertValue) {
-            $setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
+            $setterMethodName = 'set' . ucfirst($propertyName);
             $instance->$setterMethodName($propertValue);
             $result = ObjectAccess::getProperty($instance, $propertyName);
             $this->assertEquals($propertValue, $result);
