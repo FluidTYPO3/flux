@@ -16,7 +16,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 class InlineViewHelper extends AbstractInlineFieldViewHelper
 {
-
     /**
      * @return void
      */

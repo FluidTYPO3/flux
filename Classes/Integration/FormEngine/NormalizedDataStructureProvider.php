@@ -16,7 +16,11 @@ class NormalizedDataStructureProvider implements FormDataProviderInterface
     public function addData(array $result): array
     {
         foreach ($result['processedTca']['columns'] as $fieldName => $_) {
-            $implementations = $this->resolveImplementationsForTableField($result['tableName'], $fieldName, $result['databaseRow']);
+            $implementations = $this->resolveImplementationsForTableField(
+                $result['tableName'],
+                $fieldName,
+                $result['databaseRow']
+            );
             foreach ($implementations as $implementation) {
                 if ($implementation->appliesToTableField($result['tableName'], $fieldName)) {
                     $result = $implementation->getConverterForTableFieldAndRecord(

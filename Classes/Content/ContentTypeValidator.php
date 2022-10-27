@@ -72,7 +72,8 @@ class ContentTypeValidator
 
             $usesTemplateFile = true;
             if ($contentType instanceof FluidRenderingContentTypeDefinitionInterface) {
-                $usesTemplateFile = $contentType->isUsingTemplateFile() ? file_exists(GeneralUtility::getFileAbsFileName($contentType->getTemplatePathAndFilename())) : false;
+                $usesTemplateFile = $contentType->isUsingTemplateFile()
+                    && file_exists(GeneralUtility::getFileAbsFileName($contentType->getTemplatePathAndFilename()));
             }
 
             $view->assignMultiple([
@@ -85,7 +86,8 @@ class ContentTypeValidator
                     'extensionMatched' => $this->validateContextMatchesSignature($contentType),
                     'templateSource' => $this->validateTemplateSource($contentType),
                     'templateFile' => $usesTemplateFile,
-                    'icon' => !empty($record['icon']) ? file_exists(GeneralUtility::getFileAbsFileName($record['icon'])) : true,
+                    'icon' => !empty($record['icon'])
+                        && file_exists(GeneralUtility::getFileAbsFileName($record['icon'])),
                 ],
             ]);
 
@@ -120,12 +122,18 @@ class ContentTypeValidator
     protected function validateContextMatchesSignature(ContentTypeDefinitionInterface $definition): bool
     {
         $parts = explode('_', $definition->getContentTypeName());
-        return str_replace('_', '', ExtensionNamingUtility::getExtensionKey($definition->getExtensionIdentity())) === reset($parts);
+        return str_replace(
+            '_',
+            '',
+            ExtensionNamingUtility::getExtensionKey($definition->getExtensionIdentity())
+        ) === reset($parts);
     }
 
     protected function validateContextExtensionIsInstalled(ContentTypeDefinitionInterface $definition): bool
     {
-        return ExtensionManagementUtility::isLoaded(ExtensionNamingUtility::getExtensionKey($definition->getExtensionIdentity()));
+        return ExtensionManagementUtility::isLoaded(
+            ExtensionNamingUtility::getExtensionKey($definition->getExtensionIdentity())
+        );
     }
 
     protected function countUsages(ContentTypeDefinitionInterface $definition): int

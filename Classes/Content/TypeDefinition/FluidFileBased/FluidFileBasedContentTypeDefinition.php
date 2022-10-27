@@ -57,7 +57,7 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
      * @param string $extensionIdentity The VendorName.ExtensionName identity of the extension that contains the file
      * @param string $basePath Absolute path, or EXT:... path to location of template file
      * @param string $relativeFilePath Path of file relative to $basePath, without leading slash
-     * @param string $providerClassName Class name of a Flux ProviderInterface implementation that handles the content type
+     * @param string $providerClassName Class name of a Flux ProviderInterface implementation that handles the CType
      */
     public function __construct(
         string $extensionIdentity,

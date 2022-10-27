@@ -39,8 +39,11 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
         );
     }
 
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ) {
         $form = static::getFormFromRenderingContext($renderingContext);
         $pipe = static::preparePipeInstance($renderingContext, $arguments);
         if ($arguments['direction'] === static::DIRECTION_IN) {

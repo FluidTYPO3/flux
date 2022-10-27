@@ -145,7 +145,10 @@ class PreviewView extends TemplateView
 
         $previewContent = trim($previewContent);
 
-        return HookHandler::trigger(HookHandler::PREVIEW_RENDERED, ['form' => $form, 'preview' => $previewContent])['preview'];
+        return HookHandler::trigger(
+            HookHandler::PREVIEW_RENDERED,
+            ['form' => $form, 'preview' => $previewContent]
+        )['preview'];
     }
 
     /**
@@ -346,7 +349,8 @@ class PreviewView extends TemplateView
             $layoutConfiguration = $provider->getGrid($row)->buildExtendedBackendLayoutArray($parentRecordUid);
         }
 
-        $fluidBasedLayoutFeatureEnabled = class_exists(Features::class) && GeneralUtility::makeInstance(Features::class)->isFeatureEnabled('fluidBasedPageModule');
+        $fluidBasedLayoutFeatureEnabled = class_exists(Features::class)
+            && GeneralUtility::makeInstance(Features::class)->isFeatureEnabled('fluidBasedPageModule');
 
         if ($fluidBasedLayoutFeatureEnabled) {
             if (class_exists(PageLayoutContext::class)) {
@@ -354,11 +358,15 @@ class PreviewView extends TemplateView
                 $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                 $site = $siteFinder->getSiteByPageId($pageId);
                 $language = null;
-                if ($row['sys_language_uid'] >= 0 ) {
+                if ($row['sys_language_uid'] >= 0) {
                     $language = $site->getLanguageById((int) $row['sys_language_uid']);
                 }
                 
-                $context = GeneralUtility::makeInstance(PageLayoutContext::class, BackendUtility::getRecord('pages', $pageId), $backendLayout);
+                $context = GeneralUtility::makeInstance(
+                    PageLayoutContext::class,
+                    BackendUtility::getRecord('pages', $pageId),
+                    $backendLayout
+                );
                 if (isset($language)) {
                      $context = $context->cloneForLanguage($language);
                 }

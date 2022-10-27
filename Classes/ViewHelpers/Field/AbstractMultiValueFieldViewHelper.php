@@ -17,7 +17,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
 {
-
     /**
      * Initialize
      * @return void
@@ -33,7 +32,13 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
             'trim'
         );
         $this->registerArgument('size', 'integer', 'Size of the selector box', false, 1);
-        $this->registerArgument('multiple', 'boolean', 'If TRUE, allows selecting the same value multiple times', false, false);
+        $this->registerArgument(
+            'multiple',
+            'boolean',
+            'If TRUE, allows selecting the same value multiple times',
+            false,
+            false
+        );
         $this->registerArgument('minItems', 'integer', 'Minimum required number of items to be selected', false, 0);
         $this->registerArgument('maxItems', 'integer', 'Maxium allowed number of items to be selected', false, 1);
         $this->registerArgument('itemListStyle', 'string', 'Overrides the default list style when maxItems > 1');
@@ -76,8 +81,11 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
      * @param iterable $arguments
      * @return T
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    protected static function getPreparedComponent(
+        $type,
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ) {
         /** @var array $arguments */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setItems($arguments['items']);

@@ -58,5 +58,4 @@ class PagePreviewRendererTest extends AbstractTestCase
             [$withPreview, 'preview'],
         ];
     }
-
 }

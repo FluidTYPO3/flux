@@ -64,7 +64,11 @@ class DataHandlerSubscriber
             $this->regenerateContentTypes();
         }
 
-        if ($table !== 'tt_content' || $command !== 'new' || !isset($fieldArray['t3_origuid']) || !$fieldArray['t3_origuid']) {
+        if ($table !== 'tt_content'
+            || $command !== 'new'
+            || !isset($fieldArray['t3_origuid'])
+            || !$fieldArray['t3_origuid']
+        ) {
             // The action was not for tt_content, not a "create new" action, or not a "copy" or "copyToLanguage" action.
             return;
         }
@@ -79,7 +83,11 @@ class DataHandlerSubscriber
 
         if (!empty($fieldArray['l18n_parent'])) {
             // Command was "localize", read colPos value from the translation parent and use directly
-            $newColumnPosition = $this->getSingleRecordWithoutRestrictions($table, $fieldArray['l18n_parent'], 'colPos')['colPos'] ?? null;
+            $newColumnPosition = $this->getSingleRecordWithoutRestrictions(
+                $table,
+                $fieldArray['l18n_parent'],
+                'colPos'
+            )['colPos'] ?? null;
         } elseif (isset(static::$copiedRecords[$originalParentUid])) {
             // The parent of the original version of the record that was copied, was also copied in the same request;
             // this means the record that was copied, was copied as a recursion operation. Look up the most recent copy
@@ -101,7 +109,11 @@ class DataHandlerSubscriber
             if ($originalParent !== null && $originalParent['sys_language_uid'] !== $fieldArray['sys_language_uid']) {
                 // copyToLanguage case. Resolve the most recent translated version of the parent record in language of
                 // child record, and calculate the new column position number based on it.
-                $newParentRecord = $this->getTranslatedVersionOfParentInLanguageOnPage((int) $fieldArray['sys_language_uid'], (int) $fieldArray['pid'], (int) $originalParentUid);
+                $newParentRecord = $this->getTranslatedVersionOfParentInLanguageOnPage(
+                    (int) $fieldArray['sys_language_uid'],
+                    (int) $fieldArray['pid'],
+                    $originalParentUid
+                );
                 if ($newParentRecord !== null) {
                     $newColumnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                         $newParentRecord['uid'],
@@ -114,11 +126,20 @@ class DataHandlerSubscriber
         if ($newColumnPosition > 0) {
             $queryBuilder = $this->createQueryBuilderForTable($table);
             $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, \PDO::PARAM_INT)->where(
-                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq(
+                    'uid',
+                    $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)
+                )
             )->orWhere(
                 $queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->eq('t3ver_oid', $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)),
-                    $queryBuilder->expr()->eq('t3ver_wsid', $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, \PDO::PARAM_INT))
+                    $queryBuilder->expr()->eq(
+                        't3ver_oid',
+                        $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)
+                    ),
+                    $queryBuilder->expr()->eq(
+                        't3ver_wsid',
+                        $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, \PDO::PARAM_INT)
+                    )
                 )
             )->execute();
         }
@@ -146,12 +167,17 @@ class DataHandlerSubscriber
                     $fieldName
                 );
 
-                if ($primaryConfigurationProvider && is_array($fieldArray[$fieldName]) && array_key_exists('data', $fieldArray[$fieldName])) {
+                if ($primaryConfigurationProvider
+                    && is_array($fieldArray[$fieldName])
+                    && array_key_exists('data', $fieldArray[$fieldName])
+                ) {
                     foreach ($fieldArray[$fieldName]['data'] as $sheet) {
                         foreach ($sheet['lDEF'] as $key => $value) {
                             if (strpos($key, '.') !== false) {
                                 list ($possibleTableName, $columnName) = explode('.', $key, 2);
-                                if ($possibleTableName === $table && isset($GLOBALS['TCA'][$table]['columns'][$columnName])) {
+                                if ($possibleTableName === $table
+                                    && isset($GLOBALS['TCA'][$table]['columns'][$columnName])
+                                ) {
                                     $fieldArray[$columnName] = $value['vDEF'];
                                 }
                             }
@@ -165,7 +191,7 @@ class DataHandlerSubscriber
             return;
         }
 
-        // TYPO3 issue https://forge.typo3.org/issues/85013 "colPos not part of $fieldArray when dropping in top column".
+        // TYPO3 issue https://forge.typo3.org/issues/85013 "colPos not part of $fieldArray when dropping in top column"
         // TODO: remove when expected solution, the inclusion of colPos in $fieldArray, is merged and released in TYPO3
         if (!array_key_exists('colPos', $fieldArray)) {
             $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
@@ -184,8 +210,13 @@ class DataHandlerSubscriber
      * @param DataHandler $dataHandler
      * @return void
      */
-    protected function cascadeCommandToChildRecords(string $table, int $id, string $command, $value, DataHandler $dataHandler)
-    {
+    protected function cascadeCommandToChildRecords(
+        string $table,
+        int $id,
+        string $command,
+        $value,
+        DataHandler $dataHandler
+    ) {
         list (, $childRecords) = $this->getParentAndRecordsNestedInGrid(
             $table,
             (int)$id,
@@ -234,7 +265,14 @@ class DataHandlerSubscriber
                                     // Invalid target detected - delete the "move" command so it does not happen, and
                                     // dispatch an error message.
                                     unset($dataHandler->cmdmap[$table][$id]);
-                                    $dataHandler->log($table, (integer) $id, 4, 0, 1, 'Record not moved, would become child of self');
+                                    $dataHandler->log(
+                                        $table,
+                                        (integer) $id,
+                                        4,
+                                        0,
+                                        1,
+                                        'Record not moved, would become child of self'
+                                    );
                                 }
                             }
                             break;
@@ -279,8 +317,15 @@ class DataHandlerSubscriber
      * @return void
      */
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
-    public function processCmdmap_postProcess(&$command, $table, $id, &$relativeTo, &$reference, &$pasteUpdate, &$pasteDataMap)
-    {
+    public function processCmdmap_postProcess(
+        &$command,
+        $table,
+        $id,
+        &$relativeTo,
+        &$reference,
+        &$pasteUpdate,
+        &$pasteDataMap
+    ) {
 
         /*
         if ($table === 'pages' && $command === 'copy') {
@@ -304,7 +349,11 @@ class DataHandlerSubscriber
 
                 // But if we also have a workspace version of the record recorded, it too must be updated:
                 if (isset($reference->autoVersionIdMap['tt_content'][$copiedRecordUid])) {
-                    $reference->updateDB('tt_content', $reference->autoVersionIdMap['tt_content'][$copiedRecordUid], $overrideArray);
+                    $reference->updateDB(
+                        'tt_content',
+                        $reference->autoVersionIdMap['tt_content'][$copiedRecordUid],
+                        $overrideArray
+                    );
                 }
             }
         }
@@ -327,7 +376,8 @@ class DataHandlerSubscriber
         }
 
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'];
-        $languageUid = (int)($reference->cmdmap[$table][$id][$command]['update'][$languageField] ?? $originalRecord[$languageField]);
+        $languageUid = (int)($reference->cmdmap[$table][$id][$command]['update'][$languageField]
+            ?? $originalRecord[$languageField]);
 
         if ($relativeTo > 0) {
             $destinationPid = $relativeTo;
@@ -337,7 +387,13 @@ class DataHandlerSubscriber
         }
 
         if ($command === 'move') {
-            $subCommandMap = $this->recursivelyMoveChildRecords($table, (integer) $id, (integer) $destinationPid, $languageUid, $reference);
+            $subCommandMap = $this->recursivelyMoveChildRecords(
+                $table,
+                (integer) $id,
+                (integer) $destinationPid,
+                $languageUid,
+                $reference
+            );
         }
 
         if (!empty($subCommandMap)) {
@@ -363,8 +419,13 @@ class DataHandlerSubscriber
         return (array) $invalidColumnPositions;
     }
 
-    protected function recursivelyMoveChildRecords(string $table, int $parentUid, int $pageUid, int $languageUid, DataHandler $dataHandler): array
-    {
+    protected function recursivelyMoveChildRecords(
+        string $table,
+        int $parentUid,
+        int $pageUid,
+        int $languageUid,
+        DataHandler $dataHandler
+    ): array {
         $dataMap = [];
 
         list (, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
@@ -429,8 +490,12 @@ class DataHandlerSubscriber
         return $firstResult ?: null;
     }
 
-    protected function getTranslatedVersionOfParentInLanguageOnPage(int $languageUid, int $pageUid, int $originalParentUid, string $fieldsToSelect = '*'): ?array
-    {
+    protected function getTranslatedVersionOfParentInLanguageOnPage(
+        int $languageUid,
+        int $pageUid,
+        int $originalParentUid,
+        string $fieldsToSelect = '*'
+    ): ?array {
         /** @var DeletedRestriction $deletedRestriction */
         $deletedRestriction = GeneralUtility::makeInstance(DeletedRestriction::class);
         $queryBuilder = $this->createQueryBuilderForTable('tt_content');
@@ -440,9 +505,15 @@ class DataHandlerSubscriber
             ->setMaxResults(1)
             ->orderBy('uid', 'DESC')
             ->where(
-                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($languageUid, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq(
+                    'sys_language_uid',
+                    $queryBuilder->createNamedParameter($languageUid, \PDO::PARAM_INT)
+                ),
                 $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, \PDO::PARAM_INT)),
-                $queryBuilder->expr()->eq('l10n_source', $queryBuilder->createNamedParameter($originalParentUid, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq(
+                    'l10n_source',
+                    $queryBuilder->createNamedParameter($originalParentUid, \PDO::PARAM_INT)
+                )
             );
         /** @var array|false $firstResult */
         $firstResult = $queryBuilder->execute()->fetch();
@@ -457,8 +528,13 @@ class DataHandlerSubscriber
      * @param string|null $command
      * @return array
      */
-    protected function getParentAndRecordsNestedInGrid(string $table, int $parentUid, string $fieldsToSelect, bool $respectPid = false, ?string $command = null)
-    {
+    protected function getParentAndRecordsNestedInGrid(
+        string $table,
+        int $parentUid,
+        string $fieldsToSelect,
+        bool $respectPid = false,
+        ?string $command = null
+    ) {
         // A Provider must be resolved which implements the GridProviderInterface
         $resolver = $this->getProviderResolver();
         $originalRecord = (array) $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
@@ -498,9 +574,18 @@ class DataHandlerSubscriber
         $query = $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
             ->andWhere(
-                $queryBuilder->expr()->in('colPos', $queryBuilder->createNamedParameter($childColPosValues, Connection::PARAM_INT_ARRAY)),
+                $queryBuilder->expr()->in(
+                    'colPos',
+                    $queryBuilder->createNamedParameter($childColPosValues, Connection::PARAM_INT_ARRAY)
+                ),
                 $queryBuilder->expr()->eq($languageField, (int)$originalRecord[$languageField]),
-                $queryBuilder->expr()->in('t3ver_wsid', $queryBuilder->createNamedParameter([0, $GLOBALS['BE_USER']->workspace], Connection::PARAM_INT_ARRAY))
+                $queryBuilder->expr()->in(
+                    't3ver_wsid',
+                    $queryBuilder->createNamedParameter(
+                        [0, $GLOBALS['BE_USER']->workspace],
+                        Connection::PARAM_INT_ARRAY
+                    )
+                )
             )->orderBy('sorting', 'DESC');
 
         if ($respectPid) {

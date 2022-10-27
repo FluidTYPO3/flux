@@ -31,11 +31,22 @@ class ContentTypeForm extends Form
 
         /** @var Form\Container\Sheet $sheet */
         $sheet = $this->createContainer(Form\Container\Sheet::class, 'sheets', 'Define sheets');
-        $sheet->setDescription('Define the sheets that contain form fields when editors edit your content type. Save the content type record to refresh changes.');
+        $sheet->setDescription(
+            'Define the sheets that contain form fields when editors edit your content type. Save the content type '
+            . 'record to refresh changes.'
+        );
         $section = $sheet->createContainer(Form\Container\Section::class, 'sheets');
         $sheetObject = $section->createContainer(Form\Container\SectionObject::class, 'sheet');
-        $sheetObject->createField(Form\Field\Input::class, 'name', 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types.sheetName');
-        $sheetObject->createField(Form\Field\Input::class, 'label', 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types.sheetLabel');
+        $sheetObject->createField(
+            Form\Field\Input::class,
+            'name',
+            'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types.sheetName'
+        );
+        $sheetObject->createField(
+            Form\Field\Input::class,
+            'label',
+            'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types.sheetLabel'
+        );
     }
 
     /**
@@ -65,15 +76,27 @@ class ContentTypeForm extends Form
 
     protected function createInputFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'input', $this->createLabelReference('input'));
-        $object->createField(Form\Field\Input::class, 'default', $this->createLabelReference('universal.default.value'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'input',
+            $this->createLabelReference('input')
+        );
+        $object->createField(
+            Form\Field\Input::class,
+            'default',
+            $this->createLabelReference('universal.default.value')
+        );
         $this->createUniversalFieldsInFieldObject($object);
         return $object;
     }
 
     protected function createTextFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'text', $this->createLabelReference('text'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'text',
+            $this->createLabelReference('text')
+        );
         $this->createUniversalFieldsInFieldObject($object);
         $object->createField(Form\Field\Text::class, 'default', $this->createLabelReference('universal.default.value'));
         return $object;
@@ -81,30 +104,54 @@ class ContentTypeForm extends Form
 
     protected function createCheckboxFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'checkbox', $this->createLabelReference('checkbox'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'checkbox',
+            $this->createLabelReference('checkbox')
+        );
         $this->createUniversalFieldsInFieldObject($object);
-        $object->createField(Form\Field\Checkbox::class, 'default', $this->createLabelReference('universal.default.state'));
+        $object->createField(
+            Form\Field\Checkbox::class,
+            'default',
+            $this->createLabelReference('universal.default.state')
+        );
         return $object;
     }
 
     protected function createRadioFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'radio', $this->createLabelReference('radio'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'radio',
+            $this->createLabelReference('radio')
+        );
         $this->createUniversalFieldsInFieldObject($object);
-        $object->createField(Form\Field\Input::class, 'default', $this->createLabelReference('universal.default.value'));
+        $object->createField(
+            Form\Field\Input::class,
+            'default',
+            $this->createLabelReference('universal.default.value')
+        );
         return $object;
     }
 
     protected function createDateTimeFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'dateTime', $this->createLabelReference('dateTime'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'dateTime',
+            $this->createLabelReference('dateTime')
+        );
         $this->createUniversalFieldsInFieldObject($object);
         return $object;
     }
 
     protected function createSelectFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'select', $this->createLabelReference('select'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'select',
+            $this->createLabelReference('select')
+        );
         $this->createUniversalFieldsInFieldObject($object);
         $object->createField(Form\Field\Input::class, 'items', $this->createLabelReference('select.items'));
         $this->createSelectAndRelationFieldsInFieldObject($object);
@@ -113,7 +160,11 @@ class ContentTypeForm extends Form
 
     protected function createRelationFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'relation', $this->createLabelReference('relation'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'relation',
+            $this->createLabelReference('relation')
+        );
         $this->createUniversalFieldsInFieldObject($object);
         $this->createSelectAndRelationFieldsInFieldObject($object);
         return $object;
@@ -121,33 +172,62 @@ class ContentTypeForm extends Form
 
     protected function createMultiRelationFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'multiRelation', $this->createLabelReference('multiRelation'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'multiRelation',
+            $this->createLabelReference('multiRelation')
+        );
         $this->createUniversalFieldsInFieldObject($object);
         $this->createSelectAndRelationFieldsInFieldObject($object);
-        $object->createField(Form\Field\Input::class, 'foreignTableField', $this->createLabelReference('relation.foreignTableField'));
+        $object->createField(
+            Form\Field\Input::class,
+            'foreignTableField',
+            $this->createLabelReference('relation.foreignTableField')
+        );
         return $object;
     }
 
     protected function createInlineFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'inline', $this->createLabelReference('inline'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'inline',
+            $this->createLabelReference('inline')
+        );
         $this->createUniversalFieldsInFieldObject($object);
         $this->createSelectAndRelationFieldsInFieldObject($object);
-        $object->createField(Form\Field\Input::class, 'foreignTableField', $this->createLabelReference('relation.foreignTableField'));
+        $object->createField(
+            Form\Field\Input::class,
+            'foreignTableField',
+            $this->createLabelReference('relation.foreignTableField')
+        )
+        ;
         return $object;
     }
 
     protected function createFileFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'file', $this->createLabelReference('file'));
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'file',
+            $this->createLabelReference('file')
+        );
         $this->createUniversalFieldsInFieldObject($object);
         return $object;
     }
 
     protected function createUserFieldObject(Form\Container\Section $section): Form\Container\SectionObject
     {
-        $object = $section->createContainer(Form\Container\SectionObject::class, 'user', $this->createLabelReference('function'));
-        $object->createField(Form\Field\Input::class, 'userFunc', $this->createLabelReference('function.userFunc'))->setRequired(true);
+        $object = $section->createContainer(
+            Form\Container\SectionObject::class,
+            'user',
+            $this->createLabelReference('function')
+        );
+        $object->createField(
+            Form\Field\Input::class,
+            'userFunc',
+            $this->createLabelReference('function.userFunc')
+        )->setRequired(true);
         $this->createUniversalFieldsInFieldObject($object);
         return $object;
     }
@@ -155,19 +235,51 @@ class ContentTypeForm extends Form
     protected function createUniversalFieldsInFieldObject(Form\Container\SectionObject $object): void
     {
         $componentType = $object->getName();
-        $object->createField(Form\Field\Input::class, 'name', $this->createLabelReference('universal.name'))->setDefault('settings.' . $componentType)->setRequired(true);
-        $object->createField(Form\Field\Input::class, 'label', $this->createLabelReference('universal.label'))->setDefault('My ' . $componentType . ' field')->setRequired(true);
-        $object->createField(Form\Field\Input::class, 'transform', $this->createLabelReference('universal.transform'));
-        $object->createField(Form\Field\Checkbox::class, 'clearable', $this->createLabelReference('universal.clearable'));
+        $object->createField(
+            Form\Field\Input::class,
+            'name',
+            $this->createLabelReference('universal.name')
+        )->setDefault('settings.' . $componentType)->setRequired(true);
+        $object->createField(
+            Form\Field\Input::class,
+            'label',
+            $this->createLabelReference('universal.label')
+        )->setDefault('My ' . $componentType . ' field')->setRequired(true);
+        $object->createField(
+            Form\Field\Input::class,
+            'transform',
+            $this->createLabelReference('universal.transform')
+        );
+        $object->createField(
+            Form\Field\Checkbox::class,
+            'clearable',
+            $this->createLabelReference('universal.clearable')
+        );
     }
 
     protected function createSelectAndRelationFieldsInFieldObject(Form\Container\SectionObject $object): void
     {
-        $object->createField(Form\Field\Input::class, 'size', $this->createLabelReference('relation.size'))->setValidate('trim,int')->setSize(3);
-        $object->createField(Form\Field\Input::class, 'minItems', $this->createLabelReference('relation.minItems'))->setValidate('trim,int')->setSize(3);
-        $object->createField(Form\Field\Input::class, 'maxItems', $this->createLabelReference('relation.maxItems'))->setValidate('trim,int')->setSize(3);
+        $object->createField(
+            Form\Field\Input::class,
+            'size',
+            $this->createLabelReference('relation.size')
+        )->setValidate('trim,int')->setSize(3);
+        $object->createField(
+            Form\Field\Input::class,
+            'minItems',
+            $this->createLabelReference('relation.minItems')
+        )->setValidate('trim,int')->setSize(3);
+        $object->createField(
+            Form\Field\Input::class,
+            'maxItems',
+            $this->createLabelReference('relation.maxItems')
+        )->setValidate('trim,int')->setSize(3);
         $object->createField(Form\Field\Checkbox::class, 'multiple', $this->createLabelReference('relation.multiple'));
-        $object->createField(Form\Field\Checkbox::class, 'emptyOption', $this->createLabelReference('relation.emptyOption'));
+        $object->createField(
+            Form\Field\Checkbox::class,
+            'emptyOption',
+            $this->createLabelReference('relation.emptyOption')
+        );
         $object->createField(Form\Field\Input::class, 'default', 'Default value');
     }
 

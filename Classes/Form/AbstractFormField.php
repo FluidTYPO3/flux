@@ -171,7 +171,9 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public function has($childOrChildName)
     {
-        $name = ($childOrChildName instanceof FormInterface) ? (string) $childOrChildName->getName() : $childOrChildName;
+        $name = ($childOrChildName instanceof FormInterface)
+            ? (string) $childOrChildName->getName()
+            : $childOrChildName;
         return (false !== $this->get($name));
     }
 

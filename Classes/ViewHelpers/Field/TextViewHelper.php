@@ -19,7 +19,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class TextViewHelper extends AbstractFieldViewHelper
 {
-
     /**
      * Initialize
      * @return void
@@ -39,7 +38,8 @@ class TextViewHelper extends AbstractFieldViewHelper
         $this->registerArgument(
             'defaultExtras',
             'string',
-            'DEPRECATED, IGNORED - has no function on TYPO3 8.7+. FlexForm-syntax "defaultExtras" definition, example: "richtext[*]:rte_transform[mode=ts_css]"',
+            'DEPRECATED, IGNORED - has no function on TYPO3 8.7+. FlexForm-syntax "defaultExtras" definition, '
+            . 'example: "richtext[*]:rte_transform[mode=ts_css]"',
             false,
             ''
         );
@@ -73,16 +73,13 @@ class TextViewHelper extends AbstractFieldViewHelper
             'string',
             'Specifies which configuration to use in combination with EXT:rte_ckeditor.' .
             'If none is given, PageTSconfig "RTE.tx_flux.preset" and "RTE.default.preset" are used.' .
-            'More information: https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Properties/TextRichtextConfiugration.html',
-            false,
-            null
+            'More information: '
+            . 'https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Properties/TextRichtextConfiugration.html'
         );
         $this->registerArgument(
             'placeholder',
             'string',
-            'Placeholder text which vanishes if field is filled and/or field is focused',
-            false,
-            null
+            'Placeholder text which vanishes if field is filled and/or field is focused'
         );
     }
 

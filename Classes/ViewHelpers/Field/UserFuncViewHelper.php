@@ -19,7 +19,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class UserFuncViewHelper extends AbstractFieldViewHelper
 {
-
     /**
      * Initialize
      * @return void
@@ -30,13 +29,17 @@ class UserFuncViewHelper extends AbstractFieldViewHelper
         $this->registerArgument(
             'userFunc',
             'string',
-            'UserFunc to be called, example "MyExt\\MyVendor\\MySpecialClass->renderField". Ignored on TYPO3 9.5 and above - use renderType instead.'
+            'UserFunc to be called, example "MyExt\\MyVendor\\MySpecialClass->renderField". Ignored on TYPO3 9.5 '
+            . 'and above - use renderType instead.'
         );
         $this->registerArgument(
             'renderType',
             'string',
-            'Render type (TCA renderType) - required on TYPO3 9.5 and above. Render type must be registered as FormEngine node type. '
-            . 'See https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ApiOverview/FormEngine/Rendering/Index.html'
+            'Render type (TCA renderType) - required on TYPO3 9.5 and above. Render type must be registered as '
+            . 'FormEngine node type. See '
+            // @codingStandardsIgnoreStart
+            . 'https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ApiOverview/FormEngine/Rendering/Index.html'
+            // @codingStandardsIgnoreEnd
         );
         $this->registerArgument(
             'arguments',

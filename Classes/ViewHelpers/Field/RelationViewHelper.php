@@ -26,15 +26,15 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  *                          table="tt_content"
  *                          condition="AND tt_content.pid = ###THIS_UID###" />
  *
- * A list of allowed markers for the `condition` can be found in the
- * [TCA "select" type `foreign_table_where` documentation](https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#foreign-table-where).
+ * A list of allowed markers for the `condition` can be found in the documentation at:
+ *
+ * https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#foreign-table-where
  *
  * DEPRECATED - use flux:field instead
  * @deprecated Will be removed in Flux 10.0
  */
 class RelationViewHelper extends AbstractRelationFieldViewHelper
 {
-
     /**
      * @return void
      */

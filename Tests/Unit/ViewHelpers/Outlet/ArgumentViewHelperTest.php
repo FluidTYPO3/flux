@@ -49,6 +49,8 @@ class ArgumentViewHelperTest extends AbstractViewHelperTestCase
         $form->expects($this->once())->method('getOutlet')->willReturn($outlet);
         $this->viewHelperVariableContainer->add(AbstractFormViewHelper::SCOPE, 'form', $form);
 
-        AccessibleArgumentViewHelper::renderStatic(['name' => 'test', 'type' => 'string'], function () { return null; }, $this->renderingContext);
+        AccessibleArgumentViewHelper::renderStatic(['name' => 'test', 'type' => 'string'], function () {
+            return null;
+        }, $this->renderingContext);
     }
 }

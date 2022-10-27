@@ -16,7 +16,6 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
  */
 abstract class AbstractFormContainer extends AbstractFormComponent implements ContainerInterface
 {
-
     /**
      * @var FormInterface[]|\SplObjectStorage
      */
@@ -110,7 +109,9 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
      */
     public function has($childOrChildName)
     {
-        $name = ($childOrChildName instanceof FormInterface) ? (string) $childOrChildName->getName() : $childOrChildName;
+        $name = ($childOrChildName instanceof FormInterface)
+            ? (string) $childOrChildName->getName()
+            : $childOrChildName;
         return (false !== $this->get($name));
     }
 

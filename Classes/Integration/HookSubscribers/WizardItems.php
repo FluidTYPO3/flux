@@ -122,7 +122,11 @@ class WizardItems implements NewContentElementWizardHookInterface
                     $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                     $site = $siteFinder->getSiteByPageId($pageUid);
                     $siteConfiguration = $site->getConfiguration();
-                    $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
+                    $enabledContentTypes = GeneralUtility::trimExplode(
+                        ',',
+                        $siteConfiguration['flux_content_types'] ?? '',
+                        true
+                    );
                 } catch (SiteNotFoundException $exception) {
                     // Suppressed; a site not being found is not a fatal error in this context.
                 }
@@ -136,15 +140,21 @@ class WizardItems implements NewContentElementWizardHookInterface
         if (!empty($enabledContentTypes)) {
             foreach ($items as $name => $item) {
                 $contentTypeName = $item['tt_content_defValues']['CType'] ?? null;
-                if (!empty($contentTypeName) && in_array($contentTypeName, $fluidContentTypeNames, true) && !in_array($contentTypeName, $enabledContentTypes, true)) {
+                if (!empty($contentTypeName)
+                    && in_array($contentTypeName, $fluidContentTypeNames, true)
+                    && !in_array($contentTypeName, $enabledContentTypes, true)
+                ) {
                     unset($items[$name]);
                 }
             }
         }
     }
 
-    protected function filterPermittedFluidContentTypesByInsertionPosition(array $items, NewContentElementController $parentObject, int $pageUid): array
-    {
+    protected function filterPermittedFluidContentTypesByInsertionPosition(
+        array $items,
+        NewContentElementController $parentObject,
+        int $pageUid
+    ): array {
         /** @var int|null $colPos */
         $colPos = GeneralUtility::_GET('colPos');
         if ($colPos === null) {
@@ -197,7 +207,9 @@ class WizardItems implements NewContentElementWizardHookInterface
         $pageRecord = (array) $this->recordService->getSingle('pages', '*', $pageUid);
         $pageProviders = $this->configurationService->resolveConfigurationProviders('pages', null, $pageRecord);
         $parentRecordUid = ColumnNumberUtility::calculateParentUid($columnPosition);
-        $pageColumnPosition = $parentRecordUid > 0 ? $this->findParentColumnPosition($parentRecordUid) : $columnPosition;
+        $pageColumnPosition = $parentRecordUid > 0
+            ? $this->findParentColumnPosition($parentRecordUid)
+            : $columnPosition;
         $this->appendToWhiteAndBlacklistFromProviders(
             $pageProviders,
             $pageRecord,

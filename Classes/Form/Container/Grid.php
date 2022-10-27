@@ -129,7 +129,9 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             // We are creating a grid for the page level backend layout. Add colPos item values from TCA if they were
             // not defined as grid columns and are above ColumnNumberCalculator::MULTIPLIER.
             foreach ($GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] as $columnSelectionOption) {
-                if ($columnSelectionOption[1] > ColumnNumberUtility::MULTIPLIER && !in_array($columnSelectionOption, $items, true)) {
+                if ($columnSelectionOption[1] > ColumnNumberUtility::MULTIPLIER
+                    && !in_array($columnSelectionOption, $items, true)
+                ) {
                     // This is in all likelihood a virtual column; include it.
                     $items[] = $columnSelectionOption;
                 }

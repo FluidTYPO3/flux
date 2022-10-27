@@ -1,7 +1,8 @@
 <?php
 namespace FluidTYPO3\Flux\Integration\NormalizedData\Converter;
 
-interface ConverterInterface {
+interface ConverterInterface
+{
 
     /**
      * Constructor of Converters must accept exactly
@@ -32,5 +33,4 @@ interface ConverterInterface {
      * @return array
      */
     public function convertData(array $data): array;
-
 }

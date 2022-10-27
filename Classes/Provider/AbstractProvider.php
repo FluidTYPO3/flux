@@ -372,7 +372,9 @@ class AbstractProvider implements ProviderInterface
             return $parent;
         }
         foreach ($container->getChildren() as $child) {
-            if ($child instanceof Form\ContainerInterface && ($detected = $this->detectContentContainerParent($child))) {
+            if ($child instanceof Form\ContainerInterface
+                && ($detected = $this->detectContentContainerParent($child))
+            ) {
                 return $detected;
             }
         }
@@ -860,8 +862,12 @@ class AbstractProvider implements ProviderInterface
         /** @var RenderingContextInterface $renderingContext */
         $renderingContext = $objectManager->get(RenderingContext::class);
         $renderingContext->setControllerContext($controllerContext);
-        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(ExtensionNamingUtility::getExtensionKey($controllerExtensionKey));
-        $renderingContext->getTemplatePaths()->setTemplatePathAndFilename((string) $this->getTemplatePathAndFilename($row));
+        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
+            ExtensionNamingUtility::getExtensionKey($controllerExtensionKey)
+        );
+        $renderingContext->getTemplatePaths()->setTemplatePathAndFilename(
+            (string) $this->getTemplatePathAndFilename($row)
+        );
         $renderingContext->setControllerName($this->getControllerNameFromRecord($row));
         $renderingContext->setControllerAction($this->getControllerActionFromRecord($row));
         /** @var T $view */
@@ -1109,7 +1115,12 @@ class AbstractProvider implements ProviderInterface
     protected function dispatchFlashMessageForException(\Throwable $error)
     {
         /** @var FlashMessage $flashMesasage */
-        $flashMesasage = GeneralUtility::makeInstance(FlashMessage::class, $error->getMessage(), '', FlashMessage::ERROR);
+        $flashMesasage = GeneralUtility::makeInstance(
+            FlashMessage::class,
+            $error->getMessage(),
+            '',
+            FlashMessage::ERROR
+        );
         /** @var FlashMessageService $flashMessageService */
         $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
         $flashMesasageQueue = $flashMessageService->getMessageQueueByIdentifier();

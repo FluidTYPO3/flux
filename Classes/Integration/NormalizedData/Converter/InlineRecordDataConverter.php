@@ -61,7 +61,8 @@ class InlineRecordDataConverter implements ConverterInterface
             return $structure;
         }
         $this->synchroniseConfigurationRecords($source);
-        $structure['processedTca']['columns'][$this->field]['config'] = $structure['processedTca']['columns'][$this->field . '_values']['config'];
+        $columns = &$structure['processedTca']['columns'];
+        $columnms[$this->field]['config'] = $columns[$this->field . '_values']['config'];
         return $structure;
     }
 
@@ -172,7 +173,12 @@ class InlineRecordDataConverter implements ConverterInterface
         $flexFormTools = GeneralUtility::makeInstance(FlexFormTools::class);
         $config = $structure['processedTca']['columns'][$this->field]['config'];
         try {
-            $identifier = $flexFormTools->getDataStructureIdentifier($config, $this->table, $this->field, $this->record);
+            $identifier = $flexFormTools->getDataStructureIdentifier(
+                $config,
+                $this->table,
+                $this->field,
+                $this->record
+            );
             return $flexFormTools->parseDataStructureByIdentifier($identifier);
         } catch (\RuntimeException $exception) {
         }
@@ -243,8 +249,14 @@ class InlineRecordDataConverter implements ConverterInterface
     {
         $queryBuilder = $this->createQueryBuilderForTable('flux_sheet');
         return $queryBuilder->select('*')->from('flux_sheet')->where(
-            $queryBuilder->expr()->eq('source_table', $queryBuilder->createNamedParameter($this->table, \PDO::PARAM_STR)),
-            $queryBuilder->expr()->eq('source_field', $queryBuilder->createNamedParameter($this->field, \PDO::PARAM_STR)),
+            $queryBuilder->expr()->eq(
+                'source_table',
+                $queryBuilder->createNamedParameter($this->table, \PDO::PARAM_STR)
+            ),
+            $queryBuilder->expr()->eq(
+                'source_field',
+                $queryBuilder->createNamedParameter($this->field, \PDO::PARAM_STR)
+            ),
         )->execute()->fetchAllAssociative();
     }
 

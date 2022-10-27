@@ -18,5 +18,4 @@ class StandardPipeTest extends AbstractPipeTestCase
      * @var array
      */
     protected $defaultData = array('foo' => 'bar');
-
 }

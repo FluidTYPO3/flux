@@ -46,7 +46,7 @@ class OptionViewHelper extends AbstractFormViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
-        $option = isset($arguments['name']) ? $arguments['name'] : static::$option;
+        $option = $arguments['name'] ?? static::$option;
         $container = static::getContainerFromRenderingContext($renderingContext);
         $value = $renderChildrenClosure();
         if ($container instanceof OptionCarryingInterface) {
@@ -54,8 +54,14 @@ class OptionViewHelper extends AbstractFormViewHelper
             return;
         }
         throw new \UnexpectedValueException(
-            'flux:form.option cannot be used as child element of ' . get_class($container) . ' (this class does not support options). '
-            . 'Please correct this in your template file(s). The option had name="' . $option . '" and value="' . $value . '"',
+            'flux:form.option cannot be used as child element of '
+            . get_class($container)
+            . ' (this class does not support options). '
+            . 'Please correct this in your template file(s). The option had name="'
+            . $option
+            . '" and value="'
+            . $value
+            . '"',
             1602693000
         );
     }

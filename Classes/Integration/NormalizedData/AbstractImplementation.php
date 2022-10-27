@@ -32,5 +32,4 @@ abstract class AbstractImplementation
     {
         return !empty($record);
     }
-
 }

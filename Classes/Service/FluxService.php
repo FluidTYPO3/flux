@@ -296,7 +296,10 @@ class FluxService implements SingletonInterface
     public function getViewConfigurationForExtensionName($extensionName)
     {
         /** @var TemplatePaths $templatePaths */
-        $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($extensionName));
+        $templatePaths = GeneralUtility::makeInstance(
+            TemplatePaths::class,
+            ExtensionNamingUtility::getExtensionKey($extensionName)
+        );
         return $templatePaths->toArray();
     }
 
@@ -380,17 +383,29 @@ class FluxService implements SingletonInterface
             return [];
         }
 
-        $plugAndPlayEnabled = ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY);
-        $plugAndPlayDirectory = ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY);
+        $plugAndPlayEnabled = ExtensionConfigurationUtility::getOption(
+            ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY
+        );
+        $plugAndPlayDirectory = ExtensionConfigurationUtility::getOption(
+            ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY
+        );
         if (!is_scalar($plugAndPlayDirectory)) {
             return [];
         }
         $plugAndPlayTemplatesDirectory = trim((string) $plugAndPlayDirectory, '/.') . '/';
         if ($plugAndPlayEnabled && $extensionName === 'Flux') {
             return [
-                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::TEMPLATES_DIRECTORY . DropInContentTypeDefinition::PAGE_DIRECTORY],
-                TemplatePaths::CONFIG_PARTIALROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
-                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
+                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [
+                    $plugAndPlayTemplatesDirectory
+                    . DropInContentTypeDefinition::TEMPLATES_DIRECTORY
+                    . DropInContentTypeDefinition::PAGE_DIRECTORY
+                ],
+                TemplatePaths::CONFIG_PARTIALROOTPATHS => [
+                    $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY
+                ],
+                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [
+                    $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::LAYOUTS_DIRECTORY
+                ],
             ];
         }
         if (null !== $extensionName) {
@@ -407,9 +422,15 @@ class FluxService implements SingletonInterface
             $configurations['FluidTYPO3.Flux'] = array_replace(
                 $configurations['FluidTYPO3.Flux'] ?? [],
                 [
-                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::TEMPLATES_DIRECTORY],
-                    TemplatePaths::CONFIG_PARTIALROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY],
-                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::LAYOUTS_DIRECTORY],
+                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [
+                        $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::TEMPLATES_DIRECTORY
+                    ],
+                    TemplatePaths::CONFIG_PARTIALROOTPATHS => [
+                        $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY
+                    ],
+                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => [
+                        $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::LAYOUTS_DIRECTORY
+                    ],
                 ]
             );
         }
@@ -475,7 +496,10 @@ class FluxService implements SingletonInterface
     protected function createTemplatePaths(string $registeredExtensionKey): TemplatePaths
     {
         /** @var TemplatePaths $templatePaths */
-        $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($registeredExtensionKey));
+        $templatePaths = GeneralUtility::makeInstance(
+            TemplatePaths::class,
+            ExtensionNamingUtility::getExtensionKey($registeredExtensionKey)
+        );
         return $templatePaths;
     }
 
@@ -495,7 +519,9 @@ class FluxService implements SingletonInterface
     protected function getFlexFormService()
     {
         /** @var class-string $serviceClassName */
-        $serviceClassName = class_exists(FlexFormService::class) ? FlexFormService::class : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
+        $serviceClassName = class_exists(FlexFormService::class)
+            ? FlexFormService::class
+            : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
         /** @var FlexFormService|\TYPO3\CMS\Extbase\Service\FlexFormService $flexFormService */
         $flexFormService = $this->objectManager->get($serviceClassName);
         return $flexFormService;

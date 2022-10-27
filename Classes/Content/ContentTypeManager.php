@@ -83,7 +83,8 @@ class ContentTypeManager implements SingletonInterface
 
     public function determineContentTypeForTypeString(string $contentTypeName): ?ContentTypeDefinitionInterface
     {
-        return $this->types[$contentTypeName] ?? ($this->types[$contentTypeName] = $this->loadSingleDefinitionFromCache($contentTypeName));
+        return $this->types[$contentTypeName]
+            ?? ($this->types[$contentTypeName] = $this->loadSingleDefinitionFromCache($contentTypeName));
     }
 
     public function determineContentTypeForRecord(array $record): ?ContentTypeDefinitionInterface

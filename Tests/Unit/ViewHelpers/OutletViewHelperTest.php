@@ -30,6 +30,8 @@ class OutletViewHelperTest extends AbstractViewHelperTestCase
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(OutletViewHelper::class, 'provider', null);
         $renderingContext->getViewHelperVariableContainer()->addOrUpdate(OutletViewHelper::class, 'record', []);
         $renderingContext->getViewHelperVariableContainer()->add(AbstractFormViewHelper::SCOPE, 'form', $form);
-        OutletViewHelper::renderStatic(['enabled' => false], function () { return null; }, $renderingContext);
+        OutletViewHelper::renderStatic(['enabled' => false], function () {
+            return null;
+        }, $renderingContext);
     }
 }

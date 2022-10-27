@@ -27,8 +27,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @author Christian Weiske <weiske@mogic.com>
  */
-class MigrateColPosWizard
-    implements \TYPO3\CMS\Install\Updates\UpgradeWizardInterface,
+class MigrateColPosWizard implements
+    \TYPO3\CMS\Install\Updates\UpgradeWizardInterface,
     \TYPO3\CMS\Install\Updates\ChattyInterface
 {
     /**
@@ -138,14 +138,20 @@ class MigrateColPosWizard
 
         $modified = 0;
         $tryAgain = false;
+        /** @var DeletedRestriction $deletedRestriction */
+        $deletedRestriction = GeneralUtility::makeInstance(DeletedRestriction::class);
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         while ($contentRow = $statement->fetch()) {
-            list($min, $max) = ColumnNumberUtility::calculateMinimumAndMaximumColumnNumberWithinParent($contentRow['uid']);
+            list($min, $max) = ColumnNumberUtility::calculateMinimumAndMaximumColumnNumberWithinParent(
+                $contentRow['uid']
+            );
 
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+            $queryBuilder = $connectionPool->getQueryBuilderForTable('tt_content');
             $queryBuilder
                 ->getRestrictions()
                 ->removeAll()
-                ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+                ->add($deletedRestriction);
             $maxChildSorting = $queryBuilder
                 ->selectLiteral('MAX(sorting)')
                 ->from('tt_content')
@@ -156,18 +162,27 @@ class MigrateColPosWizard
                 ->execute()
                 ->fetchColumn(0);
 
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+            $queryBuilder = $connectionPool->getQueryBuilderForTable('tt_content');
             $queryBuilder
                 ->getRestrictions()
                 ->removeAll()
-                ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+                ->add($deletedRestriction);
             $selfAndFollowingSiblings = $queryBuilder
                 ->select('uid', 'sorting', 'colPos')
                 ->from('tt_content')
                 ->where(
-                    $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($contentRow['pid'], \PDO::PARAM_INT)),
-                    $queryBuilder->expr()->eq('colPos', $queryBuilder->createNamedParameter($contentRow['colPos'], \PDO::PARAM_INT)),
-                    $queryBuilder->expr()->gte('sorting', $queryBuilder->createNamedParameter($contentRow['sorting'], \PDO::PARAM_INT)),
+                    $queryBuilder->expr()->eq(
+                        'pid',
+                        $queryBuilder->createNamedParameter($contentRow['pid'], \PDO::PARAM_INT)
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'colPos',
+                        $queryBuilder->createNamedParameter($contentRow['colPos'], \PDO::PARAM_INT)
+                    ),
+                    $queryBuilder->expr()->gte(
+                        'sorting',
+                        $queryBuilder->createNamedParameter($contentRow['sorting'], \PDO::PARAM_INT)
+                    ),
                 )
                 ->orderBy('sorting', 'ASC')
                 ->execute()
@@ -182,7 +197,7 @@ class MigrateColPosWizard
                     break;
                 }
 
-                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+                $queryBuilder = $connectionPool->getQueryBuilderForTable('tt_content');
                 $res = $queryBuilder
                     ->update('tt_content')
                     ->where($queryBuilder->expr()->eq('uid', $siblingRow['uid'], \PDO::PARAM_INT))

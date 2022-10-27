@@ -85,7 +85,11 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
 
             foreach ($typeRecords as $typeRecord) {
                 $extensionIdentity = $typeRecord['extension_identity'];
-                if (empty($extensionIdentity) || !ExtensionManagementUtility::isLoaded(ExtensionNamingUtility::getExtensionKey($extensionIdentity))) {
+                if (empty($extensionIdentity)
+                    || !ExtensionManagementUtility::isLoaded(
+                        ExtensionNamingUtility::getExtensionKey($extensionIdentity)
+                    )
+                ) {
                     $typeRecord['extension_identity'] = 'FluidTYPO3.Builder';
                 }
 
@@ -120,7 +124,8 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
     {
         foreach ($this->getContentConfiguration() as $item) {
             foreach ($item['sheets']['lDEF']['sheets']['el'] ?? [] as $sheetObjectData) {
-                yield $sheetObjectData['sheet']['el']['name']['vDEF'] => 'Sheet: ' . $sheetObjectData['sheet']['el']['label']['vDEF'];
+                yield $sheetObjectData['sheet']['el']['name']['vDEF']
+                    => 'Sheet: ' . $sheetObjectData['sheet']['el']['label']['vDEF'];
             }
         }
     }
@@ -140,7 +145,11 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
             foreach ($item['sheets']['lDEF']['sheets'] ?? [] as $sheetObjects) {
                 foreach ($sheetObjects as $sheetData) {
                     $sheetValues = $sheetData['sheet']['el'];
-                    $sheet = $instance->createContainer(Form\Container\Sheet::class, $sheetValues['name']['vDEF'], $sheetValues['label']['vDEF']);
+                    $sheet = $instance->createContainer(
+                        Form\Container\Sheet::class,
+                        $sheetValues['name']['vDEF'],
+                        $sheetValues['label']['vDEF']
+                    );
 
                     foreach ($item[$sheetValues['name']['vDEF']]['lDEF']['fields']['el'] ?? [] as $fieldObject) {
                         /** @var class-string $fieldType */
@@ -270,11 +279,17 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
      * @param string $mode
      * @return void
      */
-    protected function createAutomaticGridColumns(Grid $grid, int $currentNumberOfColumns, int $totalNumberOfColumns, string $mode)
-    {
+    protected function createAutomaticGridColumns(
+        Grid $grid,
+        int $currentNumberOfColumns,
+        int $totalNumberOfColumns,
+        string $mode
+    ) {
         if ($mode === Section::GRID_MODE_ROWS) {
             for ($i = $currentNumberOfColumns; $i < $totalNumberOfColumns; ++$i) {
-                $grid->createContainer(Row::class, 'row' . $i)->createContainer(Column::class, 'content' . $i)->setColumnPosition($i);
+                $grid->createContainer(Row::class, 'row' . $i)
+                    ->createContainer(Column::class, 'content' . $i)
+                    ->setColumnPosition($i);
             }
         } else {
             $row = $grid->createContainer(Row::class, 'row');

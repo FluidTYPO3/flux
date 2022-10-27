@@ -138,7 +138,7 @@ class GetViewHelper extends AbstractViewHelper
         }
 
         if ($workspaceId) {
-            $placeholder = BackendUtility::getWorkspaceVersionOfRecord($workspaceId,'tt_content', $record['uid'] ?? 0);
+            $placeholder = BackendUtility::getWorkspaceVersionOfRecord($workspaceId, 'tt_content', $record['uid'] ?? 0);
             if ($placeholder) {
                 // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
                 // from the workspace-only placeholder.

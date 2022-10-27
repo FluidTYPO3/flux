@@ -31,7 +31,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     /**
      * @var ContentTypeBuilder|null
      */
-    static $contentTypeBuilder;
+    protected static $contentTypeBuilder;
 
     /**
      * @param array $parameters
@@ -75,8 +75,8 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     {
         $contentTypeBuilder = static::getContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
-            list ($providerExtensionName, $templatePathAndFilename, , $contentType) = $queuedRegistration;
-            $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templatePathAndFilename);
+            list ($extensionName, $templatePathAndFilename, , $contentType) = $queuedRegistration;
+            $contentType = $contentType ?: static::determineContentType($extensionName, $templatePathAndFilename);
             $contentTypeBuilder->addBoilerplateTableConfiguration($contentType);
         }
     }
@@ -105,7 +105,14 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         $contentTypeBuilder = static::getContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
-            [$providerExtensionName, $templateFilename, $providerClassName, $contentType, $pluginName, $controllerActionName] = $queuedRegistration;
+            [
+                $providerExtensionName,
+                $templateFilename,
+                $providerClassName,
+                $contentType,
+                $pluginName,
+                $controllerActionName
+            ] = $queuedRegistration;
             try {
                 $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templateFilename);
                 $defaultControllerExtensionName = 'FluidTYPO3.Flux';

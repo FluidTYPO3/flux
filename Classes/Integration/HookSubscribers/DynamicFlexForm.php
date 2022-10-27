@@ -118,11 +118,15 @@ class DynamicFlexForm extends FlexFormTools
         if ((integer) ($record['uid'] ?? 0) > 0) {
             $limitedRecordData = ['uid' => $record['uid']];
         } else {
-            $fields = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues']);
+            $fields = GeneralUtility::trimExplode(
+                ',',
+                $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues']
+            );
             if ($GLOBALS['TCA'][$tableName]['ctrl']['type'] ?? false) {
+                $typeField = $GLOBALS['TCA'][$tableName]['ctrl']['type'];
                 $fields[] = $GLOBALS['TCA'][$tableName]['ctrl']['type'];
-                if ($GLOBALS['TCA'][$tableName]['ctrl'][$GLOBALS['TCA'][$tableName]['ctrl']['type']]['subtype_value_field'] ?? false) {
-                    $fields[] = $GLOBALS['TCA'][$tableName]['ctrl'][$GLOBALS['TCA'][$tableName]['ctrl']['type']]['subtype_value_field'];
+                if ($GLOBALS['TCA'][$tableName]['ctrl'][$typeField]['subtype_value_field'] ?? false) {
+                    $fields[] = $GLOBALS['TCA'][$tableName]['ctrl'][$typeField]['subtype_value_field'];
                 }
             }
             $fields = array_combine($fields, $fields);

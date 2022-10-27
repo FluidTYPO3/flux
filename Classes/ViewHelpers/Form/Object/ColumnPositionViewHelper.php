@@ -33,7 +33,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * Example
  * -------
  *
- *       <flux:form id="sectionobjectasmanualgrid" options="{static: 1}" extensionName="FluidTYPO3.TestProviderExtension">
+ *       <flux:form id="sectionobjectasgrid" options="{static: 1}" extensionName="FluidTYPO3.TestProviderExtension">
  *           <flux:form.sheet name="options">
  *               <flux:form.section name="columns">
  *                   <flux:form.object name="column" label="Column">
@@ -67,6 +67,7 @@ class ColumnPositionViewHelper extends AbstractFormViewHelper
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
-        return static::getContainerFromRenderingContext($renderingContext)->createField(ColumnPosition::class, ColumnPosition::FIELD_NAME);
+        return static::getContainerFromRenderingContext($renderingContext)
+            ->createField(ColumnPosition::class, ColumnPosition::FIELD_NAME);
     }
 }

@@ -125,7 +125,11 @@ class PageLayoutDataProvider
             try {
                 $site = $resolver->getSiteByPageId($pageUid);
                 $siteConfiguration = $site->getConfiguration();
-                $allowedTemplates = GeneralUtility::trimExplode(',', $siteConfiguration['flux_page_templates'] ?? '', true);
+                $allowedTemplates = GeneralUtility::trimExplode(
+                    ',',
+                    $siteConfiguration['flux_page_templates'] ?? '',
+                    true
+                );
             } catch (SiteNotFoundException $exception) {
                 $allowedTemplates = [];
             }

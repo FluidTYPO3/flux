@@ -32,7 +32,6 @@ class RowTest extends AbstractContainerTest
      */
     public function canAutoWriteLabel()
     {
-
     }
 
     /**
@@ -43,6 +42,5 @@ class RowTest extends AbstractContainerTest
      */
     public function canUseShorthandLanguageLabel()
     {
-
     }
 }

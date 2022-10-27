@@ -112,7 +112,10 @@ class ContentIcon
         $provider = null;
         $icon = '';
         $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
-        $cacheIdentity = $table . $uid . sha1(serialize($record)) . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
+        $cacheIdentity = $table
+            . $uid
+            . sha1(serialize($record))
+            . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
         // filter 1: icon must not already be cached and both record and caller must be provided.
         // we check the cache here because at this point, the cache key is decidedly
         // unique and we have not yet consulted the (potentially costly) Provider.
@@ -160,9 +163,17 @@ class ContentIcon
         $label = $GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
         $icon = $collapseIcon . $expandIcon;
 
-        $template = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11', '<') ? $this->templates['legacyGridToggle'] : $this->templates['gridToggle'];
+        $template = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11', '<')
+            ? $this->templates['legacyGridToggle']
+            : $this->templates['gridToggle'];
 
-        $rendered = sprintf($template, $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
+        $rendered = sprintf(
+            $template,
+            $this->isRowCollapsed($row) ?  'toggler-expand' : 'toggler-collapse',
+            $label,
+            $row['uid'],
+            $icon
+        );
 
         return HookHandler::trigger(
             HookHandler::PREVIEW_GRID_TOGGLE_RENDERED,
