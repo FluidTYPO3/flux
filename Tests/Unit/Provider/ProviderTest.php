@@ -104,7 +104,7 @@ class ProviderTest extends AbstractProviderTest
         $this->assertSame($provider, $result);
         $extensionKey = $result->getExtensionKey($record);
         $this->assertNotEmpty($extensionKey);
-        $this->assertRegExp('/[a-z_]+/', $extensionKey);
+        $this->assertMatchesRegularExpression('/[a-z_]+/', $extensionKey);
     }
 
     /**

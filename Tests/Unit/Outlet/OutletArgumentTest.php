@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet;
 
 use FluidTYPO3\Flux\Outlet\OutletArgument;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
 use TYPO3\CMS\Extbase\Property\PropertyMapper;
@@ -23,17 +24,17 @@ use TYPO3\CMS\Extbase\Validation\ValidatorResolver;
 class OutletArgumentTest extends AbstractTestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|PropertyMapper&\PHPUnit\Framework\MockObject\MockObject
+     * @var PropertyMapper&MockObject
      */
     protected $propertyMapper;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|ValidatorResolver&\PHPUnit\Framework\MockObject\MockObject
+     * @var ValidatorResolver&MockObject
      */
     protected $validatorResolver;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|MvcPropertyMappingConfiguration&\PHPUnit\Framework\MockObject\MockObject
+     * @var MvcPropertyMappingConfiguration&MockObject
      */
     protected $propertyMappingConfiguration;
 

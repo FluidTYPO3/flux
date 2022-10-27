@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Service;
  */
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
@@ -105,7 +106,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     protected function getWorkspaceVersionOfRecordOrRecordItself($table, $record)
     {
         $copy = false;
-        if (null !== $GLOBALS['BE_USER']) {
+        if ($this->hasWorkspacesSupport($table)) {
             $copy = $record;
             $this->overlayRecordInternal($table, $copy);
             if (!$copy) {
@@ -122,7 +123,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     protected function hasWorkspacesSupport($table)
     {
         return (
-            null !== $GLOBALS['BE_USER']
+            $GLOBALS['BE_USER'] instanceof BackendUserAuthentication
             && ExtensionManagementUtility::isLoaded('workspaces')
             && BackendUtility::isTableWorkspaceEnabled($table)
         );

@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
 use FluidTYPO3\Flux\Provider\SubPageProvider;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
@@ -53,7 +54,7 @@ class SubPageProviderTest extends AbstractTestCase
         $expected = 'Tests/Fixtures/Templates/Page/Dummy.html';
         $dataFieldName = 'tx_fed_page_flexform_sub';
         $fieldName = 'tx_fed_page_controller_action_sub';
-        /** @var PageService|\PHPUnit_Framework_MockObject_MockObject $service */
+        /** @var PageService|MockObject $service */
         $service = $this->getMockBuilder(PageService::class)->setMethods(['getPageTemplateConfiguration'])->getMock();
         $templatePaths = $this->getMockBuilder(TemplatePaths::class)->setMethods(['resolveTemplateFileForControllerAndActionAndFormat'])->getMock();
         $templatePaths->method('resolveTemplateFileForControllerAndActionAndFormat')->willReturn($expected);

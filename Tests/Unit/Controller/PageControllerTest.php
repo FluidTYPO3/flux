@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Class PageControllerTest
@@ -32,7 +33,7 @@ class PageControllerTest extends AbstractTestCase
 
     public function testInitializeProvider()
     {
-        /** @var FluxService|\PHPUnit_Framework_MockObject_MockObject $pageConfigurationService */
+        /** @var FluxService|MockObject $pageConfigurationService */
         $pageConfigurationService = $this->getMockBuilder(
             FluxService::class
         )->setMethods(
@@ -45,7 +46,7 @@ class PageControllerTest extends AbstractTestCase
             ['getPageTemplateConfiguration']
         )->getMock();
         $pageConfigurationService->expects($this->once())->method('resolvePrimaryConfigurationProvider');
-        /** @var PageController|\PHPUnit_Framework_MockObject_MockObject $instance */
+        /** @var PageController|MockObject $instance */
         $instance = $this->getMockBuilder(PageController::class)->setMethods(['getRecord'])->disableOriginalConstructor()->getMock();
         $instance->expects($this->once())->method('getRecord')->willReturn([]);
         $instance->injectpageConfigurationService($pageConfigurationService);

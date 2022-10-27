@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
@@ -91,10 +92,14 @@ class PageServiceTest extends AbstractTestCase
     {
         $record1 = array('pid' => 2, 'uid' => 1);
         $record2 = array('pid' => 0, 'uid' => 3, 'tx_fed_page_flexform' => 'test');
-        /** @var WorkspacesAwareRecordService|\PHPUnit_Framework_MockObject_MockObject $service */
+        /** @var WorkspacesAwareRecordService|MockObject $service */
         $service = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(array('getSingle'))->getMock();
-        $service->expects($this->at(0))->method('getSingle')->with('pages', 'uid,pid,t3ver_oid,tx_fed_page_flexform', 1)->willReturn($record1);
-        $service->expects($this->at(1))->method('getSingle')->with('pages', 'uid,pid,t3ver_oid,tx_fed_page_flexform', 2)->willReturn($record2);
+        $service->method('getSingle')->willReturnMap(
+            [
+                ['pages', 'uid,pid,t3ver_oid,tx_fed_page_flexform', 1, $record1],
+                ['pages', 'uid,pid,t3ver_oid,tx_fed_page_flexform', 2, $record2],
+            ]
+        );
         $instance = new PageService();
         $instance->injectWorkspacesAwareRecordService($service);
         $output = $instance->getPageFlexFormSource(1);
@@ -109,7 +114,7 @@ class PageServiceTest extends AbstractTestCase
     public function testGetAvailablePageTemplateFiles($typoScript, $expected)
     {
         $runtimeCache = new VariableFrontend('runtime', $this->getMockBuilder(BackendInterface::class)->getMockForAbstractClass());
-        /** @var FluxService|\PHPUnit_Framework_MockObject_MockObject $service */
+        /** @var FluxService|MockObject $service */
         $service = $this->getMockBuilder(
             FluxService::class
         )->setMethods(
