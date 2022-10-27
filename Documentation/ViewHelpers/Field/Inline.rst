@@ -696,8 +696,8 @@ useCombination
 :aspect:`Required`
    false
 :aspect:`Description`
-   For use on bidirectional relations using an intermediary table. In combinations, it's possible to edit ' .
-           'attributes and the related child record.
+   For use on bidirectional relations using an intermediary table. In combinations, it's possible to edit '
+           . 'attributes and the related child record.
 
 .. _field.inline_usesortable:
 
@@ -775,8 +775,8 @@ enabledControls
 :aspect:`Required`
    false
 :aspect:`Description`
-   Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. ' .
-           'Set either one to TRUE or FALSE to show or hide it.
+   Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. '
+           . 'Set either one to TRUE or FALSE to show or hide it.
 
 .. _field.inline_headerthumbnail:
 

@@ -27,7 +27,7 @@ the section objects and creating a column for each.
 Example
 -------
 
-      <flux:form id="sectionobjectasmanualgrid" options="{static: 1}" extensionName="FluidTYPO3.TestProviderExtension">
+      <flux:form id="sectionobjectasgrid" options="{static: 1}" extensionName="FluidTYPO3.TestProviderExtension">
           <flux:form.sheet name="options">
               <flux:form.section name="columns">
                   <flux:form.object name="column" label="Column">
