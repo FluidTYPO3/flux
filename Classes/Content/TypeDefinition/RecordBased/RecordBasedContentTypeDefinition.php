@@ -132,10 +132,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
 
     public function getForm(array $record = []): Form
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var Form $instance */
-        $instance = $objectManager->get(Form::class);
+        $instance = Form::create();
         $instance->remove('options');
         $instance->setOption(Form::OPTION_ICON, $this->getIconReference());
         $instance->setOption(Form::OPTION_GROUP, 'fluxContent');

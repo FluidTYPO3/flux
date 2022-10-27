@@ -41,6 +41,20 @@ class ContentTypeFluxTemplateDumper
         /** @var FormToFluidTemplateConverter $dumper */
         $dumper = GeneralUtility::makeInstance(FormToFluidTemplateConverter::class);
         $dump = $dumper->convertFormAndGrid($form, $grid, $options);
+
+        $error = $this->validateTemplateSource($dump);
+        if ($error === null) {
+            $validation = '<p class="text-success">Template parses OK, it is safe to copy</p>';
+        } else {
+            $validation = '<p class="text-danger">' . $error->getMessage() . '</p>';
+        }
+
+        $content = $validation . '<pre>' . htmlspecialchars($dump) . '</pre>';
+        return $content;
+    }
+
+    protected function validateTemplateSource(string $templateSource): ?\Exception
+    {
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var TemplateView $templateView */
@@ -48,16 +62,14 @@ class ContentTypeFluxTemplateDumper
         $parser = $templateView->getRenderingContext()->getTemplateParser();
         try {
             if (class_exists(Sequencer::class)) {
-                $parser->parse(new Source($dump));
+                $parser->parse(new Source($templateSource));
             } else {
-                $parser->parse($dump);
+                $parser->parse($templateSource);
             }
-            $validation = '<p class="text-success">Template parses OK, it is safe to copy</p>';
         } catch (\Exception $error) {
-            $validation = '<p class="text-danger">' . $error->getMessage() . '</p>';
+            return $error;
         }
-        $content = $validation . '<pre>' . htmlspecialchars($dump) . '</pre>';
-        return $content;
+        return null;
     }
 
     protected function getContentType(string $contentTypeName): ?ContentTypeDefinitionInterface
