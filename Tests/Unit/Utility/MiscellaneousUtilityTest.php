@@ -21,7 +21,6 @@ use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Package\Package;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * MiscellaneousUtilityTest
@@ -84,11 +83,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
      */
     protected function getFormInstance()
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        /** @var Form $instance */
-        $instance = $objectManager->get('FluidTYPO3\Flux\Form');
-        return $instance;
+        return Form::create();
     }
 
     /**

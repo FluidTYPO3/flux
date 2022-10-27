@@ -108,7 +108,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
     public function testResolveView()
     {
         $view = $this->getMockBuilder(TemplateView::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
-        $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->getMock();
+        $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->disableOriginalConstructor()->getMock();
         $objectManager->method('get')->with(TemplateView::class)->willReturn($view);
         $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['resolveViewObjectName'])->disableOriginalConstructor()->getMockForAbstractClass();
         $instance->expects($this->once())->method('resolveViewObjectName')->willReturn(TemplateView::class);
@@ -160,7 +160,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
     protected function createAndTestDummyControllerInstance()
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-        return $this->getMockBuilder($controllerClassName)->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder($controllerClassName)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
     }
 
     /**
@@ -261,7 +261,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $controllerContext = new ControllerContext();
         $controllerContext->setRequest(new Request());
         ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, true);
-        $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->getMock();
+        $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->disableOriginalConstructor()->getMock();
         $objectManager->expects($this->once())->method('get')->with(TemplatePaths::class)->willReturn(new TemplatePaths());
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
@@ -289,7 +289,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $controllerContext = new ControllerContext();
         $controllerContext->setRequest(new Request());
         ObjectAccess::setProperty($instance, 'controllerContext', $controllerContext, true);
-        $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->getMock();
+        $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->disableOriginalConstructor()->getMock();
         $objectManager->expects($this->once())->method('get')->with(TemplatePaths::class)->willReturn(new TemplatePaths());
         ObjectAccess::setProperty($instance, 'objectManager', $objectManager, true);
         $instance->expects($this->at(0))->method('initializeProvider');
@@ -493,9 +493,11 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
         $configurationManager->method('getContentObject')->willReturn($contentObjectRenderer);
         $instance->injectConfigurationManager($configurationManager);
+        $provider = $this->getMockBuilder(Provider::class)->setMethods(['getFlexFormValues'])->disableOriginalConstructor()->getMock();
+        $provider->method('getFlexFormValues')->willReturn(['settings' => ['useTypoScript' => 1]]);
         $fluxService = $this->getMockBuilder(FluxService::class)->setMethods(['resolvePrimaryConfigurationProvider', 'getSettingsForExtensionName'])->getMock();
-        $fluxService->method('getSettingsForExtensionName')->willReturn([]);
-        $fluxService->method('resolvePrimaryConfigurationProvider')->willReturn(new Provider());
+        $fluxService->method('getSettingsForExtensionName')->willReturn(['foo' => 'bar']);
+        $fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $instance->injectConfigurationService($fluxService);
         $settings = [
             'useTypoScript' => true

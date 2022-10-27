@@ -132,7 +132,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $properties = $this->chainProperties;
         $properties['type'] = $this->getObjectClassName();
         $instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
+        $this->assertInstanceOf(Form\FormInterface::class, $instance);
     }
 
     /**
@@ -146,7 +146,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
             'type' => 'Section'
         );
         $section = AbstractFormField::create($definition);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Section', $section);
+        $this->assertInstanceOf(Form\Container\Section::class, $section);
         $this->assertSame($definition['name'], $section->getName());
     }
 

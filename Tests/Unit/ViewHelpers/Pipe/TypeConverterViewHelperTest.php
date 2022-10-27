@@ -8,7 +8,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Outlet\Pipe\TypeConverterPipe;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Property\TypeConverter\ArrayConverter;
 
 /**
  * TypeConverterViewHelperTest
@@ -33,7 +36,19 @@ class TypeConverterViewHelperTest extends AbstractViewHelperTestCase
     {
         return array(
             array(array('typeConverter' => 'Array')),
-            array(array('typeConverter' => 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\ArrayConverter')),
+            array(array('typeConverter' => ArrayConverter::class)),
         );
+    }
+
+    protected function createObjectManagerInstance(): ObjectManagerInterface
+    {
+        $objectManager = parent::createObjectManagerInstance();
+        $objectManager->method('get')->willReturnMap(
+            [
+                [TypeConverterPipe::class, new TypeConverterPipe()],
+                [ArrayConverter::class, new ArrayConverter()],
+            ]
+        );
+        return $objectManager;
     }
 }

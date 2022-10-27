@@ -27,7 +27,6 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
  */
 class FluxServiceTest extends AbstractTestCase
 {
-
     /**
      * Setup
      */
@@ -217,7 +216,7 @@ class FluxServiceTest extends AbstractTestCase
     public function testGetTypoScriptByPath()
     {
         $service = new FluxService();;
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->setMethods(array('getConfiguration'))->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->setMethods(array('getConfiguration'))->disableOriginalConstructor()->getMock();
         $configurationManager->expects($this->once())->method('getConfiguration')
             ->with(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT)
             ->willReturn(array('plugin.' => array('tx_test.' => array('settings.' => array('test_var' => 'test_val')))));
@@ -252,7 +251,7 @@ class FluxServiceTest extends AbstractTestCase
     {
         /** @var class-string $serviceClassName */
         $serviceClassName = class_exists(FlexFormService::class) ? FlexFormService::class : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
-        $flexFormService = $this->getMockBuilder($serviceClassName)->setMethods(['convertFlexFormContentToArray'])->getMock();
+        $flexFormService = $this->getMockBuilder($serviceClassName)->setMethods(['convertFlexFormContentToArray'])->disableOriginalConstructor()->getMock();
         $flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
         $instance = $this->getMockBuilder(FluxService::class)->setMethods(['getFlexFormService'])->getMock();
         $instance->method('getFlexFormService')->willReturn($flexFormService);

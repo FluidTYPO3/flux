@@ -23,7 +23,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class TypeConverterViewHelper extends AbstractPipeViewHelper
 {
-
     /**
      * @return void
      */

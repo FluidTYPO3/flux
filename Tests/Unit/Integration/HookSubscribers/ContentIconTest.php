@@ -101,11 +101,11 @@ class ContentIconTest extends AbstractTestCase
         $cache->method('get')->willReturn(null);
         $cache->method('set')->with($this->anything());
 
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->disableOriginalConstructor()->getMock();
         $service = $this->getMockBuilder(FluxService::class)->setMethods(array('resolvePrimaryConfigurationProvider','getConfiguration'))->getMock();
         $service->injectConfigurationManager($configurationManager);
         $service->expects($this->any())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
-        $instance = $this->getMockBuilder(ContentIcon::class)->disableOriginalConstructor()->getMock();
+        $instance = $this->getMockBuilder(ContentIcon::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $instance->injectFluxService($service);
         ObjectAccess::setProperty($instance, 'cache', $cache, true);
         if ($provider !== null) {
@@ -114,7 +114,8 @@ class ContentIconTest extends AbstractTestCase
             ObjectAccess::setProperty($provider, 'configurationService', $configurationServiceMock, true);
         }
 
-        $instance->addSubIcon($parameters, $this->getMockBuilder(PageLayoutView::class)->disableOriginalConstructor()->getMock());
+        $icon = $instance->addSubIcon($parameters, $this->getMockBuilder(PageLayoutView::class)->disableOriginalConstructor()->getMock());
+        $this->assertSame('', $icon);
     }
 
     /**

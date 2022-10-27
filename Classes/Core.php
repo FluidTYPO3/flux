@@ -74,7 +74,7 @@ class Core
      * Contains queued instructions to call \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin in later hook
      * @var array
      */
-    private static $queuedContentTypeRegistrations = [];
+    protected static $queuedContentTypeRegistrations = [];
 
     /**
      * @return array

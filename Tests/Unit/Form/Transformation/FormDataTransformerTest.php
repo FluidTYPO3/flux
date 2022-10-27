@@ -22,7 +22,6 @@ use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
  */
 class FormDataTransformerTest extends AbstractTestCase
 {
-
     /**
      * @test
      * @dataProvider getValuesAndTransformations
@@ -36,7 +35,9 @@ class FormDataTransformerTest extends AbstractTestCase
         $objectManager->method('get')->willReturnMap(
             [
                 ['DateTime', new \DateTime()],
-                [RepositoryInterface::class, $this->getMockBuilder(RepositoryInterface::class)->getMockForAbstractClass()]
+                ['DateTime', date('Ymd'), new \DateTime(date('Ymd'))],
+                [RepositoryInterface::class, $this->getMockBuilder(RepositoryInterface::class)->getMockForAbstractClass()],
+                [ObjectStorage::class, new ObjectStorage()],
             ]
         );
         $instance = $this->getMockBuilder(FormDataTransformer::class)->setMethods(['loadObjectsFromRepository', 'resolveRepositoryClassName'])->getMock();

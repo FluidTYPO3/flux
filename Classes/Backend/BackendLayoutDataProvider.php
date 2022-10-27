@@ -113,7 +113,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
      */
     public function getBackendLayout($identifier, $pageUid)
     {
-        $emptyLayout = new BackendLayout($identifier, 'Empty', '');
+        $emptyLayout = $this->createBackendLayoutInstance($identifier, 'Empty', '');
         $record = $this->recordService->getSingle('pages', '*', $pageUid);
         if (null === $record) {
             return $emptyLayout;
@@ -125,6 +125,17 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
         }
         $grid = $provider->getGrid($record);
         return $grid->buildBackendLayout(0);
+    }
+
+    /**
+     * @param string $identifier
+     * @param string $title
+     * @param string|array $configuration
+     * @return BackendLayout
+     */
+    protected function createBackendLayoutInstance(string $identifier, string $title, $configuration): BackendLayout
+    {
+        return new BackendLayout($identifier, 'Empty', '');
     }
 
     /**
