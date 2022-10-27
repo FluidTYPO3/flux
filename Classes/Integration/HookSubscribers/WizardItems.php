@@ -21,7 +21,6 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * WizardItemsHookSubscriber
@@ -112,7 +111,9 @@ class WizardItems implements NewContentElementWizardHookInterface
             }
 
             if ($pageUid === 0) {
-                $pageUidFroimParentObject = ObjectAccess::getProperty($parentObject, 'id', true);
+                $reflectionProperty = new \ReflectionProperty($parentObject, 'id');
+                $reflectionProperty->setAccessible(true);
+                $pageUidFroimParentObject = $reflectionProperty->getValue($parentObject);
                 $pageUid = is_scalar($pageUidFroimParentObject) ? (int) $pageUidFroimParentObject : 0;
             }
             if ($pageUid > 0) {
@@ -147,7 +148,9 @@ class WizardItems implements NewContentElementWizardHookInterface
         /** @var int|null $colPos */
         $colPos = GeneralUtility::_GET('colPos');
         if ($colPos === null) {
-            $colPosFromParentObject = ObjectAccess::getProperty($parentObject, 'colPos', true);
+            $reflectionProperty = new \ReflectionProperty($parentObject, 'colPos');
+            $reflectionProperty->setAccessible(true);
+            $colPosFromParentObject = $reflectionProperty->getValue($parentObject);
             $colPos = is_scalar($colPosFromParentObject) ? (int) $colPosFromParentObject : 0;
         }
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(

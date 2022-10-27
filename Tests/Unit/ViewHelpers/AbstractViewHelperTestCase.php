@@ -13,8 +13,8 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Web\Request;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
+use TYPO3\CMS\Extbase\Web\Request;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolver;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -56,11 +56,17 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     {
         parent::setUp();
 
+        if (class_exists(Request::class)) {
+            $requestClassName = Request::class;
+        } else {
+            $requestClassName = \TYPO3\CMS\Extbase\Mvc\Request::class;
+        }
+
         $this->viewHelperResolver = $this->getMockBuilder(ViewHelperResolver::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $this->viewHelperVariableContainer = $this->getMockBuilder(ViewHelperVariableContainer::class)->setMethods(['dummy'])->getMock();
         $this->templateVariableContainer = $this->getMockBuilder(StandardVariableProvider::class)->setMethods(['dummy'])->getMock();
         $this->controllerContext = $this->getMockBuilder(ControllerContext::class)->setMethods(['getRequest'])->getMock();
-        $this->controllerContext->method('getRequest')->willReturn(new Request());
+        $this->controllerContext->method('getRequest')->willReturn(new $requestClassName());
         $this->viewHelperInvoker = $this->getMockBuilder(ViewHelperInvoker::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $this->renderingContext = $this->getMockBuilder(RenderingContext::class)->disableOriginalConstructor()->getMock();
         $this->errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)->getMockForAbstractClass();

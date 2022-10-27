@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
 use TYPO3\CMS\Extbase\Property\PropertyMapper;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Validation\Error;
 use TYPO3\CMS\Extbase\Validation\Validator\NotEmptyValidator;
 use TYPO3\CMS\Extbase\Validation\ValidatorResolver;
@@ -47,11 +46,11 @@ class OutletArgumentTest extends AbstractTestCase
 
         $this->propertyMappingConfiguration = $this->getMockBuilder(MvcPropertyMappingConfiguration::class)->getMock();
 
-        $this->propertyMapper = $this->getMockBuilder(PropertyMapper::class)->setMethods(['convert', 'getMessages'])->getMock();
+        $this->propertyMapper = $this->getMockBuilder(PropertyMapper::class)->setMethods(['convert', 'getMessages'])->disableOriginalConstructor()->getMock();
         $this->propertyMapper->method('convert')->willReturnArgument(0);
         $this->propertyMapper->method('getMessages')->willReturn(new Result());
 
-        $this->validatorResolver = $this->getMockBuilder(ValidatorResolver::class)->setMethods(['createValidator'])->getMock();
+        $this->validatorResolver = $this->getMockBuilder(ValidatorResolver::class)->setMethods(['createValidator'])->disableOriginalConstructor()->getMock();
         $this->validatorResolver->method('createValidator')->willReturnMap(
             [
                 ['NotEmpty', [], new NotEmptyValidator()],
@@ -131,7 +130,7 @@ class OutletArgumentTest extends AbstractTestCase
         $argument = new OutletArgument('foobar', 'string');
         $argument->injectValidatorResolver($this->validatorResolver);
         $argument->addValidator('NotEmpty', []);
-        $this->assertEquals($validators, ObjectAccess::getProperty($argument, 'validators', true));
+        $this->assertEquals($validators, $this->getInaccessiblePropertyValue($argument, 'validators'));
     }
 
     /**

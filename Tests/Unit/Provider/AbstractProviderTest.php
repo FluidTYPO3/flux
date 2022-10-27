@@ -17,7 +17,6 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
@@ -122,7 +121,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $record = Records::$contentRecordIsParentAndHasChildren;
         /** @var ProviderInterface $instance */
         $instance = $this->getConfigurationProviderInstance();
-        ObjectAccess::setProperty($instance, 'parentFieldName', 'test', true);
+        $this->setInaccessiblePropertyValue($instance, 'parentFieldName', 'test');
         $this->assertSame('test', $instance->getParentFieldName($record));
     }
 
@@ -188,7 +187,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $provider->expects($this->once())->method('getPageValues')->willReturnArgument(0);
         $provider->expects($this->once())->method('getForm')->willReturn(null);
         $provider->expects($this->once())->method('getGrid')->willReturn(null);
-        ObjectAccess::setProperty($provider, 'templatePaths', array(), true);
+        $this->setInaccessiblePropertyValue($provider, 'templatePaths', array());
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
         $record = $this->getBasicRecord();
         $values = $provider->getTemplateVariables($record);

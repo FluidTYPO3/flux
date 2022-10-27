@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
 use FluidTYPO3\Flux\Integration\Overrides\BackendLayoutView;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * Class ColumnPositionsTest
@@ -23,7 +22,7 @@ class BackendLayoutViewTest extends AbstractTestCase
         $instance = new BackendLayoutView();
         $provider = $this->getMockBuilder(GridProviderInterface::class)->getMockForAbstractClass();
         $instance->setProvider($provider);
-        $this->assertSame($provider, ObjectAccess::getProperty($instance, 'provider', true));
+        $this->assertSame($provider, $this->getInaccessiblePropertyValue($instance, 'provider'));
     }
 
     public function testCanSetRecord()
@@ -31,6 +30,6 @@ class BackendLayoutViewTest extends AbstractTestCase
         $instance = new BackendLayoutView();
         $record = ['foo' => 'bar'];
         $instance->setRecord($record);
-        $this->assertSame($record, ObjectAccess::getProperty($instance, 'record', true));
+        $this->assertSame($record, $this->getInaccessiblePropertyValue($instance, 'record'));
     }
 }

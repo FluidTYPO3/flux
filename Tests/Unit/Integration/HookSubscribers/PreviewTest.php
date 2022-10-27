@@ -61,7 +61,7 @@ class PreviewTest extends AbstractTestCase
      */
     public function testAttachAssets()
     {
-        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['loadRequireJsModule'])->getMock();
+        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['loadRequireJsModule'])->disableOriginalConstructor()->getMock();
         $pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');
         $instances = GeneralUtility::getSingletonInstances();
         GeneralUtility::setSingletonInstance(PageRenderer::class, $pageRenderer);

@@ -22,7 +22,6 @@ use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
@@ -61,7 +60,7 @@ class ContentIconTest extends AbstractTestCase
         $cache->expects($this->once())->method('get')->willReturn('icon');
         $instance = $this->getMockBuilder(ContentIcon::class)->setMethods(['drawGridToggle'])->disableOriginalConstructor()->getMock();
         $instance->method('drawGridToggle')->willReturn('foobar');
-        ObjectAccess::setProperty($instance, 'cache', $cache, true);
+        $this->setInaccessiblePropertyValue($instance, 'cache', $cache);
         $result = $instance->addSubIcon(array('tt_content', 123, ['foo' => 'bar']), $this->getMockBuilder(PageLayoutView::class)->disableOriginalConstructor()->getMock());
         $this->assertEquals('icon', $result);
     }
@@ -107,11 +106,11 @@ class ContentIconTest extends AbstractTestCase
         $service->expects($this->any())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $instance = $this->getMockBuilder(ContentIcon::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $instance->injectFluxService($service);
-        ObjectAccess::setProperty($instance, 'cache', $cache, true);
+        $this->setInaccessiblePropertyValue($instance, 'cache', $cache);
         if ($provider !== null) {
             $configurationServiceMock = $this->getMockBuilder(FluxService::class)->setMethods(['resolveConfigurationProviders'])->getMock();
-            ObjectAccess::setProperty($configurationServiceMock, 'configurationManager', $configurationManager, true);
-            ObjectAccess::setProperty($provider, 'configurationService', $configurationServiceMock, true);
+            $this->setInaccessiblePropertyValue($configurationServiceMock, 'configurationManager', $configurationManager);
+            $this->setInaccessiblePropertyValue($provider, 'configurationService', $configurationServiceMock);
         }
 
         $icon = $instance->addSubIcon($parameters, $this->getMockBuilder(PageLayoutView::class)->disableOriginalConstructor()->getMock());

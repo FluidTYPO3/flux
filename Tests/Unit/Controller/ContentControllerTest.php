@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
  * ContentControllerTest
@@ -33,7 +32,7 @@ class ContentControllerTest extends AbstractFluxControllerTestCase
         $controllerClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
         /** @var AbstractFluxController $instance */
         $instance = new $controllerClassName();
-        ObjectAccess::setProperty($instance, 'extensionName', 'Flux', true);
+        $this->setInaccessiblePropertyValue($instance, 'extensionName', 'Flux');
         return $instance;
     }
 }

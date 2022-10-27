@@ -105,6 +105,31 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
+     * @param object $object
+     * @param string $propertyName
+     * @param mixed $value
+     * @return void
+     */
+    protected function setInaccessiblePropertyValue(object $object, string $propertyName, $value): void
+    {
+        $reflectionProperty = new \ReflectionProperty($object, $propertyName);
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($object, $value);
+    }
+
+    /**
+     * @param object $object
+     * @param string $propertyName
+     * @return mixed
+     */
+    protected function getInaccessiblePropertyValue(object $object, string $propertyName)
+    {
+        $reflectionProperty = new \ReflectionProperty($object, $propertyName);
+        $reflectionProperty->setAccessible(true);
+        return $reflectionProperty->getValue($object);
+    }
+
+    /**
      * @param string $propertyName
      * @param mixed $value
      * @param mixed $expectedValue

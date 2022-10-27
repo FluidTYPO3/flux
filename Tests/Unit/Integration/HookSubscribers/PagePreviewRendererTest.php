@@ -28,10 +28,10 @@ class PagePreviewRendererTest extends AbstractTestCase
      */
     public function testRender(ProviderInterface $provider, $expected)
     {
-        $subject = $this->getMockBuilder(PagePreviewRenderer::class)->setMethods(['getPageProvider', 'getRecord'])->getMock();
+        $subject = $this->getMockBuilder(PagePreviewRenderer::class)->setMethods(['getPageProvider', 'getRecord'])->disableOriginalConstructor()->getMock();
         $subject->expects($this->once())->method('getPageProvider')->willReturn($provider);
         $subject->expects($this->once())->method('getRecord')->with(123)->willReturn(['uid' => 123]);
-        $pageLayoutController = $this->getMockBuilder(PageLayoutController::class)->getMock();
+        $pageLayoutController = $this->getMockBuilder(PageLayoutController::class)->disableOriginalConstructor()->getMock();
         $pageLayoutController->id = 123;
         $result = $subject->render([], $pageLayoutController);
         $this->assertSame($expected, $result);
