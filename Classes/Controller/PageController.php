@@ -73,8 +73,9 @@ class PageController extends AbstractFluxController implements PageControllerInt
         $record = $this->getRecord();
         if ($record !== null) {
             $provider = $this->pageConfigurationService->resolvePageProvider($record);
-            if ($provider instanceof BasicProviderInterface)
-            $this->provider = $provider;
+            if ($provider instanceof BasicProviderInterface) {
+                $this->provider = $provider;
+            }
         }
     }
 

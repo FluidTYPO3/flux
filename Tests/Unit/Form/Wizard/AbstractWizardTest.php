@@ -27,7 +27,6 @@ abstract class AbstractWizardTest extends AbstractFormTest
      */
     public function canAutoWriteLabel()
     {
-
     }
 
     /**
@@ -35,7 +34,6 @@ abstract class AbstractWizardTest extends AbstractFormTest
      */
     public function canGetLabel()
     {
-
     }
 
     /**

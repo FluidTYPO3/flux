@@ -34,6 +34,5 @@ class ProviderProcessorTest extends AbstractTestCase
 
         $result = $instance->addData(['tableName' => 'foo', 'databaseRow' => []]);
         $this->assertEquals('test', $result);
-
     }
 }

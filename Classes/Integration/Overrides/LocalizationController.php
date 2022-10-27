@@ -25,8 +25,10 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function getRecordLocalizeSummary(ServerRequestInterface $request, ResponseInterface $response = null): ResponseInterface
-    {
+    public function getRecordLocalizeSummary(
+        ServerRequestInterface $request,
+        ResponseInterface $response = null
+    ): ResponseInterface {
         if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0', '<=')) {
             return parent::getRecordLocalizeSummary($request, $response);
         }

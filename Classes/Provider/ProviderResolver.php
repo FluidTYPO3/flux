@@ -122,7 +122,8 @@ class ProviderResolver implements SingletonInterface
         $providers = array_filter(
             $providers,
             function (ProviderInterface $provider) use ($row, $table, $fieldName, $extensionKey) {
-                return !$provider instanceof RecordProviderInterface || $provider->trigger($row, $table, $fieldName, $extensionKey);
+                return !$provider instanceof RecordProviderInterface
+                    || $provider->trigger($row, $table, $fieldName, $extensionKey);
             }
         );
         return HookHandler::trigger(

@@ -49,7 +49,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
      * @param string $extensionIdentity The VendorName.ExtensionName identity of the extension that contains the file
      * @param string $basePath Absolute path, or EXT:... path to location of template file
      * @param string $relativeFilePath Path of file relative to $basePath, without leading slash
-     * @param string $providerClassName Class name of a Flux ProviderInterface implementation that handles the content type
+     * @param string $providerClassName Class name of a Flux ProviderInterface implementation that handles the CType
      */
     public function __construct(
         string $extensionIdentity,
@@ -73,7 +73,9 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         // Steps:
         // 1) auto-create if missing, the required file structure and dummy files
         // 2) iterate all content types found in the file structure
-        $plugAndPlayDirectory = ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY);
+        $plugAndPlayDirectory = ExtensionConfigurationUtility::getOption(
+            ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY
+        );
         if (!is_scalar($plugAndPlayDirectory)) {
             return [];
         }
@@ -99,7 +101,9 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
             // not within the project path, is is configured as an absolute path (which technically isn't correct).
             // We ignore this case instead of throwing an exception - essentially disabling drop-in templates on systems
             // which contain an unexpected public path.
-            if (strlen($templateFile) > $basePathLength && substr_compare($basePath, $templateFile, 0, $basePathLength)) {
+            if (strlen($templateFile) > $basePathLength
+                && substr_compare($basePath, $templateFile, 0, $basePathLength)
+            ) {
                 $relativeTemplatePath = substr($templateFile, $basePathLength);
                 $contentType = new DropInContentTypeDefinition(
                     'FluidTYPO3.Flux',

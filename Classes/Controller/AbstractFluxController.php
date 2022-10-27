@@ -245,7 +245,9 @@ abstract class AbstractFluxController extends ActionController
     protected function initializeView(ViewInterface $view)
     {
         $record = $this->getRecord();
-        $extensionKey = ExtensionNamingUtility::getExtensionKey($this->provider->getControllerExtensionKeyFromRecord($record));
+        $extensionKey = ExtensionNamingUtility::getExtensionKey(
+            $this->provider->getControllerExtensionKeyFromRecord($record)
+        );
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
 
         $this->controllerContext->getRequest()->setControllerExtensionName($extensionName);
@@ -284,7 +286,9 @@ abstract class AbstractFluxController extends ActionController
     protected function resolveView()
     {
         /** @var class-string $viewClassName */
-        $viewClassName = (!method_exists($this, 'resolveViewObjectName') ? $this->defaultViewObjectName : $this->resolveViewObjectName()) ?: $this->defaultViewObjectName;
+        $viewClassName = (!method_exists($this, 'resolveViewObjectName')
+            ? $this->defaultViewObjectName
+            : $this->resolveViewObjectName()) ?: $this->defaultViewObjectName;
         /** @var ViewInterface $view */
         $view = $this->objectManager->get($viewClassName);
         return $view;
@@ -351,7 +355,7 @@ abstract class AbstractFluxController extends ActionController
      */
     protected function performSubRendering($extensionName, $controllerName, $actionName, $pluginSignature)
     {
-    	if (isset($this->responseFactory)) {
+        if (isset($this->responseFactory)) {
             $response = $this->responseFactory->createResponse();
         } else {
             $response = $this->objectManager->get(Response::class);
@@ -378,7 +382,9 @@ abstract class AbstractFluxController extends ActionController
                         ]
                     )
                 );
-                $paths->fillDefaultsByPackageName(GeneralUtility::camelCaseToLowerCaseUnderscored($vendorLessExtensionName));
+                $paths->fillDefaultsByPackageName(
+                    GeneralUtility::camelCaseToLowerCaseUnderscored($vendorLessExtensionName)
+                );
                 $paths->setTemplatePathAndFilename($templatePathAndFilename);
             }
             $content = $this->view->render();
@@ -428,7 +434,8 @@ abstract class AbstractFluxController extends ActionController
         }
         $isForeign = $extensionName !== $this->extensionName;
         $isValidController = class_exists($potentialControllerClassName);
-        return (true === $isForeign && true === $isValidController && method_exists($potentialControllerClassName, $actionName . 'Action'));
+        return (true === $isForeign && true === $isValidController
+            && method_exists($potentialControllerClassName, $actionName . 'Action'));
     }
 
     /**
@@ -536,7 +543,10 @@ abstract class AbstractFluxController extends ActionController
     {
         $contentObject = $this->configurationManager->getContentObject();
         if ($contentObject === null) {
-            throw new \UnexpectedValueException("Record of table " . $this->getFluxTableName() . ' not found', 1666538343);
+            throw new \UnexpectedValueException(
+                "Record of table " . $this->getFluxTableName() . ' not found',
+                1666538343
+            );
         }
         return $contentObject->data;
     }

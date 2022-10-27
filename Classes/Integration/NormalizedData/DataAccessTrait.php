@@ -26,7 +26,9 @@ trait DataAccessTrait
     public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
     {
         $this->configurationManager = $configurationManager;
-        $this->settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+        $this->settings = $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS
+        );
         if (!ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE)) {
             return;
         }
@@ -35,7 +37,10 @@ trait DataAccessTrait
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $contentObject = $this->configurationManager->getContentObject();
         if ($contentObject === null) {
-            throw new \UnexpectedValueException("Record of table " . $this->getFluxTableName() . ' not found', 1666538343);
+            throw new \UnexpectedValueException(
+                "Record of table " . $this->getFluxTableName() . ' not found',
+                1666538343
+            );
         }
         $table = $this->fluxTableName ?? $contentObject->getCurrentTable();
         $field = $this->fluxRecordField ?? 'pi_flexform';

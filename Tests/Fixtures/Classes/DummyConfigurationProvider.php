@@ -13,26 +13,26 @@ use FluidTYPO3\Flux\Provider\AbstractProvider;
 /**
  * DummyConfigurationProvider
  */
-class DummyConfigurationProvider extends AbstractProvider {
+class DummyConfigurationProvider extends AbstractProvider
+{
 
-	/**
-	 * @var string
-	 */
-	protected $tableName = 'test';
+    /**
+     * @var string
+     */
+    protected $tableName = 'test';
 
-	/**
-	 * @var string
-	 */
-	protected $extensionKey = 'test';
+    /**
+     * @var string
+     */
+    protected $extensionKey = 'test';
 
-	/**
-	 * @var string
-	 */
-	protected $fieldName = 'test';
+    /**
+     * @var string
+     */
+    protected $fieldName = 'test';
 
-	/**
-	 * @var string
-	 */
-	protected $templatePathAndFilename = 'EXT:flux/Tests/Fixtures/Templates/DummyConfigurationProvider.html';
-
+    /**
+     * @var string
+     */
+    protected $templatePathAndFilename = 'EXT:flux/Tests/Fixtures/Templates/DummyConfigurationProvider.html';
 }

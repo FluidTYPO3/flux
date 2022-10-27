@@ -47,7 +47,9 @@ class MiscellaneousUtility
         if (true === $form->hasOption(Form::OPTION_TEMPLATEFILE)) {
             $extensionKey = ExtensionNamingUtility::getExtensionKey((string) $form->getExtensionName());
             $fullTemplatePathAndName = $form->getOption(Form::OPTION_TEMPLATEFILE);
-            $templatePathParts = is_scalar($fullTemplatePathAndName) ? explode('/', (string) $fullTemplatePathAndName) : [];
+            $templatePathParts = is_scalar($fullTemplatePathAndName)
+                ? explode('/', (string) $fullTemplatePathAndName)
+                : [];
             if (empty($templatePathParts)) {
                 return null;
             }
@@ -67,12 +69,17 @@ class MiscellaneousUtility
                     $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);
                 } else {
                     foreach (self::$allowedIconTypes as $allowedIconType) {
-                        $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType) ?: []);
+                        $filesInFolder = array_merge(
+                            $filesInFolder,
+                            glob($iconPathAndName . '.' . $allowedIconType) ?: []
+                        );
                     }
                 }
             }
             $iconFile = (is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : null);
-            $iconRelPathAndFilename = $iconFile ? 'EXT:' . $extensionKey . '/' . $relativeIconFolder . pathinfo($iconFile, PATHINFO_BASENAME) : null;
+            $iconRelPathAndFilename = $iconFile
+                ? 'EXT:' . $extensionKey . '/' . $relativeIconFolder . pathinfo($iconFile, PATHINFO_BASENAME)
+                : null;
             return $iconRelPathAndFilename;
         }
         return null;
@@ -98,7 +105,11 @@ class MiscellaneousUtility
         $iconIdentifier = $identifier ?? 'icon-' . md5($originalFile);
         /** @var IconRegistry $iconRegistry */
         $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
-        $iconRegistry->registerIcon($iconIdentifier, $iconProvider, ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]);
+        $iconRegistry->registerIcon(
+            $iconIdentifier,
+            $iconProvider,
+            ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]
+        );
         return $iconIdentifier;
     }
 

@@ -37,7 +37,11 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper
             '"Converter" suffix, e.g. PersistentObject, Array etc.',
             true
         );
-        $this->registerArgument('property', 'string', 'Optional property which needs to be converted in data. If empty, uses entire form data array as input.');
+        $this->registerArgument(
+            'property',
+            'string',
+            'Optional property which needs to be converted in data. If empty, uses entire form data array as input.'
+        );
     }
 
     /**
@@ -59,8 +63,9 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper
         /** @var TypeConverterInterface|class-string $converterInstanceOrClassName */
         $converterInstanceOrClassName = $arguments['typeConverter'];
         if (false === $converterInstanceOrClassName instanceof TypeConverterInterface) {
+            $coreConverterTemplate = 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\%sConverter';
             /** @var class-string $coreConverterFqn */
-            $coreConverterFqn = 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\' . $converterInstanceOrClassName . 'Converter';
+            $coreConverterFqn = sprintf($coreConverterTemplate, $converterInstanceOrClassName);
             if (class_exists($coreConverterFqn)) {
                 $converterClassName = $coreConverterFqn;
             } else {

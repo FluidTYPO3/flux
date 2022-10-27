@@ -371,7 +371,9 @@ class ControllerActions extends Select
         }
         $disableLocalLanguageLabels = $this->getDisableLocalLanguageLabels();
         $labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
-        $hasLocalLanguageFile = file_exists($this->resolvePathToFileInExtension($extensionKey, $localLanguageFileRelativePath));
+        $hasLocalLanguageFile = file_exists(
+            $this->resolvePathToFileInExtension($extensionKey, $localLanguageFileRelativePath)
+        );
         $label = $actionName . $separator . $controllerName;
         if (false === $disableLocalLanguageLabels && true === $hasLocalLanguageFile) {
             $label = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
@@ -462,7 +464,7 @@ class ControllerActions extends Select
                 continue;
             }
             foreach ($controllerActions as $actionName) {
-                if (is_array($exclusions[$controllerName] ?? null) && in_array($actionName, $exclusions[$controllerName])) {
+                if (in_array($actionName, $exclusions[$controllerName] ?? [])) {
                     continue;
                 } elseif ($limitByControllerName && $controllerName !== $limitByControllerName) {
                     continue;

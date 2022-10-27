@@ -150,13 +150,14 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
                 }
                 $provider = $this->resolvePrimaryProviderForRecord('tt_content', $parentRecord);
                 if ($provider) {
+                    $label = $this->getLanguageService()->sL(
+                        'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.backendLayout.columnsInParent'
+                    );
                     $items = array_merge(
                         $items,
                         [
                             [
-                                $this->getLanguageService()->sL(
-                                    'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.backendLayout.columnsInParent'
-                                ),
+                                $label,
                                 '--div--'
                             ]
                         ],
@@ -199,6 +200,12 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var FluxService $fluxService */
         $fluxService = $objectManager->get(FluxService::class);
-        return $fluxService->resolvePrimaryConfigurationProvider($table, null, $record, null, GridProviderInterface::class);
+        return $fluxService->resolvePrimaryConfigurationProvider(
+            $table,
+            null,
+            $record,
+            null,
+            GridProviderInterface::class
+        );
     }
 }

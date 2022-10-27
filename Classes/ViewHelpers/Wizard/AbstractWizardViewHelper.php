@@ -19,7 +19,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
 {
-
     /**
      * @var string
      */
@@ -55,8 +54,11 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
      * @param iterable $arguments
      * @return WizardInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    protected static function getPreparedComponent(
+        $type,
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ) {
         /** @var array $arguments */
         $name = (true === isset($arguments['name']) ? $arguments['name'] : 'wizard');
         /** @var WizardInterface $component */

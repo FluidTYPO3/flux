@@ -13,14 +13,15 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 /**
  * DummyRepository
  */
-class DummyRepository extends Repository {
+class DummyRepository extends Repository
+{
 
-	/**
-	 * @param array $identifiers
-	 * @return array
-	 */
-	public function findByIdentifiers($identifiers) {
-		return $identifiers;
-	}
-
+    /**
+     * @param array $identifiers
+     * @return array
+     */
+    public function findByIdentifiers($identifiers)
+    {
+        return $identifiers;
+    }
 }

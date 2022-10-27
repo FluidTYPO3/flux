@@ -151,7 +151,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $templatePathAndFilename = $this->templatePathAndFilename;
         $action = $this->getControllerActionReferenceFromRecord($row);
         if (false === empty($action)) {
-            $pathsOrExtensionKey = $this->templatePaths ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row));
+            $pathsOrExtensionKey = $this->templatePaths
+                ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row));
             $templatePaths = $this->createTemplatePaths($pathsOrExtensionKey);
             $action = $this->getControllerActionFromRecord($row);
             $action = ucfirst($action);
@@ -201,10 +202,13 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     public function getControllerActionReferenceFromRecord(array $row)
     {
         if (!empty($row[self::FIELD_ACTION_MAIN])) {
-            return is_array($row[self::FIELD_ACTION_MAIN]) ? $row[self::FIELD_ACTION_MAIN][0] : $row[self::FIELD_ACTION_MAIN];
+            return is_array($row[self::FIELD_ACTION_MAIN])
+                ? $row[self::FIELD_ACTION_MAIN][0]
+                : $row[self::FIELD_ACTION_MAIN];
         }
         if (isset($row['uid'])) {
-            return ($this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB] ?? 'flux->default') ?: 'flux->default';
+            return ($this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB]
+                ?? 'flux->default') ?: 'flux->default';
         }
         return 'flux->default';
     }
@@ -268,7 +272,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                     if (isset($record[$tableFieldName]['data']) && is_array($record[$tableFieldName]['data'])) {
                         $value = $record[$tableFieldName]['data'][$sheetName]['lDEF'][$fieldName]['vDEF'];
                         $inheritedConfiguration = $this->getInheritedConfiguration($record);
-                        $inheritedValue = $this->getInheritedPropertyValueByDottedPath($inheritedConfiguration, $fieldName);
+                        $inheritedValue = $this->getInheritedPropertyValueByDottedPath(
+                            $inheritedConfiguration,
+                            $fieldName
+                        );
                         $empty = (true === empty($value) && $value !== '0' && $value !== 0);
                         $same = ($inheritedValue == $value);
                         if (true === $same && true === $inherit || (true === $inheritEmpty && true === $empty)) {

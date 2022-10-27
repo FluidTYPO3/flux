@@ -49,14 +49,19 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
     public function render()
     {
         /** @var AbstractProvider $provider */
-        $provider = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'provider');
+        $provider = $this->viewHelperVariableContainer->get(
+            \FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class,
+            'provider'
+        );
         $this->provider = $provider;
         /** @var array $record */
         $record = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'record');
         $this->record = $record;
 
         if (!$this->hasArgument('extensionName')) {
-            $this->arguments['extensionName'] = ExtensionNamingUtility::getExtensionName((string) $this->provider->getControllerExtensionKeyFromRecord($this->record));
+            $this->arguments['extensionName'] = ExtensionNamingUtility::getExtensionName(
+                (string) $this->provider->getControllerExtensionKeyFromRecord($this->record)
+            );
         }
 
         if (!$this->hasArgument('controller')) {
@@ -64,7 +69,10 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
         }
 
         if (!$this->hasArgument('pluginName')) {
-            $this->arguments['pluginName'] = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'pluginName');
+            $this->arguments['pluginName'] = $this->viewHelperVariableContainer->get(
+                \FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class,
+                'pluginName'
+            );
         }
 
         if (!$this->hasArgument('action')) {
@@ -76,15 +84,26 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
 
     /**
      * Render additional identity fields which were registered by form elements.
-     * This happens if a form field is defined like property="bla.blubb" - then we might need an identity property for the sub-object "bla".
+     * This happens if a form field is defined like property="bla.blubb" - then we might
+     * need an identity property for the sub-object "bla".
      *
      * @return string HTML-string for the additional identity properties
      */
     protected function renderAdditionalIdentityFields()
     {
         $output = parent::renderAdditionalIdentityFields();
-        $output .= '<input type="hidden" name="' . $this->prefixFieldName('__outlet[table]') . '" value="' . $this->provider->getTableName($this->record) . '" />' . PHP_EOL;
-        $output .= '<input type="hidden" name="' . $this->prefixFieldName('__outlet[recordUid]') . '" value="' . $this->record['uid'] . '" />' . PHP_EOL;
+        $output .= '<input type="hidden" name="'
+            . $this->prefixFieldName('__outlet[table]')
+            . '" value="'
+            . $this->provider->getTableName($this->record)
+            . '" />'
+            . PHP_EOL
+            . '<input type="hidden" name="'
+            . $this->prefixFieldName('__outlet[recordUid]')
+            . '" value="'
+            . $this->record['uid']
+            . '" />'
+            . PHP_EOL;
         return $output;
     }
 }

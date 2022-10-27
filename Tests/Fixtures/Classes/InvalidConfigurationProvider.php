@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 /**
  * InvalidConfigurationProvider
  */
-class InvalidConfigurationProvider {
+class InvalidConfigurationProvider
+{
 
 }

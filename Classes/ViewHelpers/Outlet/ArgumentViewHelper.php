@@ -43,7 +43,7 @@ class ArgumentViewHelper extends AbstractFormViewHelper
     /**
      * @var ObjectManagerInterface|null
      */
-    static $objectManager;
+    protected static $objectManager;
 
     /**
      * @return void

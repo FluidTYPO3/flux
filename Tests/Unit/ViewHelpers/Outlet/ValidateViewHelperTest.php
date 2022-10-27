@@ -22,7 +22,8 @@ class ValidateViewHelperTest extends AbstractViewHelperTestCase
     public function testAddsArgumentsAsValidatorConfiguration()
     {
         $arguments = ['name' => 'test', 'type' => 'NotEmpty'];
-        ValidateViewHelper::renderStatic($arguments, function () { }, $this->renderingContext);
+        ValidateViewHelper::renderStatic($arguments, function () {
+        }, $this->renderingContext);
         $this->assertSame([$arguments], $this->viewHelperVariableContainer->get(ValidateViewHelper::class, 'validators'));
     }
 }

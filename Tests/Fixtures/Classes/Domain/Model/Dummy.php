@@ -17,58 +17,63 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
  * @Flux\Control\EndTime
  * @Flux\Control\FrontendUserGroup
  */
-class Dummy extends AbstractEntity {
+class Dummy extends AbstractEntity
+{
 
-	/**
-	 * @var \DateTime
-	 * @Flux\Form\Field dateTime
-	 * @Flux\Form\Sheet options
-	 */
-	protected $crdate;
+    /**
+     * @var \DateTime
+     * @Flux\Form\Field dateTime
+     * @Flux\Form\Sheet options
+     */
+    protected $crdate;
 
-	/**
-	 * @var string
-	 * @Flux\Label
-	 * @Flux\Form\Sheet options
-	 * @Flux\Form\Field input(size: 40)
-	 */
-	protected $title;
+    /**
+     * @var string
+     * @Flux\Label
+     * @Flux\Form\Sheet options
+     * @Flux\Form\Field input(size: 40)
+     */
+    protected $title;
 
-	/**
-	 * @param \DateTime $crdate
-	 * @return void
-	 */
-	public function setCrdate($crdate) {
-		$this->crdate = $crdate;
-	}
+    /**
+     * @param \DateTime $crdate
+     * @return void
+     */
+    public function setCrdate($crdate)
+    {
+        $this->crdate = $crdate;
+    }
 
-	/**
-	 * @return \DateTime
-	 */
-	public function getCrdate() {
-		return $this->crdate;
-	}
+    /**
+     * @return \DateTime
+     */
+    public function getCrdate()
+    {
+        return $this->crdate;
+    }
 
-	/**
-	 * @param string $title
-	 * @return void
-	 */
-	public function setTitle($title) {
-		$this->title = $title;
-	}
+    /**
+     * @param string $title
+     * @return void
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getTitle() {
-		return $this->title;
-	}
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-	/**
-	 * @return NULL
-	 */
-	public function getThisMethodIsAnIgnoredGetter() {
-		return NULL;
-	}
-
+    /**
+     * @return NULL
+     */
+    public function getThisMethodIsAnIgnoredGetter()
+    {
+        return null;
+    }
 }

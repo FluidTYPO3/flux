@@ -14,7 +14,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class ProviderProcessor implements FormDataProviderInterface
 {
-
     /**
      * @param array $result
      * @return array
@@ -36,7 +35,11 @@ class ProviderProcessor implements FormDataProviderInterface
                 try {
                     $site = $siteFinder->getSiteByPageId($pageUid);
                     $siteConfiguration = $site->getConfiguration();
-                    $enabledContentTypes = GeneralUtility::trimExplode(',', $siteConfiguration['flux_content_types'] ?? '', true);
+                    $enabledContentTypes = GeneralUtility::trimExplode(
+                        ',',
+                        $siteConfiguration['flux_content_types'] ?? '',
+                        true
+                    );
                 } catch (SiteNotFoundException $exception) {
                     // Suppressed; sites not being found isn't a fatal problem here.
                 }
@@ -46,7 +49,9 @@ class ProviderProcessor implements FormDataProviderInterface
                     $fluidContentTypeNames = (array) $contentTypeManager->fetchContentTypeNames();
                     foreach ($result['processedTca']['columns']['CType']['config']['items'] as $index => $optionArray) {
                         $contentTypeName = $optionArray[1];
-                        if (in_array($contentTypeName, $fluidContentTypeNames, true) && !in_array($contentTypeName, $enabledContentTypes)) {
+                        if (in_array($contentTypeName, $fluidContentTypeNames, true)
+                            && !in_array($contentTypeName, $enabledContentTypes)
+                        ) {
                             unset($result['processedTca']['columns']['CType']['config']['items'][$index]);
                         }
                     }

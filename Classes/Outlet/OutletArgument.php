@@ -111,7 +111,10 @@ class OutletArgument
     public function __construct($name, $dataType)
     {
         if (!is_string($name)) {
-            throw new \InvalidArgumentException('$name must be of type string, ' . gettype($name) . ' given.', 1187951688);
+            throw new \InvalidArgumentException(
+                '$name must be of type string, ' . gettype($name) . ' given.',
+                1187951688
+            );
         }
         if (empty($name)) {
             throw new \InvalidArgumentException('$name must be a non-empty string.', 1232551853);
@@ -212,7 +215,8 @@ class OutletArgument
     }
 
     /**
-     * Return the Property Mapping Configuration used for this argument; can be used by the initialize*action to modify the Property Mapping.
+     * Return the Property Mapping Configuration used for this argument; can be used by the
+     * initialize*action to modify the Property Mapping.
      *
      * @return MvcPropertyMappingConfiguration
      */

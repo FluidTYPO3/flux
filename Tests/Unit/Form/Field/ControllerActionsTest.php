@@ -336,7 +336,6 @@ class ControllerActionsTest extends AbstractFieldTest
         }
         $items = $this->callInaccessibleMethod($component, 'buildItemsForActions', $actions);
         return $items;
-
     }
 
     /**
@@ -365,7 +364,6 @@ class ControllerActionsTest extends AbstractFieldTest
      */
     public function prefixesParentObjectNameToAutoLabelIfInsideObject()
     {
-
     }
 
     /**

@@ -126,7 +126,10 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
             } elseif (is_string($controllerExtensionName)) {
                 $controllerClassName = $request->getControllerObjectName();
                 if (is_string($controllerClassName)) {
-                    $controllerVendorName = ExtensionUtility::resolveVendorFromExtensionAndControllerClassName($controllerExtensionName, $controllerClassName);
+                    $controllerVendorName = ExtensionUtility::resolveVendorFromExtensionAndControllerClassName(
+                        $controllerExtensionName,
+                        $controllerClassName
+                    );
                 }
             }
             return (!empty($controllerVendorName) ? $controllerVendorName . '.' : '') . $controllerExtensionName;
@@ -144,7 +147,10 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         $form = $renderingContext->getViewHelperVariableContainer()->get(static::SCOPE, static::SCOPE_VARIABLE_FORM);
         if (!$form) {
             $form = Form::create([
-                'extensionName' => $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::SCOPE, FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME)
+                'extensionName' => $renderingContext->getViewHelperVariableContainer()->get(
+                    FormViewHelper::SCOPE,
+                    FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME
+                )
             ]);
             $renderingContext->getViewHelperVariableContainer()->add(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
         }
@@ -178,7 +184,10 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     protected static function getContainerFromRenderingContext(RenderingContextInterface $renderingContext)
     {
         /** @var Form\ContainerInterface|null $container */
-        $container = $renderingContext->getViewHelperVariableContainer()->get(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
+        $container = $renderingContext->getViewHelperVariableContainer()->get(
+            static::SCOPE,
+            static::SCOPE_VARIABLE_CONTAINER
+        );
         return $container ?? static::getFormFromRenderingContext($renderingContext);
     }
 
@@ -191,6 +200,10 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         RenderingContextInterface $renderingContext,
         FormInterface $container
     ) {
-        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER, $container);
+        $renderingContext->getViewHelperVariableContainer()->addOrUpdate(
+            static::SCOPE,
+            static::SCOPE_VARIABLE_CONTAINER,
+            $container
+        );
     }
 }

@@ -83,8 +83,6 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
         /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
         $workspacesAwareRecordService = $this->objectManager->get(WorkspacesAwareRecordService::class);
         $this->injectWorkspacesAwareRecordService($workspacesAwareRecordService);
-
-
     }
 
     /**
@@ -119,8 +117,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
             return $emptyLayout;
         }
         $provider = $this->resolveProvider($record);
-        if (!$provider instanceof PageProvider)
-        {
+        if (!$provider instanceof PageProvider) {
             return $emptyLayout;
         }
         $grid = $provider->getGrid($record);

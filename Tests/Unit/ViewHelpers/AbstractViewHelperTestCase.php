@@ -234,7 +234,8 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
      * @param string $accessor
      * @return ObjectAccessorNode
      */
-    protected function createObjectAccessorNode($accessor) {
+    protected function createObjectAccessorNode($accessor)
+    {
         return new ObjectAccessorNode($accessor);
     }
 

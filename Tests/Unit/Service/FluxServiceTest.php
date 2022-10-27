@@ -216,7 +216,8 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testGetTypoScriptByPath()
     {
-        $service = new FluxService();;
+        $service = new FluxService();
+        ;
         $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->setMethods(array('getConfiguration'))->disableOriginalConstructor()->getMock();
         $configurationManager->expects($this->once())->method('getConfiguration')
             ->with(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT)

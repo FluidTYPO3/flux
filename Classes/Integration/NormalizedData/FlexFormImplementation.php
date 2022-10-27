@@ -12,8 +12,11 @@ class FlexFormImplementation extends AbstractImplementation implements Implement
      */
     protected static $registrations = [];
 
-    public static function registerForTableAndField(string $table, string $field, ?\Closure $additionalConditionChecker = null): void
-    {
+    public static function registerForTableAndField(
+        string $table,
+        string $field,
+        ?\Closure $additionalConditionChecker = null
+    ): void {
         if (!isset(static::$registrations[$table])) {
             static::$registrations[$table] = [];
         }

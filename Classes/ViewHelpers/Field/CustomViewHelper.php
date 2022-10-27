@@ -42,7 +42,9 @@ class CustomViewHelper extends UserFuncViewHelper
     {
         $container = static::getContainerFromRenderingContext($this->renderingContext);
         $component = static::getComponent($this->renderingContext, $this->arguments);
-        $component->setClosure(static::buildClosure($this->renderingContext, $this->arguments, $this->buildRenderChildrenClosure()));
+        $component->setClosure(
+            static::buildClosure($this->renderingContext, $this->arguments, $this->buildRenderChildrenClosure())
+        );
         // rendering child nodes with Form's last sheet as active container
         static::setContainerInRenderingContext($this->renderingContext, $component);
         $this->renderChildren();

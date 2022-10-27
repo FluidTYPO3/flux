@@ -19,7 +19,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHelper
 {
-
     /**
      * Initialize
      * @return void
@@ -58,8 +57,8 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $this->registerArgument(
             'useCombination',
             'boolean',
-            "For use on bidirectional relations using an intermediary table. In combinations, it's possible to edit ' .
-            'attributes and the related child record.",
+            "For use on bidirectional relations using an intermediary table. In combinations, it's possible to edit '
+            . 'attributes and the related child record.",
             false,
             false
         );
@@ -95,8 +94,8 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $this->registerArgument(
             'enabledControls',
             'array',
-            "Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. ' .
-            'Set either one to TRUE or FALSE to show or hide it.",
+            "Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. '
+            . 'Set either one to TRUE or FALSE to show or hide it.",
             false,
             false
         );
@@ -104,17 +103,17 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $this->registerArgument(
             'foreignMatchFields',
             'array',
-            'The fields and values of the child record which have to match. For FAL the field/key is "fieldname" ' .
-            'and the value has to be defined.',
+            'The fields and values of the child record which have to match. For FAL the field/key is "fieldname" '
+            . 'and the value has to be defined.',
             false,
             false
         );
         $this->registerArgument(
             'foreignTypes',
             'array',
-            'Overrides the "types" TCA array of the target table with this array (beware! must be specified fully ' .
-            'in order to work!). Expects an array of arrays; indexed by type number - each array containing for ' .
-            'example a "showitem" CSV list value of field names to be shown when inline-editing the related record.'
+            'Overrides the "types" TCA array of the target table with this array (beware! must be specified fully '
+            . 'in order to work!). Expects an array of arrays; indexed by type number - each array containing for '
+            . 'example a "showitem" CSV list value of field names to be shown when inline-editing the related record.'
         );
         $this->registerArgument('levelLinksPosition', 'string', 'Level links position.');
     }
@@ -137,8 +136,11 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
      * @param iterable $arguments
      * @return T
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    protected static function getPreparedComponent(
+        $type,
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ) {
         /** @var array $arguments */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setCollapseAll($arguments['collapseAll']);

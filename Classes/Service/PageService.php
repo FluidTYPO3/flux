@@ -121,8 +121,12 @@ class PageService implements SingletonInterface
         // Initialize with possibly-empty values and loop root line
         // to fill values as they are detected.
         foreach ($rootLineUtility->get() as $page) {
-            $resolvedMainTemplateIdentity = is_array($page['tx_fed_page_controller_action'] ?? null) ? $page['tx_fed_page_controller_action'][0] : $page['tx_fed_page_controller_action'] ?? null;
-            $resolvedSubTemplateIdentity = is_array($page['tx_fed_page_controller_action_sub'] ?? null) ? $page['tx_fed_page_controller_action_sub'][0] : $page['tx_fed_page_controller_action_sub'] ?? null;
+            $resolvedMainTemplateIdentity = is_array($page['tx_fed_page_controller_action'] ?? null)
+                ? $page['tx_fed_page_controller_action'][0]
+                : $page['tx_fed_page_controller_action'] ?? null;
+            $resolvedSubTemplateIdentity = is_array($page['tx_fed_page_controller_action_sub'] ?? null)
+                ? $page['tx_fed_page_controller_action_sub'][0]
+                : $page['tx_fed_page_controller_action_sub'] ?? null;
             $containsSubDefinition = (false !== strpos($page['tx_fed_page_controller_action_sub'] ?? '', '->'));
             $isCandidate = ((integer) ($page['uid'] ?? 0) !== $pageUid);
             if (true === $containsSubDefinition && true === $isCandidate) {
@@ -212,11 +216,17 @@ class PageService implements SingletonInterface
                 /** @var TemplateView $view */
                 $view = $this->objectManager->get(TemplateView::class);
                 $view->getRenderingContext()->setTemplatePaths($templatePaths);
-                $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(FormViewHelper::SCOPE, FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
+                $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
+                    FormViewHelper::SCOPE,
+                    FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME,
+                    $extensionName
+                );
                 $view->setTemplatePathAndFilename($file->getPathname());
                 try {
                     $view->renderSection('Configuration');
-                    $form = $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, 'form');
+                    $form = $view->getRenderingContext()
+                        ->getViewHelperVariableContainer()
+                        ->get(FormViewHelper::class, 'form');
 
                     if (false === $form instanceof Form) {
                         $this->getLogger()->log(
@@ -249,7 +259,10 @@ class PageService implements SingletonInterface
     protected function createTemplatePaths(string $registeredExtensionKey): TemplatePaths
     {
         /** @var TemplatePaths $templatePaths */
-        $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, ExtensionNamingUtility::getExtensionKey($registeredExtensionKey));
+        $templatePaths = GeneralUtility::makeInstance(
+            TemplatePaths::class,
+            ExtensionNamingUtility::getExtensionKey($registeredExtensionKey)
+        );
         return $templatePaths;
     }
 

@@ -43,7 +43,9 @@ class UserFunctionsTest extends AbstractTestCase
             ],
             'HTML output field' => [
                 'renderHtmlOutputField',
-                ['parameters' => ['closure' => function() { return 'test'; }]],
+                ['parameters' => ['closure' => function () {
+                    return 'test';
+                }]],
                 false
             ],
         ];

@@ -68,7 +68,10 @@ class UserFunctions
      */
     public function renderHtmlOutputField(array &$parameters)
     {
-        return trim(($parameters['fieldConf']['config']['parameters']['closure'] ?? $parameters['parameters']['closure'])($parameters));
+        /** @var callable $closure */
+        $closure = ($parameters['fieldConf']['config']['parameters']['closure']
+            ?? $parameters['parameters']['closure']);
+        return trim($closure($parameters));
     }
 
     /**
@@ -95,7 +98,8 @@ class UserFunctions
         if ($inputValue !== '') {
             // The field already has a value, just use that for the hidden input element
             return sprintf(
-                '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" value="%s" />Column position: <strong class="flux-flex-colPos-text">%d</strong>',
+                '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" value="%s" />'
+                . 'Column position: <strong class="flux-flex-colPos-text">%d</strong>',
                 $parameters['itemFormElName'],
                 $id,
                 $inputValue,
@@ -117,7 +121,9 @@ class UserFunctions
             $takenColumnPositions = $this->determineTakenColumnPositionsWithinParent('tt_content', $rowUid);
 
             return sprintf(
-                '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" data-min-value="%d" data-max-value="%d" data-taken-values="%s" />Column position: <strong class="flux-flex-colPos-text"></strong>',
+                '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" data-min-value="%d" '
+                . 'data-max-value="%d" data-taken-values="%s" />Column position: '
+                . '<strong class="flux-flex-colPos-text"></strong>',
                 $parameters['itemFormElName'],
                 $id,
                 $minimumColumnPosition,
@@ -134,7 +140,10 @@ class UserFunctions
         }
         /** @var ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        list ($minimumColPosValue, $maximumColPosValue) = ColumnNumberUtility::calculateMinimumAndMaximumColumnNumberWithinParent($parentUid);
+        [
+            $minimumColPosValue,
+            $maximumColPosValue
+        ] = ColumnNumberUtility::calculateMinimumAndMaximumColumnNumberWithinParent($parentUid);
         $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
         $query = $queryBuilder->select('colPos')->from($table)->andWhere(
             $queryBuilder->expr()->gte('colPos', $minimumColPosValue),

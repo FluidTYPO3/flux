@@ -547,7 +547,10 @@ abstract class AbstractFormComponent implements FormInterface
                 ObjectAccess::setProperty($this, $propertyName, $propertyValue);
             }
         }
-        HookHandler::trigger(HookHandler::FORM_COMPONENT_MODIFIED, ['component' => $this, 'modififications' => $structure]);
+        HookHandler::trigger(
+            HookHandler::FORM_COMPONENT_MODIFIED,
+            ['component' => $this, 'modififications' => $structure]
+        );
         return $this;
     }
 
