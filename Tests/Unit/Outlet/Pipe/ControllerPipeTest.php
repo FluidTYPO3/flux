@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  */
 
 use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
+use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\Response;
@@ -20,7 +21,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 class ControllerPipeTest extends AbstractPipeTestCase
 {
     /**
-     * @var Response|\PHPUnit_Framework_MockObject_MockObject
+     * @var Response|MockObject
      */
     protected $response;
 

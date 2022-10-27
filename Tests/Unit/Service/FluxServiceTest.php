@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -54,7 +55,7 @@ class FluxServiceTest extends AbstractTestCase
         if (null !== $resourceFactoryOutput) {
             $file = $this->getMockBuilder(File::class)->setMethods(['getIdentifier'])->disableOriginalConstructor()->getMock();
             $file->method('getIdentifier')->willReturn($resourceFactoryOutput);
-            /** @var ResourceFactory|\PHPUnit_Framework_MockObject_MockObject $resourceFactory */
+            /** @var ResourceFactory|MockObject $resourceFactory */
             $resourceFactory = $this->getMockBuilder(
                 ResourceFactory::class
             )->setMethods(

@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyViewHelperNode;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
@@ -213,7 +214,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
      * @param ViewHelperInterface $instance
      * @param array $arguments
      * @param NodeInterface[] $childNNodes
-     * @return \PHPUnit_Framework_MockObject_MockObject|ViewHelperNode
+     * @return MockObject|ViewHelperNode
      */
     protected function createViewHelperNode($instance, array $arguments, array $childNNodes = [])
     {

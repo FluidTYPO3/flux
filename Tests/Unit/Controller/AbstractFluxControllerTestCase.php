@@ -266,8 +266,6 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->disableOriginalConstructor()->getMock();
         $objectManager->expects($this->once())->method('get')->with(TemplatePaths::class)->willReturn(new TemplatePaths());
         $this->setInaccessiblePropertyValue($instance, 'objectManager', $objectManager);
-        $instance->expects($this->at(0))->method('initializeProvider');
-        $instance->expects($this->at(1))->method('initializeSettings');
         $instance->method('getRecord')->willReturn(['uid' => 1]);
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }
@@ -294,8 +292,6 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $objectManager = $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->disableOriginalConstructor()->getMock();
         $objectManager->expects($this->once())->method('get')->with(TemplatePaths::class)->willReturn(new TemplatePaths());
         $this->setInaccessiblePropertyValue($instance, 'objectManager', $objectManager);
-        $instance->expects($this->at(0))->method('initializeProvider');
-        $instance->expects($this->at(1))->method('initializeSettings');
         $instance->method('getRecord')->willReturn(['uid' => 1]);
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }

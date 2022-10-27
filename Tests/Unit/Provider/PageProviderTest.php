@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
@@ -28,7 +29,7 @@ class PageProviderTest extends AbstractTestCase
 {
     public function testGetExtensionKey()
     {
-        /** @var PageProvider|\PHPUnit_Framework_MockObject_MockObject $instance */
+        /** @var PageProvider|MockObject $instance */
         $instance = $this->getMockBuilder(PageProvider::class)->setMethods(array('getControllerExtensionKeyFromRecord'))->getMock();
         $instance->expects($this->once())->method('getControllerExtensionKeyFromRecord')->willReturn('flux');
         $result = $instance->getExtensionKey(array());
@@ -37,7 +38,7 @@ class PageProviderTest extends AbstractTestCase
 
     public function testGetExtensionKeyWithoutSelection()
     {
-        /** @var PageProvider|\PHPUnit_Framework_MockObject_MockObject $instance */
+        /** @var PageProvider|MockObject $instance */
         $instance = $this->getMockBuilder(PageProvider::class)->setMethods(array('getControllerExtensionKeyFromRecord'))->getMock();
         $instance->expects($this->once())->method('getControllerExtensionKeyFromRecord')->willReturn(null);
         $result = $instance->getExtensionKey(array());
@@ -49,7 +50,7 @@ class PageProviderTest extends AbstractTestCase
         $expected = 'Tests/Fixtures/Templates/Page/Dummy.html';
         $fieldName = 'tx_fed_page_controller_action';
         $dataFieldName = 'tx_fed_page_flexform';
-        /** @var PageService|\PHPUnit_Framework_MockObject_MockObject $service */
+        /** @var PageService|MockObject $service */
         $service = $this->getMockBuilder(PageService::class)->setMethods(array('getPageTemplateConfiguration'))->getMock();
         $pathsConfiguration = ['templateRootPaths' => ['Tests/Fixtures/Templates/']];
         $templatePaths = $this->getMockBuilder(TemplatePaths::class)->setMethods(['resolveTemplateFileForControllerAndActionAndFormat'])->getMock();
@@ -69,7 +70,7 @@ class PageProviderTest extends AbstractTestCase
     public function testGetFormCallsSetDefaultValuesInFieldsWithInheritedValues()
     {
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        /** @var PageProvider|\PHPUnit_Framework_MockObject_MockObject $instance */
+        /** @var PageProvider|MockObject $instance */
         $instance = $this->getMockBuilder(PageProvider::class)->setMethods(array('setDefaultValuesInFieldsWithInheritedValues'))->getMock();
         $instance->injectPageService(new PageService());
         $instance->expects($this->once())->method('setDefaultValuesInFieldsWithInheritedValues')->willReturn($form);
@@ -79,7 +80,7 @@ class PageProviderTest extends AbstractTestCase
 
     public function testGetControllerExtensionKeyFromRecordReturnsPresetKeyOnUnrecognisedAction()
     {
-        /** @var PageProvider|\PHPUnit_Framework_MockObject_MockObject $instance */
+        /** @var PageProvider|MockObject $instance */
         $instance = $this->getMockBuilder(PageProvider::class)->setMethods(array('getControllerActionReferenceFromRecord'))->getMock();
         $instance->expects($this->once())->method('getControllerActionReferenceFromRecord')->willReturn('invalid');
         $instance->setExtensionKey('fallback');
@@ -130,7 +131,7 @@ class PageProviderTest extends AbstractTestCase
         $instance = new PageProvider();
         $service = $this->getMockBuilder(PageService::class)->setMethods(array('getPageTemplateConfiguration'))->getMock();
         $instance->injectPageService($service);
-        /** @var FluxService|\PHPUnit_Framework_MockObject_MockObject $configurationService */
+        /** @var FluxService|MockObject $configurationService */
         $configurationService = $this->getMockBuilder(FluxService::class)->getMock();
         $instance->injectPageConfigurationService($configurationService);
         // make sure PageProvider is now using the right field name
@@ -163,12 +164,14 @@ class PageProviderTest extends AbstractTestCase
         $dummyProvider2 = new DummyPageProvider();
         $dummyProvider1->setForm($form);
         $dummyProvider1->setFlexFormValues(array('foo' => 'bar'));
-        /** @var PageProvider|\PHPUnit_Framework_MockObject_MockObject $provider */
+        /** @var PageProvider|MockObject $provider */
         $provider = $this->getMockBuilder(PageProvider::class)->setMethods(array('getInheritanceTree', 'unsetInheritedValues', 'getForm'))->getMock();
-        /** @var FluxService|\PHPUnit_Framework_MockObject_MockObject $mockConfigurationService */
+        /** @var FluxService|MockObject $mockConfigurationService */
         $mockConfigurationService = $this->getMockBuilder(FluxService::class)->setMethods(array('resolvePrimaryConfigurationProvider'))->getMock();
-        $mockConfigurationService->expects($this->at(0))->method('resolvePrimaryConfigurationProvider')->willReturn($dummyProvider1);
-        $mockConfigurationService->expects($this->at(1))->method('resolvePrimaryConfigurationProvider')->willReturn($dummyProvider2);
+        $mockConfigurationService->method('resolvePrimaryConfigurationProvider')->willReturnOnConsecutiveCalls(
+            $dummyProvider1,
+            $dummyProvider2
+        );
 
         $dummyProvider1->injectConfigurationService($mockConfigurationService);
         $dummyProvider2->injectConfigurationService($mockConfigurationService);
@@ -202,12 +205,14 @@ class PageProviderTest extends AbstractTestCase
         $dummyProvider1->setFlexFormValues(array('foo' => 'bar'));
         $form2 = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $dummyProvider2->setForm($form2);
-        /** @var PageProvider|\PHPUnit_Framework_MockObject_MockObject $provider */
+        /** @var PageProvider|MockObject $provider */
         $provider = $this->getMockBuilder(PageProvider::class)->setMethods(array('getInheritanceTree', 'unsetInheritedValues', 'getForm'))->getMock();
-        /** @var FluxService|\PHPUnit_Framework_MockObject_MockObject $mockConfigurationService */
+        /** @var FluxService|MockObject $mockConfigurationService */
         $mockConfigurationService = $this->getMockBuilder(FluxService::class)->setMethods(array('resolvePrimaryConfigurationProvider', 'convertFlexFormContentToArray'))->getMock();
-        $mockConfigurationService->expects($this->at(0))->method('resolvePrimaryConfigurationProvider')->willReturn($dummyProvider1);
-        $mockConfigurationService->expects($this->at(1))->method('resolvePrimaryConfigurationProvider')->willReturn($dummyProvider2);
+        $mockConfigurationService->method('resolvePrimaryConfigurationProvider')->willReturnOnConsecutiveCalls(
+            $dummyProvider1,
+            $dummyProvider2
+        );
         $mockConfigurationService->method('convertFlexFormContentToArray')->willReturn([]);
 
         $dummyProvider1->injectConfigurationService($mockConfigurationService);
@@ -338,7 +343,7 @@ class PageProviderTest extends AbstractTestCase
      */
     public function canPostProcessRecord()
     {
-        /** @var PageProvider|\PHPUnit_Framework_MockObject_MockObject $provider */
+        /** @var PageProvider|MockObject $provider */
         $provider = $this->getMockBuilder(PageProvider::class)->setMethods(array('getForm', 'getInheritedPropertyValueByDottedPath', 'loadRecordTreeFromDatabase'))->getMock();
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->createField('Input', 'settings.input')->setInherit(true);
@@ -370,11 +375,11 @@ class PageProviderTest extends AbstractTestCase
         $provider->expects($this->once())->method('getInheritedPropertyValueByDottedPath')
             ->with([], 'settings.input')->willReturn('test');
         $provider->method('loadRecordTreeFromDatabase')->willReturn([]);
-        /** @var WorkspacesAwareRecordService|\PHPUnit_Framework_MockObject_MockObject $recordService */
+        /** @var WorkspacesAwareRecordService|MockObject $recordService */
         $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(array('getSingle', 'update'))->getMock();
         $recordService->expects($this->atLeastOnce())->method('getSingle')->willReturn($parentInstance->datamap[$tableName][$id]);
         $recordService->expects($this->once())->method('update');
-        /** @var FluxService|\PHPUnit_Framework_MockObject_MockObject $configurationService */
+        /** @var FluxService|MockObject $configurationService */
         $configurationService = $this->getMockBuilder(FluxService::class)->setMethods(array('message'))->getMock();
         $configurationService->expects($this->any())->method('message');
         $provider->injectRecordService($recordService);

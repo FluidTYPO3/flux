@@ -88,9 +88,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'uid' => 1
         );
         $viewHelper = $this->buildViewHelperInstance($arguments);
-        $prophecy = $this->prophesize(RecordService::class);
-        $prophecy->getSingle()->shouldNotBeCalled();
-        $prophecy->reveal();
 
         $this->expectViewHelperException(
             'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
@@ -108,17 +105,28 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'table' => 'tt_content',
             'field' => 'pi_flexform',
         );
-        $statement = $this->prophesize(Statement::class);
-        $statement->fetchAll()->willReturn([]);
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)->setMethods(['select', 'from', 'where', 'execute'])->disableOriginalConstructor()->getMock();
+
+        $statement = $this->getMockBuilder(Statement::class)
+            ->setMethods(['fetchAll'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->method('fetchAll')->willReturn([]);
+
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+            ->setMethods(['select', 'from', 'where', 'execute'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $queryBuilder->method('select')->willReturnSelf();
         $queryBuilder->method('from')->willReturnSelf();
         $queryBuilder->method('where')->willReturnSelf();
         $queryBuilder->method('execute')->willReturn($statement);
-        $prophecy = $this->prophesize(ConnectionPool::class);
-        $prophecy->getQueryBuilderForTable('tt_content')->willReturn($queryBuilder);
+        $connectionPool = $this->getMockBuilder(ConnectionPool::class)
+            ->setMethods(['getQueryBuilderForTable'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connectionPool->method('getQueryBuilderForTable')->with('tt_content')->willReturn($queryBuilder);
 
-        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
+        GeneralUtility::addInstance(ConnectionPool::class, $connectionPool);
 
         $this->expectViewHelperException('dummy');
         $this->executeViewHelper($arguments);
@@ -153,11 +161,10 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             ],
         ];
 
-        $prophecy = $this->prophesize(RecordService::class);
-        $prophecy->getSingle()->shouldNotBeCalled();
-        $prophecy->reveal();
-
-        $this->executeViewHelper($arguments);
+        $this->assertSame(
+            [],
+            $this->executeViewHelper($arguments)
+        );
     }
 
     /**
