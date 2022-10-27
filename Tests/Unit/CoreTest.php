@@ -33,6 +33,7 @@ class CoreTest extends AbstractTestCase
             ]
         );
         AccessibleCore::setObjectManager($this->objectManager);
+        AccessibleCore::resetQueuedRegistrations();
     }
 
     protected function tearDown(): void
@@ -190,6 +191,7 @@ class CoreTest extends AbstractTestCase
             'FluidTYPO3.Flux',
             $absoluteTemplatePathAndFilename
         );
+        $this->assertNotEmpty(AccessibleCore::getQueuedContentTypeRegistrations());
     }
 
     /**

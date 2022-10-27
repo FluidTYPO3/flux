@@ -28,7 +28,7 @@ class PreviewTest extends AbstractTestCase
      */
     public function setUp(): void
     {
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->disableOriginalConstructor()->getMock();
         $fluxService = $this->getMockBuilder(FluxService::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
         $tempFiles = (array) glob('typo3temp/flux-preview-*.tmp');

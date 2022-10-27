@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  */
 
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Exception\RfcComplianceException;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
@@ -155,7 +156,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
         try {
             $message = $this->prepareEmail($data);
             $this->sendEmail($message);
-        } catch (\Swift_RfcComplianceException $error) {
+        } catch (\Swift_RfcComplianceException | RfcComplianceException $error) {
             throw new Exception($error->getMessage(), $error->getCode());
         }
 
@@ -197,8 +198,8 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
         if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '10.4', '>=')) {
             $message->html($body);
             $message->subject($subject);
-            $message->from($sender . ' <' . $senderAddress . '>');
-            $message->to($recipient . ' <' . $recipientAddress . '>');
+            $message->from(($senderName ?? $senderAddress) . ' <' . $senderAddress . '>');
+            $message->to(($recipientName ?? $recipientAddress) . ' <' . $recipientAddress . '>');
         } else {
             $message->setBody($body);
             $message->setSubject($subject);

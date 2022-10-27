@@ -11,8 +11,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -22,7 +20,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class EmailViewHelper extends AbstractPipeViewHelper
 {
-
     /**
      * @var boolean
      */
@@ -67,10 +64,8 @@ class EmailViewHelper extends AbstractPipeViewHelper
         if (true === empty($body) && $renderChildrenClosure instanceof \Closure) {
             $body = $renderChildrenClosure();
         }
-        /** @var ObjectManagerInterface $objectManaager */
-        $objectManaager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var EmailPipe $pipe */
-        $pipe = $objectManaager->get(EmailPipe::class);
+        $pipe = GeneralUtility::makeInstance(EmailPipe::class);
         $pipe->setSubject($arguments['subject']);
         $pipe->setSender($arguments['sender']);
         $pipe->setRecipient($arguments['recipient']);

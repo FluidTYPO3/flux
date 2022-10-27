@@ -13,9 +13,16 @@ use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
 use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend;
+use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3Fluid\Fluid\Core\Parser\Interceptor\Escape;
 
 /**
  * AbstractTestCase
@@ -34,12 +41,13 @@ abstract class AbstractTestCase extends TestCase
     const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/CollidingGrid.html';
     const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
+    private array $singletonInstancesBackup = [];
+
     /**
      * @return void
      */
     protected function setUp(): void
     {
-        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
         if (!defined('LF')) {
             define('LF', PHP_EOL);
         }
@@ -55,6 +63,29 @@ abstract class AbstractTestCase extends TestCase
         if (!defined('TYPO3_version')) {
             define('TYPO3_version', '9.5.0');
         }
+
+        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['interceptors'] = [
+            Escape::class
+        ];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fluid_template'] = [
+            'frontend' => VariableFrontend::class,
+            'backend' => TransientMemoryBackend::class,
+        ];
+
+        $objectManager = $this->createObjectManagerInstance();
+
+        $this->singletonInstancesBackup = GeneralUtility::getSingletonInstances();
+        GeneralUtility::setSingletonInstance(ObjectManagerInterface::class, $objectManager);
+        GeneralUtility::setSingletonInstance(ObjectManager::class, $objectManager);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        GeneralUtility::resetSingletonInstances($this->singletonInstancesBackup);
     }
 
     /**
@@ -194,7 +225,7 @@ abstract class AbstractTestCase extends TestCase
     {
         /** @var FluxService $fluxService */
         $fluxService = $this->getMockBuilder(FluxService::class)->setMethods($methods)->disableOriginalConstructor()->getMock();
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->disableOriginalConstructor()->getMock();
         $fluxService->injectConfigurationManager($configurationManager);
         return $fluxService;
     }
@@ -216,4 +247,11 @@ abstract class AbstractTestCase extends TestCase
         return new $instanceClassName();
     }
 
+    /**
+     * @return ObjectManagerInterface|MockObject
+     */
+    protected function createObjectManagerInstance(): ObjectManagerInterface
+    {
+        return $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->disableOriginalConstructor()->getMockForAbstractClass();
+    }
 }

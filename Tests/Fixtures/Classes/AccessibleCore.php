@@ -16,4 +16,9 @@ class AccessibleCore extends Core
     {
         static::$objectManager = $objectManager;
     }
+
+    public static function resetQueuedRegistrations(): void
+    {
+        static::$queuedContentTypeRegistrations = [];
+    }
 }

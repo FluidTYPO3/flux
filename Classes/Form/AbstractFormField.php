@@ -12,8 +12,6 @@ use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * AbstractFormField
@@ -115,10 +113,8 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
                 1375373527
             );
         }
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var FieldInterface $object */
-        $object = $objectManager->get($className);
+        $object = GeneralUtility::makeInstance($className);
         foreach ($settings as $settingName => $settingValue) {
             $setterMethodName = 'set' . ucfirst($settingName);
             if (true === method_exists($object, $setterMethodName)) {

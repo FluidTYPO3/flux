@@ -26,11 +26,11 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
     public function testGetBackendLayout()
     {
         $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(['getSingle'])->disableOriginalConstructor()->getMock();
-        $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
+        $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)->setMethods(['createBackendLayoutInstance'])->disableOriginalConstructor()->getMock();
+        $instance->method('createBackendLayoutInstance')->willReturn($this->getMockBuilder(BackendLayout::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock());
         $instance->injectWorkspacesAwareRecordService($recordService);
         $result = $instance->getBackendLayout('grid', 1);
         $this->assertInstanceOf(BackendLayout::class, $result);
-        $this->assertEquals('grid', $result->getIdentifier());
     }
 
     /**
@@ -39,7 +39,8 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
     public function testAddBackendLayouts()
     {
         $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(['getSingle'])->disableOriginalConstructor()->getMock();
-        $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
+        $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)->setMethods(['createBackendLayoutInstance'])->disableOriginalConstructor()->getMock();
+        $instance->method('createBackendLayoutInstance')->willReturn($this->getMockBuilder(BackendLayout::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock());
         $instance->injectWorkspacesAwareRecordService($recordService);
         $collection = new BackendLayoutCollection('collection');
         $context = new DataProviderContext();

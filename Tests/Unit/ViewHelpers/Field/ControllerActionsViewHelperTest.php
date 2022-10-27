@@ -129,8 +129,12 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
         $instance = $this->buildViewHelperInstance($arguments);
         $request = new Request();
         $request->setControllerExtensionName('Flux');
-        $request->setControllerVendorName('FluidTYPO3');
-        $expected = 'FluidTYPO3.Flux';
+        if (method_exists($request, 'setcontrollerVendorName')) {
+            $request->setControllerVendorName('FluidTYPO3');
+            $expected = $expected = 'FluidTYPO3.Flux';
+        } else {
+            $expected = 'Flux';
+        }
         $result = $this->callInaccessibleMethod($instance, 'getFullExtensionNameFromRequest', $request);
         $this->assertEquals($expected, $result);
     }

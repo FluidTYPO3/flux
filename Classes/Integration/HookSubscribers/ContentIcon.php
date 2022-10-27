@@ -121,6 +121,7 @@ class ContentIcon
         if ($cachedIconIdentifier !== null) {
             // both empty string and non-empty value means icon was generated and cached, we return
             // the result directly in both such cases, to prevent attempts to re-resolve provider etc.
+            /** @var string $cachedIconIdentifier */
             return $cachedIconIdentifier;
         } elseif ($record) {
             $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));

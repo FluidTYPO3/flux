@@ -9,10 +9,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
+use FluidTYPO3\Flux\Hooks\HookSubscriberInterface;
 use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
 use FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleTableConfigurationPostProcessor;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
@@ -48,5 +50,16 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
         $object = $this->getMockBuilder(TableConfigurationPostProcessor::class)->setMethods(['getContentTypeManager'])->getMock();
         $object->expects($this->atLeastOnce())->method('getContentTypeManager')->willReturn($manager);
         $object->processData();
+    }
+
+    protected function createObjectManagerInstance(): ObjectManagerInterface
+    {
+        $objectManager = parent::createObjectManagerInstance();
+        $objectManager->method('get')->willReturnMap(
+            [
+                [HookSubscriberInterface::class, $this->getMockBuilder(HookSubscriberInterface::class)->getMockForAbstractClass()],
+            ]
+        );
+        return $objectManager;
     }
 }
