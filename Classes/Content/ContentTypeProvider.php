@@ -16,8 +16,6 @@ use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\PreviewProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Flux Provider for content_types table
