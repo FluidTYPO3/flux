@@ -75,11 +75,12 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     {
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->objectManager = $objectManager;
+        $this->injectObjectManager($objectManager);
 
         /** @var FluxService $fluxService */
         $fluxService = $this->objectManager->get(FluxService::class);
         $this->injectConfigurationService($fluxService);
+
         /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
         $workspacesAwareRecordService = $this->objectManager->get(WorkspacesAwareRecordService::class);
         $this->injectWorkspacesAwareRecordService($workspacesAwareRecordService);
@@ -112,7 +113,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     public function getBackendLayout($identifier, $pageUid)
     {
         $emptyLayout = $this->createBackendLayoutInstance($identifier, 'Empty', '');
-        $record = $this->recordService->getSingle('pages', '*', $pageUid);
+        $record = $this->recordService->getSingle('pages', 'uid', $pageUid);
         if (null === $record) {
             return $emptyLayout;
         }
@@ -122,17 +123,6 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
         }
         $grid = $provider->getGrid($record);
         return $grid->buildBackendLayout(0);
-    }
-
-    /**
-     * @param string $identifier
-     * @param string $title
-     * @param string|array $configuration
-     * @return BackendLayout
-     */
-    protected function createBackendLayoutInstance(string $identifier, string $title, $configuration): BackendLayout
-    {
-        return new BackendLayout($identifier, 'Empty', '');
     }
 
     /**
@@ -149,5 +139,17 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
         }
 
         return $this->configurationService->resolvePageProvider($record);
+    }
+
+    /**
+     * @param string $identifier
+     * @param string $title
+     * @param string|array $configuration
+     * @return BackendLayout
+     * @codeCoverageIgnore
+     */
+    protected function createBackendLayoutInstance(string $identifier, string $title, $configuration): BackendLayout
+    {
+        return new BackendLayout($identifier, 'Empty', '');
     }
 }

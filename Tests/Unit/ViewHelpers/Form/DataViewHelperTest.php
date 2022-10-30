@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
 use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleDataViewHelper;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;

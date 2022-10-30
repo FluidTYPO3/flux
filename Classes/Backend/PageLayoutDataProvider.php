@@ -201,6 +201,9 @@ class PageLayoutDataProvider
         return $option;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function isExtensionLoaded(string $extensionKey): bool
     {
         return ExtensionManagementUtility::isLoaded($extensionKey);
