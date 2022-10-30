@@ -136,12 +136,12 @@ parameters:
         -
             message: "#^Instantiated class TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source not found\\.$#"
             count: 1
-            path: Classes/Content/ContentTypeFluxTemplateDumper.php
+            path: Classes/Service/TemplateValidationService.php
 
         -
-            message: "#^Instantiated class TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source not found\\.$#"
+            message: "#^Parameter \\#1 \\$templateString of method TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\TemplateParser\\:\\:parse\\(\\) expects string, string\\|TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source given\\.$#"
             count: 1
-            path: Classes/Content/ContentTypeValidator.php
+            path: Classes/Service/TemplateValidationService.php
 
         -
             message: "#^Parameter \\$event of method FluidTYPO3\\\\Flux\\\\Integration\\\\Event\\\\AfterLocalizationControllerColumnsEventListener\\:\\:modifyColumnsManifest\\(\\) has invalid type TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\AfterPageColumnsSelectedForLocalizationEvent\\.$#"
