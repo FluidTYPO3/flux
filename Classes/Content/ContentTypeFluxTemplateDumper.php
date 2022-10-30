@@ -5,6 +5,7 @@ namespace FluidTYPO3\Flux\Content;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Form\Conversion\FormToFluidTemplateConverter;
+use FluidTYPO3\Flux\Service\TemplateValidationService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -42,34 +43,15 @@ class ContentTypeFluxTemplateDumper
         $dumper = GeneralUtility::makeInstance(FormToFluidTemplateConverter::class);
         $dump = $dumper->convertFormAndGrid($form, $grid, $options);
 
-        $error = $this->validateTemplateSource($dump);
+        $error = $this->getTemplateValidationService()->validateTemplateSource($dump);
         if ($error === null) {
             $validation = '<p class="text-success">Template parses OK, it is safe to copy</p>';
         } else {
-            $validation = '<p class="text-danger">' . $error->getMessage() . '</p>';
+            $validation = '<p class="text-danger">' . $error . '</p>';
         }
 
         $content = $validation . '<pre>' . htmlspecialchars($dump) . '</pre>';
         return $content;
-    }
-
-    protected function validateTemplateSource(string $templateSource): ?\Exception
-    {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var TemplateView $templateView */
-        $templateView = $objectManager->get(TemplateView::class);
-        $parser = $templateView->getRenderingContext()->getTemplateParser();
-        try {
-            if (class_exists(Sequencer::class)) {
-                $parser->parse(new Source($templateSource));
-            } else {
-                $parser->parse($templateSource);
-            }
-        } catch (\Exception $error) {
-            return $error;
-        }
-        return null;
     }
 
     protected function getContentType(string $contentTypeName): ?ContentTypeDefinitionInterface
@@ -79,5 +61,12 @@ class ContentTypeFluxTemplateDumper
         /** @var ContentTypeManager $contentTypeManager */
         $contentTypeManager = $objectManager->get(ContentTypeManager::class);
         return $contentTypeManager->determineContentTypeForTypeString($contentTypeName);
+    }
+
+    public function getTemplateValidationService(): TemplateValidationService
+    {
+        /** @var TemplateValidationService $templateValidationService */
+        $templateValidationService = GeneralUtility::makeInstance(TemplateValidationService::class);
+        return $templateValidationService;
     }
 }

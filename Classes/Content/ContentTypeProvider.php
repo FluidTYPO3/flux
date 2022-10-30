@@ -45,17 +45,24 @@ class ContentTypeProvider extends AbstractProvider implements
 
     public function getForm(array $row)
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var RecordBasedContentTypeDefinition $contentType */
-        $contentType = $objectManager->get(RecordBasedContentTypeDefinition::class, $row);
+        $contentType = $this->resolveContentTypeDefinition($row);
         /** @var ContentTypeForm $form */
-        $form = $objectManager->get(ContentTypeForm::class);
+        $form = GeneralUtility::makeInstance(ContentTypeForm::class);
         /** @var string[] $labels */
         $labels = $contentType->getSheetNamesAndLabels();
         foreach ($labels as $name => $label) {
             $form->createSheet($name, $label);
         }
         return $form;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function resolveContentTypeDefinition(array $row): RecordBasedContentTypeDefinition
+    {
+        /** @var RecordBasedContentTypeDefinition $contentType */
+        $contentType = GeneralUtility::makeInstance(RecordBasedContentTypeDefinition::class, $row);
+        return $contentType;
     }
 }

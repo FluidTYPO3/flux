@@ -52,9 +52,9 @@ class ContentTypeManager implements SingletonInterface
         if (empty($types)) {
             try {
                 $types = array_replace(
-                    (array) DropInContentTypeDefinition::fetchContentTypes(),
-                    (array) FluidFileBasedContentTypeDefinition::fetchContentTypes(),
-                    (array) RecordBasedContentTypeDefinition::fetchContentTypes()
+                    $this->fetchDropInContentTypes(),
+                    $this->fetchFileBasedContentTypes(),
+                    $this->fetchRecordBasedContentTypes()
                 );
                 $this->typeNames = array_merge($this->typeNames, array_keys($types));
             } catch (DBALException $error) {
@@ -92,6 +92,15 @@ class ContentTypeManager implements SingletonInterface
         return $this->determineContentTypeForTypeString($record['CType'] ?? $record['content_type'] ?? '');
     }
 
+    /**
+     * @return void
+     */
+    public function regenerate()
+    {
+        $cache = $this->getCache();
+        $cache->set(static::CACHE_IDENTIFIER, $this->fetchContentTypes());
+    }
+
     protected function loadSingleDefinitionFromCache(string $name): ?ContentTypeDefinitionInterface
     {
         try {
@@ -104,14 +113,32 @@ class ContentTypeManager implements SingletonInterface
     }
 
     /**
-     * @return void
+     * @codeCoverageIgnore
      */
-    public function regenerate()
+    protected function fetchDropInContentTypes(): array
     {
-        $cache = $this->getCache();
-        $cache->set(static::CACHE_IDENTIFIER, $this->fetchContentTypes());
+        return (array) DropInContentTypeDefinition::fetchContentTypes();
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function fetchFileBasedContentTypes(): array
+    {
+        return (array) FluidFileBasedContentTypeDefinition::fetchContentTypes();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function fetchRecordBasedContentTypes(): array
+    {
+        return (array) RecordBasedContentTypeDefinition::fetchContentTypes();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getCache(): FrontendInterface
     {
         try {
