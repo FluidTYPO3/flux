@@ -108,11 +108,17 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         return $this->contentTypeName;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getContentConfiguration(): array
     {
         return (array) GeneralUtility::xml2array($this->record['content_configuration'] ?? '');
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getGridConfiguration(): array
     {
         return (array) GeneralUtility::xml2array($this->record['grid'] ?? '');
@@ -197,7 +203,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
                         $name = $columnObject['column']['el']['name']['vDEF'];
                         $label = $columnObject['column']['el']['label']['vDEF'];
                         $column = $row->createContainer(Column::class, $name, $label);
-                        $column->setColumnPosition((int)$columnObject['colPos']['vDEF']);
+                        $column->setColumnPosition((int)$columnObject['column']['el']['colPos']['vDEF']);
 
                         ++$currentNumberOfColumns;
                     }

@@ -36,8 +36,14 @@ class Field extends AbstractFormField
      */
     public static function create(array $settings = [])
     {
+        if (!isset($settings['config']['type']) && !isset($settings['type'])) {
+            throw new \UnexpectedValueException(
+                'Field construction requires at least a "type", defined either as "type" or "config.type" property',
+                1667227598
+            );
+        }
         $settings['config']['type'] = $settings['config']['type'] ?? $settings['type'];
-        $settings['displayCondition'] = $settings['displayCond'];
+        $settings['displayCondition'] = $settings['displayCond'] ?? null;
         unset($settings['type'], $settings['displayCond']);
 
         /** @var FieldInterface $field */
@@ -81,9 +87,11 @@ class Field extends AbstractFormField
         return $this->type;
     }
 
-    public function setType(string $type): void
+    public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
     }
 
     public function getOnChange(): ?string
@@ -91,8 +99,10 @@ class Field extends AbstractFormField
         return $this->onChange;
     }
 
-    public function setOnChange(?string $onChange): void
+    public function setOnChange(?string $onChange): self
     {
         $this->onChange = $onChange;
+
+        return $this;
     }
 }

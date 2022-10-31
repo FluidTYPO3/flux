@@ -142,6 +142,7 @@ abstract class AbstractTestCase extends TestCase
         $setter = 'set' . ucfirst($propertyName);
         $getter = 'get' . ucfirst($propertyName);
         $chained = $instance->$setter($value);
+        $expectedValue = $expectedValue ?? $value;
         if (true === $expectsChaining) {
             $this->assertSame($instance, $chained);
         } else {

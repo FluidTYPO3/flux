@@ -536,15 +536,9 @@ abstract class AbstractFormComponent implements FormInterface
             unset($structure['options']);
         }
         foreach ($structure as $propertyName => $propertyValue) {
-            if ($propertyName === 'children') {
-                foreach ($propertyValue as $child) {
-                    $this->add($child);
-                }
-                continue;
-            }
             $setterMethodName = 'set' . ucfirst($propertyName);
             if (true === method_exists($this, $setterMethodName)) {
-                ObjectAccess::setProperty($this, $propertyName, $propertyValue);
+                $this->{$setterMethodName}($propertyValue);
             }
         }
         HookHandler::trigger(
@@ -556,6 +550,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @return ObjectManagerInterface
+     * @codeCoverageIgnore
      */
     protected function getObjectManager()
     {
@@ -566,6 +561,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     /**
      * @return FluxService
+     * @codeCoverageIgnore
      */
     protected function getConfigurationService()
     {

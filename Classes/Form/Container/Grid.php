@@ -43,7 +43,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
     public function buildColumnPositionValues(array $record): array
     {
         $columnPositionValues = [];
-        $parentRecordUid = $record['l18n_parent'] ?: $record['uid'];
+        $parentRecordUid = ($record['l18n_parent'] ?? 0) ?: ($record['uid'] ?? 0);
         foreach ($this->getRows() as $row) {
             foreach ($row->getColumns() as $column) {
                 $columnPositionValues[] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
@@ -160,11 +160,9 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         foreach ($this->flattenSetup($configuration, 'backend_layout.') as $name => $value) {
             $typoScriptString .= $name . ' = ' . $value . PHP_EOL;
         }
-        return new BackendLayout(
+        return $this->createBackendLayout(
             (string) $this->getRoot()->getName(),
-            (string) LocalizationUtility::translate($label)
-                ? $label
-                : 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.grid.grids.grid',
+            $label,
             $typoScriptString
         );
     }
@@ -190,6 +188,20 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             }
         }
         return $setup;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function createBackendLayout(string $name, string $label, string $configuration): BackendLayout
+    {
+        return new BackendLayout(
+            $name,
+            (string) LocalizationUtility::translate($label)
+                ? $label
+                : 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.grid.grids.grid',
+            $configuration
+        );
     }
 
     /**

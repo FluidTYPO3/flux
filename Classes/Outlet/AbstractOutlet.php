@@ -14,6 +14,8 @@ use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * ### Outlet Definition
@@ -70,12 +72,20 @@ abstract class AbstractOutlet implements OutletInterface
         $instance = GeneralUtility::makeInstance(static::class);
         if (isset($settings['pipesIn'])) {
             foreach ($settings['pipesIn'] as $pipeSettings) {
-                $instance->addPipeIn($pipeSettings['type']::create($pipeSettings));
+                /** @var class-string $pipeClassName */
+                $pipeClassName = $pipeSettings['type'];
+                /** @var PipeInterface $pipeIn */
+                $pipeIn = static::createPipeInstance($pipeClassName, $pipeSettings);
+                $instance->addPipeIn($pipeIn);
             }
         }
         if (isset($settings['pipesOut'])) {
             foreach ($settings['pipesOut'] as $pipeSettings) {
-                $instance->addPipeOut($pipeSettings['type']::create($pipeSettings));
+                /** @var class-string $pipeClassName */
+                $pipeClassName = $pipeSettings['type'];
+                /** @var PipeInterface $pipeOut */
+                $pipeOut = static::createPipeInstance($pipeClassName, $pipeSettings);
+                $instance->addPipeOut($pipeOut);
             }
         }
         return HookHandler::trigger(
@@ -90,11 +100,22 @@ abstract class AbstractOutlet implements OutletInterface
      * @template T
      * @param class-string<T> $class
      * @param array $settings
-     * @return T
+     * @return T&PipeInterface
      */
     protected static function createPipeInstance($class, array $settings)
     {
-        return $class::create($settings);
+        /** @var class-string $class */
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var T&PipeInterface $pipe */
+        $pipe = $objectManager->get($class);
+        foreach ($settings as $property => $value) {
+            $setterMethod = 'set' . ucfirst($property);
+            if (method_exists($pipe, $setterMethod)) {
+                $pipe->{$setterMethod}($value);
+            }
+        }
+        return $pipe;
     }
 
     /**
@@ -195,7 +216,7 @@ abstract class AbstractOutlet implements OutletInterface
         $this->validate($data);
         foreach ($this->pipesIn as $pipe) {
             if ($pipe instanceof ViewAwarePipeInterface) {
-                $pipe->setView($this->view);
+                $pipe->setView($this->getView());
             }
             $data = $pipe->conduct($data);
         }
@@ -282,7 +303,7 @@ abstract class AbstractOutlet implements OutletInterface
     public function validate(array $data)
     {
         $this->validationResults = new Result();
-        foreach ($this->arguments as $argument) {
+        foreach ($this->getArguments() as $argument) {
             $argumentName = $argument->getName();
             $argument->setValue(isset($data[$argumentName]) ? $data[$argumentName] : null);
             $propertyName = $argument->getName();
@@ -292,7 +313,8 @@ abstract class AbstractOutlet implements OutletInterface
                         HookHandler::OUTLET_INPUT_INVALID,
                         [
                             'property' => $propertyName,
-                            'argument' => $argument
+                            'argument' => $argument,
+                            'validationResults' => $argument->getValidationResults(),
                         ]
                     )['validationResults']
                 );

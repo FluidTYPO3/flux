@@ -426,6 +426,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
      * @param array $foreignSelectorFieldTcaOverride
      * @return RelationFieldInterface
      * @deprecated Please switch to overrideChildTca
+     * @codeCoverageIgnore
      */
     public function setForeignSelectorFieldTcaOverride($foreignSelectorFieldTcaOverride)
     {
@@ -440,6 +441,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     /**
      * @return array
      * @deprecated Please switch to overrideChildTca
+     * @codeCoverageIgnore
      */
     public function getForeignSelectorFieldTcaOverride()
     {
