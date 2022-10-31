@@ -35,6 +35,41 @@ class SelectTest extends AbstractFieldTest
     /**
      * @test
      */
+    public function canAddEmptyOptionWithStringValue()
+    {
+        /** @var Select $instance */
+        $instance = $this->createInstance();
+        $instance->setItems('1');
+        $instance->setEmptyOption('2');
+        $this->assertSame(2, count($instance->getItems()));
+    }
+
+    /**
+     * @test
+     */
+    public function canAddEmptyOptionWithArrayValue()
+    {
+        /** @var Select $instance */
+        $instance = $this->createInstance();
+        $instance->setItems('1');
+        $instance->setEmptyOption(['', 2]);
+        $this->assertSame(2, count($instance->getItems()));
+    }
+
+    /**
+     * @test
+     */
+    public function canUseRangeNotation()
+    {
+        /** @var Select $instance */
+        $instance = $this->createInstance();
+        $instance->setItems('1..10');
+        $this->assertSame(10, count($instance->getItems()));
+    }
+
+    /**
+     * @test
+     */
     public function canConsumeCommaSeparatedItems()
     {
         /** @var Select $instance */

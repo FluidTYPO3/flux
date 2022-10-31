@@ -32,12 +32,12 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
     protected $subject;
 
     /**
-     * @var mixed
+     * @var string|array
      */
     protected $recipient;
 
     /**
-     * @var mixed
+     * @var string|array
      */
     protected $sender;
 
@@ -66,7 +66,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function getRecipient()
     {
@@ -85,7 +85,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function getSender()
     {
@@ -178,20 +178,20 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
         }
         $sender = $this->getSender();
         $recipient = $this->getRecipient();
-        if (true === is_array($recipient)) {
-            list ($recipientAddress, $recipientName) = $recipient;
+        if (is_array($recipient)) {
+            [$recipientAddress, $recipientName] = $recipient;
         } else {
             $recipientAddress = $recipient;
             $recipientName = null;
         }
-        if (true === is_array($sender)) {
-            list ($senderAddress, $senderName) = $sender;
+        if (is_array($sender)) {
+            [$senderAddress, $senderName] = $sender;
         } else {
             $senderAddress = $sender;
             $senderName = null;
         }
         $subject = $this->getSubject();
-        if (true === is_string($data)) {
+        if (is_string($data)) {
             $body = $data;
         }
         $message = new MailMessage();

@@ -79,10 +79,8 @@ class RecordBasedContentGridProvider extends AbstractProvider implements GridPro
      */
     public function getForm(array $row)
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ContentGridForm $contentGridForm */
-        $contentGridForm = $objectManager->get(ContentGridForm::class);
+        $contentGridForm = GeneralUtility::makeInstance(ContentGridForm::class);
         return $contentGridForm;
     }
 

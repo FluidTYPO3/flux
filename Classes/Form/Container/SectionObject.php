@@ -39,9 +39,6 @@ class SectionObject extends AbstractFormContainer implements ContainerInterface,
      */
     public function build()
     {
-        if ($this->contentContainer && !$this->has(ColumnPosition::FIELD_NAME)) {
-            $this->createContentContainerFields();
-        }
         $label = $this->getLabel();
         $structureArray = [
             'title' => $label,

@@ -26,6 +26,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * as well as all following content element siblings.
  *
  * @author Christian Weiske <weiske@mogic.com>
+ * @codeCoverageIgnore
  */
 class MigrateColPosWizard implements
     \TYPO3\CMS\Install\Updates\UpgradeWizardInterface,

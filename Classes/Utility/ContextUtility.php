@@ -9,6 +9,8 @@ use TYPO3\CMS\Core\Core\Environment;
 /**
  * Compatibility proxy class to access ApplicationContext with a
  * one-shot function call. Required while TYPO3 8.7 LTS is supported.
+ *
+ * @codeCoverageIgnore
  */
 abstract class ContextUtility
 {
