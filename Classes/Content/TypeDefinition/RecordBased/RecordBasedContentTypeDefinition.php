@@ -60,40 +60,15 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         $this->contentTypeName = $record['content_type'];
     }
 
+    /**
+     * @return RecordBasedContentTypeDefinition[]
+     */
     public static function fetchContentTypes(): iterable
     {
         if (empty(static::$types)) {
-            try {
-                /** @var ConnectionPool $connectionPool */
-                $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-                $queryBuilder = $connectionPool->getQueryBuilderForTable('content_types');
-                /** @var string[] $keys */
-                $keys = array_keys($GLOBALS['TCA']['content_types']['columns'] ?? ['*' => '']);
-                /** @var array[] $typeRecords */
-                $typeRecords = $queryBuilder->select(...$keys)
-                    ->from('content_types')
-                    ->where(
-                        $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
-                        $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT))
-                    )->execute()
-                    ->fetchAll();
-            } catch (TableNotFoundException $exception) {
-                $typeRecords = [];
-            }
-
-            foreach ($typeRecords as $typeRecord) {
-                $extensionIdentity = $typeRecord['extension_identity'];
-                if (empty($extensionIdentity)
-                    || !ExtensionManagementUtility::isLoaded(
-                        ExtensionNamingUtility::getExtensionKey($extensionIdentity)
-                    )
-                ) {
-                    $typeRecord['extension_identity'] = 'FluidTYPO3.Builder';
-                }
-
-                $contentType = new RecordBasedContentTypeDefinition($typeRecord);
-                static::$types[$typeRecord['content_type']] = $contentType;
-            }
+            /** @var RecordBasedContentTypeDefinitionRepository $definitionRepository */
+            $definitionRepository = GeneralUtility::makeInstance(RecordBasedContentTypeDefinitionRepository::class);
+            static::$types = $definitionRepository->fetchContentTypeDefinitions();
         }
         return static::$types;
     }

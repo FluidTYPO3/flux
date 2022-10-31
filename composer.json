@@ -25,6 +25,7 @@
     "require": {
         "php": "^7.4.0 || ^8",
         "ext-json": "*",
+        "ext-pdo": "*",
         "typo3/cms-core": "^8.7 || ^9 || ^10 || ^11 || dev-master",
         "ext-dom": "*",
         "typo3/cms-fluid": "^8.7 || ^9 || ^10 || ^11 || dev-master",
