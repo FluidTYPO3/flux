@@ -193,6 +193,7 @@ class DataViewHelper extends AbstractViewHelper
 
     /**
      * @return FluxService
+     * @codeCoverageIgnore
      */
     protected static function getFluxService()
     {
@@ -206,6 +207,7 @@ class DataViewHelper extends AbstractViewHelper
 
     /**
      * @return WorkspacesAwareRecordService
+     * @codeCoverageIgnore
      */
     protected static function getRecordService()
     {
@@ -217,6 +219,9 @@ class DataViewHelper extends AbstractViewHelper
         return static::$recordService;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected static function getObjectManager(): ObjectManagerInterface
     {
         /** @var ObjectManagerInterface $objectManager */

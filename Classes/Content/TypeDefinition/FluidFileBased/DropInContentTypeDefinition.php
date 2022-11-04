@@ -58,11 +58,14 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         string $providerClassName = Provider::class
     ) {
         $this->extensionIdentity = $extensionIdentity;
-        $this->basePath = substr($basePath, 0, 1) !== '/' ? GeneralUtility::getFileAbsFileName($basePath) : $basePath;
+        $this->basePath = static::determineAbsolutePathForFilename($basePath);
         $this->relativeFilePath = $relativeFilePath;
         $this->providerClassName = $providerClassName;
     }
 
+    /**
+     * @return iterable|DropInContentTypeDefinition[]
+     */
     public static function fetchContentTypes(): iterable
     {
         if (!ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY)) {
@@ -79,11 +82,11 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         if (!is_scalar($plugAndPlayDirectory)) {
             return [];
         }
-        $basePath = trim((string) $plugAndPlayDirectory, '/.') . '/';
-        $basePath = realpath(GeneralUtility::getFileAbsFileName($basePath)) . '/';
+        $basePath = trim((string) $plugAndPlayDirectory, '/.');
+        $basePath = static::determineAbsolutePathForFilename($basePath) . '/';
         static::initializeDropInFileSystemStructure($basePath);
 
-        $contentTypesPath = realpath($basePath . static::TEMPLATES_DIRECTORY . static::CONTENT_DIRECTORY) . '/';
+        $contentTypesPath = $basePath . static::TEMPLATES_DIRECTORY . static::CONTENT_DIRECTORY;
         /** @var Finder $finder */
         $finder = GeneralUtility::makeInstance(Finder::class);
         try {
@@ -95,7 +98,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         $types = [];
         $basePathLength = strlen($contentTypesPath);
         foreach ($files as $file) {
-            $templateFile = $file->getRealPath();
+            $templateFile = $file->getPath() . '/' . $file->getFilename();
             // May cause some files to be ignored if the files are either symlinked or the base path was not possible
             // to resolve correctly. This can happen if for some reason, ENV is configured with a public path that is
             // not within the project path, is is configured as an absolute path (which technically isn't correct).
@@ -128,7 +131,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
 
     protected static function initializeDropInFileSystemStructure(string $basePath): void
     {
-        if (!is_dir($basePath)) {
+        if (!file_exists($basePath)) {
             static::createDir($basePath . static::PARTIALS_DIRECTORY);
             static::createDir(
                 $basePath . static::LAYOUTS_DIRECTORY,
@@ -154,5 +157,13 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
                 $directory . pathinfo($sourceFile, PATHINFO_BASENAME)
             );
         }
+    }
+
+    protected static function determineAbsolutePathForFilename(string $filename): string
+    {
+        if (strpos($filename, '://') !== false) {
+            return $filename;
+        }
+        return realpath($filename) ?: $filename;
     }
 }

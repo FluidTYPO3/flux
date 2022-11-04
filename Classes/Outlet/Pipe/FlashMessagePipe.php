@@ -130,6 +130,9 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface
         return $this->message;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getFlashMessageQueue(): FlashMessageQueue
     {
         return new FlashMessageQueue(static::FLASHMESSAGE_QUEUE);

@@ -11,11 +11,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet;
 use FluidTYPO3\Flux\Outlet\OutletArgument;
 use FluidTYPO3\Flux\Outlet\Pipe\FlashMessagePipe;
 use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
+use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Validation\Validator\NotEmptyValidator;
 use TYPO3\CMS\Extbase\Validation\ValidatorResolver;
+use TYPO3\CMS\Fluid\View\TemplateView;
 
 /**
  * AbstractOutletTestCase
@@ -137,6 +139,37 @@ abstract class AbstractOutletTestCase extends AbstractTestCase
         $pipe = new StandardPipe();
         $instance->addPipeOut($pipe);
         $this->assertContains($pipe, $instance->getPipesOut());
+    }
+
+    /**
+     * @test
+     */
+    public function canGetAndSetView()
+    {
+        $view = $this->getMockBuilder(TemplateView::class)->disableOriginalConstructor()->getMock();
+        $this->assertGetterAndSetterWorks('view', $view, $view, true);
+    }
+
+    public function testFillTransfersViewToPipesIn(): void
+    {
+        $view = $this->getMockBuilder(TemplateView::class)->disableOriginalConstructor()->getMock();
+        $subject = $this->createInstance();
+        $subject->setView($view);
+        $pipe = $this->getMockBuilder(ViewAwarePipeInterface::class)->getMockForAbstractClass();
+        $pipe->expects(self::once())->method('setView')->with($view);
+        $subject->addPipeIn($pipe);
+        $subject->fill(['foo' => 'bar']);
+    }
+
+    public function testProduceTransfersViewToPipesOut(): void
+    {
+        $view = $this->getMockBuilder(TemplateView::class)->disableOriginalConstructor()->getMock();
+        $subject = $this->createInstance();
+        $subject->setView($view);
+        $pipe = $this->getMockBuilder(ViewAwarePipeInterface::class)->getMockForAbstractClass();
+        $pipe->expects(self::once())->method('setView')->with($view);
+        $subject->addPipeOut($pipe);
+        $subject->produce();
     }
 
     /**

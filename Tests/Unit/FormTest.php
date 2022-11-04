@@ -437,4 +437,59 @@ class FormTest extends AbstractTestCase
         $sheets = $form->getSheets(true);
         $this->assertEquals('Test', reset($sheets)->getLabel());
     }
+
+    public function testSetOptionWithDottedPathAndExistingValue(): void
+    {
+        $form = new Form();
+        $form->setOptions(['foo' => ['bar' => ['baz' => 'value']]]);
+        $form->setOption('foo.bar.baz', 'new-value');
+
+        self::assertSame(['foo' => ['bar' => ['baz' => 'new-value']]], $form->getOptions());
+    }
+
+    public function testSetOptionWithDottedPathAndNewValue(): void
+    {
+        $form = new Form();
+        $form->setOptions(['foo' => ['bar' => ['baz' => 'value']]]);
+        $form->setOption('foo.new', 'new-value');
+
+        self::assertSame(['foo' => ['bar' => ['baz' => 'value'], 'new' => 'new-value']], $form->getOptions());
+    }
+
+    public function testModifyCanCreateOutlet(): void
+    {
+        $structure = [
+            'outlet' => [
+                'type' => StandardOutlet::class,
+            ]
+        ];
+
+        $form = new Form();
+        $form->modify($structure);
+
+        self::assertInstanceOf(StandardOutlet::class, $form->getOutlet());
+    }
+
+    public function testModifyCanModifyExistingSheet(): void
+    {
+        $structure = [
+            'sheets' => [
+                'foobar' => [
+                    'fields' => [
+                        'test' => [
+                            'label' => 'Foobar',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $form = new Form();
+        $sheet = $form->createContainer(Form\Container\Sheet::class, 'foobar', 'Foobar');
+        $field = $sheet->createField(Input::class, 'test', 'Label');
+
+        $form->modify($structure);
+
+        self::assertSame('Foobar', $field->getLabel());
+    }
 }

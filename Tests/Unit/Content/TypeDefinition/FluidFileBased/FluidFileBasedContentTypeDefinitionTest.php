@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Tests\Unit\Content\FluidFileBased;
+namespace FluidTYPO3\Flux\Tests\Unit\Content\TypeDefinition\FluidFileBased;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Content\FluidFileBased;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\FluidFileBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;

@@ -16,7 +16,6 @@ use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
  */
 class CompatibilityRegistryTest extends AbstractTestCase
 {
-
     /**
      * @param array $versionedValues
      * @param string $version

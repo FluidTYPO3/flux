@@ -23,6 +23,7 @@ use TYPO3Fluid\Fluid\Core\ErrorHandler\ErrorHandlerInterface;
 use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\NodeInterface;
 use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode;
 use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
+use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
 use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
@@ -42,6 +43,9 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     protected ?StandardVariableProvider $templateVariableContainer;
     protected ?ControllerContext $controllerContext;
     protected ?ErrorHandlerInterface $errorHandler;
+    protected ?TemplateParser $templateParser;
+    protected array $templateProcessors = [];
+    protected array $expressionTypes = [];
 
     /**
      * @var array
@@ -63,21 +67,42 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
             $requestClassName = \TYPO3\CMS\Extbase\Mvc\Request::class;
         }
 
-        $this->viewHelperResolver = $this->getMockBuilder(ViewHelperResolver::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
-        $this->viewHelperVariableContainer = $this->getMockBuilder(ViewHelperVariableContainer::class)->setMethods(['dummy'])->getMock();
-        $this->templateVariableContainer = $this->getMockBuilder(StandardVariableProvider::class)->setMethods(['dummy'])->getMock();
-        $this->controllerContext = $this->getMockBuilder(ControllerContext::class)->setMethods(['getRequest'])->getMock();
+        $this->viewHelperResolver = $this->getMockBuilder(ViewHelperResolver::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->viewHelperVariableContainer = $this->getMockBuilder(ViewHelperVariableContainer::class)
+            ->setMethods(['dummy'])
+            ->getMock();
+        $this->templateVariableContainer = $this->getMockBuilder(StandardVariableProvider::class)
+            ->setMethods(['dummy'])
+            ->getMock();
+        $this->controllerContext = $this->getMockBuilder(ControllerContext::class)
+            ->setMethods(['getRequest', 'getUriBuilder'])
+            ->getMock();
         $this->controllerContext->method('getRequest')->willReturn(new $requestClassName());
-        $this->viewHelperInvoker = $this->getMockBuilder(ViewHelperInvoker::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
-        $this->renderingContext = $this->getMockBuilder(RenderingContext::class)->disableOriginalConstructor()->getMock();
+        $this->viewHelperInvoker = $this->getMockBuilder(ViewHelperInvoker::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->renderingContext = $this->getMockBuilder(RenderingContext::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)->getMockForAbstractClass();
+        $this->templateParser = new TemplateParser();
+        $this->templateParser->setRenderingContext($this->renderingContext);
         $this->errorHandler->method('handleViewHelperError')->willThrowException(new Exception('dummy'));
         $this->renderingContext->method('getViewHelperResolver')->willReturn($this->viewHelperResolver);
         $this->renderingContext->method('getControllerContext')->willReturn($this->controllerContext);
-        $this->renderingContext->method('getViewHelperVariableContainer')->willReturn($this->viewHelperVariableContainer);
+        $this->renderingContext->method('getViewHelperVariableContainer')->willReturn(
+            $this->viewHelperVariableContainer
+        );
         $this->renderingContext->method('getVariableProvider')->willReturn($this->templateVariableContainer);
         $this->renderingContext->method('getViewHelperInvoker')->willReturn($this->viewHelperInvoker);
         $this->renderingContext->method('getErrorHandler')->willReturn($this->errorHandler);
+        $this->renderingContext->method('getTemplateParser')->willReturn($this->templateParser);
+        $this->renderingContext->method('getTemplateProcessors')->willReturn($this->templateProcessors);
+        $this->renderingContext->method('getExpressionNodeTypes')->willReturn($this->expressionTypes);
     }
 
     /**
@@ -191,6 +216,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     protected function executeViewHelper($arguments = [], $variables = [], $childNode = null, $extensionName = null, $pluginName = null)
     {
         $instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
+        $this->renderingContext->getVariableProvider()->setSource($variables);
         return $this->renderingContext->getViewHelperInvoker()->invoke($instance, $arguments, $this->renderingContext);
     }
 

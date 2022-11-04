@@ -67,9 +67,9 @@ class InlineViewHelper extends AbstractViewHelper
         RenderingContextInterface $renderingContext
     ) {
         $source = $renderChildrenClosure();
-        if (class_exists(Source::class)) {
-            $source = new Source($source);
-        }
-        return $renderingContext->getTemplateParser()->parse($source)->getRootNode()->evaluate($renderingContext);
+        return $renderingContext->getTemplateParser()
+            ->parse(class_exists(Source::class) ? new Source($source) : $source)
+            ->getRootNode()
+            ->evaluate($renderingContext);
     }
 }

@@ -82,6 +82,9 @@ class ArgumentViewHelper extends AbstractFormViewHelper
         $outlet->addArgument($argument);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected static function getObjectManager(): ObjectManagerInterface
     {
         if (static::$objectManager === null) {

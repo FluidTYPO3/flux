@@ -311,13 +311,12 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             while ($segment = array_shift($segments)) {
                 if (isset($subject[$segment])) {
                     $subject = &$subject[$segment];
-                } elseif (count($segments) === 0) {
-                    $subject = $value;
                 } else {
                     $subject[$segment] = [];
                     $subject = &$subject[$segment];
                 }
             }
+            $subject = $value;
         }
 
         return $this;
@@ -385,10 +384,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             unset($structure['options']);
         }
         if (isset($structure['sheets']) || isset($structure['children'])) {
-            $this->children = new \SplObjectStorage();
-            $data = isset($structure['children']) ? $structure['children'] : $structure['sheets'];
-            foreach ((array) $data as $index => $sheetData) {
-                $sheetName = isset($sheetData['name']) ? $sheetData['name'] : $index;
+            $data = $structure['sheets'] ?? $structure['children'] ?? [];
+            foreach ($data as $index => $sheetData) {
+                $sheetName = $sheetData['name'] ?? $index;
                 // check if field already exists - if it does, modify it. If it does not, create it.
                 if (true === $this->has($sheetName)) {
                     /** @var Sheet $sheet */
@@ -402,6 +400,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             unset($structure['sheets'], $structure['children']);
         }
         if (isset($structure['outlet'])) {
+            // @TODO: enable modify() on outlet instead of only allowing creation
             $outlet = StandardOutlet::create($structure['outlet']);
             $this->setOutlet($outlet);
             unset($structure['outlet']);

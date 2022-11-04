@@ -75,6 +75,9 @@ class RenderViewHelper extends AbstractViewHelper
         return $output['html'] ?? '';
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected static function convertXmlToArray(string $xml): array
     {
         $array = GeneralUtility::xml2array($xml);
@@ -85,9 +88,9 @@ class RenderViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @return NodeFactory
+     * @codeCoverageIgnore
      */
-    protected static function getNodeFactory()
+    protected static function getNodeFactory(): NodeFactory
     {
         /** @var NodeFactory $nodeFactory */
         $nodeFactory = GeneralUtility::makeInstance(NodeFactory::class);

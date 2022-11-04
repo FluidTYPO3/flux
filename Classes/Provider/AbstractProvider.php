@@ -726,6 +726,7 @@ class AbstractProvider implements ProviderInterface
      *                   before saving after operation
      * @param DataHandler $reference A reference to the DataHandler object that is currently performing the operation
      * @return void
+     * @codeCoverageIgnore
      */
     public function postProcessDatabaseOperation($status, $id, &$row, DataHandler $reference)
     {
@@ -776,6 +777,7 @@ class AbstractProvider implements ProviderInterface
      * @param integer $relativeTo
      * @param DataHandler $reference
      * @return void
+     * @codeCoverageIgnore
      */
     public function postProcessCommand($command, $id, array &$row, &$relativeTo, DataHandler $reference)
     {
@@ -844,10 +846,10 @@ class AbstractProvider implements ProviderInterface
         /** @var WebRequest $request */
         $request = $objectManager->get(WebRequest::class);
         if (method_exists($request, 'setRequestUri')) {
-            $request->setRequestUri(GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL'));
+            $request->setRequestUri($this->getEnvironmentVariable('TYPO3_REQUEST_URL'));
         }
         if (method_exists($request, 'setBaseUri')) {
-            $request->setBaseUri(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
+            $request->setBaseUri($this->getEnvironmentVariable('TYPO3_SITE_URL'));
         }
         $request->setControllerExtensionName(ExtensionNamingUtility::getExtensionName($controllerExtensionKey));
         $request->setControllerActionName($this->getControllerActionFromRecord($row));
@@ -1111,6 +1113,7 @@ class AbstractProvider implements ProviderInterface
     /**
      * @param \Throwable $error
      * @return void
+     * @codeCoverageIgnore
      */
     protected function dispatchFlashMessageForException(\Throwable $error)
     {
@@ -1127,6 +1130,9 @@ class AbstractProvider implements ProviderInterface
         $flashMesasageQueue->enqueue($flashMesasage);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function resolveAbsolutePathToFile(?string $file): ?string
     {
         return $file === null ? null : GeneralUtility::getFileAbsFileName($file);
@@ -1135,11 +1141,24 @@ class AbstractProvider implements ProviderInterface
     /**
      * @param string|array $extensionKeyOrConfiguration
      * @return TemplatePaths
+     * @codeCoverageIgnore
      */
     protected function createTemplatePaths($extensionKeyOrConfiguration): TemplatePaths
     {
         /** @var TemplatePaths $paths */
         $paths = GeneralUtility::makeInstance(TemplatePaths::class, $extensionKeyOrConfiguration);
         return $paths;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function getEnvironmentVariable(string $name): string
+    {
+        $returnValue = GeneralUtility::getIndpEnv($name);
+        if (!is_scalar($returnValue)) {
+            return '';
+        }
+        return $returnValue ? (string) $returnValue : '';
     }
 }

@@ -36,7 +36,7 @@ class Core
      * Contains all ConfigurationProviders registered with Flux
      * @var array
      */
-    private static $providers = [];
+    protected static $providers = [];
 
     /**
      * @var array

@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Tests\Unit\Content\RecordBased;
+namespace FluidTYPO3\Flux\Tests\Unit\Content\TypeDefinition\RecordBased;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.

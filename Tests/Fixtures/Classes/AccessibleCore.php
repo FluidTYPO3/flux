@@ -21,4 +21,9 @@ class AccessibleCore extends Core
     {
         static::$queuedContentTypeRegistrations = [];
     }
+
+    public static function setRegisteredProviders(array $providers): void
+    {
+        static::$providers = $providers;
+    }
 }

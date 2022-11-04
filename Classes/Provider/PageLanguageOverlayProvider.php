@@ -39,10 +39,15 @@ class PageLanguageOverlayProvider extends PageProvider implements ProviderInterf
         }
         $records = [];
         while ($parentFieldName !== null && $pageRecord !== null && 0 < ($pageRecord[$parentFieldName] ?? null)) {
-            $record = $this->recordService->get($this->tableName, '*', 'pid = ' . $pageRecord['pid']);
-            if ($record === null) {
+            $parentTranslations = $this->recordService->get(
+                $this->tableName,
+                '*',
+                'pid = ' . $pageRecord['pid'] . ' AND sys_language_uid = ' . $record['sys_language_uid']
+            );
+            if (empty($parentTranslations)) {
                 break;
             }
+            $record = reset($parentTranslations);
             $parentFieldName = $this->getParentFieldName($record);
             $records[] = $record;
             $pageRecord = $this->recordService->getSingle('pages', '*', $pageRecord['pid']);

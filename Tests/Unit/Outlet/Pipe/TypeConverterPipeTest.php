@@ -53,6 +53,36 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
     /**
      * @test
      */
+    public function canConductDataWithPropertyName()
+    {
+        $instance = $this->createInstance();
+        $converterClass = StringConverter::class;
+        $converter = new $converterClass();
+        $instance->setPropertyName('prop');
+        $instance->setTypeConverter($converter);
+        $instance->setTargetType('string');
+        $output = $instance->conduct(['prop' => 'test']);
+        $this->assertEquals(['prop' => 'test'], $output);
+    }
+
+    /**
+     * @test
+     */
+    public function canConductDataWithPropertyNameWithDottedPath()
+    {
+        $instance = $this->createInstance();
+        $converterClass = StringConverter::class;
+        $converter = new $converterClass();
+        $instance->setPropertyName('prop.sub');
+        $instance->setTypeConverter($converter);
+        $instance->setTargetType('string');
+        $output = $instance->conduct(['prop' => ['sub' => 'test']]);
+        $this->assertEquals(['prop' => ['sub' => 'test']], $output);
+    }
+
+    /**
+     * @test
+     */
     public function conductingDataThrowsExceptionWhenTypeConverterCannotConvertToTargetType()
     {
         $instance = $this->createInstance();
@@ -98,6 +128,14 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
     public function canGetAndSetTargetType()
     {
         $this->assertGetterAndSetterWorks('targetType', 'string', 'string', true);
+    }
+
+    /**
+     * @test
+     */
+    public function canGetAndSetPropertyName()
+    {
+        $this->assertGetterAndSetterWorks('propertyName', 'string', 'string', true);
     }
 
     /**

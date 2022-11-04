@@ -65,4 +65,21 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase
         );
         $this->assertEquals($arguments['foreignMatchFields'], $component->getForeignMatchFields());
     }
+
+    /**
+     * @test
+     */
+    public function supportsCropVariants()
+    {
+        $arguments = array(
+            'name' => 'test',
+            'cropVariants' => array('test' => 'test')
+        );
+        $instance = $this->buildViewHelperInstance($arguments, array());
+        $component = $instance->getComponent(
+            $this->renderingContext,
+            $this->buildViewHelperArguments($instance, $arguments)
+        );
+        $this->assertEquals($arguments['cropVariants'], $component->getCropVariants());
+    }
 }

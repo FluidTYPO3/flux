@@ -8,17 +8,18 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Outlet;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use FluidTYPO3\Flux\ViewHelpers\Outlet\ValidateViewHelper;
+use TYPO3\CMS\Extbase\Validation\Validator\NotEmptyValidator;
 
 /**
  * ValidateViewHelperTest
  */
 class ValidateViewHelperTest extends AbstractViewHelperTestCase
 {
-    /**
-     * @test
-     */
     public function testAddsArgumentsAsValidatorConfiguration()
     {
         $arguments = ['name' => 'test', 'type' => 'NotEmpty'];

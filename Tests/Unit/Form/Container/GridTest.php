@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
-use FluidTYPO3\Flux\Form\Field\ColumnPosition;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;

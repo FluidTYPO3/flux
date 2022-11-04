@@ -8,10 +8,16 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\ContentProvider;
+use FluidTYPO3\Flux\Provider\Interfaces\ContentTypeProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
+use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyBasicProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\InvalidConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -22,6 +28,32 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class ProviderResolverTest extends AbstractTestCase
 {
+    public function testResolveConfigurationProvidersFiltersProviders(): void
+    {
+        $subject = $this->getMockBuilder(ProviderResolver::class)
+            ->setMethods(['loadTypoScriptConfigurationProviderInstances', 'validateAndInstantiateProviders'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->method('loadTypoScriptConfigurationProviderInstances')->willReturn([]);
+        $subject->method('validateAndInstantiateProviders')->willReturnArgument(0);
+
+        $provider1 = new ContentProvider();
+        $provider2 = new PageProvider();
+        $provider3 = new DummyBasicProvider();
+
+        AccessibleCore::setRegisteredProviders(
+            [
+                $provider1,
+                $provider2,
+                $provider3
+            ]
+        );
+
+        $resolved = $subject->resolveConfigurationProviders('tt_content', null, null, null, [RecordProviderInterface::class]);
+        self::assertSame([], $resolved);
+
+        AccessibleCore::setRegisteredProviders([]);
+    }
 
     /**
      * @test

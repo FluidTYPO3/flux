@@ -9,11 +9,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Outlet;
  */
 
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\Outlet\FormViewHelper;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 /**
  * FormViewHelperTest
@@ -68,5 +71,33 @@ class FormViewHelperTest extends AbstractViewHelperTestCase
         $result = $method->invoke($subject);
         $this->assertStringContainsString('__outlet[table]', $result);
         $this->assertStringContainsString('__outlet[recordUid]', $result);
+    }
+
+    public function testRenderMethodAssignsPropertiesFromProvider(): void
+    {
+        $uriBuilder = $this->getMockBuilder(UriBuilder::class)->setMethods(['uriFor'])->getMock();
+        $this->controllerContext->method('getUriBuilder')->willReturn($uriBuilder);
+        $uriBuilder->method('uriFor')->willReturn('url');
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+
+        $tagBuilder = $this->getMockBuilder(TagBuilder::class)->setMethods(['render'])->getMock();
+        $tagBuilder->method('render')->willReturn('rendered');
+
+        $this->viewHelperVariableContainer->add(FormViewHelper::class, 'record', ['uid' => 123]);
+        $this->viewHelperVariableContainer->add(FormViewHelper::class, 'provider', $provider);
+
+        $subject = $this->getMockBuilder(FormViewHelper::class)
+            ->setMethods(['renderChildren', 'renderHiddenReferrerFields', 'renderTrustedPropertiesField'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->setRenderingContext($this->renderingContext);
+        $subject->method('renderHiddenReferrerFields')->willReturn('');
+        $subject->method('renderTrustedPropertiesField')->willReturn('');
+
+        $this->setInaccessiblePropertyValue($subject, 'tag', $tagBuilder);
+
+        $output = $subject->render();
+
+        self::assertSame('rendered', $output);
     }
 }
