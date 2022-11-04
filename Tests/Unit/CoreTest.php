@@ -12,7 +12,10 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use TYPO3\CMS\Core\Package\Package;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
@@ -42,7 +45,6 @@ class CoreTest extends AbstractTestCase
 
         AccessibleCore::setObjectManager(null);
     }
-
 
     /**
      * @test
@@ -80,6 +82,40 @@ class CoreTest extends AbstractTestCase
         AccessibleCore::registerProviderExtensionKey($fakeExtensionKey, $fakeControllerName);
         $registered = AccessibleCore::getRegisteredProviderExtensionKeys($fakeControllerName);
         $this->assertContains($fakeExtensionKey, $registered);
+    }
+
+    /**
+     * @test
+     */
+    public function canRegisterProviderExtensionKeyWithContentController()
+    {
+        $package = $this->getMockBuilder(Package::class)
+            ->setMethods(['getPackagePath'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $package->method('getPackagePath')->willReturn('');
+
+        $packageManager = $this->getMockBuilder(PackageManager::class)
+            ->setMethods(['isPackageActive', 'getPackage'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $packageManager->method('getPackage')->willReturn($package);
+        $packageManager->method('isPackageActive')->willReturnMap(
+            [
+                ['fluidcontent', false],
+                ['flux', true],
+            ]
+        );
+
+        AccessibleExtensionManagementUtility::setPackageManager($packageManager);
+
+        $fakeExtensionKey = 'flux';
+        $fakeControllerName = 'Content';
+        AccessibleCore::registerProviderExtensionKey($fakeExtensionKey, $fakeControllerName);
+        $registered = AccessibleCore::getRegisteredProviderExtensionKeys($fakeControllerName);
+        $this->assertContains($fakeExtensionKey, $registered);
+
+        AccessibleExtensionManagementUtility::setPackageManager(null);
     }
 
     /**

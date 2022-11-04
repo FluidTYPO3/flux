@@ -94,9 +94,11 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
         return $this->propertyName;
     }
 
-    public function setPropertyName(?string $propertyName): void
+    public function setPropertyName(?string $propertyName): self
     {
         $this->propertyName = $propertyName;
+
+        return $this;
     }
 
     /**
@@ -113,6 +115,8 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
                 foreach (explode('.', $this->propertyName) as $segment) {
                     $subject = &$subject[$segment];
                 }
+            } elseif (is_array($subject)) {
+                $subject =& $subject[$this->propertyName];
             }
         }
         $targetType = $this->getTargetType();

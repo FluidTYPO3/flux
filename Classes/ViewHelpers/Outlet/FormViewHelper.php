@@ -32,7 +32,6 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
  */
 class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
 {
-
     /**
      * @var AbstractProvider
      */
@@ -49,13 +48,10 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
     public function render()
     {
         /** @var AbstractProvider $provider */
-        $provider = $this->viewHelperVariableContainer->get(
-            \FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class,
-            'provider'
-        );
+        $provider = $this->viewHelperVariableContainer->get(self::class, 'provider');
         $this->provider = $provider;
         /** @var array $record */
-        $record = $this->viewHelperVariableContainer->get(\FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class, 'record');
+        $record = $this->viewHelperVariableContainer->get(self::class, 'record');
         $this->record = $record;
 
         if (!$this->hasArgument('extensionName')) {
@@ -69,10 +65,7 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
         }
 
         if (!$this->hasArgument('pluginName')) {
-            $this->arguments['pluginName'] = $this->viewHelperVariableContainer->get(
-                \FluidTYPO3\Flux\ViewHelpers\FormViewHelper::class,
-                'pluginName'
-            );
+            $this->arguments['pluginName'] = $this->viewHelperVariableContainer->get(self::class, 'pluginName');
         }
 
         if (!$this->hasArgument('action')) {

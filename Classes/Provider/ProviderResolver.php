@@ -101,9 +101,9 @@ class ProviderResolver implements SingletonInterface
         if ($interfaces) {
             $providers = array_filter(
                 $providers,
-                function (ProviderInterface $provider) use ($interfaces) {
+                function ($provider) use ($interfaces) {
                     foreach ((array) $interfaces as $interface) {
-                        if (!$provider instanceof $interface) {
+                        if (!is_a($provider, $interface, true)) {
                             return false;
                         }
                     }

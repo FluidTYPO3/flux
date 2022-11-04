@@ -79,26 +79,12 @@ abstract class AbstractFluxController extends ActionController
     protected $data = [];
 
     /**
-     * @var WorkspacesAwareRecordService
-     */
-    protected $workspacesAwareRecordService;
-
-    /**
      * @param FluxService $configurationService
      * @return void
      */
     public function injectConfigurationService(FluxService $configurationService)
     {
         $this->configurationService = $configurationService;
-    }
-
-    /**
-     * @param WorkspacesAwareRecordService $workspacesAwareRecordService
-     * @return void
-     */
-    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService)
-    {
-        $this->workspacesAwareRecordService = $workspacesAwareRecordService;
     }
 
     /**
@@ -373,7 +359,7 @@ abstract class AbstractFluxController extends ActionController
                 $this->request->setControllerExtensionName($vendorLessExtensionName);
                 $this->configurationManager->setConfiguration(
                     array_merge(
-                        $this->configurationManager->getConfiguration(
+                        (array) $this->configurationManager->getConfiguration(
                             ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT,
                             $vendorLessExtensionName
                         ),
@@ -424,8 +410,8 @@ abstract class AbstractFluxController extends ActionController
      */
     protected function hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName)
     {
-        $potentialControllerClassName = $this->configurationService
-            ->getResolver()->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
+        $potentialControllerClassName = $this->configurationService->getResolver()
+            ->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
                 $extensionName,
                 $controllerName
             );

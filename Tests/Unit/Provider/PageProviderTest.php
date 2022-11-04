@@ -20,6 +20,8 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
@@ -387,5 +389,46 @@ class PageProviderTest extends AbstractTestCase
         $provider->postProcessRecord('update', $id, $record, $parentInstance);
         $this->assertIsString($record[$fieldName]);
         $this->assertStringNotContainsString('settings.input', $record[$fieldName]);
+    }
+
+    public function testLoadRecordTreeFromDatabaseReturnsEmptyArrayIfRecordIsEmpty(): void
+    {
+        $subject = new PageProvider();
+        self::assertSame([], $this->callInaccessibleMethod($subject, 'loadRecordTreeFromDatabase', []));
+    }
+
+    public function testLoadRecordTreeFromDatabaseUsesRootLineUtility(): void
+    {
+        $rootLineUtility = $this->getMockBuilder(RootlineUtility::class)
+            ->setMethods(['get'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $rootLineUtility->method('get')->willReturn(
+            [
+                ['uid' => 123],
+                ['uid' => 456],
+            ]
+        );
+        $subject = new PageProvider();
+
+        GeneralUtility::addInstance(RootlineUtility::class, $rootLineUtility);
+
+        self::assertSame([['uid' => 456]], $this->callInaccessibleMethod($subject, 'loadRecordTreeFromDatabase', ['uid' => 1]));
+    }
+
+    public function testGetFormReturnsNullIfRecordIsDeleted(): void
+    {
+        $subject = new PageProvider();
+        self::assertNull($subject->getForm(['deleted' => 1]));
+    }
+
+    public function testGetControllerActionFromRecordReturnsDefaultIfActionIsEmpty(): void
+    {
+        $subject = $this->getMockBuilder(PageProvider::class)
+            ->setMethods(['getControllerActionReferenceFromRecord'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->method('getControllerActionReferenceFromRecord')->willReturn('');
+        self::assertSame('default', $subject->getControllerActionFromRecord(['uid' => 123]));
     }
 }

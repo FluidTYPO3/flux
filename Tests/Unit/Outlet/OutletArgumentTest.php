@@ -11,10 +11,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet;
 use FluidTYPO3\Flux\Outlet\OutletArgument;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
 use TYPO3\CMS\Extbase\Property\PropertyMapper;
+use TYPO3\CMS\Extbase\Property\PropertyMappingConfiguration;
 use TYPO3\CMS\Extbase\Validation\Error;
+use TYPO3\CMS\Extbase\Validation\Exception\NoSuchValidatorException;
 use TYPO3\CMS\Extbase\Validation\Validator\NotEmptyValidator;
 use TYPO3\CMS\Extbase\Validation\ValidatorResolver;
 
@@ -57,8 +62,6 @@ class OutletArgumentTest extends AbstractTestCase
                 ['NotEmpty', [], new NotEmptyValidator()],
             ]
         );
-
-        //$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['typeConverters'] = [StringConverter::class];
     }
 
     /**
@@ -211,5 +214,37 @@ class OutletArgumentTest extends AbstractTestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         new OutletArgument('', 'string');
+    }
+
+    public function testThrowsExceptionOnAddingInvalidValidator(): void
+    {
+        $singletons = GeneralUtility::getSingletonInstances();
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass();
+        $logManager = $this->getMockBuilder(LogManager::class)
+            ->setMethods(['getLogger'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $logManager->method('getLogger')->willReturn($logger);
+        GeneralUtility::setSingletonInstance(LogManager::class, $logManager);
+
+        $valiatorResolver = $this->getMockBuilder(ValidatorResolver::class)
+            ->setMethods(['resolveValidator'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $valiatorResolver->method('resolveValidator')->willReturn(null);
+        $subject = new OutletArgument('test', 'string');
+        $subject->injectValidatorResolver($valiatorResolver);
+        self::expectException(NoSuchValidatorException::class);
+        $subject->addValidator('foobarbaz');
+
+        GeneralUtility::resetSingletonInstances($singletons);
+    }
+
+    public function testCanInjectAndGetPropertyMappingConfiguration(): void
+    {
+        $propertyMappingConfiguration = new MvcPropertyMappingConfiguration();
+        $subject = new OutletArgument('test', 'string');
+        $subject->injectPropertyMappingConfiguration($propertyMappingConfiguration);
+        self::assertSame($propertyMappingConfiguration, $subject->getPropertyMappingConfiguration());
     }
 }

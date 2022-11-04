@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\TypeConverterPipe;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\ViewHelpers\Pipe\AbstractPipeViewHelper;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Property\TypeConverter\ArrayConverter;
 
@@ -18,7 +19,6 @@ use TYPO3\CMS\Extbase\Property\TypeConverter\ArrayConverter;
  */
 class TypeConverterViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @dataProvider getTestArguments
      * @param array $arguments
@@ -37,6 +37,8 @@ class TypeConverterViewHelperTest extends AbstractViewHelperTestCase
         return array(
             array(array('typeConverter' => 'Array')),
             array(array('typeConverter' => ArrayConverter::class)),
+            array(array('typeConverter' => new ArrayConverter())),
+            array(array('typeConverter' => ArrayConverter::class, 'direction' => AbstractPipeViewHelper::DIRECTION_IN)),
         );
     }
 

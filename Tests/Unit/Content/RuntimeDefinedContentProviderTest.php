@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleRecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class RuntimeDefinedContentProviderTest extends AbstractTestCase
@@ -31,7 +32,20 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         $this->contentTypeDefinition = $this->getMockBuilder(FluidRenderingContentTypeDefinitionInterface::class)
             ->getMockForAbstractClass();
 
+        AccessibleRecordBasedContentTypeDefinition::setTypes(
+            [
+                $this->getMockBuilder(RecordBasedContentTypeDefinition::class)->disableOriginalConstructor()->getMock()
+            ]
+        );
+
         parent::setUp();
+    }
+
+    protected function tearDown(): void
+    {
+        AccessibleRecordBasedContentTypeDefinition::setTypes([]);
+
+        parent::tearDown();
     }
 
     protected function createInstance(): RuntimeDefinedContentProvider

@@ -105,4 +105,16 @@ class RecursiveArrayUtilityTest extends AbstractTestCase
         $product = RecursiveArrayUtility::mergeRecursiveOverrule($array1, $array2);
         $this->assertSame($expected, $product);
     }
+
+    public function testConvertPathToArray(): void
+    {
+        $result = RecursiveArrayUtility::convertPathToArray('foo.bar.baz');
+        self::assertSame(['foo' => ['bar' => ['baz' => null]]], $result);
+    }
+
+    public function testConvertPathToArrayWithValue(): void
+    {
+        $result = RecursiveArrayUtility::convertPathToArray('foo.bar.baz', ['foo' => 'bar']);
+        self::assertSame(['foo' => ['bar' => ['baz' => ['foo' => 'bar']]]], $result);
+    }
 }

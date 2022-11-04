@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\ViewHelpers;
+namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\OutletViewHelper;
 
 /**
  * OutletViewHelperTest

@@ -122,10 +122,7 @@ class FluxService implements SingletonInterface
         uasort($objects, function ($a, $b) use ($sortBy, $ascending) {
             $a = ObjectAccess::getPropertyPath($a, $sortBy);
             $b = ObjectAccess::getPropertyPath($b, $sortBy);
-            if ($a === $b) {
-                return 0;
-            }
-            return $a < $b ? ($ascending ? -1 : 1) : ($ascending ? 1 : -1);
+            return $ascending ? $a <=> $b : $b <=> $a;
         });
         return $objects;
     }
@@ -174,6 +171,7 @@ class FluxService implements SingletonInterface
      *
      * @deprecated DO NOT USE THIS METHOD! It will hinder performance - and the method will be removed later.
      * @return array
+     * @codeCoverageIgnore
      */
     public function getAllTypoScript()
     {
@@ -291,16 +289,11 @@ class FluxService implements SingletonInterface
      *
      * @deprecated See TemplatePaths object
      * @param string $extensionName
-     * @return array|NULL
+     * @return array|null
      */
     public function getViewConfigurationForExtensionName($extensionName)
     {
-        /** @var TemplatePaths $templatePaths */
-        $templatePaths = GeneralUtility::makeInstance(
-            TemplatePaths::class,
-            ExtensionNamingUtility::getExtensionKey($extensionName)
-        );
-        return $templatePaths->toArray();
+        return $this->createTemplatePaths($extensionName)->toArray();
     }
 
     /**
@@ -463,6 +456,7 @@ class FluxService implements SingletonInterface
 
     /**
      * @return FrontendInterface
+     * @codeCoverageIgnore
      */
     protected function getRuntimeCache()
     {
@@ -477,6 +471,7 @@ class FluxService implements SingletonInterface
 
     /**
      * @return FrontendInterface
+     * @codeCoverageIgnore
      */
     protected function getPersistentCache()
     {
@@ -493,6 +488,9 @@ class FluxService implements SingletonInterface
         return $cache;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function createTemplatePaths(string $registeredExtensionKey): TemplatePaths
     {
         /** @var TemplatePaths $templatePaths */
@@ -505,6 +503,7 @@ class FluxService implements SingletonInterface
 
     /**
      * @return FormDataTransformer
+     * @codeCoverageIgnore
      */
     protected function getFormDataTransformer()
     {
@@ -515,6 +514,7 @@ class FluxService implements SingletonInterface
 
     /**
      * @return FlexFormService|\TYPO3\CMS\Extbase\Service\FlexFormService
+     * @codeCoverageIgnore
      */
     protected function getFlexFormService()
     {
@@ -527,6 +527,9 @@ class FluxService implements SingletonInterface
         return $flexFormService;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getLogger(): LoggerInterface
     {
         /** @var LogManager $logManager */
@@ -534,6 +537,9 @@ class FluxService implements SingletonInterface
         return $logManager->getLogger(__CLASS__);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function resolveAbsolutePathForFilename(string $filename): string
     {
         return GeneralUtility::getFileAbsFileName($filename);

@@ -226,10 +226,81 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertSame('tt_content', $table);
     }
 
+    public function testInitializeActionCallsExpectedMethods(): void
+    {
+        $subject = $this->getMockBuilder(AbstractFluxController::class)
+            ->setMethods(['initializeProvider', 'initializeSettings', 'initializeOverriddenSettings'])
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+        $subject->expects(self::once())->method('initializeProvider');
+        $subject->expects(self::once())->method('initializeSettings');
+        $subject->expects(self::once())->method('initializeOverriddenSettings');
+        $this->callInaccessibleMethod($subject, 'initializeAction');
+    }
+
     /**
      * @test
      */
     public function canPerformSubRenderingWithNotMatchingExtensionName()
+    {
+        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
+        $objectManager->method('get')->willReturn(
+            $this->getMockBuilder(Response::class)->disableOriginalConstructor()->getMock()
+        );
+        $controllerName = $this->getControllerName();
+        $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
+
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+
+        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+            ->setMethods(['fillDefaultsByPackageName'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $renderingContext = $this->getMockBuilder(RenderingContextInterface::class)
+            ->setMethods(['getTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+        $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
+
+        $view = $this->getMockBuilder(TemplateView::class)
+            ->setMethods(['getRenderingContext', 'render'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $view->method('getRenderingContext')->willReturn($renderingContext);
+        $view->method('render')->willReturn('rendered');
+
+        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
+
+        $instance = $this->getMockBuilder($controllerClassName)
+            ->setMethods(['hasSubControllerActionOnForeignController', 'getRecord'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $instance->method('hasSubControllerActionOnForeignController')->willReturn(false);
+        $instance->method('getRecord')->willReturn(['uid' => 123]);
+        $this->setInaccessiblePropertyValue($instance, 'provider', $provider);
+        $this->setInaccessiblePropertyValue($instance, 'extensionName', $this->extensionName);
+        $this->setInaccessiblePropertyValue($instance, 'view', $view);
+        $this->setInaccessiblePropertyValue($instance, 'request', new Request());
+        $instance->injectConfigurationService(new FluxService());
+        $instance->injectConfigurationManager($configurationManager);
+        $instance->injectObjectManager($objectManager);
+
+        $output = $this->callInaccessibleMethod(
+            $instance,
+            'performSubRendering',
+            $this->extensionName,
+            $controllerName,
+            $this->defaultAction,
+            'tx_flux_content'
+        );
+        self::assertSame('rendered', $output);
+    }
+
+    /**
+     * @test
+     */
+    public function canPerformSubRenderingWithWithoutRelay()
     {
         $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
         $objectManager->method('get')->willReturn($this->getMockBuilder(Response::class)->disableOriginalConstructor()->getMock());
@@ -622,5 +693,20 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
             'valid outlet with exception' => [true, true, 'OutletError'],
             'invalid outlet without exception' => [false, false, 'Main'],
         ];
+    }
+
+    public function testGetRecordThrowsExceptionIfContentObjectIsEmpty(): void
+    {
+        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
+            ->getMockForAbstractClass();
+        $configurationManager->method('getContentObject')->willReturn(null);
+        $subject = $this->getMockBuilder(AbstractFluxController::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+        $subject->injectConfigurationManager($configurationManager);
+
+        self::expectExceptionCode(1666538343);
+        $subject->getRecord();
     }
 }

@@ -33,7 +33,7 @@ abstract class AbstractOutlet implements OutletInterface
     /**
      * @var mixed
      */
-    protected $data;
+    protected $data = [];
 
     /**
      * @var ViewInterface
