@@ -8,10 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
-use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\TextNode;
 
 class FieldViewHelperTest extends AbstractFieldViewHelperTestCase
 {

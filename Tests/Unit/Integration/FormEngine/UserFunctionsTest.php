@@ -8,11 +8,28 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\FormEngine;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
+use FluidTYPO3\Flux\Provider\Interfaces\BasicProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class UserFunctionsTest extends AbstractTestCase
 {
+    private ?ProviderResolver $providerResolver;
+
+    protected function setUp(): void
+    {
+        $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
+            ->setMethods(['resolvePrimaryConfigurationProvider'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        parent::setUp();
+    }
+
     /**
      * @param string $method
      * @param array $parameters
@@ -49,5 +66,85 @@ class UserFunctionsTest extends AbstractTestCase
                 false
             ],
         ];
+    }
+
+    public function testFluxFormFieldDisplayConditionWithProvider(): void
+    {
+        $provider = $this->getMockBuilder(FormProviderInterface::class)->getMockForAbstractClass();
+        $provider->method('getForm')->willReturn(
+            Form::create(['fields' => ['test' => ['type' => Form\Field\Input::class]]])
+        );
+        $this->assertFluxFormFieldDisplayConditionReturnValue(true, $provider);
+    }
+
+    public function testFluxFormFieldDisplayConditionWithProviderWithFormWithoutFields(): void
+    {
+        $provider = $this->getMockBuilder(FormProviderInterface::class)->getMockForAbstractClass();
+        $provider->method('getForm')->willReturn(Form::create());
+        $this->assertFluxFormFieldDisplayConditionReturnValue(false, $provider);
+    }
+
+    public function testFluxFormFieldDisplayConditionWithProviderWithoutForm(): void
+    {
+        $provider = $this->getMockBuilder(FormProviderInterface::class)->getMockForAbstractClass();
+        $provider->method('getForm')->willReturn(null);
+        $this->assertFluxFormFieldDisplayConditionReturnValue(false, $provider);
+    }
+
+    public function testFluxFormFieldDisplayConditionWithoutProvider(): void
+    {
+        $this->assertFluxFormFieldDisplayConditionReturnValue(true, null);
+    }
+
+    private function assertFluxFormFieldDisplayConditionReturnValue(
+        bool $expected,
+        ?FormProviderInterface $provider
+    ): void {
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+        $subject = new UserFunctions();
+        $parameters = [
+            'record' => [],
+            'conditionParameters' => [
+                'tt_content',
+                'test',
+            ],
+        ];
+        $parentObject = new \stdClass();
+        self::assertSame($expected, $subject->fluxFormFieldDisplayCondition($parameters, $parentObject));
+    }
+
+    public function testRenderColumnPositionFieldWithExistingColPosValue(): void
+    {
+        $parameters = ['itemFormElValue' => '2', 'itemFormElName' => 'colPos'];
+        $subject = new UserFunctions();
+        $output = $subject->renderColumnPositionField($parameters);
+        self::assertStringContainsString('name="colPos"', $output);
+        self::assertStringContainsString('value="2"', $output);
+    }
+
+    public function testRenderColumnPositionFieldWithoutExistingColPosValue(): void
+    {
+        $parameters = ['itemFormElValue' => '', 'itemFormElName' => 'colPos', 'row' => ['uid' => 'NEW123']];
+        $subject = $this->getMockBuilder(UserFunctions::class)
+            ->setMethods(['determineTakenColumnPositionsWithinParent'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->method('determineTakenColumnPositionsWithinParent')->willReturn([1, 2]);
+        $output = $subject->renderColumnPositionField($parameters);
+        self::assertStringContainsString('name="colPos"', $output);
+        self::assertStringContainsString('data-min-value="0"', $output);
+        self::assertStringContainsString('data-max-value="99"', $output);
+        self::assertStringContainsString('data-taken-values="1,2"', $output);
+    }
+
+    protected function createObjectManagerInstance(): ObjectManagerInterface
+    {
+        $instance = parent::createObjectManagerInstance();
+        $instance->method('get')->willReturnMap(
+            [
+                [ProviderResolver::class, $this->providerResolver],
+            ]
+        );
+        return $instance;
     }
 }

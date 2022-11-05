@@ -45,7 +45,7 @@ class UserFunctions
      */
     public function fluxFormFieldDisplayCondition(array $parameters, &$pObj)
     {
-        list ($table, $field) = $parameters['conditionParameters'];
+        [$table, $field] = $parameters['conditionParameters'];
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ProviderResolver $providerResolver */
@@ -105,34 +105,37 @@ class UserFunctions
                 $inputValue,
                 $inputValue
             );
-        } else {
-            // The field does not yet have a value, which means this is used for a new panel
-            // and we have to fill the fields that will be used by the JavaScript module to
-            // determine the value
-            $rowUid = $parameters['row']['uid'];
-            // Unsaved records may begin with "NEW", make sure we don't have one of those
-            // as we cannot look up anything in the database in that case
-            if (!isset($rowUid) || !is_int($rowUid)) {
-                $rowUid = 0;
-            }
-
-            $minimumColumnPosition = 0;
-            $maximumColumnPosition = ColumnNumberUtility::MULTIPLIER - 1;
-            $takenColumnPositions = $this->determineTakenColumnPositionsWithinParent('tt_content', $rowUid);
-
-            return sprintf(
-                '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" data-min-value="%d" '
-                . 'data-max-value="%d" data-taken-values="%s" />Column position: '
-                . '<strong class="flux-flex-colPos-text"></strong>',
-                $parameters['itemFormElName'],
-                $id,
-                $minimumColumnPosition,
-                $maximumColumnPosition,
-                implode(',', $takenColumnPositions)
-            );
         }
+
+        // The field does not yet have a value, which means this is used for a new panel
+        // and we have to fill the fields that will be used by the JavaScript module to
+        // determine the value
+        $rowUid = $parameters['row']['uid'];
+        // Unsaved records may begin with "NEW", make sure we don't have one of those
+        // as we cannot look up anything in the database in that case
+        if (!isset($rowUid) || !is_int($rowUid)) {
+            $rowUid = 0;
+        }
+
+        $minimumColumnPosition = 0;
+        $maximumColumnPosition = ColumnNumberUtility::MULTIPLIER - 1;
+        $takenColumnPositions = $this->determineTakenColumnPositionsWithinParent('tt_content', $rowUid);
+
+        return sprintf(
+            '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" data-min-value="%d" '
+            . 'data-max-value="%d" data-taken-values="%s" />Column position: '
+            . '<strong class="flux-flex-colPos-text"></strong>',
+            $parameters['itemFormElName'],
+            $id,
+            $minimumColumnPosition,
+            $maximumColumnPosition,
+            implode(',', $takenColumnPositions)
+        );
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function determineTakenColumnPositionsWithinParent(string $table, int $parentUid) : array
     {
         if ($parentUid === 0) {
@@ -155,6 +158,9 @@ class UserFunctions
         }, array_unique(array_column($rows, 'colPos')));
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function translate(string $key, string $extensionName): string
     {
         return LocalizationUtility::translate($key, $extensionName) ?? $key;

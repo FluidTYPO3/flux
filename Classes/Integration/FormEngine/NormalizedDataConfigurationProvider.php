@@ -15,13 +15,13 @@ class NormalizedDataConfigurationProvider implements FormDataProviderInterface
     {
         if ($result['tableName'] === 'flux_field') {
             $fieldValue = &$result['processedTca']['columns']['field_value'];
+            $fieldValue['label'] = $result['databaseRow']['field_label'];
             if (!empty($result['databaseRow']['field_options'])) {
-                $fieldName['config'] = json_decode(
+                $fieldValue['config'] = json_decode(
                     $result['databaseRow']['field_options'],
                     true
                 ) ?? ['type' => 'passthrough'];
             }
-            $fieldValue['label'] = $result['databaseRow']['field_label'];
         }
         return $result;
     }

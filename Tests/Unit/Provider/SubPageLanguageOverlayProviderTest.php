@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\PageLanguageOverlayProvider;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\SubPageLanguageOverlayProvider;
 use FluidTYPO3\Flux\Service\PageService;
