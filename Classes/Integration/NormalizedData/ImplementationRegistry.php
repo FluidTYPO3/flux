@@ -23,7 +23,7 @@ class ImplementationRegistry
     public static function registerImplementation(string $implementationClassName, array $settings = []): void
     {
         foreach (static::$implementations as $implementationData) {
-            list ($registeredClassName, $registeredSettings) = $implementationData;
+            [$registeredClassName, $registeredSettings] = $implementationData;
             if ($registeredClassName === $implementationClassName && $registeredSettings == $settings) {
                 return;
             }
@@ -44,13 +44,9 @@ class ImplementationRegistry
     {
         $implementations = [];
         foreach (static::$implementations as $implementationData) {
+            [$registeredClassName, $registeredSettings] = $implementationData;
             /** @var ImplementationInterface $instance */
-            if (count($implementationData) === 3) {
-                list (, , $instance) = $implementationData;
-            } else {
-                list ($registeredClassName, $registeredSettings) = $implementationData;
-                $instance = GeneralUtility::makeInstance($registeredClassName, $registeredSettings);
-            }
+            $instance = GeneralUtility::makeInstance($registeredClassName, $registeredSettings);
             if ($instance->appliesToTableField($table, $field) && $instance->appliesToRecord($record)) {
                 $implementations[] = $instance;
             }

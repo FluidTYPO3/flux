@@ -99,14 +99,14 @@ class InlineRecordDataConverter implements ConverterInterface
 
             if (empty($sheetData)) {
                 $label = $sheetConfiguration['ROOT']['TCEforms']['sheetTitle'];
-                $sheetData = array(
+                $sheetData = [
                     'pid' => $this->record['pid'],
                     'name' => $sheetName,
                     'sheet_label' => empty($label) ? $sheetName : $label,
                     'source_table' => $this->table,
                     'source_field' => $this->field,
                     'source_uid' => $this->record['uid']
-                );
+                ];
                 $sheetData['uid'] = $this->insertSheetData($sheetData);
             }
             $sheetUid = (int) $sheetData['uid'];
@@ -148,11 +148,14 @@ class InlineRecordDataConverter implements ConverterInterface
 
     protected function assertArrayHasKey(array $array, string $path): bool
     {
-        $segments = GeneralUtility::trimExplode('.', $path);
-        $lastSegment = array_pop($segments);
-        if ($lastSegment === null) {
+        if (empty($array)) {
             return false;
         }
+        $segments = GeneralUtility::trimExplode('.', $path, true);
+        if (count($segments) === 0) {
+            return false;
+        }
+        $lastSegment = array_pop($segments);
         foreach ($segments as $segment) {
             $array = $array[$segment];
         }
@@ -189,32 +192,35 @@ class InlineRecordDataConverter implements ConverterInterface
      * @param array $data
      * @param string $name
      * @param mixed $value
-     * @return void
+     * @return array
      */
-    protected function assignVariableByDottedPath(array &$data, string $name, $value): void
+    protected function assignVariableByDottedPath(array $data, string $name, $value): array
     {
-        if (!strpos($name, '.')) {
-            $data[$name] = $value;
-        } else {
-            $assignIn = &$data;
-            $segments = explode('.', $name);
-            $last = array_pop($segments);
-            foreach ($segments as $segment) {
-                if (!array_key_exists($segment, $assignIn)) {
-                    $assignIn[$segment] = [];
-                }
-                $assignIn = &$assignIn[$segment];
+        $assignIn = &$data;
+        $segments = GeneralUtility::trimExplode('.', $name, true);
+        $last = array_pop($segments);
+        foreach ($segments as $segment) {
+            if (!array_key_exists($segment, $assignIn)) {
+                $assignIn[$segment] = [];
             }
-            $assignIn[$last] = $value;
+            $assignIn = &$assignIn[$segment];
         }
+        $assignIn[$last] = $value;
+        return $data;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function updateFieldData(int $sheetUid, string $fieldName, array $fieldData): void
     {
         $connection = $this->createConnectionForTable('flux_field');
         $connection->update('flux_field', $fieldData, ['sheet' => $sheetUid, 'field_name' => $fieldName]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function insertFieldData(array $fieldData): int
     {
         $connection = $this->createConnectionForTable('flux_field');
@@ -223,6 +229,9 @@ class InlineRecordDataConverter implements ConverterInterface
         return (int) $connection->lastInsertId('flux_field');
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function insertSheetData(array $sheetData): int
     {
         $connection = $this->createConnectionForTable('flux_sheet');
@@ -231,6 +240,9 @@ class InlineRecordDataConverter implements ConverterInterface
         return (int) $connection->lastInsertId('flux_sheet');
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function fetchFieldData(int $uid): array
     {
         $settings = [];
@@ -240,11 +252,18 @@ class InlineRecordDataConverter implements ConverterInterface
             $queryBuilder->expr()->eq('sheet', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT))
         )->execute()->fetchAllAssociative();
         foreach ($result as $fieldRecord) {
-            $this->assignVariableByDottedPath($settings, $fieldRecord['field_name'], $fieldRecord['field_value']);
+            $settings = $this->assignVariableByDottedPath(
+                $settings,
+                $fieldRecord['field_name'],
+                $fieldRecord['field_value']
+            );
         }
         return $settings;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function fetchConfigurationRecords(): array
     {
         $queryBuilder = $this->createQueryBuilderForTable('flux_sheet');
@@ -260,6 +279,9 @@ class InlineRecordDataConverter implements ConverterInterface
         )->execute()->fetchAllAssociative();
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function fetchSheetRecord(string $sheetName): ?array
     {
         $queryBuilder = $this->createQueryBuilderForTable('flux_sheet');
@@ -268,6 +290,9 @@ class InlineRecordDataConverter implements ConverterInterface
         )->execute()->fetchAssociative() ?: null;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function createConnectionForTable(string $table): Connection
     {
         /** @var ConnectionPool $connectionPool */
@@ -275,6 +300,9 @@ class InlineRecordDataConverter implements ConverterInterface
         return $connectionPool->getConnectionForTable($table);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function createQueryBuilderForTable(string $table): QueryBuilder
     {
         return $this->createConnectionForTable($table)->createQueryBuilder();
