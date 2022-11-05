@@ -38,6 +38,7 @@ class NormalizedDataStructureProvider implements FormDataProviderInterface
      * @param string $table
      * @param array $record
      * @return ImplementationInterface[]
+     * @codeCoverageIgnore
      */
     protected function resolveImplementationsForTableField(string $table, string $field, array $record): iterable
     {

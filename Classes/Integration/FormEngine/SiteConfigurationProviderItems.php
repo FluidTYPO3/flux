@@ -40,14 +40,18 @@ class SiteConfigurationProviderItems
                 }
                 $label = (string) $form->getLabel();
                 $identity = $extensionName . '->' . lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
-                try {
-                    $label = LocalizationUtility::translate($label) ?: $identity;
-                } catch (\InvalidArgumentException $error) {
-                    $label = $identity;
-                }
+                $label = $this->translate((string) $label) ?? $identity;
                 $tca['items'][] = [$label, $identity];
             }
         }
         return $tca;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function translate(string $label): ?string
+    {
+        return LocalizationUtility::translate($label);
     }
 }

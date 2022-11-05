@@ -47,10 +47,11 @@ class ProviderProcessor implements FormDataProviderInterface
                     /** @var ContentTypeManager $contentTypeManager */
                     $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
                     $fluidContentTypeNames = (array) $contentTypeManager->fetchContentTypeNames();
-                    foreach ($result['processedTca']['columns']['CType']['config']['items'] as $index => $optionArray) {
+                    $currentItems = $result['processedTca']['columns']['CType']['config']['items'];
+                    foreach ($currentItems as $index => $optionArray) {
                         $contentTypeName = $optionArray[1];
                         if (in_array($contentTypeName, $fluidContentTypeNames, true)
-                            && !in_array($contentTypeName, $enabledContentTypes)
+                            && !in_array($contentTypeName, $enabledContentTypes, true)
                         ) {
                             unset($result['processedTca']['columns']['CType']['config']['items'][$index]);
                         }
@@ -73,6 +74,9 @@ class ProviderProcessor implements FormDataProviderInterface
         return $result;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function loadRecord(string $table, int $uid): array
     {
         /** @var ConnectionPool $connectionPool */
@@ -90,6 +94,7 @@ class ProviderProcessor implements FormDataProviderInterface
 
     /**
      * @return ProviderResolver
+     * @codeCoverageIgnore
      */
     protected function getProviderResolver()
     {
@@ -100,6 +105,7 @@ class ProviderProcessor implements FormDataProviderInterface
 
     /**
      * @return ObjectManagerInterface
+     * @codeCoverageIgnore
      */
     protected function getObjectManager()
     {
