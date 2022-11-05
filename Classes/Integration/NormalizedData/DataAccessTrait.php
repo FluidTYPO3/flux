@@ -12,7 +12,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 trait DataAccessTrait
 {
-
     /**
      * @var ConfigurationManagerInterface;
      */

@@ -64,6 +64,7 @@ abstract class AbstractTestCase extends TestCase
             define('TYPO3_version', '9.5.0');
         }
 
+        $GLOBALS['EXEC_TIME'] = time();
         $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['interceptors'] = [
