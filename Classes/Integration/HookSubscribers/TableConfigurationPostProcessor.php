@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -103,6 +104,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     protected function spoolQueuedContentTypeRegistrations(array $queue)
     {
         $contentTypeBuilder = static::getContentTypeBuilder();
+        $providers = [];
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
             [
@@ -125,10 +127,39 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
                     $controllerActionName
                 );
 
+                $splitContentType = explode('_', $contentType, 2);
+                $pluginName = GeneralUtility::underscoredToUpperCamelCase(end($splitContentType));
+
+                $provider->setPluginName($pluginName);
+
                 Core::registerConfigurationProvider($provider);
 
-                $splitContentType = explode('_', $contentType, 2);
-                $pluginName = $pluginName ?: GeneralUtility::underscoredToUpperCamelCase(end($splitContentType));
+                $providers[] = $provider;
+            } catch (Exception $error) {
+                if (!ContextUtility::getApplicationContext()->isProduction()) {
+                    throw $error;
+                }
+            }
+        }
+
+        $self = $this;
+
+        uasort(
+            $providers,
+            function (ProviderInterface $item1, ProviderInterface $item2) use ($self) {
+                $form1 = $item1->getForm(['CType' => $item1->getContentObjectType()]);
+                $form2 = $item2->getForm(['CType' => $item2->getContentObjectType()]);
+                return $self->resolveSortingValue($form1) <=> $self->resolveSortingValue($form2);
+            }
+        );
+
+        foreach ($providers as $provider) {
+            $contentType = $provider->getContentObjectType();
+            $virtualRecord = ['CType' => $contentType];
+            $providerExtensionName = $provider->getExtensionKey($virtualRecord);
+            $pluginName = $provider->getPluginName();
+
+            try {
                 $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
             } catch (Exception $error) {
                 if (!ContextUtility::getApplicationContext()->isProduction()) {
@@ -136,6 +167,18 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
                 }
             }
         }
+    }
+
+    private function resolveSortingValue(?Form $form): int
+    {
+        if ($form === null) {
+            return 0;
+        }
+        $sortingOptionValue = $form->getOption(Form::OPTION_SORTING);
+        if (!is_scalar($sortingOptionValue)) {
+            return 0;
+        }
+        return (integer) $sortingOptionValue;
     }
 
     protected static function getContentTypeBuilder(): ContentTypeBuilder
