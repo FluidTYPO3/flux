@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;

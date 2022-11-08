@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ContextUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -76,7 +77,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
     {
         $contentTypeBuilder = static::getContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
-            list ($extensionName, $templatePathAndFilename, , $contentType) = $queuedRegistration;
+            [$extensionName, $templatePathAndFilename, , $contentType] = $queuedRegistration;
             $contentType = $contentType ?: static::determineContentType($extensionName, $templatePathAndFilename);
             $contentTypeBuilder->addBoilerplateTableConfiguration($contentType);
         }
@@ -103,6 +104,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function spoolQueuedContentTypeRegistrations(array $queue)
     {
+        $applicationContext = $this->getApplicationContext();
         $contentTypeBuilder = static::getContentTypeBuilder();
         $providers = [];
         foreach ($queue as $queuedRegistration) {
@@ -136,7 +138,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 
                 $providers[] = $provider;
             } catch (Exception $error) {
-                if (!ContextUtility::getApplicationContext()->isProduction()) {
+                if (!$applicationContext->isProduction()) {
                     throw $error;
                 }
             }
@@ -162,7 +164,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
             try {
                 $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
             } catch (Exception $error) {
-                if (!ContextUtility::getApplicationContext()->isProduction()) {
+                if (!$applicationContext->isProduction()) {
                     throw $error;
                 }
             }
@@ -181,6 +183,17 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         return (integer) $sortingOptionValue;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function getApplicationContext(): ApplicationContext
+    {
+        return ContextUtility::getApplicationContext();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
     protected static function getContentTypeBuilder(): ContentTypeBuilder
     {
         if (static::$contentTypeBuilder === null) {
@@ -191,6 +204,9 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         return static::$contentTypeBuilder;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getContentTypeManager(): ContentTypeManager
     {
         /** @var ContentTypeManager $contentTypeManager */

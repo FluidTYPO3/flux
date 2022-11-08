@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\RecordBased;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use Doctrine\DBAL\Exception\TableNotFoundException;
 use FluidTYPO3\Flux\Content\RuntimeDefinedContentProvider;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\SerializeSafeInterface;
@@ -19,8 +18,6 @@ use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Form\Container\Section;
-use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

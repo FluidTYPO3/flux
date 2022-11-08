@@ -14,12 +14,31 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class WizardItemsTest extends AbstractTestCase
 {
+    public function testCreatesInstancesInConstructor(): void
+    {
+        $subject = new WizardItems();
+        self::assertInstanceOf(
+            ObjectManagerInterface::class,
+            $this->getInaccessiblePropertyValue($subject, 'objectManager')
+        );
+        self::assertInstanceOf(
+            FluxService::class,
+            $this->getInaccessiblePropertyValue($subject, 'configurationService')
+        );
+        self::assertInstanceOf(
+            RecordService::class,
+            $this->getInaccessiblePropertyValue($subject, 'recordService')
+        );
+    }
+
     /**
      * @dataProvider getTestElementsWhiteAndBlackListsAndExpectedList
      * @test
@@ -160,5 +179,23 @@ class WizardItemsTest extends AbstractTestCase
         $controller = $this->getMockBuilder(NewContentElementController::class)->setMethods(['init'])->disableOriginalConstructor()->getMock();
         $instance->manipulateWizardItems($items, $controller);
         $this->assertNotEmpty($items);
+    }
+
+    protected function createObjectManagerInstance(): ObjectManagerInterface
+    {
+        $instance = parent::createObjectManagerInstance();
+        $instance->method('get')->willReturnMap(
+            [
+                [
+                    FluxService::class,
+                    $this->getMockBuilder(FluxService::class)->disableOriginalConstructor()->getMock(),
+                ],
+                [
+                    WorkspacesAwareRecordService::class,
+                    $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),
+                ]
+            ]
+        );
+        return $instance;
     }
 }

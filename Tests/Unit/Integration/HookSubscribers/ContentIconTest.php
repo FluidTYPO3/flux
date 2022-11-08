@@ -15,6 +15,8 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -22,6 +24,7 @@ use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
@@ -29,8 +32,21 @@ use TYPO3\CMS\Lang\LanguageService;
  */
 class ContentIconTest extends AbstractTestCase
 {
+    private ?ObjectManagerInterface $objectManager;
+    private ?FluxService $fluxService;
+    private ?CacheManager $cacheManager;
+    private ?FrontendInterface $cache;
+
     protected function setUp(): void
     {
+        $this->cache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
+        $this->fluxService = $this->getMockBuilder(FluxService::class)->disableOriginalConstructor()->getMock();
+        $this->cacheManager = $this->getMockBuilder(CacheManager::class)
+            ->setMethods(['getCache'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->cacheManager->method('getCache')->willReturn($this->cache);
+
         parent::setUp();
 
         // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
@@ -49,6 +65,17 @@ class ContentIconTest extends AbstractTestCase
     protected function tearDown(): void
     {
         GeneralUtility::removeSingletonInstance(IconRegistry::class, GeneralUtility::makeInstance(IconRegistry::class));
+    }
+
+    public function testCreatesInstancesInConstructor(): void
+    {
+        $subject = new ContentIcon();
+        self::assertInstanceOf(FluxService::class, $this->getInaccessiblePropertyValue($subject, 'fluxService'));
+        self::assertInstanceOf(FrontendInterface::class, $this->getInaccessiblePropertyValue($subject, 'cache'));
+        self::assertInstanceOf(
+            ObjectManagerInterface::class,
+            $this->getInaccessiblePropertyValue($subject, 'objectManager')
+        );
     }
 
     /**
@@ -140,5 +167,17 @@ class ContentIconTest extends AbstractTestCase
             'provider with form without icon' => array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon),
             'provider with form with icon' => array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon),
         );
+    }
+
+    protected function createObjectManagerInstance(): ObjectManagerInterface
+    {
+        $instance = parent::createObjectManagerInstance();
+        $instance->method('get')->willReturnMap(
+            [
+                [FluxService::class, $this->fluxService],
+                [CacheManager::class, $this->cacheManager],
+            ]
+        );
+        return $instance;
     }
 }

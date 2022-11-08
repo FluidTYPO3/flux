@@ -158,13 +158,7 @@ class PageLayoutDataProvider
         $options = [];
         if (false === empty($group)) {
             $extensionKey = ExtensionNamingUtility::getExtensionKey($extension);
-            if (false === $this->isExtensionLoaded($extensionKey)) {
-                $groupTitle = ucfirst($extension);
-            } else {
-                $emConfigFile = ExtensionManagementUtility::extPath($extensionKey, 'ext_emconf.php');
-                require $emConfigFile;
-                $groupTitle = reset($EM_CONF)['title'];
-            }
+            $groupTitle = $this->getGroupTitle($extensionKey);
 
             $templateOptions = [];
             foreach ($group as $form) {
@@ -199,6 +193,21 @@ class PageLayoutDataProvider
         $optionValue = $extension . '->' . lcfirst($template);
         $option = [$label, $optionValue, $thumbnail];
         return $option;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function getGroupTitle(string $extensionKey): string
+    {
+        if (false === $this->isExtensionLoaded($extensionKey)) {
+            $groupTitle = ucfirst($extensionKey);
+        } else {
+            $emConfigFile = ExtensionManagementUtility::extPath($extensionKey, 'ext_emconf.php');
+            require $emConfigFile;
+            $groupTitle = reset($EM_CONF)['title'];
+        }
+        return $groupTitle;
     }
 
     /**

@@ -53,6 +53,7 @@ class PagePreviewRenderer
     /**
      * @param integer $uid
      * @return array|null
+     * @codeCoverageIgnore
      */
     protected function getRecord($uid)
     {
