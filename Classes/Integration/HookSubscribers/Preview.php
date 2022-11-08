@@ -44,9 +44,9 @@ class Preview implements PageLayoutViewDrawItemHookInterface
         $providers = $this->getConfigurationService()->resolveConfigurationProviders('tt_content', $fieldName, $row);
         foreach ($providers as $provider) {
             /** @var ProviderInterface $provider */
-            list ($previewHeader, $previewContent, $continueDrawing) = $provider->getPreview($row);
+            [$previewHeader, $previewContent, $continueDrawing] = $provider->getPreview($row);
             if (false === empty($previewHeader)) {
-                $headerContent = $previewHeader . (false === empty($headerContent) ? ': ' . $headerContent : '');
+                $headerContent = $previewHeader . (!empty($headerContent) ? ': ' . $headerContent : '');
                 $drawItem = false;
             }
             if (false === empty($previewContent)) {
@@ -76,6 +76,9 @@ class Preview implements PageLayoutViewDrawItemHookInterface
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getConfigurationService(): FluxService
     {
         /** @var ObjectManagerInterface $objectManager */

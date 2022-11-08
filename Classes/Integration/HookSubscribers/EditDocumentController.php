@@ -9,6 +9,8 @@ class EditDocumentController
 {
     /**
      * Make sure the FluxColPosAssignment JavaScript module is loaded
+     *
+     * @codeCoverageIgnore
      */
     public function requireColumnPositionJavaScript() : void
     {

@@ -173,6 +173,7 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
      * @param string $table
      * @param int $uid
      * @return array|null
+     * @codeCoverageIgnore
      */
     protected function loadRecordFromTable(string $table, int $uid)
     {

@@ -174,7 +174,7 @@ class DataHandlerSubscriber
                     foreach ($fieldArray[$fieldName]['data'] as $sheet) {
                         foreach ($sheet['lDEF'] as $key => $value) {
                             if (strpos($key, '.') !== false) {
-                                list ($possibleTableName, $columnName) = explode('.', $key, 2);
+                                [$possibleTableName, $columnName] = explode('.', $key, 2);
                                 if ($possibleTableName === $table
                                     && isset($GLOBALS['TCA'][$table]['columns'][$columnName])
                                 ) {
@@ -217,7 +217,7 @@ class DataHandlerSubscriber
         $value,
         DataHandler $dataHandler
     ) {
-        list (, $childRecords) = $this->getParentAndRecordsNestedInGrid(
+        [, $childRecords] = $this->getParentAndRecordsNestedInGrid(
             $table,
             (int)$id,
             'uid, pid',
@@ -363,7 +363,7 @@ class DataHandlerSubscriber
             return;
         }
 
-        list ($originalRecord, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
+        [$originalRecord, $recordsToProcess] = $this->getParentAndRecordsNestedInGrid(
             $table,
             (integer) $id,
             'uid, pid, colPos',
@@ -407,7 +407,7 @@ class DataHandlerSubscriber
 
     protected function fetchAllColumnNumbersBeneathParent(int $parentUid): array
     {
-        list (, $recordsToProcess, $bannedColumnNumbers) = $this->getParentAndRecordsNestedInGrid(
+        [, $recordsToProcess, $bannedColumnNumbers] = $this->getParentAndRecordsNestedInGrid(
             'tt_content',
             $parentUid,
             'uid, colPos'
@@ -428,7 +428,7 @@ class DataHandlerSubscriber
     ): array {
         $dataMap = [];
 
-        list (, $recordsToProcess) = $this->getParentAndRecordsNestedInGrid(
+        [, $recordsToProcess] = $this->getParentAndRecordsNestedInGrid(
             $table,
             $parentUid,
             'uid, colPos'
@@ -447,6 +447,9 @@ class DataHandlerSubscriber
         return $dataMap;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getSingleRecordWithRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
     {
         /** @var DeletedRestriction $deletedRestriction */
@@ -461,6 +464,9 @@ class DataHandlerSubscriber
         return $firstResult ?: null;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getSingleRecordWithoutRestrictions(string $table, int $uid, string $fieldsToSelect): ?array
     {
         $queryBuilder = $this->createQueryBuilderForTable($table);
@@ -473,6 +479,9 @@ class DataHandlerSubscriber
         return $firstResult ?: null;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getMostRecentCopyOfRecord(int $uid, string $fieldsToSelect = 'uid'): ?array
     {
         $queryBuilder = $this->createQueryBuilderForTable('tt_content');
@@ -490,6 +499,9 @@ class DataHandlerSubscriber
         return $firstResult ?: null;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getTranslatedVersionOfParentInLanguageOnPage(
         int $languageUid,
         int $pageUid,
@@ -605,6 +617,9 @@ class DataHandlerSubscriber
         ];
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getProviderResolver(): ProviderResolver
     {
         /** @var ObjectManagerInterface $objectManager */
@@ -614,6 +629,9 @@ class DataHandlerSubscriber
         return $providerResolver;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function createQueryBuilderForTable(string $table): QueryBuilder
     {
         /** @var ConnectionPool $connectionPool */
@@ -621,6 +639,9 @@ class DataHandlerSubscriber
         return $connectionPool->getQueryBuilderForTable($table);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function regenerateContentTypes(): void
     {
         /** @var ContentTypeManager $contentTypeManager */

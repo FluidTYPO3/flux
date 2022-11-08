@@ -445,7 +445,10 @@ class Core
 
     protected static function getAbsolutePathForFilename(string $filename): string
     {
-        return GeneralUtility::getFileAbsFileName($filename);
+        if (strpos($filename, '://') !== false) {
+            return $filename;
+        }
+        return realpath($filename) ?: GeneralUtility::getFileAbsFileName($filename);
     }
 
     protected static function getObjectManager(): ObjectManagerInterface

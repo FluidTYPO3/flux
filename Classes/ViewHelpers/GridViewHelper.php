@@ -71,12 +71,10 @@ class GridViewHelper extends AbstractFormViewHelper
     {
         $container = static::getContainerFromRenderingContext($this->renderingContext);
         $viewHelperVariableContainer = $this->renderingContext->getViewHelperVariableContainer();
-        /** @var string|null $extensionName */
-        $extensionName = $container->getExtensionName()
-            ?? static::getExtensionNameFromRenderingContextOrArguments($this->renderingContext, $this->arguments);
+        $extensionName = self::resolveExtensionName($this->renderingContext, $this->arguments);
 
         $grid = static::getGridFromRenderingContext($this->renderingContext, $this->arguments['name']);
-        $grid->setLabel($this->arguments['label']);
+        $grid->setLabel($this->arguments['label'] ?? null);
         $grid->setVariables($this->arguments['variables']);
         $grid->setExtensionName($extensionName);
 
@@ -103,12 +101,10 @@ class GridViewHelper extends AbstractFormViewHelper
     ) {
         $container = static::getContainerFromRenderingContext($renderingContext);
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
-        /** @var string|null $extensionName */
-        $extensionName = $container->getExtensionName()
-            ?? static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
+        $extensionName = self::resolveExtensionName($renderingContext, $arguments);
 
         $grid = static::getGridFromRenderingContext($renderingContext, $arguments['name']);
-        $grid->setLabel($arguments['label']);
+        $grid->setLabel($arguments['label'] ?? null);
         $grid->setVariables($arguments['variables']);
         $grid->setExtensionName($extensionName);
 
@@ -119,5 +115,12 @@ class GridViewHelper extends AbstractFormViewHelper
 
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         static::setContainerInRenderingContext($renderingContext, $container);
+    }
+
+    private static function resolveExtensionName(RenderingContextInterface $renderingContext, array $arguments): string
+    {
+        $container = static::getContainerFromRenderingContext($renderingContext);
+        return $container->getExtensionName()
+            ?? static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
     }
 }

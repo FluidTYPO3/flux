@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\FormEngine;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
-use FluidTYPO3\Flux\Provider\Interfaces\BasicProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;

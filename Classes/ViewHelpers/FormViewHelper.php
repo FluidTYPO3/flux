@@ -76,7 +76,7 @@ class FormViewHelper extends AbstractFormViewHelper
     /**
      * @param RenderingContextInterface $renderingContext
      * @param iterable $arguments
-     * @return Form\FormInterface
+     * @return Form
      */
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
     {
@@ -96,7 +96,7 @@ class FormViewHelper extends AbstractFormViewHelper
     ) {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-        $form = Form::create();
+        $form = static::getComponent($renderingContext, $arguments);
         // configure Form instance
         $form->setId($arguments['id']);
         $form->setName($arguments['id']);
@@ -107,9 +107,6 @@ class FormViewHelper extends AbstractFormViewHelper
         $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);
         $form->setOptions((array) $arguments['options']);
-        if (false === $form->hasOption(Form::OPTION_ICON) && isset($arguments['icon'])) {
-            $form->setOption(Form::OPTION_ICON, $arguments['icon']);
-        }
 
         // rendering child nodes with Form's last sheet as active container
         $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);

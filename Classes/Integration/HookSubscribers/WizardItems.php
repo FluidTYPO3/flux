@@ -77,9 +77,11 @@ class WizardItems implements NewContentElementWizardHookInterface
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->injectObjectManager($objectManager);
+
         /** @var FluxService $configurationService */
         $configurationService = $this->objectManager->get(FluxService::class);
         $this->injectConfigurationService($configurationService);
+
         /** @var WorkspacesAwareRecordService $recordService */
         $recordService = $this->objectManager->get(WorkspacesAwareRecordService::class);
         $this->injectRecordService($recordService);

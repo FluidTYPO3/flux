@@ -307,7 +307,7 @@ class PreviewView extends TemplateView
     }
 
     /**
-     * @return string|NULL
+     * @return string|null
      */
     protected function getCookie()
     {

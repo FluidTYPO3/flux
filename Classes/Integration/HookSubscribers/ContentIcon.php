@@ -209,14 +209,6 @@ class ContentIcon
     }
 
     /**
-     * @return string|NULL
-     */
-    protected function getCookie()
-    {
-        return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
-    }
-
-    /**
      * @param string $table
      * @param array $fields
      * @return string|null
@@ -231,6 +223,18 @@ class ContentIcon
         return null;
     }
 
+    /**
+     * @return string|NULL
+     * @codeCoverageIgnore
+     */
+    protected function getCookie()
+    {
+        return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getIconFactory(): IconFactory
     {
         /** @var IconFactory $iconFactory */

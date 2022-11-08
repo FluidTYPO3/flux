@@ -24,6 +24,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
      *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
+     * @codeCoverageIgnore
      */
     public function getRecordLocalizeSummary(
         ServerRequestInterface $request,
