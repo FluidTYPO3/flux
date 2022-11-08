@@ -107,6 +107,7 @@ class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
                     'from',
                     'where',
                     'expr',
+                    'orderBy',
                     'execute',
                     'createNamedParameter',
                 ]
@@ -116,6 +117,7 @@ class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
         $queryBuilder->method('select')->willReturnSelf();
         $queryBuilder->method('from')->willReturnSelf();
         $queryBuilder->method('where')->willReturnSelf();
+        $queryBuilder->method('orderBy')->willReturnSelf();
         $queryBuilder->method('expr')->willReturn($expressionBuilder);
         $queryBuilder->method('createNamedParameter')->willReturn('"foo"');
         $queryBuilder->method('execute')->willReturn($statement);

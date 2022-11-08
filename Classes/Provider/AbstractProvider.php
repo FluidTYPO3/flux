@@ -111,6 +111,8 @@ class AbstractProvider implements ProviderInterface
      */
     protected $extensionKey = null;
 
+    protected string $pluginName = '';
+
     /**
      * @var string|null
      */
@@ -922,6 +924,15 @@ class AbstractProvider implements ProviderInterface
                 $variable
             ]
         );
+    }
+    public function getPluginName(): string
+    {
+        return $this->pluginName;
+    }
+
+    public function setPluginName(string $pluginName): void
+    {
+        $this->pluginName = $pluginName;
     }
 
     /**

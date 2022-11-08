@@ -35,7 +35,9 @@ class RecordBasedContentTypeDefinitionRepository implements SingletonInterface
                 ->where(
                     $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
                     $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT))
-                )->execute()
+                )
+                ->orderBy('sorting', 'ASC')
+                ->execute()
                 ->fetchAll();
         } catch (TableNotFoundException $exception) {
             $typeRecords = [];
