@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
@@ -216,12 +217,45 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testGetTypoScriptByPath()
     {
-        $service = new FluxService();
-        ;
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->setMethods(array('getConfiguration'))->disableOriginalConstructor()->getMock();
+        $service = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getRuntimeCache'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $service->method('getRuntimeCache')->willReturn(
+            $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass()
+        );
+
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)
+            ->setMethods(array('getConfiguration'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $configurationManager->expects($this->once())->method('getConfiguration')
             ->with(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT)
             ->willReturn(array('plugin.' => array('tx_test.' => array('settings.' => array('test_var' => 'test_val')))));
+        $service->injectConfigurationManager($configurationManager);
+        $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
+        $this->assertEquals(array('test_var' => 'test_val'), $result);
+    }
+
+    /**
+     * @test
+     */
+    public function testGetTypoScriptByPathWhenCacheHasEntry()
+    {
+        $cache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
+        $cache->method('get')->willReturn(['test_var' => 'test_val']);
+
+        $service = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getRuntimeCache'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $service->method('getRuntimeCache')->willReturn($cache);
+
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)
+            ->setMethods(array('getConfiguration'))
+            ->disableOriginalConstructor()
+            ->getMock();
+        $configurationManager->expects($this->never())->method('getConfiguration');
         $service->injectConfigurationManager($configurationManager);
         $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
         $this->assertEquals(array('test_var' => 'test_val'), $result);
