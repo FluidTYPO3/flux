@@ -113,7 +113,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     public function getBackendLayout($identifier, $pageUid)
     {
         $emptyLayout = $this->createBackendLayoutInstance($identifier, 'Empty', '');
-        $record = $this->recordService->getSingle('pages', 'uid', $pageUid);
+        $record = $this->recordService->getSingle('pages', '*', $pageUid);
         if (null === $record) {
             return $emptyLayout;
         }
