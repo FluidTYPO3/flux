@@ -129,7 +129,7 @@ class PageService implements SingletonInterface
                 : $page['tx_fed_page_controller_action_sub'] ?? null;
             $containsSubDefinition = (false !== strpos($page['tx_fed_page_controller_action_sub'] ?? '', '->'));
             $isCandidate = ((integer) ($page['uid'] ?? 0) !== $pageUid);
-            if (true === $containsSubDefinition && true === $isCandidate) {
+            if (true === $containsSubDefinition || true === $isCandidate) {
                 $resolvedSubTemplateIdentity = $page['tx_fed_page_controller_action_sub'] ?? null;
                 if (true === empty($resolvedMainTemplateIdentity)) {
                     // Conditions met: current page is not $pageUid, original page did not
