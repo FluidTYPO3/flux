@@ -149,6 +149,12 @@ class FluxService implements SingletonInterface
      */
     public function getTypoScriptByPath($path)
     {
+        $cache = $this->getRuntimeCache();
+        $cacheId = md5($path);
+        $fromCache = $cache->get($cacheId);
+        if ($fromCache) {
+            return $fromCache;
+        }
         $all = (array) $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
         );
@@ -160,8 +166,9 @@ class FluxService implements SingletonInterface
             }
         }
         if (is_array($value)) {
-            return GeneralUtility::removeDotsFromTS($value);
+            $value = GeneralUtility::removeDotsFromTS($value);
         }
+        $cache->set($cacheId, $value);
         return $value;
     }
 
