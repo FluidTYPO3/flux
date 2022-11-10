@@ -175,7 +175,10 @@ class DynamicFlexForm extends FlexFormTools
         }
         if (count($record) === 1 && isset($record['uid']) && is_numeric($record['uid'])) {
             // The record is a stub, has only "uid" and "uid" is numeric. Reload the full record from DB.
-            $record = BackendUtility::getRecord($identifier['tableName'], (integer) $record['uid'], '*', '', false);
+            $record = $this->loadRecordWithoutRestriction($identifier['tableName'], (integer) $record['uid']);
+        }
+        if (empty($record)) {
+            throw new \UnexpectedValueException('Unable to resolve record for DS processing', 1668011937);
         }
         $fieldName = $identifier['fieldName'];
         $dataStructArray = [];
@@ -208,27 +211,11 @@ class DynamicFlexForm extends FlexFormTools
     }
 
     /**
-     * Method used to ensure that all Closures in the data
-     * structure are evaluated. The returned array is then
-     * serialisation-safe. Closures can occur whenever Flux
-     * fields of certain types are used, for example the
-     * "custom" field type (which generates a Closure that
-     * evaluates the tag content in a deferred manner).
-     *
-     * @param array $dataStructureArray
-     * @param array $parameters
-     * @return array
+     * @codeCoverageIgnore
      */
-    protected function recursivelyEvaluateClosures(array $dataStructureArray, array $parameters)
+    protected function loadRecordWithoutRestriction(string $table, int $uid): ?array
     {
-        foreach ($dataStructureArray as $key => $value) {
-            if ($value instanceof \Closure) {
-                $dataStructureArray[$key] = $value($parameters);
-            } elseif (is_array($value)) {
-                $dataStructureArray[$key] = $this->recursivelyEvaluateClosures($value, $parameters);
-            }
-        }
-        return $dataStructureArray;
+        return BackendUtility::getRecord($table, $uid, '*', '', false);
     }
 
     /**

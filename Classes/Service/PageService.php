@@ -55,6 +55,7 @@ class PageService implements SingletonInterface
     protected $workspacesAwareRecordService;
 
     /**
+     * @codeCoverageIgnore
      * @param ObjectManagerInterface $objectManager
      * @return void
      */
@@ -64,6 +65,7 @@ class PageService implements SingletonInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param ConfigurationManagerInterface $configurationManager
      * @return void
      */
@@ -73,6 +75,7 @@ class PageService implements SingletonInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param FluxService $configurationService
      * @return void
      */
@@ -82,6 +85,7 @@ class PageService implements SingletonInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param WorkspacesAwareRecordService $workspacesAwareRecordService
      * @return void
      */
@@ -256,6 +260,9 @@ class PageService implements SingletonInterface
         return $output;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function createTemplatePaths(string $registeredExtensionKey): TemplatePaths
     {
         /** @var TemplatePaths $templatePaths */
@@ -266,6 +273,9 @@ class PageService implements SingletonInterface
         return $templatePaths;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getLogger(): LoggerInterface
     {
         /** @var LogManager $logManager */
@@ -275,6 +285,7 @@ class PageService implements SingletonInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @return FrontendInterface
      */
     protected function getRuntimeCache()
@@ -284,6 +295,9 @@ class PageService implements SingletonInterface
         return $cacheManager->getCache('cache_runtime');
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getRootLineUtility(int $pageUid): RootlineUtility
     {
         /** @var RootlineUtility $rootLineUtility */

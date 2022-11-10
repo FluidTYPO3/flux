@@ -20,6 +20,7 @@ class AccessibleCore extends Core
     public static function resetQueuedRegistrations(): void
     {
         static::$queuedContentTypeRegistrations = [];
+        static::$extensions = [self::CONTROLLER_ALL => []];
     }
 
     public static function setRegisteredProviders(array $providers): void

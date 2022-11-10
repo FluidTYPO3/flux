@@ -21,6 +21,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RecordServiceTest extends AbstractTestCase
 {
+    protected ?Statement $statement = null;
+
     /**
      * @param array $methods
      * @return RecordService|MockObject
@@ -38,11 +40,10 @@ class RecordServiceTest extends AbstractTestCase
      */
     protected function createAndRegisterMockForQueryBuilder()
     {
-        $statement = $this->getMockBuilder(Statement::class)
+        $this->statement = $this->getMockBuilder(Statement::class)
             ->setMethods(['fetchAll'])
             ->disableOriginalConstructor()
             ->getMock();
-        $statement->method('fetchAll')->willReturn([]);
 
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
             ->setMethods(
@@ -55,6 +56,8 @@ class RecordServiceTest extends AbstractTestCase
                     'groupBy',
                     'delete',
                     'setMaxResults',
+                    'setFirstResult',
+                    'setParameters',
                     'execute',
                     'set',
                 ]
@@ -69,7 +72,9 @@ class RecordServiceTest extends AbstractTestCase
         $queryBuilder->method('groupBy')->willReturnSelf();
         $queryBuilder->method('delete')->willReturnSelf();
         $queryBuilder->method('setMaxResults')->willReturnSelf();
-        $queryBuilder->method('execute')->willReturn($statement);
+        $queryBuilder->method('setFirstResult')->willReturnSelf();
+        $queryBuilder->method('setParameters')->willReturnSelf();
+        $queryBuilder->method('execute')->willReturn($this->statement);
 
         $prophecy = $this->getMockBuilder(ConnectionPool::class)
             ->setMethods(['getQueryBuilderForTable'])
@@ -93,13 +98,15 @@ class RecordServiceTest extends AbstractTestCase
         $groupBy = 'foo';
         $orderBy = 'bar';
         $limit = 60;
+        $offset = 10;
         $mock = $this->getMockServiceInstance();
 
         $this->createAndRegisterMockForQueryBuilder();
+        $this->statement->method('fetchAll')->willReturn([]);
 
         $this->assertSame(
             [],
-            $mock->get($table, $fields, $clause, $groupBy, $orderBy, $limit)
+            $mock->get($table, $fields, $clause, $groupBy, $orderBy, $limit, $offset)
         );
     }
 
@@ -167,6 +174,17 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->assertTrue(
             $mock->delete($table, $record)
+        );
+    }
+
+    public function testPreparedGet(): void
+    {
+        $mock = $this->getMockServiceInstance();
+        $this->createAndRegisterMockForQueryBuilder();
+        $this->statement->method('fetchAll')->willReturn([]);
+        self::assertSame(
+            [],
+            $mock->preparedGet('table', 'fields', 'test = 1')
         );
     }
 }
