@@ -44,18 +44,39 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest
         unset($GLOBALS['BE_USER']);
     }
 
+    public function testGetSinglePerformsOverlay(): void
+    {
+        $table = 'test';
+        $fields = 'a,b';
+        $uid = 123;
+        $mock = $this->getMockServiceInstance(['hasWorkspacesSupport', 'overlayRecordInternal']);
+        $mock->expects(self::once())->method('hasWorkspacesSupport')->willReturn(true);
+        $mock->expects(self::once())
+            ->method('overlayRecordInternal')
+            ->with($table, ['uid' => $uid])
+            ->willReturn(['uid' => 456]);
+
+        $this->createAndRegisterMockForQueryBuilder();
+
+        $this->statement->method('fetchAll')->willReturn([['uid' => $uid]]);
+
+        $mock->getSingle($table, $fields, $uid);
+    }
+
     /**
      * @test
      */
     public function overlayRecordsCallsExpectedMethodSequence()
     {
         $mock = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(array('hasWorkspacesSupport', 'overlayRecord'))
+            ->setMethods(array('hasWorkspacesSupport', 'overlayRecordInternal'))
             ->getMock();
         $mock->expects($this->once())->method('hasWorkspacesSupport')->will($this->returnValue(true));
-        $mock->expects($this->exactly(2))->method('overlayRecord')->will($this->returnValue(array('foo')));
+        $mock->expects($this->exactly(2))
+            ->method('overlayRecordInternal')
+            ->willReturnOnConsecutiveCalls($this->returnValue(array('foo')), false);
         $records = array(array(), array());
-        $expected = array(array('foo'), array('foo'));
+        $expected = array(array('foo'));
         $result = $this->callInaccessibleMethod($mock, 'overlayRecords', 'table', $records);
         $this->assertEquals($expected, $result);
     }

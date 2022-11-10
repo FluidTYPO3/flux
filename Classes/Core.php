@@ -66,7 +66,7 @@ class Core
      * Contains all extensions registered with Flux
      * @var array
      */
-    private static $extensions = [
+    protected static $extensions = [
         self::CONTROLLER_ALL => []
     ];
 

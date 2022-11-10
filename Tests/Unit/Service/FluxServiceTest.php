@@ -10,10 +10,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
@@ -137,6 +140,96 @@ class FluxServiceTest extends AbstractTestCase
             array(0),
             array(array()),
         );
+    }
+
+    public function testGetPageConfigurationReturnsEmptyArrayOnInvalidPlugAndPlayDirectorySetting(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
+            = ['foo'];
+
+        $instance = new FluxService();
+
+        $result = $instance->getPageConfiguration('Flux');
+        unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
+
+        self::assertEquals([], $result);
+    }
+
+    public function testGetPageConfigurationReturnsExpectedArrayOnPlugAndPlayDirectorySetting(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
+            = './';
+
+        $instance = new FluxService();
+
+        $result = $instance->getPageConfiguration('Flux');
+        unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
+
+        self::assertEquals(
+            [
+                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => ['/Templates/Page/'],
+                TemplatePaths::CONFIG_PARTIALROOTPATHS => ['/Partials/'],
+                TemplatePaths::CONFIG_LAYOUTROOTPATHS => ['/Layouts/'],
+            ],
+            $result
+        );
+    }
+
+    public function testGetPageConfigurationReturnsExpectedArrayOnPlugAndPlayDirectorySettingWithForeignExt(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
+            = './';
+
+        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+            ->setMethods(['toArray'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $templatePaths->method('toArray')->willReturn(['foo' => 'bar']);
+
+        $instance = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['createTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $instance->method('createTemplatePaths')->willReturn($templatePaths);
+
+        Core::registerProviderExtensionKey('FluidTYPO3.Testing', 'Page');
+        $result = $instance->getPageConfiguration(null);
+        unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
+        AccessibleCore::resetQueuedRegistrations();
+
+        self::assertEquals(
+            [
+                'FluidTYPO3.Testing' => ['foo' => 'bar'],
+                'FluidTYPO3.Flux' => [
+                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => ['/Templates/Page/'],
+                    TemplatePaths::CONFIG_PARTIALROOTPATHS => ['/Partials/'],
+                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => ['/Layouts/'],
+                ],
+            ],
+            $result
+        );
+    }
+
+    public function testGetPageConfigurationReturnsDefaultTemplatePaths(): void
+    {
+        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+            ->setMethods(['toArray'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $templatePaths->method('toArray')->willReturn(['foo' => 'bar']);
+
+        $instance = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['createTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $instance->method('createTemplatePaths')->willReturn($templatePaths);
+
+        $result = $instance->getPageConfiguration('Flux');
+
+        self::assertEquals(['foo' => 'bar'], $result);
     }
 
     /**
@@ -307,5 +400,110 @@ class FluxServiceTest extends AbstractTestCase
             array('', $form, '', '', array()),
             array(Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD, $form, '', '', array('settings' => array('input' => 0)))
         );
+    }
+
+    public function testConvertFlexFormContentToArrayWithTransform(): void
+    {
+        $expected = [
+            'foo' => 'bar',
+        ];
+
+        $flexFormContent = 'abc';
+        $languagePointer = null;
+        $valuePointer = null;
+
+        $form = Form::create();
+        $form->setOption(Form::OPTION_TRANSFORM, true);
+
+        /** @var class-string $serviceClassName */
+        $serviceClassName = class_exists(FlexFormService::class)
+            ? FlexFormService::class
+            : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
+        $flexFormService = $this->getMockBuilder($serviceClassName)
+            ->setMethods(['convertFlexFormContentToArray'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
+
+        $dataTransformer = $this->getMockBuilder(Form\Transformation\FormDataTransformer::class)
+            ->setMethods(['transformAccordingToConfiguration'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dataTransformer->method('transformAccordingToConfiguration')->willReturnArgument(0);
+
+        $instance = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getFlexFormService', 'getFormDataTransformer'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $instance->method('getFlexFormService')->willReturn($flexFormService);
+        $instance->method('getFormDataTransformer')->willReturn($dataTransformer);
+
+        $result = $instance->convertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer);
+        $this->assertEquals($expected, $result);
+    }
+
+
+    public function testResolveConfigurationProviders(): void
+    {
+        $subject = new FluxService();
+        $resolver = $this->getMockBuilder(ProviderResolver::class)
+            ->setMethods(['resolveConfigurationProviders'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $resolver->expects(self::once())
+            ->method('resolveConfigurationProviders')
+            ->with('table', 'field', ['uid' => 123], 'ext', [GridProviderInterface::class]);
+
+        $subject->injectProviderResolver($resolver);
+        $subject->resolveConfigurationProviders(
+            'table',
+            'field',
+            ['uid' => 123],
+            'ext',
+            [GridProviderInterface::class]
+        );
+    }
+
+    public function testSetInCaches(): void
+    {
+        $runtimeCache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
+        $persistentCache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
+
+        $runtimeCache->expects(self::once())->method('set')->with('flux-ec10e0c7a344da191700ab4ace1a5e26', 'foobar');
+        $persistentCache->expects(self::once())->method('set')->with('flux-ec10e0c7a344da191700ab4ace1a5e26', 'foobar');
+
+        $subject = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getRuntimeCache', 'getPersistentCache'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->method('getRuntimeCache')->willReturn($runtimeCache);
+        $subject->method('getPersistentCache')->willReturn($persistentCache);
+
+        $subject->setInCaches('foobar', true, 'a', 'b', 'c');
+    }
+
+    public function testGetFromCaches(): void
+    {
+        $runtimeCache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
+        $persistentCache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
+
+        $runtimeCache->expects(self::once())
+            ->method('get')
+            ->with('flux-ec10e0c7a344da191700ab4ace1a5e26')
+            ->willReturn(false);
+        $persistentCache->expects(self::once())
+            ->method('get')
+            ->with('flux-ec10e0c7a344da191700ab4ace1a5e26')
+            ->willReturn('foobar');
+
+        $subject = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getRuntimeCache', 'getPersistentCache'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->method('getRuntimeCache')->willReturn($runtimeCache);
+        $subject->method('getPersistentCache')->willReturn($persistentCache);
+
+        $output = $subject->getFromCaches('a', 'b', 'c');
+        self::assertSame('foobar', $output);
     }
 }

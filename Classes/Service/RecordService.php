@@ -139,6 +139,7 @@ class RecordService implements SingletonInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param QueryBuilder $queryBuilder
      * @return void
      */
@@ -147,7 +148,7 @@ class RecordService implements SingletonInterface
         if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE) {
             if ((bool)($GLOBALS['TSFE']->fePreview ?? false)) {
                 // check if running TYPO3 version >= 9
-                if (class_exists('\\TYPO3\\CMS\\Core\\Context\\VisibilityAspect')) {
+                if (class_exists(VisibilityAspect::class)) {
                     $context = new Context();
                     $visibility = new VisibilityAspect(true, true);
                     $context->setAspect('visibility', $visibility);

@@ -138,7 +138,7 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     protected function addColPosListLayoutItems($pageId, $items)
     {
         $layout = $this->getSelectedBackendLayout($pageId);
-        if ($layout && $layout['__items']) {
+        if (isset($layout, $layout['__items'])) {
             $items = $layout['__items'];
         }
         if ($this->addingItemsForContent) {

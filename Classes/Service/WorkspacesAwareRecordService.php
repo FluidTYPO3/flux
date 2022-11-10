@@ -45,10 +45,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     {
         $record = parent::getSingle($table, $fields, $uid);
         if ($record) {
-            $overlay = $this->overlayRecord($table, $record);
-            if ($overlay) {
-                return (array) $overlay;
-            }
+            return $this->overlayRecord($table, $record);
         }
         return $record;
     }
@@ -77,7 +74,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
             return $records;
         }
         foreach ($records as $index => $record) {
-            $overlay = $this->overlayRecord($table, $record);
+            $overlay = $this->overlayRecordInternal($table, $record);
             if (!$overlay) {
                 unset($records[$index]);
             } else {
@@ -90,18 +87,17 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     /**
      * @param string $table
      * @param array $record
-     * @return array|boolean
+     * @return array
      */
     protected function overlayRecord($table, array $record)
     {
-        $enabled = $this->hasWorkspacesSupport($table);
-        return (true === $enabled) ? $this->getWorkspaceVersionOfRecordOrRecordItself($table, $record) : $record;
+        return $this->getWorkspaceVersionOfRecordOrRecordItself($table, $record) ?: $record;
     }
 
     /**
      * @param string $table
      * @param array $record
-     * @return array|boolean
+     * @return array
      */
     protected function getWorkspaceVersionOfRecordOrRecordItself($table, $record)
     {
@@ -109,9 +105,6 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         if ($this->hasWorkspacesSupport($table)) {
             $copy = $record;
             $this->overlayRecordInternal($table, $copy);
-            if (!$copy) {
-                return false;
-            }
         }
         return $copy === false ? $record : $copy;
     }
@@ -133,6 +126,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
      * @param string $table
      * @param array $copy
      * @return array|false
+     * @codeCoverageIgnore
      */
     protected function overlayRecordInternal(string $table, array $copy)
     {
