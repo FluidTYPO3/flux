@@ -67,7 +67,7 @@ The crop configuration can now be passed to the image viewhelper:
 
     <f:section name="Main">
       <f:for each="{v:content.resources.fal(field: 'settings.slides')}" as="image" iteration="iterator">
-        <f:image src="{image.id}" height="300" class="leb-pic" crop="{image.crop}" cropVariant="default"/>
+        <f:image src="{image.uid}" height="300" class="leb-pic" crop="{image.crop}" cropVariant="default"/>
       </f:for>
     </f:section>
 
@@ -75,13 +75,13 @@ Rendering the image
 -------------------
 
     {v:content.resources.fal(field: 'settings.image') -> v:iterator.first() -> v:variable.set(name: 'image')}
-    <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
+    <f:image treatIdAsReference="1" src="{image.uid}" title="{image.title}" alt="{image.alternative}"/><br/>
 
 Rendering multiple images
 -------------------------
 
     <f:for each="{v:content.resources.fal(field: 'settings.image')}" as="image">
-        <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
+        <f:image treatIdAsReference="1" src="{image.uid}" title="{image.title}" alt="{image.alternative}"/><br/>
     </f:for>
 
 Arguments
