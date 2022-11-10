@@ -20,6 +20,21 @@ use TYPO3\CMS\Backend\Controller\PageLayoutController;
  */
 class PagePreviewRendererTest extends AbstractTestCase
 {
+    public function testRenderWithoutRecordReturnsEmptyString(): void
+    {
+        $subject = $this->getMockBuilder(PagePreviewRenderer::class)
+            ->setMethods(['getPageProvider', 'getRecord'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->method('getPageProvider')->willReturn(null);
+        $subject->method('getRecord')->willReturn(null);
+
+        $pageLayoutController = $this->getMockBuilder(PageLayoutController::class)->disableOriginalConstructor()->getMock();
+
+        $result = $subject->render([], $pageLayoutController);
+        self::assertSame('', $result);
+    }
+
     /**
      * @param ProviderInterface $provider
      * @param string $expected

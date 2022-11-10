@@ -66,6 +66,7 @@ class FluxService implements SingletonInterface
     protected $resourceFactory;
 
     /**
+     * @codeCoverageIgnore
      * @param ConfigurationManagerInterface $configurationManager
      * @return void
      */
@@ -75,6 +76,7 @@ class FluxService implements SingletonInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param ObjectManagerInterface $objectManager
      * @return void
      */
@@ -84,6 +86,7 @@ class FluxService implements SingletonInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param ProviderResolver $providerResolver
      * @return void
      */
@@ -93,6 +96,7 @@ class FluxService implements SingletonInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param WorkspacesAwareRecordService $recordService
      * @return void
      */
@@ -102,6 +106,7 @@ class FluxService implements SingletonInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @param ResourceFactory $resourceFactory
      * @return void
      */
@@ -297,6 +302,7 @@ class FluxService implements SingletonInterface
      * @deprecated See TemplatePaths object
      * @param string $extensionName
      * @return array|null
+     * @codeCoverageIgnore
      */
     public function getViewConfigurationForExtensionName($extensionName)
     {
@@ -423,7 +429,9 @@ class FluxService implements SingletonInterface
                 $configurations['FluidTYPO3.Flux'] ?? [],
                 [
                     TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [
-                        $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::TEMPLATES_DIRECTORY
+                        $plugAndPlayTemplatesDirectory
+                        . DropInContentTypeDefinition::TEMPLATES_DIRECTORY
+                        . DropInContentTypeDefinition::PAGE_DIRECTORY
                     ],
                     TemplatePaths::CONFIG_PARTIALROOTPATHS => [
                         $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY

@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -70,11 +69,6 @@ class PreviewView extends TemplateView
     protected $workspacesAwareRecordService;
 
     /**
-     * @var RecordService
-     */
-    protected $recordService;
-
-    /**
      * @param ConfigurationManagerInterface $configurationManager
      * @return void
      */
@@ -102,15 +96,6 @@ class PreviewView extends TemplateView
     }
 
     /**
-     * @param RecordService $recordService
-     * @return void
-     */
-    public function injectRecordService(RecordService $recordService)
-    {
-        $this->recordService = $recordService;
-    }
-
-    /**
      * @param ProviderInterface $provider
      * @param array $row
      * @return string
@@ -128,7 +113,7 @@ class PreviewView extends TemplateView
 
         $gridContent = $this->renderGrid($provider, $row, $form);
         $collapsedClass = '';
-        if (in_array($row['uid'], (array) json_decode((string) ($_COOKIE['fluxCollapseStates'] ?? '')))) {
+        if (in_array($row['uid'], (array) json_decode($this->getCookie() ?? ''))) {
             $collapsedClass = ' flux-grid-hidden';
         }
         $gridContent = sprintf(
@@ -197,7 +182,7 @@ class PreviewView extends TemplateView
      * @param ProviderInterface $provider
      * @param array $row
      * @param Form $form
-     * @return string|NULL
+     * @return string|null
      */
     protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null)
     {
@@ -219,12 +204,13 @@ class PreviewView extends TemplateView
             $variables['label'] = $label;
         }
 
-        $this->getRenderingContext()->setControllerName($provider->getControllerNameFromRecord($row));
-        $this->getRenderingContext()->setControllerAction($provider->getControllerActionFromRecord($row));
-        $this->getRenderingContext()->getTemplatePaths()->fillDefaultsByPackageName(
+        $renderingContext = $this->getRenderingContext();
+        $renderingContext->setControllerName($provider->getControllerNameFromRecord($row));
+        $renderingContext->setControllerAction($provider->getControllerActionFromRecord($row));
+        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
             ExtensionNamingUtility::getExtensionKey($extensionKey)
         );
-        $this->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
+        $renderingContext->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
         return $this->renderSection('Preview', $variables, true);
     }
 
@@ -292,22 +278,8 @@ class PreviewView extends TemplateView
     }
 
     /**
-     * @param array $row
-     * @return string
-     */
-    protected function isRowCollapsed(array $row)
-    {
-        $collapsed = false;
-        $cookie = $this->getCookie();
-        if (null !== $_COOKIE) {
-            $cookie = json_decode(urldecode($cookie));
-            $collapsed = in_array($row['uid'], (array) $cookie);
-        }
-        return $collapsed;
-    }
-
-    /**
      * @return string|null
+     * @codeCoverageIgnore
      */
     protected function getCookie()
     {
