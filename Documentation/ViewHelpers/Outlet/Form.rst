@@ -121,7 +121,7 @@ extensionName
 :aspect:`Required`
    false
 :aspect:`Description`
-   Target Extension Name (without "tx_" prefix and no underscores). If NULL the current extension name is used
+   Target Extension Name (without `tx_` prefix and no underscores). If NULL the current extension name is used
 
 .. _outlet.form_pluginname:
 
