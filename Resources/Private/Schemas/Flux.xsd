@@ -4411,7 +4411,7 @@ your "ContentController", "PageController" etc.
       </xsd:attribute>
       <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
         <xsd:annotation>
-          <xsd:documentation><![CDATA[Target Extension Name (without "tx_" prefix and no underscores). If NULL the current extension name is used]]></xsd:documentation>
+          <xsd:documentation><![CDATA[Target Extension Name (without `tx_` prefix and no underscores). If NULL the current extension name is used]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:string" name="pluginName" default="NULL">
