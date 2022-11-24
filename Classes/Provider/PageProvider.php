@@ -399,7 +399,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $name = $field->getName();
         $inherit = (boolean) $field->getInherit();
         $inheritEmpty = (boolean) $field->getInheritEmpty();
-        $empty = (true === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
+        $empty = !isset($values[$name]) || (true === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
         if (false === $inherit || (true === $inheritEmpty && true === $empty)) {
             unset($values[$name]);
         }
