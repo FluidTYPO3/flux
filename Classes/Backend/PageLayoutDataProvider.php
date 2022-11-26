@@ -119,7 +119,7 @@ class PageLayoutDataProvider
 
         $allowedTemplates = [];
         $pageUid = (int) ($parameters['row']['uid'] ?? 0);
-        if ($pageUid > 0 && class_exists(SiteFinder::class)) {
+        if ($pageUid > 0) {
             /** @var SiteFinder $resolver */
             $resolver = GeneralUtility::makeInstance(SiteFinder::class);
             try {

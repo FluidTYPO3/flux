@@ -26,7 +26,7 @@ class ProviderProcessor implements FormDataProviderInterface
         if (!isset($result['databaseRow'])) {
             throw new \UnexpectedValueException('Input data requires a "databaseRow" property', 1666816552);
         }
-        if (class_exists(SiteFinder::class) && $result['tableName'] === 'tt_content') {
+        if ($result['tableName'] === 'tt_content') {
             $pageUid = $result['parentPageRow']['uid'];
             if ($pageUid > 0) {
                 /** @var SiteFinder $siteFinder */

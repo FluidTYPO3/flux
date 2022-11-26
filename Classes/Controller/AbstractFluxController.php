@@ -451,14 +451,6 @@ abstract class AbstractFluxController extends ActionController
             $response = $this->objectManager->get(Response::class);
         }
 
-        if (class_exists(Typo3Version::class)) {
-            /** @var Typo3Version $versionClass */
-            $versionClass = GeneralUtility::makeInstance(Typo3Version::class);
-            $version = $versionClass->getVersion();
-        } else {
-            $version = ExtensionManagementUtility::getExtensionVersion('core');
-        }
-
         try {
             HookHandler::trigger(
                 HookHandler::CONTROLLER_BEFORE_REQUEST,
@@ -471,8 +463,11 @@ abstract class AbstractFluxController extends ActionController
                 ]
             );
 
-            /** @var Response $response */
-            $response = $potentialControllerInstance->processRequest($this->request, $response);
+            /** @var Response|null $responseFromCall */
+            $responseFromCall = $potentialControllerInstance->processRequest($this->request, $response);
+            if ($responseFromCall) {
+                $response = $responseFromCall;
+            }
         } catch (StopActionException $error) {
             // intentionally left blank
         }

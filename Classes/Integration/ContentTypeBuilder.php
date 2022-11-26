@@ -27,7 +27,6 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
@@ -313,13 +312,6 @@ class ContentTypeBuilder
             return;
         }
 
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '10.4', '<')) {
-            $itemsTca = $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'];
-            $contentTypeGroupOption = [$extensionName, '--div--', null, $extensionName];
-            if (array_search($contentTypeGroupOption, $itemsTca, true) === false) {
-                $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'][] = $contentTypeGroupOption;
-            }
-        }
         ExtensionUtility::registerPlugin(
             $this->getExtensionIdentityForPluginRegistration($extensionName),
             $this->getPluginNamePartFromContentType($contentType),
@@ -389,39 +381,19 @@ class ContentTypeBuilder
 
     private function getExtensionIdentityForPluginRegistration(string $extensionIdentity): string
     {
-        if (version_compare($this->getCoreVersion(), '10.4', '>=')) {
-            if (($dotPosition = strpos($extensionIdentity, '.'))) {
-                $extensionIdentity = substr($extensionIdentity, $dotPosition + 1);
-            }
+        if (($dotPosition = strpos($extensionIdentity, '.'))) {
+            $extensionIdentity = substr($extensionIdentity, $dotPosition + 1);
         }
         return $extensionIdentity;
     }
 
     private function getControllerNameForPluginRegistration(string $controllerClassName): string
     {
-        if (version_compare($this->getCoreVersion(), '10.4', '>=')) {
-            return $controllerClassName;
-        }
-        return substr($controllerClassName, strrpos($controllerClassName, '\\') + 1, -10);
+        return $controllerClassName;
     }
 
     private function getPluginNamePartFromContentType(string $contentType): string
     {
         return GeneralUtility::underscoredToUpperCamelCase(substr($contentType, strpos($contentType, '_') + 1));
-    }
-
-    private function getCoreVersion(): string
-    {
-        static $version;
-        if (!isset($version)) {
-            if (class_exists(Typo3Version::class)) {
-                /** @var Typo3Version $versionClass */
-                $versionClass = GeneralUtility::makeInstance(Typo3Version::class);
-                $version = $versionClass->getVersion();
-            } else {
-                $version = ExtensionManagementUtility::getExtensionVersion('core');
-            }
-        }
-        return $version;
     }
 }

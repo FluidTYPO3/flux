@@ -310,63 +310,39 @@ class PreviewView extends TemplateView
         $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0 ? $row['l18n_parent'] : ($row['t3ver_oid'] ?: $row['uid']);
 
         $backendLayout = $provider->getGrid($row)->buildBackendLayout($parentRecordUid);
-        if (method_exists($backendLayout, 'getStructure')) {
-            // TYPO3 10.4+
-            $layoutConfiguration = $backendLayout->getStructure();
-        } elseif (method_exists($backendLayout, 'getConfigurationArray')) {
-            // TYPO3 10.3
-            $layoutConfiguration = $backendLayout->getConfigurationArray();
-        } else {
-            // TYPO3 < 10.3
-            $layoutConfiguration = $provider->getGrid($row)->buildExtendedBackendLayoutArray($parentRecordUid);
-        }
+        $layoutConfiguration = $backendLayout->getStructure();
 
-        $fluidBasedLayoutFeatureEnabled = class_exists(Features::class)
-            && GeneralUtility::makeInstance(Features::class)->isFeatureEnabled('fluidBasedPageModule');
+        $fluidBasedLayoutFeatureEnabled = GeneralUtility::makeInstance(Features::class)
+            ->isFeatureEnabled('fluidBasedPageModule');
 
         if ($fluidBasedLayoutFeatureEnabled) {
-            if (class_exists(PageLayoutContext::class)) {
-                // TYPO3 10.4+
-                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-                $site = $siteFinder->getSiteByPageId($pageId);
-                $language = null;
-                if ($row['sys_language_uid'] >= 0) {
-                    $language = $site->getLanguageById((int) $row['sys_language_uid']);
-                }
-                
-                $context = GeneralUtility::makeInstance(
-                    PageLayoutContext::class,
-                    BackendUtility::getRecord('pages', $pageId),
-                    $backendLayout
-                );
-                if (isset($language)) {
-                     $context = $context->cloneForLanguage($language);
-                }
-
-                $configuration = $context->getDrawingConfiguration();
-                $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
-                
-                if (isset($language)) {
-                    $configuration->setSelectedLanguageId($language->getLanguageId());
-                }
-
-                return GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
-            } else {
-                // TYPO3 10.3
-                $configuration = $backendLayout->getDrawingConfiguration();
-
-                $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
-                $configuration->setPageId($pageId);
-                $configuration->setLanguageColumnsPointer((int) $row['sys_language_uid']);
-
-                return $backendLayout->getBackendLayoutRenderer();
+            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+            $site = $siteFinder->getSiteByPageId($pageId);
+            $language = null;
+            if ($row['sys_language_uid'] >= 0) {
+                $language = $site->getLanguageById((int) $row['sys_language_uid']);
             }
+
+            $context = GeneralUtility::makeInstance(
+                PageLayoutContext::class,
+                BackendUtility::getRecord('pages', $pageId),
+                $backendLayout
+            );
+            if (isset($language)) {
+                 $context = $context->cloneForLanguage($language);
+            }
+
+            $configuration = $context->getDrawingConfiguration();
+            $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
+
+            if (isset($language)) {
+                $configuration->setSelectedLanguageId($language->getLanguageId());
+            }
+
+            return GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
         }
 
-        $eventDispatcher = null;
-        if (class_exists(EventDispatcher::class)) {
-            $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
-        }
+        $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
 
         /** @var PageLayoutView $view */
         $view = GeneralUtility::makeInstance(PageLayoutView::class, $eventDispatcher);

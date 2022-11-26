@@ -33,9 +33,6 @@
 			<trans-unit id="extension_configuration.pageIntegration">
 				<source>Page Integration: If enabled, Flux will integrate with pages to make templates you place in the "Pages" template folder selectable in page properties (the features previously provided by the "Fluidpages" extension). You must flush system caches after changing this option!</source>
 			</trans-unit>
-			<trans-unit id="extension_configuration.pagesLanguageConfigurationOverlay">
-				<source>Translation: Enable translation of Page Configuration through the Pages Language Overlays.</source>
-			</trans-unit>
 			<trans-unit id="extension_configuration.flexFormToIrre">
 				<source>EXPERIMENTAL - FlexForm-to-IRRE: FlexForm XML to IRRE storage. WARNING - destroys existing FlexForm data in DB when saving records! Enabling this option makes Flux capable of storing FlexForm XML data structures as normalized IRRE records. By using the DataAccessTrait, classes such as controllers can read out the data in an array structure compatible with vanilla FlexForm data.</source>
 			</trans-unit>

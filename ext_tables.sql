@@ -9,14 +9,6 @@ CREATE TABLE pages (
 );
 
 #
-# Table structure for table 'pages_language_overlay'
-#
-CREATE TABLE pages_language_overlay (
-	tx_fed_page_flexform text,
-	tx_fed_page_flexform_sub text
-);
-
-#
 # Table structure for table 'tt_content'
 #
 CREATE TABLE tt_content (

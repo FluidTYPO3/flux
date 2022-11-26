@@ -528,17 +528,13 @@ class FluxService implements SingletonInterface
     }
 
     /**
-     * @return FlexFormService|\TYPO3\CMS\Extbase\Service\FlexFormService
+     * @return FlexFormService
      * @codeCoverageIgnore
      */
     protected function getFlexFormService()
     {
-        /** @var class-string $serviceClassName */
-        $serviceClassName = class_exists(FlexFormService::class)
-            ? FlexFormService::class
-            : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
-        /** @var FlexFormService|\TYPO3\CMS\Extbase\Service\FlexFormService $flexFormService */
-        $flexFormService = $this->objectManager->get($serviceClassName);
+        /** @var FlexFormService $flexFormService */
+        $flexFormService = $this->objectManager->get(FlexFormService::class);
         return $flexFormService;
     }
 
