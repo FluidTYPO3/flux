@@ -195,17 +195,10 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
             $body = $data;
         }
         $message = new MailMessage();
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '10.4', '>=')) {
-            $message->html($body);
-            $message->subject($subject);
-            $message->from(($senderName ?? $senderAddress) . ' <' . $senderAddress . '>');
-            $message->to(($recipientName ?? $recipientAddress) . ' <' . $recipientAddress . '>');
-        } else {
-            $message->setBody($body);
-            $message->setSubject($subject);
-            $message->setFrom($senderAddress, $senderName);
-            $message->setTo($recipientAddress, $recipientName);
-        }
+        $message->html($body);
+        $message->subject($subject);
+        $message->from(($senderName ?? $senderAddress) . ' <' . $senderAddress . '>');
+        $message->to(($recipientName ?? $recipientAddress) . ' <' . $recipientAddress . '>');
 
         return $message;
     }

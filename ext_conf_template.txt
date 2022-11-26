@@ -19,8 +19,5 @@ plugAndPlayDirectory = design
 # cat=basic/enable; type=boolean; label=LLL:EXT:flux/Resources/Private/Language/locallang.xlf:extension_configuration.pageIntegration
 pageIntegration = 1
 
-# cat=basic/enable; type=boolean; label=LLL:EXT:flux/Resources/Private/Language/locallang.xlf:extension_configuration.pagesLanguageConfigurationOverlay
-pagesLanguageConfigurationOverlay = 0
-
 # cat=basic/enable; type=boolean; label=LLL:EXT:flux/Resources/Private/Language/locallang.xlf:extension_configuration.flexFormToIrre
 flexFormToIrre = 0

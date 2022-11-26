@@ -19,7 +19,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
     \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::initialize($conf);
 
-    if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 9.0, '>=') && TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL) {
+    if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\FluidTYPO3\Flux\Updates\MigrateColPosWizard::class]
             = \FluidTYPO3\Flux\Updates\MigrateColPosWizard::class;
     }
@@ -96,17 +96,6 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
                 \FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor::class . '->includeStaticTypoScriptHook';
         }
 
-        if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 10.2, '<')) {
-            /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
-            $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-            $signalSlotDispatcher->connect(
-                \TYPO3\CMS\Backend\Controller\EditDocumentController::class,
-                'initAfter',
-                \FluidTYPO3\Flux\Integration\HookSubscribers\EditDocumentController::class,
-                'requireColumnPositionJavaScript'
-            );
-        }
-
         if (true === class_exists(\FluidTYPO3\Flux\Core::class)) {
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\ContentTypeProvider::class);
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider::class);
@@ -126,30 +115,13 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageProvider::class);
             \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\SubPageProvider::class);
         }
-        if (version_compare(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core'), 9.0, '<')) {
-            \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageLanguageOverlayProvider::class);
-            \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\SubPageLanguageOverlayProvider::class);
-        }
 
-        if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') && \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
-            if (class_exists(\TYPO3\CMS\Core\Information\Typo3Version::class)) {
-                $version = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class)->getVersion();
-            } else {
-                $version = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('core');
-            }
-            if (version_compare($version, 10.4, '>=')) {
-                $pageControllerName = \FluidTYPO3\Flux\Controller\PageController::class;
-                $pageControllerExtensionName = 'Flux';
-            } else {
-                $pageControllerName = 'Page';
-                $pageControllerExtensionName = 'FluidTYPO3.Flux';
-            }
-
+        if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-                $pageControllerExtensionName,
+                'Flux',
                 'Page',
                 [
-                    $pageControllerName => 'render,error',
+                    \FluidTYPO3\Flux\Controller\PageController::class => 'render,error',
                 ],
                 [],
                 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_PLUGIN
@@ -161,10 +133,6 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
             if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_AUTOLOAD)) {
                 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptConstants(file_get_contents(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Configuration/TypoScript/constants.txt')));
                 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(file_get_contents(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Configuration/TypoScript/setup.txt')));
-            }
-
-            if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_LANGUAGE_OVERLAY)) {
-                $GLOBALS['TYPO3_CONF_VARS']['FE']['pageOverlayFields'] .= ',tx_fed_page_flexform,tx_fed_page_flexform_sub';
             }
 
             $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ($GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] == '' ? '' : ',') .

@@ -15,7 +15,6 @@ class ExtensionConfigurationUtility
     public const OPTION_PLUG_AND_PLAY = 'plugAndPlay';
     public const OPTION_PLUG_AND_PLAY_DIRECTORY = 'plugAndPlayDirectory';
     public const OPTION_PAGE_INTEGRATION = 'pageIntegration';
-    public const OPTION_PAGE_LANGUAGE_OVERLAY = 'pagesLanguageConfigurationOverlay';
     public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
 
     /**
@@ -29,7 +28,6 @@ class ExtensionConfigurationUtility
         self::OPTION_PLUG_AND_PLAY => false,
         self::OPTION_PLUG_AND_PLAY_DIRECTORY => DropInContentTypeDefinition::DESIGN_DIRECTORY,
         self::OPTION_PAGE_INTEGRATION => true,
-        self::OPTION_PAGE_LANGUAGE_OVERLAY => false,
         self::OPTION_FLEXFORM_TO_IRRE => false,
     ];
 
@@ -40,13 +38,9 @@ class ExtensionConfigurationUtility
 
         if (empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'])) {
             $legacyConfiguration = &$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'];
-            if (class_exists(ExtensionConfiguration::class)) {
-                /** @var ExtensionConfiguration $extensionConfigurationManager */
-                $extensionConfigurationManager = GeneralUtility::makeInstance(ExtensionConfiguration::class);
-                $legacyConfiguration = $extensionConfigurationManager->get('flux');
-            } elseif (is_string($extensionConfiguration)) {
-                $legacyConfiguration = $currentConfiguration['setup'] ?? unserialize($extensionConfiguration);
-            }
+            /** @var ExtensionConfiguration $extensionConfigurationManager */
+            $extensionConfigurationManager = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+            $legacyConfiguration = $extensionConfigurationManager->get('flux');
         }
     }
 

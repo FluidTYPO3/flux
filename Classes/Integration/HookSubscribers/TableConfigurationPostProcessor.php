@@ -14,9 +14,9 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Utility\ContextUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Core\ApplicationContext;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -207,7 +207,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
      */
     protected function getApplicationContext(): ApplicationContext
     {
-        return ContextUtility::getApplicationContext();
+        return Environment::getContext();
     }
 
     /**

@@ -128,17 +128,17 @@ class GetViewHelper extends AbstractViewHelper
         if (!is_array($record)) {
             return null;
         }
-        
-        if (class_exists(Context::class)) {
-            /** @var Context $context */
-            $context = GeneralUtility::makeInstance(Context::class);
-            $workspaceId = $context->getPropertyFromAspect('workspace', 'id');
-        } else {
-            $workspaceId = $GLOBALS['BE_USER']->workspace;
-        }
 
-        if ($workspaceId) {
-            $placeholder = BackendUtility::getWorkspaceVersionOfRecord($workspaceId, 'tt_content', $record['uid'] ?? 0);
+        /** @var Context $context */
+        $context = GeneralUtility::makeInstance(Context::class);
+        $workspaceId = $context->getPropertyFromAspect('workspace', 'id');
+
+        if (is_numeric($workspaceId) && $workspaceId > 0) {
+            $placeholder = BackendUtility::getWorkspaceVersionOfRecord(
+                (integer) $workspaceId,
+                'tt_content',
+                $record['uid'] ?? 0
+            );
             if ($placeholder) {
                 // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
                 // from the workspace-only placeholder.

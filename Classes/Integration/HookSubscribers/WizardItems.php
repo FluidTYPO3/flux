@@ -98,40 +98,39 @@ class WizardItems implements NewContentElementWizardHookInterface
         $fluidContentTypeNames = [];
         /** @var int $pageUid */
         $pageUid = 0;
-        if (class_exists(SiteFinder::class)) {
-            $defaultValues = (array) GeneralUtility::_GET('defVals');
-            /** @var array $dataArray */
-            $dataArray = $defaultValues['tt_content'] ?? [];
-            $pageUidFromUrl = GeneralUtility::_GET('id');
-            $pageUidFromUrl = is_scalar($pageUidFromUrl) ? (int) $pageUidFromUrl : 0;
-            $pageUidFromDataArray = (int) key($dataArray);
 
-            if ($pageUidFromDataArray > 0) {
-                $pageUid = $pageUidFromDataArray;
-            } elseif ($pageUidFromUrl > 0) {
-                $pageUid = $pageUidFromUrl;
-            }
+        $defaultValues = (array) GeneralUtility::_GET('defVals');
+        /** @var array $dataArray */
+        $dataArray = $defaultValues['tt_content'] ?? [];
+        $pageUidFromUrl = GeneralUtility::_GET('id');
+        $pageUidFromUrl = is_scalar($pageUidFromUrl) ? (int) $pageUidFromUrl : 0;
+        $pageUidFromDataArray = (int) key($dataArray);
 
-            if ($pageUid === 0) {
-                $reflectionProperty = new \ReflectionProperty($parentObject, 'id');
-                $reflectionProperty->setAccessible(true);
-                $pageUidFroimParentObject = $reflectionProperty->getValue($parentObject);
-                $pageUid = is_scalar($pageUidFroimParentObject) ? (int) $pageUidFroimParentObject : 0;
-            }
-            if ($pageUid > 0) {
-                try {
-                    /** @var SiteFinder $siteFinder */
-                    $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-                    $site = $siteFinder->getSiteByPageId($pageUid);
-                    $siteConfiguration = $site->getConfiguration();
-                    $enabledContentTypes = GeneralUtility::trimExplode(
-                        ',',
-                        $siteConfiguration['flux_content_types'] ?? '',
-                        true
-                    );
-                } catch (SiteNotFoundException $exception) {
-                    // Suppressed; a site not being found is not a fatal error in this context.
-                }
+        if ($pageUidFromDataArray > 0) {
+            $pageUid = $pageUidFromDataArray;
+        } elseif ($pageUidFromUrl > 0) {
+            $pageUid = $pageUidFromUrl;
+        }
+
+        if ($pageUid === 0) {
+            $reflectionProperty = new \ReflectionProperty($parentObject, 'id');
+            $reflectionProperty->setAccessible(true);
+            $pageUidFroimParentObject = $reflectionProperty->getValue($parentObject);
+            $pageUid = is_scalar($pageUidFroimParentObject) ? (int) $pageUidFroimParentObject : 0;
+        }
+        if ($pageUid > 0) {
+            try {
+                /** @var SiteFinder $siteFinder */
+                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+                $site = $siteFinder->getSiteByPageId($pageUid);
+                $siteConfiguration = $site->getConfiguration();
+                $enabledContentTypes = GeneralUtility::trimExplode(
+                    ',',
+                    $siteConfiguration['flux_content_types'] ?? '',
+                    true
+                );
+            } catch (SiteNotFoundException $exception) {
+                // Suppressed; a site not being found is not a fatal error in this context.
             }
         }
 

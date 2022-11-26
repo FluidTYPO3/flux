@@ -147,23 +147,12 @@ class RecordService implements SingletonInterface
     {
         if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE) {
             if ((bool)($GLOBALS['TSFE']->fePreview ?? false)) {
-                // check if running TYPO3 version >= 9
-                if (class_exists(VisibilityAspect::class)) {
-                    $context = new Context();
-                    $visibility = new VisibilityAspect(true, true);
-                    $context->setAspect('visibility', $visibility);
-                    /** @var FrontendRestrictionContainer $frontendRestrictions */
-                    $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
-                    $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
-                } else {
-                    // Fallback for TYPO3 8.7
-                    /** @var FrontendRestrictionContainer $frontendRestrictions */
-                    $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class);
-                    $queryBuilder->setRestrictions($frontendRestrictions);
-                    if ($GLOBALS['TSFE']->showHiddenRecords) {
-                        $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
-                    }
-                }
+                $context = new Context();
+                $visibility = new VisibilityAspect(true, true);
+                $context->setAspect('visibility', $visibility);
+                /** @var FrontendRestrictionContainer $frontendRestrictions */
+                $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
+                $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
             }
         } else {
             $queryBuilder->getRestrictions()->removeAll();
