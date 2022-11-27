@@ -19,14 +19,8 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class UserFunctions
 {
-    /**
-     * @param array $parameters
-     * @param object $pObj Not used
-     * @return string
-     */
-    public function renderClearValueWizardField(&$parameters, &$pObj)
+    public function renderClearValueWizardField(array &$parameters): string
     {
-        unset($pObj);
         $nameSegments = explode('][', $parameters['itemName']);
         $nameSegments[count($nameSegments) - 2] .= '_clear';
         $fieldName = implode('][', $nameSegments);
@@ -38,12 +32,8 @@ class UserFunctions
     /**
      * User function for TCA fields to hide a Flux-enabled "flex" type field if
      * there are no fields in the DS.
-     *
-     * @param array $parameters
-     * @param object $pObj Not used
-     * @return bool
      */
-    public function fluxFormFieldDisplayCondition(array $parameters, &$pObj)
+    public function fluxFormFieldDisplayCondition(array $parameters): bool
     {
         [$table, $field] = $parameters['conditionParameters'];
         /** @var ObjectManagerInterface $objectManager */
@@ -57,16 +47,12 @@ class UserFunctions
         }
         $form = $provider->getForm($parameters['record']);
         if ($form) {
-            return count($form->getFields()) > 0;
+            return count((array) $form->getFields()) > 0;
         }
         return false;
     }
 
-    /**
-     * @param array $parameters
-     * @return mixed
-     */
-    public function renderHtmlOutputField(array &$parameters)
+    public function renderHtmlOutputField(array &$parameters): string
     {
         /** @var callable $closure */
         $closure = ($parameters['fieldConf']['config']['parameters']['closure']
@@ -83,12 +69,8 @@ class UserFunctions
      * not already occupied by records.
      * The next free value cannot be computed here as we do not have access to the
      * data of all potentially unsaved section objects.
-     *
-     * @param array $parameters
-     * @param object $pObj Not used
-     * @return mixed
      */
-    public function renderColumnPositionField(array &$parameters, &$pObj = null)
+    public function renderColumnPositionField(array &$parameters): string
     {
         $colPos = $parameters['itemFormElValue'];
         $inputValue = (string) $colPos;

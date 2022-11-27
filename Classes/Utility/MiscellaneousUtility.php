@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
 
 /*
@@ -19,26 +20,17 @@ use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * MiscellaneousUtility Utility
- */
 class MiscellaneousUtility
 {
-    /**
-     * @var array
-     */
-    private static $allowedIconTypes = ['svg', 'png', 'gif'];
+    private static array $allowedIconTypes = ['svg', 'png', 'gif'];
 
     /**
      * Returns the icon for a template
      * - checks and returns if manually set as option or
      * - checks and returns Icon if it exists by convention in
      *   EXT:$extensionKey/Resources/Public/Icons/$controllerName/$templateName.(png|gif)
-     *
-     * @param Form $form
-     * @return string|null
      */
-    public static function getIconForTemplate(Form $form)
+    public static function getIconForTemplate(Form $form): ?string
     {
         if (true === $form->hasOption(Form::OPTION_ICON)) {
             $iconOptionValue = $form->getOption(Form::OPTION_ICON);
@@ -87,11 +79,8 @@ class MiscellaneousUtility
 
     /**
      * Returns a generated icon file into typo3temp/pics
-     * @param string $originalFile
-     * @param string $identifier
-     * @return string
      */
-    public static function createIcon($originalFile, $identifier = null)
+    public static function createIcon(string $originalFile, ?string $identifier = null): string
     {
         $extension = pathinfo($originalFile, PATHINFO_EXTENSION);
         switch (strtolower($extension)) {
@@ -116,12 +105,8 @@ class MiscellaneousUtility
     /**
      * Cleans flex form XML, removing any field nodes identified
      * in $removals and trimming the result to avoid empty containers.
-     *
-     * @param string $xml
-     * @param array $removals
-     * @return string
      */
-    public static function cleanFlexFormXml($xml, array $removals = [])
+    public static function cleanFlexFormXml(string $xml, array $removals = []): string
     {
         $dom = new \DOMDocument();
         $dom->loadXML($xml);

@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase
 class FieldViewHelperTest extends AbstractFieldViewHelperTestCase
 {
     protected $defaultArguments = [
+        'name' => 'test',
         'type' => 'input',
     ];
 }

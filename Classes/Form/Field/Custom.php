@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -10,21 +11,11 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 
-/**
- * Custom
- */
 class Custom extends UserFunction
 {
+    protected ?\Closure $closure = null;
 
-    /**
-     * @var \Closure
-     */
-    protected $closure;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $fieldConfiguration = $this->prepareConfiguration('user');
         $fieldConfiguration['userFunc'] = UserFunctions::class . '->renderHtmlOutputField';
@@ -36,20 +27,13 @@ class Custom extends UserFunction
         return $fieldConfiguration;
     }
 
-    /**
-     * @param \Closure $closure
-     * @return Custom
-     */
-    public function setClosure(\Closure $closure)
+    public function setClosure(\Closure $closure): self
     {
         $this->closure = $closure;
         return $this;
     }
 
-    /**
-     * @return \Closure|NULL
-     */
-    public function getClosure()
+    public function getClosure(): ?\Closure
     {
         return $this->closure;
     }

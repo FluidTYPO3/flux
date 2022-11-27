@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -13,16 +14,9 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldContainerInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 
-/**
- * Container
- */
 class Container extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
 {
-
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $structureArray = [
             'type' => 'array',
@@ -36,8 +30,8 @@ class Container extends AbstractFormContainer implements ContainerInterface, Fie
     /**
      * @return FormInterface[]
      */
-    public function getFields()
+    public function getFields(): iterable
     {
-        return (array) iterator_to_array($this->children);
+        return iterator_to_array($this->children);
     }
 }

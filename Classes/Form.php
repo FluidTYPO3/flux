@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux;
 
 /*
@@ -19,9 +20,6 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
-/**
- * Form
- */
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface, Form\OptionCarryingInterface
 {
     const OPTION_STATIC = 'static';
@@ -56,33 +54,12 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 
     /**
      * Machine-readable, lowerCamelCase ID of this form. DOM compatible.
-     *
-     * @var string
      */
-    protected $id;
+    protected string $id = '';
 
-    /**
-     * Should be set to contain the extension name in UpperCamelCase of
-     * the extension implementing this form object.
-     *
-     * @var string
-     */
-    protected $extensionName;
-
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @var array
-     */
-    protected $options = [];
-
-    /**
-     * @var OutletInterface
-     */
-    protected $outlet;
+    protected ?string $description = null;
+    protected array $options = [];
+    protected OutletInterface $outlet;
 
     public function __construct()
     {
@@ -90,11 +67,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         $this->initializeObject();
     }
 
-
-    /**
-     * @return void
-     */
-    public function initializeObject()
+    public function initializeObject(): void
     {
         /** @var Form\Container\Sheet $defaultSheet */
         $defaultSheet = GeneralUtility::makeInstance(Sheet::class);
@@ -106,11 +79,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         $this->outlet = $outlet;
     }
 
-    /**
-     * @param array $settings
-     * @return static
-     */
-    public static function create(array $settings = [])
+    public static function create(array $settings = []): self
     {
         /** @var Form $object */
         $object = GeneralUtility::makeInstance(static::class);
@@ -119,11 +88,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         return HookHandler::trigger(HookHandler::FORM_CREATED, ['form' => $object])['form'];
     }
 
-    /**
-     * @param Form\FormInterface $child
-     * @return Form\FormInterface
-     */
-    public function add(Form\FormInterface $child)
+    public function add(Form\FormInterface $child): self
     {
         if (false === $child instanceof Form\Container\Sheet) {
             /** @var Form\Container\Sheet $last */
@@ -153,10 +118,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $disableLocalisation = 1;
         $inheritLocalisation = 0;
@@ -167,7 +129,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             ],
         ];
         $sheets = $this->getSheets(false);
-        if (0 < count($sheets)) {
+        if (count((array) $sheets) > 0) {
             $dataStructArray['sheets'] = $this->buildChildren($sheets);
         } else {
             $dataStructArray['ROOT'] = [
@@ -179,10 +141,9 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @param boolean $includeEmpty
      * @return Sheet[]|FormInterface[]
      */
-    public function getSheets($includeEmpty = false)
+    public function getSheets(bool $includeEmpty = false): iterable
     {
         $sheets = [];
         foreach ($this->children as $sheet) {
@@ -198,43 +159,21 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     /**
      * @return Form\FieldInterface[]
      */
-    public function getFields()
+    public function getFields(): iterable
     {
         /** @var Sheet[] $sheets */
         $sheets = $this->getSheets();
         /** @var FieldInterface[] $fields */
         $fields = [];
         foreach ($sheets as $sheet) {
-            $fieldsInSheet = $sheet->getFields();
+            $fieldsInSheet = (array) $sheet->getFields();
             /** @var FieldInterface[] $fields */
             $fields = array_merge($fields, $fieldsInSheet);
         }
         return $fields;
     }
 
-    /**
-     * @param string $extensionName
-     * @return Form\FormInterface
-     */
-    public function setExtensionName($extensionName)
-    {
-        $this->extensionName = $extensionName;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getExtensionName()
-    {
-        return $this->extensionName;
-    }
-
-    /**
-     * @param string $id
-     * @return Form\FormInterface
-     */
-    public function setId($id)
+    public function setId(string $id): self
     {
         $this->id = $id;
         if (true === empty($this->name)) {
@@ -243,33 +182,23 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @param string $description
-     * @return Form\FormInterface
-     */
-    public function setDescription($description)
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         $description = $this->description;
         $translated = null;
-        $extensionKey = ExtensionNamingUtility::getExtensionKey($this->extensionName);
-        if (true === empty($description)) {
+        $extensionKey = ExtensionNamingUtility::getExtensionKey((string) $this->extensionName);
+        if (empty($description)) {
             $relativeFilePath = $this->getLocalLanguageFileRelativePath();
             $relativeFilePath = ltrim($relativeFilePath, '/');
             $filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
@@ -278,30 +207,21 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         return $description;
     }
 
-    /**
-     * @param array $options
-     * @return Form\FormInterface
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): self
     {
         $this->options = $options;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
 
     /**
-     * @param string $name
      * @param mixed $value
-     * @return Form\FormInterface
      */
-    public function setOption($name, $value)
+    public function setOption(string $name, $value): self
     {
         if (strpos($name, '.') === false) {
             $this->options[$name] = $value;
@@ -323,27 +243,19 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @param string $name
      * @return mixed
      */
-    public function getOption($name)
+    public function getOption(string $name)
     {
         return ObjectAccess::getPropertyPath($this->options, $name);
     }
 
-    /**
-     * @param string $name
-     * @return boolean
-     */
-    public function hasOption($name)
+    public function hasOption(string $name): bool
     {
         return true === isset($this->options[$name]);
     }
 
-    /**
-     * @return boolean
-     */
-    public function hasChildren()
+    public function hasChildren(): bool
     {
         foreach ($this->children as $child) {
             if (true === $child->hasChildren()) {
@@ -353,29 +265,18 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         return false;
     }
 
-    /**
-     * @param OutletInterface $outlet
-     * @return Form\FormInterface
-     */
-    public function setOutlet(OutletInterface $outlet)
+    public function setOutlet(OutletInterface $outlet): self
     {
         $this->outlet = $outlet;
         return $this;
     }
 
-    /**
-     * @return OutletInterface
-     */
-    public function getOutlet()
+    public function getOutlet(): OutletInterface
     {
         return $this->outlet;
     }
 
-    /**
-     * @param array $structure
-     * @return ContainerInterface
-     */
-    public function modify(array $structure)
+    public function modify(array $structure): self
     {
         if (isset($structure['options']) && is_array($structure['options'])) {
             foreach ($structure['options'] as $name => $value) {
@@ -405,6 +306,10 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
             $this->setOutlet($outlet);
             unset($structure['outlet']);
         }
-        return parent::modify($structure);
+
+        /** @var self $fromParentMethodCall */
+        $fromParentMethodCall = parent::modify($structure);
+
+        return $fromParentMethodCall;
     }
 }

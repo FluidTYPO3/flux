@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
 
 /*
@@ -10,17 +11,9 @@ namespace FluidTYPO3\Flux\Utility;
 
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 
-/**
- * RecursiveArray Utility
- */
 class RecursiveArrayUtility
 {
-    /**
-     * @param array $array1
-     * @param array $array2
-     * @return array
-     */
-    public static function merge($array1, $array2)
+    public static function merge(array $array1, array $array2): array
     {
         $array1 = (array) $array1;
         $array2 = (array) $array2;
@@ -36,12 +29,7 @@ class RecursiveArrayUtility
         return $array1;
     }
 
-    /**
-     * @param array $array1
-     * @param array $array2
-     * @return array
-     */
-    public static function diff($array1, $array2)
+    public static function diff(array $array1, array $array2): array
     {
         $array1 = (array) $array1;
         $array2 = (array) $array2;
@@ -70,11 +58,10 @@ class RecursiveArrayUtility
 
     /**
      * This method convert a string like "Some.long.tree" into an array ["Some"=>["long"=>["tree"=> $value]]]
-     * @param string $path
+     *
      * @param mixed $value
-     * @return array
      */
-    public static function convertPathToArray($path, $value = null)
+    public static function convertPathToArray(string $path, $value = null): array
     {
         $array = [];
         if (strpos($path, '.') === false) {
@@ -111,10 +98,10 @@ class RecursiveArrayUtility
     public static function mergeRecursiveOverrule(
         array $firstArray,
         array $secondArray,
-        $notAddKeys = false,
-        $includeEmptyValues = true,
-        $enableUnsetFeature = true
-    ) {
+        bool $notAddKeys = false,
+        bool $includeEmptyValues = true,
+        bool $enableUnsetFeature = true
+    ): array {
         ArrayUtility::mergeRecursiveWithOverrule(
             $firstArray,
             $secondArray,

@@ -42,9 +42,9 @@ class PageProviderTest extends AbstractTestCase
     {
         /** @var PageProvider|MockObject $instance */
         $instance = $this->getMockBuilder(PageProvider::class)->setMethods(array('getControllerExtensionKeyFromRecord'))->getMock();
-        $instance->expects($this->once())->method('getControllerExtensionKeyFromRecord')->willReturn(null);
+        $instance->expects($this->once())->method('getControllerExtensionKeyFromRecord')->willReturn('');
         $result = $instance->getExtensionKey(array());
-        $this->assertEquals('flux', $result);
+        $this->assertEquals('FluidTYPO3.Flux', $result);
     }
 
     public function testGetTemplatePathAndFilename()

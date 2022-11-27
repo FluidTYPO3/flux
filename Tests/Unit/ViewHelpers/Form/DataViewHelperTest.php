@@ -25,18 +25,15 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DataViewHelperTest extends AbstractViewHelperTestCase
 {
-    /**
-     * @var FluxService
-     */
-    protected $fluxService;
+    protected ?FluxService $fluxService;
+    protected ?FlexFormService $flexFormService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $serviceClassName = class_exists(FlexFormService::class) ? FlexFormService::class : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
 
         $this->fluxService = $this->getMockBuilder(FluxService::class)->setMethods(['resolveConfigurationProviders', 'getFlexFormService'])->getMock();
-        $this->flexFormService = $this->getMockBuilder($serviceClassName)->setMethods(['convertFlexFormContentToArray'])->getMock();
+        $this->flexFormService = $this->getMockBuilder(FlexFormService::class)->setMethods(['convertFlexFormContentToArray'])->getMock();
         $this->fluxService->method('getFlexFormService')->willReturn($this->flexFormService);
         AccessibleDataViewHelper::setFluxService($this->fluxService);
         AccessibleDataViewHelper::setRecordService($this->getMockBuilder(WorkspacesAwareRecordService::class)->getMock());
@@ -208,6 +205,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     public function supportsAsArgument()
     {
         $this->fluxService->method('resolveConfigurationProviders')->willReturn([]);
+        $this->flexFormService->method('convertFlexFormContentToArray')->willReturn([]);
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $row['pi_flexform'] = $row['test'];
         $arguments = array(
@@ -226,6 +224,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     public function supportsAsArgumentAndBacksUpExistingVariable()
     {
         $this->fluxService->method('resolveConfigurationProviders')->willReturn([]);
+        $this->flexFormService->method('convertFlexFormContentToArray')->willReturn([]);
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $row['pi_flexform'] = $row['test'];
         $arguments = array(
@@ -251,7 +250,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         $field = 'test';
         $mock->injectConfigurationService($configurationService);
         $result = $this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
-        $this->assertNull($result);
+        $this->assertSame([], $result);
     }
 
     /**

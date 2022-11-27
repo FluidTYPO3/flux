@@ -11,16 +11,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field\Inline;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 
-/**
- * FalTest
- */
 class FalTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'collapseAll' => false,
         'expandSingle' => false,
         'newRecordLinkAddTitle' => false,
@@ -41,4 +34,19 @@ class FalTest extends AbstractFieldTest
             Form::CONTROL_LOCALISE => false,
         )
     );
+
+    public function testBuildConfigurationWithCropVariants(): void
+    {
+        $subject = new Form\Field\Inline\Fal();
+        $subject->setCropVariants(['foo' => []]);
+        $output = $subject->buildConfiguration();
+        self::assertSame(
+            [
+                'cropVariants' => [
+                    'foo' => [],
+                ],
+            ],
+            $output['overrideChildTca']['columns']['crop']['config']
+        );
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\NormalizedData;
 
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
@@ -13,7 +14,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 trait DataAccessTrait
 {
     /**
-     * @var ConfigurationManagerInterface;
+     * @var ConfigurationManagerInterface
      */
     protected $configurationManager;
 

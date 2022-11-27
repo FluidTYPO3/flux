@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field\Tree;
 
 /*
@@ -20,7 +21,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class CategoryViewHelper extends TreeViewHelper
 {
-
     /**
      * Initialize
      * @return void

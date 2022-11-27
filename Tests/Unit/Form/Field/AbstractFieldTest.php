@@ -12,16 +12,9 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
-/**
- * AbstractFieldTest
- */
 abstract class AbstractFieldTest extends AbstractFormTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
+    protected array $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
 
     /**
      * @test
@@ -88,12 +81,12 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $this->assertSame($added, $instance);
         $fetched = $instance->get('add');
         $bad = $instance->get('bad');
-        $this->assertFalse($bad);
+        $this->assertNull($bad);
         $this->assertSame($fetched, $wizard);
         $removed = $instance->remove('add');
         $this->assertSame($removed, $wizard);
         $bad = $instance->remove('bad');
-        $this->assertTrue(false === $bad);
+        $this->assertNull($bad);
         $instance->add($wizard);
         $built = $this->performTestBuild($instance);
         $this->assertIsArray($built);

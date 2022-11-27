@@ -10,15 +10,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 
 use FluidTYPO3\Flux\Form\WizardInterface;
 
-/**
- * SelectTest
- */
 class SelectTest extends AbstractWizardTest
 {
-    /**
-     * @var array
-     */
-    protected $chainProperties = [
+    protected array $chainProperties = [
         'name' => 'test',
         'hideParent' => false,
         'mode' => 'append',

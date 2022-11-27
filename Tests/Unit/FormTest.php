@@ -253,7 +253,7 @@ class FormTest extends AbstractTestCase
     public function canRemoveBadFieldByNameWithoutErrorAndReturnFalse()
     {
         $form = $this->getEmptyDummyForm();
-        $this->assertFalse($form->last()->remove('test'));
+        $this->assertNull($form->last()->remove('test'));
     }
 
     /**
@@ -264,7 +264,7 @@ class FormTest extends AbstractTestCase
         $form = $this->getEmptyDummyForm();
         $field = Input::create(array('type' => 'Input', 'name' => 'badname'));
         $child = $form->last()->remove($field);
-        $this->assertFalse($child);
+        $this->assertNull($child);
     }
 
     /**

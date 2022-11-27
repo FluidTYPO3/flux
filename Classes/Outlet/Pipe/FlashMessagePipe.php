@@ -18,28 +18,12 @@ use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
  */
 class FlashMessagePipe extends AbstractPipe implements PipeInterface
 {
-
     const FLASHMESSAGE_QUEUE = 'extbase.flashmessages.flux';
 
-    /**
-     * @var integer
-     */
-    protected $severity = FlashMessage::OK;
-
-    /**
-     * @var boolean
-     */
-    protected $storeInSession = true;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var string
-     */
-    protected $message;
+    protected int $severity = FlashMessage::OK;
+    protected bool $storeInSession = true;
+    protected string $title = '';
+    protected string $message = '';
 
     /**
      * @param array $data
@@ -58,74 +42,46 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface
         return $data;
     }
 
-    /**
-     * @param integer $severity
-     * @return FlashMessagePipe
-     */
-    public function setSeverity($severity)
+    public function setSeverity(int $severity): self
     {
         $this->severity = $severity;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getSeverity()
+    public function getSeverity(): int
     {
         return $this->severity;
     }
 
-    /**
-     * @param boolean $storeInSession
-     * @return FlashMessagePipe
-     */
-    public function setStoreInSession($storeInSession)
+    public function setStoreInSession(bool $storeInSession): self
     {
         $this->storeInSession = $storeInSession;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getStoreInSession()
+    public function getStoreInSession(): bool
     {
         return $this->storeInSession;
     }
 
-    /**
-     * @param string $title
-     * @return FlashMessagePipe
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $message
-     * @return FlashMessagePipe
-     */
-    public function setMessage($message)
+    public function setMessage(string $message): self
     {
         $this->message = $message;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }

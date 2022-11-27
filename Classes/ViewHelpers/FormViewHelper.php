@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -98,13 +99,13 @@ class FormViewHelper extends AbstractFormViewHelper
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
         $form = static::getComponent($renderingContext, $arguments);
         // configure Form instance
-        $form->setId($arguments['id']);
-        $form->setName($arguments['id']);
+        $form->setId($arguments['id'] ?? 'form');
+        $form->setName($arguments['id'] ?? 'form');
         $form->setLabel($arguments['label']);
         $form->setDescription($arguments['description']);
-        $form->setEnabled($arguments['enabled']);
+        $form->setEnabled((boolean) $arguments['enabled']);
         $form->setExtensionName($extensionName);
-        $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
+        $form->setLocalLanguageFileRelativePath((string) $arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);
         $form->setOptions((array) $arguments['options']);
 

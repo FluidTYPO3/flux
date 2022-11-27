@@ -30,18 +30,10 @@ use TYPO3Fluid\Fluid\Exception;
  */
 class TableConfigurationPostProcessor implements TableConfigurationPostProcessingHookInterface
 {
-    /**
-     * @var ContentTypeBuilder|null
-     */
-    protected static $contentTypeBuilder;
-
+    protected static ?ContentTypeBuilder $contentTypeBuilder = null;
     protected static bool $recursed = false;
 
-    /**
-     * @param array $parameters
-     * @return void
-     */
-    public function includeStaticTypoScriptHook(array $parameters, TemplateService $caller)
+    public function includeStaticTypoScriptHook(array $parameters, TemplateService $caller): void
     {
         $property = new \ReflectionProperty($caller, 'extensionStaticsProcessed');
         $property->setAccessible(true);
@@ -67,10 +59,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         }
     }
 
-    /**
-     * @return void
-     */
-    public function processData()
+    public function processData(): void
     {
         $contentTypeManager = $this->getContentTypeManager();
 
@@ -88,11 +77,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         Core::clearQueuedContentTypeRegistrations();
     }
 
-    /**
-     * @param array $queue
-     * @return void
-     */
-    public static function spoolQueuedContentTypeTableConfigurations(array $queue)
+    public static function spoolQueuedContentTypeTableConfigurations(array $queue): void
     {
         $contentTypeBuilder = static::getContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
@@ -102,13 +87,10 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         }
     }
 
-    /**
-     * @param string $providerExtensionName
-     * @param string $templatePathAndFilename
-     * @return string
-     */
-    protected static function determineContentType($providerExtensionName, $templatePathAndFilename)
-    {
+    protected static function determineContentType(
+        string $providerExtensionName,
+        string $templatePathAndFilename
+    ): string {
         // Determine which plugin name and controller action to emulate with this CType, base on file name.
         $controllerExtensionName = $providerExtensionName;
         $emulatedPluginName = ucfirst(pathinfo($templatePathAndFilename, PATHINFO_FILENAME));
@@ -117,11 +99,7 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
         return $fullContentType;
     }
 
-    /**
-     * @param array $queue
-     * @return void
-     */
-    protected function spoolQueuedContentTypeRegistrations(array $queue)
+    protected function spoolQueuedContentTypeRegistrations(array $queue): void
     {
         $applicationContext = $this->getApplicationContext();
         $contentTypeBuilder = static::getContentTypeBuilder();

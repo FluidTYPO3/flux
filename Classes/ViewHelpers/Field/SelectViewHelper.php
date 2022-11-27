@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -45,7 +46,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class SelectViewHelper extends AbstractMultiValueFieldViewHelper
 {
-
     /**
      * Initialize
      * @return void

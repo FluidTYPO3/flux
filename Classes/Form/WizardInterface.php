@@ -13,20 +13,7 @@ namespace FluidTYPO3\Flux\Form;
  */
 interface WizardInterface extends FormInterface
 {
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration();
-
-    /**
-     * @param boolean $hideParent
-     * @return WizardInterface
-     */
-    public function setHideParent($hideParent);
-
-    /**
-     * @return boolean
-     */
-    public function getHideParent();
+    public function buildConfiguration(): array;
+    public function setHideParent(bool $hideParent): self;
+    public function getHideParent(): bool;
 }

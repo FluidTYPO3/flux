@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\Overrides;
 
 /*
@@ -19,10 +20,6 @@ use TYPO3\CMS\Core\Versioning\VersionState;
 class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\LocalizationController
 {
     /**
-     * Get a prepared summary of records being translated
-     *
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
      * @codeCoverageIgnore
      */
     public function getRecordLocalizeSummary(

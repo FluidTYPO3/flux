@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\SectionObject;
+use FluidTYPO3\Flux\Form\Field\Input;
 
 /**
  * SectionTest
@@ -29,7 +30,7 @@ class SectionTest extends AbstractContainerTest
                     'label' => 'Test object',
                     'fields' => [
                         'foo' => [
-                            'type' => 'Input',
+                            'type' => Input::class,
                             'label' => 'Foo input',
                         ],
                     ],

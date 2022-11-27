@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Wizard;
 
 /*
@@ -20,25 +21,10 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  */
 class Select extends AbstractWizard
 {
-    /**
-     * @var string
-     */
-    protected $name = 'select';
-
-    /**
-     * @var string
-     */
-    protected $type = 'select';
-
-    /**
-     * @var string
-     */
-    protected $icon = 'list.gif';
-
-    /**
-     * @var string
-     */
-    protected $mode = 'substitution';
+    protected ?string $name = 'select';
+    protected ?string $type = 'select';
+    protected ?string $icon = 'list.gif';
+    protected string $mode = 'substitution';
 
     /**
      * Comma-separated, comma-and-semicolon-separated or array
@@ -48,12 +34,7 @@ class Select extends AbstractWizard
      */
     protected $items;
 
-    /**
-     * Build the configuration array
-     *
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         return [
             'mode' => $this->getMode(),
@@ -63,11 +44,8 @@ class Select extends AbstractWizard
 
     /**
      * Builds an array of selector options based on a type of string
-     *
-     * @param string $itemsString
-     * @return array
      */
-    protected function buildItems($itemsString)
+    protected function buildItems(string $itemsString): array
     {
         $itemsString = trim($itemsString, ',');
         if (strpos($itemsString, ',') && strpos($itemsString, ';')) {
@@ -85,15 +63,12 @@ class Select extends AbstractWizard
         return [$itemsString => $itemsString];
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         if (null !== $this->getParent()) {
             return $this->getParent()->getName() . '_' . $this->name;
         }
-        return $this->name;
+        return $this->name ?? 'select';
     }
 
     /**

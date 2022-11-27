@@ -36,12 +36,12 @@ class ContentTypeManager implements SingletonInterface
     /**
      * @var ContentTypeDefinitionInterface[]|null[]
      */
-    protected $types = [];
+    protected array $types = [];
 
     /**
      * @var string[]
      */
-    protected $typeNames = [];
+    protected array $typeNames = [];
 
     /**
      * @return FluidRenderingContentTypeDefinitionInterface[]
@@ -92,10 +92,7 @@ class ContentTypeManager implements SingletonInterface
         return $this->determineContentTypeForTypeString($record['CType'] ?? $record['content_type'] ?? '');
     }
 
-    /**
-     * @return void
-     */
-    public function regenerate()
+    public function regenerate(): void
     {
         $cache = $this->getCache();
         $cache->set(static::CACHE_IDENTIFIER, $this->fetchContentTypes());

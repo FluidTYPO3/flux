@@ -18,11 +18,10 @@ class FlashMessageViewHelperTest extends AbstractViewHelperTestCase
 
     /**
      * @dataProvider getTestArguments
-     * @param array $arguments
      */
-    public function testWithArguments(array $arguments)
+    public function testWithArguments(array $arguments): void
     {
-        $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
+        $result = $this->executeViewHelper($arguments, [], null, null, 'FakePlugin');
         $this->assertSame('', $result);
     }
 

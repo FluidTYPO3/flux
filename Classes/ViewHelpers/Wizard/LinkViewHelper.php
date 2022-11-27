@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -28,17 +29,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class LinkViewHelper extends AbstractWizardViewHelper
 {
+    protected ?string $label = 'Select link';
 
-    /**
-     * @var string
-     */
-    protected $label = 'Select link';
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('activeTab', 'string', 'Active tab of the link popup', false, 'file');
@@ -55,12 +48,7 @@ class LinkViewHelper extends AbstractWizardViewHelper
         $this->registerArgument('blindLinkFields', 'string', 'Blind link fields', false, '');
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Link
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Link
     {
         /** @var array $arguments */
         /** @var Link $component */

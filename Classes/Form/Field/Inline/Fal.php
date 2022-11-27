@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field\Inline;
 
 /*
@@ -11,12 +12,8 @@ namespace FluidTYPO3\Flux\Form\Field\Inline;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractInlineFormField;
 
-/**
- * Fal
- */
 class Fal extends AbstractInlineFormField
 {
-
     const DEFAULT_TABLE = 'sys_file_reference';
     const DEFAULT_FOREIGN_FIELD = 'uid_foreign';
     const DEFAULT_FOREIGN_TABLE_FIELD = 'tablenames';
@@ -156,15 +153,9 @@ class Fal extends AbstractInlineFormField
      */
     protected $cropVariants = [];
 
-    /**
-     * @var null|string
-     */
-    protected $renderType = null;
+    protected ?string $renderType = null;
 
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('inline');
         $configuration['appearance']['createNewRelationLinkTitle'] = $this->getCreateNewRelationLinkTitle();
@@ -172,17 +163,14 @@ class Fal extends AbstractInlineFormField
         if (!isset($configuration['overrideChildTca'])) {
             $configuration['overrideChildTca'] = ['columns' => []];
         }
-        if (!isset($configuration['overrideChildTca']['columns'])) {
-            $configuration['overrideChildTca']['columns'] = [];
-        }
+        $configuration['overrideChildTca']['columns'] = $configuration['overrideChildTca']['columns'] ?? [];
         $configuration['overrideChildTca']['types'] = $configuration['foreign_types'];
         if (!empty($this->cropVariants)) {
-            $configuration['overrideChildTca']['columns']['crop'] =
-                [
-                    'config' => [
-                        'cropVariants' => $this->cropVariants
-                    ]
-                ];
+            $configuration['overrideChildTca']['columns']['crop'] = [
+                'config' => [
+                    'cropVariants' => $this->cropVariants
+                ]
+            ];
         }
 
         return $configuration;

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 /*
@@ -61,16 +62,16 @@ class EmailViewHelper extends AbstractPipeViewHelper
     ) {
         /** @var array $arguments */
         $body = $arguments['body'];
-        if (true === empty($body) && $renderChildrenClosure instanceof \Closure) {
+        if (empty($body) && $renderChildrenClosure instanceof \Closure) {
             $body = $renderChildrenClosure();
         }
         /** @var EmailPipe $pipe */
         $pipe = GeneralUtility::makeInstance(EmailPipe::class);
-        $pipe->setSubject($arguments['subject']);
-        $pipe->setSender($arguments['sender']);
-        $pipe->setRecipient($arguments['recipient']);
-        $pipe->setBody($body);
-        $pipe->setBodySection($arguments['bodySection']);
+        $pipe->setSubject((string) $arguments['subject']);
+        $pipe->setSender($arguments['sender'] ?? '');
+        $pipe->setRecipient($arguments['recipient'] ?? '');
+        $pipe->setBody((string) $body);
+        $pipe->setBodySection($arguments['bodySection'] ?? null);
 
         return $pipe;
     }

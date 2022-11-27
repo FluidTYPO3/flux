@@ -16,21 +16,14 @@ use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
-/**
- * Grid
- */
 class Grid extends AbstractFormContainer implements ContainerInterface
 {
-
     /**
      * @var Row[]|\SplObjectStorage
      */
-    protected $children;
+    protected iterable $children;
 
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $structure = [
             'name' => $this->getName(),
@@ -55,10 +48,6 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         return $columnPositionValues;
     }
 
-    /**
-     * @param int $parentRecordUid
-     * @return array
-     */
     public function buildBackendLayoutArray(int $parentRecordUid): array
     {
         $config = [
@@ -145,10 +134,6 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         return $backendLayout;
     }
 
-    /**
-     * @param int $parentRecordUid
-     * @return BackendLayout
-     */
     public function buildBackendLayout(int $parentRecordUid): BackendLayout
     {
         $configuration = $this->buildBackendLayoutArray($parentRecordUid);
@@ -170,11 +155,9 @@ class Grid extends AbstractFormContainer implements ContainerInterface
     /**
      * This flattens a hierarchical TypoScript array to $this->flatSetup
      *
-     * @param iterable $setupArray TypoScript array
-     * @param string $prefix Prefix to the object path. Used for recursive calls to this function.
      * @see generateConfig()
      */
-    protected function flattenSetup(iterable $setupArray, $prefix): array
+    protected function flattenSetup(iterable $setupArray, string $prefix): array
     {
         $setup = [];
         foreach ($setupArray as $key => $val) {
@@ -204,10 +187,6 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         );
     }
 
-    /**
-     * @param array $configuration
-     * @return array
-     */
     protected function ensureDottedKeys(array $configuration): array
     {
         $converted = [];
@@ -224,8 +203,8 @@ class Grid extends AbstractFormContainer implements ContainerInterface
     /**
      * @return Row[]
      */
-    public function getRows()
+    public function getRows(): iterable
     {
-        return (array) iterator_to_array($this->children);
+        return iterator_to_array($this->children);
     }
 }

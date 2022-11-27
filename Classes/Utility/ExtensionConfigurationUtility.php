@@ -17,10 +17,7 @@ class ExtensionConfigurationUtility
     public const OPTION_PAGE_INTEGRATION = 'pageIntegration';
     public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
 
-    /**
-     * @var array
-     */
-    protected static $defaults = [
+    protected static array $defaults = [
         self::OPTION_DEBUG_MODE => false,
         self::OPTION_DOKTYPES => '0,1,4',
         self::OPTION_HANDLE_ERRORS => false,
@@ -50,7 +47,6 @@ class ExtensionConfigurationUtility
     }
 
     /**
-     * @param string $optionName
      * @return mixed|null
      */
     public static function getOption(string $optionName)

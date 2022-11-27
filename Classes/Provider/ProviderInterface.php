@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider;
 
 /*
@@ -32,10 +33,8 @@ interface ProviderInterface extends
     ControllerProviderInterface,
     RecordProviderInterface,
     DataStructureProviderInterface,
-    CommandProviderInterface,
     ContentTypeProviderInterface,
     PluginProviderInterface,
     PreviewProviderInterface
 {
-
 }

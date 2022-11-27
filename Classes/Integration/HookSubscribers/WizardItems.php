@@ -27,51 +27,25 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class WizardItems implements NewContentElementWizardHookInterface
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    protected ObjectManagerInterface $objectManager;
+    protected FluxService $configurationService;
+    protected WorkspacesAwareRecordService $recordService;
 
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
-
-    /**
-     * @var WorkspacesAwareRecordService
-     */
-    protected $recordService;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    public function injectObjectManager(ObjectManagerInterface $objectManager): void
     {
         $this->objectManager = $objectManager;
     }
 
-    /**
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
+    public function injectConfigurationService(FluxService $configurationService): void
     {
         $this->configurationService = $configurationService;
     }
 
-    /**
-     * @param WorkspacesAwareRecordService $recordService
-     * @return void
-     */
-    public function injectRecordService(WorkspacesAwareRecordService $recordService)
+    public function injectRecordService(WorkspacesAwareRecordService $recordService): void
     {
         $this->recordService = $recordService;
     }
 
-    /**
-     * Constructor
-     */
     public function __construct()
     {
         /** @var ObjectManagerInterface $objectManager */
@@ -90,9 +64,8 @@ class WizardItems implements NewContentElementWizardHookInterface
     /**
      * @param array $items
      * @param NewContentElementController $parentObject
-     * @return void
      */
-    public function manipulateWizardItems(&$items, &$parentObject)
+    public function manipulateWizardItems(&$items, &$parentObject): void
     {
         $enabledContentTypes = [];
         $fluidContentTypeNames = [];
@@ -193,12 +166,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         )['items'];
     }
 
-    /**
-     * @param integer $pageUid
-     * @param integer $columnPosition
-     * @return array
-     */
-    protected function getWhiteAndBlackListsFromPageAndContentColumn($pageUid, $columnPosition)
+    protected function getWhiteAndBlackListsFromPageAndContentColumn(int $pageUid, int $columnPosition): array
     {
         $whitelist = [];
         $blacklist = [];
@@ -251,29 +219,18 @@ class WizardItems implements NewContentElementWizardHookInterface
         return [$whitelist, $blacklist];
     }
 
-    /**
-     * @param array $providers
-     * @param array $record
-     * @param array $whitelist
-     * @param array $blacklist
-     * @param integer $columnPosition
-     * @return void
-     */
     protected function appendToWhiteAndBlacklistFromProviders(
         array $providers,
         array $record,
         array &$whitelist,
         array &$blacklist,
-        $columnPosition
-    ) {
+        int $columnPosition
+    ): void {
         if ($columnPosition >= ColumnNumberUtility::MULTIPLIER) {
             $columnPosition = ColumnNumberUtility::calculateLocalColumnNumber($columnPosition);
         }
         foreach ($providers as $provider) {
             $grid = $provider->getGrid($record);
-            if (null === $grid) {
-                continue;
-            }
             foreach ($grid->getRows() as $row) {
                 foreach ($row->getColumns() as $column) {
                     if ($column->getColumnPosition() === $columnPosition) {
@@ -288,11 +245,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         }
     }
 
-    /**
-     * @param array $items
-     * @return array
-     */
-    protected function trimItems(array $items)
+    protected function trimItems(array $items): array
     {
         $preserveHeaders = [];
         foreach ($items as $name => $item) {
@@ -309,12 +262,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         return $items;
     }
 
-    /**
-     * @param array $items
-     * @param array $blacklist
-     * @return array
-     */
-    protected function applyBlacklist(array $items, array $blacklist)
+    protected function applyBlacklist(array $items, array $blacklist): array
     {
         $blacklist = array_unique($blacklist);
         if (0 < count($blacklist)) {
@@ -329,12 +277,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         return $items;
     }
 
-    /**
-     * @param array $items
-     * @param array $whitelist
-     * @return array
-     */
-    protected function applyWhitelist(array $items, array $whitelist)
+    protected function applyWhitelist(array $items, array $whitelist): array
     {
         $whitelist = array_unique($whitelist);
         if (0 < count($whitelist)) {
@@ -347,17 +290,11 @@ class WizardItems implements NewContentElementWizardHookInterface
         return $items;
     }
 
-    /**
-     * @param FormInterface $component
-     * @param array $whitelist
-     * @param array $blacklist
-     * @return array
-     */
     protected function appendToWhiteAndBlacklistFromComponent(
         FormInterface $component,
         array $whitelist,
         array $blacklist
-    ) {
+    ): array {
         /** @var string|null $allowed */
         $allowed = $component->getVariable('allowedContentTypes');
         if (null !== $allowed) {

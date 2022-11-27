@@ -271,7 +271,8 @@ class CoreTest extends AbstractTestCase
     public function registerFormForTableSetsExtensionNameFromExtensionKeyGlobal()
     {
         $GLOBALS['_EXTKEY'] = 'test';
-        $form = $this->getMockBuilder('FluidTYPO3\\Flux\\Form')->setMethods(array('setExtensionName'))->getMock();
+        $form = $this->getMockBuilder(Form::class)->setMethods(array('setExtensionName', 'getExtensionName'))->getMock();
+        $form->method('getExtensionName')->willReturn(null);
         $form->expects($this->once())->method('setExtensionName')->with('Test');
         AccessibleCore::registerFormForTable('foobar', $form);
         unset($GLOBALS['_EXTKEY']);

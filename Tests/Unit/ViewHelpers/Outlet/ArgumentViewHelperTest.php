@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Outlet;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Outlet\OutletArgument;
+use FluidTYPO3\Flux\Outlet\OutletInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleArgumentViewHelper;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
@@ -54,7 +55,7 @@ class ArgumentViewHelperTest extends AbstractViewHelperTestCase
      */
     public function testAddsArgumentToOutlet()
     {
-        $outlet = $this->getMockBuilder(Outlet::class)->setMethods(['addArgument'])->getMock();
+        $outlet = $this->getMockBuilder(OutletInterface::class)->getMockForAbstractClass();
         $outlet->expects($this->once())->method('addArgument')->with($this->anything());
         $form = $this->getMockBuilder(Form::class)->setMethods(['getOutlet'])->getMock();
         $form->expects($this->once())->method('getOutlet')->willReturn($outlet);

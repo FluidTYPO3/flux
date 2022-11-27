@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -10,56 +11,18 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
 
-/**
- * File
- */
 class File extends AbstractMultiValueFormField
 {
+    protected ?string $disallowed = '';
+    protected ?string $allowed = '';
+    protected ?int $maxSize = null;
+    protected ?string $uploadFolder = null;
+    protected bool $showThumbnails = false;
+    protected bool $useFalRelation = false;
+    protected string $internalType = 'file_reference';
+    protected ?string $renderType = null;
 
-    /**
-     * @var string
-     */
-    protected $disallowed = '';
-
-    /**
-     * @var string
-     */
-    protected $allowed = '';
-
-    /**
-     * @var integer
-     */
-    protected $maxSize;
-
-    /**
-     * @var string
-     */
-    protected $uploadFolder;
-
-    /**
-     * @var boolean
-     */
-    protected $showThumbnails = false;
-
-    /**
-     * @var boolean
-     */
-    protected $useFalRelation = false;
-
-    /**
-     * @var string
-     */
-    protected $internalType = 'file_reference';
-
-    /**
-     * @var string|null
-     */
-    protected $renderType = null;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('group');
         $configuration['disallowed'] = $this->getDisallowed();
@@ -80,127 +43,78 @@ class File extends AbstractMultiValueFormField
         return $configuration;
     }
 
-    /**
-     * @param string $allowed
-     * @return File
-     */
-    public function setAllowed($allowed)
+    public function setAllowed(?string $allowed): self
     {
         $this->allowed = $allowed;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getAllowed()
+    public function getAllowed(): ?string
     {
         return $this->allowed;
     }
 
-    /**
-     * @param string $disallowed
-     * @return File
-     */
-    public function setDisallowed($disallowed)
+    public function setDisallowed(?string $disallowed): self
     {
         $this->disallowed = $disallowed;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDisallowed()
+    public function getDisallowed(): ?string
     {
         return $this->disallowed;
     }
 
-    /**
-     * @param integer $maxSize
-     * @return File
-     */
-    public function setMaxSize($maxSize)
+    public function setMaxSize(?int $maxSize): self
     {
         $this->maxSize = $maxSize;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getMaxSize()
+    public function getMaxSize(): ?int
     {
         return $this->maxSize;
     }
 
-    /**
-     * @param string $uploadFolder
-     * @return File
-     */
-    public function setUploadFolder($uploadFolder)
+    public function setUploadFolder(?string $uploadFolder): self
     {
         $this->uploadFolder = $uploadFolder;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getUploadFolder()
+    public function getUploadFolder(): ?string
     {
         return $this->uploadFolder;
     }
 
-    /**
-     * @param boolean $showThumbnails
-     * @return File
-     */
-    public function setShowThumbnails($showThumbnails)
+    public function setShowThumbnails(bool $showThumbnails): self
     {
-        $this->showThumbnails = (boolean) $showThumbnails;
+        $this->showThumbnails = $showThumbnails;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getShowThumbnails()
+    public function getShowThumbnails(): bool
     {
         return (boolean) $this->showThumbnails;
     }
 
-    /**
-     * @param boolean $useFalRelation
-     * @return File
-     */
-    public function setUseFalRelation($useFalRelation)
+    public function setUseFalRelation(bool $useFalRelation): self
     {
         $this->useFalRelation = $useFalRelation;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getUseFalRelation()
+    public function getUseFalRelation(): bool
     {
         return $this->useFalRelation;
     }
 
-    /**
-     * @return string
-     */
-    public function getInternalType()
+    public function getInternalType(): string
     {
         return $this->internalType;
     }
 
-    /**
-     * @param string $internalType
-     * @return File
-     */
-    public function setInternalType($internalType)
+    public function setInternalType(string $internalType): self
     {
         $this->internalType = $internalType;
         return $this;

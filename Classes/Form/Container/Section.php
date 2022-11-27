@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -32,16 +33,9 @@ class Section extends AbstractFormContainer implements ContainerInterface
     const GRID_MODE_ROWS = 'rows';
     const GRID_MODE_COLUMNS = 'columns';
 
-    /**
-     * @var string
-     */
-    protected $gridMode = self::GRID_MODE_ROWS;
+    protected string $gridMode = self::GRID_MODE_ROWS;
 
-    /**
-     * @param array $settings
-     * @return Section
-     */
-    public static function create(array $settings = [])
+    public static function create(array $settings = []): self
     {
         /** @var Section */
         $section = GeneralUtility::makeInstance(Section::class);
@@ -63,27 +57,18 @@ class Section extends AbstractFormContainer implements ContainerInterface
         return $section;
     }
 
-    /**
-     * @return string
-     */
-    public function getGridMode()
+    public function getGridMode(): string
     {
         return $this->gridMode;
     }
 
-    /**
-     * @param string $gridMode
-     * @return void
-     */
-    public function setGridMode($gridMode)
+    public function setGridMode(string $gridMode): self
     {
         $this->gridMode = $gridMode;
+        return $this;
     }
 
-    /**
-     * @return SectionObject|null
-     */
-    public function getContentContainer()
+    public function getContentContainer(): ?SectionObject
     {
         foreach ($this->children as $child) {
             if ($child instanceof SectionObject && $child->isContentContainer()) {
@@ -93,10 +78,7 @@ class Section extends AbstractFormContainer implements ContainerInterface
         return null;
     }
 
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $structureArray = [
             'type' => 'array',

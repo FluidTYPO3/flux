@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  */
 
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
@@ -32,21 +33,21 @@ class ProviderTest extends AbstractProviderTest
                 'foo' => array(
                     'fields' => array(
                         'test' => array(
-                            'type' => 'Input',
+                            'type' => Input::class,
                         )
                     )
                 ),
                 'bar' => array(
                     'fields' => array(
                         'test2' => array(
-                            'type' => 'Input',
+                            'type' => Input::class,
                         )
                     )
                 ),
             ),
             'fields' => array(
                 'test3' => array(
-                    'type' => 'Input',
+                    'type' => Input::class,
                 )
             ),
         ),

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Backend;
 
 /*
@@ -21,54 +22,23 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * Class for provisioning page layout selections for backend form fields
- */
 class PageLayoutDataProvider
 {
-    /**
-     * @var ConfigurationManagerInterface
-     */
-    protected $configurationManager;
+    protected ConfigurationManagerInterface $configurationManager;
+    protected FluxService $configurationService;
+    protected PageService $pageService;
 
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
-
-    /**
-     * @var array
-     */
-    protected $recognizedFormats = ['html', 'xml', 'txt', 'json', 'js', 'css'];
-
-    /**
-     * @var PageService
-     */
-    protected $pageService;
-
-    /**
-     * @param ConfigurationManagerInterface $configurationManager
-     * @return void
-     */
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
+    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
     {
         $this->configurationManager = $configurationManager;
     }
 
-    /**
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
+    public function injectConfigurationService(FluxService $configurationService): void
     {
         $this->configurationService = $configurationService;
     }
 
-    /**
-     * @param PageService $pageService
-     * @return void
-     */
-    public function injectPageService(PageService $pageService)
+    public function injectPageService(PageService $pageService): void
     {
         $this->pageService = $pageService;
     }
@@ -88,11 +58,7 @@ class PageLayoutDataProvider
         $this->injectPageService($pageService);
     }
 
-    /**
-     * @param array $parameters
-     * @return array
-     */
-    public function addItems(array $parameters)
+    public function addItems(array $parameters): array
     {
         $typoScript = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
@@ -103,7 +69,7 @@ class PageLayoutDataProvider
         } else {
             $hideInheritFieldSiteRoot = false;
         }
-        $pageIsSiteRoot = (boolean) ($parameters['row']['is_siteroot'] ?? 0);
+        $pageIsSiteRoot = (boolean) ($parameters['row']['is_siteroot'] ?? false);
         $forceDisplayInheritSiteRoot = 'tx_fed_page_controller_action_sub' === ($parameters['field'] ?? null)
             && !$hideInheritFieldSiteRoot;
         $forceHideInherit = (0 === (int) ($parameters['row']['pid'] ?? 0));
@@ -146,17 +112,10 @@ class PageLayoutDataProvider
         return $parameters;
     }
 
-    /**
-     * @param string $extension
-     * @param array $group
-     * @param array $parameters
-     * @param array $allowedTemplates
-     * @return array
-     */
-    protected function renderOptions($extension, array $group, array $parameters, array $allowedTemplates): array
+    protected function renderOptions(string $extension, array $group, array $parameters, array $allowedTemplates): array
     {
         $options = [];
-        if (false === empty($group)) {
+        if (!empty($group)) {
             $extensionKey = ExtensionNamingUtility::getExtensionKey($extension);
             $groupTitle = $this->getGroupTitle($extensionKey);
 
@@ -179,7 +138,7 @@ class PageLayoutDataProvider
     {
         $extension = $form->getExtensionName();
         $thumbnail = MiscellaneousUtility::getIconForTemplate($form);
-        if (null !== $thumbnail) {
+        if ($thumbnail) {
             $thumbnail = ltrim($thumbnail, '/');
             $thumbnail = GeneralUtility::getFileAbsFileName($thumbnail);
             $thumbnail = $thumbnail ? MiscellaneousUtility::createIcon($thumbnail) : null;
@@ -200,7 +159,7 @@ class PageLayoutDataProvider
      */
     protected function getGroupTitle(string $extensionKey): string
     {
-        if (false === $this->isExtensionLoaded($extensionKey)) {
+        if (!$this->isExtensionLoaded($extensionKey)) {
             $groupTitle = ucfirst($extensionKey);
         } else {
             $emConfigFile = ExtensionManagementUtility::extPath($extensionKey, 'ext_emconf.php');

@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Integration\HookSubscribers\ContentIcon;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Cache\CacheManager;
@@ -167,6 +168,18 @@ class ContentIconTest extends AbstractTestCase
             'provider with form without icon' => array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon),
             'provider with form with icon' => array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon),
         );
+    }
+
+    public function testReturnsEmptyStringWithInvalidCaller(): void
+    {
+        $subject = new ContentIcon();
+        self::assertSame('', $subject->addSubIcon([], $this));
+    }
+
+    public function testReturnsEmptyStringWithInvalidTable(): void
+    {
+        $subject = new ContentIcon();
+        self::assertSame('', $subject->addSubIcon(['foo', '', ''], $this->getMockBuilder(GridColumnItem::class)->disableOriginalConstructor()->getMock()));
     }
 
     protected function createObjectManagerInstance(): ObjectManagerInterface

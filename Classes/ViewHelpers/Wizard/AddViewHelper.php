@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -22,17 +23,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class AddViewHelper extends AbstractWizardViewHelper
 {
+    protected ?string $label = 'Add new record';
 
-    /**
-     * @var string
-     */
-    protected $label = 'Add new record';
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -51,18 +44,13 @@ class AddViewHelper extends AbstractWizardViewHelper
         $this->registerArgument('setValue', 'string', 'How to treat the record once created', false, 'prepend');
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Add
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Add
     {
         /** @var array $arguments */
         /** @var Add $component */
         $component = static::getPreparedComponent(Add::class, $renderingContext, $arguments);
-        $component->setTable($arguments['table']);
-        $component->setStoragePageUid($arguments['pid']);
+        $component->setTable((string) $arguments['table']);
+        $component->setStoragePageUid((int) $arguments['pid']);
         $component->setSetValue($arguments['setValue']);
         return $component;
     }

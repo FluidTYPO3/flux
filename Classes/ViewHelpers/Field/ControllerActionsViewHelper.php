@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -172,24 +173,25 @@ class ControllerActionsViewHelper extends SelectViewHelper
     {
         /** @var array $arguments */
         $extensionName = $arguments['controllerExtensionName'];
+        /** @var string|null $pluginName */
         $pluginName = $arguments['pluginName'];
         $actions = $arguments['actions'];
         $controllerName = $arguments['controllerName'];
         $separator = $arguments['separator'];
         $controllerContext = $renderingContext->getControllerContext();
-        if (true === $actions instanceof \Traversable) {
+        if ($actions instanceof \Traversable) {
             $actions = iterator_to_array($actions);
         }
-        if (null !== $controllerContext) {
-            if (true === empty($extensionName)) {
+        if ($controllerContext) {
+            if (empty($extensionName)) {
                 $request = $controllerContext->getRequest();
                 $extensionName = static::getFullExtensionNameFromRequest($request);
             }
-            if (true === empty($pluginName)) {
+            if (empty($pluginName)) {
                 $pluginName = $controllerContext->getRequest()->getPluginName();
             }
         }
-        if (true === empty($extensionName) && true === empty($pluginName) && 1 > count($actions)) {
+        if (empty($extensionName) && empty($pluginName) && count($actions) < 1) {
             throw new \RuntimeException(
                 'Either "actions", or both "extensionName" and "pluginName" must be used on ' .
                 'flux:field.controllerActions. None were found and none were detected from the Request.',
@@ -202,7 +204,7 @@ class ControllerActionsViewHelper extends SelectViewHelper
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
         $component->setItems($arguments['items']);
-        $component->setControllerExtensionName($extensionName);
+        $component->setControllerExtensionName($extensionName ?? 'FluidTYPO3.Flux');
         $component->setPluginName($pluginName);
         $component->setControllerName($controllerName);
         $component->setActions($actions);
@@ -211,7 +213,7 @@ class ControllerActionsViewHelper extends SelectViewHelper
         $component->setDisableLocalLanguageLabels($arguments['disableLocalLanguageLabels']);
         $component->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $component->setSubActions($arguments['subActions']);
-        if (false === empty($separator)) {
+        if (!empty($separator)) {
             $component->setSeparator($separator);
         }
         return $component;

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Wizard;
 
 /*
@@ -20,109 +21,57 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  */
 class Add extends AbstractWizard
 {
-
-    /**
-     * @var string
-     */
-    protected $name = 'add';
-
-    /**
-     * @var string
-     */
-    protected $type = 'script';
-
-    /**
-     * @var string
-     */
-    protected $icon = 'add.gif';
-
-    /**
-     * @var array
-     */
-    protected $module = [
+    protected ?string $name = 'add';
+    protected ?string $type = 'script';
+    protected ?string $icon = 'add.gif';
+    protected array $module = [
         'name' => 'wizard_add'
     ];
+    protected string $table = '';
+    protected int $storagePageUid = 0;
+    protected ?string $setValue = null;
 
-    /**
-     * @var string
-     */
-    protected $table;
-
-    /**
-     * @var integer
-     */
-    protected $storagePageUid;
-
-    /**
-     * @var boolean
-     */
-    protected $setValue = true;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = [
             'params' => [
                 'table' => $this->getTable(),
                 'pid' => $this->getStoragePageUid(),
-                'setValue' => intval($this->getSetValue())
+                'setValue' => $this->getSetValue()
             ]
         ];
         return $configuration;
     }
 
-    /**
-     * @param boolean $setValue
-     * @return Add
-     */
-    public function setSetValue($setValue)
+    public function setSetValue(?string $setValue): self
     {
         $this->setValue = $setValue;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getSetValue()
+    public function getSetValue(): ?string
     {
         return $this->setValue;
     }
 
-    /**
-     * @param integer $storagePageUid
-     * @return Add
-     */
-    public function setStoragePageUid($storagePageUid)
+    public function setStoragePageUid(int $storagePageUid): self
     {
         $this->storagePageUid = $storagePageUid;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getStoragePageUid()
+    public function getStoragePageUid(): int
     {
         return $this->storagePageUid;
     }
 
-    /**
-     * @param string $table
-     * @return Add
-     */
-    public function setTable($table)
+    public function setTable(string $table): self
     {
         $this->table = $table;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTable()
+    public function getTable(): string
     {
         return $this->table;
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Backend;
 
 /*
@@ -21,56 +22,27 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * Class for backend layouts
- */
 class BackendLayoutDataProvider extends DefaultDataProvider implements DataProviderInterface
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    protected ObjectManagerInterface $objectManager;
+    protected FluxService $configurationService;
+    protected WorkspacesAwareRecordService $recordService;
 
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
-
-    /**
-     * @var WorkspacesAwareRecordService
-     */
-    protected $recordService;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    public function injectObjectManager(ObjectManagerInterface $objectManager): void
     {
         $this->objectManager = $objectManager;
     }
 
-    /**
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
+    public function injectConfigurationService(FluxService $configurationService): void
     {
         $this->configurationService = $configurationService;
     }
 
-    /**
-     * @param WorkspacesAwareRecordService $workspacesAwareRecordService
-     * @return void
-     */
-    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService)
+    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService): void
     {
         $this->recordService = $workspacesAwareRecordService;
     }
 
-    /**
-     * Constructor
-     */
     public function __construct()
     {
         /** @var ObjectManagerInterface $objectManager */
@@ -86,17 +58,10 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
         $this->injectWorkspacesAwareRecordService($workspacesAwareRecordService);
     }
 
-    /**
-     * Adds backend layouts to the given backend layout collection.
-     *
-     * @param DataProviderContext $dataProviderContext
-     * @param BackendLayoutCollection $backendLayoutCollection
-     * @return void
-     */
     public function addBackendLayouts(
         DataProviderContext $dataProviderContext,
         BackendLayoutCollection $backendLayoutCollection
-    ) {
+    ): void {
         $backendLayout = $this->getBackendLayout('grid', $dataProviderContext->getPageId());
         if ($backendLayout) {
             $backendLayoutCollection->add($backendLayout);
@@ -107,13 +72,12 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
      * Gets a backend layout by (regular) identifier.
      *
      * @param string $identifier
-     * @param integer $pageUid
-     * @return BackendLayout|null
+     * @param integer $pageId
      */
-    public function getBackendLayout($identifier, $pageUid)
+    public function getBackendLayout($identifier, $pageId): ?BackendLayout
     {
         $emptyLayout = $this->createBackendLayoutInstance($identifier, 'Empty', '');
-        $record = $this->recordService->getSingle('pages', '*', $pageUid);
+        $record = $this->recordService->getSingle('pages', '*', $pageId);
         if (null === $record) {
             return $emptyLayout;
         }
@@ -125,11 +89,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
         return $grid->buildBackendLayout(0);
     }
 
-    /**
-     * @param array $record
-     * @return ProviderInterface|null
-     */
-    protected function resolveProvider(array $record)
+    protected function resolveProvider(array $record): ?ProviderInterface
     {
         $record = $this->recordService->getSingle('pages', '*', $record['uid']);
 
@@ -142,10 +102,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
     }
 
     /**
-     * @param string $identifier
-     * @param string $title
      * @param string|array $configuration
-     * @return BackendLayout
      * @codeCoverageIgnore
      */
     protected function createBackendLayoutInstance(string $identifier, string $title, $configuration): BackendLayout

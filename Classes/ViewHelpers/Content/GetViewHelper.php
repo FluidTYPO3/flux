@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
 /*
@@ -184,7 +185,7 @@ class GetViewHelper extends AbstractViewHelper
     {
         $columnPosition = $arguments['area'];
         if (!ctype_digit((string) $columnPosition)) {
-            $column = $grid->get($columnPosition, true, Column::class);
+            $column = $grid->get((string) $columnPosition, true, Column::class);
             if ($column instanceof Column) {
                 $columnPosition = $column->getColumnPosition();
             } else {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\Overrides;
 
 /*
@@ -13,55 +14,34 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
 {
-    /**
-     * @var array
-     */
-    protected $record = [];
+    protected array $record = [];
 
     /**
      * @var GridProviderInterface
      */
     protected $provider;
 
-    /**
-     * @param array $pageinfo
-     * @return void
-     */
-    public function setPageinfo($pageinfo)
+    public function setPageinfo(array $pageinfo): void
     {
         $this->pageinfo = $pageinfo;
     }
 
-    /**
-     * @return array
-     */
-    public function getPageinfo()
+    public function getPageinfo(): array
     {
         return $this->pageinfo;
     }
 
-    /**
-     * @param GridProviderInterface $provider
-     * @return void
-     */
-    public function setProvider(GridProviderInterface $provider)
+    public function setProvider(GridProviderInterface $provider): void
     {
         $this->provider = $provider;
     }
 
-    /**
-     * @param array $record
-     * @return void
-     */
-    public function setRecord(array $record)
+    public function setRecord(array $record): void
     {
         $this->record = $record;
     }
 
-    /**
-     * @return BackendLayoutView
-     */
-    protected function getBackendLayoutView()
+    protected function getBackendLayoutView(): BackendLayoutView
     {
         /** @var BackendLayoutView $view */
         $view = GeneralUtility::makeInstance(BackendLayoutView::class);
@@ -77,8 +57,12 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
      * @param string $additionalWhereClause
      * @return array
      */
-    protected function getContentRecordsPerColumn($table, $id, array $columns, $additionalWhereClause = '')
-    {
+    protected function getContentRecordsPerColumn(
+        $table,
+        $id,
+        array $columns,
+        $additionalWhereClause = ''
+    ): array {
         // Vital recursion prevention: each instance of PageLayoutView will attempt to render all records every
         // time - something which has started happening since the "unused content" feature was introduced. To avoid
         // the infinite recursion that happens because of this combined with the recursive usage of PageLayoutView,

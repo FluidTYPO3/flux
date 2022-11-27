@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider;
 
 /*
@@ -14,5 +15,4 @@ namespace FluidTYPO3\Flux\Provider;
  */
 class ContentProvider extends AbstractProvider implements ProviderInterface
 {
-
 }

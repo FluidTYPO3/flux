@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Controller;
 
 /*
@@ -13,77 +14,40 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use TYPO3\CMS\Extbase\Mvc\Response;
 
-/**
- * Page Controller
- *
- * @route off
- */
 class PageController extends AbstractFluxController implements PageControllerInterface
 {
+    protected ?string $fluxRecordField = 'tx_fed_page_flexform';
+    protected ?string $fluxTableName = 'pages';
 
-    /**
-     * @var string
-     */
-    protected $fluxRecordField = 'tx_fed_page_flexform';
-
-    /**
-     * @var string
-     */
-    protected $fluxTableName = 'pages';
-
-    /**
-     * @var PageService
-     */
-    protected $pageService;
-
-    /**
-     * @var FluxService
-     */
-    protected $pageConfigurationService;
+    protected PageService $pageService;
+    protected FluxService $pageConfigurationService;
 
     /**
      * @var Response
      */
     protected $response;
 
-    /**
-     * @param PageService $pageService
-     * @return void
-     */
-    public function injectPageService(PageService $pageService)
+    public function injectPageService(PageService $pageService): void
     {
         $this->pageService = $pageService;
     }
 
-    /**
-     * @param FluxService $pageConfigurationService
-     * @return void
-     */
-    public function injectPageConfigurationService(FluxService $pageConfigurationService)
+    public function injectPageConfigurationService(FluxService $pageConfigurationService): void
     {
         $this->pageConfigurationService = $pageConfigurationService;
     }
 
-    /**
-     * @throws \RuntimeException
-     * @return void
-     */
-    protected function initializeProvider()
+    protected function initializeProvider(): void
     {
         $record = $this->getRecord();
-        if ($record !== null) {
-            $provider = $this->pageConfigurationService->resolvePageProvider($record);
-            if ($provider instanceof BasicProviderInterface) {
-                $this->provider = $provider;
-            }
+        $provider = $this->pageConfigurationService->resolvePageProvider($record);
+        if ($provider instanceof BasicProviderInterface) {
+            $this->provider = $provider;
         }
     }
 
-    /**
-     * @return array|null
-     */
-    public function getRecord()
+    public function getRecord(): array
     {
-        return $GLOBALS['TSFE']->page ?? null;
+        return $GLOBALS['TSFE']->page ?? [];
     }
 }

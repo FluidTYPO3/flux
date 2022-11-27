@@ -22,85 +22,46 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class ControllerPipe extends AbstractPipe implements PipeInterface
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    protected ObjectManagerInterface $objectManager;
 
-    /**
-     * @var string
-     */
-    protected $controller;
+    protected string $controller = '';
+    protected string $action = '';
+    protected string $extensionName = '';
 
-    /**
-     * @var string
-     */
-    protected $action;
-
-    /**
-     * @var string
-     */
-    protected $extensionName;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    public function injectObjectManager(ObjectManagerInterface $objectManager): void
     {
         $this->objectManager = $objectManager;
     }
 
-    /**
-     * @param string $controller
-     * @return ControllerPipe
-     */
-    public function setController($controller)
+    public function setController(string $controller): self
     {
         $this->controller = $controller;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getController()
+    public function getController(): string
     {
         return $this->controller;
     }
 
-    /**
-     * @param string $action
-     * @return ControllerPipe
-     */
-    public function setAction($action)
+    public function setAction(string $action): self
     {
         $this->action = $action;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getAction()
+    public function getAction(): string
     {
         return $this->action;
     }
 
-    /**
-     * @param string $extensionName
-     * @return ControllerPipe
-     */
-    public function setExtensionName($extensionName)
+    public function setExtensionName(string $extensionName): self
     {
         $this->extensionName = $extensionName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getExtensionName()
+    public function getExtensionName(): string
     {
         return $this->extensionName;
     }

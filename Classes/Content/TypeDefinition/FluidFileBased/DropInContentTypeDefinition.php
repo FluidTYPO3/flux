@@ -33,10 +33,10 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
     public const CONTENT_DIRECTORY = 'Content/';
     public const PAGE_DIRECTORY = 'Page/';
 
-    protected $extensionIdentity = 'FluidTYPO3.Flux';
-    protected $basePath = 'design/';
-    protected $relativeFilePath = '';
-    protected $providerClassName = Provider::class;
+    protected string $extensionIdentity = 'FluidTYPO3.Flux';
+    protected string $basePath = 'design/';
+    protected string $relativeFilePath = '';
+    protected string $providerClassName = Provider::class;
 
     /**
      * Constructs a Fluid file-based content type definition

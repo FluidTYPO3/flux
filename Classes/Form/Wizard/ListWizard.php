@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Wizard;
 
 /*
@@ -22,26 +23,10 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  */
 class ListWizard extends AbstractWizard
 {
-
-    /**
-     * @var string
-     */
-    protected $name = 'list';
-
-    /**
-     * @var string
-     */
-    protected $type = 'popup';
-
-    /**
-     * @var string
-     */
-    protected $icon = 'list.gif';
-
-    /**
-     * @var array
-     */
-    protected $module = [
+    protected ?string $name = 'list';
+    protected ?string $type = 'popup';
+    protected ?string $icon = 'list.gif';
+    protected array $module = [
         'name' => 'wizard_list'
     ];
 
@@ -65,10 +50,7 @@ class ListWizard extends AbstractWizard
      */
     protected $storagePageUid;
 
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $structure = [
             'JSopenParams' => sprintf(

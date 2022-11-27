@@ -31,13 +31,34 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)->disableOriginalConstructor()->getMock();
-        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->setMethods(['getRecords'])->getMock();
+        $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getRecords'])
+            ->getMock();
         $GLOBALS['TSFE']->cObj->method('getRecords')->willReturn([]);
         $GLOBALS['TCA']['tt_content']['ctrl'] = [];
 
+        $grid = Grid::create(
+            [
+                'children' => [
+                    [
+                        'type' => Row::class,
+                        'children' => [
+                            [
+                                'type' => Column::class,
+                                'name' => 'void'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        );
+
         $provider = new Provider();
-        $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $provider->setGrid($grid);
         $provider->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
 
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'provider', $provider);

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux;
 
 /*
@@ -32,89 +33,43 @@ class Core
      */
     protected static $objectManager;
 
-    /**
-     * Contains all ConfigurationProviders registered with Flux
-     * @var array
-     */
-    protected static $providers = [];
-
-    /**
-     * @var array
-     */
-    protected static $pipes = [];
-
-    /**
-     * @var array
-     */
-    protected static $outlets = [];
-
-    /**
-     * Contains all Forms for tables registered with Flux
-     * @var array
-     */
-    private static $forms = [
+    protected static array $providers = [];
+    protected static array $pipes = [];
+    protected static array $outlets = [];
+    private static array $forms = [
         'tables' => [],
     ];
-
-    /**
-     * Contains ConfigurationProviders which have been unregistered
-     * @var array
-     */
-    private static $unregisteredProviders = [];
-
-    /**
-     * Contains all extensions registered with Flux
-     * @var array
-     */
-    protected static $extensions = [
+    private static array $unregisteredProviders = [];
+    protected static array $extensions = [
         self::CONTROLLER_ALL => []
     ];
+    protected static array $queuedContentTypeRegistrations = [];
 
-    /**
-     * Contains queued instructions to call \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin in later hook
-     * @var array
-     */
-    protected static $queuedContentTypeRegistrations = [];
-
-    /**
-     * @return array
-     */
-    public static function getQueuedContentTypeRegistrations()
+    public static function getQueuedContentTypeRegistrations(): array
     {
         return self::$queuedContentTypeRegistrations;
     }
 
-    /**
-     * @return void
-     */
-    public static function clearQueuedContentTypeRegistrations()
+    public static function clearQueuedContentTypeRegistrations(): void
     {
         self::$queuedContentTypeRegistrations = [];
     }
 
-    /**
-     * @param string $table
-     * @param Form $form
-     * @return void
-     */
-    public static function registerFormForTable($table, Form $form)
+    public static function registerFormForTable(string $table, Form $form): void
     {
         if (null === $form->getName()) {
             $form->setName($table);
         }
-        if (null === $form->getExtensionName() && true === isset($GLOBALS['_EXTKEY'])) {
+        if (null === $form->getExtensionName() && isset($GLOBALS['_EXTKEY'])) {
             $form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
         }
         self::$forms['tables'][$table] = $form;
     }
 
-    /**
-     * @param string $extensionKey
-     * @param string $providesControllerName
-     * @return void
-     */
-    public static function registerProviderExtensionKey($extensionKey, $providesControllerName = self::CONTROLLER_ALL)
-    {
+    public static function registerProviderExtensionKey(
+        string $extensionKey,
+        string $providesControllerName = self::CONTROLLER_ALL
+    ): void {
         if ($providesControllerName === 'Content' && !ExtensionManagementUtility::isLoaded('fluidcontent')) {
             // Special temporary case - when fluidcontent is not installed, Flux takes over and registers all
             // detected template files as native CTypes. Remove if/when fluidcontent is discontinued.
@@ -148,11 +103,7 @@ class Core
         }
     }
 
-    /**
-     * @param string $forControllerName
-     * @return array
-     */
-    public static function getRegisteredProviderExtensionKeys($forControllerName)
+    public static function getRegisteredProviderExtensionKeys(string $forControllerName): array
     {
         if (true === isset(self::$extensions[$forControllerName])) {
             return array_unique(
@@ -166,11 +117,9 @@ class Core
      * Registers a class implementing one of the Flux ConfigurationProvider
      * interfaces.
      *
-     * @param string|object $classNameOrInstance
-     * @return void
-     * @throws \RuntimeException
+     * @param class-string|object $classNameOrInstance
      */
-    public static function registerConfigurationProvider($classNameOrInstance)
+    public static function registerConfigurationProvider($classNameOrInstance): void
     {
         $alreadyRegistered = in_array($classNameOrInstance, self::$providers);
         $alreadyUnregistered = in_array($classNameOrInstance, self::$unregisteredProviders);
@@ -204,17 +153,16 @@ class Core
      * @param string|null $section Optional section name containing the configuration
      * @param array|null $paths Optional paths array / Closure to return paths
      * @param string $fieldName Optional fieldname if not from pi_flexform
-     * @return ProviderInterface
      */
     public static function registerFluidFlexFormPlugin(
-        $extensionKey,
-        $pluginSignature,
-        $templateFilename,
-        $variables = [],
-        $section = null,
-        $paths = null,
-        $fieldName = 'pi_flexform'
-    ) {
+        string $extensionKey,
+        string $pluginSignature,
+        string $templateFilename,
+        array $variables = [],
+        ?string $section = null,
+        ?array $paths = null,
+        string $fieldName = 'pi_flexform'
+    ): ProviderInterface {
         $objectManager = static::getObjectManager();
         /** @var ProviderInterface $provider */
         $provider = $objectManager->get(Provider::class);
@@ -242,17 +190,16 @@ class Core
      * @param string|null $section Optional section name containing the configuration
      * @param array|null $paths Optional paths array / Closure to return paths
      * @param string $fieldName Optional fieldname if not from pi_flexform
-     * @return ProviderInterface
      */
     public static function registerFluidFlexFormContentObject(
-        $extensionKey,
-        $contentObjectType,
-        $templateFilename,
-        $variables = [],
-        $section = null,
-        $paths = null,
-        $fieldName = 'pi_flexform'
-    ) {
+        string $extensionKey,
+        string $contentObjectType,
+        string $templateFilename,
+        array $variables = [],
+        ?string $section = null,
+        ?array $paths = null,
+        string $fieldName = 'pi_flexform'
+    ): ProviderInterface {
         $objectManager = static::getObjectManager();
         /** @var ProviderInterface $provider */
         $provider = $objectManager->get(Provider::class);
@@ -274,21 +221,20 @@ class Core
      * to display as a FlexForm.
      *
      * @param string $table The SQL table this FlexForm is bound to
-     * @param string $fieldName The SQL field this FlexForm is bound to
+     * @param string|null $fieldName The SQL field this FlexForm is bound to. If empty, binds to any/every field
      * @param string $templateFilename Location of the Fluid template containing field definitions
      * @param array $variables Optional array of variables to pass to Fluid template
      * @param string|null $section Optional section name containing the configuration
      * @param array|null $paths Optional paths array / Closure to return paths
-     * @return ProviderInterface
      */
     public static function registerFluidFlexFormTable(
-        $table,
-        $fieldName,
-        $templateFilename,
-        $variables = [],
-        $section = null,
-        $paths = null
-    ) {
+        string $table,
+        ?string $fieldName,
+        string $templateFilename,
+        array $variables = [],
+        ?string $section = null,
+        ?array $paths = null
+    ): ProviderInterface {
         $objectManager = static::getObjectManager();
         /** @var ProviderInterface $provider */
         $provider = $objectManager->get(Provider::class);
@@ -314,15 +260,14 @@ class Core
      * @param string|null $contentTypeName Optional override for the CType value this template will use
      * @param string|null $providerClassName Optional custom class implementing ProviderInterface from Flux
      * @param string|null $pluginName Optional plugin name used when registering the Extbase plugin for the template
-     * @return void
      */
     public static function registerTemplateAsContentType(
-        $providerExtensionName,
-        $templateFilename,
-        $contentTypeName = null,
-        $providerClassName = Provider::class,
-        $pluginName = null
-    ) {
+        string $providerExtensionName,
+        string $templateFilename,
+        ?string $contentTypeName = null,
+        ?string $providerClassName = Provider::class,
+        ?string $pluginName = null
+    ): void {
         if (!PathUtility::isAbsolutePath($templateFilename)) {
             $templateFilename = static::getAbsolutePathForFilename($templateFilename);
         }
@@ -337,11 +282,7 @@ class Core
         ];
     }
 
-    /**
-     * @param string $providerClassName
-     * @return void
-     */
-    public static function unregisterConfigurationProvider($providerClassName)
+    public static function unregisterConfigurationProvider(string $providerClassName): void
     {
         if (true === in_array($providerClassName, self::$providers)) {
             $index = array_search($providerClassName, self::$providers);
@@ -351,22 +292,13 @@ class Core
         }
     }
 
-    /**
-     * @param string $typeOrClassName
-     * @param string $insteadOfNativeType
-     * @return void
-     */
-    public static function registerPipe($typeOrClassName, $insteadOfNativeType = null)
+    public static function registerPipe(string $typeOrClassName, ?string $insteadOfNativeType = null): void
     {
         $key = null === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
         self::$pipes[$key] = $typeOrClassName;
     }
 
-    /**
-     * @param string $typeOrClassName
-     * @return void
-     */
-    public static function unregisterPipe($typeOrClassName)
+    public static function unregisterPipe(string $typeOrClassName): void
     {
         if (true === in_array($typeOrClassName, self::$pipes)) {
             $index = array_search($typeOrClassName, self::$pipes);
@@ -374,22 +306,13 @@ class Core
         }
     }
 
-    /**
-     * @param string $typeOrClassName
-     * @param string $insteadOfNativeType
-     * @return void
-     */
-    public static function registerOutlet($typeOrClassName, $insteadOfNativeType = null)
+    public static function registerOutlet(string $typeOrClassName, ?string $insteadOfNativeType = null): void
     {
         $key = null === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
         self::$outlets[$key] = $typeOrClassName;
     }
 
-    /**
-     * @param string $typeOrClassName
-     * @return void
-     */
-    public static function unregisterOutlet($typeOrClassName)
+    public static function unregisterOutlet(string $typeOrClassName): void
     {
         if (true === in_array($typeOrClassName, self::$outlets)) {
             $index = array_search($typeOrClassName, self::$outlets);
@@ -401,7 +324,7 @@ class Core
      * Gets the defined FlexForms configuration providers based on parameters
      * @return ProviderInterface[]
      */
-    public static function getRegisteredFlexFormProviders()
+    public static function getRegisteredFlexFormProviders(): array
     {
         reset(self::$providers);
         return self::$providers;
@@ -410,16 +333,12 @@ class Core
     /**
      * @return Form[]
      */
-    public static function getRegisteredFormsForTables()
+    public static function getRegisteredFormsForTables(): array
     {
         return self::$forms['tables'];
     }
 
-    /**
-     * @param string $table
-     * @return Form|NULL
-     */
-    public static function getRegisteredFormForTable($table)
+    public static function getRegisteredFormForTable(string $table): ?Form
     {
         if (true === isset(self::$forms['tables'][$table])) {
             return self::$forms['tables'][$table];
@@ -427,18 +346,12 @@ class Core
         return null;
     }
 
-    /**
-     * @return array
-     */
-    public static function getPipes()
+    public static function getPipes(): array
     {
         return array_values(self::$pipes);
     }
 
-    /**
-     * @return array
-     */
-    public static function getOutlets()
+    public static function getOutlets(): array
     {
         return array_values(self::$outlets);
     }
@@ -451,6 +364,9 @@ class Core
         return realpath($filename) ?: GeneralUtility::getFileAbsFileName($filename);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected static function getObjectManager(): ObjectManagerInterface
     {
         if (static::$objectManager === null) {

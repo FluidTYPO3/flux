@@ -113,16 +113,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canExecuteClearCacheCommand()
-    {
-        $provider = $this->getConfigurationProviderInstance();
-        $return = $provider->clearCacheCommand(array('all'));
-        $this->assertEmpty($return);
-    }
-
-    /**
-     * @test
-     */
     public function canGetAndSetListType()
     {
         $record = Records::$contentRecordIsParentAndHasChildren;
@@ -215,9 +205,9 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function canGetTemplateVariables()
     {
         $provider = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getPageValues', 'getGrid', 'getForm'))->getMock();
-        $provider->expects($this->once())->method('getPageValues')->willReturnArgument(0);
+        $provider->expects($this->once())->method('getPageValues')->willReturn([]);
         $provider->expects($this->once())->method('getForm')->willReturn(null);
-        $provider->expects($this->once())->method('getGrid')->willReturn(null);
+        $provider->expects($this->once())->method('getGrid')->willReturn(Grid::create());
         $this->setInaccessiblePropertyValue($provider, 'templatePaths', array());
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
         $record = $this->getBasicRecord();
@@ -247,7 +237,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $provider = $this->getConfigurationProviderInstance();
         $record = $this->getBasicRecord();
         $extensionKey = $provider->getExtensionKey($record);
-        $this->assertNull($extensionKey);
+        $this->assertSame('FluidTYPO3.Flux', $extensionKey);
     }
 
     /**
@@ -272,7 +262,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $provider = $this->getConfigurationProviderInstance();
         $record = $this->getBasicRecord();
         $result = $provider->getControllerExtensionKeyFromRecord($record);
-        $this->assertNull($result);
+        $this->assertSame('FluidTYPO3.Flux', $result);
     }
 
     /**
@@ -550,7 +540,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function canSetTemplateVariables()
     {
         $provider = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getPageValues'))->getMock();
-        $provider->expects($this->once())->method('getPageValues')->willReturnArgument(0);
+        $provider->expects($this->once())->method('getPageValues')->willReturn([]);
         $record = $this->getBasicRecord();
         $variables = array('test' => 'test');
         $provider->setTemplateVariables($variables);
@@ -618,21 +608,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $this->assertSame($section, $provider->getConfigurationSectionName($record));
     }
 
-    /**
-     * @test
-     */
-    public function canCallPreProcessCommand()
-    {
-        $provider = $this->getConfigurationProviderInstance();
-        $command = 'dummy';
-        $id = 0;
-        $record = $this->getBasicRecord();
-        $relativeTo = 1;
-        $reference = $this->getMockBuilder(DataHandler::class)->disableOriginalConstructor()->getMock();
-        $result = $provider->preProcessCommand($command, $id, $record, $relativeTo, $reference);
-        $this->assertNull($result);
-    }
-
     public function testGetGridCanDetectContentContainerInParentWithModeRows(): void
     {
         $form = Form::create();
@@ -675,7 +650,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)->getMockForAbstractClass();
         $output = $this->callInaccessibleMethod($instance, 'getCacheKeyForStoredVariable', ['uid' => 123], 'test');
-        self::assertSame('flux-storedvariable---123--default-test', $output);
+        self::assertSame('flux-storedvariable---123-FluidTYPO3.Flux-default-test', $output);
     }
 
     public function testGetPreview(): void
