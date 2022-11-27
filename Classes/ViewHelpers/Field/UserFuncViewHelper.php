@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -60,9 +61,9 @@ class UserFuncViewHelper extends AbstractFieldViewHelper
         /** @var array $arguments */
         /** @var UserFunction $user */
         $user = static::getPreparedComponent(UserFunction::class, $renderingContext, $arguments);
-        $user->setFunction($arguments['userFunc']);
+        $user->setFunction((string) $arguments['userFunc']);
         $user->setRenderType($arguments['renderType'] ?? '');
-        $user->setArguments($arguments['arguments']);
+        $user->setArguments($arguments['arguments'] ?? []);
         return $user;
     }
 }

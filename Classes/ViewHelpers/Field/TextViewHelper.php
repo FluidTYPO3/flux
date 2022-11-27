@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -97,7 +98,7 @@ class TextViewHelper extends AbstractFieldViewHelper
         $text->setColumns($arguments['cols']);
         $text->setRows($arguments['rows']);
         $text->setEnableRichText($arguments['enableRichText']);
-        $text->setRichtextConfiguration($arguments['richtextConfiguration']);
+        $text->setRichtextConfiguration($arguments['richtextConfiguration'] ?? '');
         $text->setRenderType($arguments['renderType']);
         $text->setFormat($arguments['format']);
         $text->setPlaceholder($arguments['placeholder']);

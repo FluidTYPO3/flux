@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -17,7 +18,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class OutletViewHelper extends AbstractFormViewHelper
 {
-
     /**
      * Initialize
      * @return void

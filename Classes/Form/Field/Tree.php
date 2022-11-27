@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -10,12 +11,8 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\AbstractRelationFormField;
 
-/**
- * Tree
- */
 class Tree extends AbstractRelationFormField
 {
-
     const DEFAULT_ALLOW_RECURSIVE_MODE = false;
     const DEFAULT_EXPAND_ALL = false;
     const DEFAULT_NON_SELECTABLE_LEVELS  = '0';
@@ -23,45 +20,15 @@ class Tree extends AbstractRelationFormField
     const DEFAULT_SHOW_HEADER = false;
     const DEFAULT_WIDTH = 280;
 
-    /**
-     * @var string
-     */
-    protected $parentField;
+    protected ?string $parentField = null;
+    protected bool $allowRecursiveMode = self::DEFAULT_ALLOW_RECURSIVE_MODE;
+    protected bool $expandAll = self::DEFAULT_EXPAND_ALL;
+    protected string $nonSelectableLevels = self::DEFAULT_NON_SELECTABLE_LEVELS;
+    protected int $maxLevels = self::DEFAULT_MAX_LEVELS;
+    protected bool $showHeader = self::DEFAULT_SHOW_HEADER;
+    protected int $width = self::DEFAULT_WIDTH;
 
-    /**
-     * @var boolean
-     */
-    protected $allowRecursiveMode = self::DEFAULT_ALLOW_RECURSIVE_MODE;
-
-    /**
-     * @var boolean
-     */
-    protected $expandAll = self::DEFAULT_EXPAND_ALL;
-
-    /**
-     * @var string
-     */
-    protected $nonSelectableLevels = self::DEFAULT_NON_SELECTABLE_LEVELS;
-
-    /**
-     * @var integer
-     */
-    protected $maxLevels = self::DEFAULT_MAX_LEVELS;
-
-    /**
-     * @var boolean
-     */
-    protected $showHeader = self::DEFAULT_SHOW_HEADER;
-
-    /**
-     * @var integer
-     */
-    protected $width = self::DEFAULT_WIDTH;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('select');
         $configuration['renderMode'] = 'tree';
@@ -80,128 +47,79 @@ class Tree extends AbstractRelationFormField
         return $configuration;
     }
 
-    /**
-     * @param string $parentField
-     * @return Tree
-     */
-    public function setParentField($parentField)
+    public function setParentField(?string $parentField): self
     {
         $this->parentField = $parentField;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getParentField()
+    public function getParentField(): ?string
     {
         return $this->parentField;
     }
 
-    /**
-     * @param boolean $allowRecursiveMode
-     * @return Tree
-     */
-    public function setAllowRecursiveMode($allowRecursiveMode)
+    public function setAllowRecursiveMode(bool $allowRecursiveMode): self
     {
         $this->allowRecursiveMode = $allowRecursiveMode;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getAllowRecursiveMode()
+    public function getAllowRecursiveMode(): bool
     {
         return $this->allowRecursiveMode;
     }
 
-    /**
-     * @param boolean $expandAll
-     * @return Tree
-     */
-    public function setExpandAll($expandAll)
+    public function setExpandAll(bool $expandAll): self
     {
         $this->expandAll = $expandAll;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getExpandAll()
+    public function getExpandAll(): bool
     {
         return $this->expandAll;
     }
 
-    /**
-     * @param string $nonSelectableLevels
-     * @return Tree
-     */
-    public function setNonSelectableLevels($nonSelectableLevels)
+    public function setNonSelectableLevels(string $nonSelectableLevels): self
     {
         $this->nonSelectableLevels = $nonSelectableLevels;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getNonSelectableLevels()
+    public function getNonSelectableLevels(): string
     {
         return $this->nonSelectableLevels;
     }
 
-    /**
-     * @param integer $maxLevels
-     * @return Tree
-     */
-    public function setMaxLevels($maxLevels)
+    public function setMaxLevels(int $maxLevels): self
     {
         $this->maxLevels = $maxLevels;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getMaxLevels()
+    public function getMaxLevels(): int
     {
         return $this->maxLevels;
     }
 
-    /**
-     * @param boolean $showHeader
-     * @return Tree
-     */
-    public function setShowHeader($showHeader)
+    public function setShowHeader(bool $showHeader): self
     {
         $this->showHeader = $showHeader;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getShowHeader()
+    public function getShowHeader(): bool
     {
         return $this->showHeader;
     }
 
-    /**
-     * @param integer $width
-     * @return Tree
-     */
-    public function setWidth($width)
+    public function setWidth(int $width): self
     {
         $this->width = $width;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getWidth()
+    public function getWidth(): int
     {
         return $this->width;
     }

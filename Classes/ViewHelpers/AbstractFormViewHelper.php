@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -174,7 +175,9 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
             $grids[$gridName] = Grid::create(['name' => $gridName]);
             $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_GRIDS, $grids);
         }
-        return $grids[$gridName];
+        /** @var Grid $grid */
+        $grid = $grids[$gridName];
+        return $grid;
     }
 
     /**

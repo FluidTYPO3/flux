@@ -138,7 +138,6 @@ class FluxServiceTest extends AbstractTestCase
         return array(
             array(''),
             array(0),
-            array(array()),
         );
     }
 
@@ -452,7 +451,8 @@ class FluxServiceTest extends AbstractTestCase
             ->getMock();
         $resolver->expects(self::once())
             ->method('resolveConfigurationProviders')
-            ->with('table', 'field', ['uid' => 123], 'ext', [GridProviderInterface::class]);
+            ->with('table', 'field', ['uid' => 123], 'ext', [GridProviderInterface::class])
+            ->willReturn([]);
 
         $subject->injectProviderResolver($resolver);
         $subject->resolveConfigurationProviders(

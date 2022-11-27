@@ -16,47 +16,25 @@ use FluidTYPO3\Flux\Provider\SubPageProvider;
  */
 class DummyPageProvider extends SubPageProvider
 {
+    protected array $values = [];
 
-    /**
-     * @var array
-     */
-    protected $values = array();
-
-    /**
-     * @param array $row
-     * @param string $table
-     * @param string $field
-     * @param string $extensionKey
-     * @return boolean
-     */
-    public function trigger(array $row, $table, $field, $extensionKey = null)
+    public function trigger(array $row, ?string $table, ?string $field, ?string $extensionKey = null): bool
     {
         return true;
     }
 
-    /**
-     * @param array $values
-     * @return void
-     */
-    public function setFlexFormValues(array $values)
+    public function setFlexFormValues(array $values): self
     {
         $this->values = $values;
+        return $this;
     }
 
-    /**
-     * @param array $row
-     * @return array()
-     */
-    public function getFlexFormValues(array $row)
+    public function getFlexFormValues(array $row): array
     {
-        return array();
+        return [];
     }
 
-    /**
-     * @param array $row
-     * @return Form
-     */
-    public function getForm(array $row)
+    public function getForm(array $row): ?Form
     {
         return $this->form;
     }

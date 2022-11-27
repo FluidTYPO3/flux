@@ -49,12 +49,7 @@ class ContentTypeForm extends Form
         );
     }
 
-    /**
-     * @param string $name
-     * @param string $label
-     * @return void
-     */
-    public function createSheet(string $name, string $label)
+    public function createSheet(string $name, string $label): void
     {
         /** @var Form\Container\Sheet $sheet */
         $sheet = $this->createContainer(Form\Container\Sheet::class, $name, $label);
@@ -259,21 +254,33 @@ class ContentTypeForm extends Form
 
     protected function createSelectAndRelationFieldsInFieldObject(Form\Container\SectionObject $object): void
     {
-        $object->createField(
+        /** @var Form\Field\Input $input */
+        $input = $object->createField(
             Form\Field\Input::class,
             'size',
             $this->createLabelReference('relation.size')
-        )->setValidate('trim,int')->setSize(3);
-        $object->createField(
+        );
+        $input->setValidate('trim,int');
+        $input->setSize(3);
+
+        /** @var Form\Field\Input $input */
+        $input = $object->createField(
             Form\Field\Input::class,
             'minItems',
             $this->createLabelReference('relation.minItems')
-        )->setValidate('trim,int')->setSize(3);
-        $object->createField(
+        );
+        $input->setValidate('trim,int');
+        $input->setSize(3);
+
+        /** @var Form\Field\Input $input */
+        $input = $object->createField(
             Form\Field\Input::class,
             'maxItems',
             $this->createLabelReference('relation.maxItems')
-        )->setValidate('trim,int')->setSize(3);
+        );
+        $input->setValidate('trim,int');
+        $input->setSize(3);
+
         $object->createField(Form\Field\Checkbox::class, 'multiple', $this->createLabelReference('relation.multiple'));
         $object->createField(
             Form\Field\Checkbox::class,

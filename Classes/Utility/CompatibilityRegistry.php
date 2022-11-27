@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
 
 /**
@@ -154,51 +155,27 @@ namespace FluidTYPO3\Flux\Utility;
  */
 abstract class CompatibilityRegistry
 {
-
     const VERSION_DEFAULT = 'default';
 
-    /**
-     * @var array
-     */
-    protected static $registry = [];
+    protected static array $registry = [];
+    protected static array $featureFlags = [];
+    protected static array $cache = [];
 
-    /**
-     * @var array
-     */
-    protected static $featureFlags = [];
-
-    /**
-     * @var array
-     */
-    protected static $cache = [];
-
-    /**
-     * @param string $scope
-     * @param array $versionedVariables
-     * @return void
-     */
-    public static function register($scope, array $versionedVariables)
+    public static function register(string $scope, array $versionedVariables): void
     {
         static::$registry[$scope] = $versionedVariables;
     }
 
-    /**
-     * @param string $scope
-     * @param array $versionedFeatureFlags
-     * @return void
-     */
-    public static function registerFeatureFlags($scope, array $versionedFeatureFlags)
+    public static function registerFeatureFlags(string $scope, array $versionedFeatureFlags): void
     {
         static::$featureFlags[$scope] = $versionedFeatureFlags;
     }
 
     /**
-     * @param string $scope
-     * @param string $version
      * @param mixed $default
      * @return mixed
      */
-    public static function get($scope, $version = self::VERSION_DEFAULT, $default = null)
+    public static function get(string $scope, string $version = self::VERSION_DEFAULT, $default = null)
     {
         $value = static::cache(static::$registry, 'registry', $scope, $version);
         if (null === $value && $default !== $value) {
@@ -207,42 +184,25 @@ abstract class CompatibilityRegistry
         return $value;
     }
 
-    /**
-     * @param string $scope
-     * @param string $flag
-     * @param string $version
-     * @return boolean
-     */
-    public static function hasFeatureFlag($scope, $flag, $version = self::VERSION_DEFAULT)
+    public static function hasFeatureFlag(string $scope, string $flag, string $version = self::VERSION_DEFAULT): bool
     {
         return in_array($flag, static::getFeatureFlags($scope, $version));
     }
 
-    /**
-     * @param string $scope
-     * @param string $version
-     * @return array
-     */
-    public static function getFeatureFlags($scope, $version = self::VERSION_DEFAULT)
+    public static function getFeatureFlags(string $scope, string $version = self::VERSION_DEFAULT): array
     {
         return (array) static::cache(static::$featureFlags, 'featureFlags', $scope, $version);
     }
 
-    /**
-     * @param string $version
-     * @return string
-     */
-    protected static function resolveVersion($version)
+    protected static function resolveVersion(string $version): string
     {
-        return (string) (static::VERSION_DEFAULT === $version ? TYPO3_version : $version);
+        return static::VERSION_DEFAULT === $version ? TYPO3_version : $version;
     }
 
     /**
-     * @param array $versionedValues
-     * @param string $version
      * @return mixed
      */
-    protected static function resolveVersionedValue(array &$versionedValues, $version)
+    protected static function resolveVersionedValue(array &$versionedValues, string $version)
     {
         $version = static::resolveVersion($version);
         krsort($versionedValues);
@@ -255,13 +215,9 @@ abstract class CompatibilityRegistry
     }
 
     /**
-     * @param array $source
-     * @param string $prefix
-     * @param string $scope
-     * @param string $version
      * @return mixed
      */
-    protected static function cache(array &$source, $prefix, $scope, $version)
+    protected static function cache(array &$source, string $prefix, string $scope, string $version)
     {
         $key = $prefix . '-' . $scope . '-' . $version;
         if (true === array_key_exists($key, static::$cache)) {

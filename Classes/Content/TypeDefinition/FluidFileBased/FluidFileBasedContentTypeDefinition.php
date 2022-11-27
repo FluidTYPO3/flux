@@ -26,25 +26,10 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDefinitionInterface
 {
-    /**
-     * @var string
-     */
-    protected $extensionIdentity = '';
-
-    /**
-     * @var string
-     */
-    protected $basePath = '';
-
-    /**
-     * @var string
-     */
-    protected $relativeFilePath = '';
-
-    /**
-     * @var string
-     */
-    protected $providerClassName = Provider::class;
+    protected string $extensionIdentity = '';
+    protected string $basePath = '';
+    protected string $relativeFilePath = '';
+    protected string $providerClassName = Provider::class;
 
     /**
      * Constructs a Fluid file-based content type definition
@@ -103,7 +88,9 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
             $record
         );
         if ($provider === null) {
-            return Form\Container\Grid::create();
+            /** @var Form\Container\Grid $grid */
+            $grid = Form\Container\Grid::create();
+            return $grid;
         }
         return $provider->getGrid($record);
     }

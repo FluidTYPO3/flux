@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 /*
@@ -53,9 +54,9 @@ class FlashMessageViewHelper extends AbstractPipeViewHelper
         /** @var array $arguments */
         /** @var FlashMessagePipe $pipe */
         $pipe = GeneralUtility::makeInstance(FlashMessagePipe::class);
-        $pipe->setTitle($arguments['title']);
-        $pipe->setMessage($arguments['message']);
-        $pipe->setSeverity($arguments['severity']);
+        $pipe->setTitle((string) $arguments['title']);
+        $pipe->setMessage((string) $arguments['message']);
+        $pipe->setSeverity((int) $arguments['severity']);
         $pipe->setStoreInSession((boolean) $arguments['storeInSession']);
         return $pipe;
     }

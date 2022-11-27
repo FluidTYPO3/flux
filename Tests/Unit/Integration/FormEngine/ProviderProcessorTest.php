@@ -40,7 +40,7 @@ class ProviderProcessorTest extends AbstractTestCase
     public function testCallsProcessTableConfigurationOnProviders(): void
     {
         $provider = $this->getMockBuilder(Provider::class)->setMethods(['processTableConfiguration'])->getMock();
-        $provider->expects($this->once())->method('processTableConfiguration')->willReturn('test');
+        $provider->expects($this->once())->method('processTableConfiguration')->willReturn([]);
 
         $providerResolver = $this->getMockBuilder(ProviderResolver::class)->setMethods(['resolveConfigurationProviders'])->getMock();
         $providerResolver->expects($this->once())->method('resolveConfigurationProviders')->willReturn([$provider]);
@@ -49,7 +49,7 @@ class ProviderProcessorTest extends AbstractTestCase
         $instance->expects($this->once())->method('getProviderResolver')->willReturn($providerResolver);
 
         $result = $instance->addData(['tableName' => 'foo', 'databaseRow' => []]);
-        $this->assertEquals('test', $result);
+        $this->assertEquals([], $result);
     }
 
     public function testSetsEnabledContentTypesFromSiteConfiguration(): void

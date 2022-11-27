@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -19,16 +20,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
 {
-    /**
-     * @var string
-     */
-    protected $label = null;
+    protected ?string $label = null;
 
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('label', 'string', 'Optional title of this Wizard', false, $this->label);
         $this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the parent field', false, false);
@@ -48,17 +42,12 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param class-string $type
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return WizardInterface
-     */
     protected static function getPreparedComponent(
-        $type,
+        string $type,
         RenderingContextInterface $renderingContext,
         iterable $arguments
-    ) {
+    ): WizardInterface {
+        /** @var class-string $type */
         /** @var array $arguments */
         $name = (true === isset($arguments['name']) ? $arguments['name'] : 'wizard');
         /** @var WizardInterface $component */

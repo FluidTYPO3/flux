@@ -110,14 +110,26 @@ class PageLayoutDataProviderTest extends AbstractTestCase
                     ['foo', 'bar', 'baz'],
                     [$label, '', 'actions-move-down'],
                     ['Flux', '--div--'],
-                    [null, '->tests/Fixtures/Templates/Page/Dummy.html', null]
+                    [
+                        'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.',
+                        'FluidTYPO3.Flux->tests/Fixtures/Templates/Page/Dummy.html',
+                        null
+                    ]
                 ]
             ],
             [
                 $formWithTemplateFile,
                 ['field' => 'tx_fed_page_controller_action', 'row' => ['pid' => 0, 'is_siteroot' => true]],
                 [['foo', 'bar', 'baz']],
-                [['foo', 'bar', 'baz'], ['Flux', '--div--'], [null, '->tests/Fixtures/Templates/Page/Dummy.html', null]]
+                [
+                    ['foo', 'bar', 'baz'],
+                    ['Flux', '--div--'],
+                    [
+                        'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.',
+                        'FluidTYPO3.Flux->tests/Fixtures/Templates/Page/Dummy.html',
+                        null
+                    ]
+                ]
             ],
         ];
     }

@@ -13,25 +13,16 @@ use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Backend\Form\NodeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * HtmlOutputNode
- */
 class HtmlOutputNode extends AbstractNode implements NodeInterface
 {
-    /**
-     * @var array
-     */
-    private $parameters = [];
+    private array $parameters = [];
 
     public function __construct(NodeFactory $nodeFactory, array $data)
     {
         $this->parameters = $data;
     }
 
-    /**
-     * @return array
-     */
-    public function render()
+    public function render(): array
     {
         $return = $this->initializeResultArray();
         /** @var UserFunctions $userFunctions */

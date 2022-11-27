@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -11,16 +12,9 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
-/**
- * Flex
- */
 class Flex extends AbstractFormField implements FieldInterface
 {
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('flex');
         return $configuration;

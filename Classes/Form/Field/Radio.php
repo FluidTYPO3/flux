@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -8,17 +9,9 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * @package Flux
- * @subpackage Form\Field
- */
 class Radio extends Select
 {
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = parent::prepareConfiguration('radio');
         $configuration['items'] = $this->getItems();

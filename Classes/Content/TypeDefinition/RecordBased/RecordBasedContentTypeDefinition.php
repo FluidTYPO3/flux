@@ -31,25 +31,10 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
 {
     use SerializeSafeTrait;
 
-    /**
-     * @var array
-     */
-    protected $record = [];
-
-    /**
-     * @var string
-     */
-    protected $contentTypeName = '';
-
-    /**
-     * @var Grid|null
-     */
-    protected $grid;
-
-    /**
-     * @var iterable
-     */
-    protected static $types = [];
+    protected array $record = [];
+    protected string $contentTypeName = '';
+    protected ?Grid $grid;
+    protected static array $types = [];
 
     public function __construct(array $record)
     {
@@ -152,6 +137,8 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         foreach ($this->getGridConfiguration() as $item) {
             $gridMode = $item['grid']['lDEF']['gridMode']['vDEF'] ?? Section::GRID_MODE_ROWS;
             $autoColumns = (int)($item['grid']['lDEF']['autoColumns']['vDEF'] ?? 0);
+
+            /** @var Grid $grid */
             $grid = Grid::create();
 
             $currentNumberOfColumns = 0;
@@ -245,19 +232,12 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         return $this->record['template_source'];
     }
 
-    /**
-     * @param Grid $grid
-     * @param int $currentNumberOfColumns
-     * @param int $totalNumberOfColumns
-     * @param string $mode
-     * @return void
-     */
     protected function createAutomaticGridColumns(
         Grid $grid,
         int $currentNumberOfColumns,
         int $totalNumberOfColumns,
         string $mode
-    ) {
+    ): void {
         if ($mode === Section::GRID_MODE_ROWS) {
             for ($i = $currentNumberOfColumns; $i < $totalNumberOfColumns; ++$i) {
                 $grid->createContainer(Row::class, 'row' . $i)

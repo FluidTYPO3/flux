@@ -23,21 +23,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * TCEMain
- */
 class DataHandlerSubscriber
 {
-    /**
-     * @var array
-     */
-    protected static $copiedRecords = [];
+    protected static array $copiedRecords = [];
 
-    /**
-     * @param array $command
-     * @return void
-     */
-    public function clearCacheCommand($command)
+    public function clearCacheCommand(array $command): void
     {
         if (($command['cacheCmd'] ?? null) === 'all' || ($command['cacheCmd'] ?? null) === 'system') {
             $this->regenerateContentTypes();
@@ -532,21 +522,13 @@ class DataHandlerSubscriber
         return $firstResult ?: null;
     }
 
-    /**
-     * @param string $table
-     * @param int $parentUid
-     * @param string $fieldsToSelect
-     * @param bool $respectPid
-     * @param string|null $command
-     * @return array
-     */
     protected function getParentAndRecordsNestedInGrid(
         string $table,
         int $parentUid,
         string $fieldsToSelect,
         bool $respectPid = false,
         ?string $command = null
-    ) {
+    ):array {
         // A Provider must be resolved which implements the GridProviderInterface
         $resolver = $this->getProviderResolver();
         $originalRecord = (array) $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
@@ -556,7 +538,7 @@ class DataHandlerSubscriber
             null,
             $originalRecord,
             null,
-            GridProviderInterface::class
+            [GridProviderInterface::class]
         );
 
         if (!$primaryProvider) {

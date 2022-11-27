@@ -16,17 +16,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * Class PagePreviewRenderer
- */
 class PagePreviewRenderer
 {
-    /**
-     * @param array $params
-     * @param PageLayoutController $pageLayoutController
-     * @return string
-     */
-    public function render(array $params, PageLayoutController $pageLayoutController)
+    public function render(array $params, PageLayoutController $pageLayoutController): string
     {
         $pageProvider = $this->getPageProvider();
         $previewContent = '';
@@ -51,20 +43,17 @@ class PagePreviewRenderer
     }
 
     /**
-     * @param integer $uid
-     * @return array|null
      * @codeCoverageIgnore
      */
-    protected function getRecord($uid)
+    protected function getRecord(int $uid): ?array
     {
         return BackendUtility::getRecord('pages', $uid);
     }
 
     /**
-     * @return PageProvider
      * @codeCoverageIgnore
      */
-    protected function getPageProvider()
+    protected function getPageProvider(): PageProvider
     {
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);

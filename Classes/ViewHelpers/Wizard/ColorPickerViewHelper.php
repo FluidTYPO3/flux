@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -22,17 +23,9 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ColorPickerViewHelper extends AbstractWizardViewHelper
 {
+    protected ?string $label = 'Choose color';
 
-    /**
-     * @var string
-     */
-    protected $label = 'Choose color';
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('dim', 'string', 'Dimensions (WxH, e.g. 20x20) of color picker', false, '20x20');
@@ -47,12 +40,7 @@ class ColorPickerViewHelper extends AbstractWizardViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return ColorPicker
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): ColorPicker
     {
         /** @var array $arguments */
         /** @var ColorPicker $component */

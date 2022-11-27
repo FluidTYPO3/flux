@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
 use TYPO3\CMS\Core\Mail\MailMessage;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Email Pipe
@@ -23,13 +22,9 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
  */
 class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInterface
 {
-
     use ViewAwarePipeTrait;
 
-    /**
-     * @var string
-     */
-    protected $subject;
+    protected string $subject = '';
 
     /**
      * @var string|array
@@ -41,24 +36,18 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
      */
     protected $sender;
 
-    /**
-     * @var string|null
-     */
-    protected $body = null;
+    protected ?string $body = null;
 
     /**
      * The name of a section that will be rendered using
      * the view set by the outlet and will be used instead of the body property
-     *
-     * @var string|null
      */
-    protected $bodySection = null;
+    protected ?string $bodySection = null;
 
     /**
-     * @param string $recipient
-     * @return EmailPipe
+     * @param string|array $recipient
      */
-    public function setRecipient($recipient)
+    public function setRecipient($recipient): self
     {
         $this->recipient = $recipient;
 
@@ -75,9 +64,8 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
 
     /**
      * @param string $sender
-     * @return EmailPipe
      */
-    public function setSender($sender)
+    public function setSender($sender): self
     {
         $this->sender = $sender;
 
@@ -92,58 +80,39 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
         return $this->sender;
     }
 
-    /**
-     * @param string $subject
-     * @return EmailPipe
-     */
-    public function setSubject($subject)
+    public function setSubject(string $subject): self
     {
         $this->subject = $subject;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSubject()
+    public function getSubject(): string
     {
         return $this->subject;
     }
 
-    /**
-     * @param string|null $body
-     * @return EmailPipe
-     */
-    public function setBody($body)
+    public function setBody(?string $body): self
     {
         $this->body = $body;
 
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getBody()
+    public function getBody(): ?string
     {
         return $this->body;
     }
 
-    /**
-     * @return null|string
-     */
-    public function getBodySection()
+    public function getBodySection(): ?string
     {
         return $this->bodySection;
     }
 
-    /**
-     * @param null|string $bodySection
-     */
-    public function setBodySection($bodySection)
+    public function setBodySection(?string $bodySection): self
     {
         $this->bodySection = $bodySection;
+        return $this;
     }
 
     /**
@@ -156,7 +125,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
         try {
             $message = $this->prepareEmail($data);
             $this->sendEmail($message);
-        } catch (\Swift_RfcComplianceException | RfcComplianceException $error) {
+        } catch (RfcComplianceException $error) {
             throw new Exception($error->getMessage(), $error->getCode());
         }
 
@@ -164,10 +133,9 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
     }
 
     /**
-     * @param string $data
-     * @return MailMessage|Email
+     * @param mixed $data
      */
-    protected function prepareEmail($data)
+    protected function prepareEmail($data): MailMessage
     {
         $body = null;
         if ($this->getBodySection() !== null) {
@@ -203,11 +171,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
         return $message;
     }
 
-    /**
-     * @param MailMessage $message
-     * @return void
-     */
-    protected function sendEmail($message)
+    protected function sendEmail(MailMessage $message): void
     {
         $message->send();
     }

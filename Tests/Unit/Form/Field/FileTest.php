@@ -8,16 +8,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * FileTest
- */
+use FluidTYPO3\Flux\Form\Field\File;
+
 class FileTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
         'enabled' => true,
@@ -27,4 +22,28 @@ class FileTest extends AbstractFieldTest
         'uploadFolder' => '',
         'showThumbnails' => true
     );
+
+    public function testBuildWithUseFalRelation(): void
+    {
+        $subject = File::create(['name' => 'test', 'useFalRelation' => true]);
+        $output = $subject->build();
+        $expected = [
+            'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.fields.test',
+            'exclude' => 0,
+            'config' => [
+                'type' => 'group',
+                'size' => 1,
+                'minitems' => 0,
+                'multiple' => false,
+                'allowed' => 'sys_file',
+                'show_thumbs' => false,
+                'internal_type' => 'db',
+                'appearance' => [
+                    'elementBrowserAllowed' => '*',
+                    'elementBrowserType' => 'file',
+                ],
+            ],
+        ];
+        self::assertSame($expected, $output);
+    }
 }

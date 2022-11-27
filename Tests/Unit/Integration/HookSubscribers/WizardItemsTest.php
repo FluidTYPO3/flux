@@ -79,7 +79,7 @@ class WizardItemsTest extends AbstractTestCase
         $provider1->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
 
         $provider2 = $this->getMockBuilder(Provider::class)->setMethods(['getGrid'])->getMock();
-        $provider2->expects($this->once())->method('getGrid')->will($this->returnValue(null));
+        $provider2->expects($this->once())->method('getGrid')->will($this->returnValue(Grid::create()));
 
         $configurationService = $this->getMockBuilder(FluxService::class)
             ->setMethods(['resolveConfigurationProviders'])

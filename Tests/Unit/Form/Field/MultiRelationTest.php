@@ -8,16 +8,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * MultiRelationTest
- */
 class MultiRelationTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
         'table' => 'pages',

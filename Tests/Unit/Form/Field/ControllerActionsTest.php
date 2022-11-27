@@ -12,16 +12,9 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\ControllerActions;
 use FluidTYPO3\Flux\Form\FormInterface;
 
-/**
- * ControllerActionsTest
- */
 class ControllerActionsTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'name' => 'switchableControllerActions',
         'label' => 'Test field',
         'enabled' => true,

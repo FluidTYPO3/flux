@@ -10,16 +10,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 
 use FluidTYPO3\Flux\Form;
 
-/**
- * InlineTest
- */
 class InlineTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'collapseAll' => false,
         'expandSingle' => false,
         'newRecordLinkAddTitle' => false,

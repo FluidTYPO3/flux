@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Wizard;
 
 /*
@@ -21,20 +22,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Link extends AbstractWizard
 {
-    /**
-     * @var string
-     */
-    protected $name = 'link';
-
-    /**
-     * @var string
-     */
-    protected $type = 'popup';
-
-    /**
-     * @var string
-     */
-    protected $icon = 'link_popup.gif';
+    protected ?string $name = 'link';
+    protected ?string $type = 'popup';
+    protected ?string $icon = 'link_popup.gif';
 
     /**
      * @var string
@@ -66,10 +56,7 @@ class Link extends AbstractWizard
      */
     protected $allowedExtensions;
 
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $structure = [
             'JSopenParams' => sprintf(

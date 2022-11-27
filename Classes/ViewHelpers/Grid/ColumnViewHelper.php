@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 
 /*
@@ -43,7 +44,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ColumnViewHelper extends AbstractFormViewHelper
 {
-
     /**
      * Initialize
      * @return void
@@ -92,10 +92,10 @@ class ColumnViewHelper extends AbstractFormViewHelper
         $column->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
-        $column->setColspan($arguments['colspan']);
-        $column->setRowspan($arguments['rowspan']);
+        $column->setColspan((integer) ($arguments['colspan'] ?? 1));
+        $column->setRowspan((integer) ($arguments['rowspan'] ?? 1));
         $column->setStyle($arguments['style']);
-        $column->setColumnPosition($arguments['colPos']);
+        $column->setColumnPosition((integer) $arguments['colPos']);
         $column->setVariables($arguments['variables']);
         return $column;
     }

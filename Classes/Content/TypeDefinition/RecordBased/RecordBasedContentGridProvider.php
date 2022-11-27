@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Content\TypeDefinition\RecordBased;
 
 /*
@@ -11,6 +12,7 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\RecordBased;
 use FluidTYPO3\Flux\Content\ContentGridForm;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
@@ -26,67 +28,37 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RecordBasedContentGridProvider extends AbstractProvider implements GridProviderInterface
 {
-    protected $tableName = 'content_types';
+    protected ?string $tableName = 'content_types';
+    protected ?string $fieldName = 'grid';
+    protected string $extensionKey = 'FluidTYPO3.Flux';
 
-    protected $fieldName = 'grid';
+    protected ContentTypeManager $contentTypeDefinitions;
 
-    protected $extensionKey = 'FluidTYPO3.Builder';
-
-    /**
-     * @var ContentTypeManager
-     */
-    protected $contentTypeDefinitions;
-
-    /**
-     * @param ContentTypeManager $contentTypes
-     * @return void
-     */
-    public function injectContentTypes(ContentTypeManager $contentTypes)
+    public function injectContentTypes(ContentTypeManager $contentTypes): void
     {
         $this->contentTypeDefinitions = $contentTypes;
     }
 
-    /**
-     * @param array $row
-     * @param string $table
-     * @param string|null $field
-     * @param string|null $extensionKey
-     * @return bool
-     */
-    public function trigger(array $row, $table, $field, $extensionKey = null)
+    public function trigger(array $row, ?string $table, ?string $field, ?string $extensionKey = null): bool
     {
         return $table === $this->tableName && $field === $this->fieldName;
     }
 
-    /**
-     * @param array $row
-     * @param array $dataStructure
-     * @param array $conf
-     * @return void
-     */
-    public function postProcessDataStructure(array &$row, &$dataStructure, array $conf)
+    public function postProcessDataStructure(array &$row, ?array &$dataStructure, array $conf): void
     {
         // Reset the dummy data structure which has no sheets.
         $dataStructure = [];
         parent::postProcessDataStructure($row, $dataStructure, $conf);
     }
 
-    /**
-     * @param array $row
-     * @return ContentGridForm
-     */
-    public function getForm(array $row)
+    public function getForm(array $row): Form
     {
         /** @var ContentGridForm $contentGridForm */
         $contentGridForm = GeneralUtility::makeInstance(ContentGridForm::class);
         return $contentGridForm;
     }
 
-    /**
-     * @param array $row
-     * @return Grid
-     */
-    public function getGrid(array $row)
+    public function getGrid(array $row): Grid
     {
         $contentTypeDefinition = $this->contentTypeDefinitions->determineContentTypeForRecord($row);
         if (!($contentTypeDefinition instanceof ContentTypeDefinitionInterface)) {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Wizard;
 
 /*
@@ -20,48 +21,17 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  */
 class Edit extends AbstractWizard
 {
-
-    /**
-     * @var string
-     */
-    protected $name = 'edit';
-
-    /**
-     * @var string
-     */
-    protected $type = 'script';
-
-    /**
-     * @var string
-     */
-    protected $icon = 'edit2.gif';
-
-    /**
-     * @var array
-     */
-    protected $module = [
+    protected ?string $name = 'edit';
+    protected ?string $type = 'script';
+    protected ?string $icon = 'edit2.gif';
+    protected array $module = [
         'name' => 'wizard_edit'
     ];
+    protected bool $openOnlyIfSelected = true;
+    protected int $width = 450;
+    protected int $height = 720;
 
-    /**
-     * @var boolean
-     */
-    protected $openOnlyIfSelected = true;
-
-    /**
-     * @var integer
-     */
-    protected $width = 450;
-
-    /**
-     * @var integer
-     */
-    protected $height = 720;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = [
             'type' => 'popup',

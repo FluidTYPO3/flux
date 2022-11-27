@@ -23,13 +23,9 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class Preview implements PageLayoutViewDrawItemHookInterface
 {
-    /**
-     * @var boolean
-     */
-    protected static $assetsIncluded = false;
+    protected static bool $assetsIncluded = false;
 
     /**
-     *
      * @param PageLayoutView $parentObject
      * @param boolean $drawItem
      * @param string $headerContent
@@ -37,8 +33,13 @@ class Preview implements PageLayoutViewDrawItemHookInterface
      * @param array $row
      * @return void
      */
-    public function preProcess(PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row)
-    {
+    public function preProcess(
+        PageLayoutView &$parentObject,
+        &$drawItem,
+        &$headerContent,
+        &$itemContent,
+        array &$row
+    ): void {
         $fieldName = null;
         $itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
         $providers = $this->getConfigurationService()->resolveConfigurationProviders('tt_content', $fieldName, $row);
@@ -61,10 +62,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
         unset($parentObject);
     }
 
-    /**
-     * @return void
-     */
-    protected function attachAssets()
+    protected function attachAssets(): void
     {
         if (false === static::$assetsIncluded) {
             /** @var PageRenderer $pageRenderer */

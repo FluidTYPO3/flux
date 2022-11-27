@@ -16,5 +16,4 @@ namespace FluidTYPO3\Flux\Outlet;
  */
 class StandardOutlet extends AbstractOutlet implements OutletInterface
 {
-
 }

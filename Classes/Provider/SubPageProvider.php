@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider;
 
 /*
@@ -22,9 +23,5 @@ namespace FluidTYPO3\Flux\Provider;
  */
 class SubPageProvider extends PageProvider implements ProviderInterface
 {
-
-    /**
-     * @var string
-     */
-    protected $fieldName = self::FIELD_NAME_SUB;
+    protected ?string $fieldName = self::FIELD_NAME_SUB;
 }

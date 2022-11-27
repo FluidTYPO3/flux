@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 /*
@@ -87,7 +88,7 @@ class ContentViewHelper extends AbstractFormViewHelper
         $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
         $row = $grid->createContainer(Row::class, 'row');
         $column = $row->createContainer(Column::class, 'column');
-        $column->setName($arguments['name']);
+        $column->setName((string) $arguments['name']);
         $column->setLabel($arguments['label']);
         return $column;
     }

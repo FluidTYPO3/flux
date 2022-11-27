@@ -14,11 +14,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class ProviderProcessor implements FormDataProviderInterface
 {
-    /**
-     * @param array $result
-     * @return array
-     */
-    public function addData(array $result)
+    public function addData(array $result): array
     {
         if (!isset($result['tableName'])) {
             throw new \UnexpectedValueException('Input data requires a "tableName" property', 1666816552);
@@ -66,7 +62,7 @@ class ProviderProcessor implements FormDataProviderInterface
             null,
             $result['databaseRow'],
             null,
-            DataStructureProviderInterface::class
+            [DataStructureProviderInterface::class]
         );
         foreach ($providers as $provider) {
             $result = $provider->processTableConfiguration($result['databaseRow'], $result);

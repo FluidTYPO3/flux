@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
 
 use TYPO3\CMS\Extbase\Error\Error;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
 
 /**
@@ -20,42 +21,23 @@ use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
  */
 class TypeConverterPipe extends AbstractPipe implements PipeInterface
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    protected ObjectManagerInterface $objectManager;
+    protected ?TypeConverterInterface $typeConverter = null;
 
-    /**
-     * @var TypeConverterInterface
-     */
-    protected $typeConverter;
+    protected ?string $targetType = null;
+    protected ?string $propertyName = null;
 
-    /**
-     * @var string
-     */
-    protected $targetType;
-
-    /**
-     * @var string|null
-     */
-    protected $propertyName = '';
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    public function injectObjectManager(ObjectManagerInterface $objectManager): void
     {
         $this->objectManager = $objectManager;
     }
 
     /**
      * @param TypeConverterInterface|class-string $typeConverter
-     * @return TypeConverterPipe
      */
-    public function setTypeConverter($typeConverter)
+    public function setTypeConverter($typeConverter): self
     {
-        if (true === is_string($typeConverter)) {
+        if (is_string($typeConverter)) {
             /** @var TypeConverterInterface $typeConverter */
             $typeConverter = $this->objectManager->get($typeConverter);
         }
@@ -63,30 +45,20 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
         return $this;
     }
 
-    /**
-     * @return TypeConverterInterface
-     */
-    public function getTypeConverter()
+    public function getTypeConverter(): TypeConverterInterface
     {
-        return $this->typeConverter;
+        return $this->typeConverter ?? new StringConverter();
     }
 
-    /**
-     * @param string $targetType
-     * @return TypeConverterPipe
-     */
-    public function setTargetType($targetType)
+    public function setTargetType(?string $targetType): self
     {
         $this->targetType = $targetType;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTargetType()
+    public function getTargetType(): string
     {
-        return $this->targetType;
+        return $this->targetType ?? 'string';
     }
 
     public function getPropertyName(): ?string
@@ -121,7 +93,7 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
         }
         $targetType = $this->getTargetType();
         $typeConverter = $this->getTypeConverter();
-        if (false === $typeConverter->canConvertFrom($subject, $targetType)) {
+        if (!$typeConverter->canConvertFrom($subject, $targetType)) {
             throw new Exception(
                 sprintf(
                     'TypeConverter %s cannot convert %s to %s',
@@ -132,8 +104,8 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
                 1386292424
             );
         }
-        $subject= $this->typeConverter->convertFrom($subject, $targetType);
-        if (true === $output instanceof Error) {
+        $subject = $this->getTypeConverter()->convertFrom($subject, $targetType);
+        if ($output instanceof Error) {
             throw new Exception(
                 sprintf(
                     'Conversion of %s to %s was unsuccessful, Error was: %s',
@@ -141,7 +113,7 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
                     $targetType,
                     $output->getMessage()
                 ),
-                (integer) $output->getCode()
+                $output->getCode()
             );
         }
         return $output;

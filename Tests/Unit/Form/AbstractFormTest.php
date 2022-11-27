@@ -14,16 +14,9 @@ use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
-/**
- * AbstractFormTest
- */
 abstract class AbstractFormTest extends AbstractTestCase
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
+    protected array $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
 
     /**
      * @return FormInterface
@@ -200,7 +193,7 @@ abstract class AbstractFormTest extends AbstractTestCase
      */
     public function canCreateFromDefinition()
     {
-        $properties = array($this->chainProperties);
+        $properties = $this->chainProperties;
         $class = $this->getObjectClassName();
         $type = implode('/', array_slice(explode('_', substr($class, 13)), 1));
         $properties['type'] = $type;

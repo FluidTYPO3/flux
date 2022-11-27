@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
+use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
@@ -22,6 +23,29 @@ use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
  */
 class FormDataTransformerTest extends AbstractTestCase
 {
+    private ?FrontendUserRepository $frontendUserRepository = null;
+    private ?FrontendUser $frontendUser = null;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->frontendUser = $this->getMockBuilder(FrontendUser::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->frontendUserRepository = $this->getMockBuilder(FrontendUserRepository::class)
+            ->setMethods(['findByUid'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->frontendUserRepository->method('findByUid')->willReturn($this->frontendUser);
+    }
+
+    public function fixtureTransformToFooString(): string
+    {
+        return 'foo';
+    }
+
     /**
      * @test
      * @dataProvider getValuesAndTransformations
@@ -36,18 +60,24 @@ class FormDataTransformerTest extends AbstractTestCase
             [
                 ['DateTime', new \DateTime()],
                 ['DateTime', date('Ymd'), new \DateTime(date('Ymd'))],
-                [RepositoryInterface::class, $this->getMockBuilder(RepositoryInterface::class)->getMockForAbstractClass()],
                 [ObjectStorage::class, new ObjectStorage()],
+                [self::class, $this],
+                [FrontendUserRepository::class, $this->frontendUserRepository],
             ]
         );
-        $instance = $this->getMockBuilder(FormDataTransformer::class)->setMethods(['loadObjectsFromRepository', 'resolveRepositoryClassName'])->getMock();
-        $instance->method('resolveRepositoryClassName')->willReturn(RepositoryInterface::class);
+        $instance = $this->getMockBuilder(FormDataTransformer::class)
+            ->setMethods(['loadObjectsFromRepository'])
+            ->getMock();
         $instance->method('loadObjectsFromRepository')->willReturn([]);
         $instance->injectObjectManager($objectManager);
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->createField('Input', 'field')->setTransform($transformation);
+        $form->createField(Form\Field\Input::class, 'field')->setTransform($transformation);
         $transformed = $instance->transformAccordingToConfiguration(['field' => $value], $form);
-        $this->assertTrue($transformed !== $expected, 'Transformation type ' . $transformation . ' failed; values are still identical');
+        $this->assertNotSame(
+            $expected,
+            $transformed,
+            'Transformation type ' . $transformation . ' failed; values are still identical'
+        );
     }
 
     /**
@@ -62,9 +92,11 @@ class FormDataTransformerTest extends AbstractTestCase
             array('1,2,3', 'array', array(1, 2, 3)),
             array('123,321', 'InvalidClass', '123'),
             array(date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))),
-            array('1', FrontendUser::class, null),
+            array('1', 'boolean', true),
             array('1,2', ObjectStorage::class . '<' . FrontendUser::class . '>', null),
             array('1,2', ObjectStorage::class . '<\\Invalid>', null),
+            array('bar', self::class . '->fixtureTransformToFooString', 'foo'),
+            array('1', FrontendUser::class, $this->frontendUser),
         ];
     }
 

@@ -13,13 +13,16 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  */
 class TextViewHelperTest extends AbstractFieldViewHelperTestCase
 {
+    protected $defaultArguments = [
+        'name' => 'test',
+    ];
 
     /**
      * @test
      */
     public function supportsPlaceholders()
     {
-        $arguments = ['placeholder' => 'test'];
+        $arguments = ['name' => 'test', 'placeholder' => 'test'];
         $instance = $this->buildViewHelperInstance($arguments);
         $component = $instance->getComponent(
             $this->getInaccessiblePropertyValue($instance, 'renderingContext'),

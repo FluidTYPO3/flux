@@ -44,9 +44,9 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
             'sheets' => [
                 'grid' => [
                     'ROOT' => [
-                        'sheetTitle' => 'grid',
-                        'sheetDescription' => 'grid',
-                        'sheetShortDescr' => 'grid',
+                        'sheetTitle' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..sheets.grid',
+                        'sheetDescription' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..sheets.grid.description',
+                        'sheetShortDescr' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..sheets.grid.shortDescription',
                         'type' => 'array',
                         'el' => [
                             'gridMode' => [
@@ -80,7 +80,7 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
                                 'section' => '1',
                                 'el' => [
                                     'column' => [
-                                        'title' => 'column',
+                                        'title' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..objects.column',
                                         'type' => 'array',
                                         'el' => [
                                             'colPos' => [

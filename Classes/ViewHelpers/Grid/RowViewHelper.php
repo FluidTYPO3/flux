@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 
 /*
@@ -22,7 +23,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class RowViewHelper extends AbstractFormViewHelper
 {
-
     /**
      * Initialize
      * @return void

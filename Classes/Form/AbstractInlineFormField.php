@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Form;
  */
 abstract class AbstractInlineFormField extends AbstractRelationFormField implements InlineRelationFieldInterface
 {
-
     /**
      * If true, all child records are shown as collapsed.
      *
@@ -137,11 +136,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
      */
     protected $foreignTypes = null;
 
-    /**
-     * @param string $type
-     * @return array
-     */
-    public function prepareConfiguration($type)
+    public function prepareConfiguration(string $type): array
     {
         $configuration = parent::prepareConfiguration($type);
         $configuration['foreign_match_fields'] = $this->getForeignMatchFields();

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 /*
@@ -36,7 +37,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ContainerViewHelper extends AbstractFieldViewHelper
 {
-
     /**
      * Initialize arguments
      * @return void

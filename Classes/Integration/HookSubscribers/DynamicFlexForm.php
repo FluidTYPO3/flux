@@ -15,67 +15,36 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * Dynamic FlexForm insertion hook class
- */
 class DynamicFlexForm extends FlexFormTools
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    protected ObjectManagerInterface $objectManager;
+    protected FluxService $configurationService;
+    protected WorkspacesAwareRecordService $recordService;
 
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
+    protected static bool $recursed = false;
 
-    /**
-     * @var WorkspacesAwareRecordService
-     */
-    protected $recordService;
-
-    /**
-     * @var boolean
-     */
-    protected static $recursed = false;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    public function injectObjectManager(ObjectManagerInterface $objectManager): void
     {
         $this->objectManager = $objectManager;
     }
 
-    /**
-     * @param FluxService $service
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $service)
+    public function injectConfigurationService(FluxService $service): void
     {
         $this->configurationService = $service;
     }
 
-    /**
-     * @param WorkspacesAwareRecordService $recordService
-     * @return void
-     */
-    public function injectRecordService(WorkspacesAwareRecordService $recordService)
+    public function injectRecordService(WorkspacesAwareRecordService $recordService): void
     {
         $this->recordService = $recordService;
     }
 
-    /**
-     * DynamicFlexForm constructor.
-     */
     public function __construct()
     {
         /** @var ObjectManagerInterface $objectManager */
@@ -95,15 +64,13 @@ class DynamicFlexForm extends FlexFormTools
      * Method to generate a custom identifier for a Flux-based DS.
      * The custom identifier must include a record ID, which we
      * can then use to restore the record.
-     *
-     * @param array $tca
-     * @param string $tableName
-     * @param string $fieldName
-     * @param array $record
-     * @return array
      */
-    public function getDataStructureIdentifierPreProcess(array $tca, $tableName, $fieldName, array $record)
-    {
+    public function getDataStructureIdentifierPreProcess(
+        array $tca,
+        string $tableName,
+        string $fieldName,
+        array $record
+    ): array {
         if (static::$recursed) {
             return [];
         }
@@ -154,11 +121,7 @@ class DynamicFlexForm extends FlexFormTools
         return $identifier;
     }
 
-    /**
-     * @param array $identifier
-     * @return array
-     */
-    public function parseDataStructureByIdentifierPreProcess(array $identifier)
+    public function parseDataStructureByIdentifierPreProcess(array $identifier): array
     {
         if ($identifier['type'] !== 'flux') {
             return [];
@@ -187,7 +150,7 @@ class DynamicFlexForm extends FlexFormTools
             $fieldName,
             $record,
             null,
-            DataStructureProviderInterface::class
+            [DataStructureProviderInterface::class]
         );
         if (!$provider instanceof FormProviderInterface) {
             // No Providers detected - return empty data structure (reported as invalid DS in backend)
@@ -219,10 +182,9 @@ class DynamicFlexForm extends FlexFormTools
     }
 
     /**
-     * @return VariableFrontend
      * @codeCoverageIgnore
      */
-    protected function getCache()
+    protected function getCache(): FrontendInterface
     {
         static $cache;
         if (!$cache) {
@@ -234,10 +196,9 @@ class DynamicFlexForm extends FlexFormTools
     }
 
     /**
-     * @return VariableFrontend
      * @codeCoverageIgnore
      */
-    protected function getRuntimeCache()
+    protected function getRuntimeCache(): FrontendInterface
     {
         static $cache;
         if (!$cache) {

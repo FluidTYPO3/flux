@@ -23,18 +23,13 @@ class Field extends AbstractFormField
      */
     protected $onChange;
 
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         // void, not required by generic field type
         return [];
     }
 
-    /**
-     * @param array $settings
-     * @return FieldInterface
-     * @throws \RuntimeException
-     */
-    public static function create(array $settings = [])
+    public static function create(array $settings = []): FieldInterface
     {
         if (!isset($settings['config']['type']) && !isset($settings['type'])) {
             throw new \UnexpectedValueException(
@@ -61,10 +56,8 @@ class Field extends AbstractFormField
      * expected-to-be-overridden stub method getConfiguration()
      * to return the TCE field configuration - see that method
      * for information about how to implement that method.
-     *
-     * @return array
      */
-    public function build()
+    public function build(): array
     {
         $filterClosure = function ($value) {
             return $value !== null && $value !== '';

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Wizard;
 
 /*
@@ -20,48 +21,17 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  */
 class ColorPicker extends AbstractWizard
 {
-
-    /**
-     * @var string
-     */
-    protected $name = 'color';
-
-    /**
-     * @var string
-     */
-    protected $type = 'script';
-
-    /**
-     * @var string
-     */
-    protected $icon = 'EXT:flux/Resources/Public/Icons/ColorWheel.png';
-
-    /**
-     * @var array
-     */
-    protected $module = [
+    protected ?string $name = 'color';
+    protected ?string $type = 'script';
+    protected ?string $icon = 'EXT:flux/Resources/Public/Icons/ColorWheel.png';
+    protected array $module = [
         'name' => 'wizard_colorpicker',
     ];
+    protected string $dimensions = '20x20';
+    protected int $width = 450;
+    protected int $height = 720;
 
-    /**
-     * @var string
-     */
-    protected $dimensions = '20x20';
-
-    /**
-     * @var integer
-     */
-    protected $width = 450;
-
-    /**
-     * @var integer
-     */
-    protected $height = 720;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = [
             'type' => 'colorbox',
@@ -78,74 +48,46 @@ class ColorPicker extends AbstractWizard
         return $configuration;
     }
 
-    /**
-     * @param string $dimensions
-     * @return ColorPicker
-     */
-    public function setDimensions($dimensions)
+    public function setDimensions(string $dimensions): self
     {
         $this->dimensions = $dimensions;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDimensions()
+    public function getDimensions(): string
     {
         return $this->dimensions;
     }
 
-    /**
-     * @param integer $height
-     * @return ColorPicker
-     */
-    public function setHeight($height)
+    public function setHeight(int $height): self
     {
         $this->height = $height;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getHeight()
+    public function getHeight(): int
     {
         return $this->height;
     }
 
-    /**
-     * @param string $icon
-     * @return ColorPicker
-     */
-    public function setIcon($icon)
+    public function setIcon(?string $icon): self
     {
         $this->icon = $icon;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getIcon()
+    public function getIcon(): ?string
     {
         return $this->icon;
     }
 
-    /**
-     * @param integer $width
-     * @return ColorPicker
-     */
-    public function setWidth($width)
+    public function setWidth(int $width): self
     {
         $this->width = $width;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getWidth()
+    public function getWidth(): int
     {
         return $this->width;
     }

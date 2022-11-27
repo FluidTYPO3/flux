@@ -42,10 +42,7 @@ class PreviewView extends TemplateView
     const PREVIEW_SECTION = 'Preview';
     const CONTROLLER_NAME = 'Content';
 
-    /**
-     * @var array
-     */
-    protected $templates = [
+    protected array $templates = [
         'gridToggle' => '<div class="grid-visibility-toggle" data-toggle-uid="%s">
                             %s
                         </div>',
@@ -53,54 +50,26 @@ class PreviewView extends TemplateView
                       class="btn btn-default btn-sm">%s %s</a>'
     ];
 
-    /**
-     * @var ConfigurationManagerInterface
-     */
-    protected $configurationManager;
+    protected ConfigurationManagerInterface $configurationManager;
+    protected FluxService $configurationService;
+    protected WorkspacesAwareRecordService $workspacesAwareRecordService;
 
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
-
-    /**
-     * @var WorkspacesAwareRecordService
-     */
-    protected $workspacesAwareRecordService;
-
-    /**
-     * @param ConfigurationManagerInterface $configurationManager
-     * @return void
-     */
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
+    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
     {
         $this->configurationManager = $configurationManager;
     }
 
-    /**
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
+    public function injectConfigurationService(FluxService $configurationService): void
     {
         $this->configurationService = $configurationService;
     }
 
-    /**
-     * @param WorkspacesAwareRecordService $workspacesAwareRecordService
-     * @return void
-     */
-    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService)
+    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService): void
     {
         $this->workspacesAwareRecordService = $workspacesAwareRecordService;
     }
 
-    /**
-     * @param ProviderInterface $provider
-     * @param array $row
-     * @return string
-     */
-    public function getPreview(ProviderInterface $provider, array $row)
+    public function getPreview(ProviderInterface $provider, array $row): string
     {
         $form = $provider->getForm($row);
         $options = $this->getPreviewOptions($form);
@@ -136,11 +105,7 @@ class PreviewView extends TemplateView
         )['preview'];
     }
 
-    /**
-     * @param Form $form
-     * @return array
-     */
-    protected function getPreviewOptions(Form $form = null)
+    protected function getPreviewOptions(Form $form = null): array
     {
         if (!is_object($form) || !$form->hasOption(static::OPTION_PREVIEW)) {
             return [
@@ -149,14 +114,10 @@ class PreviewView extends TemplateView
             ];
         }
 
-        return $form->getOption(static::OPTION_PREVIEW);
+        return (array) $form->getOption(static::OPTION_PREVIEW);
     }
 
-    /**
-     * @param array $options
-     * @return string
-     */
-    protected function getOptionMode(array $options = null)
+    protected function getOptionMode(array $options = []): string
     {
         if (isset($options[static::OPTION_MODE])) {
             if (static::MODE_APPEND === $options[static::OPTION_MODE] ||
@@ -169,22 +130,12 @@ class PreviewView extends TemplateView
         return static::MODE_APPEND;
     }
 
-    /**
-     * @param array $options
-     * @return boolean
-     */
-    protected function getOptionToggle(array $options = null)
+    protected function getOptionToggle(array $options = []): bool
     {
         return (boolean) ($options[static::OPTION_TOGGLE] ?? true);
     }
 
-    /**
-     * @param ProviderInterface $provider
-     * @param array $row
-     * @param Form $form
-     * @return string|null
-     */
-    protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null)
+    protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null): ?string
     {
         $templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
         if (!$templatePathAndFilename) {
@@ -200,7 +151,7 @@ class PreviewView extends TemplateView
 
         if (is_object($form)) {
             $formLabel = $form->getLabel();
-            $label = $this->getLanguageService()->sL($formLabel);
+            $label = $this->getLanguageService()->sL((string) $formLabel);
             $variables['label'] = $label;
         }
 
@@ -214,13 +165,7 @@ class PreviewView extends TemplateView
         return $this->renderSection('Preview', $variables, true);
     }
 
-    /**
-     * @param ProviderInterface $provider
-     * @param array $row
-     * @param Form $form
-     * @return string
-     */
-    protected function renderGrid(ProviderInterface $provider, array $row, Form $form)
+    protected function renderGrid(ProviderInterface $provider, array $row, Form $form): string
     {
         $content = '';
         $grid = $provider->getGrid($row);
@@ -267,28 +212,20 @@ class PreviewView extends TemplateView
         return $content;
     }
 
-    /**
-     * @param array $row
-     * @param string $content
-     * @return string
-     */
-    protected function drawGridToggle(array $row, $content)
+    protected function drawGridToggle(array $row, string $content): string
     {
         return sprintf($this->templates['gridToggle'], $row['uid'], $content);
     }
 
     /**
-     * @return string|null
      * @codeCoverageIgnore
      */
-    protected function getCookie()
+    protected function getCookie(): ?string
     {
         return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
     }
 
     /**
-     * @param ProviderInterface $provider
-     * @param array $row
      * @return PageLayoutView|BackendLayoutRenderer
      */
     protected function getInitializedPageLayoutView(ProviderInterface $provider, array $row)
@@ -312,10 +249,12 @@ class PreviewView extends TemplateView
         $backendLayout = $provider->getGrid($row)->buildBackendLayout($parentRecordUid);
         $layoutConfiguration = $backendLayout->getStructure();
 
-        $fluidBasedLayoutFeatureEnabled = GeneralUtility::makeInstance(Features::class)
-            ->isFeatureEnabled('fluidBasedPageModule');
+        /** @var Features $features */
+        $features = GeneralUtility::makeInstance(Features::class);
+        $fluidBasedLayoutFeatureEnabled = $features->isFeatureEnabled('fluidBasedPageModule');
 
         if ($fluidBasedLayoutFeatureEnabled) {
+            /** @var SiteFinder $siteFinder */
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
             $site = $siteFinder->getSiteByPageId($pageId);
             $language = null;
@@ -323,6 +262,7 @@ class PreviewView extends TemplateView
                 $language = $site->getLanguageById((int) $row['sys_language_uid']);
             }
 
+            /** @var PageLayoutContext $context */
             $context = GeneralUtility::makeInstance(
                 PageLayoutContext::class,
                 BackendUtility::getRecord('pages', $pageId),
@@ -339,7 +279,9 @@ class PreviewView extends TemplateView
                 $configuration->setSelectedLanguageId($language->getLanguageId());
             }
 
-            return GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
+            /** @var BackendLayoutRenderer $backendLayoutRenderer */
+            $backendLayoutRenderer = GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
+            return $backendLayoutRenderer;
         }
 
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
@@ -393,27 +335,24 @@ class PreviewView extends TemplateView
 
     /**
      * @codeCoverageIgnore
-     * @return BackendUserAuthentication
      */
-    protected function getBackendUser()
+    protected function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
     }
 
     /**
      * @codeCoverageIgnore
-     * @return LanguageService
      */
-    protected function getLanguageService()
+    protected function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }
 
     /**
      * @codeCoverageIgnore
-     * @return integer
      */
-    protected function getActiveWorkspaceId()
+    protected function getActiveWorkspaceId(): int
     {
         return (integer) (true === isset($GLOBALS['BE_USER']->workspace) ? $GLOBALS['BE_USER']->workspace : 0);
     }

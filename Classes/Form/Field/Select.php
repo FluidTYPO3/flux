@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -10,28 +11,18 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\AbstractMultiValueFormField;
 
-/**
- * Select
- */
 class Select extends AbstractMultiValueFormField
 {
     /**
      * Displays option icons as table beneath the select.
      *
-     * @var boolean
      * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#showicontable
      */
-    protected $showIconTable = false;
+    protected bool $showIconTable = false;
 
-    /**
-     * @var string
-     */
-    protected $renderType = 'selectSingle';
+    protected ?string $renderType = 'selectSingle';
 
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = parent::prepareConfiguration('select');
         if ($this->getShowIconTable()) {
@@ -40,19 +31,12 @@ class Select extends AbstractMultiValueFormField
         return $configuration;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getShowIconTable()
+    public function getShowIconTable(): bool
     {
         return $this->showIconTable;
     }
 
-    /**
-     * @param boolean $showIconTable
-     * @return Select
-     */
-    public function setShowIconTable($showIconTable)
+    public function setShowIconTable(bool $showIconTable): self
     {
         $this->showIconTable = $showIconTable;
         return $this;

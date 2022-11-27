@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -19,7 +20,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class CheckboxViewHelper extends AbstractFieldViewHelper
 {
-
     /**
      * @param RenderingContextInterface $renderingContext
      * @param array $arguments

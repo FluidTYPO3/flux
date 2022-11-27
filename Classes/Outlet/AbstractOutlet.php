@@ -25,10 +25,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 abstract class AbstractOutlet implements OutletInterface
 {
-    /**
-     * @var boolean
-     */
-    protected $enabled = true;
+    protected bool $enabled = true;
 
     /**
      * @var mixed
@@ -36,24 +33,24 @@ abstract class AbstractOutlet implements OutletInterface
     protected $data = [];
 
     /**
-     * @var ViewInterface
+     * @var PipeInterface[]
      */
-    protected $view;
+    protected array $pipesIn = [];
 
     /**
      * @var PipeInterface[]
      */
-    protected $pipesIn = [];
-
-    /**
-     * @var PipeInterface[]
-     */
-    protected $pipesOut = [];
+    protected array $pipesOut = [];
 
     /**
      * @var OutletArgument[]
      */
-    protected $arguments = [];
+    protected array $arguments = [];
+
+    /**
+     * @var ViewInterface
+     */
+    protected $view;
 
     /**
      * The validation results. This can be asked if the argument has errors.
@@ -62,11 +59,7 @@ abstract class AbstractOutlet implements OutletInterface
      */
     protected $validationResults;
 
-    /**
-     * @param array $settings
-     * @return OutletInterface
-     */
-    public static function create(array $settings)
+    public static function create(array $settings): OutletInterface
     {
         /** @var self $instance */
         $instance = GeneralUtility::makeInstance(static::class);
@@ -99,10 +92,9 @@ abstract class AbstractOutlet implements OutletInterface
     /**
      * @template T
      * @param class-string<T> $class
-     * @param array $settings
      * @return T&PipeInterface
      */
-    protected static function createPipeInstance($class, array $settings)
+    protected static function createPipeInstance(string $class, array $settings): PipeInterface
     {
         /** @var class-string $class */
         /** @var ObjectManagerInterface $objectManager */
@@ -118,30 +110,33 @@ abstract class AbstractOutlet implements OutletInterface
         return $pipe;
     }
 
-    /**
-     * @param boolean $enabled
-     * @return $this
-     */
-    public function setEnabled($enabled)
+    public function getView(): ViewInterface
+    {
+        return $this->view;
+    }
+
+    public function setView(ViewInterface $view): self
+    {
+        $this->view = $view;
+        return $this;
+    }
+
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
 
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getEnabled()
+    public function getEnabled(): bool
     {
         return $this->enabled;
     }
 
     /**
      * @param PipeInterface[] $pipes
-     * @return $this
      */
-    public function setPipesIn(array $pipes)
+    public function setPipesIn(array $pipes): self
     {
         $this->pipesIn = [];
         foreach ($pipes as $pipe) {
@@ -154,16 +149,15 @@ abstract class AbstractOutlet implements OutletInterface
     /**
      * @return PipeInterface[]
      */
-    public function getPipesIn()
+    public function getPipesIn(): array
     {
         return $this->pipesIn;
     }
 
     /**
      * @param PipeInterface[] $pipes
-     * @return $this
      */
-    public function setPipesOut(array $pipes)
+    public function setPipesOut(array $pipes): self
     {
         $this->pipesOut = [];
         foreach ($pipes as $pipe) {
@@ -176,16 +170,15 @@ abstract class AbstractOutlet implements OutletInterface
     /**
      * @return PipeInterface[]
      */
-    public function getPipesOut()
+    public function getPipesOut(): array
     {
         return $this->pipesOut;
     }
 
     /**
      * @param PipeInterface $pipe
-     * @return $this
      */
-    public function addPipeIn(PipeInterface $pipe)
+    public function addPipeIn(PipeInterface $pipe): self
     {
         if (false === in_array($pipe, $this->pipesIn)) {
             array_push($this->pipesIn, $pipe);
@@ -196,9 +189,8 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param PipeInterface $pipe
-     * @return $this
      */
-    public function addPipeOut(PipeInterface $pipe)
+    public function addPipeOut(PipeInterface $pipe): self
     {
         if (false === in_array($pipe, $this->pipesOut)) {
             array_push($this->pipesOut, $pipe);
@@ -207,11 +199,7 @@ abstract class AbstractOutlet implements OutletInterface
         return $this;
     }
 
-    /**
-     * @param array $data
-     * @return $this
-     */
-    public function fill($data)
+    public function fill(array $data): self
     {
         $this->validate($data);
         foreach ($this->pipesIn as $pipe) {
@@ -225,10 +213,7 @@ abstract class AbstractOutlet implements OutletInterface
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function produce()
+    public function produce(): array
     {
         $data = $this->data;
         foreach ($this->pipesOut as $pipe) {
@@ -248,59 +233,29 @@ abstract class AbstractOutlet implements OutletInterface
     }
 
     /**
-     * @return ViewInterface
-     */
-    public function getView()
-    {
-        return $this->view;
-    }
-
-    /**
-     * @param ViewInterface $view
-     * @return $this
-     */
-    public function setView($view)
-    {
-        $this->view = $view;
-
-        return $this;
-    }
-
-    /**
      * @return OutletArgument[]
      */
-    public function getArguments()
+    public function getArguments(): array
     {
         return $this->arguments;
     }
 
     /**
      * @param OutletArgument[] $arguments
-     * @return $this
      */
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments): self
     {
         $this->arguments = $arguments;
         return $this;
     }
 
-    /**
-     * @param OutletArgument $argument
-     * @return $this
-     */
-    public function addArgument(OutletArgument $argument)
+    public function addArgument(OutletArgument $argument): self
     {
         $this->arguments[] = $argument;
         return $this;
     }
 
-    /**
-     * Validate given $data based on configured argument validations
-     *
-     * @param array $data
-     * @return Result
-     */
-    public function validate(array $data)
+    public function validate(array $data): Result
     {
         $this->validationResults = new Result();
         foreach ($this->getArguments() as $argument) {
@@ -324,10 +279,7 @@ abstract class AbstractOutlet implements OutletInterface
         return $this->validationResults;
     }
 
-    /**
-     * @return bool
-     */
-    public function isValid()
+    public function isValid(): bool
     {
         if ($this->validationResults === null) {
             return true;
@@ -336,10 +288,7 @@ abstract class AbstractOutlet implements OutletInterface
         return !$this->validationResults->hasErrors();
     }
 
-    /**
-     * @return Result Validation errors which have occurred.
-     */
-    public function getValidationResults()
+    public function getValidationResults(): Result
     {
         return $this->validationResults;
     }

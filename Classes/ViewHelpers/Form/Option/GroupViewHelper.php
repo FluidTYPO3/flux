@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form\Option;
 
 /*
@@ -22,7 +23,6 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class GroupViewHelper extends OptionViewHelper
 {
-
     /**
      * @var string
      */

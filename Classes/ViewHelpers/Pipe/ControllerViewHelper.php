@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 /*
@@ -22,7 +23,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ControllerViewHelper extends AbstractPipeViewHelper
 {
-
     /**
      * @return void
      */
@@ -62,19 +62,19 @@ class ControllerViewHelper extends AbstractPipeViewHelper
         $extensionName = $arguments['extensionName'];
         $controller = $arguments['controller'];
         $controllerContext = $renderingContext->getControllerContext();
-        if (true === empty($extensionName)) {
+        if (empty($extensionName)) {
             $extensionName = $controllerContext->getRequest()->getControllerExtensionName();
         }
-        if (true === empty($controller)) {
+        if (empty($controller)) {
             $controller = $controllerContext->getRequest()->getControllerObjectName();
         }
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ControllerPipe $pipe */
         $pipe = $objectManager->get(ControllerPipe::class);
-        $pipe->setAction($arguments['action']);
-        $pipe->setController($controller);
-        $pipe->setExtensionName($extensionName);
+        $pipe->setAction((string) $arguments['action']);
+        $pipe->setController((string) $controller);
+        $pipe->setExtensionName((string) $extensionName);
         return $pipe;
     }
 }

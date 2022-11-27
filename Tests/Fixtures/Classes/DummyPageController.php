@@ -9,57 +9,35 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  */
 
 use FluidTYPO3\Flux\Controller\PageController;
+use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
-/**
- * Class DummyPageController
- */
 class DummyPageController extends PageController
 {
+    protected array $record = [];
 
-    /**
-     * @var array
-     */
-    protected $record = array();
-
-    /**
-     * @param ViewInterface $view
-     */
-    public function setView(ViewInterface $view)
+    public function setView(ViewInterface $view): void
     {
         $this->view = $view;
     }
 
-    /**
-     * @return array
-     */
-    public function getRecord()
+    public function getRecord(): array
     {
         return $this->record;
     }
 
-    /**
-     * @param array $record
-     */
-    public function setRecord(array $record)
+    public function setRecord(array $record): void
     {
         $this->record = $record;
     }
 
-    /**
-     * @return ProviderInterface
-     */
-    public function getProvider()
+    public function getProvider(): ?ControllerProviderInterface
     {
         return $this->provider;
     }
 
-    /**
-     * @param ProviderInterface $provider
-     * @return void
-     */
-    public function setProvider(ProviderInterface $provider)
+    public function setProvider(ControllerProviderInterface $provider): void
     {
         $this->provider = $provider;
     }

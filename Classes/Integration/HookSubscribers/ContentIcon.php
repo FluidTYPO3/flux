@@ -24,15 +24,9 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 
-/**
- * Class ContentIconHookSubscriber
- */
 class ContentIcon
 {
-    /**
-     * @var array
-     */
-    protected $templates = [
+    protected array $templates = [
         'gridToggle' => '<div class="fluidcontent-toggler col-auto">
                             <div class="btn-group btn-group-sm" role="group">
                             <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a> 
@@ -43,42 +37,20 @@ class ContentIcon
                         </div></div><div>',
     ];
 
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    protected ObjectManagerInterface $objectManager;
+    protected FluxService $fluxService;
+    protected FrontendInterface $cache;
 
-    /**
-     * @var FluxService
-     */
-    protected $fluxService;
-
-    /**
-     * @var FrontendInterface
-     */
-    protected $cache;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    public function injectObjectManager(ObjectManagerInterface $objectManager): void
     {
         $this->objectManager = $objectManager;
     }
 
-    /**
-     * @param FluxService $fluxService
-     * @return void
-     */
-    public function injectFluxService(FluxService $fluxService)
+    public function injectFluxService(FluxService $fluxService): void
     {
         $this->fluxService = $fluxService;
     }
 
-    /**
-     * Construct
-     */
     public function __construct()
     {
         /** @var ObjectManagerInterface $objectManager */
@@ -95,16 +67,14 @@ class ContentIcon
     }
 
     /**
-     * @param array $parameters
      * @param PageLayoutView|GridColumnItem|DatabaseRecordList $caller
-     * @return string
      */
-    public function addSubIcon(array $parameters, $caller = null)
+    public function addSubIcon(array $parameters, $caller = null): string
     {
         if (!($caller instanceof PageLayoutView || $caller instanceof GridColumnItem)) {
             return '';
         }
-        list ($table, $uid, $record) = $parameters;
+        [$table, $uid, $record] = $parameters;
         if ($table !== 'tt_content') {
             return '';
         }
@@ -135,7 +105,7 @@ class ContentIcon
                     $field,
                     $record,
                     null,
-                    GridProviderInterface::class
+                    [GridProviderInterface::class]
                 );
                 // filter 3: a Provider must be resolved for the record.
                 if ($provider && $provider->getGrid($record)->hasChildren()) {
@@ -148,13 +118,7 @@ class ContentIcon
         return $icon;
     }
 
-    /**
-     * @param array $row
-     *
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    protected function drawGridToggle(array $row)
+    protected function drawGridToggle(array $row): string
     {
         $iconFactory = $this->getIconFactory();
 
@@ -186,11 +150,7 @@ class ContentIcon
         )['rendered'];
     }
 
-    /**
-     * @param array $row
-     * @return string
-     */
-    protected function isRowCollapsed(array $row)
+    protected function isRowCollapsed(array $row): string
     {
         $collapsed = false;
         $cookie = $this->getCookie();
@@ -208,12 +168,7 @@ class ContentIcon
         )['collapsed'];
     }
 
-    /**
-     * @param string $table
-     * @param array $fields
-     * @return string|null
-     */
-    protected function detectFirstFlexTypeFieldInTableFromPossibilities($table, $fields)
+    protected function detectFirstFlexTypeFieldInTableFromPossibilities(string $table, array $fields): ?string
     {
         foreach ($fields as $fieldName) {
             if (($GLOBALS['TCA'][$table]['columns'][$fieldName]['config']['type'] ?? null) === 'flex') {
@@ -224,10 +179,9 @@ class ContentIcon
     }
 
     /**
-     * @return string|NULL
      * @codeCoverageIgnore
      */
-    protected function getCookie()
+    protected function getCookie(): ?string
     {
         return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
     }
