@@ -73,17 +73,15 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
     public function conduct($data)
     {
         $extensionName = $this->getExtensionName();
+        $extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
+
         /** @var Request $request */
         $request = $this->objectManager->get(Request::class);
         $request->setControllerName($this->getController());
         $request->setControllerActionName($this->getAction());
-        list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
         $request->setControllerExtensionName($extensionName);
-        if (null !== $vendorName && method_exists($request, 'setControllerVendorName')) {
-            $request->setControllerVendorName($vendorName);
-        }
-
         $request->setArguments($data);
+
         /** @var Response $response */
         $response = $this->objectManager->get(Response::class);
         /** @var Dispatcher $dispatcher */
