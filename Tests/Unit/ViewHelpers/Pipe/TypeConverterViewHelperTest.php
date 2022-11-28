@@ -14,9 +14,6 @@ use FluidTYPO3\Flux\ViewHelpers\Pipe\AbstractPipeViewHelper;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Property\TypeConverter\ArrayConverter;
 
-/**
- * TypeConverterViewHelperTest
- */
 class TypeConverterViewHelperTest extends AbstractViewHelperTestCase
 {
     /**
@@ -29,10 +26,7 @@ class TypeConverterViewHelperTest extends AbstractViewHelperTestCase
         $this->assertSame('', $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getTestArguments()
+    public function getTestArguments(): array
     {
         return array(
             array(array('typeConverter' => 'Array')),

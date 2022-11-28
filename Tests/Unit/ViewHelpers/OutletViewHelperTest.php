@@ -13,15 +13,8 @@ use FluidTYPO3\Flux\Outlet\OutletInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use FluidTYPO3\Flux\ViewHelpers\OutletViewHelper;
 
-/**
- * OutletViewHelperTest
- */
 class OutletViewHelperTest extends AbstractViewHelperTestCase
 {
-
-    /**
-     * @test
-     */
     public function testCanDisableOutlet()
     {
         $outlet = $this->getMockBuilder(OutletInterface::class)->getMockForAbstractClass();

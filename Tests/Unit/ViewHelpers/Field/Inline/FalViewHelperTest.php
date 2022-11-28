@@ -11,9 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\Inline;
 use FluidTYPO3\Flux\Form\Field\Inline\Fal;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase;
 
-/**
- * FalViewHelperTest
- */
 class FalViewHelperTest extends AbstractFieldViewHelperTestCase
 {
     /**

@@ -20,11 +20,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class SheetViewHelper extends AbstractFormViewHelper
 {
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'name',
@@ -65,17 +61,12 @@ class SheetViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Sheet
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Sheet
     {
         /** @var array $arguments */
         $form = static::getContainerFromRenderingContext($renderingContext);
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-        if (true === $form->has($arguments['name'])) {
+        if ($form->has($arguments['name'])) {
             /** @var Sheet $sheet */
             $sheet = $form->get($arguments['name']);
         } else {

@@ -18,16 +18,10 @@ use FluidTYPO3\Flux\ViewHelpers\Outlet\ArgumentViewHelper;
 use FluidTYPO3\Flux\ViewHelpers\Outlet\ValidateViewHelper;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * ArgumentViewHelperTest
- */
 class ArgumentViewHelperTest extends AbstractViewHelperTestCase
 {
     private ?OutletArgument $argument;
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         $this->argument = $this->getMockBuilder(OutletArgument::class)
@@ -50,9 +44,6 @@ class ArgumentViewHelperTest extends AbstractViewHelperTestCase
         AccessibleArgumentViewHelper::setObjectManager(null);
     }
 
-    /**
-     * @test
-     */
     public function testAddsArgumentToOutlet()
     {
         $outlet = $this->getMockBuilder(OutletInterface::class)->getMockForAbstractClass();

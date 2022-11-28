@@ -46,11 +46,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class SelectViewHelper extends AbstractMultiValueFieldViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->overrideArgument(
@@ -75,12 +71,7 @@ class SelectViewHelper extends AbstractMultiValueFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Select
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Select
     {
         /** @var array $arguments */
         /** @var Select $component */

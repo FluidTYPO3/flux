@@ -15,9 +15,6 @@ use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Backend\Form\NodeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * RenderViewHelperTest
- */
 class RenderViewHelperTest extends AbstractViewHelperTestCase
 {
     /**

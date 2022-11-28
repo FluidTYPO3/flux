@@ -53,11 +53,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ContentViewHelper extends AbstractFormViewHelper
 {
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('name', 'string', 'Name of the content area, FlexForm XML-valid tag name string', true);
         $this->registerArgument(
@@ -75,12 +71,7 @@ class ContentViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Column
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Column
     {
         /** @var array $arguments */
         // get the current Grid and check for existence of one row and one column, if missing then create them:

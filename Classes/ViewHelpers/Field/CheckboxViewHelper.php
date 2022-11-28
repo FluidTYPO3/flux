@@ -20,12 +20,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class CheckboxViewHelper extends AbstractFieldViewHelper
 {
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Checkbox
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Checkbox
     {
         /** @var Checkbox $checkbox */
         $checkbox = static::getPreparedComponent(Checkbox::class, $renderingContext, $arguments);

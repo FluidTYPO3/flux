@@ -21,38 +21,25 @@ class OptionViewHelper extends AbstractFormViewHelper
 {
     use CompileWithContentArgumentAndRenderStatic;
 
-    /**
-     * @var string
-     */
-    public static $option;
+    public static string $option = '';
 
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('value', 'string', 'Option value');
         $this->registerArgument('name', 'string', 'Name of the option to be set', true);
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $option = $arguments['name'] ?? static::$option;
         $container = static::getContainerFromRenderingContext($renderingContext);
         $value = $renderChildrenClosure();
         if ($container instanceof OptionCarryingInterface) {
             $container->setOption($option, $value);
-            return;
+            return '';
         }
         throw new \UnexpectedValueException(
             'flux:form.option cannot be used as child element of '

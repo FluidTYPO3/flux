@@ -20,9 +20,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\TextNode;
 
-/**
- * RenderViewHelperTest
- */
 class RenderViewHelperTest extends AbstractViewHelperTestCase
 {
     /**

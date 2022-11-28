@@ -12,9 +12,6 @@ use FluidTYPO3\Flux\Form\WizardInterface;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\Wizard\AbstractWizardViewHelper;
 
-/**
- * AbstractWizardViewHelperTestCase
- */
 abstract class AbstractWizardViewHelperTestCase extends AbstractFormViewHelperTestCase
 {
     /**

@@ -20,16 +20,9 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class StaticViewHelper extends OptionViewHelper
 {
-    /**
-     * @var string
-     */
-    public static $option = Form::OPTION_STATIC;
+    public static string $option = Form::OPTION_STATIC;
 
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'value',

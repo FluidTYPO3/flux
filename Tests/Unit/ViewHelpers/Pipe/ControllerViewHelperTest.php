@@ -12,12 +12,8 @@ use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * ControllerViewHelperTest
- */
 class ControllerViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @dataProvider getTestArguments
      * @param array $arguments

@@ -24,10 +24,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class TypeConverterViewHelper extends AbstractPipeViewHelper
 {
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('targetType', 'string', 'Target type (class name, integer, array, etc.)', true);
@@ -45,17 +42,11 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
         iterable $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
+        ?\Closure $renderChildrenClosure = null
+    ): TypeConverterPipe {
         /** @var array $arguments */
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);

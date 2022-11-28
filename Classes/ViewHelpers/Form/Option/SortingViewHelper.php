@@ -17,16 +17,9 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class SortingViewHelper extends OptionViewHelper
 {
-    /**
-     * @var string
-     */
-    public static $option = Form::OPTION_SORTING;
+    public static string $option = Form::OPTION_SORTING;
 
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'value',

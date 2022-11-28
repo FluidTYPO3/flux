@@ -62,26 +62,11 @@ class GetViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
-    /**
-     * @var FluxService|null
-     */
-    protected static $configurationService;
+    protected static ?FluxService $configurationService = null;
+    protected static ?ConfigurationManagerInterface $configurationManager = null;
+    protected static ?WorkspacesAwareRecordService $recordService = null;
 
-    /**
-     * @var ConfigurationManagerInterface|null
-     */
-    protected static $configurationManager;
-
-    /**
-     * @var WorkspacesAwareRecordService|null
-     */
-    protected static $recordService;
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('area', 'string', 'Name or "colPos" value of the content area to render', true);
         $this->registerArgument('limit', 'integer', 'Optional limit to the number of content elements to render');
@@ -105,11 +90,6 @@ class GetViewHelper extends AbstractViewHelper
     }
 
     /**
-     * Default implementation for use in compiled templates
-     *
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
      * @return string|array|null
      */
     public static function renderStatic(
@@ -175,13 +155,7 @@ class GetViewHelper extends AbstractViewHelper
         return $content;
     }
 
-    /**
-     * @param array $arguments
-     * @param array $parent
-     * @param Grid $grid
-     * @return array
-     */
-    protected static function getContentRecords(array $arguments, array $parent, Grid $grid)
+    protected static function getContentRecords(array $arguments, array $parent, Grid $grid): array
     {
         $columnPosition = $arguments['area'];
         if (!ctype_digit((string) $columnPosition)) {
@@ -227,10 +201,7 @@ class GetViewHelper extends AbstractViewHelper
         )['records'];
     }
 
-    /**
-     * @return ContentObjectRenderer
-     */
-    protected static function getContentObjectRenderer()
+    protected static function getContentObjectRenderer(): ContentObjectRenderer
     {
         return $GLOBALS['TSFE']->cObj;
     }
@@ -238,11 +209,8 @@ class GetViewHelper extends AbstractViewHelper
     /**
      * This function renders an array of tt_content record into an array of rendered content
      * it returns a list of elements rendered by typoscript RECORDS function
-     *
-     * @param array $rows database rows of records (each item is a tt_content table record)
-     * @return array
      */
-    protected static function getRenderedRecords(array $rows)
+    protected static function getRenderedRecords(array $rows): array
     {
         $elements = [];
         foreach ($rows as $row) {
@@ -251,7 +219,7 @@ class GetViewHelper extends AbstractViewHelper
                 'source' => $row['uid'],
                 'dontCheckPid' => 1,
             ];
-            array_push($elements, static::getContentObjectRenderer()->cObjGetSingle('RECORDS', $conf));
+            $elements[] = static::getContentObjectRenderer()->cObjGetSingle('RECORDS', $conf);
         }
         return HookHandler::trigger(
             HookHandler::NESTED_CONTENT_RENDERED,

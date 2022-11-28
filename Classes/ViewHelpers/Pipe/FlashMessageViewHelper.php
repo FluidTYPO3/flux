@@ -22,10 +22,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FlashMessageViewHelper extends AbstractPipeViewHelper
 {
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('message', 'string', 'FlashMessage message body', true);
@@ -40,17 +37,11 @@ class FlashMessageViewHelper extends AbstractPipeViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
         iterable $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
+        ?\Closure $renderChildrenClosure = null
+    ): FlashMessagePipe {
         /** @var array $arguments */
         /** @var FlashMessagePipe $pipe */
         $pipe = GeneralUtility::makeInstance(FlashMessagePipe::class);

@@ -11,9 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Outlet;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\Outlet\ValidateViewHelper;
 
-/**
- * ValidateViewHelperTest
- */
 class ValidateViewHelperTest extends AbstractViewHelperTestCase
 {
     public function testAddsArgumentsAsValidatorConfiguration()

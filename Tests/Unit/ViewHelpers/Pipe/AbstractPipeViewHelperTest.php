@@ -12,9 +12,6 @@ use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\Pipe\AbstractPipeViewHelper;
 
-/**
- * AbstractPipeViewHelperTest
- */
 class AbstractPipeViewHelperTest extends AbstractViewHelperTestCase
 {
     protected function createInstance()
@@ -22,9 +19,6 @@ class AbstractPipeViewHelperTest extends AbstractViewHelperTestCase
         return $this->getMockBuilder($this->createInstanceClassName())->getMockForAbstractClass();
     }
 
-    /**
-     * @test
-     */
     public function testPreparePipeInstanceDefaultReturnsStandardPipe()
     {
         $className = AbstractPipeViewHelper::class;

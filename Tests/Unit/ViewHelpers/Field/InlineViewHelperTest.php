@@ -8,12 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * InlineViewHelperTest
- */
 class InlineViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-
     /**
      * @var array
      */

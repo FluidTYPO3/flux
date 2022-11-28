@@ -31,11 +31,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FileViewHelper extends AbstractMultiValueFieldViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('maxSize', 'integer', 'Maximum file size allowed in KB');
@@ -70,12 +66,7 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return File
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): File
     {
         /** @var array $arguments */
         /** @var File $component */

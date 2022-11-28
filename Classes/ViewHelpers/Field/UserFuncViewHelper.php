@@ -20,11 +20,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class UserFuncViewHelper extends AbstractFieldViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -49,15 +45,10 @@ class UserFuncViewHelper extends AbstractFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return UserFunction
-     */
     public static function getComponent(
         RenderingContextInterface $renderingContext,
         iterable $arguments
-    ) {
+    ): UserFunction {
         /** @var array $arguments */
         /** @var UserFunction $user */
         $user = static::getPreparedComponent(UserFunction::class, $renderingContext, $arguments);

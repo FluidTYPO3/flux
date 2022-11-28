@@ -40,11 +40,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class GridViewHelper extends AbstractFormViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('name', 'string', 'Optional name of this grid - defaults to "grid"', false, 'grid');
         $this->registerArgument(
@@ -68,7 +64,7 @@ class GridViewHelper extends AbstractFormViewHelper
         );
     }
 
-    protected function callRenderMethod()
+    protected function callRenderMethod(): string
     {
         $container = static::getContainerFromRenderingContext($this->renderingContext);
         $viewHelperVariableContainer = $this->renderingContext->getViewHelperVariableContainer();
@@ -89,17 +85,11 @@ class GridViewHelper extends AbstractFormViewHelper
         return '';
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $container = static::getContainerFromRenderingContext($renderingContext);
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $extensionName = self::resolveExtensionName($renderingContext, $arguments);
@@ -116,6 +106,7 @@ class GridViewHelper extends AbstractFormViewHelper
 
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         static::setContainerInRenderingContext($renderingContext, $container);
+        return '';
     }
 
     private static function resolveExtensionName(RenderingContextInterface $renderingContext, array $arguments): string

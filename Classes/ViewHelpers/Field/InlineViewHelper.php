@@ -17,10 +17,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 class InlineViewHelper extends AbstractInlineFieldViewHelper
 {
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
     }

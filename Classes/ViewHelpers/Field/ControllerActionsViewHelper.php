@@ -78,11 +78,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ControllerActionsViewHelper extends SelectViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->overrideArgument(
@@ -163,14 +159,10 @@ class ControllerActionsViewHelper extends SelectViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return ControllerActions
-     * @throws \RuntimeException
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): ControllerActions {
         /** @var array $arguments */
         $extensionName = $arguments['controllerExtensionName'];
         /** @var string|null $pluginName */
@@ -219,11 +211,7 @@ class ControllerActionsViewHelper extends SelectViewHelper
         return $component;
     }
 
-    /**
-     * @param Request $request
-     * @return string
-     */
-    protected static function getFullExtensionNameFromRequest(Request $request)
+    protected static function getFullExtensionNameFromRequest(Request $request): string
     {
         $vendorName = null;
         if (true === method_exists($request, 'getControllerVendorName')) {

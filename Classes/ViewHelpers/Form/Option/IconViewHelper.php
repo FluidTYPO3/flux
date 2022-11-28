@@ -28,16 +28,9 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class IconViewHelper extends OptionViewHelper
 {
-    /**
-     * @var string
-     */
-    public static $option = Form::OPTION_ICON;
+    public static string $option = Form::OPTION_ICON;
 
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('value', 'string', 'Path and name of the icon file');
     }

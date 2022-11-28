@@ -12,9 +12,6 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 
-/**
- * VariableViewHelperTest
- */
 class VariableViewHelperTest extends AbstractViewHelperTestCase
 {
     /**

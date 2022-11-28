@@ -26,10 +26,7 @@ class EmailViewHelper extends AbstractPipeViewHelper
      */
     protected $escapeChildren = false;
 
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('body', 'string', 'Message body. Can also be inserted as tag content');
@@ -49,17 +46,11 @@ class EmailViewHelper extends AbstractPipeViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
         iterable $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
+        ?\Closure $renderChildrenClosure = null
+    ): EmailPipe {
         /** @var array $arguments */
         $body = $arguments['body'];
         if (empty($body) && $renderChildrenClosure instanceof \Closure) {
