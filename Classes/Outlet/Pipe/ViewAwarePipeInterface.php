@@ -15,6 +15,5 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
  */
 interface ViewAwarePipeInterface extends PipeInterface
 {
-    public function setView(ViewInterface $view): void;
-    public function getView(): ViewInterface;
+    public function setView(ViewInterface $view): self;
 }
