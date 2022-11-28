@@ -213,14 +213,8 @@ class ControllerActionsViewHelper extends SelectViewHelper
 
     protected static function getFullExtensionNameFromRequest(Request $request): string
     {
-        $vendorName = null;
-        if (true === method_exists($request, 'getControllerVendorName')) {
-            $vendorName = $request->getControllerVendorName();
-        }
-        $extensionName = $request->getControllerExtensionName();
-        if (null !== $vendorName) {
-            $extensionName = $vendorName . '.' . $extensionName;
-        }
-        return $extensionName;
+        $vendorName = method_exists($request, 'getControllerVendorName') ? $request->getControllerVendorName() : null;
+        $extensionName = (string) $request->getControllerExtensionName();
+        return $vendorName ? $vendorName . '.' . $extensionName : $extensionName;
     }
 }
