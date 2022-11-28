@@ -22,8 +22,11 @@ abstract class AbstractFieldViewHelperTestCase extends AbstractFormViewHelperTes
     public function createsValidFieldInterfaceComponents()
     {
         $instance = $this->buildViewHelperInstance($this->defaultArguments);
-        $component = $instance->getComponent($this->renderingContext, $this->buildViewHelperArguments($instance, $this->defaultArguments), function () {
-        });
+        $component = $instance->getComponent(
+            $this->renderingContext,
+            $this->buildViewHelperArguments($instance, $this->defaultArguments),
+            $this->callInaccessibleMethod($instance, 'buildRenderChildrenClosure')
+        );
         $this->assertInstanceOf(FieldInterface::class, $component);
     }
 }
