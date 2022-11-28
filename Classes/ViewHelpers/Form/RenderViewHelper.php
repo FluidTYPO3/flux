@@ -30,25 +30,16 @@ class RenderViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('form', Form::class, 'Form instance to render as HTML', true);
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return string
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $form = $arguments['form'];
         $record = $form->getOption(Form::OPTION_RECORD);
         $table = $form->getOption(Form::OPTION_RECORD_TABLE);

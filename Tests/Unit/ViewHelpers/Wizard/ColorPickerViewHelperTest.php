@@ -8,10 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Wizard;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * ColorPickerViewHelperTest
- */
 class ColorPickerViewHelperTest extends AbstractWizardViewHelperTestCase
 {
-
 }

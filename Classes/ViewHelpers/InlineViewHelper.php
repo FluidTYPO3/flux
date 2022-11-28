@@ -39,14 +39,17 @@ class InlineViewHelper extends AbstractViewHelper
 {
     use CompileWithContentArgumentAndRenderStatic;
 
+    /**
+     * @var boolean
+     */
     protected $escapeChildren = false;
 
+    /**
+     * @var boolean
+     */
     protected $escapeOutput = false;
 
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'code',
@@ -57,10 +60,7 @@ class InlineViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return mixed|string
+     * @return mixed
      */
     public static function renderStatic(
         array $arguments,

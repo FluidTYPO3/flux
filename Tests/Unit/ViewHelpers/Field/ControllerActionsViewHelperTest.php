@@ -10,9 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 
 use TYPO3\CMS\Extbase\Mvc\Request;
 
-/**
- * ControllerActionsViewHelperTest
- */
 class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
 {
     /**

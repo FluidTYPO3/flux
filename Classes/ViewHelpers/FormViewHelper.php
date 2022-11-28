@@ -18,11 +18,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FormViewHelper extends AbstractFormViewHelper
 {
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'id',
@@ -74,27 +70,16 @@ class FormViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Form
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Form
     {
         return Form::create();
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return string
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
         $form = static::getComponent($renderingContext, $arguments);

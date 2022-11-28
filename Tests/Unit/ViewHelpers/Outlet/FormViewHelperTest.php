@@ -16,11 +16,9 @@ use FluidTYPO3\Flux\ViewHelpers\Outlet\FormViewHelper;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
-/**
- * FormViewHelperTest
- */
 class FormViewHelperTest extends AbstractViewHelperTestCase
 {
     /**
@@ -51,9 +49,6 @@ class FormViewHelperTest extends AbstractViewHelperTestCase
         return $instance;
     }
 
-    /**
-     * @test
-     */
     public function testAddsTableAndUidHiddenFields()
     {
         $provider = $this->getMockBuilder(Provider::class)->setMethods(['getTableName'])->getMock();
@@ -99,5 +94,28 @@ class FormViewHelperTest extends AbstractViewHelperTestCase
         $output = $subject->render();
 
         self::assertSame('rendered', $output);
+    }
+
+    public function testThrowsExceptionIfUsedWithoutProvider(): void
+    {
+        $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'provider', null);
+        $this->expectExceptionCode(1669647845);
+        $subject = new FormViewHelper();
+        $subject->setRenderingContext($this->renderingContext);
+        $subject->render();
+    }
+
+    public function testThrowsExceptionIfUsedWithoutRecord(): void
+    {
+        $this->viewHelperVariableContainer->addOrUpdate(
+            FormViewHelper::class,
+            'provider',
+            $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass()
+        );
+        $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'record', null);
+        $this->expectExceptionCode(1669647846);
+        $subject = new FormViewHelper();
+        $subject->setRenderingContext($this->renderingContext);
+        $subject->render();
     }
 }

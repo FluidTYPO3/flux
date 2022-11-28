@@ -20,11 +20,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldViewHelper
 {
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -159,29 +155,25 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return RelationFieldInterface
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): RelationFieldInterface {
         return static::getPreparedComponent(Relation::class, $renderingContext, $arguments);
     }
 
     /**
      * @template T
      * @param class-string<T> $type
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return T
+     * @return T&RelationFieldInterface
      */
     protected static function getPreparedComponent(
         $type,
         RenderingContextInterface $renderingContext,
         iterable $arguments
-    ) {
+    ): RelationFieldInterface {
         /** @var array $arguments */
+        /** @var T&RelationFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setTable($arguments['table']);
         $component->setCondition($arguments['condition']);

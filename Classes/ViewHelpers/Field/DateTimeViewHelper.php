@@ -20,21 +20,12 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class DateTimeViewHelper extends AbstractFieldViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Input
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Input
     {
         /** @var Input $input */
         $input = static::getPreparedComponent('DateTime', $renderingContext, $arguments);

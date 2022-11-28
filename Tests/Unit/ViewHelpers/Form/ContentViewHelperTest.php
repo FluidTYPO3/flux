@@ -15,9 +15,6 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Extbase\Mvc\Request;
 
-/**
- * ContentViewHelperTest
- */
 class ContentViewHelperTest extends AbstractViewHelperTestCase
 {
     /**

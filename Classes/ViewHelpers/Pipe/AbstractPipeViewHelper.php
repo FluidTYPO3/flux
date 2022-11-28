@@ -26,10 +26,7 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
     const DIRECTION_IN = 'in';
     const DIRECTION_OUT = 'out';
 
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'direction',
@@ -44,9 +41,9 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $form = static::getFormFromRenderingContext($renderingContext);
-        $pipe = static::preparePipeInstance($renderingContext, $arguments);
+        $pipe = static::preparePipeInstance($renderingContext, $arguments, $renderChildrenClosure);
         if ($arguments['direction'] === static::DIRECTION_IN) {
             $form->getOutlet()->addPipeIn($pipe);
         } else {
@@ -55,17 +52,11 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
         return '';
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
         iterable $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
+        ?\Closure $renderChildrenClosure = null
+    ): PipeInterface {
         /** @var StandardPipe $pipe */
         $pipe = GeneralUtility::makeInstance(StandardPipe::class);
 

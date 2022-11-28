@@ -11,9 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
 use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
 
-/**
- * CustomViewHelperTest
- */
 class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
 {
     /**

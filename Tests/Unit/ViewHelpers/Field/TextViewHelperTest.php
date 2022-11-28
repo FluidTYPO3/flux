@@ -8,11 +8,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * TextViewHelperTest
- */
 class TextViewHelperTest extends AbstractFieldViewHelperTestCase
 {
+    /**
+     * @var array
+     */
     protected $defaultArguments = [
         'name' => 'test',
     ];

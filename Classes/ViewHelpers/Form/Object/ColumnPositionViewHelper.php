@@ -61,13 +61,10 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ColumnPositionViewHelper extends AbstractFormViewHelper
 {
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return ColumnPosition
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): ColumnPosition {
         return static::getContainerFromRenderingContext($renderingContext)
             ->createField(ColumnPosition::class, ColumnPosition::FIELD_NAME);
     }

@@ -55,38 +55,10 @@ class DataViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
-    /**
-     * @var FluxService|null
-     */
-    protected static $configurationService;
+    protected static ?FluxService $configurationService = null;
+    protected static ?WorkspacesAwareRecordService $recordService = null;
 
-    /**
-     * @var WorkspacesAwareRecordService|null
-     */
-    protected static $recordService;
-
-    /**
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
-    {
-        static::$configurationService = $configurationService;
-    }
-
-    /**
-     * @param WorkspacesAwareRecordService $recordService
-     * @return void
-     */
-    public function injectRecordService(WorkspacesAwareRecordService $recordService)
-    {
-        static::$recordService = $recordService;
-    }
-
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('table', 'string', 'Name of table that contains record with Flux field', true);
         $this->registerArgument('field', 'string', 'Name of Flux field in table', true);
@@ -96,9 +68,6 @@ class DataViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
      * @return mixed
      */
     public static function renderStatic(
@@ -113,14 +82,14 @@ class DataViewHelper extends AbstractViewHelper
         $field = $arguments['field'] ?? null;
         $table = $arguments['table'] ?? null;
 
-        if (null === $record && null === $as) {
+        if (!$record && !$as) {
             $record = $renderChildrenClosure();
         }
-        if (null === $uid && null !== $record && true === isset($record['uid'])) {
+        if (!$uid && $record && isset($record['uid'])) {
             $uid = $record['uid'];
         }
-        if (true === isset($GLOBALS['TCA'][$table]) && true === isset($GLOBALS['TCA'][$table]['columns'][$field])) {
-            if (null === $record) {
+        if (isset($GLOBALS['TCA'][$table]) && isset($GLOBALS['TCA'][$table]['columns'][$field])) {
+            if (!$record) {
                 $record = static::getRecordService()->getSingle($table, 'uid,' . $field, $uid);
             }
             if (!$record) {
@@ -155,7 +124,7 @@ class DataViewHelper extends AbstractViewHelper
                 'variableProvider' => $templateVariableContainer
             ]
         )['data'];
-        if (null !== $as) {
+        if ($as) {
             if ($templateVariableContainer->exists($as)) {
                 $backupVariable = $templateVariableContainer->get($as);
                 $templateVariableContainer->remove($as);
@@ -163,7 +132,7 @@ class DataViewHelper extends AbstractViewHelper
             $templateVariableContainer->add($as, $dataArray);
             $content = $renderChildrenClosure();
             $templateVariableContainer->remove($as);
-            if (true === isset($backupVariable)) {
+            if (isset($backupVariable)) {
                 $templateVariableContainer->add($as, $backupVariable);
             }
             return $content;
@@ -171,14 +140,11 @@ class DataViewHelper extends AbstractViewHelper
         return $dataArray;
     }
 
-    /**
-     * @param array $providers
-     * @param array $record
-     * @param string $field
-     * @return array
-     */
-    protected static function readDataArrayFromProvidersOrUsingDefaultMethod(array $providers, $record, $field)
-    {
+    protected static function readDataArrayFromProvidersOrUsingDefaultMethod(
+        array $providers,
+        array $record,
+        string $field
+    ): array {
         if (0 === count($providers)) {
             $dataArray = static::getFluxService()->convertFlexFormContentToArray($record[$field]);
         } else {
@@ -193,10 +159,9 @@ class DataViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @return FluxService
      * @codeCoverageIgnore
      */
-    protected static function getFluxService()
+    protected static function getFluxService(): FluxService
     {
         if (!isset(static::$configurationService)) {
             /** @var FluxService $fluxService */
@@ -207,10 +172,9 @@ class DataViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @return WorkspacesAwareRecordService
      * @codeCoverageIgnore
      */
-    protected static function getRecordService()
+    protected static function getRecordService(): WorkspacesAwareRecordService
     {
         if (!isset(static::$recordService)) {
             /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */

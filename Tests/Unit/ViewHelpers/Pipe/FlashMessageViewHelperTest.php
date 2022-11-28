@@ -10,9 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
-/**
- * FlashMessageViewHelperTest
- */
 class FlashMessageViewHelperTest extends AbstractViewHelperTestCase
 {
 
@@ -25,10 +22,7 @@ class FlashMessageViewHelperTest extends AbstractViewHelperTestCase
         $this->assertSame('', $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getTestArguments()
+    public function getTestArguments(): array
     {
         return array(
             array(array()),

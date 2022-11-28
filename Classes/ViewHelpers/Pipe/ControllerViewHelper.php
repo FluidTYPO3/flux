@@ -23,10 +23,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ControllerViewHelper extends AbstractPipeViewHelper
 {
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -47,17 +44,11 @@ class ControllerViewHelper extends AbstractPipeViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
         iterable $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
+        ?\Closure $renderChildrenClosure = null
+    ): ControllerPipe {
         /** @var array $arguments */
         $extensionName = $arguments['extensionName'];
         $controller = $arguments['controller'];

@@ -10,7 +10,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
  */
 
 use FluidTYPO3\Flux\Provider\AbstractProvider;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 
 /**
  * Outlet Form Renderer
@@ -33,31 +36,32 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
  */
 class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
 {
-    /**
-     * @var AbstractProvider
-     */
-    protected $provider;
+    protected ?ProviderInterface $provider = null;
+    protected array $record = [];
 
-    /**
-     * @var array
-     */
-    protected $record;
-
-    /**
-     * @return string
-     */
-    public function render()
+    public function render(): string
     {
-        /** @var AbstractProvider $provider */
+        /** @var ProviderInterface|null $provider */
         $provider = $this->viewHelperVariableContainer->get(self::class, 'provider');
-        $this->provider = $provider;
-        /** @var array $record */
+        if (!$provider instanceof ProviderInterface) {
+            throw new Exception(
+                'Provider associated with outlet must be instance of ' . ProviderInterface::class,
+                1669647845
+            );
+        }
+
+        /** @var array|null $record */
         $record = $this->viewHelperVariableContainer->get(self::class, 'record');
+        if (!is_array($record)) {
+            throw new Exception('Record not found in context of outlet form', 1669647846);
+        }
+
+        $this->provider = $provider;
         $this->record = $record;
 
         if (!$this->hasArgument('extensionName')) {
             $this->arguments['extensionName'] = ExtensionNamingUtility::getExtensionName(
-                (string) $this->provider->getControllerExtensionKeyFromRecord($this->record)
+                $this->provider->getControllerExtensionKeyFromRecord($this->record)
             );
         }
 
@@ -80,16 +84,16 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
      * Render additional identity fields which were registered by form elements.
      * This happens if a form field is defined like property="bla.blubb" - then we might
      * need an identity property for the sub-object "bla".
-     *
-     * @return string HTML-string for the additional identity properties
      */
-    protected function renderAdditionalIdentityFields()
+    protected function renderAdditionalIdentityFields(): string
     {
+        /** @var ProviderInterface $provider */
+        $provider = $this->provider;
         $output = parent::renderAdditionalIdentityFields();
         $output .= '<input type="hidden" name="'
             . $this->prefixFieldName('__outlet[table]')
             . '" value="'
-            . $this->provider->getTableName($this->record)
+            . $provider->getTableName($this->record)
             . '" />'
             . PHP_EOL
             . '<input type="hidden" name="'

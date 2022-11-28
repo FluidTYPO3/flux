@@ -23,16 +23,9 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class GroupViewHelper extends OptionViewHelper
 {
-    /**
-     * @var string
-     */
-    public static $option = Form::OPTION_GROUP;
+    public static string $option = Form::OPTION_GROUP;
 
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('value', 'string', 'Name of the group');
     }

@@ -22,7 +22,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FieldViewHelper extends AbstractFieldViewHelper
 {
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('type', 'string', 'TCA field type', true);
         $this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', true);
@@ -71,13 +71,10 @@ class FieldViewHelper extends AbstractFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return FieldInterface
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): FieldInterface {
         /** @var array $arguments */
         $parent = static::getContainerFromRenderingContext($renderingContext);
         $field = Field::create($arguments instanceof ArgumentCollection ? $arguments->getArrayCopy() : $arguments);

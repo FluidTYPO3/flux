@@ -10,9 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
 
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInterface;
 
-/**
- * AbstractFormViewHelperTestCase
- */
 abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 {
     /**

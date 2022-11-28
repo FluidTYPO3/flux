@@ -45,13 +45,10 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class MultiRelationViewHelper extends AbstractRelationFieldViewHelper
 {
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return RelationFieldInterface
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): RelationFieldInterface {
         return static::getPreparedComponent(MultiRelation::class, $renderingContext, $arguments);
     }
 }

@@ -41,32 +41,20 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ArgumentViewHelper extends AbstractFormViewHelper
 {
-    /**
-     * @var ObjectManagerInterface|null
-     */
-    protected static $objectManager;
+    protected static ?ObjectManagerInterface $objectManager = null;
 
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('name', 'string', 'name of the argument', true);
         $this->registerArgument('type', 'string', 'type of the argument', false, 'string');
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $outlet = static::getFormFromRenderingContext($renderingContext)->getOutlet();
         $objectManager = static::getObjectManager();
         /** @var OutletArgument $argument */
@@ -81,6 +69,7 @@ class ArgumentViewHelper extends AbstractFormViewHelper
             $argument->addValidator($validator['type'], (array)$validator['options']);
         }
         $outlet->addArgument($argument);
+        return '';
     }
 
     /**

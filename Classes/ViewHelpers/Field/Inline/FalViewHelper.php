@@ -89,11 +89,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FalViewHelper extends AbstractInlineFieldViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
 
@@ -205,12 +201,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Fal
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Fal
     {
         /** @var array $arguments */
         $allowedExtensions = $arguments['allowedExtensions'];
@@ -220,7 +211,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
 
         /** @var Fal $component */
         $component = static::getPreparedComponent(Fal::class, $renderingContext, $arguments);
-        if (false === is_array($arguments['foreignMatchFields'])) {
+        if (!is_array($arguments['foreignMatchFields'])) {
             $component->setForeignMatchFields([
                 'fieldname' => $arguments['name']
             ]);
@@ -245,7 +236,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
                 ]
             ]]);
 
-        if (false === isset($arguments['foreignTypes'])) {
+        if (!isset($arguments['foreignTypes'])) {
             $component->setForeignTypes([
                 '0' => [
                     'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.' .

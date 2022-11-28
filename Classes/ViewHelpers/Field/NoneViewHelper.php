@@ -23,12 +23,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class NoneViewHelper extends AbstractFieldViewHelper
 {
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return None
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): None
     {
         return static::getPreparedComponent(None::class, $renderingContext, $arguments);
     }

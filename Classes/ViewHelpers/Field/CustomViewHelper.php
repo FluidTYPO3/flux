@@ -22,11 +22,7 @@ class CustomViewHelper extends UserFuncViewHelper
 {
     const DEFAULT_USERFUNCTION = 'FluidTYPO3\\Flux\\UserFunction\\HtmlOutput->renderField';
 
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->overrideArgument(
@@ -38,7 +34,7 @@ class CustomViewHelper extends UserFuncViewHelper
         );
     }
 
-    protected function callRenderMethod()
+    protected function callRenderMethod(): string
     {
         $container = static::getContainerFromRenderingContext($this->renderingContext);
         $component = static::getComponent($this->renderingContext, $this->arguments);
@@ -52,31 +48,20 @@ class CustomViewHelper extends UserFuncViewHelper
         return '';
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Custom
-     */
     public static function getComponent(
         RenderingContextInterface $renderingContext,
         iterable $arguments
-    ) {
+    ): Custom {
         /** @var Custom $component */
         $component = parent::getPreparedComponent(Custom::class, $renderingContext, $arguments);
         return $component;
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return \Closure
-     */
     protected static function buildClosure(
         RenderingContextInterface $renderingContext,
         iterable $arguments,
         \Closure $renderChildrenClosure
-    ) {
+    ): \Closure {
         $container = $renderingContext->getVariableProvider();
         $closure = function ($parameters) use ($container, $renderChildrenClosure) {
             $backupParameters = null;

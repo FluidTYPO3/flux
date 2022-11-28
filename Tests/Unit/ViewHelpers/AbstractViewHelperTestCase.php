@@ -31,9 +31,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInvoker;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 
-/**
- * AbstractViewHelperTestCase
- */
 abstract class AbstractViewHelperTestCase extends AbstractTestCase
 {
     protected ?RenderingContext $renderingContext;
