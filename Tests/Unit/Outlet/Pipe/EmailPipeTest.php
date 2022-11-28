@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\Exception;
+use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
 /**
  * EmailPipeTest
@@ -26,10 +27,12 @@ class EmailPipeTest extends AbstractPipeTestCase
      */
     protected function createInstance()
     {
+        $view = $this->getMockBuilder(ViewInterface::class)->getMockForAbstractClass();
         $pipe = $this->getMockBuilder(EmailPipe::class)->setMethods(array('sendEmail'))->getMock();
         $pipe->setSubject('Test subject')
             ->setSender('test@test.com')
-            ->setRecipient('test@test.com');
+            ->setRecipient('test@test.com')
+            ->setView($view);
         $this->setInaccessiblePropertyValue($pipe, 'subject', 'Mock EmailPipe');
         return $pipe;
     }
@@ -40,6 +43,47 @@ class EmailPipeTest extends AbstractPipeTestCase
     public function supportsStringData()
     {
         $instance = $this->createInstance();
+        $output = $instance->conduct('test');
+        $this->assertNotEmpty($output);
+    }
+
+    public function testSupportsArrayRecipient(): void
+    {
+        $instance = $this->createInstance();
+        $instance->setRecipient(['foo@bar.com', 'foo']);
+        $output = $instance->conduct('test');
+        $this->assertNotEmpty($output);
+    }
+
+    public function testSupportsArraySender(): void
+    {
+        $instance = $this->createInstance();
+        $instance->setSender(['foo@bar.com', 'foo']);
+        $output = $instance->conduct('test');
+        $this->assertNotEmpty($output);
+    }
+
+    public function testRendersBodyFromViewWithoutBodySection(): void
+    {
+        $view = $this->getMockBuilder(ViewInterface::class)->getMockForAbstractClass();
+        $view->expects(self::once())->method('render')->willReturn('rendered');
+
+        $instance = $this->createInstance();
+        $instance->setView($view);
+        $instance->setBody(null);
+        $output = $instance->conduct('test');
+        $this->assertNotEmpty($output);
+    }
+
+    public function testRendersBodyFromViewWithBodySection(): void
+    {
+        $view = $this->getMockBuilder(ViewInterface::class)->addMethods(['renderSection'])->getMockForAbstractClass();
+        $view->expects(self::once())->method('renderSection')->willReturn('rendered');
+
+        $instance = $this->createInstance();
+        $instance->setView($view);
+        $instance->setBody(null);
+        $instance->setBodySection('section');
         $output = $instance->conduct('test');
         $this->assertNotEmpty($output);
     }

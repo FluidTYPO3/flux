@@ -116,8 +116,8 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
     }
 
     /**
-     * @param mixed $data
-     * @return mixed
+     * @param array|string $data
+     * @return array|string
      * @throws Exception
      */
     public function conduct($data)
@@ -133,17 +133,20 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
     }
 
     /**
-     * @param mixed $data
+     * @param array|string $data
      */
     protected function prepareEmail($data): MailMessage
     {
-        $body = null;
-        if ($this->getBodySection() !== null) {
-            $body = $this->view->renderSection($this->getBodySection(), $data, true);
-        }
+        $body = $this->getBody();
         if (empty($body)) {
-            $body = $this->getBody();
+            if ($this->getBodySection() !== null && method_exists($this->view, 'renderSection')) {
+                $body = $this->view->renderSection($this->getBodySection(), $data, true);
+            } else {
+                $this->view->assignMultiple((array) $data);
+                $body = $this->view->render();
+            }
         }
+
         $sender = $this->getSender();
         $recipient = $this->getRecipient();
         if (is_array($recipient)) {

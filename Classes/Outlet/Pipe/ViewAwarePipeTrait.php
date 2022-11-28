@@ -20,13 +20,9 @@ trait ViewAwarePipeTrait
      */
     protected $view;
 
-    public function setView(ViewInterface $view): void
+    public function setView(ViewInterface $view): self
     {
         $this->view = $view;
-    }
-
-    public function getView(): ViewInterface
-    {
-        return $this->view;
+        return $this;
     }
 }
