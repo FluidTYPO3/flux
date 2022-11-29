@@ -327,7 +327,7 @@ class ContentTypeBuilder
             return;
         }
 
-        if (in_array($groupName, ['common', 'menu', 'special', 'forms', 'plugins'])) {
+        if (in_array($groupName, ['common', 'menu', 'special', 'forms', 'plugins'], true)) {
             return;
         }
 
@@ -345,6 +345,9 @@ class ContentTypeBuilder
         $groups[$groupName] = true;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getObjectManager(): ObjectManagerInterface
     {
         /** @var ObjectManagerInterface $objectManager */
@@ -352,6 +355,9 @@ class ContentTypeBuilder
         return $objectManager;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getRuntimeCache(): FrontendInterface
     {
         /** @var CacheManager $cacheManager */
@@ -359,6 +365,9 @@ class ContentTypeBuilder
         return $cacheManager->getCache('cache_runtime');
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getCache(): FrontendInterface
     {
         /** @var CacheManager $cacheManager */
@@ -370,6 +379,9 @@ class ContentTypeBuilder
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function createIcon(string $icon, string $contentType): string
     {
         return MiscellaneousUtility::createIcon(

@@ -43,11 +43,8 @@ class PreviewView extends TemplateView
     const CONTROLLER_NAME = 'Content';
 
     protected array $templates = [
-        'gridToggle' => '<div class="grid-visibility-toggle" data-toggle-uid="%s">
-                            %s
-                        </div>',
-        'link' => '<a href="%s" title="%s"
-                      class="btn btn-default btn-sm">%s %s</a>'
+        'gridToggle' => '<div class="grid-visibility-toggle" data-toggle-uid="%s">%s</div>',
+        'link' => '<a href="%s" title="%s" class="btn btn-default btn-sm">%s %s</a>'
     ];
 
     protected ConfigurationManagerInterface $configurationManager;
@@ -186,20 +183,14 @@ class PreviewView extends TemplateView
             );
 
             $pageUid = $row['pid'];
-            if ($GLOBALS['BE_USER']->workspace > 0) {
-                $workspaceVersion = BackendUtility::getWorkspaceVersionOfRecord(
-                    $GLOBALS['BE_USER']->workspace,
-                    'tt_content',
-                    $row['uid']
-                );
-                if ($workspaceVersion) {
-                    $pageUid = $workspaceVersion['pid'] ?? $pageUid;
-                }
+            if (($workspaceId = $this->getBackendUser()->workspace) > 0) {
+                $workspaceVersion = $this->fetchWorkspaceVersionOfRecord($workspaceId, $row['uid']);
+                $pageUid = $workspaceVersion['pid'] ?? $pageUid;
             }
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
             if ($pageLayoutView instanceof BackendLayoutRenderer) {
-                $content = $pageLayoutView->drawContent(false);
-            } elseif (method_exists($pageLayoutView, 'start')) {
+                $content .= $pageLayoutView->drawContent(false);
+            } elseif (method_exists($pageLayoutView, 'start') && method_exists($pageLayoutView, 'generateList')) {
                 $pageLayoutView->start($pageUid, 'tt_content', 0);
                 $pageLayoutView->generateList();
                 $content .= $pageLayoutView->HTMLcode;
@@ -218,29 +209,18 @@ class PreviewView extends TemplateView
     }
 
     /**
-     * @codeCoverageIgnore
-     */
-    protected function getCookie(): ?string
-    {
-        return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
-    }
-
-    /**
      * @return PageLayoutView|BackendLayoutRenderer
      */
     protected function getInitializedPageLayoutView(ProviderInterface $provider, array $row)
     {
         $pageId = (int) $row['pid'];
         $pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $pageId);
-        $moduleData = $GLOBALS['BE_USER']->getModuleData('web_layout', '');
+        $moduleData = $this->getBackendUser()->getModuleData('web_layout', '');
         $showHiddenRecords = (int) ($moduleData['tt_content_showHidden'] ?? 1);
 
         // For all elements to be shown in draft workspaces & to also show hidden elements by default if user hasn't
         // disabled the option analog behavior to the PageLayoutController at the end of menuConfig()
-        if ($this->getActiveWorkspaceId() != 0
-            || !isset($moduleData['tt_content_showHidden'])
-            || $moduleData['tt_content_showHidden'] !== '0'
-        ) {
+        if ($this->getActiveWorkspaceId() !== 0 || !$showHiddenRecords) {
             $moduleData['tt_content_showHidden'] = 1;
         }
 
@@ -265,7 +245,7 @@ class PreviewView extends TemplateView
             /** @var PageLayoutContext $context */
             $context = GeneralUtility::makeInstance(
                 PageLayoutContext::class,
-                BackendUtility::getRecord('pages', $pageId),
+                $this->fetchPageRecordWithoutOverlay($pageId),
                 $backendLayout
             );
             if (isset($language)) {
@@ -302,7 +282,7 @@ class PreviewView extends TemplateView
 
         array_push(
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
-            ...$layoutConfiguration['__items']
+            ...($layoutConfiguration['__items'] ?? [])
         );
 
         $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList'] ?? []);
@@ -325,12 +305,41 @@ class PreviewView extends TemplateView
         $view->tt_contentConfig['showHidden'] = $showHiddenRecords;
         $view->tt_contentConfig['activeCols'] = $columnsAsCSV;
         $view->tt_contentConfig['cols'] = $columnsAsCSV;
-        $view->CType_labels = [];
-        $view->setPageinfo(BackendUtility::readPageAccess($pageId, ''));
         $view->CType_labels = $contentTypeLabels;
-        $view->itemLabels = [];
         $view->itemLabels = $itemLabels;
+
+        if (($pageInfo = $this->checkAccessToPage($pageId))) {
+            $view->setPageinfo($pageInfo);
+        }
+
         return $view;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function fetchWorkspaceVersionOfRecord(int $workspaceId, int $recordUid): ?array
+    {
+        /** @var array|false $workspaceVersion */
+        $workspaceVersion = BackendUtility::getWorkspaceVersionOfRecord($workspaceId, 'tt_content', $recordUid);
+        return $workspaceVersion ?: null;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return array|false
+     */
+    protected function checkAccessToPage(int $pageId)
+    {
+        return BackendUtility::readPageAccess($pageId, '');
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function fetchPageRecordWithoutOverlay(int $pageId): ?array
+    {
+        return BackendUtility::getRecord('pages', $pageId);
     }
 
     /**
@@ -352,8 +361,16 @@ class PreviewView extends TemplateView
     /**
      * @codeCoverageIgnore
      */
+    protected function getCookie(): ?string
+    {
+        return $_COOKIE['fluxCollapseStates'] ?? null;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getActiveWorkspaceId(): int
     {
-        return (integer) (true === isset($GLOBALS['BE_USER']->workspace) ? $GLOBALS['BE_USER']->workspace : 0);
+        return (integer) ($GLOBALS['BE_USER']->workspace ?? 0);
     }
 }

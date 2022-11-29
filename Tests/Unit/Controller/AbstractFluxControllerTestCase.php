@@ -13,9 +13,13 @@ use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
+use FluidTYPO3\Flux\Provider\Interfaces\BasicProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\MisconfiguredControllerProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -41,31 +45,12 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
  */
 class AbstractFluxControllerTestCase extends AbstractTestCase
 {
-    /**
-     * @var string
-     */
-    protected $extensionName = 'FluidTYPO3.Flux';
+    protected string $extensionName = 'FluidTYPO3.Flux';
+    protected string $defaultAction = 'render';
+    protected string $extensionKey = 'flux';
+    protected string $shortExtensionName = 'Flux';
 
-    /**
-     * @var string
-     */
-    protected $defaultAction = 'render';
-
-    /**
-     * @var string
-     */
-    protected $extensionKey = 'flux';
-
-    /**
-     * @var string
-     */
-    protected $shortExtensionName = 'Flux';
-
-    /**
-     * @param string $action
-     * @return void
-     */
-    protected function assertSimpleActionCallsRenderOnView($action)
+    protected function assertSimpleActionCallsRenderOnView(string $action): void
     {
         $className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = new $className();
@@ -80,10 +65,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertEquals('rendered', $output);
     }
 
-    /**
-     * @return string
-     */
-    protected function getControllerName()
+    protected function getControllerName(): string
     {
         if (true === strpos(get_class($this), '\\')) {
             $parts = explode('\\', get_class($this));
@@ -94,9 +76,6 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         return $name;
     }
 
-    /**
-     * @test
-     */
     public function testDefaultActionForwardsToRenderAction()
     {
         $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['forward'])->disableOriginalConstructor()->getMockForAbstractClass();
@@ -104,9 +83,6 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance->defaultAction();
     }
 
-    /**
-     * @test
-     */
     public function testResolveView()
     {
         $view = $this->getMockBuilder(TemplateView::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
@@ -119,9 +95,6 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertSame($view, $result);
     }
 
-    /**
-     * @test
-     */
     public function testInitializeViewHelperVariableContainer()
     {
         $variableProvider = $this->getMockBuilder(ViewHelperVariableContainer::class)->getMock();
@@ -136,40 +109,26 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->callInaccessibleMethod($instance, 'initializeViewHelperVariableContainer');
     }
 
-    /**
-     * @test
-     * @return AbstractFluxController
-     */
-    public function canCreateInstanceOfCustomRegisteredController()
+    public function testCanCreateInstanceOfCustomRegisteredController(): AbstractFluxController
     {
         $instance = $this->createAndTestDummyControllerInstance();
         $this->assertInstanceOf(AbstractFluxController::class, $instance);
         return $instance;
     }
 
-    /**
-     * @return void
-     */
-    protected function performDummyRegistration()
+    protected function performDummyRegistration(): void
     {
         Core::registerProviderExtensionKey($this->extensionName, $this->getControllerName());
         $this->assertContains($this->extensionName, Core::getRegisteredProviderExtensionKeys($this->getControllerName()));
     }
 
-    /**
-     * @return AbstractFluxController
-     */
-    protected function createAndTestDummyControllerInstance()
+    protected function createAndTestDummyControllerInstance(): AbstractFluxController
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         return $this->getMockBuilder($controllerClassName)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
     }
 
-    /**
-     * @param string $controllerName
-     * @return array
-     */
-    protected function createDummyRequestAndResponseForFluxController($controllerName = 'Content')
+    protected function createDummyRequestAndResponseForFluxController(string $controllerName = 'Content'): array
     {
         $request = new Request();
         $request->setControllerExtensionName('Flux');
@@ -181,22 +140,16 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         return array($request, $response);
     }
 
-    /**
-     * @test
-     */
-    public function canGetData()
+    public function testCanGetData(): void
     {
-        $instance = $this->canCreateInstanceOfCustomRegisteredController();
+        $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
         $data = $this->callInaccessibleMethod($instance, 'getData');
         $this->assertIsArray($data);
     }
 
-    /**
-     * @test
-     */
-    public function canGetRecord()
+    public function testCanGetRecord(): void
     {
-        $instance = $this->canCreateInstanceOfCustomRegisteredController();
+        $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
         $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->getMock();
         $contentObjectRenderer->data = [];
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
@@ -206,22 +159,16 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertIsArray($record);
     }
 
-    /**
-     * @test
-     */
-    public function canGetFluxRecordField()
+    public function testCanGetFluxRecordField(): void
     {
-        $instance = $this->canCreateInstanceOfCustomRegisteredController();
+        $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
         $field = $this->callInaccessibleMethod($instance, 'getFluxRecordField');
         $this->assertSame('pi_flexform', $field);
     }
 
-    /**
-     * @test
-     */
-    public function canGetFluxTableName()
+    public function testCanGetFluxTableName(): void
     {
-        $instance = $this->canCreateInstanceOfCustomRegisteredController();
+        $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
         $table = $this->callInaccessibleMethod($instance, 'getFluxTableName');
         $this->assertSame('tt_content', $table);
     }
@@ -238,10 +185,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->callInaccessibleMethod($subject, 'initializeAction');
     }
 
-    /**
-     * @test
-     */
-    public function canPerformSubRenderingWithNotMatchingExtensionName()
+    public function testCanPerformSubRenderingWithNotMatchingExtensionName(): void
     {
         $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
         $objectManager->method('get')->willReturn(
@@ -297,10 +241,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         self::assertSame('rendered', $output);
     }
 
-    /**
-     * @test
-     */
-    public function canPerformSubRenderingWithWithoutRelay()
+    public function testCanPerformSubRenderingWithWithoutRelay(): void
     {
         $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
         $objectManager->method('get')->willReturn($this->getMockBuilder(Response::class)->disableOriginalConstructor()->getMock());
@@ -315,10 +256,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->callInaccessibleMethod($instance, 'performSubRendering', $this->extensionName, $controllerName, $this->defaultAction, 'tx_flux_content');
     }
 
-    /**
-     * @test
-     */
-    public function canInitializeView()
+    public function testCanInitializeView(): void
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $view = $this->getMockBuilder(TemplateView::class)->setMethods(array('dummy'))->disableOriginalConstructor()->getMock();
@@ -341,10 +279,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }
 
-    /**
-     * @test
-     */
-    public function canInitializeViewWithTemplateSource()
+    public function testCanInitializeViewWithTemplateSource(): void
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $view = $this->getMockBuilder(TemplateView::class)->setMethods(array('setTemplateSource'))->disableOriginalConstructor()->getMock();
@@ -367,10 +302,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->callInaccessibleMethod($instance, 'initializeView', $view);
     }
 
-    /**
-     * @test
-     */
-    public function canInitializeSettings()
+    public function testCanInitializeSettings(): void
     {
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
@@ -412,10 +344,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->callInaccessibleMethod($mock, 'initializeOverriddenSettings');
     }
 
-    /**
-     * @return array
-     */
-    public function getInitializeOverriddenSettingsTestValues()
+    public function getInitializeOverriddenSettingsTestValues(): array
     {
         return [
             [['settings' => []], [], []],
@@ -424,10 +353,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         ];
     }
 
-    /**
-     * @test
-     */
-    public function testInitializeProvider()
+    public function testInitializeProvider(): void
     {
         $provider = new Provider();
         $service = $this->getMockBuilder(FluxService::class)->setMethods(['resolvePrimaryConfigurationProvider'])->getMock();
@@ -444,10 +370,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->callInaccessibleMethod($mock, 'initializeProvider');
     }
 
-    /**
-     * @test
-     */
-    public function testInitializeProviderThrowsExceptionIfNoProviderResolved()
+    public function testInitializeProviderThrowsExceptionIfNoProviderResolved(): void
     {
         $service = $this->getMockBuilder(FluxService::class)->setMethods(['resolvePrimaryConfigurationProvider'])->getMock();
         $service->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn(null);
@@ -464,10 +387,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->callInaccessibleMethod($mock, 'initializeProvider');
     }
 
-    /**
-     * @test
-     */
-    public function callingRenderActionExecutesExpectedMethodsOnNestedObjects()
+    public function testCallingRenderActionExecutesExpectedMethodsOnNestedObjects(): void
     {
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
@@ -485,10 +405,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertEquals($result, 'test');
     }
 
-    /**
-     * @test
-     */
-    public function performSubRenderingCallsViewRenderOnNativeTarget()
+    public function testPerformSubRenderingCallsViewRenderOnNativeTarget(): void
     {
         $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
         $objectManager->method('get')->willReturn($this->getMockBuilder(Response::class)->disableOriginalConstructor()->disableOriginalConstructor()->getMock());
@@ -506,10 +423,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertEquals('test', $result);
     }
 
-    /**
-     * @test
-     */
-    public function callingSubControllerActionExecutesExpectedMethodsOnNestedObjects()
+    public function testCallingSubControllerActionExecutesExpectedMethodsOnNestedObjects(): void
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = $this->getMockBuilder($controllerClassName)->setMethods(['processRequest', 'initializeViewHelperVariableContainer'])->disableOriginalConstructor()->getMock();
@@ -548,10 +462,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertEquals('test', $result);
     }
 
-    /**
-     * @test
-     */
-    public function canInitializeViewVariables()
+    public function testCanInitializeViewVariables(): void
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $data = ['test' => 'test'];
@@ -570,12 +481,9 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->callInaccessibleMethod($instance, 'initializeViewVariables');
     }
 
-    /**
-     * @test
-     */
-    public function canUseTypoScriptSettingsInsteadOfFlexFormDataWhenRequested()
+    public function testCanUseTypoScriptSettingsInsteadOfFlexFormDataWhenRequested(): void
     {
-        $instance = $this->canCreateInstanceOfCustomRegisteredController();
+        $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
         $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->getMock();
         $contentObjectRenderer->data = [];
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
@@ -598,12 +506,9 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertNotSame($previousSettings, $overriddenSettings);
     }
 
-    /**
-     * @test
-     */
-    public function canUseFlexFormDataWhenPresent()
+    public function testCanUseFlexFormDataWhenPresent(): void
     {
-        $instance = $this->canCreateInstanceOfCustomRegisteredController();
+        $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
         $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->getMock();
         $contentObjectRenderer->data = [];
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
@@ -624,10 +529,61 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertEquals($settings['settings']['test'], $overriddenSettings['test']);
     }
 
-    /**
-     * @test
-     */
-    public function testOutletActionForwardsUnmatchedConfigurationToRenderAction()
+    public function testInitializeViewReturnsEarlyWithoutProvider(): void
+    {
+        $subject = $this->getMockBuilder($this->createInstanceClassName())
+            ->setMethods(['getRecord'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->expects(self::never())->method('getRecord');
+        $this->callInaccessibleMethod(
+            $subject,
+            'initializeView',
+            $this->getMockBuilder(\TYPO3\CMS\Extbase\Mvc\View\ViewInterface::class)->getMockForAbstractClass()
+        );
+    }
+
+    public function testRenderActionReturnsEmptyStringWithoutProvider(): void
+    {
+        $subject = $this->getMockBuilder($this->createInstanceClassName())
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        self::assertSame('', $subject->renderAction());
+    }
+
+    public function testOutletActionThrowsExceptionIfProviderIsNotFormProviderInterface(): void
+    {
+        $this->expectExceptionCode(1669488830);
+        $subject = $this->getMockBuilder($this->createInstanceClassName())
+            ->setMethods(['getRecord'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->setInaccessiblePropertyValue(
+            $subject,
+            'provider',
+            $this->getMockBuilder(ControllerProviderInterface::class)->getMockForAbstractClass()
+        );
+        $subject->outletAction();
+    }
+
+    public function testOutletActionThrowsExceptionIfProviderIsNotRecordProviderInterface(): void
+    {
+        $this->expectExceptionCode(1669488830);
+        $subject = $this->getMockBuilder($this->createInstanceClassName())
+            ->setMethods(['getRecord'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->setInaccessiblePropertyValue(
+            $subject,
+            'provider',
+            $this->getMockBuilder(MisconfiguredControllerProvider::class)
+                ->getMockForAbstractClass()
+        );
+        $subject->outletAction();
+    }
+
+    public function testOutletActionForwardsUnmatchedConfigurationToRenderAction(): void
     {
         $subject = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['forward', 'getRecord'])->disableOriginalConstructor()->getMock();
         $subject->expects($this->once())->method('forward')->with('render')->willThrowException(new StopActionException());
@@ -653,7 +609,6 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
      * @param bool $isValidOutlet
      * @param bool $throwsException
      * @param string $expectedSection
-     * @test
      * @dataProvider getOutletActionTestValues
      */
     public function testOutletAction($isValidOutlet, $throwsException, $expectedSection)
@@ -683,10 +638,7 @@ class AbstractFluxControllerTestCase extends AbstractTestCase
         $this->assertSame('rendered', $rendered);
     }
 
-    /**
-     * @return array
-     */
-    public function getOutletActionTestValues()
+    public function getOutletActionTestValues(): array
     {
         return [
             'valid outlet without exception' => [true, false, 'OutletSuccess'],

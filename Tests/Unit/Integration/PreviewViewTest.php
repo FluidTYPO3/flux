@@ -9,13 +9,22 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Backend\View\Drawing\BackendLayoutRenderer;
+use TYPO3\CMS\Backend\View\Drawing\DrawingConfiguration;
+use TYPO3\CMS\Backend\View\PageLayoutContext;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Configuration\Features;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
@@ -172,6 +181,245 @@ class PreviewViewTest extends AbstractTestCase
         $options = array(PreviewView::OPTION_MODE => 'someinvalidvalue');
         $result = $this->callInaccessibleMethod($instance, 'getOptionMode', $options);
         $this->assertEquals(PreviewView::MODE_APPEND, $result);
+    }
+
+    public function testRenderGridWithoutChildren(): void
+    {
+        $subject = $this->getMockBuilder(PreviewView::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+        $provider->method('getGrid')->willReturn(Form\Container\Grid::create());
+        $form = Form::create();
+        self::assertSame('', $this->callInaccessibleMethod($subject, 'renderGrid', $provider, ['uid' => 123], $form));
+    }
+
+    public function testRenderGridWithChildrenWorkspaceEnabled(): void
+    {
+        $renderer = $this->getMockBuilder(BackendLayoutRenderer::class)
+            ->setMethods(['drawContent'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $renderer->method('drawContent')->willReturn('rendered');
+
+        $backendUser = $this->getMockBuilder(BackendUserAuthentication::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $backendUser->workspace = 1;
+
+        $subject = $this->getMockBuilder(PreviewView::class)
+            ->setMethods(['getInitializedPageLayoutView', 'fetchWorkspaceVersionOfRecord', 'getBackendUser'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->method('getInitializedPageLayoutView')->willReturn($renderer);
+        $subject->method('fetchWorkspaceVersionOfRecord')->willReturn(null);
+        $subject->method('getBackendUser')->willReturn($backendUser);
+
+        $grid = Form\Container\Grid::create();
+        /** @var Form\Container\Column $column */
+        $column = $grid->createContainer(Form\Container\Row::class, 'row')
+            ->createContainer(Form\Container\Column::class, 'column');
+        $column->setColumnPosition(123);
+        $form = Form::create();
+
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+        $provider->method('getGrid')->willReturn($grid);
+
+        $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = [];
+
+        $output = $this->callInaccessibleMethod($subject, 'renderGrid', $provider, ['uid' => 123, 'pid' => 1], $form);
+
+        self::assertSame('<div class="grid-visibility-toggle" data-toggle-uid="123"></div>rendered', $output);
+    }
+
+    /**
+     * @dataProvider getRenderGridWithChildrenTestValues
+     * @param BackendLayoutRenderer|PageLayoutView $renderer
+     * @return void
+     */
+    public function testRenderGridWithChildren($renderer): void
+    {
+        $subject = $this->getMockBuilder(PreviewView::class)
+            ->setMethods(['getInitializedPageLayoutView'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->method('getInitializedPageLayoutView')->willReturn($renderer);
+        $grid = Form\Container\Grid::create();
+        /** @var Form\Container\Column $column */
+        $column = $grid->createContainer(Form\Container\Row::class, 'row')
+            ->createContainer(Form\Container\Column::class, 'column');
+        $column->setColumnPosition(123);
+        $form = Form::create();
+
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+        $provider->method('getGrid')->willReturn($grid);
+
+        $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = [];
+
+        $output = $this->callInaccessibleMethod($subject, 'renderGrid', $provider, ['uid' => 123, 'pid' => 1], $form);
+
+        self::assertSame('<div class="grid-visibility-toggle" data-toggle-uid="123"></div>rendered', $output);
+    }
+
+    public function getRenderGridWithChildrenTestValues(): array
+    {
+        $backendLayoutRenderer = $this->getMockBuilder(BackendLayoutRenderer::class)
+            ->setMethods(['drawContent'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $backendLayoutRenderer->method('drawContent')->willReturn('rendered');
+
+        $pageLayoutView = $this->getMockBuilder(PageLayoutView::class)
+            ->setMethods(['getTable_tt_content', 'generateList'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $pageLayoutView->method('getTable_tt_content')->willReturn('rendered');
+
+        $legacyPageLayoutView = $this->getMockBuilder(PageLayoutView::class)
+            ->setMethods(['generateList'])
+            ->addMethods(['start'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $legacyPageLayoutView->HTMLcode = 'rendered';
+
+        return [
+            'with backend layout renderer' => [$backendLayoutRenderer],
+            'with page layout view' => [$pageLayoutView],
+            'with legacy page layout view' => [$legacyPageLayoutView],
+        ];
+    }
+
+    public function testGetInitializedPageLayoutViewWithFluidPageModuleFeatureEnabled(): void
+    {
+        $record = [
+            'uid' => 123,
+            'pid' => 1,
+            'l18n_parent' => 0,
+            't3ver_oid' => 0,
+            'sys_language_uid' => 0,
+        ];
+
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+
+        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->setMethods(['getSingle'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $recordService->method('getSingle')->willReturn(['uid' => 1]);
+
+        $backendUser = $this->getMockBuilder(BackendUserAuthentication::class)
+            ->setMethods(['getModuleData'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $subject = $this->getMockBuilder(PreviewView::class)
+            ->setMethods(['getBackendUser', 'fetchPageRecordWithoutOverlay'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->injectWorkspacesAwareRecordService($recordService);
+        $subject->method('fetchPageRecordWithoutOverlay')->willReturn(['uid' => 456]);
+
+        $features = $this->getMockBuilder(Features::class)
+            ->setMethods(['isFeatureEnabled'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $features->method('isFeatureEnabled')->willReturn(true);
+        GeneralUtility::addInstance(Features::class, $features);
+
+        $siteFinder = $this->getMockBuilder(SiteFinder::class)
+            ->setMethods(['getSiteByPageId'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::addInstance(SiteFinder::class, $siteFinder);
+
+        $pageLayoutContext = $this->getMockBuilder(PageLayoutContext::class)
+            ->setMethods(['getDrawingConfiguration'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $pageLayoutContext->method('getDrawingConfiguration')->willReturn(new DrawingConfiguration());
+        GeneralUtility::addInstance(PageLayoutContext::class, $pageLayoutContext);
+
+        $renderer = $this->getMockBuilder(BackendLayoutRenderer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::addInstance(BackendLayoutRenderer::class, $renderer);
+
+        $output = $this->callInaccessibleMethod($subject, 'getInitializedPageLayoutView', $provider, $record);
+        self::assertSame($renderer, $output);
+    }
+
+    public function testGetInitializedPageLayoutViewWithFluidPageModuleFeatureDisabled(): void
+    {
+        $singletonInstances = GeneralUtility::getSingletonInstances();
+
+        $record = [
+            'uid' => 123,
+            'pid' => 1,
+            'l18n_parent' => 0,
+            't3ver_oid' => 0,
+            'sys_language_uid' => 0,
+        ];
+
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+
+        $languageService = $this->getMockBuilder(LanguageService::class)
+            ->setMethods(['sL'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->setMethods(['getSingle'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $recordService->method('getSingle')->willReturn(['uid' => 1]);
+
+        $backendUser = $this->getMockBuilder(BackendUserAuthentication::class)
+            ->setMethods(['getModuleData'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $subject = $this->getMockBuilder(PreviewView::class)
+            ->setMethods(['getBackendUser', 'fetchPageRecordWithoutOverlay', 'getLanguageService', 'checkAccessToPage'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->injectWorkspacesAwareRecordService($recordService);
+        $subject->method('fetchPageRecordWithoutOverlay')->willReturn(['uid' => 456]);
+        $subject->method('getLanguageService')->willReturn($languageService);
+        $subject->method('checkAccessToPage')->willReturn(['read' => true]);
+
+        $features = $this->getMockBuilder(Features::class)
+            ->setMethods(['isFeatureEnabled'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $features->method('isFeatureEnabled')->willReturn(false);
+        GeneralUtility::addInstance(Features::class, $features);
+
+        $eventDispatcher = $this->getMockBuilder(EventDispatcher::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::setSingletonInstance(EventDispatcher::class, $eventDispatcher);
+
+        $renderer = $this->getMockBuilder(PageLayoutView::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::addInstance(PageLayoutView::class, $renderer);
+
+        $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] = [
+            [
+                'foo',
+                'bar',
+                'baz',
+            ],
+        ];
+
+        $output = $this->callInaccessibleMethod($subject, 'getInitializedPageLayoutView', $provider, $record);
+
+        GeneralUtility::resetSingletonInstances($singletonInstances);
+
+        self::assertSame($renderer, $output);
     }
 
     /**
