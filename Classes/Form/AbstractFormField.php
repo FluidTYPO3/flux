@@ -153,7 +153,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     public function build(): array
     {
-        if (false === $this->getEnabled()) {
+        if (!$this->getEnabled()) {
             return [];
         }
 
@@ -173,7 +173,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             $fieldStructureArray['displayCond'] = $displayCondition;
         }
         $wizards = $this->buildChildren($this->wizards);
-        if (true === $this->getClearable()) {
+        if ($this->getClearable()) {
             $wizards[] = [
                 'type' => 'userFunc',
                 'userFunc' => UserFunctions::class . '->renderClearValueWizardField',
@@ -185,7 +185,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         if (!empty($wizards)) {
             $fieldStructureArray['config']['wizards'] = $wizards;
         }
-        if (true === $this->getRequestUpdate()) {
+        if ($this->getRequestUpdate()) {
             $fieldStructureArray['onChange'] = 'reload';
         }
         return $fieldStructureArray;

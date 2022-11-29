@@ -10,26 +10,27 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 
 use FluidTYPO3\Flux\Form;
 
-/**
- * SheetTest
- */
 class SheetTest extends AbstractContainerTest
 {
-
-    /**
-     * @test
-     */
-    public function testDescriptionPropertyWorks()
+    public function testDescriptionPropertyWorks(): void
     {
         $this->assertGetterAndSetterWorks('description', 'foobardescription', 'foobardescription', true);
     }
 
-    /**
-     * @test
-     */
-    public function testShortDescriptionPropertyWorks()
+    public function testShortDescriptionPropertyWorks(): void
     {
         $this->assertGetterAndSetterWorks('shortDescription', 'foobarshortdescription', 'foobarshortdescription', true);
+    }
+
+    public function testAddTogglesTransformOnIfChildHasTransformProperty(): void
+    {
+        $form = Form::create();
+        $sheet = $form->createContainer(Form\Container\Sheet::class, 'sheet');
+        $child = new Form\Field\Input();
+        $child->setTransform('string');
+        self::assertFalse($form->hasOption(Form::OPTION_TRANSFORM));
+        $sheet->add($child);
+        self::assertTrue($form->hasOption(Form::OPTION_TRANSFORM));
     }
 
     /**

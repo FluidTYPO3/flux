@@ -9,28 +9,20 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
+use FluidTYPO3\Flux\Controller\ContentController;
 
-/**
- * ContentControllerTest
- */
 class ContentControllerTest extends AbstractFluxControllerTestCase
 {
-    /**
-     * @test
-     */
-    public function canRegisterCustomControllerForContent()
+    public function testCanRegisterCustomControllerForContent(): void
     {
         $this->performDummyRegistration();
     }
 
-    /**
-     * @return AbstractFluxController
-     */
-    protected function createAndTestDummyControllerInstance()
+    protected function createAndTestDummyControllerInstance(): ContentController
     {
         $this->performDummyRegistration();
-        $controllerClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
-        /** @var AbstractFluxController $instance */
+        $controllerClassName = ContentController::class;
+        /** @var ContentController $instance */
         $instance = new $controllerClassName();
         $this->setInaccessiblePropertyValue($instance, 'extensionName', 'Flux');
         return $instance;

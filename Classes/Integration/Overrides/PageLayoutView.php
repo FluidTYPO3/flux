@@ -56,6 +56,7 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
      * @param array $columns
      * @param string $additionalWhereClause
      * @return array
+     * @codeCoverageIgnore
      */
     protected function getContentRecordsPerColumn(
         $table,

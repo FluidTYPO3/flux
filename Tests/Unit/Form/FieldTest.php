@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form;
  */
 
 use FluidTYPO3\Flux\Form\Field;
+use FluidTYPO3\Flux\Form\Wizard\Add;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class FieldTest extends AbstractTestCase
@@ -67,5 +68,12 @@ class FieldTest extends AbstractTestCase
     public function testCanGetAndSetOnChange(): void
     {
         $this->assertGetterAndSetterWorks('onChange', 'someonchange', null, true);
+    }
+
+    public function testHasChildWithInstance(): void
+    {
+        $field = Field::create(['type' => 'input']);
+        $wizard = $field->createWizard(Add::class, 'add');
+        self::assertTrue($field->has($wizard));
     }
 }
